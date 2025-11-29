@@ -1,0 +1,66 @@
+export const de = {
+    APP: {
+        TITLE: 'Wasserverbrauch Tracker',
+        SETTINGS: 'Einstellungen',
+        BACK: 'Zurück zur Startseite'
+    },
+    HOME: {
+        HISTORY_TITLE: 'Verbrauchsverlauf',
+        FILTERS: {
+            TOTAL: 'Gesamt',
+            BY_ROOM: 'Nach Raum',
+            BY_TYPE: 'Nach Wassertyp',
+            DETAILED: 'Detailliert'
+        },
+        NO_RECORDS: 'Noch keine Einträge.',
+        DETAILED_RECORDS: 'Detaillierte Einträge',
+        RECORD_CONSUMPTION: 'Verbrauch erfassen',
+        READINGS_FOR: 'Ablesung für',
+        KITCHEN: 'Küche',
+        BATHROOM: 'Badezimmer',
+        WARM_WATER: 'Warmwasser (L)',
+        COLD_WATER: 'Kaltwasser (L)',
+        SAVE: 'Speichern',
+        TOTAL: 'Gesamt'
+    },
+    SETTINGS: {
+        TITLE: 'Haushaltseinstellungen',
+        ADDRESS_TITLE: 'Haushaltsadresse',
+        STREET_NAME: 'Straßenname',
+        NUMBER: 'Hausnummer',
+
+        CITY: 'Stadt',
+        ZIP_CODE: 'PLZ',
+        COUNTRY: 'Land',
+        SAVE_ADDRESS: 'Adresse speichern',
+        EDIT_ADDRESS: 'Adresse bearbeiten',
+        CANCEL: 'Abbrechen',
+        ADDRESS_SAVED: 'Adresse erfolgreich gespeichert!',
+        SEARCH_COUNTRY: 'Zum Suchen eingeben...',
+        ADD_MEMBER_TITLE: 'Familienmitglied hinzufügen',
+        NAME: 'Vorname',
+        SURNAME: 'Nachname',
+        TYPE: 'Typ',
+        GENDER: 'Geschlecht',
+        SELECT_AVATAR: 'Helden-Avatar wählen',
+        ADD_MEMBER: 'Mitglied hinzufügen',
+        CURRENT_MEMBERS: 'Aktuelle Mitglieder',
+        NO_MEMBERS: 'Noch keine Mitglieder hinzugefügt.',
+        REMOVE: 'Entfernen',
+        TYPES: {
+            ADULT: 'Erwachsener',
+            KID: 'Kind'
+        },
+        ERRORS: {
+            NUMBER_ONLY: 'Nur Zahlen sind erlaubt'
+        },
+        EXPORT_ADDRESS: 'Adresse exportieren',
+        IMPORT_ADDRESS: 'Adresse importieren',
+        IMPORT_SUCCESS: 'Adresse erfolgreich importiert!',
+        IMPORT_ERROR: 'Adresse konnte nicht importiert werden. Bitte überprüfen Sie das Dateiformat.',
+        GENDERS: {
+            MALE: 'Männlich',
+            FEMALE: 'Weiblich'
+        }
+    }
+};

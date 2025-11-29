@@ -1,0 +1,76 @@
+<div class="section address-section">
+  <h2>{{ 'SETTINGS.ADDRESS_TITLE' | translate }}</h2>
+
+  @if (showSaveConfirmation()) {
+  <div class="success-message">
+    ✓ {{ 'SETTINGS.ADDRESS_SAVED' | translate }}
+  </div>
+  }
+
+  @if (!isEditingAddress()) {
+  <!-- Read-only view -->
+  <div class="address-display">
+    <p><strong>{{ 'SETTINGS.STREET_NAME' | translate }}:</strong> {{ streetName() }} {{ streetNumber() }}</p>
+    <p><strong>{{ 'SETTINGS.CITY' | translate }}:</strong> {{ city() }}</p>
+    <p><strong>{{ 'SETTINGS.ZIP_CODE' | translate }}:</strong> {{ zipCode() }}</p>
+    <p><strong>{{ 'SETTINGS.COUNTRY' | translate }}:</strong> {{ country() }}</p>
+  </div>
+  <div class="button-group">
+    <button type="button" class="edit-btn" (click)="editAddress()">✎ {{ 'SETTINGS.EDIT_ADDRESS' | translate
+      }}</button>
+    <button type="button" class="export-btn" (click)="exportAddress()">⬇️ {{ 'SETTINGS.EXPORT_ADDRESS' | translate
+      }}</button>
+    <button type="button" class="import-btn" (click)="fileInput.click()">⬆️ {{ 'SETTINGS.IMPORT_ADDRESS' | translate
+      }}</button>
+    <input #fileInput type="file" (change)="importAddress($event)" accept=".json" class="hidden-input"
+      title="Import Address">
+  </div>
+  } @else {
+  <!-- Edit view -->
+  <div class="form-grid">
+    <div class="form-group span-2">
+      <label>{{ 'SETTINGS.STREET_NAME' | translate }}</label>
+      <input type="text" [ngModel]="streetName()" (ngModelChange)="streetName.set($event)" placeholder="Landwehrweg">
+    </div>
+    <div class="form-group">
+      <label>{{ 'SETTINGS.NUMBER' | translate }}</label>
+      <input type="text" [ngModel]="streetNumber()" (ngModelChange)="onStreetNumberChange($event)" placeholder="1"
+        [class.error]="streetNumberError()">
+      @if (streetNumberError()) {
+      <span class="error-message">{{ streetNumberError() | translate }}</span>
+      }
+    </div>
+    <div class="form-group">
+      <label>{{ 'SETTINGS.CITY' | translate }}</label>
+      <input type="text" [ngModel]="city()" (ngModelChange)="city.set($event)" placeholder="Bad Homburg vor der Höhe">
+    </div>
+    <div class="form-group">
+      <label>{{ 'SETTINGS.ZIP_CODE' | translate }}</label>
+      <input type="text" [ngModel]="zipCode()" (ngModelChange)="onZipCodeChange($event)" placeholder="61350"
+        [class.error]="zipCodeError()">
+      @if (zipCodeError()) {
+      <span class="error-message">{{ zipCodeError() | translate }}</span>
+      }
+    </div>
+    <div class="form-group span-2">
+      <label>{{ 'SETTINGS.COUNTRY' | translate }}</label>
+      <div class="country-selector">
+        <input type="text" [ngModel]="country()" (ngModelChange)="country.set($event); countrySearch.set($event)"
+          placeholder="{{ 'SETTINGS.SEARCH_COUNTRY' | translate }}">
+        @if (filteredCountries().length > 0) {
+        <ul class="country-dropdown">@for (c of filteredCountries(); track c) {<li (click)="selectCountry(c)">{{
+            c }}</li>}</ul>
+        }
+      </div>
+    </div>
+  </div>
+  <div class="button-group">
+    <button type="button" class="save-btn" (click)="saveAddress()" [disabled]="!isAddressFormValid()">
+      💾 {{ 'SETTINGS.SAVE_ADDRESS' | translate }}
+    </button>
+    @if (householdService.address()) {
+    <button type="button" class="cancel-btn" (click)="cancelEdit()">❌ {{ 'SETTINGS.CANCEL' | translate }}</button>
+    }
+  </div>
+  }
+</div>

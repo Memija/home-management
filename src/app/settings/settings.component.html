@@ -1,0 +1,151 @@
+<div class="settings-container">
+    <div class="header">
+        <div class="header-top">
+            <a routerLink="/" class="back-link">← {{ 'APP.BACK' | translate }}</a>
+            <!-- Force dependency on language signal -->
+            <span style="display: none">{{ languageService.currentLang() }}</span>
+        </div>
+        <h1>{{ 'SETTINGS.TITLE' | translate }}</h1>
+    </div>
+
+    <app-address></app-address>
+
+    <div class="section add-member-section">
+        <h2>{{ 'SETTINGS.ADD_MEMBER_TITLE' | translate }}</h2>
+
+        <div class="form-grid">
+            <div class="form-group">
+                <label>{{ 'SETTINGS.NAME' | translate }}</label>
+                <input type="text" [ngModel]="newMemberName()" (ngModelChange)="newMemberName.set($event)"
+                    placeholder="John">
+            </div>
+            <div class="form-group">
+                <label>{{ 'SETTINGS.SURNAME' | translate }}</label>
+                <input type="text" [ngModel]="newMemberSurname()" (ngModelChange)="newMemberSurname.set($event)"
+                    placeholder="Doe">
+            </div>
+        </div>
+
+        <div class="form-grid">
+            <div class="form-group">
+                <label>{{ 'SETTINGS.TYPE' | translate }}</label>
+                <div class="toggle-group">
+                    <button [class.active]="newMemberType() === 'adult'" (click)="newMemberType.set('adult')">{{
+                        'SETTINGS.TYPES.ADULT' | translate }}</button>
+                    <button [class.active]="newMemberType() === 'kid'" (click)="newMemberType.set('kid')">{{
+                        'SETTINGS.TYPES.KID' | translate }}</button>
+                </div>
+            </div>
+            <div class="form-group">
+                <label>{{ 'SETTINGS.GENDER' | translate }}</label>
+                <div class="toggle-group">
+                    <button [class.active]="newMemberGender() === 'male'" (click)="newMemberGender.set('male')">{{
+                        'SETTINGS.GENDERS.MALE' | translate }}</button>
+                    <button [class.active]="newMemberGender() === 'female'" (click)="newMemberGender.set('female')">{{
+                        'SETTINGS.GENDERS.FEMALE' | translate }}</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label>{{ 'SETTINGS.SELECT_AVATAR' | translate }}</label>
+            <div class="avatar-grid">
+                @for (avatar of householdService.avatars; track avatar) {
+                <img [src]="avatar" [class.selected]="selectedAvatar() === avatar" (click)="selectAvatar(avatar)"
+                    alt="Hero Avatar">
+                }
+            </div>
+        </div>
+
+        <button class="add-btn" (click)="addMember()" [disabled]="!newMemberName() || !newMemberSurname()">
+            {{ 'SETTINGS.ADD_MEMBER' | translate }}
+        </button>
+    </div>
+    <div class="settings-container">
+        <div class="header">
+            <div class="header-top">
+                <a routerLink="/" class="back-link">← {{ 'APP.BACK' | translate }}</a>
+                <!-- Force dependency on language signal -->
+                <span style="display: none">{{ languageService.currentLang() }}</span>
+            </div>
+            <h1>{{ 'SETTINGS.TITLE' | translate }}</h1>
+        </div>
+
+        <app-address></app-address>
+
+        <div class="section add-member-section">
+            <h2>{{ 'SETTINGS.ADD_MEMBER_TITLE' | translate }}</h2>
+
+            <div class="form-grid">
+                <div class="form-group">
+                    <label>{{ 'SETTINGS.NAME' | translate }}</label>
+                    <input type="text" [ngModel]="newMemberName()" (ngModelChange)="newMemberName.set($event)"
+                        placeholder="John">
+                </div>
+                <div class="form-group">
+                    <label>{{ 'SETTINGS.SURNAME' | translate }}</label>
+                    <input type="text" [ngModel]="newMemberSurname()" (ngModelChange)="newMemberSurname.set($event)"
+                        placeholder="Doe">
+                </div>
+            </div>
+
+            <div class="form-grid">
+                <div class="form-group">
+                    <label>{{ 'SETTINGS.TYPE' | translate }}</label>
+                    <div class="toggle-group">
+                        <button [class.active]="newMemberType() === 'adult'" (click)="newMemberType.set('adult')">{{
+                            'SETTINGS.TYPES.ADULT' | translate }}</button>
+                        <button [class.active]="newMemberType() === 'kid'" (click)="newMemberType.set('kid')">{{
+                            'SETTINGS.TYPES.KID' | translate }}</button>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>{{ 'SETTINGS.GENDER' | translate }}</label>
+                    <div class="toggle-group">
+                        <button [class.active]="newMemberGender() === 'male'" (click)="newMemberGender.set('male')">{{
+                            'SETTINGS.GENDERS.MALE' | translate }}</button>
+                        <button [class.active]="newMemberGender() === 'female'"
+                            (click)="newMemberGender.set('female')">{{
+                            'SETTINGS.GENDERS.FEMALE' | translate }}</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label>{{ 'SETTINGS.SELECT_AVATAR' | translate }}</label>
+                <div class="avatar-grid">
+                    @for (avatar of householdService.avatars; track avatar) {
+                    <img [src]="avatar" [class.selected]="selectedAvatar() === avatar" (click)="selectAvatar(avatar)"
+                        alt="Hero Avatar">
+                    }
+                </div>
+            </div>
+
+            <button class="add-btn" (click)="addMember()" [disabled]="!newMemberName() || !newMemberSurname()">
+                {{ 'SETTINGS.ADD_MEMBER' | translate }}
+            </button>
+        </div>
+
+        <div class="members-list">
+            <h2>{{ 'SETTINGS.CURRENT_MEMBERS' | translate }}</h2>
+            @if (householdService.members().length === 0) {
+            <p class="empty-state">{{ 'SETTINGS.NO_MEMBERS' | translate }}</p>
+            } @else {
+            <ul>@for (member of householdService.members(); track member.id) {<li>
+                    <div class="member-info">
+                        <img [src]="member.avatar" [alt]="member.name">
+                        <div class="details">
+                            <span class="name">{{ member.name }} {{ member.surname }}</span>
+                            <div class="badges">
+                                <span class="badge" [class.kid]="member.type === 'kid'">{{ member.type | titlecase
+                                    }}</span>
+                                <span class="badge gender">{{ member.gender | titlecase }}</span>
+                            </div>
+                        </div>
+                    </div>
+                    <button class="remove-btn" (click)="householdService.removeMember(member.id)">{{ 'SETTINGS.REMOVE' |
+                        translate }}</button>
+                </li>}</ul>
+            }
+        </div>
+    </div>

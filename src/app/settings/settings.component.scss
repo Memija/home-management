@@ -15,14 +15,25 @@
         margin-bottom: 1rem;
     }
 
-    .back-link {
-        display: inline-block;
-        color: #007bff;
-        text-decoration: none;
+    .back-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0.5rem 1rem;
+        border: 1px solid #ced4da;
+        background: white;
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: 0.9rem;
         font-weight: 500;
+        color: #495057;
+        text-decoration: none;
+        transition: all 0.2s;
 
         &:hover {
-            text-decoration: underline;
+            background: #e7f3ff;
+            border-color: #007bff;
+            color: #007bff;
         }
     }
 

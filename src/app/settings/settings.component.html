@@ -1,7 +1,10 @@
 <div class="settings-container">
     <div class="header">
         <div class="header-top">
-            <a routerLink="/" class="back-link">← {{ 'APP.BACK' | translate }}</a>
+            <button type="button" routerLink="/" class="back-btn" title="{{ 'APP.BACK' | translate }}">
+                <lucide-icon [img]="ArrowLeftIcon" size="16"></lucide-icon>
+                {{ 'APP.BACK' | translate }}
+            </button>
             <!-- Force dependency on language signal -->
             <span style="display: none">{{ languageService.currentLang() }}</span>
         </div>

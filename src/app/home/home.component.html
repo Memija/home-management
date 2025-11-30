@@ -7,7 +7,11 @@
                 📤 Import
                 <input type="file" id="import-file" accept=".json" (change)="importData($event)" style="display: none">
             </label>
-            <a routerLink="/settings" class="settings-link">⚙️ {{ 'APP.SETTINGS' | translate }}</a>
+            <button type="button" routerLink="/settings" class="action-btn settings-btn"
+                title="{{ 'APP.SETTINGS' | translate }}">
+                <lucide-icon [img]="SettingsIcon" size="16"></lucide-icon>
+                {{ 'APP.SETTINGS' | translate }}
+            </button>
         </div>
     </div>
 

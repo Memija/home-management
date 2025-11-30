@@ -8,6 +8,7 @@ import { TranslatePipe } from '../pipes/translate.pipe';
 import { LanguageSwitcherComponent } from '../components/language-switcher/language-switcher.component';
 import { STORAGE_SERVICE } from '../services/storage.service';
 import { FileStorageService } from '../services/file-storage.service';
+import { LucideAngularModule, Settings } from 'lucide-angular';
 
 Chart.register(...registerables);
 
@@ -24,13 +25,15 @@ type ChartView = 'total' | 'by-room' | 'by-type' | 'detailed';
 @Component({
     selector: 'app-home',
     standalone: true,
-    imports: [FormsModule, DatePipe, BaseChartDirective, RouterLink, TranslatePipe],
+    imports: [FormsModule, DatePipe, BaseChartDirective, RouterLink, TranslatePipe, LucideAngularModule],
     templateUrl: './home.component.html',
     styleUrl: './home.component.scss'
 })
 export class HomeComponent {
     private storage = inject(STORAGE_SERVICE);
     private fileStorage = inject(FileStorageService);
+
+    protected readonly SettingsIcon = Settings;
 
     protected records = signal<ConsumptionRecord[]>([]);
     protected nextSunday = signal<Date>(this.calculateNextSunday());

@@ -33,11 +33,11 @@
   <div class="form-grid">
     <div class="form-group span-2">
       <label>{{ 'SETTINGS.STREET_NAME' | translate }}</label>
-      <input type="text" [ngModel]="streetName()" (ngModelChange)="streetName.set($event)" placeholder="Landwehrweg">
+      <input type="text" [ngModel]="streetName()" (ngModelChange)="streetName.set($event)" placeholder="Broadway">
     </div>
     <div class="form-group">
       <label>{{ 'SETTINGS.NUMBER' | translate }}</label>
-      <input type="text" [ngModel]="streetNumber()" (ngModelChange)="onStreetNumberChange($event)" placeholder="1"
+      <input type="text" [ngModel]="streetNumber()" (ngModelChange)="onStreetNumberChange($event)" placeholder="2156"
         [class.error]="streetNumberError()">
       @if (streetNumberError()) {
       <span class="error-message">{{ streetNumberError() | translate }}</span>
@@ -45,11 +45,11 @@
     </div>
     <div class="form-group">
       <label>{{ 'SETTINGS.CITY' | translate }}</label>
-      <input type="text" [ngModel]="city()" (ngModelChange)="city.set($event)" placeholder="Bad Homburg vor der Höhe">
+      <input type="text" [ngModel]="city()" (ngModelChange)="city.set($event)" placeholder="New York">
     </div>
     <div class="form-group">
       <label>{{ 'SETTINGS.ZIP_CODE' | translate }}</label>
-      <input type="text" [ngModel]="zipCode()" (ngModelChange)="onZipCodeChange($event)" placeholder="61350"
+      <input type="text" [ngModel]="zipCode()" (ngModelChange)="onZipCodeChange($event)" placeholder="10024"
         [class.error]="zipCodeError()">
       @if (zipCodeError()) {
       <span class="error-message">{{ zipCodeError() | translate }}</span>

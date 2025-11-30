@@ -29,15 +29,12 @@ export class HouseholdService {
     readonly address = signal<Address | null>(null);
 
     readonly avatars = [
-        '/avatars/spider-man.jpg',
-        '/avatars/iron-man.jpg',
-        '/avatars/captain-america.jpg',
-        '/avatars/black-widow.jpg',
-        '/avatars/hulk.jpg',
-        '/avatars/black-panther.jpg',
-        '/avatars/doctor-strange.jpg',
-        '/avatars/scarlet-witch.jpg',
-        '/avatars/captain-marvel.jpg'
+        '/avatars/batman.jpg',
+        '/avatars/superman.jpg',
+        '/avatars/wonder-woman.jpg',
+        '/avatars/flash.jpg',
+        '/avatars/aquaman.jpg',
+        '/avatars/cyborg.jpg'
     ];
 
     constructor() {
@@ -90,5 +87,15 @@ export class HouseholdService {
 
     updateAddress(address: Address) {
         this.address.set(address);
+    }
+
+    updateMembers(members: HouseholdMember[]) {
+        this.members.set(members);
+    }
+
+    updateMember(id: string, updatedMember: Partial<HouseholdMember>) {
+        this.members.update(members =>
+            members.map(m => m.id === id ? { ...m, ...updatedMember } : m)
+        );
     }
 }

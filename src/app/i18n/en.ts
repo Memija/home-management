@@ -26,6 +26,7 @@ export const en = {
     SETTINGS: {
         TITLE: 'Household Settings',
         ADDRESS_TITLE: 'Household Address',
+        FAMILY_TITLE: 'Family Members',
         STREET_NAME: 'Street Name',
         NUMBER: 'Number',
 
@@ -47,6 +48,16 @@ export const en = {
         CURRENT_MEMBERS: 'Current Members',
         NO_MEMBERS: 'No members added yet.',
         REMOVE: 'Remove',
+        EDIT_FAMILY: 'Edit Family',
+        SAVE_FAMILY: 'Save Family',
+        FAMILY_SAVED: 'Family saved successfully!',
+        EDIT_MEMBER: 'Edit',
+        SAVE_MEMBER: 'Save Changes',
+        UPLOAD_PICTURE: 'Upload Custom Picture',
+        OR_SELECT_AVATAR: 'Or select an avatar',
+        EXPORT_FAMILY: 'Export Family',
+        IMPORT_FAMILY: 'Import Family',
+        SHOW_ADD_MEMBER_FORM: 'Add Family Member',
         TYPES: {
             ADULT: 'Adult',
             KID: 'Kid'

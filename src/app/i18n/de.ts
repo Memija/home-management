@@ -26,6 +26,7 @@ export const de = {
     SETTINGS: {
         TITLE: 'Haushaltseinstellungen',
         ADDRESS_TITLE: 'Haushaltsadresse',
+        FAMILY_TITLE: 'Familienmitglieder',
         STREET_NAME: 'Straßenname',
         NUMBER: 'Hausnummer',
 
@@ -47,6 +48,16 @@ export const de = {
         CURRENT_MEMBERS: 'Aktuelle Mitglieder',
         NO_MEMBERS: 'Noch keine Mitglieder hinzugefügt.',
         REMOVE: 'Entfernen',
+        EDIT_FAMILY: 'Familie bearbeiten',
+        SAVE_FAMILY: 'Familie speichern',
+        FAMILY_SAVED: 'Familie erfolgreich gespeichert!',
+        EDIT_MEMBER: 'Bearbeiten',
+        SAVE_MEMBER: 'Änderungen speichern',
+        UPLOAD_PICTURE: 'Eigenes Bild hochladen',
+        OR_SELECT_AVATAR: 'Oder Avatar auswählen',
+        EXPORT_FAMILY: 'Familie exportieren',
+        IMPORT_FAMILY: 'Familie importieren',
+        SHOW_ADD_MEMBER_FORM: 'Familienmitglied hinzufügen',
         TYPES: {
             ADULT: 'Erwachsener',
             KID: 'Kind'

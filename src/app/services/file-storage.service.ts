@@ -49,4 +49,42 @@ export class FileStorageService {
             reader.readAsText(file);
         });
     }
+
+    /**
+     * Modern API for exporting data (alias for exportToFile)
+     * @param data The data to export
+     * @param filename The name of the file to download
+     */
+    async exportData(data: any, filename: string): Promise<void> {
+        this.exportToFile(data, filename);
+    }
+
+    /**
+     * Modern API for importing data with file picker
+     * @returns The parsed data from the selected file
+     */
+    async importData<T>(): Promise<T | null> {
+        return new Promise((resolve) => {
+            const input = document.createElement('input');
+            input.type = 'file';
+            input.accept = 'application/json';
+
+            input.onchange = async (e: Event) => {
+                const file = (e.target as HTMLInputElement).files?.[0];
+                if (file) {
+                    try {
+                        const data = await this.importFromFile<T>(file);
+                        resolve(data);
+                    } catch (error) {
+                        console.error('Import failed:', error);
+                        resolve(null);
+                    }
+                } else {
+                    resolve(null);
+                }
+            };
+
+            input.click();
+        });
+    }
 }

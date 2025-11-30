@@ -29,11 +29,11 @@ export class AddressComponent {
   protected readonly ImportIcon = Upload;
 
   // Address Form Signals with defaults
-  protected streetName = signal('Landwehrweg');
-  protected streetNumber = signal('1');
-  protected city = signal('Bad Homburg vor der Höhe');
-  protected zipCode = signal('61350');
-  protected country = signal('Deutschland');
+  protected streetName = signal('Broadway');
+  protected streetNumber = signal('2156');
+  protected city = signal('New York');
+  protected zipCode = signal('10024');
+  protected country = signal('United States');
   protected countrySearch = signal('');
 
   // Address UI State

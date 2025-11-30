@@ -73,5 +73,10 @@ export const de = {
             MALE: 'Männlich',
             FEMALE: 'Weiblich'
         }
+    },
+    FOOTER: {
+        APP_NAME: 'Haushaltsmanagement',
+        ALL_RIGHTS: 'Alle Rechte vorbehalten',
+        CONTACT_US: 'Kontaktiere uns'
     }
 };

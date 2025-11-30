@@ -73,5 +73,10 @@ export const en = {
             MALE: 'Male',
             FEMALE: 'Female'
         }
+    },
+    FOOTER: {
+        APP_NAME: 'Home Management',
+        ALL_RIGHTS: 'All rights reserved',
+        CONTACT_US: 'Contact Us'
     }
 };

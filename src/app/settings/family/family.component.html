@@ -1,261 +1,255 @@
 <div class="section family-section">
-    <h2>{{ 'SETTINGS.FAMILY_TITLE' | translate }}</h2>
+  <h2>{{ 'SETTINGS.FAMILY_TITLE' | translate }}</h2>
 
-    @if (showSaveConfirmation()) {
-    <div class="success-message">
-        ✓ {{ 'SETTINGS.FAMILY_SAVED' | translate }}
-    </div>
-    }
+  @if (showSaveConfirmation()) {
+  <div class="success-message">
+    ✓ {{ 'SETTINGS.FAMILY_SAVED' | translate }}
+  </div>
+  }
 
-    @if (!isEditing()) {
-    <!-- ============================================ -->
-    <!-- READ-ONLY VIEW -->
-    <!-- ============================================ -->
-    <div class="members-list">
-        @if (householdService.members().length === 0) {
-        <p class="empty-state">{{ 'SETTINGS.NO_MEMBERS' | translate }}</p>
-        } @else {
-        <ul>
-            <li *ngFor="let member of householdService.members()">
-                <div class="member-info">
-                    <img [src]="member.avatar" [alt]="member.name" title="{{ member.name }}">
-                    <div class="details">
-                        <span class="name">{{ member.name }} {{ member.surname }}</span>
-                        <div class="badges">
-                            <span class="badge" [class.kid]="member.type === 'kid'">{{ member.type | titlecase }}</span>
-                            <span class="badge gender" [class.female]="member.gender === 'female'">{{ member.gender |
-                                titlecase }}</span>
-                        </div>
-                    </div>
-                </div>
-            </li>
-        </ul>
-        }
-    </div>
-
-    <!-- Action buttons for read-only view -->
-    <div class="button-group">
-        <button type="button" class="edit-btn" (click)="editFamily()" title="{{ 'SETTINGS.EDIT_FAMILY' | translate }}">
-            <lucide-icon [img]="EditIcon" size="16"></lucide-icon>
-            {{ 'SETTINGS.EDIT_FAMILY' | translate }}
-        </button>
-        <button type="button" class="export-btn" (click)="exportFamily()"
-            title="{{ 'SETTINGS.EXPORT_FAMILY' | translate }}">
-            <lucide-icon [img]="ExportIcon" size="16"></lucide-icon>
-            {{ 'SETTINGS.EXPORT_FAMILY' | translate }}
-        </button>
-        <button type="button" class="import-btn" (click)="importFamily()"
-            title="{{ 'SETTINGS.IMPORT_FAMILY' | translate }}">
-            <lucide-icon [img]="ImportIcon" size="16"></lucide-icon>
-            {{ 'SETTINGS.IMPORT_FAMILY' | translate }}
-        </button>
-    </div>
-
+  @if (!isEditing()) {
+  <!-- ============================================ -->
+  <!-- READ-ONLY VIEW -->
+  <!-- ============================================ -->
+  <div class="members-list">
+    @if (householdService.members().length === 0) {
+    <p class="empty-state">{{ 'SETTINGS.NO_MEMBERS' | translate }}</p>
     } @else {
-    <!-- ============================================ -->
-    <!-- BULK EDIT VIEW -->
-    <!-- ============================================ -->
-    <div class="members-list editing">
-        <h3>{{ 'SETTINGS.CURRENT_MEMBERS' | translate }}</h3>
-        @if (draftMembers().length === 0) {
-        <p class="empty-state">{{ 'SETTINGS.NO_MEMBERS' | translate }}</p>
-        } @else {
-        <ul>
-            <li *ngFor="let member of draftMembers()">
-                @if (editingMemberId() === member.id) {
-                <!-- Inline edit form in bulk mode -->
-                <div class="member-edit-form">
-                    <div class="form-grid">
-                        <div class="form-group">
-                            <label>{{ 'SETTINGS.NAME' | translate }}</label>
-                            <input type="text" [ngModel]="editMemberName()" (ngModelChange)="editMemberName.set($event)"
-                                title="{{ 'SETTINGS.NAME' | translate }}">
-                        </div>
-                        <div class="form-group">
-                            <label>{{ 'SETTINGS.SURNAME' | translate }}</label>
-                            <input type="text" [ngModel]="editMemberSurname()"
-                                (ngModelChange)="editMemberSurname.set($event)"
-                                title="{{ 'SETTINGS.SURNAME' | translate }}">
-                        </div>
-                    </div>
-                    <div class="form-grid">
-                        <div class="form-group">
-                            <label>{{ 'SETTINGS.TYPE' | translate }}</label>
-                            <div class="toggle-group">
-                                <button [class.active]="editMemberType() === 'adult'"
-                                    (click)="editMemberType.set('adult')">
-                                    {{ 'SETTINGS.TYPES.ADULT' | translate }}
-                                </button>
-                                <button [class.active]="editMemberType() === 'kid'" (click)="editMemberType.set('kid')">
-                                    {{ 'SETTINGS.TYPES.KID' | translate }}
-                                </button>
-                            </div>
-                        </div>
-                        <div class="form-group">
-                            <label>{{ 'SETTINGS.GENDER' | translate }}</label>
-                            <div class="toggle-group">
-                                <button [class.active]="editMemberGender() === 'male'"
-                                    (click)="editMemberGender.set('male')">
-                                    {{ 'SETTINGS.GENDERS.MALE' | translate }}
-                                </button>
-                                <button [class.active]="editMemberGender() === 'female'"
-                                    (click)="editMemberGender.set('female')">
-                                    {{ 'SETTINGS.GENDERS.FEMALE' | translate }}
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <label>{{ 'SETTINGS.UPLOAD_PICTURE' | translate }}</label>
-                        <label class="upload-btn">
-                            <lucide-icon [img]="ImportIcon" size="16"></lucide-icon>
-                            {{ 'SETTINGS.UPLOAD_PICTURE' | translate }}
-                            <input type="file" accept="image/*" (change)="handleFileUpload($event)"
-                                class="hidden-input">
-                        </label>
-                        @if (customPicturePreview()) {
-                        <div class="picture-preview">
-                            <img [src]="customPicturePreview()" alt="Preview">
-                        </div>
-                        }
-                    </div>
-                    <div class="form-group">
-                        <label>{{ 'SETTINGS.OR_SELECT_AVATAR' | translate }}</label>
-                        <div class="avatar-grid">
-                            <img *ngFor="let avatar of householdService.avatars" [src]="avatar"
-                                [class.selected]="editMemberAvatar() === avatar && !customPicturePreview()"
-                                (click)="selectEditAvatar(avatar)" alt="Hero Avatar"
-                                title="{{ 'SETTINGS.SELECT_AVATAR' | translate }}">
-                        </div>
-                    </div>
-                    <div class="button-group">
-                        <button type="button" class="save-btn" (click)="saveMemberEditInBulk()"
-                            title="{{ 'SETTINGS.SAVE_MEMBER' | translate }}">
-                            <lucide-icon [img]="SaveIcon" size="16"></lucide-icon>
-                            {{ 'SETTINGS.SAVE_MEMBER' | translate }}
-                        </button>
-                        <button type="button" class="cancel-btn" (click)="cancelEditMember()"
-                            title="{{ 'SETTINGS.CANCEL' | translate }}">
-                            <lucide-icon [img]="CancelIcon" size="16"></lucide-icon>
-                            {{ 'SETTINGS.CANCEL' | translate }}
-                        </button>
-                    </div>
-                </div>
-                } @else {
-                <!-- Normal member display with edit and remove buttons -->
-                <div class="member-info">
-                    <img [src]="member.avatar" [alt]="member.name" title="{{ member.name }}">
-                    <div class="details">
-                        <span class="name">{{ member.name }} {{ member.surname }}</span>
-                        <div class="badges">
-                            <span class="badge" [class.kid]="member.type === 'kid'">{{ member.type | titlecase }}</span>
-                            <span class="badge gender" [class.female]="member.gender === 'female'">{{ member.gender |
-                                titlecase }}</span>
-                        </div>
-                    </div>
-                </div>
-                <div class="member-actions">
-                    <button class="edit-member-btn" (click)="startEditMember(member)"
-                        title="{{ 'SETTINGS.EDIT_MEMBER' | translate }}">
-                        <lucide-icon [img]="EditIcon" size="16"></lucide-icon>
-                    </button>
-                    <button class="remove-btn" (click)="removeMember(member.id)"
-                        title="{{ 'SETTINGS.REMOVE' | translate }}">
-                        <lucide-icon [img]="DeleteIcon" size="16"></lucide-icon>
-                    </button>
-                </div>
-                }
-            </li>
-        </ul>
-        }
-    </div>
+    <ul>
+      <li *ngFor="let member of householdService.members()">
+        <div class="member-info">
+          <img [src]="member.avatar" [alt]="member.name" title="{{ member.name }}">
+          <div class="details">
+            <span class="name">{{ member.name }} {{ member.surname }}</span>
+            <div class="badges">
+              <span class="badge" [class.kid]="member.type === 'kid'">{{ 'SETTINGS.TYPES.' + (member.type | uppercase) |
+                translate }}</span>
+              <span class="badge gender" [class.female]="member.gender === 'female'">{{ 'SETTINGS.GENDERS.' +
+                (member.gender | uppercase) | translate }}</span>
+            </div>
+          </div>
+        </div>
+      </li>
+    </ul>
+    }
+  </div>
 
-    <!-- Add member form (conditional) -->
-    @if (showAddMemberForm()) {
-    <div class="add-member-form">
-        <h3>{{ 'SETTINGS.ADD_MEMBER_TITLE' | translate }}</h3>
-        <div class="form-grid">
+  <!-- Action buttons for read-only view -->
+  <div class="button-group">
+    <button type="button" class="edit-btn" (click)="editFamily()" title="{{ 'SETTINGS.EDIT_FAMILY' | translate }}">
+      <lucide-icon [img]="EditIcon" size="16"></lucide-icon>
+      {{ 'SETTINGS.EDIT_FAMILY' | translate }}
+    </button>
+    <button type="button" class="export-btn" (click)="exportFamily()"
+      title="{{ 'SETTINGS.EXPORT_FAMILY' | translate }}">
+      <lucide-icon [img]="ExportIcon" size="16"></lucide-icon>
+      {{ 'SETTINGS.EXPORT_FAMILY' | translate }}
+    </button>
+    <button type="button" class="import-btn" (click)="importFamily()"
+      title="{{ 'SETTINGS.IMPORT_FAMILY' | translate }}">
+      <lucide-icon [img]="ImportIcon" size="16"></lucide-icon>
+      {{ 'SETTINGS.IMPORT_FAMILY' | translate }}
+    </button>
+  </div>
+
+  } @else {
+  <!-- ============================================ -->
+  <!-- BULK EDIT VIEW -->
+  <!-- ============================================ -->
+  <div class="members-list editing">
+    <h3>{{ 'SETTINGS.CURRENT_MEMBERS' | translate }}</h3>
+    @if (draftMembers().length === 0) {
+    <p class="empty-state">{{ 'SETTINGS.NO_MEMBERS' | translate }}</p>
+    } @else {
+    <ul>
+      <li *ngFor="let member of draftMembers()">
+        @if (editingMemberId() === member.id) {
+        <!-- Inline edit form in bulk mode -->
+        <div class="member-edit-form">
+          <div class="form-grid">
             <div class="form-group">
-                <label>{{ 'SETTINGS.NAME' | translate }}</label>
-                <input type="text" [ngModel]="newMemberName()" (ngModelChange)="newMemberName.set($event)"
-                    placeholder="John">
+              <label>{{ 'SETTINGS.NAME' | translate }}</label>
+              <input type="text" [ngModel]="editMemberName()" (ngModelChange)="editMemberName.set($event)"
+                title="{{ 'SETTINGS.NAME' | translate }}">
             </div>
             <div class="form-group">
-                <label>{{ 'SETTINGS.SURNAME' | translate }}</label>
-                <input type="text" [ngModel]="newMemberSurname()" (ngModelChange)="newMemberSurname.set($event)"
-                    placeholder="Doe">
+              <label>{{ 'SETTINGS.SURNAME' | translate }}</label>
+              <input type="text" [ngModel]="editMemberSurname()" (ngModelChange)="editMemberSurname.set($event)"
+                title="{{ 'SETTINGS.SURNAME' | translate }}">
             </div>
-        </div>
-        <div class="form-grid">
+          </div>
+          <div class="form-grid">
             <div class="form-group">
-                <label>{{ 'SETTINGS.TYPE' | translate }}</label>
-                <div class="toggle-group">
-                    <button [class.active]="newMemberType() === 'adult'" (click)="newMemberType.set('adult')">
-                        {{ 'SETTINGS.TYPES.ADULT' | translate }}
-                    </button>
-                    <button [class.active]="newMemberType() === 'kid'" (click)="newMemberType.set('kid')">
-                        {{ 'SETTINGS.TYPES.KID' | translate }}
-                    </button>
-                </div>
+              <label>{{ 'SETTINGS.TYPE' | translate }}</label>
+              <div class="toggle-group">
+                <button [class.active]="editMemberType() === 'adult'" (click)="editMemberType.set('adult')">
+                  {{ 'SETTINGS.TYPES.ADULT' | translate }}
+                </button>
+                <button [class.active]="editMemberType() === 'kid'" (click)="editMemberType.set('kid')">
+                  {{ 'SETTINGS.TYPES.KID' | translate }}
+                </button>
+              </div>
             </div>
             <div class="form-group">
-                <label>{{ 'SETTINGS.GENDER' | translate }}</label>
-                <div class="toggle-group">
-                    <button [class.active]="newMemberGender() === 'male'" (click)="newMemberGender.set('male')">
-                        {{ 'SETTINGS.GENDERS.MALE' | translate }}
-                    </button>
-                    <button [class.active]="newMemberGender() === 'female'" (click)="newMemberGender.set('female')">
-                        {{ 'SETTINGS.GENDERS.FEMALE' | translate }}
-                    </button>
-                </div>
+              <label>{{ 'SETTINGS.GENDER' | translate }}</label>
+              <div class="toggle-group">
+                <button [class.active]="editMemberGender() === 'male'" (click)="editMemberGender.set('male')">
+                  {{ 'SETTINGS.GENDERS.MALE' | translate }}
+                </button>
+                <button [class.active]="editMemberGender() === 'female'" (click)="editMemberGender.set('female')">
+                  {{ 'SETTINGS.GENDERS.FEMALE' | translate }}
+                </button>
+              </div>
             </div>
-        </div>
-        <div class="form-group">
+          </div>
+          <div class="form-group">
             <label>{{ 'SETTINGS.UPLOAD_PICTURE' | translate }}</label>
             <label class="upload-btn">
-                <lucide-icon [img]="ImportIcon" size="16"></lucide-icon>
-                {{ 'SETTINGS.UPLOAD_PICTURE' | translate }}
-                <input type="file" accept="image/*" (change)="handleNewMemberFileUpload($event)" class="hidden-input">
+              <lucide-icon [img]="ImportIcon" size="16"></lucide-icon>
+              {{ 'SETTINGS.UPLOAD_PICTURE' | translate }}
+              <input type="file" accept="image/*" (change)="handleFileUpload($event)" class="hidden-input">
             </label>
-            @if (newMemberPicturePreview()) {
+            @if (customPicturePreview()) {
             <div class="picture-preview">
-                <img [src]="newMemberPicturePreview()" alt="Preview">
+              <img [src]="customPicturePreview()" alt="Preview">
             </div>
             }
-        </div>
-        <div class="form-group">
-            <label>{{ 'SETTINGS.SELECT_AVATAR' | translate }}</label>
+          </div>
+          <div class="form-group">
+            <label>{{ 'SETTINGS.OR_SELECT_AVATAR' | translate }}</label>
             <div class="avatar-grid">
-                <img *ngFor="let avatar of householdService.avatars" [src]="avatar"
-                    [class.selected]="selectedAvatar() === avatar" (click)="selectAvatar(avatar)" alt="Hero Avatar"
-                    title="{{ 'SETTINGS.SELECT_AVATAR' | translate }}">
+              <img *ngFor="let avatar of householdService.avatars" [src]="avatar"
+                [class.selected]="editMemberAvatar() === avatar && !customPicturePreview()"
+                (click)="selectEditAvatar(avatar)" alt="Hero Avatar" title="{{ 'SETTINGS.SELECT_AVATAR' | translate }}">
             </div>
+          </div>
+          <div class="button-group">
+            <button type="button" class="save-btn" (click)="saveMemberEditInBulk()"
+              title="{{ 'SETTINGS.SAVE_MEMBER' | translate }}">
+              <lucide-icon [img]="SaveIcon" size="16"></lucide-icon>
+              {{ 'SETTINGS.SAVE_MEMBER' | translate }}
+            </button>
+            <button type="button" class="cancel-btn" (click)="cancelEditMember()"
+              title="{{ 'SETTINGS.CANCEL' | translate }}">
+              <lucide-icon [img]="CancelIcon" size="16"></lucide-icon>
+              {{ 'SETTINGS.CANCEL' | translate }}
+            </button>
+          </div>
         </div>
-        <button class="add-btn" (click)="addMember()" [disabled]="!newMemberName() || !newMemberSurname()"
-            title="{{ 'SETTINGS.ADD_MEMBER' | translate }}">
-            <lucide-icon [img]="AddIcon" size="16"></lucide-icon>
-            {{ 'SETTINGS.ADD_MEMBER' | translate }}
-        </button>
-    </div>
-    }
-
-    <!-- Action buttons for bulk edit view -->
-    <div class="button-group">
-        @if (!showAddMemberForm() && draftMembers().length > 0) {
-        <button type="button" class="add-btn" (click)="toggleAddMemberForm()"
-            title="{{ 'SETTINGS.SHOW_ADD_MEMBER_FORM' | translate }}">
-            <lucide-icon [img]="AddIcon" size="16"></lucide-icon>
-            {{ 'SETTINGS.SHOW_ADD_MEMBER_FORM' | translate }}
-        </button>
+        } @else {
+        <!-- Normal member display with edit and remove buttons -->
+        <div class="member-info">
+          <img [src]="member.avatar" [alt]="member.name" title="{{ member.name }}">
+          <div class="details">
+            <span class="name">{{ member.name }} {{ member.surname }}</span>
+            <div class="badges">
+              <span class="badge" [class.kid]="member.type === 'kid'">{{ 'SETTINGS.TYPES.' + (member.type | uppercase) |
+                translate }}</span>
+              <span class="badge gender" [class.female]="member.gender === 'female'">{{ 'SETTINGS.GENDERS.' +
+                (member.gender | uppercase) | translate }}</span>
+            </div>
+          </div>
+        </div>
+        <div class="member-actions">
+          <button class="edit-member-btn" (click)="startEditMember(member)"
+            title="{{ 'SETTINGS.EDIT_MEMBER' | translate }}">
+            <lucide-icon [img]="EditIcon" size="16"></lucide-icon>
+          </button>
+          <button class="remove-btn" (click)="removeMember(member.id)" title="{{ 'SETTINGS.REMOVE' | translate }}">
+            <lucide-icon [img]="DeleteIcon" size="16"></lucide-icon>
+          </button>
+        </div>
         }
-        <button type="button" class="save-btn" (click)="saveFamily()" title="{{ 'SETTINGS.SAVE_FAMILY' | translate }}">
-            <lucide-icon [img]="SaveIcon" size="16"></lucide-icon>
-            {{ 'SETTINGS.SAVE_FAMILY' | translate }}
-        </button>
-        <button type="button" class="cancel-btn" (click)="cancelEdit()" title="{{ 'SETTINGS.CANCEL' | translate }}">
-            <lucide-icon [img]="CancelIcon" size="16"></lucide-icon>
-            {{ 'SETTINGS.CANCEL' | translate }}
-        </button>
-    </div>
+      </li>
+    </ul>
     }
+  </div>
+
+  <!-- Add member form (conditional) -->
+  @if (showAddMemberForm()) {
+  <div class="add-member-form">
+    <h3>{{ 'SETTINGS.ADD_MEMBER_TITLE' | translate }}</h3>
+    <div class="form-grid">
+      <div class="form-group">
+        <label>{{ 'SETTINGS.NAME' | translate }}</label>
+        <input type="text" [ngModel]="newMemberName()" (ngModelChange)="newMemberName.set($event)" placeholder="John">
+      </div>
+      <div class="form-group">
+        <label>{{ 'SETTINGS.SURNAME' | translate }}</label>
+        <input type="text" [ngModel]="newMemberSurname()" (ngModelChange)="newMemberSurname.set($event)"
+          placeholder="Doe">
+      </div>
+    </div>
+    <div class="form-grid">
+      <div class="form-group">
+        <label>{{ 'SETTINGS.TYPE' | translate }}</label>
+        <div class="toggle-group">
+          <button [class.active]="newMemberType() === 'adult'" (click)="newMemberType.set('adult')">
+            {{ 'SETTINGS.TYPES.ADULT' | translate }}
+          </button>
+          <button [class.active]="newMemberType() === 'kid'" (click)="newMemberType.set('kid')">
+            {{ 'SETTINGS.TYPES.KID' | translate }}
+          </button>
+        </div>
+      </div>
+      <div class="form-group">
+        <label>{{ 'SETTINGS.GENDER' | translate }}</label>
+        <div class="toggle-group">
+          <button [class.active]="newMemberGender() === 'male'" (click)="newMemberGender.set('male')">
+            {{ 'SETTINGS.GENDERS.MALE' | translate }}
+          </button>
+          <button [class.active]="newMemberGender() === 'female'" (click)="newMemberGender.set('female')">
+            {{ 'SETTINGS.GENDERS.FEMALE' | translate }}
+          </button>
+        </div>
+      </div>
+    </div>
+    <div class="form-group">
+      <label>{{ 'SETTINGS.UPLOAD_PICTURE' | translate }}</label>
+      <label class="upload-btn">
+        <lucide-icon [img]="ImportIcon" size="16"></lucide-icon>
+        {{ 'SETTINGS.UPLOAD_PICTURE' | translate }}
+        <input type="file" accept="image/*" (change)="handleNewMemberFileUpload($event)" class="hidden-input">
+      </label>
+      @if (newMemberPicturePreview()) {
+      <div class="picture-preview">
+        <img [src]="newMemberPicturePreview()" alt="Preview">
+      </div>
+      }
+    </div>
+    <div class="form-group">
+      <label>{{ 'SETTINGS.SELECT_AVATAR' | translate }}</label>
+      <div class="avatar-grid">
+        <img *ngFor="let avatar of householdService.avatars" [src]="avatar"
+          [class.selected]="selectedAvatar() === avatar" (click)="selectAvatar(avatar)" alt="Hero Avatar"
+          title="{{ 'SETTINGS.SELECT_AVATAR' | translate }}">
+      </div>
+    </div>
+    <button class="add-btn" (click)="addMember()" [disabled]="!newMemberName() || !newMemberSurname()"
+      title="{{ 'SETTINGS.ADD_MEMBER' | translate }}">
+      <lucide-icon [img]="AddIcon" size="16"></lucide-icon>
+      {{ 'SETTINGS.ADD_MEMBER' | translate }}
+    </button>
+  </div>
+  }
+
+  <!-- Action buttons for bulk edit view -->
+  <div class="button-group">
+    @if (!showAddMemberForm() && draftMembers().length > 0) {
+    <button type="button" class="add-btn" (click)="toggleAddMemberForm()"
+      title="{{ 'SETTINGS.SHOW_ADD_MEMBER_FORM' | translate }}">
+      <lucide-icon [img]="AddIcon" size="16"></lucide-icon>
+      {{ 'SETTINGS.SHOW_ADD_MEMBER_FORM' | translate }}
+    </button>
+    }
+    <button type="button" class="save-btn" (click)="saveFamily()" title="{{ 'SETTINGS.SAVE_FAMILY' | translate }}">
+      <lucide-icon [img]="SaveIcon" size="16"></lucide-icon>
+      {{ 'SETTINGS.SAVE_FAMILY' | translate }}
+    </button>
+    <button type="button" class="cancel-btn" (click)="cancelEdit()" title="{{ 'SETTINGS.CANCEL' | translate }}">
+      <lucide-icon [img]="CancelIcon" size="16"></lucide-icon>
+      {{ 'SETTINGS.CANCEL' | translate }}
+    </button>
+  </div>
+  }
 </div>

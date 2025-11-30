@@ -8,6 +8,8 @@ body {
     background-position: center;
     background-attachment: fixed;
     min-height: 100vh;
+    padding-top: 72px; // Space for sticky header
+    padding-bottom: 70px; // Space for sticky footer
 }
 
 @import 'styles/buttons';

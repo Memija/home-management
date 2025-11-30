@@ -34,7 +34,13 @@ export class HouseholdService {
         '/avatars/wonder-woman.jpg',
         '/avatars/flash.jpg',
         '/avatars/aquaman.jpg',
-        '/avatars/cyborg.jpg'
+        '/avatars/cyborg.jpg',
+        '/avatars/iron-man.jpg',
+        '/avatars/captain-america.jpg',
+        '/avatars/thor.jpg',
+        '/avatars/hulk.jpg',
+        '/avatars/black-widow.jpg',
+        '/avatars/spider-man.jpg'
     ];
 
     constructor() {

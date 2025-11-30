@@ -24,7 +24,7 @@ type ChartView = 'total' | 'by-room' | 'by-type' | 'detailed';
 @Component({
     selector: 'app-home',
     standalone: true,
-    imports: [FormsModule, DatePipe, BaseChartDirective, RouterLink, TranslatePipe, LanguageSwitcherComponent],
+    imports: [FormsModule, DatePipe, BaseChartDirective, RouterLink, TranslatePipe],
     templateUrl: './home.component.html',
     styleUrl: './home.component.scss'
 })

@@ -16,12 +16,15 @@
     <p><strong>{{ 'SETTINGS.COUNTRY' | translate }}:</strong> {{ country() }}</p>
   </div>
   <div class="button-group">
-    <button type="button" class="edit-btn" (click)="editAddress()">✎ {{ 'SETTINGS.EDIT_ADDRESS' | translate
-      }}</button>
-    <button type="button" class="export-btn" (click)="exportAddress()">⬇️ {{ 'SETTINGS.EXPORT_ADDRESS' | translate
-      }}</button>
-    <button type="button" class="import-btn" (click)="fileInput.click()">⬆️ {{ 'SETTINGS.IMPORT_ADDRESS' | translate
-      }}</button>
+    <button type="button" class="edit-btn" (click)="editAddress()">
+      <lucide-icon [img]="EditIcon" size="16"></lucide-icon> {{ 'SETTINGS.EDIT_ADDRESS' | translate }}
+    </button>
+    <button type="button" class="export-btn" (click)="exportAddress()">
+      <lucide-icon [img]="ExportIcon" size="16"></lucide-icon> {{ 'SETTINGS.EXPORT_ADDRESS' | translate }}
+    </button>
+    <button type="button" class="import-btn" (click)="fileInput.click()">
+      <lucide-icon [img]="ImportIcon" size="16"></lucide-icon> {{ 'SETTINGS.IMPORT_ADDRESS' | translate }}
+    </button>
     <input #fileInput type="file" (change)="importAddress($event)" accept=".json" class="hidden-input"
       title="Import Address">
   </div>
@@ -58,18 +61,21 @@
         <input type="text" [ngModel]="country()" (ngModelChange)="country.set($event); countrySearch.set($event)"
           placeholder="{{ 'SETTINGS.SEARCH_COUNTRY' | translate }}">
         @if (filteredCountries().length > 0) {
-        <ul class="country-dropdown">@for (c of filteredCountries(); track c) {<li (click)="selectCountry(c)">{{
-            c }}</li>}</ul>
+        <ul class="country-dropdown">
+          <li *ngFor="let c of filteredCountries()" (click)="selectCountry(c)">{{ c }}</li>
+        </ul>
         }
       </div>
     </div>
   </div>
   <div class="button-group">
     <button type="button" class="save-btn" (click)="saveAddress()" [disabled]="!isAddressFormValid()">
-      💾 {{ 'SETTINGS.SAVE_ADDRESS' | translate }}
+      <lucide-icon [img]="SaveIcon" size="16"></lucide-icon> {{ 'SETTINGS.SAVE_ADDRESS' | translate }}
     </button>
     @if (householdService.address()) {
-    <button type="button" class="cancel-btn" (click)="cancelEdit()">❌ {{ 'SETTINGS.CANCEL' | translate }}</button>
+    <button type="button" class="cancel-btn" (click)="cancelEdit()">
+      <lucide-icon [img]="CancelIcon" size="16"></lucide-icon> {{ 'SETTINGS.CANCEL' | translate }}
+    </button>
     }
   </div>
   }

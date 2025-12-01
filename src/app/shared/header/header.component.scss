@@ -44,6 +44,28 @@
             display: flex;
             align-items: center;
             gap: 1rem;
+
+            .settings-btn {
+                padding: 0.4rem 0.8rem;
+                border: 1px solid #ced4da;
+                background: white;
+                border-radius: 4px;
+                cursor: pointer;
+                font-size: 0.85rem;
+                font-weight: 500;
+                color: #495057;
+                text-decoration: none;
+                display: inline-flex;
+                align-items: center;
+                gap: 0.5rem;
+                transition: all 0.2s;
+
+                &:hover {
+                    background: #fff3cd;
+                    border-color: #ffc107;
+                    color: #ffc107;
+                }
+            }
         }
     }
 }

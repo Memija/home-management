@@ -1,0 +1,24 @@
+<div class="dashboard-container">
+    <div class="welcome-section">
+        <h1>{{ 'DASHBOARD.TITLE' | translate }}</h1>
+        <p class="subtitle">{{ 'DASHBOARD.SUBTITLE' | translate }}</p>
+    </div>
+
+    <div class="tracker-grid">
+        <button type="button" routerLink="/water" class="tracker-card water-card">
+            <div class="icon-wrapper">
+                <lucide-icon [img]="DropletsIcon" [size]="64"></lucide-icon>
+            </div>
+            <h2>{{ 'DASHBOARD.WATER_TRACKER' | translate }}</h2>
+            <p>{{ 'DASHBOARD.WATER_DESC' | translate }}</p>
+        </button>
+
+        <button type="button" routerLink="/heating" class="tracker-card heating-card">
+            <div class="icon-wrapper">
+                <lucide-icon [img]="FlameIcon" [size]="64"></lucide-icon>
+            </div>
+            <h2>{{ 'DASHBOARD.HEATING_TRACKER' | translate }}</h2>
+            <p>{{ 'DASHBOARD.HEATING_DESC' | translate }}</p>
+        </button>
+    </div>
+</div>

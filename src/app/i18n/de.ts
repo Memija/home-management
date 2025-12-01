@@ -4,6 +4,32 @@ export const de = {
         SETTINGS: 'Einstellungen',
         BACK: 'Zurück zur Startseite'
     },
+    DASHBOARD: {
+        TITLE: 'Haushaltsmanagement',
+        SUBTITLE: 'Wählen Sie einen Tracker zur Verwaltung Ihres Verbrauchs',
+        WATER_TRACKER: 'Wasserverbrauch',
+        WATER_DESC: 'Verfolgen Sie Ihren wöchentlichen Wasserverbrauch',
+        HEATING_TRACKER: 'Heizungsverbrauch',
+        HEATING_DESC: 'Überwachen Sie Ihren Heizenergieverbrauch',
+        BACK_TO_DASHBOARD: 'Zurück zum Dashboard'
+    },
+    WATER: {
+        TITLE: 'Wasserverbrauch Tracker',
+        EXPORT: 'Daten exportieren',
+        IMPORT: 'Daten importieren'
+    },
+    HEATING: {
+        TITLE: 'Heizungsverbrauch Tracker',
+        EXPORT: 'Daten exportieren',
+        IMPORT: 'Daten importieren',
+        LIVING_AREAS: 'Wohnbereiche',
+        SERVICE_AREAS: 'Servicebereiche',
+        LIVING_ROOM: 'Wohnzimmer',
+        BEDROOM: 'Schlafzimmer',
+        KITCHEN: 'Küche',
+        BATHROOM: 'Badezimmer',
+        RECORD_CONSUMPTION: 'Heizungsverbrauch erfassen'
+    },
     HOME: {
         HISTORY_TITLE: 'Verbrauchsverlauf',
         FILTERS: {

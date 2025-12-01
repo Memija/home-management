@@ -1,0 +1,133 @@
+.dashboard-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 3rem 1rem;
+    font-family: system-ui, -apple-system, sans-serif;
+}
+
+.welcome-section {
+    text-align: center;
+    margin-bottom: 3rem;
+
+    h1 {
+        margin: 0 0 0.5rem 0;
+        font-size: 2.5rem;
+        color: #2c3e50;
+    }
+
+    .subtitle {
+        margin: 0;
+        font-size: 1.2rem;
+        color: #6c757d;
+    }
+}
+
+.tracker-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 2rem;
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+.tracker-card {
+    background: white;
+    border: 2px solid #e9ecef;
+    border-radius: 16px;
+    padding: 3rem 2rem;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-decoration: none;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+
+    &:hover {
+        transform: translateY(-8px);
+        box-shadow: 0 12px 24px rgba(0, 0, 0, 0.15);
+    }
+
+    .icon-wrapper {
+        width: 100px;
+        height: 100px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-bottom: 1rem;
+    }
+
+    h2 {
+        margin: 0;
+        font-size: 1.8rem;
+        color: #2c3e50;
+    }
+
+    p {
+        margin: 0;
+        font-size: 1rem;
+        color: #6c757d;
+        line-height: 1.5;
+    }
+}
+
+.water-card {
+    .icon-wrapper {
+        background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%);
+        color: #1976d2;
+    }
+
+    &:hover {
+        border-color: #1976d2;
+
+        .icon-wrapper {
+            background: linear-gradient(135deg, #1976d2 0%, #1565c0 100%);
+            color: white;
+        }
+
+        h2 {
+            color: #1976d2;
+        }
+    }
+}
+
+.heating-card {
+    .icon-wrapper {
+        background: linear-gradient(135deg, #fff3e0 0%, #ffe0b2 100%);
+        color: #f57c00;
+    }
+
+    &:hover {
+        border-color: #f57c00;
+
+        .icon-wrapper {
+            background: linear-gradient(135deg, #f57c00 0%, #ef6c00 100%);
+            color: white;
+        }
+
+        h2 {
+            color: #f57c00;
+        }
+    }
+}
+
+@media (max-width: 768px) {
+    .welcome-section h1 {
+        font-size: 2rem;
+    }
+
+    .tracker-card {
+        padding: 2rem 1.5rem;
+
+        .icon-wrapper {
+            width: 80px;
+            height: 80px;
+        }
+
+        h2 {
+            font-size: 1.5rem;
+        }
+    }
+}

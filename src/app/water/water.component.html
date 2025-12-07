@@ -1,114 +1,143 @@
 <div class="container">
-    <div class="app-header">
-        <div class="header-left">
-            <button type="button" routerLink="/" class="back-btn"
-                title="{{ 'DASHBOARD.BACK_TO_DASHBOARD' | translate }}">
-                <lucide-icon [img]="ArrowLeftIcon" size="16"></lucide-icon>
-                {{ 'DASHBOARD.BACK_TO_DASHBOARD' | translate }}
-            </button>
-            <h1>{{ 'WATER.TITLE' | translate }}</h1>
+  <div class="app-header">
+    <div class="header-left">
+      <button type="button" routerLink="/" class="btn-outline" title="{{ 'DASHBOARD.BACK_TO_DASHBOARD' | translate }}">
+        <lucide-icon [img]="ArrowLeftIcon" size="16"></lucide-icon>
+        {{ 'DASHBOARD.BACK_TO_DASHBOARD' | translate }}
+      </button>
+      <h1>{{ 'WATER.TITLE' | translate }}</h1>
+    </div>
+    <div class="header-actions">
+      <button type="button" (click)="exportData()" class="export-btn" title="{{ 'WATER.EXPORT' | translate }}">
+        <lucide-icon [img]="DownloadIcon" size="16"></lucide-icon>
+        {{ 'WATER.EXPORT' | translate }}
+      </button>
+      <label for="import-file" class="import-btn" title="{{ 'WATER.IMPORT' | translate }}">
+        <lucide-icon [img]="UploadIcon" size="16"></lucide-icon>
+        {{ 'WATER.IMPORT' | translate }}
+        <input type="file" id="import-file" accept=".json" (change)="importData($event)" class="hidden-input">
+      </label>
+    </div>
+  </div>
+
+  @if (records().length > 0) {
+  <div class="chart-section">
+    <div class="chart-header">
+      <h2>{{ 'HOME.HISTORY_TITLE' | translate }}</h2>
+      <div class="chart-filters">
+        <button type="button" [class.active]="chartView() === 'total'" (click)="chartView.set('total')">
+          {{ 'HOME.FILTERS.TOTAL' | translate }}
+        </button>
+        <button type="button" [class.active]="chartView() === 'by-room'" (click)="chartView.set('by-room')">
+          {{ 'HOME.FILTERS.BY_ROOM' | translate }}
+        </button>
+        <button type="button" [class.active]="chartView() === 'by-type'" (click)="chartView.set('by-type')">
+          {{ 'HOME.FILTERS.BY_TYPE' | translate }}
+        </button>
+        <button type="button" [class.active]="chartView() === 'detailed'" (click)="chartView.set('detailed')">
+          {{ 'HOME.FILTERS.DETAILED' | translate }}
+        </button>
+      </div>
+    </div>
+    <div class="chart-container">
+      <canvas baseChart [data]="chartData()" [options]="chartOptions" type="line">
+      </canvas>
+    </div>
+  </div>
+  }
+
+  <div class="history-section">
+    <div class="section-header">
+      <h2>{{ 'HOME.DETAILED_RECORDS' | translate }}</h2>
+      <div class="filters-container">
+        <div class="search-box">
+          <lucide-icon [img]="SearchIcon" size="16"></lucide-icon>
+          <app-date-picker [date]="searchDate() || ''" (dateChange)="searchDate.set($event || null)"
+            [placeholder]="'HOME.SEARCH_DATE' | translate">
+          </app-date-picker>
         </div>
-        <div class="header-actions">
-            <button type="button" (click)="exportData()" class="action-btn export-btn"
-                title="{{ 'WATER.EXPORT' | translate }}">
-                📥 {{ 'WATER.EXPORT' | translate }}
-            </button>
-            <label for="import-file" class="action-btn import-btn" title="{{ 'WATER.IMPORT' | translate }}">
-                📤 {{ 'WATER.IMPORT' | translate }}
-                <input type="file" id="import-file" accept=".json" (change)="importData($event)" class="hidden-input">
-            </label>
+        <div class="filter-box">
+          <select [ngModel]="searchYear()" (ngModelChange)="searchYear.set($event ? +$event : null)">
+            <option [value]="null">Year</option>
+            @for (year of availableYears(); track year) {
+            <option [value]="year">{{ year }}</option>
+            }
+          </select>
+          <select [ngModel]="searchMonth()" (ngModelChange)="searchMonth.set($event !== 'null' ? +$event : null)">
+            <option value="null">Month</option>
+            <option value="0">January</option>
+            <option value="1">February</option>
+            <option value="2">March</option>
+            <option value="3">April</option>
+            <option value="4">May</option>
+            <option value="5">June</option>
+            <option value="6">July</option>
+            <option value="7">August</option>
+            <option value="8">September</option>
+            <option value="9">October</option>
+            <option value="10">November</option>
+            <option value="11">December</option>
+          </select>
         </div>
+      </div>
     </div>
 
-    @if (records().length > 0) {
-    <div class="chart-section">
-        <div class="chart-header">
-            <h2>{{ 'HOME.HISTORY_TITLE' | translate }}</h2>
-            <div class="chart-filters">
-                <button type="button" [class.active]="chartView() === 'total'" (click)="chartView.set('total')">
-                    {{ 'HOME.FILTERS.TOTAL' | translate }}
-                </button>
-                <button type="button" [class.active]="chartView() === 'by-room'" (click)="chartView.set('by-room')">
-                    {{ 'HOME.FILTERS.BY_ROOM' | translate }}
-                </button>
-                <button type="button" [class.active]="chartView() === 'by-type'" (click)="chartView.set('by-type')">
-                    {{ 'HOME.FILTERS.BY_TYPE' | translate }}
-                </button>
-                <button type="button" [class.active]="chartView() === 'detailed'" (click)="chartView.set('detailed')">
-                    {{ 'HOME.FILTERS.DETAILED' | translate }}
-                </button>
+    @if (filteredRecords().length === 0) {
+    <p>{{ 'HOME.NO_RECORDS' | translate }}</p>
+    } @else {
+    <div class="history-list">
+      <ul>
+        @for (record of filteredRecords(); track record.date) {
+        <li>
+          <div class="record-header">
+            <span class="date">{{ record.date | date:'fullDate':undefined:currentLang() }}</span>
+            <div class="record-actions">
+              <span class="total">{{ 'HOME.TOTAL' | translate }}: {{ calculateTotal(record) }} L</span>
+              <button type="button" class="edit-member-btn" (click)="editRecord(record)" title="Edit">
+                <lucide-icon [img]="EditIcon" size="16"></lucide-icon>
+              </button>
+              <button type="button" class="remove-btn" (click)="deleteRecord(record)" title="Delete">
+                <lucide-icon [img]="TrashIcon" size="16"></lucide-icon>
+              </button>
             </div>
-        </div>
-        <div class="chart-container">
-            <canvas baseChart [data]="chartData()" [options]="chartOptions" type="line">
-            </canvas>
-        </div>
+          </div>
+          <div class="record-details">
+            <div class="location">
+              <strong>{{ 'HOME.KITCHEN' | translate }}:</strong> {{ 'HOME.WARM_WATER' | translate }}:
+              {{ record.kitchenWarm }} L | {{ 'HOME.COLD_WATER' | translate }}: {{ record.kitchenCold }} L
+            </div>
+            <div class="location">
+              <strong>{{ 'HOME.BATHROOM' | translate }}:</strong> {{ 'HOME.WARM_WATER' | translate }}:
+              {{ record.bathroomWarm }} L | {{ 'HOME.COLD_WATER' | translate }}: {{ record.bathroomCold }} L
+            </div>
+          </div>
+        </li>
+        }
+      </ul>
     </div>
     }
+  </div>
 
-    <div class="history-section">
-        <h2>{{ 'HOME.DETAILED_RECORDS' | translate }}</h2>
-        @if (records().length === 0) {
-        <p>{{ 'HOME.NO_RECORDS' | translate }}</p>
-        } @else {
-        <ul>
-            @for (record of records(); track record.date) {
-            <li>
-                <div class="record-header">
-                    <span class="date">{{ record.date | date:'fullDate' }}</span>
-                    <span class="total">{{ 'HOME.TOTAL' | translate }}: {{ calculateTotal(record) }} L</span>
-                </div>
-                <div class="record-details">
-                    <div class="location">
-                        <strong>{{ 'HOME.KITCHEN' | translate }}:</strong> {{ 'HOME.WARM_WATER' | translate }}:
-                        {{ record.kitchenWarm }} L | {{ 'HOME.COLD_WATER' | translate }}: {{ record.kitchenCold }} L
-                    </div>
-                    <div class="location">
-                        <strong>{{ 'HOME.BATHROOM' | translate }}:</strong> {{ 'HOME.WARM_WATER' | translate }}:
-                        {{ record.bathroomWarm }} L | {{ 'HOME.COLD_WATER' | translate }}: {{ record.bathroomCold }} L
-                    </div>
-                </div>
-            </li>
-            }
-        </ul>
-        }
-    </div>
-
-    <div class="input-section">
-        <h2>{{ 'HOME.RECORD_CONSUMPTION' | translate }}</h2>
-        <div class="date-label">{{ 'HOME.READINGS_FOR' | translate }} {{ nextSunday() | date:'fullDate' }}</div>
-
-        <div class="readings-grid">
-            <div class="reading-group">
-                <h3>{{ 'HOME.KITCHEN' | translate }}</h3>
-                <div class="input-pair">
-                    <label for="kitchen-warm">{{ 'HOME.WARM_WATER' | translate }}</label>
-                    <input type="number" id="kitchen-warm" [ngModel]="kitchenWarm()"
-                        (ngModelChange)="kitchenWarm.set($event)" placeholder="0">
-                </div>
-                <div class="input-pair">
-                    <label for="kitchen-cold">{{ 'HOME.COLD_WATER' | translate }}</label>
-                    <input type="number" id="kitchen-cold" [ngModel]="kitchenCold()"
-                        (ngModelChange)="kitchenCold.set($event)" placeholder="0">
-                </div>
-            </div>
-
-            <div class="reading-group">
-                <h3>{{ 'HOME.BATHROOM' | translate }}</h3>
-                <div class="input-pair">
-                    <label for="bathroom-warm">{{ 'HOME.WARM_WATER' | translate }}</label>
-                    <input type="number" id="bathroom-warm" [ngModel]="bathroomWarm()"
-                        (ngModelChange)="bathroomWarm.set($event)" placeholder="0">
-                </div>
-                <div class="input-pair">
-                    <label for="bathroom-cold">{{ 'HOME.COLD_WATER' | translate }}</label>
-                    <input type="number" id="bathroom-cold" [ngModel]="bathroomCold()"
-                        (ngModelChange)="bathroomCold.set($event)" placeholder="0">
-                </div>
-            </div>
-        </div>
-
-        <button type="button" (click)="saveRecord()" [disabled]="!allFieldsFilled()">{{ 'HOME.SAVE' | translate
-            }}</button>
-    </div>
+  <app-consumption-input [groups]="consumptionGroups()" [selectedDate]="selectedDate()" [maxDate]="maxDate"
+    [editingMode]="!!editingRecord()" [dateExists]="dateExists()" (dateChange)="selectedDate.set($event)"
+    (fieldChange)="onFieldChange($event)" (save)="onConsumptionSave($event)" (cancel)="cancelEdit()">
+  </app-consumption-input>
 </div>
+
+@if (showSuccessModal()) {
+<div class="modal-overlay" (click)="closeSuccessModal()">
+  <div class="modal-content" (click)="$event.stopPropagation()">
+    <div class="modal-header">
+      <lucide-icon [img]="CheckCircleIcon" size="32" class="success-icon"></lucide-icon>
+      <h3>{{ 'HOME.SUCCESS_TITLE' | translate }}</h3>
+      <button class="close-btn" (click)="closeSuccessModal()">×</button>
+    </div>
+    <div class="modal-body">
+      <p>{{ 'HOME.RECORD_SAVED' | translate }}</p>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-primary" (click)="closeSuccessModal()">OK</button>
+    </div>
+  </div>
+</div>
+}

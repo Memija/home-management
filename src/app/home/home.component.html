@@ -99,6 +99,13 @@
             </div>
         </div>
 
-        <button (click)="saveRecord()" [disabled]="!allFieldsFilled()">{{ 'HOME.SAVE' | translate }}</button>
+        @if (errorMessage()) {
+        <div class="warning-message error-message">
+            <lucide-icon [img]="TriangleAlertIcon" size="24" class="warning-icon"></lucide-icon>
+            <span>{{ errorMessage()! | translate }}</span>
+        </div>
+        }
+
+        <button (click)="saveRecord()">{{ 'HOME.SAVE' | translate }}</button>
     </div>
 </div>

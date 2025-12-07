@@ -8,7 +8,7 @@ import { TranslatePipe } from '../pipes/translate.pipe';
 import { LanguageSwitcherComponent } from '../components/language-switcher/language-switcher.component';
 import { STORAGE_SERVICE } from '../services/storage.service';
 import { FileStorageService } from '../services/file-storage.service';
-import { LucideAngularModule, Settings } from 'lucide-angular';
+import { LucideAngularModule, Settings, TriangleAlert } from 'lucide-angular';
 
 Chart.register(...registerables);
 
@@ -34,6 +34,7 @@ export class HomeComponent {
     private fileStorage = inject(FileStorageService);
 
     protected readonly SettingsIcon = Settings;
+    protected readonly TriangleAlertIcon = TriangleAlert;
 
     protected records = signal<ConsumptionRecord[]>([]);
     protected nextSunday = signal<Date>(this.calculateNextSunday());
@@ -42,13 +43,20 @@ export class HomeComponent {
     protected kitchenCold = signal<number | null>(null);
     protected bathroomWarm = signal<number | null>(null);
     protected bathroomCold = signal<number | null>(null);
+    protected errorMessage = signal<string | null>(null);
 
-    protected allFieldsFilled = computed(() =>
-        this.kitchenWarm() !== null &&
-        this.kitchenCold() !== null &&
-        this.bathroomWarm() !== null &&
-        this.bathroomCold() !== null
-    );
+    protected hasValidInput = computed(() => {
+        const kw = this.kitchenWarm() !== null;
+        const kc = this.kitchenCold() !== null;
+        const bw = this.bathroomWarm() !== null;
+        const bc = this.bathroomCold() !== null;
+
+        const kitchenValid = kw === kc; // Both set or both null
+        const bathroomValid = bw === bc; // Both set or both null
+        const atLeastOneSet = (kw && kc) || (bw && bc);
+
+        return kitchenValid && bathroomValid && atLeastOneSet;
+    });
 
     protected chartData = computed<ChartConfiguration['data']>(() => {
         const recs = this.records();
@@ -218,29 +226,52 @@ export class HomeComponent {
     }
 
     protected saveRecord() {
-        if (this.allFieldsFilled()) {
-            this.records.update((records: ConsumptionRecord[]) => [
-                ...records,
-                {
-                    date: this.nextSunday(),
-                    kitchenWarm: this.kitchenWarm()!,
-                    kitchenCold: this.kitchenCold()!,
-                    bathroomWarm: this.bathroomWarm()!,
-                    bathroomCold: this.bathroomCold()!
-                }
-            ]);
+        // Check for specific validation failures
+        const kw = this.kitchenWarm() !== null;
+        const kc = this.kitchenCold() !== null;
+        const bw = this.bathroomWarm() !== null;
+        const bc = this.bathroomCold() !== null;
 
-            void this.storage.save('consumption_records', this.records());
+        const kitchenComplete = kw && kc;
+        const kitchenEmpty = !kw && !kc;
+        const kitchenPartial = !kitchenComplete && !kitchenEmpty;
 
-            const currentSunday = this.nextSunday();
-            const nextDate = new Date(currentSunday);
-            nextDate.setDate(currentSunday.getDate() + 7);
-            this.nextSunday.set(nextDate);
+        const bathroomComplete = bw && bc;
+        const bathroomEmpty = !bw && !bc;
+        const bathroomPartial = !bathroomComplete && !bathroomEmpty;
 
-            this.kitchenWarm.set(null);
-            this.kitchenCold.set(null);
-            this.bathroomWarm.set(null);
-            this.bathroomCold.set(null);
+        if (kitchenPartial || bathroomPartial) {
+            this.errorMessage.set('HOME.INCOMPLETE_ROOM_ERROR');
+            return;
         }
+
+        if (!kitchenComplete && !bathroomComplete) {
+            this.errorMessage.set('HOME.PARTIAL_INPUT_ERROR');
+            return;
+        }
+
+        this.records.update((records: ConsumptionRecord[]) => [
+            ...records,
+            {
+                date: this.nextSunday(),
+                kitchenWarm: this.kitchenWarm() || 0,
+                kitchenCold: this.kitchenCold() || 0,
+                bathroomWarm: this.bathroomWarm() || 0,
+                bathroomCold: this.bathroomCold() || 0
+            }
+        ]);
+
+        void this.storage.save('consumption_records', this.records());
+
+        const currentSunday = this.nextSunday();
+        const nextDate = new Date(currentSunday);
+        nextDate.setDate(currentSunday.getDate() + 7);
+        this.nextSunday.set(nextDate);
+
+        this.kitchenWarm.set(null);
+        this.kitchenCold.set(null);
+        this.bathroomWarm.set(null);
+        this.bathroomCold.set(null);
+        this.errorMessage.set(null);
     }
 }

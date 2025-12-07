@@ -8,13 +8,13 @@ import { FamilyComponent } from './family/family.component';
 import { LucideAngularModule, ArrowLeft } from 'lucide-angular';
 
 @Component({
-    selector: 'app-settings',
-    standalone: true,
-    imports: [RouterLink, TranslatePipe, CommonModule, AddressComponent, FamilyComponent, LucideAngularModule],
-    templateUrl: './settings.component.html',
-    styleUrl: './settings.component.scss'
+  selector: 'app-settings',
+  standalone: true,
+  imports: [RouterLink, TranslatePipe, CommonModule, AddressComponent, FamilyComponent, LucideAngularModule],
+  templateUrl: './settings.component.html',
+  styleUrl: './settings.component.scss'
 })
 export class SettingsComponent {
-    protected languageService = inject(LanguageService);
-    protected readonly ArrowLeftIcon = ArrowLeft;
+  protected languageService = inject(LanguageService);
+  protected readonly ArrowLeftIcon = ArrowLeft;
 }

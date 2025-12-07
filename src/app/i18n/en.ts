@@ -47,7 +47,22 @@ export const en = {
         WARM_WATER: 'Warm Water (L)',
         COLD_WATER: 'Cold Water (L)',
         SAVE: 'Save',
-        TOTAL: 'Total'
+        TOTAL: 'Total',
+        SUCCESS_TITLE: 'Success',
+        RECORD_SAVED: 'Water consumption record saved successfully!',
+        DATE_EXISTS_WARNING: 'A record for this date already exists. Please edit the existing record or choose another date.',
+        EDIT_RECORD: 'Edit Record',
+        UPDATE_RECORD: 'Update Record',
+        CANCEL: 'Cancel',
+        SEARCH_DATE: 'Search by date',
+        SELECT_DATE: 'Select date',
+        SELECT_DATE_ERROR: 'Please select a date.',
+        PARTIAL_INPUT_ERROR: 'Please enter both Warm and Cold water values for at least one room.',
+        INCOMPLETE_ROOM_ERROR: 'Please complete both Warm and Cold water entries for all started rooms.'
+    },
+    CALENDAR: {
+        TODAY: 'Today',
+        CLEAR: 'Clear'
     },
     SETTINGS: {
         TITLE: 'Household Settings',

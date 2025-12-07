@@ -1,13 +1,14 @@
 <header class="app-header">
     <div class="header-content">
         <div class="logo-section">
-            <img src="/assets/logo.svg" alt="Home Management Logo" class="logo">
+            <img src="/assets/logo.png" alt="Home Management Logo" class="logo">
             <h1 class="app-title">{{ 'FOOTER.APP_NAME' | translate }}</h1>
         </div>
         <div class="header-actions">
             @if (!isSettingsPage()) {
             <button type="button" routerLink="/settings" class="settings-btn" title="{{ 'APP.SETTINGS' | translate }}">
                 <lucide-icon [img]="SettingsIcon" size="20"></lucide-icon>
+                <span>{{ 'APP.SETTINGS' | translate }}</span>
             </button>
             }
             <app-language-switcher></app-language-switcher>

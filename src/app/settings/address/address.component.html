@@ -25,40 +25,43 @@
     <button type="button" class="import-btn" (click)="fileInput.click()">
       <lucide-icon [img]="ImportIcon" size="16"></lucide-icon> {{ 'SETTINGS.IMPORT_ADDRESS' | translate }}
     </button>
-    <input #fileInput type="file" (change)="importAddress($event)" accept=".json" class="hidden-input"
-      title="Import Address">
+    <input #fileInput type="file" id="import-address-file" name="import-address-file" (change)="importAddress($event)"
+      accept=".json" class="hidden-input" title="Import Address">
   </div>
   } @else {
   <!-- Edit view -->
   <div class="form-grid">
     <div class="form-group span-2">
-      <label>{{ 'SETTINGS.STREET_NAME' | translate }}</label>
-      <input type="text" [ngModel]="streetName()" (ngModelChange)="streetName.set($event)" placeholder="Broadway">
+      <label for="street-name">{{ 'SETTINGS.STREET_NAME' | translate }}</label>
+      <input type="text" id="street-name" name="street-name" autocomplete="address-line1" [ngModel]="streetName()"
+        (ngModelChange)="streetName.set($event)" placeholder="Broadway">
     </div>
     <div class="form-group">
-      <label>{{ 'SETTINGS.NUMBER' | translate }}</label>
-      <input type="text" [ngModel]="streetNumber()" (ngModelChange)="onStreetNumberChange($event)" placeholder="2156"
-        [class.error]="streetNumberError()">
+      <label for="street-number">{{ 'SETTINGS.NUMBER' | translate }}</label>
+      <input type="text" id="street-number" name="street-number" autocomplete="address-line2" [ngModel]="streetNumber()"
+        (ngModelChange)="onStreetNumberChange($event)" placeholder="2156" [class.error]="streetNumberError()">
       @if (streetNumberError()) {
       <span class="error-message">{{ streetNumberError() | translate }}</span>
       }
     </div>
     <div class="form-group">
-      <label>{{ 'SETTINGS.CITY' | translate }}</label>
-      <input type="text" [ngModel]="city()" (ngModelChange)="city.set($event)" placeholder="New York">
+      <label for="city">{{ 'SETTINGS.CITY' | translate }}</label>
+      <input type="text" id="city" name="city" autocomplete="address-level2" [ngModel]="city()"
+        (ngModelChange)="city.set($event)" placeholder="New York">
     </div>
     <div class="form-group">
-      <label>{{ 'SETTINGS.ZIP_CODE' | translate }}</label>
-      <input type="text" [ngModel]="zipCode()" (ngModelChange)="onZipCodeChange($event)" placeholder="10024"
-        [class.error]="zipCodeError()">
+      <label for="zip-code">{{ 'SETTINGS.ZIP_CODE' | translate }}</label>
+      <input type="text" id="zip-code" name="zip-code" autocomplete="postal-code" [ngModel]="zipCode()"
+        (ngModelChange)="onZipCodeChange($event)" placeholder="10024" [class.error]="zipCodeError()">
       @if (zipCodeError()) {
       <span class="error-message">{{ zipCodeError() | translate }}</span>
       }
     </div>
     <div class="form-group span-2">
-      <label>{{ 'SETTINGS.COUNTRY' | translate }}</label>
+      <label for="country">{{ 'SETTINGS.COUNTRY' | translate }}</label>
       <div class="country-selector">
-        <input type="text" [ngModel]="country()" (ngModelChange)="country.set($event); countrySearch.set($event)"
+        <input type="text" id="country" name="country" autocomplete="country-name" [ngModel]="country()"
+          (ngModelChange)="country.set($event); countrySearch.set($event)"
           placeholder="{{ 'SETTINGS.SEARCH_COUNTRY' | translate }}">
         @if (filteredCountries().length > 0) {
         <ul class="country-dropdown">

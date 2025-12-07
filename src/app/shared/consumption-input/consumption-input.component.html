@@ -1,0 +1,50 @@
+<div class="input-section">
+  <div class="section-header">
+    <h2>{{ editingMode() ? (editTitleKey() | translate) : (titleKey() | translate) }}</h2>
+    @if (editingMode()) {
+    <button type="button" class="cancel-btn" (click)="onCancel()">{{ cancelKey() | translate }}</button>
+    }
+  </div>
+
+  <div class="date-selection">
+    <div class="input-pair">
+      <span class="form-label">{{ readingsForKey() | translate }}</span>
+      <app-date-picker [date]="selectedDate()" (dateChange)="onDateChange($event)" [disabled]="editingMode()"
+        [maxDate]="maxDate()" [placeholder]="'HOME.SELECT_DATE' | translate">
+      </app-date-picker>
+    </div>
+    @if (dateExists()) {
+    <div class="warning-message">
+      <lucide-icon [img]="TriangleAlertIcon" size="24" class="warning-icon"></lucide-icon>
+      <span>{{ dateWarningKey() | translate }}</span>
+    </div>
+    }
+  </div>
+
+  <div class="readings-grid">
+    @for (group of groups(); track group.title) {
+    <div class="reading-group">
+      <h3>{{ group.title | translate }}</h3>
+      @for (field of group.fields; track field.key) {
+      <div class="input-pair">
+        <label [for]="field.key">{{ field.label | translate }}</label>
+        <input type="number" [id]="field.key" [name]="field.key" [ngModel]="field.value"
+          (ngModelChange)="onFieldChange(field.key, $event)" (keydown)="onKeyDown($event)" (input)="onInput($event)"
+          placeholder="0" min="0">
+      </div>
+      }
+    </div>
+    }
+  </div>
+
+  @if (errorMessage()) {
+  <div class="warning-message error-message">
+    <lucide-icon [img]="TriangleAlertIcon" size="24" class="warning-icon"></lucide-icon>
+    <span>{{ errorMessage()! | translate }}</span>
+  </div>
+  }
+
+  <button type="button" (click)="onSave()">
+    {{ editingMode() ? (updateKey() | translate) : (saveKey() | translate) }}
+  </button>
+</div>

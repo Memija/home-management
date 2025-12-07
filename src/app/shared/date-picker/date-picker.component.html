@@ -1,0 +1,48 @@
+<div class="date-picker-container">
+    <div class="input-wrapper" (click)="toggleCalendar()" [class.disabled]="disabled()">
+        <lucide-icon [img]="CalendarIcon" size="18" class="calendar-icon"></lucide-icon>
+        <span class="date-display" [class.placeholder]="!date()">
+            {{ formattedDate() || (placeholder() | translate) }}
+        </span>
+    </div>
+
+    @if (isOpen()) {
+    <div class="calendar-popup">
+        <div class="calendar-header">
+            <button type="button" (click)="prevMonth()" class="nav-btn" title="Previous month">
+                <lucide-icon [img]="ChevronLeftIcon" size="20"></lucide-icon>
+            </button>
+            <span class="month-year">{{ currentMonthName() }}</span>
+            <button type="button" (click)="nextMonth()" class="nav-btn" title="Next month">
+                <lucide-icon [img]="ChevronRightIcon" size="20"></lucide-icon>
+            </button>
+        </div>
+
+        <div class="calendar-grid">
+            <div class="weekdays">
+                @for (day of weekDays(); track $index) {
+                <span class="weekday">{{ day }}</span>
+                }
+            </div>
+            <div class="days">
+                @for (day of calendarDays(); track $index) {
+                <button type="button" class="day-cell" [class.empty]="!day" [class.selected]="isSameDay(day, date())"
+                    [class.today]="isToday(day)" [class.sunday]="isSunday(day)" [class.disabled]="isDisabled(day)"
+                    [disabled]="!day || isDisabled(day)" (click)="selectDate(day)">
+                    {{ day?.getDate() }}
+                </button>
+                }
+            </div>
+        </div>
+
+        <div class="calendar-footer">
+            <button type="button" class="btn-text" (click)="selectToday()">
+                {{ 'CALENDAR.TODAY' | translate }}
+            </button>
+            <button type="button" class="btn-text danger" (click)="clearDate()">
+                {{ 'CALENDAR.CLEAR' | translate }}
+            </button>
+        </div>
+    </div>
+    }
+</div>

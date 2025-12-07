@@ -3,76 +3,76 @@ import { isPlatformBrowser } from '@angular/common';
 import { StorageService } from './storage.service';
 
 @Injectable({
-    providedIn: 'root'
+  providedIn: 'root'
 })
 export class LocalStorageService extends StorageService {
-    private readonly prefix = 'water-consumption-';
-    private platformId = inject(PLATFORM_ID);
+  private readonly prefix = 'water-consumption-';
+  private platformId = inject(PLATFORM_ID);
 
-    private get isBrowser(): boolean {
-        return isPlatformBrowser(this.platformId);
+  private get isBrowser(): boolean {
+    return isPlatformBrowser(this.platformId);
+  }
+
+  async save<T>(key: string, data: T): Promise<void> {
+    if (!this.isBrowser) return;
+
+    try {
+      const serialized = JSON.stringify(data);
+      localStorage.setItem(this.prefix + key, serialized);
+    } catch (error) {
+      console.error(`Error saving to localStorage with key ${key}:`, error);
     }
+  }
 
-    async save<T>(key: string, data: T): Promise<void> {
-        if (!this.isBrowser) return;
+  async load<T>(key: string): Promise<T | null> {
+    if (!this.isBrowser) return null;
 
-        try {
-            const serialized = JSON.stringify(data);
-            localStorage.setItem(this.prefix + key, serialized);
-        } catch (error) {
-            console.error(`Error saving to localStorage with key ${key}:`, error);
+    try {
+      const item = localStorage.getItem(this.prefix + key);
+      return item ? JSON.parse(item) : null;
+    } catch (error) {
+      console.error(`Error loading from localStorage with key ${key}:`, error);
+      return null;
+    }
+  }
+
+  async delete(key: string): Promise<void> {
+    if (!this.isBrowser) return;
+
+    try {
+      localStorage.removeItem(this.prefix + key);
+    } catch (error) {
+      console.error(`Error deleting from localStorage with key ${key}:`, error);
+    }
+  }
+
+  async exists(key: string): Promise<boolean> {
+    if (!this.isBrowser) return false;
+    return localStorage.getItem(this.prefix + key) !== null;
+  }
+
+  async exportAll(): Promise<Record<string, any>> {
+    if (!this.isBrowser) return {};
+
+    const data: Record<string, any> = {};
+    for (let i = 0; i < localStorage.length; i++) {
+      const key = localStorage.key(i);
+      if (key?.startsWith(this.prefix)) {
+        const cleanKey = key.substring(this.prefix.length);
+        const value = await this.load(cleanKey);
+        if (value !== null) {
+          data[cleanKey] = value;
         }
+      }
     }
+    return data;
+  }
 
-    async load<T>(key: string): Promise<T | null> {
-        if (!this.isBrowser) return null;
+  async importAll(data: Record<string, any>): Promise<void> {
+    if (!this.isBrowser) return;
 
-        try {
-            const item = localStorage.getItem(this.prefix + key);
-            return item ? JSON.parse(item) : null;
-        } catch (error) {
-            console.error(`Error loading from localStorage with key ${key}:`, error);
-            return null;
-        }
+    for (const [key, value] of Object.entries(data)) {
+      await this.save(key, value);
     }
-
-    async delete(key: string): Promise<void> {
-        if (!this.isBrowser) return;
-
-        try {
-            localStorage.removeItem(this.prefix + key);
-        } catch (error) {
-            console.error(`Error deleting from localStorage with key ${key}:`, error);
-        }
-    }
-
-    async exists(key: string): Promise<boolean> {
-        if (!this.isBrowser) return false;
-        return localStorage.getItem(this.prefix + key) !== null;
-    }
-
-    async exportAll(): Promise<Record<string, any>> {
-        if (!this.isBrowser) return {};
-
-        const data: Record<string, any> = {};
-        for (let i = 0; i < localStorage.length; i++) {
-            const key = localStorage.key(i);
-            if (key?.startsWith(this.prefix)) {
-                const cleanKey = key.substring(this.prefix.length);
-                const value = await this.load(cleanKey);
-                if (value !== null) {
-                    data[cleanKey] = value;
-                }
-            }
-        }
-        return data;
-    }
-
-    async importAll(data: Record<string, any>): Promise<void> {
-        if (!this.isBrowser) return;
-
-        for (const [key, value] of Object.entries(data)) {
-            await this.save(key, value);
-        }
-    }
+  }
 }

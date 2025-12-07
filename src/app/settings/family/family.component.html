@@ -22,10 +22,14 @@
           <div class="details">
             <span class="name">{{ member.name }} {{ member.surname }}</span>
             <div class="badges">
-              <span class="badge" [class.kid]="member.type === 'kid'">{{ 'SETTINGS.TYPES.' + (member.type | uppercase) |
-                translate }}</span>
-              <span class="badge gender" [class.female]="member.gender === 'female'">{{ 'SETTINGS.GENDERS.' +
-                (member.gender | uppercase) | translate }}</span>
+              <span class="badge" [class.kid]="member.type === 'kid'">
+                <lucide-icon [img]="member.type === 'kid' ? KidIcon : AdultIcon" size="14"></lucide-icon>
+                {{ 'SETTINGS.TYPES.' + (member.type | uppercase) | translate }}
+              </span>
+              <span class="badge gender" [class.female]="member.gender === 'female'">
+                <lucide-icon [img]="member.gender === 'female' ? FemaleIcon : MaleIcon" size="14"></lucide-icon>
+                {{ 'SETTINGS.GENDERS.' + (member.gender | uppercase) | translate }}
+              </span>
             </div>
           </div>
         </div>
@@ -68,46 +72,53 @@
         <div class="member-edit-form">
           <div class="form-grid">
             <div class="form-group">
-              <label>{{ 'SETTINGS.NAME' | translate }}</label>
-              <input type="text" [ngModel]="editMemberName()" (ngModelChange)="editMemberName.set($event)"
+              <label for="edit-member-name">{{ 'SETTINGS.NAME' | translate }}</label>
+              <input type="text" id="edit-member-name" name="edit-member-name" autocomplete="given-name"
+                [ngModel]="editMemberName()" (ngModelChange)="editMemberName.set($event)"
                 title="{{ 'SETTINGS.NAME' | translate }}">
             </div>
             <div class="form-group">
-              <label>{{ 'SETTINGS.SURNAME' | translate }}</label>
-              <input type="text" [ngModel]="editMemberSurname()" (ngModelChange)="editMemberSurname.set($event)"
+              <label for="edit-member-surname">{{ 'SETTINGS.SURNAME' | translate }}</label>
+              <input type="text" id="edit-member-surname" name="edit-member-surname" autocomplete="family-name"
+                [ngModel]="editMemberSurname()" (ngModelChange)="editMemberSurname.set($event)"
                 title="{{ 'SETTINGS.SURNAME' | translate }}">
             </div>
           </div>
           <div class="form-grid">
             <div class="form-group">
-              <label>{{ 'SETTINGS.TYPE' | translate }}</label>
+              <span class="form-label">{{ 'SETTINGS.TYPE' | translate }}</span>
               <div class="toggle-group">
                 <button [class.active]="editMemberType() === 'adult'" (click)="editMemberType.set('adult')">
+                  <lucide-icon [img]="AdultIcon" size="16"></lucide-icon>
                   {{ 'SETTINGS.TYPES.ADULT' | translate }}
                 </button>
                 <button [class.active]="editMemberType() === 'kid'" (click)="editMemberType.set('kid')">
+                  <lucide-icon [img]="KidIcon" size="16"></lucide-icon>
                   {{ 'SETTINGS.TYPES.KID' | translate }}
                 </button>
               </div>
             </div>
             <div class="form-group">
-              <label>{{ 'SETTINGS.GENDER' | translate }}</label>
+              <span class="form-label">{{ 'SETTINGS.GENDER' | translate }}</span>
               <div class="toggle-group">
                 <button [class.active]="editMemberGender() === 'male'" (click)="editMemberGender.set('male')">
+                  <lucide-icon [img]="MaleIcon" size="16"></lucide-icon>
                   {{ 'SETTINGS.GENDERS.MALE' | translate }}
                 </button>
                 <button [class.active]="editMemberGender() === 'female'" (click)="editMemberGender.set('female')">
+                  <lucide-icon [img]="FemaleIcon" size="16"></lucide-icon>
                   {{ 'SETTINGS.GENDERS.FEMALE' | translate }}
                 </button>
               </div>
             </div>
           </div>
           <div class="form-group">
-            <label>{{ 'SETTINGS.UPLOAD_PICTURE' | translate }}</label>
+            <span class="form-label">{{ 'SETTINGS.UPLOAD_PICTURE' | translate }}</span>
             <label class="upload-btn">
               <lucide-icon [img]="ImportIcon" size="16"></lucide-icon>
               {{ 'SETTINGS.UPLOAD_PICTURE' | translate }}
-              <input type="file" accept="image/*" (change)="handleFileUpload($event)" class="hidden-input">
+              <input type="file" id="edit-member-file" name="edit-member-file" accept="image/*"
+                (change)="handleFileUpload($event)" class="hidden-input">
             </label>
             @if (customPicturePreview()) {
             <div class="picture-preview">
@@ -116,7 +127,7 @@
             }
           </div>
           <div class="form-group">
-            <label>{{ 'SETTINGS.OR_SELECT_AVATAR' | translate }}</label>
+            <span class="form-label">{{ 'SETTINGS.OR_SELECT_AVATAR' | translate }}</span>
             <div class="avatar-grid">
               <img *ngFor="let avatar of householdService.avatars" [src]="avatar"
                 [class.selected]="editMemberAvatar() === avatar && !customPicturePreview()"
@@ -143,10 +154,14 @@
           <div class="details">
             <span class="name">{{ member.name }} {{ member.surname }}</span>
             <div class="badges">
-              <span class="badge" [class.kid]="member.type === 'kid'">{{ 'SETTINGS.TYPES.' + (member.type | uppercase) |
-                translate }}</span>
-              <span class="badge gender" [class.female]="member.gender === 'female'">{{ 'SETTINGS.GENDERS.' +
-                (member.gender | uppercase) | translate }}</span>
+              <span class="badge" [class.kid]="member.type === 'kid'">
+                <lucide-icon [img]="member.type === 'kid' ? KidIcon : AdultIcon" size="14"></lucide-icon>
+                {{ 'SETTINGS.TYPES.' + (member.type | uppercase) | translate }}
+              </span>
+              <span class="badge gender" [class.female]="member.gender === 'female'">
+                <lucide-icon [img]="member.gender === 'female' ? FemaleIcon : MaleIcon" size="14"></lucide-icon>
+                {{ 'SETTINGS.GENDERS.' + (member.gender | uppercase) | translate }}
+              </span>
             </div>
           </div>
         </div>
@@ -171,45 +186,51 @@
     <h3>{{ 'SETTINGS.ADD_MEMBER_TITLE' | translate }}</h3>
     <div class="form-grid">
       <div class="form-group">
-        <label>{{ 'SETTINGS.NAME' | translate }}</label>
-        <input type="text" [ngModel]="newMemberName()" (ngModelChange)="newMemberName.set($event)" placeholder="John">
+        <label for="new-member-name">{{ 'SETTINGS.NAME' | translate }}</label>
+        <input type="text" id="new-member-name" name="new-member-name" autocomplete="given-name"
+          [ngModel]="newMemberName()" (ngModelChange)="newMemberName.set($event)" placeholder="John">
       </div>
       <div class="form-group">
-        <label>{{ 'SETTINGS.SURNAME' | translate }}</label>
-        <input type="text" [ngModel]="newMemberSurname()" (ngModelChange)="newMemberSurname.set($event)"
-          placeholder="Doe">
+        <label for="new-member-surname">{{ 'SETTINGS.SURNAME' | translate }}</label>
+        <input type="text" id="new-member-surname" name="new-member-surname" autocomplete="family-name"
+          [ngModel]="newMemberSurname()" (ngModelChange)="newMemberSurname.set($event)" placeholder="Doe">
       </div>
     </div>
     <div class="form-grid">
       <div class="form-group">
-        <label>{{ 'SETTINGS.TYPE' | translate }}</label>
+        <span class="form-label">{{ 'SETTINGS.TYPE' | translate }}</span>
         <div class="toggle-group">
           <button [class.active]="newMemberType() === 'adult'" (click)="newMemberType.set('adult')">
+            <lucide-icon [img]="AdultIcon" size="16"></lucide-icon>
             {{ 'SETTINGS.TYPES.ADULT' | translate }}
           </button>
           <button [class.active]="newMemberType() === 'kid'" (click)="newMemberType.set('kid')">
+            <lucide-icon [img]="KidIcon" size="16"></lucide-icon>
             {{ 'SETTINGS.TYPES.KID' | translate }}
           </button>
         </div>
       </div>
       <div class="form-group">
-        <label>{{ 'SETTINGS.GENDER' | translate }}</label>
+        <span class="form-label">{{ 'SETTINGS.GENDER' | translate }}</span>
         <div class="toggle-group">
           <button [class.active]="newMemberGender() === 'male'" (click)="newMemberGender.set('male')">
+            <lucide-icon [img]="MaleIcon" size="16"></lucide-icon>
             {{ 'SETTINGS.GENDERS.MALE' | translate }}
           </button>
           <button [class.active]="newMemberGender() === 'female'" (click)="newMemberGender.set('female')">
+            <lucide-icon [img]="FemaleIcon" size="16"></lucide-icon>
             {{ 'SETTINGS.GENDERS.FEMALE' | translate }}
           </button>
         </div>
       </div>
     </div>
     <div class="form-group">
-      <label>{{ 'SETTINGS.UPLOAD_PICTURE' | translate }}</label>
+      <span class="form-label">{{ 'SETTINGS.UPLOAD_PICTURE' | translate }}</span>
       <label class="upload-btn">
         <lucide-icon [img]="ImportIcon" size="16"></lucide-icon>
         {{ 'SETTINGS.UPLOAD_PICTURE' | translate }}
-        <input type="file" accept="image/*" (change)="handleNewMemberFileUpload($event)" class="hidden-input">
+        <input type="file" id="new-member-file" name="new-member-file" accept="image/*"
+          (change)="handleNewMemberFileUpload($event)" class="hidden-input">
       </label>
       @if (newMemberPicturePreview()) {
       <div class="picture-preview">
@@ -218,7 +239,7 @@
       }
     </div>
     <div class="form-group">
-      <label>{{ 'SETTINGS.SELECT_AVATAR' | translate }}</label>
+      <span class="form-label">{{ 'SETTINGS.SELECT_AVATAR' | translate }}</span>
       <div class="avatar-grid">
         <img *ngFor="let avatar of householdService.avatars" [src]="avatar"
           [class.selected]="selectedAvatar() === avatar" (click)="selectAvatar(avatar)" alt="Hero Avatar"

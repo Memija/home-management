@@ -1,121 +1,152 @@
 // Shared Button Styles
 
 .button-group {
-    display: flex;
-    gap: 1rem;
-    margin-top: 1rem;
+  display: flex;
+  gap: 1rem;
+  margin-top: 1rem;
 
-    button {
-        margin-top: 0;
-    }
+  button {
+    margin-top: 0;
+  }
 }
 
 // Base button style
 %btn-base {
-    width: 100%;
-    padding: 0.75rem;
-    color: white;
-    border: none;
-    border-radius: 4px;
-    font-size: 1rem;
-    font-weight: 500;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 0.5rem;
-    transition: background-color 0.2s;
+  width: 100%;
+  padding: 0.75rem;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  font-size: 1rem;
+  font-weight: 500;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  transition: background-color 0.2s;
 
-    &:disabled {
-        background: #6c757d;
-        cursor: not-allowed;
-        opacity: 0.7;
-    }
+  &:disabled {
+    background: #6c757d;
+    cursor: not-allowed;
+    opacity: 0.7;
+  }
 }
 
 .save-btn {
-    @extend %btn-base;
-    background: #007bff;
+  @extend %btn-base;
+  background: #007bff;
 
-    &:hover:not(:disabled) {
-        background: #0056b3;
-    }
+  &:hover:not(:disabled) {
+    background: #0056b3;
+  }
 }
 
 .edit-btn {
-    @extend %btn-base;
-    background: #007bff;
+  @extend %btn-base;
+  background: #007bff;
 
-    &:hover {
-        background: #0056b3;
-    }
+  &:hover {
+    background: #0056b3;
+  }
 }
 
 .cancel-btn {
-    @extend %btn-base;
-    background: #6c757d;
+  @extend %btn-base;
+  background: #6c757d;
 
-    &:hover {
-        background: #5a6268;
-    }
+  &:hover {
+    background: #5a6268;
+  }
 }
 
 .export-btn {
-    @extend %btn-base;
-    background: #28a745; // Green
+  @extend %btn-base;
+  background: #28a745; // Green
+  width: auto;
+  white-space: nowrap;
+  flex-shrink: 0;
 
-    &:hover {
-        background: #218838;
-    }
+  &:hover {
+    background: #218838;
+  }
 }
 
 .import-btn {
-    @extend %btn-base;
-    background: #17a2b8; // Teal
+  @extend %btn-base;
+  background: #17a2b8; // Teal
+  width: auto;
+  white-space: nowrap;
+  flex-shrink: 0;
 
-    &:hover {
-        background: #138496;
-    }
+  &:hover {
+    background: #138496;
+  }
 }
 
 .add-btn {
-    @extend %btn-base;
-    background: #28a745; // Green
+  @extend %btn-base;
+  background: #28a745; // Green
 
-    &:hover:not(:disabled) {
-        background: #218838;
-    }
+  &:hover:not(:disabled) {
+    background: #218838;
+  }
 }
 
 .remove-btn {
-    @extend %btn-base;
-    background: #dc3545; // Red
-    padding: 0.5rem;
-    width: auto;
+  @extend %btn-base;
+  background: #dc3545; // Red
+  padding: 0.5rem;
+  width: auto;
 
-    &:hover {
-        background: #c82333;
-    }
+  &:hover {
+    background: #c82333;
+  }
 }
 
 .edit-member-btn {
-    @extend %btn-base;
-    background: #ffc107; // Yellow/Warning
-    color: #212529;
-    padding: 0.5rem;
-    width: auto;
+  @extend %btn-base;
+  background: #ffc107; // Yellow/Warning
+  color: #212529;
+  padding: 0.5rem;
+  width: auto;
 
-    &:hover {
-        background: #e0a800;
-    }
+  &:hover {
+    background: #e0a800;
+  }
 }
 
 .upload-btn {
-    @extend %btn-base;
-    background: #17a2b8; // Teal
-    width: auto; // Allow it to size to content if needed, or keep full width
+  @extend %btn-base;
+  background: #17a2b8; // Teal
+  width: auto; // Allow it to size to content if needed, or keep full width
 
-    &:hover {
-        background: #138496;
-    }
+  &:hover {
+    background: #138496;
+  }
+}
+
+// New shared outline button style
+.btn-outline {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  border: 1px solid #ced4da;
+  background: white;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: #495057;
+  text-decoration: none;
+  transition: all 0.2s;
+  white-space: nowrap;
+  flex-shrink: 0;
+
+  &:hover {
+    background: #e7f3ff;
+    border-color: #007bff;
+    color: #007bff;
+  }
 }

@@ -1,7 +1,7 @@
 import { Component, signal, inject, effect, computed } from '@angular/core';
-import { CommonModule, TitleCasePipe } from '@angular/common';
+import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { LucideAngularModule, Pencil, Save, X, Trash2, Plus, Download, Upload } from 'lucide-angular';
+import { LucideAngularModule, Pencil, Save, X, Trash2, Plus, Download, Upload, User, Baby, Mars, Venus } from 'lucide-angular';
 import { HouseholdService, HouseholdMember } from '../../services/household.service';
 import { LanguageService } from '../../services/language.service';
 import { FileStorageService } from '../../services/file-storage.service';
@@ -10,7 +10,7 @@ import { TranslatePipe } from '../../pipes/translate.pipe';
 @Component({
     selector: 'app-family',
     standalone: true,
-    imports: [CommonModule, FormsModule, LucideAngularModule, TranslatePipe, TitleCasePipe],
+    imports: [CommonModule, FormsModule, LucideAngularModule, TranslatePipe],
     templateUrl: './family.component.html',
     styleUrl: './family.component.scss'
 })
@@ -27,6 +27,10 @@ export class FamilyComponent {
     protected readonly AddIcon = Plus;
     protected readonly ExportIcon = Download;
     protected readonly ImportIcon = Upload;
+    protected readonly AdultIcon = User;
+    protected readonly KidIcon = Baby;
+    protected readonly MaleIcon = Mars;
+    protected readonly FemaleIcon = Venus;
 
     // State
     protected isEditing = signal(false);
@@ -60,7 +64,7 @@ export class FamilyComponent {
             if (!this.isEditing()) {
                 this.draftMembers.set([...currentMembers]);
             }
-        }, { allowSignalWrites: true });
+        });
     }
 
     editFamily() {

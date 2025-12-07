@@ -1,48 +1,26 @@
 .settings-container {
-    max-width: 800px;
-    margin: 2rem auto;
-    padding: 1rem;
-    font-family: system-ui, -apple-system, sans-serif;
+  max-width: 800px;
+  margin: 4rem auto auto auto;
+  padding: 1rem;
+  font-family: system-ui, -apple-system, sans-serif;
 }
 
 .header {
-    margin-bottom: 2rem;
+  margin-bottom: 2rem;
 
-    .header-top {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        margin-bottom: 1rem;
-    }
+  .header-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+  }
 
-    .back-btn {
-        display: inline-flex;
-        align-items: center;
-        gap: 0.5rem;
-        padding: 0.5rem 1rem;
-        border: 1px solid #ced4da;
-        background: white;
-        border-radius: 4px;
-        cursor: pointer;
-        font-size: 0.9rem;
-        font-weight: 500;
-        color: #495057;
-        text-decoration: none;
-        transition: all 0.2s;
-
-        &:hover {
-            background: #e7f3ff;
-            border-color: #007bff;
-            color: #007bff;
-        }
-    }
-
-    h1 {
-        margin: 0;
-        color: #2c3e50;
-    }
+  h1 {
+    margin: 0;
+    color: #2c3e50;
+  }
 }
 
 .visually-hidden {
-    display: none;
+  display: none;
 }

@@ -6,4 +6,8 @@
       {{ 'FOOTER.CONTACT_US' | translate }}
     </button>
   </div>
+
+  @if (showContactModal()) {
+  <app-contact-modal (close)="onCloseModal()" (send)="onSendEmail($event)"></app-contact-modal>
+  }
 </footer>

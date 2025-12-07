@@ -119,5 +119,22 @@ export const de = {
         APP_NAME: 'Haushaltsmanagement',
         ALL_RIGHTS: 'Alle Rechte vorbehalten',
         CONTACT_US: 'Kontaktiere uns'
+    },
+    CONTACT: {
+        TITLE: 'Kontaktiere uns',
+        NAME: 'Name',
+        NAME_PLACEHOLDER: 'Ihr Name',
+        EMAIL: 'E-Mail',
+        EMAIL_PLACEHOLDER: 'ihre.email@beispiel.de',
+        SUBJECT: 'Betreff',
+        SUBJECT_PLACEHOLDER: 'Kurzer Betreff',
+        MESSAGE: 'Nachricht',
+        MESSAGE_PLACEHOLDER: 'Ihre Nachricht...',
+        EMAIL_CLIENT: 'E-Mail-Client',
+        DEFAULT_CLIENT: 'Standard (System)',
+        SEND: 'Nachricht senden',
+        CANCEL: 'Abbrechen',
+        CLOSE: 'Schließen',
+        INVALID_EMAIL: 'Bitte geben Sie eine gültige E-Mail-Adresse ein'
     }
 };

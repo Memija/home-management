@@ -119,5 +119,22 @@ export const en = {
         APP_NAME: 'Home Management',
         ALL_RIGHTS: 'All rights reserved',
         CONTACT_US: 'Contact Us'
+    },
+    CONTACT: {
+        TITLE: 'Contact Us',
+        NAME: 'Name',
+        NAME_PLACEHOLDER: 'Your name',
+        EMAIL: 'Email',
+        EMAIL_PLACEHOLDER: 'your.email@example.com',
+        SUBJECT: 'Subject',
+        SUBJECT_PLACEHOLDER: 'Brief subject',
+        MESSAGE: 'Message',
+        MESSAGE_PLACEHOLDER: 'Your message...',
+        EMAIL_CLIENT: 'Email Client',
+        DEFAULT_CLIENT: 'Default (System)',
+        SEND: 'Send Message',
+        CANCEL: 'Cancel',
+        CLOSE: 'Close',
+        INVALID_EMAIL: 'Please enter a valid email address'
     }
 };

@@ -1,0 +1,108 @@
+<div class="modal-overlay" (click)="onClose()">
+  <div class="modal-container" (click)="$event.stopPropagation()">
+    <div class="modal-header">
+      <h2>{{ 'CONTACT.TITLE' | translate }}</h2>
+      <button type="button" class="close-btn" (click)="onClose()" title="Close">
+        <lucide-icon [img]="XIcon" size="24"></lucide-icon>
+      </button>
+    </div>
+
+    <div class="modal-body">
+      <form (ngSubmit)="onSend()">
+        <div class="form-group">
+          <label for="contact-name">{{ 'CONTACT.NAME' | translate }}</label>
+          <input type="text" id="contact-name" name="name" [ngModel]="name()" (ngModelChange)="name.set($event)"
+            [placeholder]="'CONTACT.NAME_PLACEHOLDER' | translate" autocomplete="name" required>
+        </div>
+
+        <div class="form-group">
+          <label for="contact-email">{{ 'CONTACT.EMAIL' | translate }}</label>
+          <input type="email" id="contact-email" name="email" [ngModel]="email()"
+            (ngModelChange)="onEmailChange($event)" [placeholder]="'CONTACT.EMAIL_PLACEHOLDER' | translate"
+            [class.invalid]="emailError()" autocomplete="email" required>
+          @if (emailError()) {
+          <div class="error-message">
+            <lucide-icon [img]="TriangleAlertIcon" size="16" class="error-icon"></lucide-icon>
+            <span>{{ 'CONTACT.INVALID_EMAIL' | translate }}</span>
+          </div>
+          }
+        </div>
+
+        <div class="form-group">
+          <label for="contact-subject">{{ 'CONTACT.SUBJECT' | translate }}</label>
+          <input type="text" id="contact-subject" name="subject" [ngModel]="subject()"
+            (ngModelChange)="subject.set($event)" [placeholder]="'CONTACT.SUBJECT_PLACEHOLDER' | translate"
+            autocomplete="off" required>
+        </div>
+
+        <div class="form-group">
+          <label for="contact-message">{{ 'CONTACT.MESSAGE' | translate }}</label>
+          <textarea id="contact-message" name="message" rows="6" [ngModel]="message()"
+            (ngModelChange)="message.set($event)" [placeholder]="'CONTACT.MESSAGE_PLACEHOLDER' | translate"
+            autocomplete="off" required></textarea>
+        </div>
+
+        <div class="form-group">
+          <div class="custom-select" role="combobox" aria-expanded="true" title="Email client"
+            [attr.aria-expanded]="dropdownOpen() ? 'true' : 'false'" aria-haspopup="listbox"
+            aria-controls="email-client-dropdown" [attr.aria-label]="'CONTACT.EMAIL_CLIENT' | translate" tabindex="0"
+            (click)="toggleDropdown()" (keydown.enter)="toggleDropdown()"
+            (keydown.space)="toggleDropdown(); $event.preventDefault()">
+            <div class="select-trigger">
+              <div class="select-content">
+                @if (emailClient() === 'default') {
+                <lucide-icon [img]="LaptopIcon" size="20"></lucide-icon>
+                } @else if (emailClient() === 'outlook') {
+                <img src="/assets/outlook_logo.png" alt="Outlook" class="logo-icon">
+                } @else if (emailClient() === 'gmail') {
+                <img src="/assets/gmail_logo.png" alt="Gmail" class="logo-icon">
+                }
+                <span>
+                  @if (emailClient() === 'default') {
+                  {{ 'CONTACT.DEFAULT_CLIENT' | translate }}
+                  } @else {
+                  {{ getClientLabel(emailClient()) }}
+                  }
+                </span>
+              </div>
+              <lucide-icon [img]="XIcon" size="16" class="chevron"
+                [style.transform]="dropdownOpen() ? 'rotate(180deg)' : 'rotate(0deg)'"></lucide-icon>
+            </div>
+            @if (dropdownOpen()) {
+            <div class="dropdown-menu" role="listbox" id="email-client-dropdown">
+              <div class="dropdown-item" role="option" [attr.aria-selected]="emailClient() === 'default'"
+                [class.selected]="emailClient() === 'default'"
+                (click)="selectEmailClient('default'); $event.stopPropagation()">
+                <lucide-icon [img]="LaptopIcon" size="20"></lucide-icon>
+                <span>{{ 'CONTACT.DEFAULT_CLIENT' | translate }}</span>
+              </div>
+              <div class="dropdown-item" role="option" [attr.aria-selected]="emailClient() === 'outlook'"
+                [class.selected]="emailClient() === 'outlook'"
+                (click)="selectEmailClient('outlook'); $event.stopPropagation()">
+                <img src="/assets/outlook_logo.png" alt="Outlook" class="logo-icon">
+                <span>Outlook</span>
+              </div>
+              <div class="dropdown-item" role="option" [attr.aria-selected]="emailClient() === 'gmail'"
+                [class.selected]="emailClient() === 'gmail'"
+                (click)="selectEmailClient('gmail'); $event.stopPropagation()">
+                <img src="/assets/gmail_logo.png" alt="Gmail" class="logo-icon">
+                <span>Gmail</span>
+              </div>
+            </div>
+            }
+          </div>
+        </div>
+
+        <div class="modal-actions">
+          <button type="button" class="btn-secondary" (click)="onClose()">
+            {{ 'CONTACT.CANCEL' | translate }}
+          </button>
+          <button type="submit" class="btn-primary"
+            [disabled]="!name() || !email() || !subject() || !message() || emailError()">
+            {{ 'CONTACT.SEND' | translate }}
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>

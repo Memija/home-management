@@ -132,7 +132,7 @@ export const en = {
         MESSAGE_PLACEHOLDER: 'Your message...',
         EMAIL_CLIENT: 'Email Client',
         DEFAULT_CLIENT: 'Default (System)',
-        SEND: 'Send Message',
+        SEND: 'Compose',
         CANCEL: 'Cancel',
         CLOSE: 'Close',
         INVALID_EMAIL: 'Please enter a valid email address'

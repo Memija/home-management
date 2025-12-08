@@ -8,6 +8,6 @@
   </div>
 
   @if (showContactModal()) {
-  <app-contact-modal (close)="onCloseModal()" (send)="onSendEmail($event)"></app-contact-modal>
+  <app-contact-modal (close)="onCloseModal()" (compose)="onComposeEmail($event)"></app-contact-modal>
   }
 </footer>

@@ -32,7 +32,7 @@ export class ContactModalComponent {
 
   // Output
   close = output<void>();
-  send = output<{ name: string; email: string; subject: string; message: string; client: EmailClient }>();
+  compose = output<{ name: string; email: string; subject: string; message: string; client: EmailClient }>();
 
   protected validateEmail(email: string): boolean {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -77,7 +77,7 @@ export class ContactModalComponent {
     this.close.emit();
   }
 
-  protected onSend() {
+  protected onCompose() {
     // Validate form
     if (!this.name() || !this.email() || !this.subject() || !this.message()) {
       return;
@@ -90,7 +90,7 @@ export class ContactModalComponent {
     }
 
     // Emit the email data with selected client
-    this.send.emit({
+    this.compose.emit({
       name: this.name(),
       email: this.email(),
       subject: this.subject(),

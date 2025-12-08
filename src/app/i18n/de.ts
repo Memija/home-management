@@ -132,7 +132,7 @@ export const de = {
         MESSAGE_PLACEHOLDER: 'Ihre Nachricht...',
         EMAIL_CLIENT: 'E-Mail-Client',
         DEFAULT_CLIENT: 'Standard (System)',
-        SEND: 'Nachricht senden',
+        SEND: 'Verfassen',
         CANCEL: 'Abbrechen',
         CLOSE: 'Schließen',
         INVALID_EMAIL: 'Bitte geben Sie eine gültige E-Mail-Adresse ein'

@@ -8,7 +8,7 @@
     </div>
 
     <div class="modal-body">
-      <form (ngSubmit)="onSend()">
+      <form (ngSubmit)="onCompose()">
         <div class="form-group">
           <label for="contact-name">{{ 'CONTACT.NAME' | translate }}</label>
           <input type="text" id="contact-name" name="name" [ngModel]="name()" (ngModelChange)="name.set($event)"

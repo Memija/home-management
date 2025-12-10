@@ -58,7 +58,41 @@ export const en = {
         SELECT_DATE: 'Select date',
         SELECT_DATE_ERROR: 'Please select a date.',
         PARTIAL_INPUT_ERROR: 'Please enter both Warm and Cold water values for at least one room.',
-        INCOMPLETE_ROOM_ERROR: 'Please complete both Warm and Cold water entries for all started rooms.'
+        INCOMPLETE_ROOM_ERROR: 'Please complete both Warm and Cold water entries for all started rooms.',
+        LOAD_MORE_RECORDS: 'Load More Records',
+        SHOWING_RECORDS: 'Showing {current} of {total} records',
+        PAGINATION_SIZE: 'Records per page',
+        PAGE_OF: 'Page {current} of {total}',
+        PREVIOUS_PAGE: 'Previous',
+        NEXT_PAGE: 'Next',
+        FILTER_YEAR: 'Year',
+        FILTER_MONTH: 'Month',
+        SORT: {
+            DATE_DESC: 'Date (Newest First)',
+            DATE_ASC: 'Date (Oldest First)',
+            TOTAL_DESC: 'Total Consumption (High to Low)',
+            TOTAL_ASC: 'Total Consumption (Low to High)',
+            KITCHEN_DESC: 'Kitchen Total (High to Low)',
+            KITCHEN_ASC: 'Kitchen Total (Low to High)',
+            BATHROOM_DESC: 'Bathroom Total (High to Low)',
+            BATHROOM_ASC: 'Bathroom Total (Low to High)',
+            LIVING_ROOM_DESC: 'Living Room (High to Low)',
+            BEDROOM_DESC: 'Bedroom (High to Low)'
+        },
+        MONTHS: {
+            JANUARY: 'January',
+            FEBRUARY: 'February',
+            MARCH: 'March',
+            APRIL: 'April',
+            MAY: 'May',
+            JUNE: 'June',
+            JULY: 'July',
+            AUGUST: 'August',
+            SEPTEMBER: 'September',
+            OCTOBER: 'October',
+            NOVEMBER: 'November',
+            DECEMBER: 'December'
+        }
     },
     CALENDAR: {
         TODAY: 'Today',

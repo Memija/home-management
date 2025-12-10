@@ -7,22 +7,22 @@ import { LucideAngularModule, Settings } from 'lucide-angular';
 import { map } from 'rxjs/operators';
 
 @Component({
-    selector: 'app-header',
-    standalone: true,
-    imports: [TranslatePipe, LanguageSwitcherComponent, RouterLink, LucideAngularModule],
-    templateUrl: './header.component.html',
-    styleUrl: './header.component.scss'
+  selector: 'app-header',
+  standalone: true,
+  imports: [TranslatePipe, LanguageSwitcherComponent, RouterLink, LucideAngularModule],
+  templateUrl: './header.component.html',
+  styleUrl: './header.component.scss'
 })
 export class HeaderComponent {
-    protected readonly SettingsIcon = Settings;
+  protected readonly SettingsIcon = Settings;
 
-    private router = inject(Router);
+  private router = inject(Router);
 
-    // Check if current route is the settings page
-    protected isSettingsPage = toSignal(
-        this.router.events.pipe(
-            map(() => this.router.url === '/settings')
-        ),
-        { initialValue: this.router.url === '/settings' }
-    );
+  // Check if current route is the settings page
+  protected isSettingsPage = toSignal(
+    this.router.events.pipe(
+      map(() => this.router.url === '/settings')
+    ),
+    { initialValue: this.router.url === '/settings' }
+  );
 }

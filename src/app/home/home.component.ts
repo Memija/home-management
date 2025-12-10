@@ -8,7 +8,8 @@ import { TranslatePipe } from '../pipes/translate.pipe';
 import { LanguageSwitcherComponent } from '../components/language-switcher/language-switcher.component';
 import { STORAGE_SERVICE } from '../services/storage.service';
 import { FileStorageService } from '../services/file-storage.service';
-import { LucideAngularModule, Settings, TriangleAlert } from 'lucide-angular';
+import { LanguageService } from '../services/language.service';
+import { LucideAngularModule, Settings, TriangleAlert, ChevronDown, ChevronLeft, ChevronRight } from 'lucide-angular';
 
 Chart.register(...registerables);
 
@@ -32,9 +33,13 @@ type ChartView = 'total' | 'by-room' | 'by-type' | 'detailed';
 export class HomeComponent {
     private storage = inject(STORAGE_SERVICE);
     private fileStorage = inject(FileStorageService);
+    private languageService = inject(LanguageService);
 
     protected readonly SettingsIcon = Settings;
     protected readonly TriangleAlertIcon = TriangleAlert;
+    protected readonly ChevronDownIcon = ChevronDown;
+    protected readonly ChevronLeftIcon = ChevronLeft;
+    protected readonly ChevronRightIcon = ChevronRight;
 
     protected records = signal<ConsumptionRecord[]>([]);
     protected nextSunday = signal<Date>(this.calculateNextSunday());
@@ -44,6 +49,11 @@ export class HomeComponent {
     protected bathroomWarm = signal<number | null>(null);
     protected bathroomCold = signal<number | null>(null);
     protected errorMessage = signal<string | null>(null);
+
+    // Pagination
+    protected currentPage = signal<number>(1);
+    protected paginationSize = signal<number>(5);
+    protected sortOption = signal<'date-desc' | 'date-asc' | 'total-desc' | 'total-asc' | 'kitchen-desc' | 'kitchen-asc' | 'bathroom-desc' | 'bathroom-asc'>('date-desc');
 
     protected hasValidInput = computed(() => {
         const kw = this.kitchenWarm() !== null;
@@ -56,6 +66,58 @@ export class HomeComponent {
         const atLeastOneSet = (kw && kc) || (bw && bc);
 
         return kitchenValid && bathroomValid && atLeastOneSet;
+    });
+
+    protected displayedRecords = computed(() => {
+        const records = [...this.records()];
+        const sortOption = this.sortOption();
+
+        // Sort records
+        records.sort((a, b) => {
+            switch (sortOption) {
+                case 'date-desc':
+                    return b.date.getTime() - a.date.getTime();
+                case 'date-asc':
+                    return a.date.getTime() - b.date.getTime();
+                case 'total-desc':
+                    return this.calculateTotal(b) - this.calculateTotal(a);
+                case 'total-asc':
+                    return this.calculateTotal(a) - this.calculateTotal(b);
+                case 'kitchen-desc':
+                    return this.calculateKitchenTotal(b) - this.calculateKitchenTotal(a);
+                case 'kitchen-asc':
+                    return this.calculateKitchenTotal(a) - this.calculateKitchenTotal(b);
+                case 'bathroom-desc':
+                    return this.calculateBathroomTotal(b) - this.calculateBathroomTotal(a);
+                case 'bathroom-asc':
+                    return this.calculateBathroomTotal(a) - this.calculateBathroomTotal(b);
+                default:
+                    return 0;
+            }
+        });
+
+        // Limit records based on current page and pagination size
+        return records.slice((this.currentPage() - 1) * this.paginationSize(), this.currentPage() * this.paginationSize());
+    });
+
+    protected totalPages = computed(() => {
+        return Math.ceil(this.records().length / this.paginationSize());
+    });
+
+    protected pageOfText = computed(() => {
+        const key = 'HOME.PAGE_OF';
+        const template = this.languageService.translate(key);
+        return template
+            .replace('{current}', this.currentPage().toString())
+            .replace('{total}', this.totalPages().toString());
+    });
+
+    protected showingRecordsText = computed(() => {
+        const key = 'HOME.SHOWING_RECORDS';
+        const template = this.languageService.translate(key);
+        return template
+            .replace('{current}', this.displayedRecords().length.toString())
+            .replace('{total}', this.records().length.toString());
     });
 
     protected chartData = computed<ChartConfiguration['data']>(() => {
@@ -223,6 +285,35 @@ export class HomeComponent {
 
     protected calculateTotal(record: ConsumptionRecord): number {
         return record.kitchenWarm + record.kitchenCold + record.bathroomWarm + record.bathroomCold;
+    }
+
+    protected calculateKitchenTotal(record: ConsumptionRecord): number {
+        return record.kitchenWarm + record.kitchenCold;
+    }
+
+    protected calculateBathroomTotal(record: ConsumptionRecord): number {
+        return record.bathroomWarm + record.bathroomCold;
+    }
+
+    protected nextPage() {
+        if (this.currentPage() < this.totalPages()) {
+            this.currentPage.update(page => page + 1);
+        }
+    }
+
+    protected prevPage() {
+        if (this.currentPage() > 1) {
+            this.currentPage.update(page => page - 1);
+        }
+    }
+
+    protected onPaginationSizeChange(size: number) {
+        this.paginationSize.set(size);
+        this.currentPage.set(1); // Reset to first page when changing page size
+    }
+
+    protected setSortOption(option: unknown) {
+        this.sortOption.set(option as typeof this.sortOption extends () => infer T ? T : never);
     }
 
     protected saveRecord() {

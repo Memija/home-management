@@ -7,7 +7,8 @@ import { RouterLink } from '@angular/router';
 import { TranslatePipe } from '../pipes/translate.pipe';
 import { STORAGE_SERVICE } from '../services/storage.service';
 import { FileStorageService } from '../services/file-storage.service';
-import { LucideAngularModule, ArrowLeft } from 'lucide-angular';
+import { LanguageService } from '../services/language.service';
+import { LucideAngularModule, ArrowLeft, ChevronDown, ChevronLeft, ChevronRight } from 'lucide-angular';
 
 Chart.register(...registerables);
 
@@ -31,8 +32,12 @@ type ChartView = 'total' | 'by-room' | 'detailed';
 export class HeatingComponent {
     private storage = inject(STORAGE_SERVICE);
     private fileStorage = inject(FileStorageService);
+    private languageService = inject(LanguageService);
 
     protected readonly ArrowLeftIcon = ArrowLeft;
+    protected readonly ChevronDownIcon = ChevronDown;
+    protected readonly ChevronLeftIcon = ChevronLeft;
+    protected readonly ChevronRightIcon = ChevronRight;
 
     protected records = signal<HeatingRecord[]>([]);
     protected nextSunday = signal<Date>(this.calculateNextSunday());
@@ -43,12 +48,69 @@ export class HeatingComponent {
     protected kitchen = signal<number | null>(null);
     protected bathroom = signal<number | null>(null);
 
+    // Pagination
+    protected currentPage = signal<number>(1);
+    protected paginationSize = signal<number>(5);
+    protected sortOption = signal<'date-desc' | 'date-asc' | 'total-desc' | 'total-asc' | 'livingRoom-desc' | 'bedroom-desc' | 'kitchen-desc' | 'bathroom-desc'>('date-desc');
+
     protected allFieldsFilled = computed(() =>
         this.livingRoom() !== null &&
         this.bedroom() !== null &&
         this.kitchen() !== null &&
         this.bathroom() !== null
     );
+
+    protected displayedRecords = computed(() => {
+        const records = [...this.records()];
+        const sortOption = this.sortOption();
+
+        // Sort records
+        records.sort((a, b) => {
+            switch (sortOption) {
+                case 'date-desc':
+                    return b.date.getTime() - a.date.getTime();
+                case 'date-asc':
+                    return a.date.getTime() - b.date.getTime();
+                case 'total-desc':
+                    return this.calculateTotal(b) - this.calculateTotal(a);
+                case 'total-asc':
+                    return this.calculateTotal(a) - this.calculateTotal(b);
+                case 'livingRoom-desc':
+                    return b.livingRoom - a.livingRoom;
+                case 'bedroom-desc':
+                    return b.bedroom - a.bedroom;
+                case 'kitchen-desc':
+                    return b.kitchen - a.kitchen;
+                case 'bathroom-desc':
+                    return b.bathroom - a.bathroom;
+                default:
+                    return 0;
+            }
+        });
+
+        // Limit records based on current page and pagination size
+        return records.slice((this.currentPage() - 1) * this.paginationSize(), this.currentPage() * this.paginationSize());
+    });
+
+    protected totalPages = computed(() => {
+        return Math.ceil(this.records().length / this.paginationSize());
+    });
+
+    protected pageOfText = computed(() => {
+        const key = 'HOME.PAGE_OF';
+        const template = this.languageService.translate(key);
+        return template
+            .replace('{current}', this.currentPage().toString())
+            .replace('{total}', this.totalPages().toString());
+    });
+
+    protected showingRecordsText = computed(() => {
+        const key = 'HOME.SHOWING_RECORDS';
+        const template = this.languageService.translate(key);
+        return template
+            .replace('{current}', this.displayedRecords().length.toString())
+            .replace('{total}', this.records().length.toString());
+    });
 
     protected chartData = computed<ChartConfiguration['data']>(() => {
         const recs = this.records();
@@ -209,6 +271,27 @@ export class HeatingComponent {
 
     protected calculateTotal(record: HeatingRecord): number {
         return record.livingRoom + record.bedroom + record.kitchen + record.bathroom;
+    }
+
+    protected nextPage() {
+        if (this.currentPage() < this.totalPages()) {
+            this.currentPage.update(page => page + 1);
+        }
+    }
+
+    protected prevPage() {
+        if (this.currentPage() > 1) {
+            this.currentPage.update(page => page - 1);
+        }
+    }
+
+    protected onPaginationSizeChange(size: number) {
+        this.paginationSize.set(size);
+        this.currentPage.set(1); // Reset to first page when changing page size
+    }
+
+    protected setSortOption(option: unknown) {
+        this.sortOption.set(option as typeof this.sortOption extends () => infer T ? T : never);
     }
 
     protected saveRecord() {

@@ -9,7 +9,7 @@ import { LanguageSwitcherComponent } from '../components/language-switcher/langu
 import { STORAGE_SERVICE } from '../services/storage.service';
 import { FileStorageService } from '../services/file-storage.service';
 import { LanguageService } from '../services/language.service';
-import { LucideAngularModule, ArrowLeft, Download, Upload, Edit, Trash2, Calendar, CheckCircle } from 'lucide-angular';
+import { LucideAngularModule, ArrowLeft, Download, Upload, Edit, Trash2, Calendar, CheckCircle, ChevronDown, ChevronLeft, ChevronRight } from 'lucide-angular';
 import { ConsumptionInputComponent, type ConsumptionGroup, type ConsumptionData } from '../shared/consumption-input/consumption-input.component';
 import { DatePickerComponent } from '../shared/date-picker/date-picker.component';
 
@@ -44,6 +44,9 @@ export class WaterComponent {
   protected readonly TrashIcon = Trash2;
   protected readonly SearchIcon = Calendar;
   protected readonly CheckCircleIcon = CheckCircle;
+  protected readonly ChevronDownIcon = ChevronDown;
+  protected readonly ChevronLeftIcon = ChevronLeft;
+  protected readonly ChevronRightIcon = ChevronRight;
 
   protected readonly maxDate = new Date().toISOString().split('T')[0];
 
@@ -61,6 +64,11 @@ export class WaterComponent {
   protected searchYear = signal<number | null>(null);
   protected searchMonth = signal<number | null>(null);
   protected editingRecord = signal<ConsumptionRecord | null>(null);
+
+  // Pagination
+  protected currentPage = signal<number>(1);
+  protected paginationSize = signal<number>(5);
+  protected sortOption = signal<'date-desc' | 'date-asc' | 'total-desc' | 'total-asc' | 'kitchen-desc' | 'kitchen-asc' | 'bathroom-desc' | 'bathroom-asc'>('date-desc');
 
   protected availableYears = computed(() => {
     const years = new Set(this.records().map(r => new Date(r.date).getFullYear()));
@@ -91,6 +99,50 @@ export class WaterComponent {
     return records;
   });
 
+  protected displayedRecords = computed(() => {
+    const records = [...this.filteredRecords()];
+    const sortOption = this.sortOption();
+
+    // Sort records
+    records.sort((a, b) => {
+      switch (sortOption) {
+        case 'date-desc':
+          return b.date.getTime() - a.date.getTime();
+        case 'date-asc':
+          return a.date.getTime() - b.date.getTime();
+        case 'total-desc':
+          return this.calculateTotal(b) - this.calculateTotal(a);
+        case 'total-asc':
+          return this.calculateTotal(a) - this.calculateTotal(b);
+        case 'kitchen-desc':
+          return this.calculateKitchenTotal(b) - this.calculateKitchenTotal(a);
+        case 'kitchen-asc':
+          return this.calculateKitchenTotal(a) - this.calculateKitchenTotal(b);
+        case 'bathroom-desc':
+          return this.calculateBathroomTotal(b) - this.calculateBathroomTotal(a);
+        case 'bathroom-asc':
+          return this.calculateBathroomTotal(a) - this.calculateBathroomTotal(b);
+        default:
+          return 0;
+      }
+    });
+
+    // Limit records based on current page and pagination size
+    return records.slice((this.currentPage() - 1) * this.paginationSize(), this.currentPage() * this.paginationSize());
+  });
+
+  protected totalPages = computed(() => {
+    return Math.ceil(this.filteredRecords().length / this.paginationSize());
+  });
+
+  protected pageOfText = computed(() => {
+    const key = 'HOME.PAGE_OF';
+    const template = this.languageService.translate(key);
+    return template
+      .replace('{current}', this.currentPage().toString())
+      .replace('{total}', this.totalPages().toString());
+  });
+
   protected dateExists = computed(() => {
     if (this.editingRecord()) return false; // Don't warn when editing
     const selected = this.selectedDate();
@@ -113,6 +165,14 @@ export class WaterComponent {
   );
 
   protected currentLang = computed(() => this.languageService.currentLang());
+
+  protected showingRecordsText = computed(() => {
+    const key = 'HOME.SHOWING_RECORDS';
+    const template = this.languageService.translate(key);
+    return template
+      .replace('{current}', this.displayedRecords().length.toString())
+      .replace('{total}', this.filteredRecords().length.toString());
+  });
 
   protected consumptionGroups = computed<ConsumptionGroup[]>(() => [
     {
@@ -287,6 +347,35 @@ export class WaterComponent {
 
   protected calculateTotal(record: ConsumptionRecord): number {
     return record.kitchenWarm + record.kitchenCold + record.bathroomWarm + record.bathroomCold;
+  }
+
+  protected calculateKitchenTotal(record: ConsumptionRecord): number {
+    return record.kitchenWarm + record.kitchenCold;
+  }
+
+  protected calculateBathroomTotal(record: ConsumptionRecord): number {
+    return record.bathroomWarm + record.bathroomCold;
+  }
+
+  protected nextPage() {
+    if (this.currentPage() < this.totalPages()) {
+      this.currentPage.update(page => page + 1);
+    }
+  }
+
+  protected prevPage() {
+    if (this.currentPage() > 1) {
+      this.currentPage.update(page => page - 1);
+    }
+  }
+
+  protected onPaginationSizeChange(size: number) {
+    this.paginationSize.set(size);
+    this.currentPage.set(1); // Reset to first page when changing page size
+  }
+
+  protected setSortOption(option: unknown) {
+    this.sortOption.set(option as typeof this.sortOption extends () => infer T ? T : never);
   }
 
   protected editRecord(record: ConsumptionRecord) {

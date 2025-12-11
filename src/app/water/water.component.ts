@@ -9,7 +9,7 @@ import { LanguageSwitcherComponent } from '../components/language-switcher/langu
 import { STORAGE_SERVICE } from '../services/storage.service';
 import { FileStorageService } from '../services/file-storage.service';
 import { LanguageService } from '../services/language.service';
-import { LucideAngularModule, ArrowLeft, Download, Upload, Edit, Trash2, Calendar, CheckCircle, ChevronDown, ChevronLeft, ChevronRight } from 'lucide-angular';
+import { LucideAngularModule, ArrowLeft, Download, Upload, Edit, Trash2, Calendar, CheckCircle, ChevronDown, ChevronLeft, ChevronRight, Info } from 'lucide-angular';
 import { ConsumptionInputComponent, type ConsumptionGroup, type ConsumptionData } from '../shared/consumption-input/consumption-input.component';
 import { DatePickerComponent } from '../shared/date-picker/date-picker.component';
 
@@ -47,12 +47,15 @@ export class WaterComponent {
   protected readonly ChevronDownIcon = ChevronDown;
   protected readonly ChevronLeftIcon = ChevronLeft;
   protected readonly ChevronRightIcon = ChevronRight;
+  protected readonly InfoIcon = Info;
 
   protected readonly maxDate = new Date().toISOString().split('T')[0];
 
   protected records = signal<ConsumptionRecord[]>([]);
   protected selectedDate = signal<string>('');
   protected showSuccessModal = signal(false);
+  protected showDeleteModal = signal(false);
+  protected recordToDelete = signal<ConsumptionRecord | null>(null);
 
   protected chartView = signal<ChartView>('total');
   protected kitchenWarm = signal<number | null>(null);
@@ -391,7 +394,13 @@ export class WaterComponent {
   }
 
   protected deleteRecord(record: ConsumptionRecord) {
-    if (confirm('Are you sure you want to delete this record?')) {
+    this.recordToDelete.set(record);
+    this.showDeleteModal.set(true);
+  }
+
+  protected confirmDelete() {
+    const record = this.recordToDelete();
+    if (record) {
       this.records.update(records => records.filter(r => r.date.getTime() !== record.date.getTime()));
       void this.storage.save('water_consumption_records', this.records());
 
@@ -400,6 +409,13 @@ export class WaterComponent {
         this.cancelEdit();
       }
     }
+    this.showDeleteModal.set(false);
+    this.recordToDelete.set(null);
+  }
+
+  protected cancelDelete() {
+    this.showDeleteModal.set(false);
+    this.recordToDelete.set(null);
   }
 
   protected cancelEdit() {

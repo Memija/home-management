@@ -36,6 +36,8 @@ export class FamilyComponent {
     protected isEditing = signal(false);
     protected showSaveConfirmation = signal(false);
     protected showAddMemberForm = signal(false);
+    protected showDeleteModal = signal(false);
+    protected memberToDelete = signal<string | null>(null);
 
     // Individual member edit state
     protected editingMemberId = signal<string | null>(null);
@@ -105,7 +107,22 @@ export class FamilyComponent {
     }
 
     removeMember(id: string) {
-        this.draftMembers.update(members => members.filter(m => m.id !== id));
+        this.memberToDelete.set(id);
+        this.showDeleteModal.set(true);
+    }
+
+    confirmDelete() {
+        const memberId = this.memberToDelete();
+        if (memberId) {
+            this.draftMembers.update(members => members.filter(m => m.id !== memberId));
+        }
+        this.showDeleteModal.set(false);
+        this.memberToDelete.set(null);
+    }
+
+    cancelDelete() {
+        this.showDeleteModal.set(false);
+        this.memberToDelete.set(null);
     }
 
     selectAvatar(avatar: string) {

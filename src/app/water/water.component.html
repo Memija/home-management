@@ -96,6 +96,10 @@
     @if (filteredRecords().length === 0) {
     <p>{{ 'HOME.NO_RECORDS' | translate }}</p>
     } @else {
+    <p class="liters-note">
+      <lucide-icon [img]="InfoIcon" size="14"></lucide-icon>
+      {{ 'HOME.ALL_VALUES_IN_LITERS' | translate }}
+    </p>
     <div class="history-list">
       <ul>
         @for (record of displayedRecords(); track record.date) {
@@ -103,23 +107,34 @@
           <div class="record-header">
             <span class="date">{{ record.date | date:'fullDate':undefined:currentLang() }}</span>
             <div class="record-actions">
-              <span class="total">{{ 'HOME.TOTAL' | translate }}: {{ calculateTotal(record) }} L</span>
-              <button type="button" class="edit-member-btn" (click)="editRecord(record)" title="Edit">
+              <span class="total">{{ 'HOME.TOTAL' | translate }}: {{ calculateTotal(record) }}</span>
+              <button type="button" class="edit-member-btn" (click)="editRecord(record)"
+                title="{{ 'HOME.EDIT_TOOLTIP' | translate }}">
                 <lucide-icon [img]="EditIcon" size="16"></lucide-icon>
               </button>
-              <button type="button" class="remove-btn" (click)="deleteRecord(record)" title="Delete">
+              <button type="button" class="remove-btn" (click)="deleteRecord(record)"
+                title="{{ 'HOME.DELETE_TOOLTIP' | translate }}">
                 <lucide-icon [img]="TrashIcon" size="16"></lucide-icon>
               </button>
             </div>
           </div>
           <div class="record-details">
-            <div class="location">
-              <strong>{{ 'HOME.KITCHEN' | translate }}:</strong> {{ 'HOME.WARM_WATER' | translate }}:
-              {{ record.kitchenWarm }} L | {{ 'HOME.COLD_WATER' | translate }}: {{ record.kitchenCold }} L
+            <div class="consumption-row">
+              <strong>{{ 'HOME.KITCHEN' | translate }}:</strong>
+              <span class="warm-water">{{ 'HOME.WARM_WATER' | translate }}: {{ record.kitchenWarm }}</span>
+              <span class="cold-water">{{ 'HOME.COLD_WATER' | translate }}: {{ record.kitchenCold }}</span>
             </div>
-            <div class="location">
-              <strong>{{ 'HOME.BATHROOM' | translate }}:</strong> {{ 'HOME.WARM_WATER' | translate }}:
-              {{ record.bathroomWarm }} L | {{ 'HOME.COLD_WATER' | translate }}: {{ record.bathroomCold }} L
+            <div class="consumption-row">
+              <strong>{{ 'HOME.BATHROOM' | translate }}:</strong>
+              <span class="warm-water">{{ 'HOME.WARM_WATER' | translate }}: {{ record.bathroomWarm }}</span>
+              <span class="cold-water">{{ 'HOME.COLD_WATER' | translate }}: {{ record.bathroomCold }}</span>
+            </div>
+            <div class="consumption-row combined-totals">
+              <span></span>
+              <span class="warm-water">{{ 'HOME.WARM_WATER' | translate }}: {{ record.kitchenWarm + record.bathroomWarm
+                }}</span>
+              <span class="cold-water">{{ 'HOME.COLD_WATER' | translate }}: {{ record.kitchenCold + record.bathroomCold
+                }}</span>
             </div>
           </div>
         </li>
@@ -175,6 +190,25 @@
     </div>
     <div class="modal-footer">
       <button class="btn-primary" (click)="closeSuccessModal()">OK</button>
+    </div>
+  </div>
+</div>
+}
+
+@if (showDeleteModal()) {
+<div class="modal-overlay" (click)="cancelDelete()">
+  <div class="modal-content" (click)="$event.stopPropagation()">
+    <div class="modal-header">
+      <lucide-icon [img]="TrashIcon" size="32" class="warning-icon"></lucide-icon>
+      <h3>{{ 'HOME.DELETE_CONFIRM_TITLE' | translate }}</h3>
+      <button class="close-btn" (click)="cancelDelete()">&times;</button>
+    </div>
+    <div class="modal-body">
+      <p>{{ 'HOME.DELETE_CONFIRM_MESSAGE' | translate }}</p>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-secondary" (click)="cancelDelete()">{{ 'HOME.CANCEL' | translate }}</button>
+      <button class="btn-danger" (click)="confirmDelete()">{{ 'HOME.DELETE_BUTTON' | translate }}</button>
     </div>
   </div>
 </div>

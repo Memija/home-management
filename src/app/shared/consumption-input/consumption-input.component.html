@@ -1,9 +1,6 @@
 <div class="input-section">
   <div class="section-header">
     <h2>{{ editingMode() ? (editTitleKey() | translate) : (titleKey() | translate) }}</h2>
-    @if (editingMode()) {
-    <button type="button" class="cancel-btn" (click)="onCancel()">{{ cancelKey() | translate }}</button>
-    }
   </div>
 
   <div class="date-selection">
@@ -44,7 +41,12 @@
   </div>
   }
 
-  <button type="button" (click)="onSave()">
-    {{ editingMode() ? (updateKey() | translate) : (saveKey() | translate) }}
-  </button>
+  <div class="button-group">
+    @if (editingMode()) {
+    <button type="button" class="cancel-btn" (click)="onCancel()">{{ cancelKey() | translate }}</button>
+    }
+    <button type="button" (click)="onSave()">
+      {{ editingMode() ? (updateKey() | translate) : (saveKey() | translate) }}
+    </button>
+  </div>
 </div>

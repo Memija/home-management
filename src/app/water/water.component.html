@@ -195,21 +195,7 @@
 </div>
 }
 
-@if (showDeleteModal()) {
-<div class="modal-overlay" (click)="cancelDelete()">
-  <div class="modal-content" (click)="$event.stopPropagation()">
-    <div class="modal-header">
-      <lucide-icon [img]="TrashIcon" size="32" class="warning-icon"></lucide-icon>
-      <h3>{{ 'HOME.DELETE_CONFIRM_TITLE' | translate }}</h3>
-      <button class="close-btn" (click)="cancelDelete()">&times;</button>
-    </div>
-    <div class="modal-body">
-      <p>{{ 'HOME.DELETE_CONFIRM_MESSAGE' | translate }}</p>
-    </div>
-    <div class="modal-footer">
-      <button class="btn-secondary" (click)="cancelDelete()">{{ 'HOME.CANCEL' | translate }}</button>
-      <button class="btn-danger" (click)="confirmDelete()">{{ 'HOME.DELETE_BUTTON' | translate }}</button>
-    </div>
-  </div>
-</div>
-}
+<app-delete-confirmation-modal [show]="showDeleteModal()" [titleKey]="'HOME.DELETE_CONFIRM_TITLE'"
+  [messageKey]="'HOME.DELETE_CONFIRM_MESSAGE'" [cancelKey]="'HOME.CANCEL'" [deleteKey]="'HOME.DELETE_BUTTON'"
+  [icon]="TrashIcon" (confirm)="confirmDelete()" (cancel)="cancelDelete()">
+</app-delete-confirmation-modal>

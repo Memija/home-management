@@ -6,11 +6,12 @@ import { HouseholdService, HouseholdMember } from '../../services/household.serv
 import { LanguageService } from '../../services/language.service';
 import { FileStorageService } from '../../services/file-storage.service';
 import { TranslatePipe } from '../../pipes/translate.pipe';
+import { DeleteConfirmationModalComponent } from '../../shared/delete-confirmation-modal/delete-confirmation-modal.component';
 
 @Component({
     selector: 'app-family',
     standalone: true,
-    imports: [CommonModule, FormsModule, LucideAngularModule, TranslatePipe],
+    imports: [CommonModule, FormsModule, LucideAngularModule, TranslatePipe, DeleteConfirmationModalComponent],
     templateUrl: './family.component.html',
     styleUrl: './family.component.scss'
 })

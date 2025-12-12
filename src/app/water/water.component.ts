@@ -12,6 +12,7 @@ import { LanguageService } from '../services/language.service';
 import { LucideAngularModule, ArrowLeft, Download, Upload, Edit, Trash2, Calendar, CheckCircle, ChevronDown, ChevronLeft, ChevronRight, Info } from 'lucide-angular';
 import { ConsumptionInputComponent, type ConsumptionGroup, type ConsumptionData } from '../shared/consumption-input/consumption-input.component';
 import { DatePickerComponent } from '../shared/date-picker/date-picker.component';
+import { DeleteConfirmationModalComponent } from '../shared/delete-confirmation-modal/delete-confirmation-modal.component';
 
 Chart.register(...registerables);
 
@@ -28,7 +29,7 @@ type ChartView = 'total' | 'by-room' | 'by-type' | 'detailed';
 @Component({
   selector: 'app-water',
   standalone: true,
-  imports: [FormsModule, DatePipe, BaseChartDirective, RouterLink, TranslatePipe, LucideAngularModule, ConsumptionInputComponent, DatePickerComponent],
+  imports: [FormsModule, DatePipe, BaseChartDirective, RouterLink, TranslatePipe, LucideAngularModule, ConsumptionInputComponent, DatePickerComponent, DeleteConfirmationModalComponent],
   templateUrl: './water.component.html',
   styleUrl: './water.component.scss'
 })

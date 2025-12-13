@@ -143,6 +143,73 @@ Prefer:
 - Data display components with sorting/filtering
 - Service methods for CRUD operations
 
+## File Size & Component Extraction
+
+### Keep Files Small and Focused
+
+**CRITICAL RULE:** Large files are hard to maintain, test, and understand. Extract functionality early and often.
+
+#### File Size Guidelines
+
+- **Components (TypeScript):** Target < 300 lines, max 500 lines
+- **Templates (HTML):** Target < 200 lines, max 300 lines  
+- **Stylesheets (SCSS):** Target < 300 lines, max 500 lines
+- **Services:** Target < 400 lines, max 600 lines
+
+#### When to Extract
+
+Extract to a new component/service when:
+
+1. **File exceeds target size** - Don't wait for max size
+2. **Distinct sections** - Code has clear, separable responsibilities
+3. **Reusability potential** - Section could be used elsewhere
+4. **Testing complexity** - Too many test cases for one file
+5. **Multiple concerns** - Component handles more than one main purpose
+
+#### Extraction Checklist
+
+Before extracting code:
+
+- [ ] **Identify boundaries** - Find natural separation points
+- [ ] **Name clearly** - New component should have descriptive, focused name
+- [ ] **Define interface** - Inputs and outputs should be minimal and clear
+- [ ] **Move related code** - Include all related logic, styles, and templates
+- [ ] **Update tests** - Create tests for new component
+- [ ] **Verify functionality** - Ensure everything works after extraction
+
+#### Example: Detailed Records Extraction
+
+Good example from this project:
+
+**Before:** Water component was 520 lines with records display, filtering, sorting, pagination, chart logic, and data management.
+
+**After:**
+
+- Water component: ~260 lines (chart + data management)
+- Detailed records component: ~200 lines (display + filtering + pagination)
+
+**Benefits:**
+
+- Each component has single responsibility
+- Detailed records component is reusable across water, home, heating
+- Easier to test and maintain
+- Clearer code organization
+
+#### Component Extraction Priority
+
+1. **UI sections** that are self-contained (modals, lists, forms)
+2. **Repeated markup** across multiple components
+3. **Complex logic** that can be isolated (filtering, sorting, validation)
+4. **Feature-specific code** that might grow (wizards, multi-step forms)
+
+### Naming Extracted Components
+
+Use descriptive names that reflect single responsibility:
+
+✅ **Good:** `detailed-records`, `delete-confirmation-modal`, `consumption-input`
+❌ **Bad:** `records`, `modal`, `input` (too generic)
+❌ **Bad:** `water-records-list-with-filters` (too specific, should be generic)
+
 ---
 
 **Remember:** Every line of duplicated code is a future maintenance burden. Code reuse isn't just about reducing lines—it's about creating a maintainable, consistent, and scalable codebase.

@@ -1,7 +1,5 @@
 import { Component, signal, computed, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { BaseChartDirective } from 'ng2-charts';
-import { Chart, ChartConfiguration, registerables } from 'chart.js';
 import { RouterLink } from '@angular/router';
 import { TranslatePipe } from '../pipes/translate.pipe';
 import { LanguageSwitcherComponent } from '../components/language-switcher/language-switcher.component';
@@ -12,16 +10,12 @@ import { LucideAngularModule, ArrowLeft, Download, Upload, CheckCircle, Trash2 }
 import { ConsumptionInputComponent, type ConsumptionGroup, type ConsumptionData } from '../shared/consumption-input/consumption-input.component';
 import { DeleteConfirmationModalComponent } from '../shared/delete-confirmation-modal/delete-confirmation-modal.component';
 import { DetailedRecordsComponent, type ConsumptionRecord } from '../shared/detailed-records/detailed-records.component';
-
-
-Chart.register(...registerables);
-
-type ChartView = 'total' | 'by-room' | 'by-type' | 'detailed';
+import { ConsumptionChartComponent, type ChartView } from '../shared/consumption-chart/consumption-chart.component';
 
 @Component({
   selector: 'app-water',
   standalone: true,
-  imports: [FormsModule, BaseChartDirective, RouterLink, TranslatePipe, LucideAngularModule, ConsumptionInputComponent, DeleteConfirmationModalComponent, DetailedRecordsComponent],
+  imports: [FormsModule, RouterLink, TranslatePipe, LucideAngularModule, ConsumptionInputComponent, DeleteConfirmationModalComponent, DetailedRecordsComponent, ConsumptionChartComponent],
   templateUrl: './water.component.html',
   styleUrl: './water.component.scss'
 })
@@ -73,8 +67,6 @@ export class WaterComponent {
     this.bathroomCold() !== null
   );
 
-  protected currentLang = computed(() => this.languageService.currentLang());
-
   protected consumptionGroups = computed<ConsumptionGroup[]>(() => [
     {
       title: 'HOME.KITCHEN',
@@ -92,124 +84,8 @@ export class WaterComponent {
     }
   ]);
 
-  protected chartData = computed<ChartConfiguration['data']>(() => {
-    const recs = this.records();
-    const labels = recs.map(r => new Date(r.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }));
-    const view = this.chartView();
-
-    switch (view) {
-      case 'total':
-        return {
-          labels,
-          datasets: [{
-            label: 'Total Weekly Consumption',
-            data: recs.map(r => this.calculateTotal(r)),
-            borderColor: '#007bff',
-            backgroundColor: 'rgba(0, 123, 255, 0.1)',
-            fill: true,
-            tension: 0.4
-          }]
-        };
-      case 'by-room':
-        return {
-          labels,
-          datasets: [
-            {
-              label: 'Kitchen Total',
-              data: recs.map(r => r.kitchenWarm + r.kitchenCold),
-              borderColor: '#28a745',
-              backgroundColor: 'rgba(40, 167, 69, 0.1)',
-              fill: true,
-              tension: 0.4
-            },
-            {
-              label: 'Bathroom Total',
-              data: recs.map(r => r.bathroomWarm + r.bathroomCold),
-              borderColor: '#17a2b8',
-              backgroundColor: 'rgba(23, 162, 184, 0.1)',
-              fill: true,
-              tension: 0.4
-            }
-          ]
-        };
-      case 'by-type':
-        return {
-          labels,
-          datasets: [
-            {
-              label: 'Warm Water Total',
-              data: recs.map(r => r.kitchenWarm + r.bathroomWarm),
-              borderColor: '#dc3545',
-              backgroundColor: 'rgba(220, 53, 69, 0.1)',
-              fill: true,
-              tension: 0.4
-            },
-            {
-              label: 'Cold Water Total',
-              data: recs.map(r => r.kitchenCold + r.bathroomCold),
-              borderColor: '#6c757d',
-              backgroundColor: 'rgba(108, 117, 125, 0.1)',
-              fill: true,
-              tension: 0.4
-            }
-          ]
-        };
-      case 'detailed':
-        return {
-          labels,
-          datasets: [
-            {
-              label: 'Kitchen Warm',
-              data: recs.map(r => r.kitchenWarm),
-              borderColor: '#ff6384',
-              backgroundColor: 'rgba(255, 99, 132, 0.1)',
-              fill: false,
-              tension: 0.4
-            },
-            {
-              label: 'Kitchen Cold',
-              data: recs.map(r => r.kitchenCold),
-              borderColor: '#36a2eb',
-              backgroundColor: 'rgba(54, 162, 235, 0.1)',
-              fill: false,
-              tension: 0.4
-            },
-            {
-              label: 'Bathroom Warm',
-              data: recs.map(r => r.bathroomWarm),
-              borderColor: '#ffcd56',
-              backgroundColor: 'rgba(255, 205, 86, 0.1)',
-              fill: false,
-              tension: 0.4
-            },
-            {
-              label: 'Bathroom Cold',
-              data: recs.map(r => r.bathroomCold),
-              borderColor: '#4bc0c0',
-              backgroundColor: 'rgba(75, 192, 192, 0.1)',
-              fill: false,
-              tension: 0.4
-            }
-          ]
-        };
-    }
-  });
-
-  protected chartOptions: ChartConfiguration['options'] = {
-    responsive: true,
-    maintainAspectRatio: false,
-    plugins: {
-      legend: { display: true, position: 'top' },
-      tooltip: {
-        callbacks: {
-          label: (context) => `${context.dataset.label}: ${context.parsed.y} L`
-        }
-      }
-    },
-    scales: {
-      y: { beginAtZero: true, title: { display: true, text: 'Liters' } },
-      x: { title: { display: true, text: 'Date' } }
-    }
+  protected onChartViewChange = (view: ChartView): void => {
+    this.chartView.set(view);
   };
 
   constructor() {

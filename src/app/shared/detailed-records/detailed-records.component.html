@@ -11,43 +11,52 @@
       }
       @if (showYearMonth()) {
       <div class="filter-box">
-        <select id="year-filter" name="year-filter" [ngModel]="searchYear()"
-          (ngModelChange)="searchYear.set($event ? +$event : null)" aria-label="Filter by year">
-          <option [value]="null">{{ 'HOME.FILTER_YEAR' | translate }}</option>
-          @for (year of availableYears(); track year) {
-          <option [value]="year">{{ year }}</option>
-          }
-        </select>
-        <select id="month-filter" name="month-filter" [ngModel]="searchMonth()"
-          (ngModelChange)="searchMonth.set($event !== 'null' ? +$event : null)" aria-label="Filter by month">
-          <option value="null">{{ 'HOME.FILTER_MONTH' | translate }}</option>
-          <option value="0">{{ 'HOME.MONTHS.JANUARY' | translate }}</option>
-          <option value="1">{{ 'HOME.MONTHS.FEBRUARY' | translate }}</option>
-          <option value="2">{{ 'HOME.MONTHS.MARCH' | translate }}</option>
-          <option value="3">{{ 'HOME.MONTHS.APRIL' | translate }}</option>
-          <option value="4">{{ 'HOME.MONTHS.MAY' | translate }}</option>
-          <option value="5">{{ 'HOME.MONTHS.JUNE' | translate }}</option>
-          <option value="6">{{ 'HOME.MONTHS.JULY' | translate }}</option>
-          <option value="7">{{ 'HOME.MONTHS.AUGUST' | translate }}</option>
-          <option value="8">{{ 'HOME.MONTHS.SEPTEMBER' | translate }}</option>
-          <option value="9">{{ 'HOME.MONTHS.OCTOBER' | translate }}</option>
-          <option value="10">{{ 'HOME.MONTHS.NOVEMBER' | translate }}</option>
-          <option value="11">{{ 'HOME.MONTHS.DECEMBER' | translate }}</option>
-        </select>
+        <div class="select-with-icon">
+          <lucide-icon [img]="CalendarDaysIcon" size="16"></lucide-icon>
+          <select id="year-filter" name="year-filter" [ngModel]="searchYear()"
+            (ngModelChange)="searchYear.set($event ? +$event : null)" aria-label="Filter by year">
+            <option [value]="null">{{ 'HOME.FILTER_YEAR' | translate }}</option>
+            @for (year of availableYears(); track year) {
+            <option [value]="year">{{ year }}</option>
+            }
+          </select>
+        </div>
+        <div class="select-with-icon">
+          <lucide-icon [img]="CalendarDaysIcon" size="16"></lucide-icon>
+          <select id="month-filter" name="month-filter" [ngModel]="searchMonth()"
+            (ngModelChange)="searchMonth.set($event !== 'null' ? +$event : null)" aria-label="Filter by month">
+            <option value="null">{{ 'HOME.FILTER_MONTH' | translate }}</option>
+            <option value="0">{{ 'HOME.MONTHS.JANUARY' | translate }}</option>
+            <option value="1">{{ 'HOME.MONTHS.FEBRUARY' | translate }}</option>
+            <option value="2">{{ 'HOME.MONTHS.MARCH' | translate }}</option>
+            <option value="3">{{ 'HOME.MONTHS.APRIL' | translate }}</option>
+            <option value="4">{{ 'HOME.MONTHS.MAY' | translate }}</option>
+            <option value="5">{{ 'HOME.MONTHS.JUNE' | translate }}</option>
+            <option value="6">{{ 'HOME.MONTHS.JULY' | translate }}</option>
+            <option value="7">{{ 'HOME.MONTHS.AUGUST' | translate }}</option>
+            <option value="8">{{ 'HOME.MONTHS.SEPTEMBER' | translate }}</option>
+            <option value="9">{{ 'HOME.MONTHS.OCTOBER' | translate }}</option>
+            <option value="10">{{ 'HOME.MONTHS.NOVEMBER' | translate }}</option>
+            <option value="11">{{ 'HOME.MONTHS.DECEMBER' | translate }}</option>
+          </select>
+        </div>
       </div>
       }
       <div class="filter-box">
-        <select id="sort-records" name="sort-records" [ngModel]="sortOption()" (ngModelChange)="setSortOption($event)"
-          aria-label="Sort records">
-          <option value="date-desc">↓ {{ 'HOME.SORT.DATE_DESC' | translate }}</option>
-          <option value="date-asc">↑ {{ 'HOME.SORT.DATE_ASC' | translate }}</option>
-          <option value="total-desc">↓ {{ 'HOME.SORT.TOTAL_DESC' | translate }}</option>
-          <option value="total-asc">↑ {{ 'HOME.SORT.TOTAL_ASC' | translate }}</option>
-          <option value="kitchen-desc">↓ {{ 'HOME.SORT.KITCHEN_DESC' | translate }}</option>
-          <option value="kitchen-asc">↑ {{ 'HOME.SORT.KITCHEN_ASC' | translate }}</option>
-          <option value="bathroom-desc">↓ {{ 'HOME.SORT.BATHROOM_DESC' | translate }}</option>
-          <option value="bathroom-asc">↑ {{ 'HOME.SORT.BATHROOM_ASC' | translate }}</option>
-        </select>
+        <div class="select-with-icon">
+          <lucide-icon [img]="ArrowUpDownIcon" size="16"></lucide-icon>
+          <select id="sort-records" name="sort-records" [ngModel]="sortOption()" (ngModelChange)="setSortOption($event)"
+            aria-label="Sort records">
+            <option value="date-desc">↓ {{ 'HOME.SORT.DATE_DESC' | translate }}</option>
+            <option value="date-asc">↑ {{ 'HOME.SORT.DATE_ASC' | translate }}</option>
+            <option value="total-desc">↓ {{ 'HOME.SORT.TOTAL_DESC' | translate }}</option>
+            <option value="total-asc">↑ {{ 'HOME.SORT.TOTAL_ASC' | translate }}</option>
+            <option value="kitchen-desc">↓ {{ 'HOME.SORT.KITCHEN_DESC' | translate }}</option>
+            <option value="kitchen-asc">↑ {{ 'HOME.SORT.KITCHEN_ASC' | translate }}</option>
+            <option value="bathroom-desc">↓ {{ 'HOME.SORT.BATHROOM_DESC' | translate }}</option>
+            <option value="bathroom-asc">↑ {{ 'HOME.SORT.BATHROOM_ASC' | translate }}</option>
+          </select>
+        </div>
       </div>
     </div>
   </div>

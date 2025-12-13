@@ -18,6 +18,24 @@ export const en = {
         EXPORT: 'Export Data',
         IMPORT: 'Import Data'
     },
+    CHART: {
+        AXIS_DATE: 'Date',
+        AXIS_LITERS: 'Liters',
+        AXIS_KWH: 'kWh',
+        TOTAL_WEEKLY_CONSUMPTION: 'Total Weekly Consumption',
+        KITCHEN_TOTAL: 'Kitchen Total',
+        BATHROOM_TOTAL: 'Bathroom Total',
+        WARM_WATER_TOTAL: 'Warm Water Total',
+        COLD_WATER_TOTAL: 'Cold Water Total',
+        KITCHEN_WARM: 'Kitchen Warm',
+        KITCHEN_COLD: 'Kitchen Cold',
+        BATHROOM_WARM: 'Bathroom Warm',
+        BATHROOM_COLD: 'Bathroom Cold',
+        LIVING_ROOM: 'Living Room',
+        BEDROOM: 'Bedroom',
+        KITCHEN: 'Kitchen',
+        BATHROOM: 'Bathroom'
+    },
     HEATING: {
         TITLE: 'Heating Consumption Tracker',
         EXPORT: 'Export Data',

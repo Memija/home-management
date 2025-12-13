@@ -35,6 +35,19 @@
         display: flex;
         gap: 0.5rem;
 
+        .select-with-icon {
+          position: relative;
+          display: flex;
+          align-items: center;
+          gap: 0.5rem;
+
+          lucide-icon {
+            color: #6c757d;
+            flex-shrink: 0;
+            pointer-events: none;
+          }
+        }
+
         select {
           padding: 0.4rem 2rem 0.4rem 0.8rem;
           border: 1px solid #ced4da;
@@ -65,7 +78,6 @@
     font-size: 0.85rem;
     color: #6c757d;
     font-style: italic;
-    margin-bottom: 0rem;
     margin-top: 0rem;
     padding-left: 0.25rem;
 

@@ -1,7 +1,7 @@
 import { Component, signal, computed, input, output } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { DatePipe } from '@angular/common';
-import { LucideAngularModule, Edit, Trash2, Calendar, Info, ChevronDown, ChevronLeft, ChevronRight } from 'lucide-angular';
+import { LucideAngularModule, Edit, Trash2, Calendar, Info, ChevronDown, ChevronLeft, ChevronRight, CalendarDays, ArrowUpDown } from 'lucide-angular';
 import { TranslatePipe } from '../../pipes/translate.pipe';
 import { DatePickerComponent } from '../date-picker/date-picker.component';
 import { LanguageService } from '../../services/language.service';
@@ -35,6 +35,8 @@ export class DetailedRecordsComponent {
   protected readonly ChevronDownIcon = ChevronDown;
   protected readonly ChevronLeftIcon = ChevronLeft;
   protected readonly ChevronRightIcon = ChevronRight;
+  protected readonly CalendarDaysIcon = CalendarDays;
+  protected readonly ArrowUpDownIcon = ArrowUpDown;
 
   // Inputs
   records = input.required<ConsumptionRecord[]>();

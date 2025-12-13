@@ -19,28 +19,10 @@
     </div>
   </div>
 
-  @if (records().length > 0) {
-  <div class="chart-section">
-    <div class="chart-header">
-      <h2>{{ 'HOME.HISTORY_TITLE' | translate }}</h2>
-      <div class="chart-filters">
-        <button type="button" [class.active]="chartView() === 'total'" (click)="chartView.set('total')">
-          {{ 'HOME.FILTERS.TOTAL' | translate }}
-        </button>
-        <button type="button" [class.active]="chartView() === 'by-room'" (click)="chartView.set('by-room')">
-          {{ 'HOME.FILTERS.BY_ROOM' | translate }}
-        </button>
-        <button type="button" [class.active]="chartView() === 'detailed'" (click)="chartView.set('detailed')">
-          {{ 'HOME.FILTERS.DETAILED' | translate }}
-        </button>
-      </div>
-    </div>
-    <div class="chart-container">
-      <canvas baseChart [data]="chartData()" [options]="chartOptions" type="line">
-      </canvas>
-    </div>
-  </div>
-  }
+  <app-consumption-chart [data]="records()" [currentView]="chartView()" [onViewChange]="onChartViewChange"
+    [chartType]="'heating'">
+  </app-consumption-chart>
+
 
   <div class="history-section">
     <div class="section-header">

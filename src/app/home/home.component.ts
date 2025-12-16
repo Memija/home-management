@@ -8,7 +8,7 @@ import { STORAGE_SERVICE } from '../services/storage.service';
 import { FileStorageService } from '../services/file-storage.service';
 import { LanguageService } from '../services/language.service';
 import { LucideAngularModule, Settings, TriangleAlert, ChevronDown, ChevronLeft, ChevronRight } from 'lucide-angular';
-import { ConsumptionChartComponent, type ChartView } from '../shared/consumption-chart/consumption-chart.component';
+import { ConsumptionChartComponent, type ChartView, type DisplayMode } from '../shared/consumption-chart/consumption-chart.component';
 
 interface ConsumptionRecord {
   date: Date;
@@ -39,6 +39,7 @@ export class HomeComponent {
   protected records = signal<ConsumptionRecord[]>([]);
   protected nextSunday = signal<Date>(this.calculateNextSunday());
   protected chartView = signal<ChartView>('total');
+  protected displayMode = signal<DisplayMode>('total');
   protected kitchenWarm = signal<number | null>(null);
   protected kitchenCold = signal<number | null>(null);
   protected bathroomWarm = signal<number | null>(null);
@@ -117,6 +118,10 @@ export class HomeComponent {
 
   protected onChartViewChange = (view: ChartView): void => {
     this.chartView.set(view);
+  };
+
+  protected onDisplayModeChange = (mode: DisplayMode): void => {
+    this.displayMode.set(mode);
   };
 
   constructor() {

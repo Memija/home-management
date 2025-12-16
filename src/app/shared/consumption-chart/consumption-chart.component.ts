@@ -3,11 +3,12 @@ import { BaseChartDirective } from 'ng2-charts';
 import { Chart, ChartConfiguration, registerables } from 'chart.js';
 import { TranslatePipe } from '../../pipes/translate.pipe';
 import { LanguageService } from '../../services/language.service';
-import { LucideAngularModule, BarChart3, DoorOpen, Droplet, Grid3x3 } from 'lucide-angular';
+import { LucideAngularModule, BarChart3, DoorOpen, Droplet, Grid3x3, TrendingUp } from 'lucide-angular';
 
 Chart.register(...registerables);
 
 export type ChartView = 'total' | 'by-room' | 'by-type' | 'detailed';
+export type DisplayMode = 'total' | 'incremental';
 
 export type ChartDataPoint = Record<string, number | Date> & { date: Date };
 
@@ -28,6 +29,8 @@ export class ConsumptionChartComponent {
   currentView = input.required<ChartView>();
   @Input({ required: true }) onViewChange!: (view: ChartView) => void;
   @Input({ required: true }) chartType!: 'water' | 'home' | 'heating';
+  displayMode = input<DisplayMode>('total');
+  @Input({ required: true }) onDisplayModeChange!: (mode: DisplayMode) => void;
 
   private languageService = inject(LanguageService);
 
@@ -35,6 +38,7 @@ export class ConsumptionChartComponent {
   protected readonly DoorOpenIcon = DoorOpen;
   protected readonly DropletIcon = Droplet;
   protected readonly Grid3x3Icon = Grid3x3;
+  protected readonly TrendingUpIcon = TrendingUp;
 
   protected currentLang = computed(() => this.languageService.currentLang());
 
@@ -42,15 +46,19 @@ export class ConsumptionChartComponent {
     const recs = this.data;
     const labels = recs.map(r => new Date(r.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }));
     const view = this.currentView();
+    const mode = this.displayMode();
     // Reactive to language changes
     this.currentLang();
 
+    // Process data based on display mode
+    const processedData = mode === 'incremental' ? this.calculateIncrementalData(recs) : recs;
+
     if (this.chartType === 'water') {
-      return this.getWaterChartData(recs, labels, view);
+      return this.getWaterChartData(processedData, labels, view, mode);
     } else if (this.chartType === 'home') {
-      return this.getHomeChartData(recs, labels, view);
+      return this.getHomeChartData(processedData, labels, view, mode);
     } else {
-      return this.getHeatingChartData(recs, labels, view);
+      return this.getHeatingChartData(processedData, labels, view, mode);
     }
   });
 
@@ -75,13 +83,40 @@ export class ConsumptionChartComponent {
     };
   });
 
-  private getWaterChartData(recs: any[], labels: string[], view: ChartView): ChartConfiguration['data'] {
+  private calculateIncrementalData(recs: any[]): any[] {
+    if (recs.length <= 1) return recs;
+
+    const incrementalData: any[] = [];
+    for (let i = 1; i < recs.length; i++) {
+      const current = recs[i];
+      const previous = recs[i - 1];
+      const incremental: any = { date: current.date };
+
+      // Calculate differences for all numeric fields
+      Object.keys(current).forEach(key => {
+        if (key !== 'date' && typeof current[key] === 'number') {
+          incremental[key] = Math.max(0, (current[key] as number) - (previous[key] as number));
+        }
+      });
+
+      incrementalData.push(incremental);
+    }
+
+    return incrementalData;
+  }
+
+  private getWaterChartData(recs: any[], labels: string[], view: ChartView, mode: DisplayMode): ChartConfiguration['data'] {
+    // Adjust labels for incremental mode (skip first measurement)
+    const chartLabels = mode === 'incremental' ? labels.slice(1) : labels;
+    const chartTitle = mode === 'incremental'
+      ? this.languageService.translate('CHART.INCREMENTAL_CONSUMPTION')
+      : this.languageService.translate('CHART.TOTAL_WEEKLY_CONSUMPTION');
     switch (view) {
       case 'total':
         return {
-          labels,
+          labels: chartLabels,
           datasets: [{
-            label: this.languageService.translate('CHART.TOTAL_WEEKLY_CONSUMPTION'),
+            label: chartTitle,
             data: recs.map(r => (r['kitchenWarm'] as number) + (r['kitchenCold'] as number) + (r['bathroomWarm'] as number) + (r['bathroomCold'] as number)),
             borderColor: '#007bff',
             backgroundColor: 'rgba(0, 123, 255, 0.1)',
@@ -91,7 +126,7 @@ export class ConsumptionChartComponent {
         };
       case 'by-room':
         return {
-          labels,
+          labels: chartLabels,
           datasets: [
             {
               label: this.languageService.translate('CHART.KITCHEN_TOTAL'),
@@ -113,7 +148,7 @@ export class ConsumptionChartComponent {
         };
       case 'by-type':
         return {
-          labels,
+          labels: chartLabels,
           datasets: [
             {
               label: this.languageService.translate('CHART.WARM_WATER_TOTAL'),
@@ -135,7 +170,7 @@ export class ConsumptionChartComponent {
         };
       case 'detailed':
         return {
-          labels,
+          labels: chartLabels,
           datasets: [
             {
               label: this.languageService.translate('CHART.KITCHEN_WARM'),
@@ -174,18 +209,23 @@ export class ConsumptionChartComponent {
     }
   }
 
-  private getHomeChartData(recs: any[], labels: string[], view: ChartView): ChartConfiguration['data'] {
+  private getHomeChartData(recs: any[], labels: string[], view: ChartView, mode: DisplayMode): ChartConfiguration['data'] {
     // Home component uses same structure as water
-    return this.getWaterChartData(recs, labels, view);
+    return this.getWaterChartData(recs, labels, view, mode);
   }
 
-  private getHeatingChartData(recs: any[], labels: string[], view: ChartView): ChartConfiguration['data'] {
+  private getHeatingChartData(recs: any[], labels: string[], view: ChartView, mode: DisplayMode): ChartConfiguration['data'] {
+    // Adjust labels for incremental mode (skip first measurement)
+    const chartLabels = mode === 'incremental' ? labels.slice(1) : labels;
+    const chartTitle = mode === 'incremental'
+      ? this.languageService.translate('CHART.INCREMENTAL_CONSUMPTION')
+      : this.languageService.translate('CHART.TOTAL_WEEKLY_CONSUMPTION');
     switch (view) {
       case 'total':
         return {
-          labels,
+          labels: chartLabels,
           datasets: [{
-            label: this.languageService.translate('CHART.TOTAL_WEEKLY_CONSUMPTION'),
+            label: chartTitle,
             data: recs.map(r => (r['livingRoom'] as number) + (r['bedroom'] as number) + (r['kitchen'] as number) + (r['bathroom'] as number)),
             borderColor: '#ff6f00',
             backgroundColor: 'rgba(255, 111, 0, 0.1)',
@@ -195,7 +235,7 @@ export class ConsumptionChartComponent {
         };
       case 'by-room':
         return {
-          labels,
+          labels: chartLabels,
           datasets: [
             {
               label: this.languageService.translate('CHART.LIVING_ROOM'),
@@ -234,11 +274,15 @@ export class ConsumptionChartComponent {
       case 'by-type':
       case 'detailed':
         // For heating, by-type and detailed views are the same as by-room
-        return this.getHeatingChartData(recs, labels, 'by-room');
+        return this.getHeatingChartData(recs, labels, 'by-room', mode);
     }
   }
 
   protected setView(view: ChartView): void {
     this.onViewChange(view);
+  }
+
+  protected setDisplayMode(mode: DisplayMode): void {
+    this.onDisplayModeChange(mode);
   }
 }

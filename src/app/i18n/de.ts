@@ -16,13 +16,21 @@ export const de = {
     WATER: {
         TITLE: 'Wasserverbrauch Tracker',
         EXPORT: 'Daten exportieren',
-        IMPORT: 'Daten importieren'
+        IMPORT: 'Daten importieren',
+        EXPORT_EXCEL: 'In Excel exportieren',
+        IMPORT_EXCEL: 'Aus Excel importieren',
+        EXCEL_IMPORT_SUCCESS: 'Excel-Daten erfolgreich importiert!',
+        EXCEL_IMPORT_ERROR_TITLE: 'Excel-Import fehlgeschlagen',
+        EXCEL_IMPORT_ERROR: 'Excel-Daten konnten nicht importiert werden. Bitte überprüfen Sie die Details unten und befolgen Sie die Anweisungen zur Behebung des Problems.'
     },
     CHART: {
         AXIS_DATE: 'Datum',
         AXIS_LITERS: 'Liter',
         AXIS_KWH: 'kWh',
+        DISPLAY_MODE_TOTAL: 'Gesamtverbrauch',
+        DISPLAY_MODE_INCREMENTAL: 'Zwischen Messungen',
         TOTAL_WEEKLY_CONSUMPTION: 'Gesamtverbrauch pro Woche',
+        INCREMENTAL_CONSUMPTION: 'Verbrauch zwischen Messungen',
         KITCHEN_TOTAL: 'Küche Gesamt',
         BATHROOM_TOTAL: 'Badezimmer Gesamt',
         WARM_WATER_TOTAL: 'Warmwasser Gesamt',
@@ -40,6 +48,11 @@ export const de = {
         TITLE: 'Heizungsverbrauch Tracker',
         EXPORT: 'Daten exportieren',
         IMPORT: 'Daten importieren',
+        EXPORT_EXCEL: 'In Excel exportieren',
+        IMPORT_EXCEL: 'Aus Excel importieren',
+        EXCEL_IMPORT_SUCCESS: 'Excel-Daten erfolgreich importiert!',
+        EXCEL_IMPORT_ERROR_TITLE: 'Excel-Import fehlgeschlagen',
+        EXCEL_IMPORT_ERROR: 'Excel-Daten konnten nicht importiert werden. Bitte überprüfen Sie die Details unten und befolgen Sie die Anweisungen zur Behebung des Problems.',
         LIVING_AREAS: 'Wohnbereiche',
         SERVICE_AREAS: 'Servicebereiche',
         LIVING_ROOM: 'Wohnzimmer',
@@ -175,7 +188,25 @@ export const de = {
         GENDERS: {
             MALE: 'Männlich',
             FEMALE: 'Weiblich'
-        }
+        },
+        EXCEL_TITLE: 'Excel-Integration',
+        EXCEL_ENABLED: 'Excel-Integration aktivieren',
+        EXCEL_COLUMN_MAPPING: 'Spaltenzuordnung Konfiguration',
+        EXCEL_WATER_MAPPING_TITLE: 'Wasserverbrauch',
+        EXCEL_HEATING_MAPPING_TITLE: 'Heizungsverbrauch',
+        EXCEL_COLUMN_DATE_NAME: 'Datumsspaltenname',
+        EXCEL_COLUMN_KITCHEN_WARM_NAME: 'Küche Warmwasser Spaltenname',
+        EXCEL_COLUMN_KITCHEN_COLD_NAME: 'Küche Kaltwasser Spaltenname',
+        EXCEL_COLUMN_BATHROOM_WARM_NAME: 'Badezimmer Warmwasser Spaltenname',
+        EXCEL_COLUMN_BATHROOM_COLD_NAME: 'Badezimmer Kaltwasser Spaltenname',
+        EXCEL_COLUMN_LIVING_ROOM_NAME: 'Wohnzimmer Spaltenname',
+        EXCEL_COLUMN_BEDROOM_NAME: 'Schlafzimmer Spaltenname',
+        EXCEL_COLUMN_KITCHEN_NAME: 'Küche Spaltenname',
+        EXCEL_COLUMN_BATHROOM_NAME: 'Badezimmer Spaltenname',
+        EXCEL_SAVE_SETTINGS: 'Excel-Einstellungen speichern',
+        EXCEL_RESET_DEFAULTS: 'Auf Standardwerte zurücksetzen',
+        EXCEL_SETTINGS_SAVED: 'Excel-Einstellungen erfolgreich gespeichert!',
+        EDIT_EXCEL_SETTINGS: 'Excel-Einstellungen bearbeiten'
     },
     FOOTER: {
         APP_NAME: 'Haushaltsmanagement',
@@ -198,5 +229,35 @@ export const de = {
         CANCEL: 'Abbrechen',
         CLOSE: 'Schließen',
         INVALID_EMAIL: 'Bitte geben Sie eine gültige E-Mail-Adresse ein'
+    },
+    ERROR: {
+        TITLE: 'Fehler',
+        DETAILS: 'Fehlerdetails',
+        HOW_TO_FIX: 'So beheben Sie den Fehler',
+        CLOSE: 'Schließen',
+        EXCEL_DATE_FIX_1: 'Stellen Sie sicher, dass Datumsangaben im Format TT.MM.JJJJ vorliegen (z.B. 14.09.2025)',
+        EXCEL_DATE_FIX_2: 'Oder verwenden Sie das Format TT/MM/JJJJ (z.B. 14/09/2025)',
+        EXCEL_DATE_FIX_3: 'Oder verwenden Sie das Format JJJJ-MM-TT (z.B. 2025-09-14)',
+        EXCEL_COLUMN_FIX_1: 'Überprüfen Sie, ob Ihre Excel-Spaltennamen mit den in den Einstellungen konfigurierten Namen übereinstimmen',
+        EXCEL_COLUMN_FIX_2: 'Gehen Sie zu Einstellungen → Excel-Integration, um die Spaltenzuordnungen anzuzeigen oder zu aktualisieren',
+        EXCEL_GENERIC_FIX_1: 'Überprüfen Sie, ob Ihre Excel-Datei im .xlsx-Format vorliegt',
+        EXCEL_GENERIC_FIX_2: 'Stellen Sie sicher, dass alle erforderlichen Spalten mit korrekten Datentypen vorhanden sind'
+    },
+    EXCEL: {
+        DEFAULT_DATE: 'Datum',
+        DEFAULT_KITCHEN_WARM: 'Küche Warmwasser',
+        DEFAULT_KITCHEN_COLD: 'Küche Kaltwasser',
+        DEFAULT_BATHROOM_WARM: 'Badezimmer Warmwasser',
+        DEFAULT_BATHROOM_COLD: 'Badezimmer Kaltwasser',
+        DEFAULT_LIVING_ROOM: 'Wohnzimmer',
+        DEFAULT_BEDROOM: 'Schlafzimmer',
+        DEFAULT_KITCHEN: 'Küche',
+        DEFAULT_BATHROOM: 'Badezimmer',
+        VALIDATION_REQUIRED: 'Spaltenname ist erforderlich',
+        VALIDATION_TOO_LONG: 'Spaltenname darf höchstens 255 Zeichen lang sein',
+        VALIDATION_NO_WHITESPACE: 'Spaltenname darf keine führenden oder nachfolgenden Leerzeichen haben',
+        VALIDATION_INVALID_CHARS: 'Spaltenname darf folgende Zeichen nicht enthalten: [ ] * / \\ ? :',
+        VALIDATION_DUPLICATES: 'Spaltennamen müssen innerhalb jedes Bereichs eindeutig sein',
+        VALIDATION_FORM_INVALID: 'Bitte beheben Sie die Validierungsfehler vor dem Speichern'
     }
 };

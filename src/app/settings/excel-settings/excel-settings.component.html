@@ -1,0 +1,221 @@
+<div class="excel-settings">
+  <div class="settings-header">
+    <div class="title-row">
+      <!-- Custom Excel-style icon -->
+      <div class="excel-icon">
+        <svg viewBox="0 0 24 24" width="32" height="32">
+          <rect x="3" y="3" width="18" height="18" rx="2" fill="#217346" />
+          <text x="12" y="16" font-family="Arial, sans-serif" font-size="12" font-weight="bold" fill="white"
+            text-anchor="middle">X</text>
+        </svg>
+      </div>
+      <h2>{{ 'SETTINGS.EXCEL_TITLE' | translate }}</h2>
+    </div>
+
+    <!-- Enable/Disable Toggle -->
+    <div class="toggle-container">
+      <label class="toggle-label">
+        <input type="checkbox" [checked]="enabled()" (change)="onEnabledChange($event)" class="toggle-input">
+        <span class="toggle-text">{{ 'SETTINGS.EXCEL_ENABLED' | translate }}</span>
+      </label>
+    </div>
+  </div>
+
+  <!-- Column Mapping Preview (when enabled and not editing) -->
+  <div class="column-preview" *ngIf="enabled()">
+    <div class="preview-header" (click)="togglePreview()">
+      <h3>{{ 'SETTINGS.EXCEL_COLUMN_MAPPING' | translate }}</h3>
+      <button class="toggle-preview-btn" type="button"
+        [attr.aria-label]="isPreviewCollapsed() ? 'Expand column mapping' : 'Collapse column mapping'"
+        [attr.title]="isPreviewCollapsed() ? 'Expand column mapping' : 'Collapse column mapping'">
+        <span class="sr-only">{{ isPreviewCollapsed() ? 'Expand' : 'Collapse' }} column mapping</span>
+        <lucide-icon [img]="isPreviewCollapsed() ? ChevronDownIcon : ChevronUpIcon" size="20"></lucide-icon>
+      </button>
+    </div>
+
+    <div class="preview-content" *ngIf="!isPreviewCollapsed()">
+      <div class="preview-section">
+        <h4>{{ 'SETTINGS.EXCEL_WATER_MAPPING_TITLE' | translate }}</h4>
+        <div class="preview-items">
+          <span class="preview-item">{{ waterDateCol() }}</span>
+          <span class="preview-item">{{ waterKitchenWarmCol() }}</span>
+          <span class="preview-item">{{ waterKitchenColdCol() }}</span>
+          <span class="preview-item">{{ waterBathroomWarmCol() }}</span>
+          <span class="preview-item">{{ waterBathroomColdCol() }}</span>
+        </div>
+      </div>
+
+      <div class="preview-section">
+        <h4>{{ 'SETTINGS.EXCEL_HEATING_MAPPING_TITLE' | translate }}</h4>
+        <div class="preview-items">
+          <span class="preview-item">{{ heatingDateCol() }}</span>
+          <span class="preview-item">{{ heatingLivingRoomCol() }}</span>
+          <span class="preview-item">{{ heatingBedroomCol() }}</span>
+          <span class="preview-item">{{ heatingKitchenCol() }}</span>
+          <span class="preview-item">{{ heatingBathroomCol() }}</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Action Button -->
+  <div class="action-buttons" *ngIf="enabled()">
+    <button type="button" class="btn-primary" (click)="openModal()">
+      {{ 'SETTINGS.EDIT_EXCEL_SETTINGS' | translate }}
+    </button>
+  </div>
+</div>
+
+<!-- Edit Modal -->
+@if (showModal()) {
+<div class="modal-overlay" (click)="closeModal()">
+  <div class="modal-content" (click)="$event.stopPropagation()">
+    <div class="modal-header">
+      <h3>{{ 'SETTINGS.EDIT_EXCEL_SETTINGS' | translate }}</h3>
+      <button class="close-btn" (click)="closeModal()">×</button>
+    </div>
+
+    <!-- Success Message - Sticky at top -->
+    <div class="success-banner" *ngIf="showSaveSuccess()">
+      {{ 'SETTINGS.EXCEL_SETTINGS_SAVED' | translate }}
+    </div>
+
+    <div class="modal-body">
+      <!-- Water/Home Consumption Mapping -->
+      <div class="mapping-group">
+        <h4>{{ 'SETTINGS.EXCEL_WATER_MAPPING_TITLE' | translate }}</h4>
+        <div class="form-grid">
+          <div class="form-group">
+            <label for="water-date">{{ 'SETTINGS.EXCEL_COLUMN_DATE_NAME' | translate }}</label>
+            <input id="water-date" type="text" [(ngModel)]="waterDateCol" class="form-control"
+              [placeholder]="'EXCEL.DEFAULT_DATE' | translate"
+              [class.input-error]="waterDateCol() && getValidationError(waterDateCol())">
+            <div class="field-error" *ngIf="waterDateCol() && getValidationError(waterDateCol())">
+              {{ getValidationError(waterDateCol()) }}
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="water-kitchen-warm">{{ 'SETTINGS.EXCEL_COLUMN_KITCHEN_WARM_NAME' | translate
+              }}</label>
+            <input id="water-kitchen-warm" type="text" [(ngModel)]="waterKitchenWarmCol" class="form-control"
+              [placeholder]="'EXCEL.DEFAULT_KITCHEN_WARM' | translate"
+              [class.input-error]="waterKitchenWarmCol() && getValidationError(waterKitchenWarmCol())">
+            <div class="field-error" *ngIf="waterKitchenWarmCol() && getValidationError(waterKitchenWarmCol())">
+              {{ getValidationError(waterKitchenWarmCol()) }}
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="water-kitchen-cold">{{ 'SETTINGS.EXCEL_COLUMN_KITCHEN_COLD_NAME' | translate
+              }}</label>
+            <input id="water-kitchen-cold" type="text" [(ngModel)]="waterKitchenColdCol" class="form-control"
+              [placeholder]="'EXCEL.DEFAULT_KITCHEN_COLD' | translate"
+              [class.input-error]="waterKitchenColdCol() && getValidationError(waterKitchenColdCol())">
+            <div class="field-error" *ngIf="waterKitchenColdCol() && getValidationError(waterKitchenColdCol())">
+              {{ getValidationError(waterKitchenColdCol()) }}
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="water-bathroom-warm">{{ 'SETTINGS.EXCEL_COLUMN_BATHROOM_WARM_NAME' | translate
+              }}</label>
+            <input id="water-bathroom-warm" type="text" [(ngModel)]="waterBathroomWarmCol" class="form-control"
+              [placeholder]="'EXCEL.DEFAULT_BATHROOM_WARM' | translate"
+              [class.input-error]="waterBathroomWarmCol() && getValidationError(waterBathroomWarmCol())">
+            <div class="field-error" *ngIf="waterBathroomWarmCol() && getValidationError(waterBathroomWarmCol())">
+              {{ getValidationError(waterBathroomWarmCol()) }}
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="water-bathroom-cold">{{ 'SETTINGS.EXCEL_COLUMN_BATHROOM_COLD_NAME' | translate
+              }}</label>
+            <input id="water-bathroom-cold" type="text" [(ngModel)]="waterBathroomColdCol" class="form-control"
+              [placeholder]="'EXCEL.DEFAULT_BATHROOM_COLD' | translate"
+              [class.input-error]="waterBathroomColdCol() && getValidationError(waterBathroomColdCol())">
+            <div class="field-error" *ngIf="waterBathroomColdCol() && getValidationError(waterBathroomColdCol())">
+              {{ getValidationError(waterBathroomColdCol()) }}
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Heating Consumption Mapping -->
+      <div class="mapping-group">
+        <h4>{{ 'SETTINGS.EXCEL_HEATING_MAPPING_TITLE' | translate }}</h4>
+        <div class="form-grid">
+          <div class="form-group">
+            <label for="heating-date">{{ 'SETTINGS.EXCEL_COLUMN_DATE_NAME' | translate }}</label>
+            <input id="heating-date" type="text" [(ngModel)]="heatingDateCol" class="form-control"
+              [placeholder]="'EXCEL.DEFAULT_DATE' | translate"
+              [class.input-error]="heatingDateCol() && getValidationError(heatingDateCol())">
+            <div class="field-error" *ngIf="heatingDateCol() && getValidationError(heatingDateCol())">
+              {{ getValidationError(heatingDateCol()) }}
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="heating-living-room">{{ 'SETTINGS.EXCEL_COLUMN_LIVING_ROOM_NAME' | translate
+              }}</label>
+            <input id="heating-living-room" type="text" [(ngModel)]="heatingLivingRoomCol" class="form-control"
+              [placeholder]="'EXCEL.DEFAULT_LIVING_ROOM' | translate"
+              [class.input-error]="heatingLivingRoomCol() && getValidationError(heatingLivingRoomCol())">
+            <div class="field-error" *ngIf="heatingLivingRoomCol() && getValidationError(heatingLivingRoomCol())">
+              {{ getValidationError(heatingLivingRoomCol()) }}
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="heating-bedroom">{{ 'SETTINGS.EXCEL_COLUMN_BEDROOM_NAME' | translate }}</label>
+            <input id="heating-bedroom" type="text" [(ngModel)]="heatingBedroomCol" class="form-control"
+              [placeholder]="'EXCEL.DEFAULT_BEDROOM' | translate"
+              [class.input-error]="heatingBedroomCol() && getValidationError(heatingBedroomCol())">
+            <div class="field-error" *ngIf="heatingBedroomCol() && getValidationError(heatingBedroomCol())">
+              {{ getValidationError(heatingBedroomCol()) }}
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="heating-kitchen">{{ 'SETTINGS.EXCEL_COLUMN_KITCHEN_NAME' | translate }}</label>
+            <input id="heating-kitchen" type="text" [(ngModel)]="heatingKitchenCol" class="form-control"
+              [placeholder]="'EXCEL.DEFAULT_KITCHEN' | translate"
+              [class.input-error]="heatingKitchenCol() && getValidationError(heatingKitchenCol())">
+            <div class="field-error" *ngIf="heatingKitchenCol() && getValidationError(heatingKitchenCol())">
+              {{ getValidationError(heatingKitchenCol()) }}
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="heating-bathroom">{{ 'SETTINGS.EXCEL_COLUMN_BATHROOM_NAME' | translate }}</label>
+            <input id="heating-bathroom" type="text" [(ngModel)]="heatingBathroomCol" class="form-control"
+              [placeholder]="'EXCEL.DEFAULT_BATHROOM' | translate"
+              [class.input-error]="heatingBathroomCol() && getValidationError(heatingBathroomCol())">
+            <div class="field-error" *ngIf="heatingBathroomCol() && getValidationError(heatingBathroomCol())">
+              {{ getValidationError(heatingBathroomCol()) }}
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Validation Error Message -->
+      <div class="error-message" *ngIf="validationError()">
+        {{ validationError() }}
+      </div>
+    </div>
+
+    <div class="modal-footer">
+      <button type="button" class="btn-secondary" (click)="resetDefaults()">
+        <lucide-icon [img]="RotateCcwIcon" size="16"></lucide-icon>
+        {{ 'SETTINGS.EXCEL_RESET_DEFAULTS' | translate }}
+      </button>
+      <button type="button" class="btn-outline" (click)="closeModal()">
+        {{ 'SETTINGS.CANCEL' | translate }}
+      </button>
+      <button type="button" class="btn-primary" (click)="saveSettings()" [disabled]="!isFormValid()">
+        {{ 'SETTINGS.EXCEL_SAVE_SETTINGS' | translate }}
+      </button>
+    </div>
+  </div>
+</div>
+}

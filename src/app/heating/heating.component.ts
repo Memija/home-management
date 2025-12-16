@@ -1,13 +1,16 @@
 import { Component, signal, computed, inject } from '@angular/core';
+import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { DatePipe } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { TranslatePipe } from '../pipes/translate.pipe';
 import { STORAGE_SERVICE } from '../services/storage.service';
 import { FileStorageService } from '../services/file-storage.service';
 import { LanguageService } from '../services/language.service';
-import { LucideAngularModule, ArrowLeft, ChevronDown, ChevronLeft, ChevronRight } from 'lucide-angular';
-import { ConsumptionChartComponent, type ChartView } from '../shared/consumption-chart/consumption-chart.component';
+import { ExcelService } from '../services/excel.service';
+import { ExcelSettingsService } from '../services/excel-settings.service';
+import { LucideAngularModule, ArrowLeft, ChevronDown, ChevronLeft, ChevronRight, Download, Upload, FileSpreadsheet } from 'lucide-angular';
+import { ConsumptionChartComponent, type ChartView, type DisplayMode } from '../shared/consumption-chart/consumption-chart.component';
+import { ErrorModalComponent } from '../shared/error-modal/error-modal.component';
 
 
 export interface HeatingRecord {
@@ -21,7 +24,7 @@ export interface HeatingRecord {
 @Component({
   selector: 'app-heating',
   standalone: true,
-  imports: [FormsModule, DatePipe, RouterLink, TranslatePipe, LucideAngularModule, ConsumptionChartComponent],
+  imports: [CommonModule, FormsModule, RouterLink, TranslatePipe, LucideAngularModule, ConsumptionChartComponent, ErrorModalComponent],
   templateUrl: './heating.component.html',
   styleUrl: './heating.component.scss'
 })
@@ -29,15 +32,29 @@ export class HeatingComponent {
   private storage = inject(STORAGE_SERVICE);
   private fileStorage = inject(FileStorageService);
   private languageService = inject(LanguageService);
+  protected excelService = inject(ExcelService);
+  protected excelSettings = inject(ExcelSettingsService);
 
   protected readonly ArrowLeftIcon = ArrowLeft;
   protected readonly ChevronDownIcon = ChevronDown;
   protected readonly ChevronLeftIcon = ChevronLeft;
   protected readonly ChevronRightIcon = ChevronRight;
+  protected readonly DownloadIcon = Download;
+  protected readonly UploadIcon = Upload;
+  protected readonly FileSpreadsheetIcon = FileSpreadsheet;
+
+  protected isExporting = signal(false);
+  protected isImporting = signal(false);
+  protected showErrorModal = signal(false);
+  protected errorTitle = signal('ERROR.TITLE');
+  protected errorMessage = signal('');
+  protected errorDetails = signal('');
+  protected errorInstructions = signal<string[]>([]);
 
   protected records = signal<HeatingRecord[]>([]);
   protected nextSunday = signal<Date>(this.calculateNextSunday());
   protected chartView = signal<ChartView>('total');
+  protected displayMode = signal<DisplayMode>('total');
 
   protected livingRoom = signal<number | null>(null);
   protected bedroom = signal<number | null>(null);
@@ -112,6 +129,10 @@ export class HeatingComponent {
     this.chartView.set(view);
   };
 
+  protected onDisplayModeChange = (mode: DisplayMode): void => {
+    this.displayMode.set(mode);
+  };
+
   constructor() {
     this.loadData();
   }
@@ -125,14 +146,36 @@ export class HeatingComponent {
   }
 
   async exportData() {
-    const allData = await this.storage.exportAll();
-    this.fileStorage.exportToFile(allData, `heating-consumption-${new Date().toISOString().split('T')[0]}.json`);
+    this.isExporting.set(true);
+    try {
+      const allData = await this.storage.exportAll();
+      this.fileStorage.exportToFile(allData, `heating-consumption-${new Date().toISOString().split('T')[0]}.json`);
+    } finally {
+      this.isExporting.set(false);
+    }
+  }
+
+  async exportToExcel() {
+    this.isExporting.set(true);
+    try {
+      const dateStr = new Date().toISOString().split('T')[0];
+      this.excelService.exportHeatingToExcel(
+        this.records(),
+        `heating-consumption-${dateStr}.xlsx`
+      );
+    } catch (error) {
+      console.error('Excel export error:', error);
+      alert(this.languageService.translate('HEATING.EXCEL_IMPORT_ERROR'));
+    } finally {
+      this.isExporting.set(false);
+    }
   }
 
   async importData(event: Event) {
     const input = event.target as HTMLInputElement;
     const file = input.files?.[0];
     if (file) {
+      this.isImporting.set(true);
       try {
         const data = await this.fileStorage.importFromFile(file);
         await this.storage.importAll(data);
@@ -141,8 +184,69 @@ export class HeatingComponent {
       } catch (error) {
         console.error('Error importing data:', error);
         alert('Failed to import data. Please check the file format.');
+      } finally {
+        this.isImporting.set(false);
       }
     }
+  }
+
+  async importFromExcel(event: Event) {
+    const input = event.target as HTMLInputElement;
+    const file = input.files?.[0];
+    if (file) {
+      this.isImporting.set(true);
+      try {
+        const records = await this.excelService.importHeatingFromExcel(file);
+
+        // Merge with existing records, avoiding duplicates by date
+        this.records.update(existing => {
+          const merged = [...existing, ...records];
+          const uniqueMap = new Map<number, HeatingRecord>();
+          merged.forEach(r => uniqueMap.set(r.date.getTime(), r));
+          return Array.from(uniqueMap.values())
+            .sort((a, b) => a.date.getTime() - b.date.getTime());
+        });
+
+        await this.storage.save('heating_consumption_records', this.records());
+        input.value = '';
+        // Show success (could add success modal here too)
+      } catch (error) {
+        console.error('Excel import error:', error);
+        const errorMsg = error instanceof Error ? error.message : 'Unknown error';
+
+        // Show detailed error modal with instructions
+        this.errorTitle.set('HEATING.EXCEL_IMPORT_ERROR_TITLE');
+        this.errorMessage.set('HEATING.EXCEL_IMPORT_ERROR');
+        this.errorDetails.set(errorMsg);
+
+        // Provide specific instructions based on error type
+        if (errorMsg.includes('Invalid date')) {
+          this.errorInstructions.set([
+            'ERROR.EXCEL_DATE_FIX_1',
+            'ERROR.EXCEL_DATE_FIX_2',
+            'ERROR.EXCEL_DATE_FIX_3'
+          ]);
+        } else if (errorMsg.includes('column')) {
+          this.errorInstructions.set([
+            'ERROR.EXCEL_COLUMN_FIX_1',
+            'ERROR.EXCEL_COLUMN_FIX_2'
+          ]);
+        } else {
+          this.errorInstructions.set([
+            'ERROR.EXCEL_GENERIC_FIX_1',
+            'ERROR.EXCEL_GENERIC_FIX_2'
+          ]);
+        }
+
+        this.showErrorModal.set(true);
+      } finally {
+        this.isImporting.set(false);
+      }
+    }
+  }
+
+  protected closeErrorModal() {
+    this.showErrorModal.set(false);
   }
 
   private calculateNextSunday(): Date {

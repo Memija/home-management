@@ -2,25 +2,37 @@
 <div class="chart-section">
   <div class="chart-header">
     <h2>{{ 'HOME.HISTORY_TITLE' | translate }}</h2>
-    <div class="chart-filters">
-      <button type="button" [class.active]="currentView() === 'total'" (click)="setView('total')">
-        <lucide-icon [img]="BarChart3Icon" size="16"></lucide-icon>
-        {{ 'HOME.FILTERS.TOTAL' | translate }}
-      </button>
-      <button type="button" [class.active]="currentView() === 'by-room'" (click)="setView('by-room')">
-        <lucide-icon [img]="DoorOpenIcon" size="16"></lucide-icon>
-        {{ 'HOME.FILTERS.BY_ROOM' | translate }}
-      </button>
-      @if (chartType === 'water' || chartType === 'home') {
-      <button type="button" [class.active]="currentView() === 'by-type'" (click)="setView('by-type')">
-        <lucide-icon [img]="DropletIcon" size="16"></lucide-icon>
-        {{ 'HOME.FILTERS.BY_TYPE' | translate }}
-      </button>
-      <button type="button" [class.active]="currentView() === 'detailed'" (click)="setView('detailed')">
-        <lucide-icon [img]="Grid3x3Icon" size="16"></lucide-icon>
-        {{ 'HOME.FILTERS.DETAILED' | translate }}
-      </button>
-      }
+    <div class="chart-controls">
+      <div class="display-mode-toggle">
+        <button type="button" [class.active]="displayMode() === 'total'" (click)="setDisplayMode('total')">
+          <lucide-icon [img]="BarChart3Icon" size="16"></lucide-icon>
+          {{ 'CHART.DISPLAY_MODE_TOTAL' | translate }}
+        </button>
+        <button type="button" [class.active]="displayMode() === 'incremental'" (click)="setDisplayMode('incremental')">
+          <lucide-icon [img]="TrendingUpIcon" size="16"></lucide-icon>
+          {{ 'CHART.DISPLAY_MODE_INCREMENTAL' | translate }}
+        </button>
+      </div>
+      <div class="chart-filters">
+        <button type="button" [class.active]="currentView() === 'total'" (click)="setView('total')">
+          <lucide-icon [img]="BarChart3Icon" size="16"></lucide-icon>
+          {{ 'HOME.FILTERS.TOTAL' | translate }}
+        </button>
+        <button type="button" [class.active]="currentView() === 'by-room'" (click)="setView('by-room')">
+          <lucide-icon [img]="DoorOpenIcon" size="16"></lucide-icon>
+          {{ 'HOME.FILTERS.BY_ROOM' | translate }}
+        </button>
+        @if (chartType === 'water' || chartType === 'home') {
+        <button type="button" [class.active]="currentView() === 'by-type'" (click)="setView('by-type')">
+          <lucide-icon [img]="DropletIcon" size="16"></lucide-icon>
+          {{ 'HOME.FILTERS.BY_TYPE' | translate }}
+        </button>
+        <button type="button" [class.active]="currentView() === 'detailed'" (click)="setView('detailed')">
+          <lucide-icon [img]="Grid3x3Icon" size="16"></lucide-icon>
+          {{ 'HOME.FILTERS.DETAILED' | translate }}
+        </button>
+        }
+      </div>
     </div>
   </div>
   <div class="chart-container">

@@ -16,13 +16,21 @@ export const en = {
     WATER: {
         TITLE: 'Water Consumption Tracker',
         EXPORT: 'Export Data',
-        IMPORT: 'Import Data'
+        IMPORT: 'Import Data',
+        EXPORT_EXCEL: 'Export to Excel',
+        IMPORT_EXCEL: 'Import from Excel',
+        EXCEL_IMPORT_SUCCESS: 'Excel data imported successfully!',
+        EXCEL_IMPORT_ERROR_TITLE: 'Excel Import Failed',
+        EXCEL_IMPORT_ERROR: 'Failed to import Excel data. Please check the details below and follow the instructions to fix the issue.'
     },
     CHART: {
         AXIS_DATE: 'Date',
         AXIS_LITERS: 'Liters',
         AXIS_KWH: 'kWh',
+        DISPLAY_MODE_TOTAL: 'Total Consumption',
+        DISPLAY_MODE_INCREMENTAL: 'Between Measurements',
         TOTAL_WEEKLY_CONSUMPTION: 'Total Weekly Consumption',
+        INCREMENTAL_CONSUMPTION: 'Consumption Between Measurements',
         KITCHEN_TOTAL: 'Kitchen Total',
         BATHROOM_TOTAL: 'Bathroom Total',
         WARM_WATER_TOTAL: 'Warm Water Total',
@@ -40,6 +48,10 @@ export const en = {
         TITLE: 'Heating Consumption Tracker',
         EXPORT: 'Export Data',
         IMPORT: 'Import Data',
+        EXPORT_EXCEL: 'Export to Excel',
+        IMPORT_EXCEL: 'Import from Excel',
+        EXCEL_IMPORT_SUCCESS: 'Excel data imported successfully!',
+        EXCEL_IMPORT_ERROR: 'Failed to import Excel data. Please check the file format and column mappings.',
         LIVING_AREAS: 'Living Areas',
         SERVICE_AREAS: 'Service Areas',
         LIVING_ROOM: 'Living Room',
@@ -175,7 +187,25 @@ export const en = {
         GENDERS: {
             MALE: 'Male',
             FEMALE: 'Female'
-        }
+        },
+        EXCEL_TITLE: 'Excel Integration',
+        EXCEL_ENABLED: 'Enable Excel Integration',
+        EXCEL_COLUMN_MAPPING: 'Column Mapping Configuration',
+        EXCEL_WATER_MAPPING_TITLE: 'Water Consumption',
+        EXCEL_HEATING_MAPPING_TITLE: 'Heating Consumption',
+        EXCEL_COLUMN_DATE_NAME: 'Date Column Name',
+        EXCEL_COLUMN_KITCHEN_WARM_NAME: 'Kitchen Warm Water Column Name',
+        EXCEL_COLUMN_KITCHEN_COLD_NAME: 'Kitchen Cold Water Column Name',
+        EXCEL_COLUMN_BATHROOM_WARM_NAME: 'Bathroom Warm Water Column Name',
+        EXCEL_COLUMN_BATHROOM_COLD_NAME: 'Bathroom Cold Water Column Name',
+        EXCEL_COLUMN_LIVING_ROOM_NAME: 'Living Room Column Name',
+        EXCEL_COLUMN_BEDROOM_NAME: 'Bedroom Column Name',
+        EXCEL_COLUMN_KITCHEN_NAME: 'Kitchen Column Name',
+        EXCEL_COLUMN_BATHROOM_NAME: 'Bathroom Column Name',
+        EXCEL_SAVE_SETTINGS: 'Save Excel Settings',
+        EXCEL_RESET_DEFAULTS: 'Reset to Defaults',
+        EXCEL_SETTINGS_SAVED: 'Excel settings saved successfully!',
+        EDIT_EXCEL_SETTINGS: 'Edit Excel Settings'
     },
     FOOTER: {
         APP_NAME: 'Home Management',
@@ -198,5 +228,35 @@ export const en = {
         CANCEL: 'Cancel',
         CLOSE: 'Close',
         INVALID_EMAIL: 'Please enter a valid email address'
+    },
+    ERROR: {
+        TITLE: 'Error',
+        DETAILS: 'Error Details',
+        HOW_TO_FIX: 'How to Fix',
+        CLOSE: 'Close',
+        EXCEL_DATE_FIX_1: 'Ensure dates are in DD.MM.YYYY format (e.g., 14.09.2025)',
+        EXCEL_DATE_FIX_2: 'Or use DD/MM/YYYY format (e.g., 14/09/2025)',
+        EXCEL_DATE_FIX_3: 'Or use YYYY-MM-DD format (e.g., 2025-09-14)',
+        EXCEL_COLUMN_FIX_1: 'Check that your Excel column names match the configured names in Settings',
+        EXCEL_COLUMN_FIX_2: 'Go to Settings → Excel Integration to view or update column mappings',
+        EXCEL_GENERIC_FIX_1: 'Verify your Excel file is in .xlsx format',
+        EXCEL_GENERIC_FIX_2: 'Ensure all required columns are present with correct data types'
+    },
+    EXCEL: {
+        DEFAULT_DATE: 'Date',
+        DEFAULT_KITCHEN_WARM: 'Kitchen Warm Water',
+        DEFAULT_KITCHEN_COLD: 'Kitchen Cold Water',
+        DEFAULT_BATHROOM_WARM: 'Bathroom Warm Water',
+        DEFAULT_BATHROOM_COLD: 'Bathroom Cold Water',
+        DEFAULT_LIVING_ROOM: 'Living Room',
+        DEFAULT_BEDROOM: 'Bedroom',
+        DEFAULT_KITCHEN: 'Kitchen',
+        DEFAULT_BATHROOM: 'Bathroom',
+        VALIDATION_REQUIRED: 'Column name is required',
+        VALIDATION_TOO_LONG: 'Column name must be 255 characters or less',
+        VALIDATION_NO_WHITESPACE: 'Column name cannot have leading or trailing spaces',
+        VALIDATION_INVALID_CHARS: 'Column name cannot contain: [ ] * / \\ ? :',
+        VALIDATION_DUPLICATES: 'Column names must be unique within each section',
+        VALIDATION_FORM_INVALID: 'Please fix validation errors before saving'
     }
 };

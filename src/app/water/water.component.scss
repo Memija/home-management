@@ -316,3 +316,18 @@
     transform: scale(1);
   }
 }
+
+.comparison-note {
+  margin-top: 1rem;
+  padding: 0.75rem 1rem;
+  background: #e7f3ff;
+  border-left: 4px solid #007bff;
+  border-radius: 4px;
+
+  p {
+    margin: 0;
+    font-size: 0.9rem;
+    color: #495057;
+    font-style: italic;
+  }
+}

@@ -49,6 +49,7 @@ export class DetailedRecordsComponent {
   // Outputs
   editRecord = output<ConsumptionRecord>();
   deleteRecord = output<ConsumptionRecord>();
+  deleteAllRecords = output<ConsumptionRecord[]>();
 
   // State
   protected searchDate = signal<string | null>(null);
@@ -189,5 +190,9 @@ export class DetailedRecordsComponent {
 
   protected onDeleteRecord(record: ConsumptionRecord) {
     this.deleteRecord.emit(record);
+  }
+
+  protected onDeleteAllRecords() {
+    this.deleteAllRecords.emit(this.filteredRecords());
   }
 }

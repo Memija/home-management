@@ -13,9 +13,9 @@
       <div class="filter-box">
         <div class="select-with-icon">
           <lucide-icon [img]="CalendarDaysIcon" size="16"></lucide-icon>
-          <select id="year-filter" name="year-filter" [ngModel]="searchYear()"
-            (ngModelChange)="searchYear.set($event ? +$event : null)" aria-label="Filter by year">
-            <option [value]="null">{{ 'HOME.FILTER_YEAR' | translate }}</option>
+          <select id="year-filter" name="year-filter" [ngModel]="searchYear() ?? ''"
+            (ngModelChange)="searchYear.set($event === '' ? null : +$event)" aria-label="Filter by year">
+            <option value="">{{ 'HOME.FILTER_YEAR' | translate }}</option>
             @for (year of availableYears(); track year) {
             <option [value]="year">{{ year }}</option>
             }
@@ -60,6 +60,16 @@
       </div>
     </div>
   </div>
+
+  @if (filteredRecords().length > 0 && showEditDelete()) {
+  <div class="delete-all-section">
+    <button type="button" class="delete-all-btn" (click)="onDeleteAllRecords()"
+      title="{{ 'HOME.DELETE_ALL_TOOLTIP' | translate }}">
+      <lucide-icon [img]="TrashIcon" size="16"></lucide-icon>
+      {{ 'HOME.DELETE_ALL_BUTTON' | translate }} ({{ filteredRecords().length }})
+    </button>
+  </div>
+  }
 
   @if (filteredRecords().length === 0) {
   <p>{{ 'HOME.NO_RECORDS' | translate }}</p>

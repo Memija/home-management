@@ -7,7 +7,7 @@
       <button class="close-btn" (click)="onCancel()">&times;</button>
     </div>
     <div class="modal-body">
-      <p>{{ messageKey | translate }}</p>
+      <p>{{ translatedMessage() }}</p>
     </div>
     <div class="modal-footer">
       <button class="btn-secondary" (click)="onCancel()">{{ cancelKey | translate }}</button>

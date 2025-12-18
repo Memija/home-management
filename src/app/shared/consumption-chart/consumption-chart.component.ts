@@ -31,6 +31,7 @@ export class ConsumptionChartComponent {
   @Input({ required: true }) chartType!: 'water' | 'home' | 'heating';
   displayMode = input<DisplayMode>('total');
   @Input({ required: true }) onDisplayModeChange!: (mode: DisplayMode) => void;
+  @Input() familySize: number = 0;
 
   private languageService = inject(LanguageService);
 
@@ -61,6 +62,53 @@ export class ConsumptionChartComponent {
       return this.getHeatingChartData(processedData, labels, view, mode);
     }
   });
+
+  private generateComparisonData(processedData: any[], familySize: number): any[] {
+    // Generate realistic comparison using German national average
+    // 128 liters per person per day (Umweltbundesamt 2019)
+    if (processedData.length === 0 || familySize === 0) return [];
+
+    const GERMAN_AVERAGE_LITERS_PER_PERSON_PER_DAY = 128;
+
+    return processedData.map((current, index) => {
+      const comparison: any = { date: current.date };
+
+      // Calculate days between measurements
+      let daysBetween;
+      if (index === 0) {
+        // For first point, use days to next measurement
+        if (processedData.length > 1) {
+          const next = processedData[1];
+          daysBetween = Math.round(
+            (new Date(next.date).getTime() - new Date(current.date).getTime()) / (1000 * 60 * 60 * 24)
+          );
+        } else {
+          daysBetween = 7; // Default to 7 days if only one data point
+        }
+      } else {
+        const previous = processedData[index - 1];
+        daysBetween = Math.round(
+          (new Date(current.date).getTime() - new Date(previous.date).getTime()) / (1000 * 60 * 60 * 24)
+        );
+      }
+
+      // Calculate expected total consumption (constant average - no variance)
+      const totalConsumption = GERMAN_AVERAGE_LITERS_PER_PERSON_PER_DAY * familySize * daysBetween;
+
+      // Distribute proportionally across rooms based on typical usage patterns
+      // Typical household distribution: Kitchen 40%, Bathroom 60%
+      // Within each: Warm 40%, Cold 60%
+      const kitchenTotal = totalConsumption * 0.4;
+      const bathroomTotal = totalConsumption * 0.6;
+
+      comparison['kitchenWarm'] = Math.round(kitchenTotal * 0.4);
+      comparison['kitchenCold'] = Math.round(kitchenTotal * 0.6);
+      comparison['bathroomWarm'] = Math.round(bathroomTotal * 0.4);
+      comparison['bathroomCold'] = Math.round(bathroomTotal * 0.6);
+
+      return comparison;
+    });
+  }
 
   protected chartOptions = computed<ChartConfiguration['options']>(() => {
     // Reactive to language changes
@@ -108,21 +156,37 @@ export class ConsumptionChartComponent {
   private getWaterChartData(recs: any[], labels: string[], view: ChartView, mode: DisplayMode): ChartConfiguration['data'] {
     // Adjust labels for incremental mode (skip first measurement)
     const chartLabels = mode === 'incremental' ? labels.slice(1) : labels;
-    const chartTitle = mode === 'incremental'
-      ? this.languageService.translate('CHART.INCREMENTAL_CONSUMPTION')
-      : this.languageService.translate('CHART.TOTAL_WEEKLY_CONSUMPTION');
+    const showComparison = this.familySize > 0 && mode === 'incremental' && view === 'total';
+    const comparisonData = showComparison ? this.generateComparisonData(recs, this.familySize) : [];
+
     switch (view) {
       case 'total':
+        const datasets: any[] = [{
+          label: showComparison ? this.languageService.translate('CHART.YOUR_FAMILY') :
+            mode === 'incremental' ? this.languageService.translate('CHART.INCREMENTAL_CONSUMPTION') :
+              this.languageService.translate('CHART.TOTAL_WEEKLY_CONSUMPTION'),
+          data: recs.map(r => (r['kitchenWarm'] as number) + (r['kitchenCold'] as number) + (r['bathroomWarm'] as number) + (r['bathroomCold'] as number)),
+          borderColor: '#007bff',
+          backgroundColor: 'rgba(0, 123, 255, 0.1)',
+          fill: true,
+          tension: 0.4
+        }];
+
+        if (showComparison) {
+          datasets.push({
+            label: this.languageService.translate('CHART.AVERAGE_FAMILY'),
+            data: comparisonData.map(r => (r['kitchenWarm'] as number) + (r['kitchenCold'] as number) + (r['bathroomWarm'] as number) + (r['bathroomCold'] as number)),
+            borderColor: '#6c757d',
+            backgroundColor: 'rgba(108, 117, 125, 0.1)',
+            fill: true,
+            tension: 0.4,
+            borderDash: [5, 5]
+          });
+        }
+
         return {
           labels: chartLabels,
-          datasets: [{
-            label: chartTitle,
-            data: recs.map(r => (r['kitchenWarm'] as number) + (r['kitchenCold'] as number) + (r['bathroomWarm'] as number) + (r['bathroomCold'] as number)),
-            borderColor: '#007bff',
-            backgroundColor: 'rgba(0, 123, 255, 0.1)',
-            fill: true,
-            tension: 0.4
-          }]
+          datasets
         };
       case 'by-room':
         return {

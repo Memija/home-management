@@ -1,0 +1,37 @@
+@if (show()) {
+<div class="modal-overlay" (click)="cancel.emit()">
+  <div class="modal-content error-modal" (click)="$event.stopPropagation()">
+    <div class="modal-header error-header">
+      <lucide-icon [img]="AlertCircleIcon" size="32" class="error-icon"></lucide-icon>
+      <h3>{{ title() | translate }}</h3>
+      <button type="button" class="close-btn" (click)="cancel.emit()" aria-label="Close">
+        <lucide-icon [img]="XIcon" size="20"></lucide-icon>
+      </button>
+    </div>
+    <div class="modal-body">
+      <p class="error-message">{{ message() | translate }}</p>
+      @if (details()) {
+      <div class="error-details">
+        <strong>{{ 'ERROR.DETAILS' | translate }}:</strong>
+        <pre>{{ details() }}</pre>
+      </div>
+      }
+      @if (instructions()) {
+      <div class="error-instructions">
+        <strong>{{ 'ERROR.HOW_TO_FIX' | translate }}:</strong>
+        <ul>
+          @for (instruction of instructions(); track $index) {
+          <li>{{ instruction | translate }}</li>
+          }
+        </ul>
+      </div>
+      }
+    </div>
+    <div class="modal-footer">
+      <button type="button" class="btn-primary" (click)="cancel.emit()">
+        {{ 'ERROR.CLOSE' | translate }}
+      </button>
+    </div>
+  </div>
+</div>
+}

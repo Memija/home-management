@@ -15,6 +15,7 @@ import { DeleteConfirmationModalComponent } from '../shared/delete-confirmation-
 import { DetailedRecordsComponent, type ConsumptionRecord } from '../shared/detailed-records/detailed-records.component';
 import { ConsumptionChartComponent, type ChartView, type DisplayMode } from '../shared/consumption-chart/consumption-chart.component';
 import { ErrorModalComponent } from '../shared/error-modal/error-modal.component';
+import { HouseholdService } from '../services/household.service';
 
 @Component({
   selector: 'app-water',
@@ -29,6 +30,7 @@ export class WaterComponent {
   private languageService = inject(LanguageService);
   protected excelService = inject(ExcelService);
   protected excelSettings = inject(ExcelSettingsService);
+  private householdService = inject(HouseholdService);
 
   protected readonly ArrowLeftIcon = ArrowLeft;
   protected readonly DownloadIcon = Download;
@@ -51,10 +53,12 @@ export class WaterComponent {
   protected selectedDate = signal<string>('');
   protected showSuccessModal = signal(false);
   protected showDeleteModal = signal(false);
+  protected showDeleteAllModal = signal(false);
   protected recordToDelete = signal<ConsumptionRecord | null>(null);
+  protected recordsToDelete = signal<ConsumptionRecord[]>([]);
 
   protected chartView = signal<ChartView>('total');
-  protected displayMode = signal<DisplayMode>('total');
+  protected displayMode = signal<DisplayMode>('incremental');
   protected kitchenWarm = signal<number | null>(null);
   protected kitchenCold = signal<number | null>(null);
   protected bathroomWarm = signal<number | null>(null);
@@ -83,6 +87,10 @@ export class WaterComponent {
     this.bathroomCold() !== null
   );
 
+  protected familySize = computed(() => this.householdService.members().length);
+
+  protected cityName = computed(() => this.householdService.address()?.city || '');
+
   protected consumptionGroups = computed<ConsumptionGroup[]>(() => [
     {
       title: 'HOME.KITCHEN',
@@ -99,6 +107,10 @@ export class WaterComponent {
       ]
     }
   ]);
+
+  protected deleteAllMessageParams = computed(() => ({
+    count: this.recordsToDelete().length.toString()
+  }));
 
   protected onChartViewChange = (view: ChartView): void => {
     this.chartView.set(view);
@@ -268,6 +280,26 @@ export class WaterComponent {
   protected cancelDelete() {
     this.showDeleteModal.set(false);
     this.recordToDelete.set(null);
+  }
+
+  protected deleteAllRecords(recordsToDelete: ConsumptionRecord[]) {
+    this.recordsToDelete.set(recordsToDelete);
+    this.showDeleteAllModal.set(true);
+  }
+
+  protected confirmDeleteAll() {
+    // Remove the records to delete from the main records array
+    const recordsToDeleteSet = new Set(this.recordsToDelete().map(r => r.date.getTime()));
+    this.records.update(records =>
+      records.filter(r => !recordsToDeleteSet.has(r.date.getTime()))
+    );
+    void this.storage.save('water_consumption_records', this.records());
+    this.showDeleteAllModal.set(false);
+    this.recordsToDelete.set([]);
+  }
+
+  protected cancelDeleteAll() {
+    this.showDeleteAllModal.set(false);
   }
 
   protected cancelEdit() {

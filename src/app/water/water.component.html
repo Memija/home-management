@@ -38,13 +38,20 @@
   </div>
 
   <app-consumption-chart [data]="records()" [currentView]="chartView()" [onViewChange]="onChartViewChange"
-    [chartType]="'water'" [displayMode]="displayMode()" [onDisplayModeChange]="onDisplayModeChange">
+    [chartType]="'water'" [displayMode]="displayMode()" [onDisplayModeChange]="onDisplayModeChange"
+    [familySize]="familySize()">
   </app-consumption-chart>
+
+  @if (familySize() > 0 && displayMode() === 'incremental' && chartView() === 'total') {
+  <div class="comparison-note">
+    <p>{{ 'CHART.COMPARISON_NOTE_CITY' | translate:{ city: cityName() || 'Germany', size: familySize() } }}</p>
+  </div>
+  }
 
 
   <app-detailed-records [records]="records()" [defaultSortOption]="'date-desc'" [showSearchDate]="true"
     [showYearMonth]="true" [showEditDelete]="true" [recordType]="'water'" (editRecord)="editRecord($event)"
-    (deleteRecord)="deleteRecord($event)">
+    (deleteRecord)="deleteRecord($event)" (deleteAllRecords)="deleteAllRecords($event)">
   </app-detailed-records>
 
   <app-consumption-input [groups]="consumptionGroups()" [selectedDate]="selectedDate()" [maxDate]="maxDate"
@@ -74,6 +81,12 @@
 <app-delete-confirmation-modal [show]="showDeleteModal()" [titleKey]="'HOME.DELETE_CONFIRM_TITLE'"
   [messageKey]="'HOME.DELETE_CONFIRM_MESSAGE'" [cancelKey]="'HOME.CANCEL'" [deleteKey]="'HOME.DELETE_BUTTON'"
   [icon]="TrashIcon" (confirm)="confirmDelete()" (cancel)="cancelDelete()">
+</app-delete-confirmation-modal>
+
+<app-delete-confirmation-modal [show]="showDeleteAllModal()" [titleKey]="'HOME.DELETE_ALL_CONFIRM_TITLE'"
+  [messageKey]="'HOME.DELETE_ALL_CONFIRM_MESSAGE'" [messageParams]="deleteAllMessageParams()"
+  [cancelKey]="'HOME.CANCEL'" [deleteKey]="'HOME.DELETE_ALL_BUTTON'" [icon]="TrashIcon" (confirm)="confirmDeleteAll()"
+  (cancel)="cancelDeleteAll()">
 </app-delete-confirmation-modal>
 
 <app-error-modal [show]="showErrorModal()" [title]="errorTitle()" [message]="errorMessage()" [details]="errorDetails()"

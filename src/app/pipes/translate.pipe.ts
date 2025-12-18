@@ -9,9 +9,18 @@ import { LanguageService } from '../services/language.service';
 export class TranslatePipe implements PipeTransform {
   private languageService = inject(LanguageService);
 
-  transform(key: string): string {
+  transform(key: string, params?: Record<string, any>): string {
     // Reading the signal here creates a dependency
     this.languageService.currentLang();
-    return this.languageService.translate(key);
+    let translation = this.languageService.translate(key);
+
+    // Replace parameters in the translation if provided
+    if (params) {
+      Object.keys(params).forEach(param => {
+        translation = translation.replace(`{${param}}`, params[param]);
+      });
+    }
+
+    return translation;
   }
 }

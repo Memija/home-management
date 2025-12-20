@@ -58,21 +58,21 @@
           </select>
         </div>
       </div>
+      @if (filteredRecords().length > 0 && showEditDelete()) {
+      <button type="button" class="delete-all-btn" (click)="onDeleteAllRecords()"
+        title="{{ 'HOME.DELETE_ALL_TOOLTIP' | translate }}">
+        <lucide-icon [img]="TrashIcon" size="16"></lucide-icon>
+        {{ 'HOME.DELETE_ALL_BUTTON' | translate }} ({{ filteredRecords().length }})
+      </button>
+      }
     </div>
   </div>
 
-  @if (filteredRecords().length > 0 && showEditDelete()) {
-  <div class="delete-all-section">
-    <button type="button" class="delete-all-btn" (click)="onDeleteAllRecords()"
-      title="{{ 'HOME.DELETE_ALL_TOOLTIP' | translate }}">
-      <lucide-icon [img]="TrashIcon" size="16"></lucide-icon>
-      {{ 'HOME.DELETE_ALL_BUTTON' | translate }} ({{ filteredRecords().length }})
-    </button>
-  </div>
-  }
-
   @if (filteredRecords().length === 0) {
-  <p>{{ 'HOME.NO_RECORDS' | translate }}</p>
+  <div class="no-records-message">
+    <lucide-icon [img]="InfoIcon" size="14"></lucide-icon>
+    <p>{{ 'HOME.NO_RECORDS' | translate }}</p>
+  </div>
   } @else {
   <p class="liters-note">
     <lucide-icon [img]="InfoIcon" size="14"></lucide-icon>

@@ -68,41 +68,34 @@
           }
         }
       }
-    }
-  }
 
-  .delete-all-section {
-    display: flex;
-    justify-content: flex-end;
-    margin-bottom: 1rem;
-    padding-top: 0.5rem;
+      .delete-all-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0.5rem 1rem;
+        background: #dc3545;
+        color: white;
+        border: none;
+        border-radius: 6px;
+        cursor: pointer;
+        font-size: 0.9rem;
+        font-weight: 500;
+        transition: all 0.2s ease;
 
-    .delete-all-btn {
-      display: inline-flex;
-      align-items: center;
-      gap: 0.5rem;
-      padding: 0.5rem 1rem;
-      background: #dc3545;
-      color: white;
-      border: none;
-      border-radius: 6px;
-      cursor: pointer;
-      font-size: 0.9rem;
-      font-weight: 500;
-      transition: all 0.2s ease;
+        lucide-icon {
+          flex-shrink: 0;
+        }
 
-      lucide-icon {
-        flex-shrink: 0;
-      }
+        &:hover {
+          background: #c82333;
+          box-shadow: 0 2px 8px rgba(220, 53, 69, 0.3);
+        }
 
-      &:hover {
-        background: #c82333;
-        box-shadow: 0 2px 8px rgba(220, 53, 69, 0.3);
-      }
-
-      &:active {
-        transform: translateY(0);
-        box-shadow: 0 1px 4px rgba(220, 53, 69, 0.2);
+        &:active {
+          transform: translateY(0);
+          box-shadow: 0 1px 4px rgba(220, 53, 69, 0.2);
+        }
       }
     }
   }
@@ -119,6 +112,25 @@
 
     lucide-icon {
       flex-shrink: 0;
+    }
+  }
+
+  .no-records-message {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    font-size: 0.85rem;
+    color: #6c757d;
+    font-style: italic;
+    margin-top: 0rem;
+    padding-left: 0.25rem;
+
+    lucide-icon {
+      flex-shrink: 0;
+    }
+
+    p {
+      margin: 0;
     }
   }
 

@@ -37,16 +37,40 @@
     </div>
   </div>
 
-  <app-consumption-chart [data]="records()" [currentView]="chartView()" [onViewChange]="onChartViewChange"
-    [chartType]="'water'" [displayMode]="displayMode()" [onDisplayModeChange]="onDisplayModeChange"
-    [familySize]="familySize()">
-  </app-consumption-chart>
-
-  @if (familySize() > 0 && displayMode() === 'incremental' && chartView() === 'total') {
+  @if (familySize() > 0 && displayMode() === 'incremental') {
   <div class="comparison-note">
-    <p>{{ 'CHART.COMPARISON_NOTE_CITY' | translate:{ city: cityName() || 'Germany', size: familySize() } }}</p>
+    <div class="comparison-content">
+      <p>{{ 'CHART.COMPARISON_NOTE_COUNTRY' | translate:{ country: effectiveComparisonCountryName(), average:
+        countryAverage(), size: familySize() } }}</p>
+      <div class="country-selector">
+        <label for="comparison-country">
+          <span class="info-tooltip-container">
+            <lucide-icon [img]="InfoIcon" size="14" class="info-icon"></lucide-icon>
+            <span class="info-tooltip">{{ 'CHART.COMPARE_WITH_INFO' | translate }}</span>
+          </span>
+          {{ 'CHART.COMPARE_WITH' | translate }}:
+        </label>
+        <div class="select-with-flag">
+          <img [src]="getSelectedCountryFlag()" alt="" class="country-flag" />
+          <select id="comparison-country" [value]="effectiveComparisonCountryCode()"
+            (change)="onComparisonCountryChange($any($event.target).value)">
+            @for (country of availableCountries(); track country.code) {
+            <option [value]="country.code"
+              [selected]="country.code.toLowerCase() === effectiveComparisonCountryCode().toLowerCase()">
+              {{ country.translationKey | translate }} ({{ country.average }} L)
+            </option>
+            }
+          </select>
+        </div>
+      </div>
+    </div>
   </div>
   }
+
+  <app-consumption-chart [data]="records()" [currentView]="chartView()" [onViewChange]="onChartViewChange"
+    [chartType]="'water'" [displayMode]="displayMode()" [onDisplayModeChange]="onDisplayModeChange"
+    [familySize]="familySize()" [country]="effectiveComparisonCountryCode()">
+  </app-consumption-chart>
 
 
   <app-detailed-records [records]="records()" [defaultSortOption]="'date-desc'" [showSearchDate]="true"
@@ -84,9 +108,8 @@
 </app-delete-confirmation-modal>
 
 <app-delete-confirmation-modal [show]="showDeleteAllModal()" [titleKey]="'HOME.DELETE_ALL_CONFIRM_TITLE'"
-  [messageKey]="'HOME.DELETE_ALL_CONFIRM_MESSAGE'" [messageParams]="deleteAllMessageParams()"
-  [cancelKey]="'HOME.CANCEL'" [deleteKey]="'HOME.DELETE_ALL_BUTTON'" [icon]="TrashIcon" (confirm)="confirmDeleteAll()"
-  (cancel)="cancelDeleteAll()">
+  [messageKey]="deleteAllMessageKey()" [messageParams]="deleteAllMessageParams()" [cancelKey]="'HOME.CANCEL'"
+  [deleteKey]="'HOME.DELETE_ALL_BUTTON'" [icon]="TrashIcon" (confirm)="confirmDeleteAll()" (cancel)="cancelDeleteAll()">
 </app-delete-confirmation-modal>
 
 <app-error-modal [show]="showErrorModal()" [title]="errorTitle()" [message]="errorMessage()" [details]="errorDetails()"

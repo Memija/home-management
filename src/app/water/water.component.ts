@@ -9,13 +9,14 @@ import { FileStorageService } from '../services/file-storage.service';
 import { LanguageService } from '../services/language.service';
 import { ExcelService } from '../services/excel.service';
 import { ExcelSettingsService } from '../services/excel-settings.service';
-import { LucideAngularModule, ArrowLeft, Download, Upload, CheckCircle, Trash2, FileSpreadsheet } from 'lucide-angular';
+import { LucideAngularModule, ArrowLeft, Download, Upload, CheckCircle, Trash2, FileSpreadsheet, Info } from 'lucide-angular';
 import { ConsumptionInputComponent, type ConsumptionGroup, type ConsumptionData } from '../shared/consumption-input/consumption-input.component';
 import { DeleteConfirmationModalComponent } from '../shared/delete-confirmation-modal/delete-confirmation-modal.component';
 import { DetailedRecordsComponent, type ConsumptionRecord } from '../shared/detailed-records/detailed-records.component';
 import { ConsumptionChartComponent, type ChartView, type DisplayMode } from '../shared/consumption-chart/consumption-chart.component';
 import { ErrorModalComponent } from '../shared/error-modal/error-modal.component';
 import { HouseholdService } from '../services/household.service';
+import { WaterAveragesService } from '../services/water-averages.service';
 
 @Component({
   selector: 'app-water',
@@ -31,6 +32,7 @@ export class WaterComponent {
   protected excelService = inject(ExcelService);
   protected excelSettings = inject(ExcelSettingsService);
   private householdService = inject(HouseholdService);
+  private waterAveragesService = inject(WaterAveragesService);
 
   protected readonly ArrowLeftIcon = ArrowLeft;
   protected readonly DownloadIcon = Download;
@@ -38,6 +40,7 @@ export class WaterComponent {
   protected readonly CheckCircleIcon = CheckCircle;
   protected readonly TrashIcon = Trash2;
   protected readonly FileSpreadsheetIcon = FileSpreadsheet;
+  protected readonly InfoIcon = Info;
 
   protected isExporting = signal(false);
   protected isImporting = signal(false);
@@ -91,6 +94,60 @@ export class WaterComponent {
 
   protected cityName = computed(() => this.householdService.address()?.city || '');
 
+  protected countryName = computed(() => this.householdService.address()?.country || '');
+
+  // Temporary country selection for comparison - stores country code (not persisted)
+  protected comparisonCountry = signal<string>('');
+
+  // Get list of available countries for dropdown
+  protected availableCountries = computed(() => {
+    return this.waterAveragesService.getAvailableCountries();
+  });
+
+  // Get the effective country code (user selection or derived from address country name)
+  protected effectiveComparisonCountryCode = computed(() => {
+    // If user selected a country, use that
+    if (this.comparisonCountry()) {
+      return this.comparisonCountry();
+    }
+    // Otherwise, try to find the country code from the address country name
+    const addressCountry = this.countryName();
+    if (addressCountry) {
+      const code = this.waterAveragesService.getCountryCode(addressCountry);
+      if (code) return code;
+    }
+    // Default to 'de' (Germany) if nothing found
+    return 'de';
+  });
+
+  // Get the translated name for the effective country (for display in comparison note)
+  protected effectiveComparisonCountryName = computed(() => {
+    const code = this.effectiveComparisonCountryCode();
+    const countries = this.availableCountries();
+    const country = countries.find(c => c.code.toLowerCase() === code.toLowerCase());
+    return country ? this.languageService.translate(country.translationKey) : this.languageService.translate('COUNTRIES.GERMANY');
+  });
+
+  protected countryAverage = computed(() => {
+    const code = this.effectiveComparisonCountryCode();
+    const countries = this.availableCountries();
+    const country = countries.find(c => c.code.toLowerCase() === code.toLowerCase());
+    return country?.average || 128; // Default to Germany average
+  });
+
+  protected onComparisonCountryChange(countryCode: string): void {
+    this.comparisonCountry.set(countryCode);
+  }
+
+  protected getSelectedCountryFlag(): string {
+    const code = this.effectiveComparisonCountryCode();
+    if (code) {
+      return this.waterAveragesService.getFlagUrl(code);
+    }
+    // Default to world/UN flag
+    return '/flags/un.png';
+  }
+
   protected consumptionGroups = computed<ConsumptionGroup[]>(() => [
     {
       title: 'HOME.KITCHEN',
@@ -111,6 +168,12 @@ export class WaterComponent {
   protected deleteAllMessageParams = computed(() => ({
     count: this.recordsToDelete().length.toString()
   }));
+
+  protected deleteAllMessageKey = computed(() =>
+    this.recordsToDelete().length === 1
+      ? 'HOME.DELETE_ALL_CONFIRM_MESSAGE_SINGULAR'
+      : 'HOME.DELETE_ALL_CONFIRM_MESSAGE_PLURAL'
+  );
 
   protected onChartViewChange = (view: ChartView): void => {
     this.chartView.set(view);

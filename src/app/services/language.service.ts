@@ -4,20 +4,35 @@ import { de } from '../i18n/de';
 
 export type Language = 'en' | 'de';
 
+const LANGUAGE_STORAGE_KEY = 'preferred_language';
+
 @Injectable({
   providedIn: 'root'
 })
 export class LanguageService {
   private appRef = inject(ApplicationRef);
-  readonly currentLang = signal<Language>('en');
+  readonly currentLang = signal<Language>(this.getStoredLanguage());
 
   private translations: Record<Language, any> = {
     en,
     de
   };
 
+  private getStoredLanguage(): Language {
+    if (typeof window !== 'undefined' && typeof localStorage !== 'undefined') {
+      const stored = localStorage.getItem(LANGUAGE_STORAGE_KEY);
+      if (stored === 'en' || stored === 'de') {
+        return stored;
+      }
+    }
+    return 'en';
+  }
+
   setLanguage(lang: Language) {
     this.currentLang.set(lang);
+    if (typeof window !== 'undefined' && typeof localStorage !== 'undefined') {
+      localStorage.setItem(LANGUAGE_STORAGE_KEY, lang);
+    }
     const locale = lang === 'de' ? 'de-DE' : 'en-US';
     document.documentElement.lang = locale;
 

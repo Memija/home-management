@@ -57,7 +57,9 @@ export const de = {
     KITCHEN_WARM_AVG: 'Küche Warm Durchschnitt',
     KITCHEN_COLD_AVG: 'Küche Kalt Durchschnitt',
     BATHROOM_WARM_AVG: 'Bad Warm Durchschnitt',
-    BATHROOM_COLD_AVG: 'Bad Kalt Durchschnitt'
+    BATHROOM_COLD_AVG: 'Bad Kalt Durchschnitt',
+    TRENDLINE: 'Trendlinie',
+    SHOW_TRENDLINE: 'Trendlinie anzeigen'
   },
   COUNTRIES: {
     GERMANY: 'Deutschland',

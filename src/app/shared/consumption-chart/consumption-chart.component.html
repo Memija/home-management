@@ -1,4 +1,4 @@
-@if (data.length > 0) {
+@if (data().length > 0) {
 <div class="chart-section">
   <div class="chart-header">
     <h2>{{ 'HOME.HISTORY_TITLE' | translate }}</h2>
@@ -13,6 +13,13 @@
           {{ 'CHART.DISPLAY_MODE_INCREMENTAL' | translate }}
         </button>
       </div>
+      @if (chartType === 'water' && currentView() === 'total' && data().length >= 2) {
+      <label class="trendline-toggle">
+        <input type="checkbox" [checked]="showTrendline()" (change)="toggleTrendline()">
+        <lucide-icon [img]="ActivityIcon" size="16"></lucide-icon>
+        {{ 'CHART.SHOW_TRENDLINE' | translate }}
+      </label>
+      }
       <div class="chart-filters">
         <button type="button" [class.active]="currentView() === 'total'" (click)="setView('total')">
           <lucide-icon [img]="BarChart3Icon" size="16"></lucide-icon>

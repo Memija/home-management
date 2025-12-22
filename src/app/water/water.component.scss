@@ -56,40 +56,6 @@
   .hidden-input {
     display: none;
   }
-
-  .export-btn,
-  .import-btn {
-    padding: 0.4rem 0.8rem;
-    border: 1px solid #ced4da;
-    background: white;
-    border-radius: 4px;
-    cursor: pointer;
-    font-size: 0.85rem;
-    font-weight: 500;
-    color: #495057;
-    text-decoration: none;
-    display: inline-flex;
-    align-items: center;
-    gap: 0.5rem;
-    transition: all 0.2s;
-
-    &:hover {
-      background: #e9ecef;
-      border-color: #adb5bd;
-    }
-  }
-
-  .export-btn:hover {
-    background: #d4edda;
-    border-color: #28a745;
-    color: #28a745;
-  }
-
-  .import-btn:hover {
-    background: #d1ecf1;
-    border-color: #17a2b8;
-    color: #17a2b8;
-  }
 }
 
 .chart-section {
@@ -319,9 +285,9 @@
 
 .comparison-note {
   margin-top: -0.5rem;
+  margin-bottom: 0.1rem;
   padding: 0.75rem 1rem;
-  background: #e7f3ff;
-  border-left: 4px solid #007bff;
+  background: #e9ecef;
   border-radius: 4px;
 
   .comparison-content {

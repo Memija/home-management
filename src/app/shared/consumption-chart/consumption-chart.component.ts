@@ -1,10 +1,10 @@
-import { Component, Input, computed, inject, input } from '@angular/core';
+import { Component, Input, ViewChild, computed, effect, inject, input, signal } from '@angular/core';
 import { BaseChartDirective } from 'ng2-charts';
 import { Chart, ChartConfiguration, registerables } from 'chart.js';
 import { TranslatePipe } from '../../pipes/translate.pipe';
 import { LanguageService } from '../../services/language.service';
 import { WaterAveragesService } from '../../services/water-averages.service';
-import { LucideAngularModule, BarChart3, DoorOpen, Droplet, Grid3x3, TrendingUp } from 'lucide-angular';
+import { LucideAngularModule, BarChart3, DoorOpen, Droplet, Grid3x3, TrendingUp, Activity } from 'lucide-angular';
 
 Chart.register(...registerables);
 
@@ -26,7 +26,9 @@ export interface ChartConfig {
   styleUrl: './consumption-chart.component.scss'
 })
 export class ConsumptionChartComponent {
-  @Input({ required: true }) data!: any[];
+  @ViewChild(BaseChartDirective) chart?: BaseChartDirective;
+
+  data = input.required<any[]>();
   currentView = input.required<ChartView>();
   @Input({ required: true }) onViewChange!: (view: ChartView) => void;
   @Input({ required: true }) chartType!: 'water' | 'home' | 'heating';
@@ -43,11 +45,15 @@ export class ConsumptionChartComponent {
   protected readonly DropletIcon = Droplet;
   protected readonly Grid3x3Icon = Grid3x3;
   protected readonly TrendingUpIcon = TrendingUp;
+  protected readonly ActivityIcon = Activity;
+
+  // Trendline visibility toggle (only for water charts)
+  protected showTrendline = signal<boolean>(true);
 
   protected currentLang = computed(() => this.languageService.currentLang());
 
   protected chartData = computed<ChartConfiguration['data']>(() => {
-    const recs = this.data;
+    const recs = this.data();
     const labels = recs.map(r => new Date(r.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }));
     const view = this.currentView();
     const mode = this.displayMode();
@@ -68,6 +74,16 @@ export class ConsumptionChartComponent {
     }
   });
 
+  constructor() {
+    // Effect to update chart when data changes
+    effect(() => {
+      // Read chartData to track it
+      this.chartData();
+      // Trigger chart update
+      this.chart?.update();
+    });
+  }
+
   private generateComparisonData(processedData: any[], familySize: number, country: string): any[] {
     // Generate realistic comparison using country-specific average
     if (processedData.length === 0 || familySize === 0) return [];
@@ -75,30 +91,20 @@ export class ConsumptionChartComponent {
     const countryData = this.waterAveragesService.getCountryData(country);
     const averageLitersPerPersonPerDay = countryData.averageLitersPerPersonPerDay;
 
-    return processedData.map((current, index) => {
+    // Calculate the average period across all measurements to keep the line constant
+    let totalDays = 0;
+    if (processedData.length > 1) {
+      const firstDate = new Date(processedData[0].date).getTime();
+      const lastDate = new Date(processedData[processedData.length - 1].date).getTime();
+      totalDays = Math.round((lastDate - firstDate) / (1000 * 60 * 60 * 24));
+    }
+    const averagePeriod = processedData.length > 1 ? totalDays / (processedData.length - 1) : 7;
+
+    return processedData.map((current) => {
       const comparison: any = { date: current.date };
 
-      // Calculate days between measurements
-      let daysBetween;
-      if (index === 0) {
-        // For first point, use days to next measurement
-        if (processedData.length > 1) {
-          const next = processedData[1];
-          daysBetween = Math.round(
-            (new Date(next.date).getTime() - new Date(current.date).getTime()) / (1000 * 60 * 60 * 24)
-          );
-        } else {
-          daysBetween = 7; // Default to 7 days if only one data point
-        }
-      } else {
-        const previous = processedData[index - 1];
-        daysBetween = Math.round(
-          (new Date(current.date).getTime() - new Date(previous.date).getTime()) / (1000 * 60 * 60 * 24)
-        );
-      }
-
-      // Calculate expected total consumption (constant average - no variance)
-      const totalConsumption = averageLitersPerPersonPerDay * familySize * daysBetween;
+      // Use consistent average period for all points to keep line straight
+      const totalConsumption = averageLitersPerPersonPerDay * familySize * averagePeriod;
 
       // Distribute proportionally across rooms based on official statistics
       // Normalized for kitchen+bathroom only: Kitchen 15%, Bathroom 85%
@@ -159,6 +165,44 @@ export class ConsumptionChartComponent {
     return incrementalData;
   }
 
+  /**
+   * Calculate linear regression (least squares method) for trendline
+   * Returns slope (m) and y-intercept (b) for equation: y = mx + b
+   */
+  private calculateLinearRegression(dataPoints: number[]): { slope: number; intercept: number } {
+    const n = dataPoints.length;
+    if (n < 2) return { slope: 0, intercept: dataPoints[0] || 0 };
+
+    // x values are just indices (0, 1, 2, ...)
+    let sumX = 0;
+    let sumY = 0;
+    let sumXY = 0;
+    let sumX2 = 0;
+
+    for (let i = 0; i < n; i++) {
+      sumX += i;
+      sumY += dataPoints[i];
+      sumXY += i * dataPoints[i];
+      sumX2 += i * i;
+    }
+
+    const denominator = n * sumX2 - sumX * sumX;
+    if (denominator === 0) return { slope: 0, intercept: sumY / n };
+
+    const slope = (n * sumXY - sumX * sumY) / denominator;
+    const intercept = (sumY - slope * sumX) / n;
+
+    return { slope, intercept };
+  }
+
+  /**
+   * Generate trendline data points from regression
+   */
+  private generateTrendlineData(dataPoints: number[]): number[] {
+    const { slope, intercept } = this.calculateLinearRegression(dataPoints);
+    return dataPoints.map((_, index) => Math.round(slope * index + intercept));
+  }
+
   private getWaterChartData(recs: any[], labels: string[], view: ChartView, mode: DisplayMode, country: string, familySize: number): ChartConfiguration['data'] {
     // Adjust labels for incremental mode (skip first measurement)
     const chartLabels = mode === 'incremental' ? labels.slice(1) : labels;
@@ -187,6 +231,23 @@ export class ConsumptionChartComponent {
             fill: false,
             tension: 0,
             borderDash: [5, 5],
+            pointRadius: 0
+          });
+        }
+
+        // Add trendline if enabled and we have enough data points
+        if (this.showTrendline() && recs.length >= 2) {
+          const totalData = recs.map(r => (r['kitchenWarm'] as number) + (r['kitchenCold'] as number) + (r['bathroomWarm'] as number) + (r['bathroomCold'] as number));
+          const trendlineData = this.generateTrendlineData(totalData);
+          datasets.push({
+            label: this.languageService.translate('CHART.TRENDLINE'),
+            data: trendlineData,
+            borderColor: '#9b59b6',
+            backgroundColor: 'transparent',
+            fill: false,
+            tension: 0,
+            borderDash: [10, 5],
+            borderWidth: 2,
             pointRadius: 0
           });
         }
@@ -458,5 +519,9 @@ export class ConsumptionChartComponent {
 
   protected setDisplayMode(mode: DisplayMode): void {
     this.onDisplayModeChange(mode);
+  }
+
+  protected toggleTrendline(): void {
+    this.showTrendline.update(value => !value);
   }
 }

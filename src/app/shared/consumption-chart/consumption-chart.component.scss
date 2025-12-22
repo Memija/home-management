@@ -66,6 +66,35 @@
   }
 }
 
+.trendline-toggle {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  background: #f8f9fa;
+  border: 1px solid #e0e0e0;
+  border-radius: 6px;
+  font-size: 0.875rem;
+  color: #6c757d;
+  cursor: pointer;
+  transition: all 0.2s;
+
+  input[type="checkbox"] {
+    margin: 0;
+    cursor: pointer;
+  }
+
+  lucide-icon {
+    color: #9b59b6;
+  }
+
+  &:hover {
+    background: white;
+    border-color: #9b59b6;
+    color: #9b59b6;
+  }
+}
+
 .chart-filters {
   display: flex;
   gap: 8px;

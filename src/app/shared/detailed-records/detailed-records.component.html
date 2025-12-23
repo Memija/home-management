@@ -58,6 +58,8 @@
           </select>
         </div>
       </div>
+      <!-- Slot for parent component to project buttons (e.g., Import/Export) -->
+      <ng-content select="[slot=action-buttons]"></ng-content>
       @if (filteredRecords().length > 0 && showEditDelete()) {
       <button type="button" class="delete-all-btn" (click)="onDeleteAllRecords()"
         title="{{ 'HOME.DELETE_ALL_TOOLTIP' | translate }}">

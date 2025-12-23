@@ -58,6 +58,67 @@
   }
 }
 
+// Styles for action buttons projected into detailed-records
+.action-buttons-group {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+
+  .hidden-input {
+    display: none;
+  }
+
+  .export-btn,
+  .import-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 1rem;
+    background: #007bff;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 0.9rem;
+    font-weight: 500;
+    transition: all 0.2s ease;
+
+    lucide-icon {
+      flex-shrink: 0;
+    }
+
+    &:hover:not(:disabled) {
+      background: #0056b3;
+      box-shadow: 0 2px 8px rgba(0, 123, 255, 0.3);
+    }
+
+    &:disabled,
+    &.disabled {
+      background: #6c757d;
+      cursor: not-allowed;
+      opacity: 0.5;
+    }
+  }
+
+  .import-btn {
+    background: #28a745;
+
+    &:hover:not(.disabled) {
+      background: #1e7e34;
+      box-shadow: 0 2px 8px rgba(40, 167, 69, 0.3);
+    }
+  }
+
+  .excel-btn {
+    background: #217346;
+
+    &:hover:not(:disabled):not(.disabled) {
+      background: #1a5c38;
+      box-shadow: 0 2px 8px rgba(33, 115, 70, 0.3);
+    }
+  }
+}
+
 .chart-section {
   margin-bottom: 2rem;
   padding: 1.5rem;

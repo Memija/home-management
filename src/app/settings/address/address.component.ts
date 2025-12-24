@@ -44,14 +44,13 @@ export class AddressComponent {
   protected streetNumberError = signal('');
   protected zipCodeError = signal('');
 
-  // Country list for search
-  protected readonly countries = this.countryService.getCountries();
-
-  // Filtered countries based on search
+  // Filtered countries based on search (reactive to language changes)
   protected filteredCountries = computed(() => {
     const search = this.countrySearch().toLowerCase();
     if (!search) return [];
-    return this.countries
+    // Get countries fresh each time (they're translated based on current language)
+    const countries = this.countryService.getCountries();
+    return countries
       .filter(c => c.toLowerCase().includes(search))
       .slice(0, 10); // Limit to 10 results
   });

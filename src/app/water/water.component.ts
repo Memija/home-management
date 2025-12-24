@@ -1,5 +1,5 @@
-import { Component, signal, computed, inject } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { Component, signal, computed, inject, PLATFORM_ID } from '@angular/core';
+import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
 import { TranslatePipe } from '../pipes/translate.pipe';
@@ -33,6 +33,7 @@ export class WaterComponent {
   protected excelSettings = inject(ExcelSettingsService);
   private householdService = inject(HouseholdService);
   private waterAveragesService = inject(WaterAveragesService);
+  private platformId = inject(PLATFORM_ID);
 
   protected readonly ArrowLeftIcon = ArrowLeft;
   protected readonly DownloadIcon = Download;
@@ -60,8 +61,8 @@ export class WaterComponent {
   protected recordToDelete = signal<ConsumptionRecord | null>(null);
   protected recordsToDelete = signal<ConsumptionRecord[]>([]);
 
-  protected chartView = signal<ChartView>('total');
-  protected displayMode = signal<DisplayMode>('incremental');
+  protected chartView = signal<ChartView>(this.getStoredChartView());
+  protected displayMode = signal<DisplayMode>(this.getStoredDisplayMode());
   protected kitchenWarm = signal<number | null>(null);
   protected kitchenCold = signal<number | null>(null);
   protected bathroomWarm = signal<number | null>(null);
@@ -92,6 +93,9 @@ export class WaterComponent {
 
   protected familySize = computed(() => this.householdService.members().length);
 
+  // Check if there's enough data for country comparison (needs 3 records for 2 incremental data points)
+  protected hasSufficientDataForComparison = computed(() => this.records().length >= 3);
+
   protected cityName = computed(() => this.householdService.address()?.city || '');
 
   protected countryName = computed(() => this.householdService.address()?.country || '');
@@ -116,8 +120,8 @@ export class WaterComponent {
       const code = this.waterAveragesService.getCountryCode(addressCountry);
       if (code) return code;
     }
-    // Default to 'de' (Germany) if nothing found
-    return 'de';
+    // Default to 'world' (World Average) if nothing found
+    return 'world';
   });
 
   // Get the translated name for the effective country (for display in comparison note)
@@ -125,14 +129,14 @@ export class WaterComponent {
     const code = this.effectiveComparisonCountryCode();
     const countries = this.availableCountries();
     const country = countries.find(c => c.code.toLowerCase() === code.toLowerCase());
-    return country ? this.languageService.translate(country.translationKey) : this.languageService.translate('COUNTRIES.GERMANY');
+    return country ? this.languageService.translate(country.translationKey) : this.languageService.translate('COUNTRIES.WORLD');
   });
 
   protected countryAverage = computed(() => {
     const code = this.effectiveComparisonCountryCode();
     const countries = this.availableCountries();
     const country = countries.find(c => c.code.toLowerCase() === code.toLowerCase());
-    return country?.average || 128; // Default to Germany average
+    return country?.average || 150; // Default to World average
   });
 
   protected onComparisonCountryChange(countryCode: string): void {
@@ -177,11 +181,45 @@ export class WaterComponent {
 
   protected onChartViewChange = (view: ChartView): void => {
     this.chartView.set(view);
+    this.saveChartView(view);
   };
 
   protected onDisplayModeChange = (mode: DisplayMode): void => {
     this.displayMode.set(mode);
+    this.saveDisplayMode(mode);
   };
+
+  private getStoredChartView(): ChartView {
+    if (isPlatformBrowser(this.platformId)) {
+      const stored = localStorage.getItem('water_chart_view');
+      if (stored === 'total' || stored === 'by-room' || stored === 'by-type' || stored === 'detailed') {
+        return stored;
+      }
+    }
+    return 'total';
+  }
+
+  private getStoredDisplayMode(): DisplayMode {
+    if (isPlatformBrowser(this.platformId)) {
+      const stored = localStorage.getItem('water_display_mode');
+      if (stored === 'total' || stored === 'incremental') {
+        return stored;
+      }
+    }
+    return 'incremental';
+  }
+
+  private saveChartView(view: ChartView): void {
+    if (isPlatformBrowser(this.platformId)) {
+      localStorage.setItem('water_chart_view', view);
+    }
+  }
+
+  private saveDisplayMode(mode: DisplayMode): void {
+    if (isPlatformBrowser(this.platformId)) {
+      localStorage.setItem('water_display_mode', mode);
+    }
+  }
 
   constructor() {
     this.loadData();

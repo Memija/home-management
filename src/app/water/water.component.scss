@@ -351,6 +351,11 @@
   background: #e9ecef;
   border-radius: 4px;
 
+  &.disabled {
+    background: #f8f9fa;
+    border: 1px dashed #dee2e6;
+  }
+
   .comparison-content {
     display: flex;
     flex-wrap: wrap;
@@ -366,6 +371,19 @@
     font-style: italic;
     flex: 1;
     min-width: 200px;
+
+    &.disabled-message {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      color: #6c757d;
+      font-style: normal;
+
+      .info-icon {
+        color: #6c757d;
+        flex-shrink: 0;
+      }
+    }
   }
 
   .country-selector {
@@ -373,6 +391,11 @@
     align-items: center;
     gap: 0.5rem;
     flex-shrink: 0;
+
+    &.disabled {
+      opacity: 0.5;
+      pointer-events: none;
+    }
 
     label {
       font-size: 0.85rem;
@@ -382,6 +405,10 @@
       display: flex;
       align-items: center;
       gap: 0.25rem;
+
+      &.disabled {
+        color: #6c757d;
+      }
 
       .info-tooltip-container {
         position: relative;
@@ -443,6 +470,10 @@
       align-items: center;
       gap: 0.5rem;
 
+      &.disabled {
+        opacity: 0.6;
+      }
+
       .country-flag {
         width: 24px;
         height: 16px;
@@ -462,7 +493,7 @@
       cursor: pointer;
       min-width: 180px;
 
-      &:hover {
+      &:hover:not(:disabled) {
         border-color: #007bff;
       }
 
@@ -470,6 +501,12 @@
         outline: none;
         border-color: #007bff;
         box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.25);
+      }
+
+      &:disabled {
+        background: #e9ecef;
+        cursor: not-allowed;
+        color: #6c757d;
       }
     }
   }

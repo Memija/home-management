@@ -256,14 +256,15 @@
 
   <!-- Action buttons for bulk edit view -->
   <div class="button-group">
-    @if (!showAddMemberForm() && draftMembers().length > 0) {
+    @if (!showAddMemberForm()) {
     <button type="button" class="add-btn" (click)="toggleAddMemberForm()"
       title="{{ 'SETTINGS.SHOW_ADD_MEMBER_FORM' | translate }}">
       <lucide-icon [img]="AddIcon" size="16"></lucide-icon>
       {{ 'SETTINGS.SHOW_ADD_MEMBER_FORM' | translate }}
     </button>
     }
-    <button type="button" class="save-btn" (click)="saveFamily()" title="{{ 'SETTINGS.SAVE_FAMILY' | translate }}">
+    <button type="button" class="save-btn" (click)="saveFamily()" [disabled]="draftMembers().length === 0"
+      title="{{ 'SETTINGS.SAVE_FAMILY' | translate }}">
       <lucide-icon [img]="SaveIcon" size="16"></lucide-icon>
       {{ 'SETTINGS.SAVE_FAMILY' | translate }}
     </button>
@@ -279,4 +280,11 @@
   [messageKey]="'SETTINGS.DELETE_MEMBER_CONFIRM_MESSAGE'" [cancelKey]="'SETTINGS.CANCEL'"
   [deleteKey]="'SETTINGS.DELETE_MEMBER_BUTTON'" [icon]="DeleteIcon" (confirm)="confirmDelete()"
   (cancel)="cancelDelete()">
+</app-delete-confirmation-modal>
+
+<!-- Unsaved changes warning modal -->
+<app-delete-confirmation-modal [show]="showUnsavedChangesModal()" [titleKey]="'SETTINGS.UNSAVED_CHANGES_TITLE'"
+  [messageKey]="'SETTINGS.UNSAVED_CHANGES_MESSAGE'" [cancelKey]="'SETTINGS.UNSAVED_CHANGES_STAY'"
+  [deleteKey]="'SETTINGS.UNSAVED_CHANGES_LEAVE'" [icon]="WarningIcon" (confirm)="confirmLeaveWithoutSaving()"
+  (cancel)="stayAndSave()">
 </app-delete-confirmation-modal>

@@ -11,22 +11,31 @@
   </div>
 
   @if (familySize() > 0 && displayMode() === 'incremental') {
-  <div class="comparison-note">
+  <div class="comparison-note" [class.disabled]="!hasSufficientDataForComparison()">
     <div class="comparison-content">
+      @if (hasSufficientDataForComparison()) {
       <p>{{ 'CHART.COMPARISON_NOTE_COUNTRY' | translate:{ country: effectiveComparisonCountryName(), average:
         countryAverage(), size: familySize() } }}</p>
-      <div class="country-selector">
-        <label for="comparison-country">
+      } @else {
+      <p class="disabled-message">
+        <lucide-icon [img]="InfoIcon" size="16" class="info-icon"></lucide-icon>
+        {{ 'CHART.COMPARISON_REQUIRES_DATA' | translate }}
+      </p>
+      }
+      <div class="country-selector" [class.disabled]="!hasSufficientDataForComparison()">
+        <label for="comparison-country" [class.disabled]="!hasSufficientDataForComparison()">
           <span class="info-tooltip-container">
             <lucide-icon [img]="InfoIcon" size="14" class="info-icon"></lucide-icon>
-            <span class="info-tooltip">{{ 'CHART.COMPARE_WITH_INFO' | translate }}</span>
+            <span class="info-tooltip">{{ hasSufficientDataForComparison() ? ('CHART.COMPARE_WITH_INFO' | translate) :
+              ('CHART.COMPARISON_REQUIRES_DATA' | translate) }}</span>
           </span>
           {{ 'CHART.COMPARE_WITH' | translate }}:
         </label>
-        <div class="select-with-flag">
+        <div class="select-with-flag" [class.disabled]="!hasSufficientDataForComparison()">
           <img [src]="getSelectedCountryFlag()" alt="" class="country-flag" />
           <select id="comparison-country" [value]="effectiveComparisonCountryCode()"
-            (change)="onComparisonCountryChange($any($event.target).value)">
+            (change)="onComparisonCountryChange($any($event.target).value)"
+            [disabled]="!hasSufficientDataForComparison()">
             @for (country of availableCountries(); track country.code) {
             <option [value]="country.code"
               [selected]="country.code.toLowerCase() === effectiveComparisonCountryCode().toLowerCase()">

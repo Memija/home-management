@@ -1,7 +1,7 @@
-import { Component, signal, inject, effect, computed } from '@angular/core';
+import { Component, signal, inject, effect, computed, HostListener } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { LucideAngularModule, Pencil, Save, X, Trash2, Plus, Download, Upload, User, Baby, Mars, Venus } from 'lucide-angular';
+import { LucideAngularModule, Pencil, Save, X, Trash2, Plus, Download, Upload, User, Baby, Mars, Venus, AlertTriangle } from 'lucide-angular';
 import { HouseholdService, HouseholdMember } from '../../services/household.service';
 import { LanguageService } from '../../services/language.service';
 import { FileStorageService } from '../../services/file-storage.service';
@@ -32,6 +32,7 @@ export class FamilyComponent {
     protected readonly KidIcon = Baby;
     protected readonly MaleIcon = Mars;
     protected readonly FemaleIcon = Venus;
+    protected readonly WarningIcon = AlertTriangle;
 
     // State
     protected isEditing = signal(false);
@@ -39,6 +40,8 @@ export class FamilyComponent {
     protected showAddMemberForm = signal(false);
     protected showDeleteModal = signal(false);
     protected memberToDelete = signal<string | null>(null);
+    public showUnsavedChangesModal = signal(false);
+    public pendingNavigation = signal<(() => void) | null>(null);
 
     // Individual member edit state
     protected editingMemberId = signal<string | null>(null);
@@ -70,6 +73,38 @@ export class FamilyComponent {
         });
     }
 
+    // Computed property to check if there are unsaved changes (public for parent access)
+    public hasUnsavedChanges = computed(() => {
+        if (!this.isEditing()) return false;
+
+        const savedMembers = this.householdService.members();
+        const draft = this.draftMembers();
+
+        // Compare lengths first
+        if (savedMembers.length !== draft.length) return true;
+
+        // Compare each member
+        return !savedMembers.every((saved, index) => {
+            const draftMember = draft[index];
+            return saved.id === draftMember.id &&
+                saved.name === draftMember.name &&
+                saved.surname === draftMember.surname &&
+                saved.type === draftMember.type &&
+                saved.gender === draftMember.gender &&
+                saved.avatar === draftMember.avatar;
+        });
+    });
+
+    // Handle browser refresh/close
+    @HostListener('window:beforeunload', ['$event'])
+    onBeforeUnload(event: BeforeUnloadEvent) {
+        if (this.hasUnsavedChanges()) {
+            event.preventDefault();
+            return '';
+        }
+        return;
+    }
+
     editFamily() {
         this.draftMembers.set([...this.householdService.members()]);
         this.isEditing.set(true);
@@ -77,8 +112,42 @@ export class FamilyComponent {
     }
 
     cancelEdit() {
-        this.isEditing.set(false);
-        this.resetForm();
+        if (this.hasUnsavedChanges()) {
+            this.pendingNavigation.set(() => {
+                this.isEditing.set(false);
+                this.resetForm();
+            });
+            this.showUnsavedChangesModal.set(true);
+        } else {
+            this.isEditing.set(false);
+            this.resetForm();
+        }
+    }
+
+    // Unsaved changes modal handlers
+    confirmLeaveWithoutSaving() {
+        const navigation = this.pendingNavigation();
+        if (navigation) {
+            navigation();
+        }
+        this.showUnsavedChangesModal.set(false);
+        this.pendingNavigation.set(null);
+    }
+
+    stayAndSave() {
+        this.showUnsavedChangesModal.set(false);
+        this.pendingNavigation.set(null);
+        // User chose to stay, they can save manually
+    }
+
+    // Method for parent component to trigger navigation warning
+    public triggerNavigationWarning(onLeave: () => void): boolean {
+        if (this.hasUnsavedChanges()) {
+            this.pendingNavigation.set(onLeave);
+            this.showUnsavedChangesModal.set(true);
+            return true; // Navigation blocked
+        }
+        return false; // Navigation allowed
     }
 
     saveFamily() {

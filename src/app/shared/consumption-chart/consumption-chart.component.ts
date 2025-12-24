@@ -1,10 +1,11 @@
-import { Component, Input, ViewChild, computed, effect, inject, input, signal } from '@angular/core';
+import { Component, Input, PLATFORM_ID, ViewChild, computed, effect, inject, input, signal } from '@angular/core';
+import { isPlatformBrowser } from '@angular/common';
 import { BaseChartDirective } from 'ng2-charts';
 import { Chart, ChartConfiguration, registerables } from 'chart.js';
 import { TranslatePipe } from '../../pipes/translate.pipe';
 import { LanguageService } from '../../services/language.service';
 import { WaterAveragesService } from '../../services/water-averages.service';
-import { LucideAngularModule, BarChart3, DoorOpen, Droplet, Grid3x3, TrendingUp, Activity } from 'lucide-angular';
+import { LucideAngularModule, BarChart3, DoorOpen, Droplet, Grid3x3, TrendingUp, Activity, Info } from 'lucide-angular';
 
 Chart.register(...registerables);
 
@@ -39,6 +40,7 @@ export class ConsumptionChartComponent {
 
   private languageService = inject(LanguageService);
   private waterAveragesService = inject(WaterAveragesService);
+  private platformId = inject(PLATFORM_ID);
 
   protected readonly BarChart3Icon = BarChart3;
   protected readonly DoorOpenIcon = DoorOpen;
@@ -46,9 +48,26 @@ export class ConsumptionChartComponent {
   protected readonly Grid3x3Icon = Grid3x3;
   protected readonly TrendingUpIcon = TrendingUp;
   protected readonly ActivityIcon = Activity;
+  protected readonly InfoIcon = Info;
 
   // Trendline visibility toggle (only for water charts)
-  protected showTrendline = signal<boolean>(true);
+  protected showTrendline = signal<boolean>(this.getStoredTrendlineVisibility());
+
+  // Average comparison visibility toggle (only for water charts)
+  protected showAverageComparison = signal<boolean>(this.getStoredAverageComparisonVisibility());
+
+  // Computed property to check if there's enough data for features
+  // In incremental mode, we need 3 records to get 2 incremental data points for a trendline
+  protected hasSufficientDataForTrendline = computed(() => {
+    const dataLength = this.data().length;
+    const mode = this.displayMode();
+    return mode === 'incremental' ? dataLength >= 3 : dataLength >= 2;
+  });
+
+  protected hasSufficientDataForComparison = computed(() => {
+    const dataLength = this.data().length;
+    return dataLength >= 3; // Comparison only works in incremental mode, needs 3 original records
+  });
 
   protected currentLang = computed(() => this.languageService.currentLang());
 
@@ -57,8 +76,10 @@ export class ConsumptionChartComponent {
     const labels = recs.map(r => new Date(r.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }));
     const view = this.currentView();
     const mode = this.displayMode();
-    // Reactive to language and country changes
+    // Reactive to language, country, and toggle changes
     this.currentLang();
+    this.showTrendline();
+    this.showAverageComparison();
     const currentCountry = this.country();
     const currentFamilySize = this.familySize();
 
@@ -206,7 +227,7 @@ export class ConsumptionChartComponent {
   private getWaterChartData(recs: any[], labels: string[], view: ChartView, mode: DisplayMode, country: string, familySize: number): ChartConfiguration['data'] {
     // Adjust labels for incremental mode (skip first measurement)
     const chartLabels = mode === 'incremental' ? labels.slice(1) : labels;
-    const showComparison = familySize > 0 && mode === 'incremental';
+    const showComparison = familySize > 0 && mode === 'incremental' && this.showAverageComparison();
     const comparisonData = showComparison ? this.generateComparisonData(recs, familySize, country) : [];
 
     switch (view) {
@@ -219,7 +240,9 @@ export class ConsumptionChartComponent {
           borderColor: '#007bff',
           backgroundColor: 'rgba(0, 123, 255, 0.1)',
           fill: true,
-          tension: 0.4
+          tension: 0.4,
+          pointRadius: recs.length === 1 ? 8 : 3,
+          pointHoverRadius: 6
         }];
 
         if (showComparison) {
@@ -264,7 +287,8 @@ export class ConsumptionChartComponent {
             borderColor: '#28a745',
             backgroundColor: 'rgba(40, 167, 69, 0.1)',
             fill: true,
-            tension: 0.4
+            tension: 0.4,
+            pointRadius: recs.length === 1 ? 8 : 3
           },
           {
             label: this.languageService.translate('CHART.BATHROOM_TOTAL'),
@@ -272,7 +296,8 @@ export class ConsumptionChartComponent {
             borderColor: '#17a2b8',
             backgroundColor: 'rgba(23, 162, 184, 0.1)',
             fill: true,
-            tension: 0.4
+            tension: 0.4,
+            pointRadius: recs.length === 1 ? 8 : 3
           }
         ];
 
@@ -313,7 +338,8 @@ export class ConsumptionChartComponent {
             borderColor: '#dc3545',
             backgroundColor: 'rgba(220, 53, 69, 0.1)',
             fill: true,
-            tension: 0.4
+            tension: 0.4,
+            pointRadius: recs.length === 1 ? 8 : 3
           },
           {
             label: this.languageService.translate('CHART.COLD_WATER_TOTAL'),
@@ -321,7 +347,8 @@ export class ConsumptionChartComponent {
             borderColor: '#6c757d',
             backgroundColor: 'rgba(108, 117, 125, 0.1)',
             fill: true,
-            tension: 0.4
+            tension: 0.4,
+            pointRadius: recs.length === 1 ? 8 : 3
           }
         ];
 
@@ -362,7 +389,8 @@ export class ConsumptionChartComponent {
             borderColor: '#ff6384',
             backgroundColor: 'rgba(255, 99, 132, 0.1)',
             fill: false,
-            tension: 0.4
+            tension: 0.4,
+            pointRadius: recs.length === 1 ? 8 : 3
           },
           {
             label: this.languageService.translate('CHART.KITCHEN_COLD'),
@@ -370,7 +398,8 @@ export class ConsumptionChartComponent {
             borderColor: '#36a2eb',
             backgroundColor: 'rgba(54, 162, 235, 0.1)',
             fill: false,
-            tension: 0.4
+            tension: 0.4,
+            pointRadius: recs.length === 1 ? 8 : 3
           },
           {
             label: this.languageService.translate('CHART.BATHROOM_WARM'),
@@ -378,7 +407,8 @@ export class ConsumptionChartComponent {
             borderColor: '#ffcd56',
             backgroundColor: 'rgba(255, 205, 86, 0.1)',
             fill: false,
-            tension: 0.4
+            tension: 0.4,
+            pointRadius: recs.length === 1 ? 8 : 3
           },
           {
             label: this.languageService.translate('CHART.BATHROOM_COLD'),
@@ -386,7 +416,8 @@ export class ConsumptionChartComponent {
             borderColor: '#4bc0c0',
             backgroundColor: 'rgba(75, 192, 192, 0.1)',
             fill: false,
-            tension: 0.4
+            tension: 0.4,
+            pointRadius: recs.length === 1 ? 8 : 3
           }
         ];
 
@@ -523,5 +554,39 @@ export class ConsumptionChartComponent {
 
   protected toggleTrendline(): void {
     this.showTrendline.update(value => !value);
+    this.saveTrendlineVisibility(this.showTrendline());
+  }
+
+  private getStoredTrendlineVisibility(): boolean {
+    if (isPlatformBrowser(this.platformId)) {
+      const stored = localStorage.getItem('water_chart_trendline_visible');
+      return stored === null ? true : stored === 'true';
+    }
+    return true;
+  }
+
+  private saveTrendlineVisibility(visible: boolean): void {
+    if (isPlatformBrowser(this.platformId)) {
+      localStorage.setItem('water_chart_trendline_visible', visible.toString());
+    }
+  }
+
+  protected toggleAverageComparison(): void {
+    this.showAverageComparison.update(value => !value);
+    this.saveAverageComparisonVisibility(this.showAverageComparison());
+  }
+
+  private getStoredAverageComparisonVisibility(): boolean {
+    if (isPlatformBrowser(this.platformId)) {
+      const stored = localStorage.getItem('water_chart_average_visible');
+      return stored === null ? true : stored === 'true';
+    }
+    return true;
+  }
+
+  private saveAverageComparisonVisibility(visible: boolean): void {
+    if (isPlatformBrowser(this.platformId)) {
+      localStorage.setItem('water_chart_average_visible', visible.toString());
+    }
   }
 }

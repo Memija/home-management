@@ -108,6 +108,13 @@ export class WaterAveragesService {
     year: 2022
   };
 
+  // World average entry (used as fallback)
+  private readonly worldData: CountryWaterData = {
+    averageLitersPerPersonPerDay: 150,
+    source: 'World Average Estimate',
+    year: 2022
+  };
+
   // Code-to-country mapping for reverse lookup
   private readonly codeToCountry: Record<string, string> = {
     'de': 'germany', 'it': 'italy', 'fr': 'france', 'gb': 'united kingdom',
@@ -125,7 +132,8 @@ export class WaterAveragesService {
     'sg': 'singapore', 'my': 'malaysia', 'id': 'indonesia', 'th': 'thailand',
     'vn': 'vietnam', 'ph': 'philippines', 'tr': 'turkey', 'ir': 'iran',
     'sa': 'saudi arabia', 'ae': 'uae', 'il': 'israel', 'pk': 'pakistan',
-    'bd': 'bangladesh', 'au': 'australia', 'nz': 'new zealand'
+    'bd': 'bangladesh', 'au': 'australia', 'nz': 'new zealand',
+    'world': 'world'
   };
 
   // Country name to code mapping (includes English and German names)
@@ -138,7 +146,7 @@ export class WaterAveragesService {
     'ireland': 'ie', 'czech republic': 'cz', 'hungary': 'hu', 'romania': 'ro',
     'croatia': 'hr', 'slovenia': 'si', 'slovakia': 'sk', 'bosnia and herzegovina': 'ba',
     'serbia': 'rs', 'montenegro': 'me', 'north macedonia': 'mk', 'albania': 'al',
-    'kosovo': 'xk', 'usa': 'us', 'canada': 'ca', 'mexico': 'mx',
+    'kosovo': 'xk', 'usa': 'us', 'united states': 'us', 'united states of america': 'us', 'canada': 'ca', 'mexico': 'mx',
     'brazil': 'br', 'argentina': 'ar', 'nigeria': 'ng', 'south africa': 'za',
     'egypt': 'eg', 'kenya': 'ke', 'morocco': 'ma', 'algeria': 'dz',
     'tunisia': 'tn', 'ethiopia': 'et', 'ghana': 'gh', 'tanzania': 'tz',
@@ -147,6 +155,14 @@ export class WaterAveragesService {
     'vietnam': 'vn', 'philippines': 'ph', 'turkey': 'tr', 'iran': 'ir',
     'saudi arabia': 'sa', 'uae': 'ae', 'israel': 'il', 'pakistan': 'pk',
     'bangladesh': 'bd', 'australia': 'au', 'new zealand': 'nz',
+    // Additional English names
+    'afghanistan': 'af', 'andorra': 'ad', 'angola': 'ao', 'armenia': 'am',
+    'azerbaijan': 'az', 'belarus': 'by', 'bulgaria': 'bg', 'colombia': 'co',
+    'cuba': 'cu', 'cyprus': 'cy', 'ecuador': 'ec', 'estonia': 'ee',
+    'honduras': 'hn', 'iceland': 'is', 'iraq': 'iq', 'jordan': 'jo',
+    'kazakhstan': 'kz', 'kuwait': 'kw', 'latvia': 'lv', 'lebanon': 'lb',
+    'lithuania': 'lt', 'luxembourg': 'lu', 'malta': 'mt', 'moldova': 'md',
+    'peru': 'pe', 'qatar': 'qa', 'russia': 'ru', 'taiwan': 'tw', 'ukraine': 'ua',
     // German names
     'deutschland': 'de', 'italien': 'it', 'frankreich': 'fr', 'vereinigtes königreich': 'gb',
     'spanien': 'es', 'niederlande': 'nl', 'belgien': 'be', 'österreich': 'at',
@@ -160,7 +176,12 @@ export class WaterAveragesService {
     'algerien': 'dz', 'tunesien': 'tn', 'äthiopien': 'et', 'tansania': 'tz',
     'indien': 'in', 'südkorea': 'kr', 'singapur': 'sg', 'indonesien': 'id',
     'philippinen': 'ph', 'türkei': 'tr', 'saudi-arabien': 'sa', 'vae': 'ae',
-    'bangladesch': 'bd', 'australien': 'au', 'neuseeland': 'nz'
+    'bangladesch': 'bd', 'australien': 'au', 'neuseeland': 'nz',
+    'armenien': 'am', 'aserbaidschan': 'az', 'weißrussland': 'by', 'bulgarien': 'bg',
+    'kolumbien': 'co', 'kuba': 'cu', 'zypern': 'cy', 'estland': 'ee',
+    'island': 'is', 'irak': 'iq', 'jordanien': 'jo', 'kasachstan': 'kz',
+    'lettland': 'lv', 'libanon': 'lb', 'litauen': 'lt', 'luxemburg': 'lu',
+    'moldawien': 'md', 'katar': 'qa', 'russland': 'ru'
   };
 
   getCountryData(countryOrCode: string): CountryWaterData {
@@ -177,8 +198,13 @@ export class WaterAveragesService {
 
     // Then try as country code
     const countryName = this.codeToCountry[normalized];
-    if (countryName && this.countryData[countryName]) {
+    if (countryName && countryName !== 'world' && this.countryData[countryName]) {
       return this.countryData[countryName];
+    }
+
+    // Special case for world average
+    if (normalized === 'world') {
+      return this.worldData;
     }
 
     return this.defaultData;
@@ -277,12 +303,18 @@ export class WaterAveragesService {
       { translationKey: 'COUNTRIES.PAKISTAN', code: 'pk', average: 95 },
       { translationKey: 'COUNTRIES.BANGLADESH', code: 'bd', average: 95 },
       { translationKey: 'COUNTRIES.AUSTRALIA', code: 'au', average: 340 },
-      { translationKey: 'COUNTRIES.NEW_ZEALAND', code: 'nz', average: 227 }
+      { translationKey: 'COUNTRIES.NEW_ZEALAND', code: 'nz', average: 227 },
+      { translationKey: 'COUNTRIES.WORLD', code: 'world', average: 150 }
     ];
   }
 
   // Get flag URL for a country code (local flags directory)
   getFlagUrl(countryCode: string): string {
-    return `/flags/${countryCode.toLowerCase()}.png`;
+    const code = countryCode.toLowerCase();
+    // Use UN flag for world average
+    if (code === 'world') {
+      return '/flags/un.png';
+    }
+    return `/flags/${code}.png`;
   }
 }

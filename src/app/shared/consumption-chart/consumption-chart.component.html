@@ -13,11 +13,38 @@
           {{ 'CHART.DISPLAY_MODE_INCREMENTAL' | translate }}
         </button>
       </div>
-      @if (chartType === 'water' && currentView() === 'total' && data().length >= 2) {
-      <label class="trendline-toggle">
-        <input type="checkbox" [checked]="showTrendline()" (change)="toggleTrendline()">
+      @if (chartType === 'water' && currentView() === 'total') {
+      <label class="trendline-toggle" [class.disabled]="!hasSufficientDataForTrendline()">
+        <input type="checkbox" [checked]="showTrendline()" (change)="toggleTrendline()"
+          [disabled]="!hasSufficientDataForTrendline()">
         <lucide-icon [img]="ActivityIcon" size="16"></lucide-icon>
         {{ 'CHART.SHOW_TRENDLINE' | translate }}
+        @if (!hasSufficientDataForTrendline()) {
+        <span class="info-tooltip-container">
+          <lucide-icon [img]="InfoIcon" size="14" class="info-icon"></lucide-icon>
+          <span class="info-tooltip">{{ (displayMode() === 'incremental' ? 'CHART.TRENDLINE_REQUIRES_DATA_INCREMENTAL' :
+            'CHART.TRENDLINE_REQUIRES_DATA') | translate }}</span>
+        </span>
+        }
+      </label>
+      }
+      @if (chartType === 'water' && displayMode() === 'incremental') {
+      <label class="trendline-toggle" [class.disabled]="familySize() === 0 || !hasSufficientDataForComparison()">
+        <input type="checkbox" [checked]="showAverageComparison()" (change)="toggleAverageComparison()"
+          [disabled]="familySize() === 0 || !hasSufficientDataForComparison()">
+        <lucide-icon [img]="BarChart3Icon" size="16"></lucide-icon>
+        {{ 'CHART.SHOW_AVERAGE' | translate }}
+        @if (familySize() === 0) {
+        <span class="info-tooltip-container">
+          <lucide-icon [img]="InfoIcon" size="14" class="info-icon"></lucide-icon>
+          <span class="info-tooltip">{{ 'CHART.AVERAGE_REQUIRES_FAMILY' | translate }}</span>
+        </span>
+        } @else if (!hasSufficientDataForComparison()) {
+        <span class="info-tooltip-container">
+          <lucide-icon [img]="InfoIcon" size="14" class="info-icon"></lucide-icon>
+          <span class="info-tooltip">{{ 'CHART.AVERAGE_REQUIRES_DATA' | translate }}</span>
+        </span>
+        }
       </label>
       }
       <div class="chart-filters">

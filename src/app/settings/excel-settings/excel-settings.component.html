@@ -14,8 +14,9 @@
 
     <!-- Enable/Disable Toggle -->
     <div class="toggle-container">
-      <label class="toggle-label">
-        <input type="checkbox" [checked]="enabled()" (change)="onEnabledChange($event)" class="toggle-input">
+      <label class="toggle-label" for="excel-integration-toggle">
+        <input id="excel-integration-toggle" type="checkbox" [checked]="enabled()" (change)="onEnabledChange($event)"
+          class="toggle-input">
         <span class="toggle-text">{{ 'SETTINGS.EXCEL_ENABLED' | translate }}</span>
       </label>
     </div>

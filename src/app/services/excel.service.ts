@@ -1,5 +1,4 @@
 import { Injectable, inject } from '@angular/core';
-import * as XLSX from 'xlsx';
 import { ExcelSettingsService, WaterColumnMapping, HeatingColumnMapping } from './excel-settings.service';
 
 export interface WaterRecord {
@@ -23,11 +22,22 @@ export interface HeatingRecord {
 })
 export class ExcelService {
   private excelSettings = inject(ExcelSettingsService);
+  private xlsxModule: typeof import('xlsx') | null = null;
+
+  /**
+   * Dynamically load xlsx library when needed
+   */
+  private async getXLSX(): Promise<typeof import('xlsx')> {
+    if (!this.xlsxModule) {
+      this.xlsxModule = await import('xlsx');
+    }
+    return this.xlsxModule;
+  }
 
   /**
    * Export water consumption records to Excel
    */
-  exportWaterToExcel(records: WaterRecord[], filename: string = 'water-consumption.xlsx'): void {
+  async exportWaterToExcel(records: WaterRecord[], filename: string = 'water-consumption.xlsx'): Promise<void> {
     const mapping = this.excelSettings.getWaterMapping();
 
     // Transform records to match column mapping
@@ -39,13 +49,13 @@ export class ExcelService {
       [mapping.bathroomCold]: record.bathroomCold
     }));
 
-    this.createAndDownloadExcel(data, filename);
+    await this.createAndDownloadExcel(data, filename);
   }
 
   /**
    * Export heating consumption records to Excel
    */
-  exportHeatingToExcel(records: HeatingRecord[], filename: string = 'heating-consumption.xlsx'): void {
+  async exportHeatingToExcel(records: HeatingRecord[], filename: string = 'heating-consumption.xlsx'): Promise<void> {
     const mapping = this.excelSettings.getHeatingMapping();
 
     // Transform records to match column mapping
@@ -57,7 +67,7 @@ export class ExcelService {
       [mapping.bathroom]: record.bathroom
     }));
 
-    this.createAndDownloadExcel(data, filename);
+    await this.createAndDownloadExcel(data, filename);
   }
 
   /**
@@ -113,7 +123,8 @@ export class ExcelService {
   /**
    * Create Excel file and trigger download
    */
-  private createAndDownloadExcel(data: any[], filename: string): void {
+  private async createAndDownloadExcel(data: any[], filename: string): Promise<void> {
+    const XLSX = await this.getXLSX();
     const worksheet = XLSX.utils.json_to_sheet(data);
     const workbook = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(workbook, worksheet, 'Data');
@@ -126,6 +137,8 @@ export class ExcelService {
    * Read Excel file and return data as array of objects
    */
   private async readExcelFile(file: File): Promise<any[]> {
+    const XLSX = await this.getXLSX();
+
     return new Promise((resolve, reject) => {
       const reader = new FileReader();
 

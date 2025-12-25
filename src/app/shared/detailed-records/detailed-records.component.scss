@@ -1,3 +1,5 @@
+// Detailed records specific styles - extends shared styles from styles.scss
+
 .history-section {
   margin-bottom: 2rem;
   padding: 1.5rem;
@@ -100,21 +102,7 @@
     }
   }
 
-  .liters-note {
-    display: flex;
-    align-items: center;
-    gap: 0.4rem;
-    font-size: 0.85rem;
-    color: #6c757d;
-    font-style: italic;
-    margin-top: 0rem;
-    padding-left: 0.25rem;
-
-    lucide-icon {
-      flex-shrink: 0;
-    }
-  }
-
+  .liters-note,
   .no-records-message {
     display: flex;
     align-items: center;
@@ -122,7 +110,7 @@
     font-size: 0.85rem;
     color: #6c757d;
     font-style: italic;
-    margin-top: 0rem;
+    margin-top: 0;
     padding-left: 0.25rem;
 
     lucide-icon {
@@ -137,7 +125,7 @@
   .history-list {
     max-height: 500px;
     overflow-y: auto;
-    padding-right: 0.5rem; // Add space for scrollbar
+    padding-right: 0.5rem;
   }
 
   ul {
@@ -269,6 +257,13 @@
     }
   }
 
+  .filter-box label {
+    font-size: 0.9rem;
+    color: #495057;
+    font-weight: 500;
+    white-space: nowrap;
+  }
+
   .pagination-container {
     display: flex;
     justify-content: space-between;
@@ -367,15 +362,6 @@
           box-shadow: none;
         }
       }
-    }
-  }
-
-  .filter-box {
-    label {
-      font-size: 0.9rem;
-      color: #495057;
-      font-weight: 500;
-      white-space: nowrap;
     }
   }
 }

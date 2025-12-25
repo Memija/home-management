@@ -14,8 +14,8 @@
         </button>
       </div>
       @if (chartType === 'water' && currentView() === 'total') {
-      <label class="trendline-toggle" [class.disabled]="!hasSufficientDataForTrendline()">
-        <input type="checkbox" [checked]="showTrendline()" (change)="toggleTrendline()"
+      <label class="trendline-toggle" for="show-trendline" [class.disabled]="!hasSufficientDataForTrendline()">
+        <input id="show-trendline" type="checkbox" [checked]="showTrendline()" (change)="toggleTrendline()"
           [disabled]="!hasSufficientDataForTrendline()">
         <lucide-icon [img]="ActivityIcon" size="16"></lucide-icon>
         {{ 'CHART.SHOW_TRENDLINE' | translate }}
@@ -29,9 +29,10 @@
       </label>
       }
       @if (chartType === 'water' && displayMode() === 'incremental') {
-      <label class="trendline-toggle" [class.disabled]="familySize() === 0 || !hasSufficientDataForComparison()">
-        <input type="checkbox" [checked]="showAverageComparison()" (change)="toggleAverageComparison()"
-          [disabled]="familySize() === 0 || !hasSufficientDataForComparison()">
+      <label class="trendline-toggle" for="show-average-comparison"
+        [class.disabled]="familySize() === 0 || !hasSufficientDataForComparison()">
+        <input id="show-average-comparison" type="checkbox" [checked]="showAverageComparison()"
+          (change)="toggleAverageComparison()" [disabled]="familySize() === 0 || !hasSufficientDataForComparison()">
         <lucide-icon [img]="BarChart3Icon" size="16"></lucide-icon>
         {{ 'CHART.SHOW_AVERAGE' | translate }}
         @if (familySize() === 0) {

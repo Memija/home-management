@@ -1,23 +1,32 @@
 import { ApplicationConfig, provideBrowserGlobalErrorListeners } from '@angular/core';
 import { provideClientHydration, withEventReplay } from '@angular/platform-browser';
 import { provideRouter, Routes, CanDeactivateFn } from '@angular/router';
-import { DashboardComponent } from './dashboard/dashboard.component';
-import { WaterComponent } from './water/water.component';
-import { HeatingComponent } from './heating/heating.component';
-import { SettingsComponent } from './settings/settings.component';
 import { STORAGE_SERVICE } from './services/storage.service';
 import { LocalStorageService } from './services/local-storage.service';
 
-// CanDeactivate guard for settings
-const canDeactivateSettings: CanDeactivateFn<SettingsComponent> = (component) => {
-  return component.canDeactivate();
+// CanDeactivate guard for settings - lazy loaded component
+const canDeactivateSettings: CanDeactivateFn<any> = (component) => {
+  return component.canDeactivate ? component.canDeactivate() : true;
 };
 
 const routes: Routes = [
-  { path: '', component: DashboardComponent },
-  { path: 'water', component: WaterComponent },
-  { path: 'heating', component: HeatingComponent },
-  { path: 'settings', component: SettingsComponent, canDeactivate: [canDeactivateSettings] }
+  {
+    path: '',
+    loadComponent: () => import('./dashboard/dashboard.component').then(m => m.DashboardComponent)
+  },
+  {
+    path: 'water',
+    loadComponent: () => import('./water/water.component').then(m => m.WaterComponent)
+  },
+  {
+    path: 'heating',
+    loadComponent: () => import('./heating/heating.component').then(m => m.HeatingComponent)
+  },
+  {
+    path: 'settings',
+    loadComponent: () => import('./settings/settings.component').then(m => m.SettingsComponent),
+    canDeactivate: [canDeactivateSettings]
+  }
 ];
 
 export const appConfig: ApplicationConfig = {

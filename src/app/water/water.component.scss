@@ -1,64 +1,24 @@
-.container {
-  max-width: 1000px;
-  margin: 5rem auto;
-  padding: 1rem;
-  font-family: system-ui, -apple-system, sans-serif;
-}
+// Water-specific styles - extends shared styles from styles.scss
 
-.app-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 2rem;
-  flex-wrap: wrap;
-  gap: 1rem;
+// Water theme color
+$water-primary: #007bff;
+$water-primary-dark: #0056b3;
 
-  .header-left {
-    display: flex;
-    align-items: center;
-    gap: 1rem;
-    flex-wrap: wrap;
+// Chart filter buttons
+.chart-section .chart-header .chart-filters button {
+  &:hover {
+    border-color: $water-primary;
+    color: $water-primary;
   }
 
-  .btn-outline {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.5rem;
-    padding: 0.5rem 1rem;
-    border: 1px solid #ced4da;
-    background: white;
-    border-radius: 4px;
-    cursor: pointer;
-    font-size: 0.9rem;
-    font-weight: 500;
-    color: #495057;
-    text-decoration: none;
-    transition: all 0.2s;
-
-    &:hover {
-      background: #e7f3ff;
-      border-color: #007bff;
-      color: #007bff;
-    }
-  }
-
-  h1 {
-    margin: 0;
-    color: #2c3e50;
-  }
-
-  .header-actions {
-    display: flex;
-    align-items: center;
-    gap: 0.75rem;
-  }
-
-  .hidden-input {
-    display: none;
+  &.active {
+    background: $water-primary;
+    border-color: $water-primary;
+    color: white;
   }
 }
 
-// Styles for action buttons projected into detailed-records
+// Action buttons group for detailed-records
 .action-buttons-group {
   display: flex;
   align-items: center;
@@ -74,7 +34,7 @@
     align-items: center;
     gap: 0.5rem;
     padding: 0.5rem 1rem;
-    background: #007bff;
+    background: $water-primary;
     color: white;
     border: none;
     border-radius: 6px;
@@ -88,7 +48,7 @@
     }
 
     &:hover:not(:disabled) {
-      background: #0056b3;
+      background: $water-primary-dark;
       box-shadow: 0 2px 8px rgba(0, 123, 255, 0.3);
     }
 
@@ -119,231 +79,7 @@
   }
 }
 
-.chart-section {
-  margin-bottom: 2rem;
-  padding: 1.5rem;
-  background: white;
-  border-radius: 8px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-
-  .chart-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 1rem;
-    flex-wrap: wrap;
-    gap: 1rem;
-
-    h2 {
-      margin: 0;
-      color: #2c3e50;
-    }
-
-    .chart-filters {
-      display: flex;
-      gap: 0.5rem;
-      flex-wrap: wrap;
-
-      button {
-        padding: 0.5rem 1rem;
-        border: 2px solid #dee2e6;
-        background: white;
-        color: #495057;
-        border-radius: 4px;
-        cursor: pointer;
-        font-size: 0.9rem;
-        font-weight: 500;
-        transition: all 0.2s;
-
-        &:hover {
-          border-color: #007bff;
-          color: #007bff;
-        }
-
-        &.active {
-          background: #007bff;
-          border-color: #007bff;
-          color: white;
-        }
-      }
-    }
-  }
-
-  .chart-container {
-    position: relative;
-    height: 300px;
-    width: 100%;
-  }
-}
-
-
-// Modal styles
-.modal-overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: rgba(0, 0, 0, 0.5);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 2000;
-  animation: fadeIn 0.2s ease-in;
-}
-
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-  }
-
-  to {
-    opacity: 1;
-  }
-}
-
-@keyframes slideIn {
-  from {
-    transform: translateY(-20px);
-    opacity: 0;
-  }
-
-  to {
-    transform: translateY(0);
-    opacity: 1;
-  }
-}
-
-.modal-content {
-  background: white;
-  border-radius: 12px;
-  max-width: 500px;
-  width: 90%;
-  animation: slideIn 0.3s ease-out;
-  position: relative;
-
-  .modal-header {
-    padding: 1.5rem;
-    border-bottom: 1px solid #e9ecef;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 0.75rem;
-    position: relative;
-
-    .success-icon {
-      color: #28a745;
-      animation: scaleIn 0.4s ease-out;
-    }
-
-    .warning-icon {
-      color: #dc3545;
-      animation: scaleIn 0.4s ease-out;
-    }
-
-    h3 {
-      margin: 0;
-      font-size: 1.5rem;
-      color: #2c3e50;
-    }
-
-    .close-btn {
-      position: absolute;
-      right: 1rem;
-      top: 1rem;
-      background: none;
-      border: none;
-      font-size: 1.5rem;
-      color: #6c757d;
-      cursor: pointer;
-      width: 32px;
-      height: 32px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      border-radius: 4px;
-      transition: all 0.2s;
-
-      &:hover {
-        background: #f8f9fa;
-        color: #495057;
-      }
-    }
-  }
-
-  .modal-body {
-    padding: 1.5rem;
-    text-align: center;
-
-    p {
-      margin: 0;
-      font-size: 1.1rem;
-      color: #495057;
-    }
-  }
-
-  .modal-footer {
-    padding: 1rem 1.5rem;
-    border-top: 1px solid #e9ecef;
-    display: flex;
-    justify-content: center;
-    gap: 0.75rem;
-
-    .btn-primary,
-    .btn-secondary,
-    .btn-danger {
-      padding: 0.75rem 2rem;
-      color: white;
-      border: none;
-      border-radius: 6px;
-      cursor: pointer;
-      font-size: 1rem;
-      font-weight: 500;
-      transition: all 0.2s;
-    }
-
-    .btn-primary {
-      background: #007bff;
-
-      &:hover {
-        background: #0056b3;
-        transform: translateY(-1px);
-        box-shadow: 0 4px 12px rgba(0, 123, 255, 0.3);
-      }
-    }
-
-    .btn-secondary {
-      background: #6c757d;
-
-      &:hover {
-        background: #545b62;
-        transform: translateY(-1px);
-        box-shadow: 0 4px 12px rgba(108, 117, 125, 0.3);
-      }
-    }
-
-    .btn-danger {
-      background: #dc3545;
-
-      &:hover {
-        background: #c82333;
-        transform: translateY(-1px);
-        box-shadow: 0 4px 12px rgba(220, 53, 69, 0.3);
-      }
-    }
-  }
-}
-
-@keyframes scaleIn {
-  from {
-    transform: scale(0);
-  }
-
-  to {
-    transform: scale(1);
-  }
-}
-
+// Comparison note
 .comparison-note {
   margin-top: -0.5rem;
   margin-bottom: 0.1rem;
@@ -421,7 +157,7 @@
           transition: color 0.2s;
 
           &:hover {
-            color: #007bff;
+            color: $water-primary;
           }
         }
 
@@ -494,12 +230,12 @@
       min-width: 180px;
 
       &:hover:not(:disabled) {
-        border-color: #007bff;
+        border-color: $water-primary;
       }
 
       &:focus {
         outline: none;
-        border-color: #007bff;
+        border-color: $water-primary;
         box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.25);
       }
 

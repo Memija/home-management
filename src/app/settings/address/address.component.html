@@ -83,3 +83,13 @@
   </div>
   }
 </div>
+
+<app-confirmation-modal [show]="showImportConfirmModal()" [titleKey]="'SETTINGS.IMPORT_ADDRESS_CONFIRM_TITLE'"
+  [messageKey]="'SETTINGS.IMPORT_ADDRESS_CONFIRM_MESSAGE'" [cancelKey]="'SETTINGS.CANCEL'"
+  [confirmKey]="'HOME.IMPORT_BUTTON'" [icon]="ImportIcon" (confirm)="confirmImportAddress()"
+  (cancel)="cancelImportAddress()">
+</app-confirmation-modal>
+
+<app-error-modal [show]="showImportErrorModal()" [title]="'SETTINGS.IMPORT_ADDRESS_CONFIRM_TITLE'"
+  [message]="importErrorMessage()" [instructions]="importErrorInstructions()" (cancel)="closeImportErrorModal()">
+</app-error-modal>

@@ -1,4 +1,5 @@
-// Contact modal specific styles - extends shared modal styles from styles.scss
+// Contact modal - component-specific styles only
+// Custom dropdown styles are now in global _forms.scss
 
 .modal-header {
   display: flex;
@@ -19,7 +20,7 @@
     cursor: pointer;
     padding: 0.25rem;
     color: #6c757d;
-    transition: color 0.2s ease;
+    transition: color 0.2s;
 
     &:hover {
       color: #212529;
@@ -54,7 +55,7 @@
       border-radius: 4px;
       font-size: 1rem;
       font-family: inherit;
-      transition: border-color 0.2s ease;
+      transition: border-color 0.2s;
 
       &:focus {
         outline: none;
@@ -70,7 +71,6 @@
         border-color: #dc3545;
 
         &:focus {
-          border-color: #dc3545;
           box-shadow: 0 0 0 3px rgba(220, 53, 69, 0.1);
         }
       }
@@ -90,109 +90,6 @@
       .error-icon {
         color: #721c24;
         flex-shrink: 0;
-      }
-    }
-
-    .custom-select {
-      position: relative;
-      cursor: pointer;
-      -webkit-user-select: none; // Safari 3+, iOS Safari 3+
-      user-select: none;
-
-      .select-trigger {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        padding: 0.75rem;
-        border: 1px solid #ced4da;
-        border-radius: 4px;
-        background: white;
-        transition: border-color 0.2s ease;
-
-        &:hover {
-          border-color: #007bff;
-        }
-
-        .select-content {
-          display: flex;
-          align-items: center;
-          gap: 0.5rem;
-
-          lucide-icon {
-            color: #6c757d;
-          }
-
-          .logo-icon {
-            width: 20px;
-            height: 20px;
-            object-fit: contain;
-          }
-
-          span {
-            font-size: 1rem;
-            color: #495057;
-          }
-        }
-
-        .chevron {
-          color: #6c757d;
-          transition: transform 0.2s ease;
-        }
-      }
-
-      .dropdown-menu {
-        position: absolute;
-        top: calc(100% + 4px);
-        left: 0;
-        right: 0;
-        background: white;
-        border: 1px solid #ced4da;
-        border-radius: 4px;
-        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-        z-index: 10;
-        max-height: 200px;
-        overflow-y: auto;
-
-        .dropdown-item {
-          display: flex;
-          align-items: center;
-          gap: 0.5rem;
-          padding: 0.75rem;
-          cursor: pointer;
-          transition: background-color 0.2s ease;
-
-          lucide-icon {
-            color: #6c757d;
-          }
-
-          .logo-icon {
-            width: 20px;
-            height: 20px;
-            object-fit: contain;
-          }
-
-          span {
-            font-size: 1rem;
-            color: #495057;
-          }
-
-          &:hover {
-            background: #f8f9fa;
-          }
-
-          &.selected {
-            background: #e7f1ff;
-
-            span {
-              color: #007bff;
-              font-weight: 500;
-            }
-
-            lucide-icon {
-              color: #007bff;
-            }
-          }
-        }
       }
     }
 
@@ -219,7 +116,7 @@
       font-size: 1rem;
       font-weight: 500;
       cursor: pointer;
-      transition: all 0.2s ease;
+      transition: all 0.2s;
 
       &:disabled {
         opacity: 0.5;

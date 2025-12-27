@@ -134,3 +134,12 @@
     <button (click)="saveRecord()">{{ 'HOME.SAVE' | translate }}</button>
   </div>
 </div>
+
+<app-confirmation-modal [show]="showImportConfirmModal()" [titleKey]="'HOME.IMPORT_CONFIRM_TITLE'"
+  [messageKey]="'HOME.IMPORT_CONFIRM_MESSAGE'" [cancelKey]="'HOME.CANCEL'" [confirmKey]="'HOME.IMPORT_BUTTON'"
+  [icon]="UploadIcon" (confirm)="confirmImport()" (cancel)="cancelImport()">
+</app-confirmation-modal>
+
+<app-error-modal [show]="showImportErrorModal()" [title]="'HOME.IMPORT_CONFIRM_TITLE'" [message]="importErrorMessage()"
+  [instructions]="importErrorInstructions()" (cancel)="closeImportErrorModal()">
+</app-error-modal>

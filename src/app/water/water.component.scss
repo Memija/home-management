@@ -1,10 +1,8 @@
-// Water-specific styles - extends shared styles from styles.scss
-
-// Water theme color
+// Water component - only theme color overrides
+// Base styles inherited from global partials (_comparison.scss, _buttons.scss)
 $water-primary: #007bff;
 $water-primary-dark: #0056b3;
 
-// Chart filter buttons
 .chart-section .chart-header .chart-filters button {
   &:hover {
     border-color: $water-primary;
@@ -18,7 +16,6 @@ $water-primary-dark: #0056b3;
   }
 }
 
-// Action buttons group for detailed-records
 .action-buttons-group {
   display: flex;
   align-items: center;
@@ -75,175 +72,6 @@ $water-primary-dark: #0056b3;
     &:hover:not(:disabled):not(.disabled) {
       background: #1a5c38;
       box-shadow: 0 2px 8px rgba(33, 115, 70, 0.3);
-    }
-  }
-}
-
-// Comparison note
-.comparison-note {
-  margin-top: -0.5rem;
-  margin-bottom: 0.1rem;
-  padding: 0.75rem 1rem;
-  background: #e9ecef;
-  border-radius: 4px;
-
-  &.disabled {
-    background: #f8f9fa;
-    border: 1px dashed #dee2e6;
-  }
-
-  .comparison-content {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    justify-content: space-between;
-    gap: 0.75rem;
-  }
-
-  p {
-    margin: 0;
-    font-size: 0.9rem;
-    color: #495057;
-    font-style: italic;
-    flex: 1;
-    min-width: 200px;
-
-    &.disabled-message {
-      display: flex;
-      align-items: center;
-      gap: 0.5rem;
-      color: #6c757d;
-      font-style: normal;
-
-      .info-icon {
-        color: #6c757d;
-        flex-shrink: 0;
-      }
-    }
-  }
-
-  .country-selector {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    flex-shrink: 0;
-
-    &.disabled {
-      opacity: 0.5;
-      pointer-events: none;
-    }
-
-    label {
-      font-size: 0.85rem;
-      color: #495057;
-      font-weight: 500;
-      white-space: nowrap;
-      display: flex;
-      align-items: center;
-      gap: 0.25rem;
-
-      &.disabled {
-        color: #6c757d;
-      }
-
-      .info-tooltip-container {
-        position: relative;
-        display: inline-flex;
-        align-items: center;
-        cursor: help;
-
-        .info-icon {
-          color: #6c757d;
-          transition: color 0.2s;
-
-          &:hover {
-            color: $water-primary;
-          }
-        }
-
-        .info-tooltip {
-          visibility: hidden;
-          opacity: 0;
-          position: absolute;
-          bottom: 100%;
-          left: 50%;
-          transform: translateX(-50%);
-          background: #2c3e50;
-          color: white;
-          padding: 0.5rem 0.75rem;
-          border-radius: 6px;
-          font-size: 0.75rem;
-          font-weight: 400;
-          white-space: normal;
-          width: 220px;
-          text-align: center;
-          z-index: 100;
-          margin-bottom: 8px;
-          box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
-          transition: opacity 0.2s, visibility 0.2s;
-
-          &::after {
-            content: '';
-            position: absolute;
-            top: 100%;
-            left: 50%;
-            transform: translateX(-50%);
-            border-width: 6px;
-            border-style: solid;
-            border-color: #2c3e50 transparent transparent transparent;
-          }
-        }
-
-        &:hover .info-tooltip {
-          visibility: visible;
-          opacity: 1;
-        }
-      }
-    }
-
-    .select-with-flag {
-      display: flex;
-      align-items: center;
-      gap: 0.5rem;
-
-      &.disabled {
-        opacity: 0.6;
-      }
-
-      .country-flag {
-        width: 24px;
-        height: 16px;
-        object-fit: cover;
-        border-radius: 2px;
-        box-shadow: 0 1px 2px rgba(0, 0, 0, 0.15);
-      }
-    }
-
-    select {
-      padding: 0.35rem 0.75rem;
-      border: 1px solid #ced4da;
-      border-radius: 4px;
-      font-size: 0.85rem;
-      background: white;
-      color: #495057;
-      cursor: pointer;
-      min-width: 180px;
-
-      &:hover:not(:disabled) {
-        border-color: $water-primary;
-      }
-
-      &:focus {
-        outline: none;
-        border-color: $water-primary;
-        box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.25);
-      }
-
-      &:disabled {
-        background: #e9ecef;
-        cursor: not-allowed;
-        color: #6c757d;
-      }
     }
   }
 }

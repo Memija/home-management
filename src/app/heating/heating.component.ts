@@ -11,6 +11,7 @@ import { ExcelSettingsService } from '../services/excel-settings.service';
 import { LucideAngularModule, ArrowLeft, ChevronDown, ChevronLeft, ChevronRight, Download, Upload, FileSpreadsheet } from 'lucide-angular';
 import { ConsumptionChartComponent, type ChartView, type DisplayMode } from '../shared/consumption-chart/consumption-chart.component';
 import { ErrorModalComponent } from '../shared/error-modal/error-modal.component';
+import { ConfirmationModalComponent } from '../shared/confirmation-modal/confirmation-modal.component';
 
 
 export interface HeatingRecord {
@@ -24,7 +25,7 @@ export interface HeatingRecord {
 @Component({
   selector: 'app-heating',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterLink, TranslatePipe, LucideAngularModule, ConsumptionChartComponent, ErrorModalComponent],
+  imports: [CommonModule, FormsModule, RouterLink, TranslatePipe, LucideAngularModule, ConsumptionChartComponent, ErrorModalComponent, ConfirmationModalComponent],
   templateUrl: './heating.component.html',
   styleUrl: './heating.component.scss'
 })
@@ -50,8 +51,11 @@ export class HeatingComponent {
   protected errorMessage = signal('');
   protected errorDetails = signal('');
   protected errorInstructions = signal<string[]>([]);
+  protected errorType = signal<'error' | 'warning'>('error');
 
   protected records = signal<HeatingRecord[]>([]);
+  protected showImportConfirmModal = signal(false);
+  protected pendingImportFile = signal<File | null>(null);
   protected nextSunday = signal<Date>(this.calculateNextSunday());
   protected chartView = signal<ChartView>('total');
   protected displayMode = signal<DisplayMode>('total');
@@ -148,8 +152,9 @@ export class HeatingComponent {
   async exportData() {
     this.isExporting.set(true);
     try {
-      const allData = await this.storage.exportAll();
-      this.fileStorage.exportToFile(allData, `heating-consumption-${new Date().toISOString().split('T')[0]}.json`);
+      const records = await this.storage.exportRecords('heating_consumption_records');
+      const dateStr = new Date().toISOString().split('T')[0];
+      this.fileStorage.exportToFile(records, `heating-records-${dateStr}.json`);
     } finally {
       this.isExporting.set(false);
     }
@@ -175,19 +180,169 @@ export class HeatingComponent {
     const input = event.target as HTMLInputElement;
     const file = input.files?.[0];
     if (file) {
+      this.pendingImportFile.set(file);
+      this.showImportConfirmModal.set(true);
+      input.value = ''; // Reset input so same file can be selected again
+    }
+  }
+
+  async confirmImport() {
+    const file = this.pendingImportFile();
+    if (file) {
       this.isImporting.set(true);
       try {
         const data = await this.fileStorage.importFromFile(file);
-        await this.storage.importAll(data);
+
+        // Validate imported data is an array
+        if (!Array.isArray(data)) {
+          throw new Error('Invalid data format: expected an array of records');
+        }
+
+        if (data.length === 0) {
+          throw new Error('The file is empty or has no data records.');
+        }
+
+        // Validate each record and collect errors
+        const validationErrors: string[] = [];
+        const validRecords: HeatingRecord[] = [];
+        const seenDates = new Map<string, number>();
+
+        for (let index = 0; index < data.length; index++) {
+          const record = data[index];
+          const rowNumber = index + 1;
+
+          // Check record is an object
+          if (!record || typeof record !== 'object') {
+            validationErrors.push(`Record ${rowNumber}: Invalid record format`);
+            continue;
+          }
+
+          // Check required fields exist
+          if (!('date' in record)) {
+            validationErrors.push(`Record ${rowNumber}: Missing 'date' field`);
+            continue;
+          }
+
+          // Parse and validate date
+          const dateValue = record.date;
+          let parsedDate: Date | null = null;
+
+          if (typeof dateValue === 'string') {
+            parsedDate = new Date(dateValue);
+            if (isNaN(parsedDate.getTime())) {
+              validationErrors.push(`Record ${rowNumber}: Invalid date value '${dateValue}'`);
+              continue;
+            }
+          } else if (dateValue instanceof Date) {
+            parsedDate = dateValue;
+          } else {
+            validationErrors.push(`Record ${rowNumber}: Invalid date type`);
+            continue;
+          }
+
+          // Check for duplicate dates (use local date to match display)
+          const dateKey = `${parsedDate.getFullYear()}-${String(parsedDate.getMonth() + 1).padStart(2, '0')}-${String(parsedDate.getDate()).padStart(2, '0')}`;
+          if (seenDates.has(dateKey)) {
+            validationErrors.push(`Record ${rowNumber}: Duplicate date '${dateKey}' (first occurrence in record ${seenDates.get(dateKey)})`);
+            continue;
+          }
+          seenDates.set(dateKey, rowNumber);
+
+          // Validate numeric fields
+          const numericFields = ['livingRoom', 'bedroom', 'kitchen', 'bathroom'];
+          const rowErrors: string[] = [];
+          const numericValues: Record<string, number> = {};
+
+          for (const field of numericFields) {
+            const value = record[field];
+            if (value === undefined || value === null || value === '') {
+              numericValues[field] = 0; // Default to 0 for missing
+            } else if (typeof value === 'number' && !isNaN(value)) {
+              numericValues[field] = value;
+            } else if (typeof value === 'string') {
+              const num = Number(value);
+              if (isNaN(num)) {
+                rowErrors.push(`Record ${rowNumber}: Invalid number value '${value}' for field '${field}'`);
+              } else {
+                numericValues[field] = num;
+              }
+            } else {
+              rowErrors.push(`Record ${rowNumber}: Invalid type for field '${field}'`);
+            }
+          }
+
+          if (rowErrors.length > 0) {
+            validationErrors.push(...rowErrors);
+            continue;
+          }
+
+          validRecords.push({
+            date: parsedDate,
+            livingRoom: numericValues['livingRoom'],
+            bedroom: numericValues['bedroom'],
+            kitchen: numericValues['kitchen'],
+            bathroom: numericValues['bathroom']
+          });
+        }
+
+        if (validationErrors.length > 0) {
+          throw new Error(validationErrors.join('\n'));
+        }
+
+        await this.storage.importRecords('heating_consumption_records', validRecords);
         await this.loadData();
-        input.value = '';
       } catch (error) {
         console.error('Error importing data:', error);
-        alert('Failed to import data. Please check the file format.');
+        const errorMsg = error instanceof Error ? error.message : 'Unknown error';
+
+        this.errorType.set('error');
+        this.errorTitle.set(this.languageService.translate('HEATING.JSON_IMPORT_ERROR_TITLE'));
+        this.errorMessage.set(this.languageService.translate('HEATING.JSON_IMPORT_ERROR'));
+        this.errorDetails.set(errorMsg);
+
+        // Provide specific instructions based on ALL error types present
+        const instructions: string[] = [];
+
+        if (errorMsg.includes('Invalid date')) {
+          instructions.push(
+            'ERROR.JSON_DATE_FIX_1',
+            'ERROR.JSON_DATE_FIX_2'
+          );
+        }
+        if (errorMsg.includes('Invalid number value')) {
+          instructions.push(
+            'ERROR.JSON_NUMBER_FIX_1',
+            'ERROR.JSON_NUMBER_FIX_2'
+          );
+        }
+        if (errorMsg.includes('Duplicate date')) {
+          instructions.push(
+            'ERROR.JSON_DUPLICATE_FIX_1',
+            'ERROR.JSON_DUPLICATE_FIX_2'
+          );
+        }
+
+        if (instructions.length === 0) {
+          instructions.push(
+            'HOME.IMPORT_ERROR_INSTRUCTION_1',
+            'HOME.IMPORT_ERROR_INSTRUCTION_2',
+            'HOME.IMPORT_ERROR_INSTRUCTION_3'
+          );
+        }
+
+        this.errorInstructions.set(instructions);
+        this.showErrorModal.set(true);
       } finally {
         this.isImporting.set(false);
       }
     }
+    this.showImportConfirmModal.set(false);
+    this.pendingImportFile.set(null);
+  }
+
+  cancelImport() {
+    this.showImportConfirmModal.set(false);
+    this.pendingImportFile.set(null);
   }
 
   async importFromExcel(event: Event) {
@@ -196,7 +351,14 @@ export class HeatingComponent {
     if (file) {
       this.isImporting.set(true);
       try {
-        const records = await this.excelService.importHeatingFromExcel(file);
+        // Validate file type
+        const validExtensions = ['.xlsx', '.xls', '.csv'];
+        const fileExtension = file.name.toLowerCase().substring(file.name.lastIndexOf('.'));
+        if (!validExtensions.includes(fileExtension)) {
+          throw new Error(`Invalid file type. Expected Excel file (.xlsx, .xls, .csv), got ${fileExtension}`);
+        }
+
+        const { records, missingColumns } = await this.excelService.importHeatingFromExcel(file);
 
         // Merge with existing records, avoiding duplicates by date
         this.records.update(existing => {
@@ -209,38 +371,68 @@ export class HeatingComponent {
 
         await this.storage.save('heating_consumption_records', this.records());
         input.value = '';
-        // Show success (could add success modal here too)
+
+        if (missingColumns.length > 0) {
+          this.errorTitle.set(this.languageService.translate('HOME.IMPORT_WARNING_TITLE'));
+          this.errorMessage.set(this.languageService.translate('HOME.IMPORT_WARNING_MESSAGE'));
+          this.errorDetails.set(this.languageService.translate('HOME.MISSING_COLUMNS') + ': ' + missingColumns.join(', '));
+          this.errorInstructions.set([]);
+          this.errorType.set('warning');
+          this.showErrorModal.set(true);
+        }
       } catch (error) {
         console.error('Excel import error:', error);
+        this.errorType.set('error');
         const errorMsg = error instanceof Error ? error.message : 'Unknown error';
 
         // Show detailed error modal with instructions
-        this.errorTitle.set('HEATING.EXCEL_IMPORT_ERROR_TITLE');
-        this.errorMessage.set('HEATING.EXCEL_IMPORT_ERROR');
+        this.errorTitle.set(this.languageService.translate('HEATING.EXCEL_IMPORT_ERROR_TITLE'));
+        this.errorMessage.set(this.languageService.translate('HEATING.EXCEL_IMPORT_ERROR'));
         this.errorDetails.set(errorMsg);
 
-        // Provide specific instructions based on error type
+        // Provide specific instructions based on ALL error types present
+        const instructions: string[] = [];
+
         if (errorMsg.includes('Invalid date')) {
-          this.errorInstructions.set([
+          instructions.push(
             'ERROR.EXCEL_DATE_FIX_1',
             'ERROR.EXCEL_DATE_FIX_2',
             'ERROR.EXCEL_DATE_FIX_3'
-          ]);
-        } else if (errorMsg.includes('column')) {
-          this.errorInstructions.set([
+          );
+        }
+        if (errorMsg.includes('Invalid number value')) {
+          instructions.push(
+            'ERROR.EXCEL_NUMBER_FIX_1',
+            'ERROR.EXCEL_NUMBER_FIX_2'
+          );
+        }
+        if (errorMsg.includes('Duplicate date')) {
+          instructions.push(
+            'ERROR.EXCEL_DUPLICATE_FIX_1',
+            'ERROR.EXCEL_DUPLICATE_FIX_2'
+          );
+        }
+        if (errorMsg.includes('Missing required') && errorMsg.includes('column')) {
+          instructions.push(
             'ERROR.EXCEL_COLUMN_FIX_1',
             'ERROR.EXCEL_COLUMN_FIX_2'
-          ]);
-        } else {
-          this.errorInstructions.set([
+          );
+        }
+
+        // If no specific instructions matched, use generic ones
+        if (instructions.length === 0) {
+          instructions.push(
             'ERROR.EXCEL_GENERIC_FIX_1',
             'ERROR.EXCEL_GENERIC_FIX_2'
-          ]);
+          );
         }
+
+        this.errorInstructions.set(instructions);
 
         this.showErrorModal.set(true);
       } finally {
         this.isImporting.set(false);
+        input.value = ''; // Reset input to allow re-importing same file
       }
     }
   }

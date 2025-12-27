@@ -7,11 +7,13 @@ import { LanguageService } from '../../services/language.service';
 import { FileStorageService } from '../../services/file-storage.service';
 import { TranslatePipe } from '../../pipes/translate.pipe';
 import { DeleteConfirmationModalComponent } from '../../shared/delete-confirmation-modal/delete-confirmation-modal.component';
+import { ConfirmationModalComponent } from '../../shared/confirmation-modal/confirmation-modal.component';
+import { ErrorModalComponent } from '../../shared/error-modal/error-modal.component';
 
 @Component({
     selector: 'app-family',
     standalone: true,
-    imports: [CommonModule, FormsModule, LucideAngularModule, TranslatePipe, DeleteConfirmationModalComponent],
+    imports: [CommonModule, FormsModule, LucideAngularModule, TranslatePipe, DeleteConfirmationModalComponent, ConfirmationModalComponent, ErrorModalComponent],
     templateUrl: './family.component.html',
     styleUrl: './family.component.scss'
 })
@@ -42,6 +44,18 @@ export class FamilyComponent {
     protected memberToDelete = signal<string | null>(null);
     public showUnsavedChangesModal = signal(false);
     public pendingNavigation = signal<(() => void) | null>(null);
+    protected showImportConfirmModal = signal(false);
+
+    // Error modal state
+    protected showImportErrorModal = signal(false);
+    protected importErrorMessage = signal('');
+    protected importErrorInstructions = signal<string[]>([]);
+
+    // Safe computed for template - ensures array for NgFor
+    protected safeMembers = computed(() => {
+        const members = this.householdService.members();
+        return Array.isArray(members) ? members : [];
+    });
 
     // Individual member edit state
     protected editingMemberId = signal<string | null>(null);
@@ -68,7 +82,8 @@ export class FamilyComponent {
         effect(() => {
             const currentMembers = this.householdService.members();
             if (!this.isEditing()) {
-                this.draftMembers.set([...currentMembers]);
+                // Ensure currentMembers is an array before spreading
+                this.draftMembers.set(Array.isArray(currentMembers) ? [...currentMembers] : []);
             }
         });
     }
@@ -79,6 +94,9 @@ export class FamilyComponent {
 
         const savedMembers = this.householdService.members();
         const draft = this.draftMembers();
+
+        // Ensure both are arrays
+        if (!Array.isArray(savedMembers) || !Array.isArray(draft)) return false;
 
         // Compare lengths first
         if (savedMembers.length !== draft.length) return true;
@@ -300,12 +318,36 @@ export class FamilyComponent {
     }
 
     async importFamily() {
+        this.showImportConfirmModal.set(true);
+    }
+
+    async confirmImportFamily() {
         const imported = await this.fileStorage.importData<HouseholdMember[]>();
-        if (imported) {
+        if (imported && Array.isArray(imported)) {
             this.householdService.updateMembers(imported);
             this.showSaveConfirmation.set(true);
             setTimeout(() => this.showSaveConfirmation.set(false), 3000);
+        } else if (imported !== null) {
+            // User selected a file but it was invalid
+            this.importErrorMessage.set(this.languageService.translate('HOME.IMPORT_INVALID_DATA'));
+            this.importErrorInstructions.set([
+                'HOME.IMPORT_ERROR_INSTRUCTION_1',
+                'HOME.IMPORT_ERROR_INSTRUCTION_2',
+                'HOME.IMPORT_ERROR_INSTRUCTION_3'
+            ]);
+            this.showImportErrorModal.set(true);
         }
+        this.showImportConfirmModal.set(false);
+    }
+
+    cancelImportFamily() {
+        this.showImportConfirmModal.set(false);
+    }
+
+    closeImportErrorModal() {
+        this.showImportErrorModal.set(false);
+        this.importErrorMessage.set('');
+        this.importErrorInstructions.set([]);
     }
 
     private resetForm() {

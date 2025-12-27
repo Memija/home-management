@@ -39,6 +39,20 @@ export abstract class StorageService {
    * @param data The data to import
    */
   abstract importAll(data: Record<string, any>): Promise<void>;
+
+  /**
+   * Export records only from a specific key
+   * @param recordKey The key where records are stored
+   * @returns The records array
+   */
+  abstract exportRecords(recordKey: string): Promise<any[]>;
+
+  /**
+   * Import records into a specific key
+   * @param recordKey The key where records are stored
+   * @param records The records array to import
+   */
+  abstract importRecords(recordKey: string, records: any[]): Promise<void>;
 }
 
 export const STORAGE_SERVICE = new InjectionToken<StorageService>('StorageService');

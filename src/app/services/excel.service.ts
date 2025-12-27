@@ -73,51 +73,145 @@ export class ExcelService {
   /**
    * Import water consumption records from Excel
    */
-  async importWaterFromExcel(file: File): Promise<WaterRecord[]> {
+  async importWaterFromExcel(file: File): Promise<{ records: WaterRecord[], missingColumns: string[] }> {
     const mapping = this.excelSettings.getWaterMapping();
     const data = await this.readExcelFile(file);
 
-    return data.map(row => {
+    if (data.length === 0) {
+      throw new Error('The Excel file is empty or has no data rows.');
+    }
+
+    // Check that Date column exists in the first row
+    const firstRow = data[0];
+    if (!(mapping.date in firstRow)) {
+      throw new Error(`Missing required Date column: ${mapping.date}. Please check your Excel file.`);
+    }
+
+    // Check for other partial columns
+    const otherColumns = [mapping.kitchenWarm, mapping.kitchenCold, mapping.bathroomWarm, mapping.bathroomCold];
+    const missingColumns = otherColumns.filter(col => !(col in firstRow));
+
+    const records: WaterRecord[] = [];
+    const validationErrors: string[] = [];
+    const seenDates = new Map<string, number>(); // date string -> first row number
+
+    for (let index = 0; index < data.length; index++) {
+      const row = data[index];
+      const rowNumber = index + 2; // Excel row number (1-indexed + header row)
       const dateValue = row[mapping.date];
       const date = this.parseDate(dateValue);
 
       if (!date) {
-        throw new Error(`Invalid date value: ${dateValue}`);
+        validationErrors.push(`Row ${rowNumber}: Invalid date value '${dateValue}'`);
+        continue; // Skip this row but continue checking others
       }
 
-      return {
+      // Check for duplicate dates (use local date to match display)
+      const dateKey = this.formatDate(date);
+      if (seenDates.has(dateKey)) {
+        validationErrors.push(`Row ${rowNumber}: Duplicate date '${dateKey}' (first occurrence in row ${seenDates.get(dateKey)})`);
+        continue; // Skip duplicate
+      }
+      seenDates.set(dateKey, rowNumber);
+
+      // Collect number validation errors for this row
+      const rowErrors: string[] = [];
+      const kitchenWarm = this.validateNumberCollectError(row[mapping.kitchenWarm], rowNumber, mapping.kitchenWarm, rowErrors);
+      const kitchenCold = this.validateNumberCollectError(row[mapping.kitchenCold], rowNumber, mapping.kitchenCold, rowErrors);
+      const bathroomWarm = this.validateNumberCollectError(row[mapping.bathroomWarm], rowNumber, mapping.bathroomWarm, rowErrors);
+      const bathroomCold = this.validateNumberCollectError(row[mapping.bathroomCold], rowNumber, mapping.bathroomCold, rowErrors);
+
+      if (rowErrors.length > 0) {
+        validationErrors.push(...rowErrors);
+        continue; // Skip this row
+      }
+
+      records.push({
         date,
-        kitchenWarm: this.parseNumber(row[mapping.kitchenWarm]) || 0,
-        kitchenCold: this.parseNumber(row[mapping.kitchenCold]) || 0,
-        bathroomWarm: this.parseNumber(row[mapping.bathroomWarm]) || 0,
-        bathroomCold: this.parseNumber(row[mapping.bathroomCold]) || 0
-      };
-    });
+        kitchenWarm,
+        kitchenCold,
+        bathroomWarm,
+        bathroomCold
+      });
+    }
+
+    if (validationErrors.length > 0) {
+      throw new Error(validationErrors.join('\n'));
+    }
+
+    return { records, missingColumns };
   }
 
   /**
    * Import heating consumption records from Excel
    */
-  async importHeatingFromExcel(file: File): Promise<HeatingRecord[]> {
+  async importHeatingFromExcel(file: File): Promise<{ records: HeatingRecord[], missingColumns: string[] }> {
     const mapping = this.excelSettings.getHeatingMapping();
     const data = await this.readExcelFile(file);
 
-    return data.map(row => {
+    if (data.length === 0) {
+      throw new Error('The Excel file is empty or has no data rows.');
+    }
+
+    // Check that Date column exists in the first row
+    const firstRow = data[0];
+    if (!(mapping.date in firstRow)) {
+      throw new Error(`Missing required Date column: ${mapping.date}. Please check your Excel file.`);
+    }
+
+    // Check for other partial columns
+    const otherColumns = [mapping.livingRoom, mapping.bedroom, mapping.kitchen, mapping.bathroom];
+    const missingColumns = otherColumns.filter(col => !(col in firstRow));
+
+    const records: HeatingRecord[] = [];
+    const validationErrors: string[] = [];
+    const seenDates = new Map<string, number>(); // date string -> first row number
+
+    for (let index = 0; index < data.length; index++) {
+      const row = data[index];
+      const rowNumber = index + 2; // Excel row number (1-indexed + header row)
       const dateValue = row[mapping.date];
       const date = this.parseDate(dateValue);
 
       if (!date) {
-        throw new Error(`Invalid date value: ${dateValue}`);
+        validationErrors.push(`Row ${rowNumber}: Invalid date value '${dateValue}'`);
+        continue; // Skip this row but continue checking others
       }
 
-      return {
+      // Check for duplicate dates (use local date to match display)
+      const dateKey = this.formatDate(date);
+      if (seenDates.has(dateKey)) {
+        validationErrors.push(`Row ${rowNumber}: Duplicate date '${dateKey}' (first occurrence in row ${seenDates.get(dateKey)})`);
+        continue; // Skip duplicate
+      }
+      seenDates.set(dateKey, rowNumber);
+
+      // Collect number validation errors for this row
+      const rowErrors: string[] = [];
+      const livingRoom = this.validateNumberCollectError(row[mapping.livingRoom], rowNumber, mapping.livingRoom, rowErrors);
+      const bedroom = this.validateNumberCollectError(row[mapping.bedroom], rowNumber, mapping.bedroom, rowErrors);
+      const kitchen = this.validateNumberCollectError(row[mapping.kitchen], rowNumber, mapping.kitchen, rowErrors);
+      const bathroom = this.validateNumberCollectError(row[mapping.bathroom], rowNumber, mapping.bathroom, rowErrors);
+
+      if (rowErrors.length > 0) {
+        validationErrors.push(...rowErrors);
+        continue; // Skip this row
+      }
+
+      records.push({
         date,
-        livingRoom: this.parseNumber(row[mapping.livingRoom]) || 0,
-        bedroom: this.parseNumber(row[mapping.bedroom]) || 0,
-        kitchen: this.parseNumber(row[mapping.kitchen]) || 0,
-        bathroom: this.parseNumber(row[mapping.bathroom]) || 0
-      };
-    });
+        livingRoom,
+        bedroom,
+        kitchen,
+        bathroom
+      });
+    }
+
+    if (validationErrors.length > 0) {
+      throw new Error(validationErrors.join('\n'));
+    }
+
+    return { records, missingColumns };
   }
 
   /**
@@ -152,7 +246,7 @@ export class ExcelService {
           const worksheet = workbook.Sheets[sheetName];
 
           // Convert to JSON
-          const jsonData = XLSX.utils.sheet_to_json(worksheet);
+          const jsonData = XLSX.utils.sheet_to_json(worksheet, { defval: '' });
           resolve(jsonData);
         } catch (error) {
           reject(new Error('Failed to parse Excel file'));
@@ -217,8 +311,9 @@ export class ExcelService {
     // If it's an Excel serial date number
     if (typeof value === 'number') {
       // Excel date serial numbers start from 1900-01-01
-      const excelEpoch = new Date(1900, 0, 1);
-      const date = new Date(excelEpoch.getTime() + (value - 2) * 24 * 60 * 60 * 1000);
+      // Use UTC to avoid timezone issues
+      const excelEpoch = Date.UTC(1900, 0, 1);
+      const date = new Date(excelEpoch + (value - 2) * 24 * 60 * 60 * 1000);
       return date;
     }
 
@@ -227,6 +322,51 @@ export class ExcelService {
 
   /**
    * Parse number from various formats
+   */
+  /**
+   * Parse number with strict validation
+   * Returns 0 for empty values (allowing partial data if intended)
+   * Throws error for invalid non-empty values
+   */
+  private validateAndParseNumber(value: any, rowIndex: number, columnName: string): number {
+    if (value === null || value === undefined || value === '') {
+      return 0; // Default to 0 for missing/empty values (partial import)
+    }
+
+    // Convert to number
+    const num = Number(value);
+
+    // strict check
+    if (isNaN(num)) {
+      throw new Error(`Row ${rowIndex}: Invalid number value '${value}' in column '${columnName}'`);
+    }
+
+    return num;
+  }
+
+  /**
+   * Validate number and collect error instead of throwing
+   * Returns 0 for empty/invalid values, pushes error message to errors array
+   */
+  private validateNumberCollectError(value: any, rowIndex: number, columnName: string, errors: string[]): number {
+    if (value === null || value === undefined || value === '') {
+      return 0; // Default to 0 for missing/empty values (partial import)
+    }
+
+    // Convert to number
+    const num = Number(value);
+
+    // strict check
+    if (isNaN(num)) {
+      errors.push(`Row ${rowIndex}: Invalid number value '${value}' in column '${columnName}'`);
+      return 0; // Return 0 as fallback, row will be skipped anyway
+    }
+
+    return num;
+  }
+
+  /**
+   * Parse number from various formats (Legacy/Loose)
    */
   private parseNumber(value: any): number | null {
     if (value === null || value === undefined || value === '') {

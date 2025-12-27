@@ -21,7 +21,9 @@ export const en = {
     IMPORT_EXCEL: 'Import from Excel',
     EXCEL_IMPORT_SUCCESS: 'Excel data imported successfully!',
     EXCEL_IMPORT_ERROR_TITLE: 'Excel Import Failed',
-    EXCEL_IMPORT_ERROR: 'Failed to import Excel data. Please check the details below and follow the instructions to fix the issue.'
+    EXCEL_IMPORT_ERROR: 'Failed to import Excel data. Please check the details below and follow the instructions to fix the issue.',
+    JSON_IMPORT_ERROR_TITLE: 'JSON Import Failed',
+    JSON_IMPORT_ERROR: 'Failed to import JSON data. Please check the details below and follow the instructions to fix the issue.'
   },
   CHART: {
     AXIS_DATE: 'Date',
@@ -169,7 +171,10 @@ export const en = {
     EXPORT_EXCEL: 'Export to Excel',
     IMPORT_EXCEL: 'Import from Excel',
     EXCEL_IMPORT_SUCCESS: 'Excel data imported successfully!',
-    EXCEL_IMPORT_ERROR: 'Failed to import Excel data. Please check the file format and column mappings.',
+    EXCEL_IMPORT_ERROR_TITLE: 'Excel Import Failed',
+    EXCEL_IMPORT_ERROR: 'Failed to import Excel data. Please check the details below and follow the instructions to fix the issue.',
+    JSON_IMPORT_ERROR_TITLE: 'JSON Import Failed',
+    JSON_IMPORT_ERROR: 'Failed to import JSON data. Please check the details below and follow the instructions to fix the issue.',
     LIVING_AREAS: 'Living Areas',
     SERVICE_AREAS: 'Service Areas',
     LIVING_ROOM: 'Living Room',
@@ -227,6 +232,14 @@ export const en = {
     DELETE_ALL_CONFIRM_MESSAGE_SINGULAR: 'Are you sure you want to delete this filtered record? This action cannot be undone.',
     DELETE_ALL_CONFIRM_MESSAGE_PLURAL: 'Are you sure you want to delete all {count} filtered records? This action cannot be undone.',
     DELETE_ALL_BUTTON: 'Delete All',
+    IMPORT_CONFIRM_TITLE: 'Confirm Import',
+    IMPORT_CONFIRM_MESSAGE: 'Importing data will merge with your existing records. Are you sure you want to continue?',
+    IMPORT_BUTTON: 'Import',
+    IMPORT_INVALID_DATA: 'The selected file does not contain valid data for this section. Please make sure you are importing the correct file type.',
+    IMPORT_INVALID_FORMAT: 'Failed to import data. The file may be corrupted or in an incorrect format. Please export a fresh copy from the source and try again.',
+    IMPORT_ERROR_INSTRUCTION_1: 'Make sure you are importing the correct file for this section',
+    IMPORT_ERROR_INSTRUCTION_2: 'Verify the file was exported from this application',
+    IMPORT_ERROR_INSTRUCTION_3: 'Try exporting a fresh backup and importing again',
     SORT: {
       DATE_DESC: 'Date (Newest First)',
       DATE_ASC: 'Date (Oldest First)',
@@ -252,7 +265,10 @@ export const en = {
       OCTOBER: 'October',
       NOVEMBER: 'November',
       DECEMBER: 'December'
-    }
+    },
+    IMPORT_WARNING_TITLE: 'Column Mismatch',
+    IMPORT_WARNING_MESSAGE: 'Data imported successfully, but some columns configured in Settings were not found in your Excel file. Values for missing columns were set to 0.',
+    MISSING_COLUMNS: 'Columns not found in file'
   },
   CALENDAR: {
     TODAY: 'Today',
@@ -310,7 +326,11 @@ export const en = {
     EXPORT_ADDRESS: 'Export Address',
     IMPORT_ADDRESS: 'Import Address',
     IMPORT_SUCCESS: 'Address imported successfully!',
-    IMPORT_ERROR: 'Failed to import address. Please check the file format.',
+    IMPORT_ERROR: 'Failed to import address. The file does not appear to contain valid address data. Please make sure you are importing an address file with street name, number, city, zip code and country fields.',
+    IMPORT_FAMILY_CONFIRM_TITLE: 'Confirm Import',
+    IMPORT_FAMILY_CONFIRM_MESSAGE: 'Importing will replace all current family members. Are you sure you want to continue?',
+    IMPORT_ADDRESS_CONFIRM_TITLE: 'Confirm Import',
+    IMPORT_ADDRESS_CONFIRM_MESSAGE: 'Importing will replace your current address. Are you sure you want to continue?',
     GENDERS: {
       MALE: 'Male',
       FEMALE: 'Female'
@@ -367,7 +387,17 @@ export const en = {
     EXCEL_COLUMN_FIX_1: 'Check that your Excel column names match the configured names in Settings',
     EXCEL_COLUMN_FIX_2: 'Go to Settings → Excel Integration to view or update column mappings',
     EXCEL_GENERIC_FIX_1: 'Verify your Excel file is in .xlsx format',
-    EXCEL_GENERIC_FIX_2: 'Ensure all required columns are present with correct data types'
+    EXCEL_GENERIC_FIX_2: 'Ensure all required columns are present with correct data types',
+    EXCEL_NUMBER_FIX_1: 'Ensure all consumption values are numbers',
+    EXCEL_NUMBER_FIX_2: 'Remove any text or special characters from numeric columns',
+    EXCEL_DUPLICATE_FIX_1: 'Remove duplicate date entries from your Excel file',
+    EXCEL_DUPLICATE_FIX_2: 'Each date should only appear once in the file',
+    JSON_DATE_FIX_1: 'Ensure dates are in ISO format (e.g., 2025-09-14T00:00:00.000Z)',
+    JSON_DATE_FIX_2: 'Or use YYYY-MM-DD format (e.g., 2025-09-14)',
+    JSON_NUMBER_FIX_1: 'Ensure all consumption values are numbers',
+    JSON_NUMBER_FIX_2: 'Remove any text or special characters from numeric fields',
+    JSON_DUPLICATE_FIX_1: 'Remove duplicate date entries from your JSON file',
+    JSON_DUPLICATE_FIX_2: 'Each date should only appear once in the file'
   },
   EXCEL: {
     DEFAULT_DATE: 'Date',

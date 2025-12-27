@@ -12,11 +12,11 @@
   <!-- READ-ONLY VIEW -->
   <!-- ============================================ -->
   <div class="members-list">
-    @if (householdService.members().length === 0) {
+    @if (safeMembers().length === 0) {
     <p class="empty-state">{{ 'SETTINGS.NO_MEMBERS' | translate }}</p>
     } @else {
     <ul>
-      <li *ngFor="let member of householdService.members()">
+      <li *ngFor="let member of safeMembers()">
         <div class="member-info">
           <img [src]="member.avatar" [alt]="member.name" title="{{ member.name }}">
           <div class="details">
@@ -288,3 +288,13 @@
   [deleteKey]="'SETTINGS.UNSAVED_CHANGES_LEAVE'" [icon]="WarningIcon" (confirm)="confirmLeaveWithoutSaving()"
   (cancel)="stayAndSave()">
 </app-delete-confirmation-modal>
+
+<app-confirmation-modal [show]="showImportConfirmModal()" [titleKey]="'SETTINGS.IMPORT_FAMILY_CONFIRM_TITLE'"
+  [messageKey]="'SETTINGS.IMPORT_FAMILY_CONFIRM_MESSAGE'" [cancelKey]="'SETTINGS.CANCEL'"
+  [confirmKey]="'HOME.IMPORT_BUTTON'" [icon]="ImportIcon" (confirm)="confirmImportFamily()"
+  (cancel)="cancelImportFamily()">
+</app-confirmation-modal>
+
+<app-error-modal [show]="showImportErrorModal()" [title]="'SETTINGS.IMPORT_FAMILY_CONFIRM_TITLE'"
+  [message]="importErrorMessage()" [instructions]="importErrorInstructions()" (cancel)="closeImportErrorModal()">
+</app-error-modal>

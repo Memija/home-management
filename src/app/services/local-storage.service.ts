@@ -75,4 +75,19 @@ export class LocalStorageService extends StorageService {
       await this.save(key, value);
     }
   }
+
+  // Export only specific record keys
+  async exportRecords(recordKey: string): Promise<any[]> {
+    if (!this.isBrowser) return [];
+
+    const data = await this.load<any[]>(recordKey);
+    return data || [];
+  }
+
+  // Import records with validation
+  async importRecords(recordKey: string, records: any[]): Promise<void> {
+    if (!this.isBrowser) return;
+
+    await this.save(recordKey, records);
+  }
 }

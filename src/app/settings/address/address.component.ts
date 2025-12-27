@@ -7,11 +7,13 @@ import { LanguageService } from '../../services/language.service';
 import { FileStorageService } from '../../services/file-storage.service';
 import { CountryService } from '../../services/country.service';
 import { TranslatePipe } from '../../pipes/translate.pipe';
+import { ConfirmationModalComponent } from '../../shared/confirmation-modal/confirmation-modal.component';
+import { ErrorModalComponent } from '../../shared/error-modal/error-modal.component';
 
 @Component({
   selector: 'app-address',
   standalone: true,
-  imports: [FormsModule, CommonModule, TranslatePipe, LucideAngularModule],
+  imports: [FormsModule, CommonModule, TranslatePipe, LucideAngularModule, ConfirmationModalComponent, ErrorModalComponent],
   templateUrl: './address.component.html',
   styleUrl: './address.component.scss'
 })
@@ -43,6 +45,15 @@ export class AddressComponent {
   // Validation Errors
   protected streetNumberError = signal('');
   protected zipCodeError = signal('');
+
+  // Import confirmation modal
+  protected showImportConfirmModal = signal(false);
+  protected pendingImportFile = signal<File | null>(null);
+
+  // Error modal state
+  protected showImportErrorModal = signal(false);
+  protected importErrorMessage = signal('');
+  protected importErrorInstructions = signal<string[]>([]);
 
   // Filtered countries based on search (reactive to language changes)
   protected filteredCountries = computed(() => {
@@ -175,20 +186,48 @@ export class AddressComponent {
     const input = event.target as HTMLInputElement;
     const file = input.files?.[0];
     if (file) {
+      this.pendingImportFile.set(file);
+      this.showImportConfirmModal.set(true);
+      input.value = ''; // Reset input so same file can be selected again
+    }
+  }
+
+  async confirmImportAddress(): Promise<void> {
+    const file = this.pendingImportFile();
+    if (file) {
       try {
         const data = await this.fileStorage.importFromFile<Address>(file);
         // Validate required fields
         if (data && data.streetName && data.streetNumber && data.city && data.zipCode && data.country) {
           this.householdService.updateAddress(data);
-          alert(this.languageService.translate('SETTINGS.IMPORT_SUCCESS'));
+          this.showSaveConfirmation.set(true);
+          setTimeout(() => this.showSaveConfirmation.set(false), 3000);
         } else {
           throw new Error('Invalid address format');
         }
-        input.value = '';
       } catch (error) {
         console.error('Error importing address:', error);
-        alert(this.languageService.translate('SETTINGS.IMPORT_ERROR'));
+        this.importErrorMessage.set(this.languageService.translate('SETTINGS.IMPORT_ERROR'));
+        this.importErrorInstructions.set([
+          'HOME.IMPORT_ERROR_INSTRUCTION_1',
+          'HOME.IMPORT_ERROR_INSTRUCTION_2',
+          'HOME.IMPORT_ERROR_INSTRUCTION_3'
+        ]);
+        this.showImportErrorModal.set(true);
       }
     }
+    this.showImportConfirmModal.set(false);
+    this.pendingImportFile.set(null);
+  }
+
+  cancelImportAddress(): void {
+    this.showImportConfirmModal.set(false);
+    this.pendingImportFile.set(null);
+  }
+
+  closeImportErrorModal(): void {
+    this.showImportErrorModal.set(false);
+    this.importErrorMessage.set('');
+    this.importErrorInstructions.set([]);
   }
 }

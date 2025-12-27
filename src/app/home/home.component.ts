@@ -7,8 +7,10 @@ import { LanguageSwitcherComponent } from '../components/language-switcher/langu
 import { STORAGE_SERVICE } from '../services/storage.service';
 import { FileStorageService } from '../services/file-storage.service';
 import { LanguageService } from '../services/language.service';
-import { LucideAngularModule, Settings, TriangleAlert, ChevronDown, ChevronLeft, ChevronRight } from 'lucide-angular';
+import { LucideAngularModule, Settings, TriangleAlert, ChevronDown, ChevronLeft, ChevronRight, Upload } from 'lucide-angular';
 import { ConsumptionChartComponent, type ChartView, type DisplayMode } from '../shared/consumption-chart/consumption-chart.component';
+import { ConfirmationModalComponent } from '../shared/confirmation-modal/confirmation-modal.component';
+import { ErrorModalComponent } from '../shared/error-modal/error-modal.component';
 
 interface ConsumptionRecord {
   date: Date;
@@ -21,7 +23,7 @@ interface ConsumptionRecord {
 @Component({
   selector: 'app-home',
   standalone: true,
-  imports: [FormsModule, DatePipe, RouterLink, TranslatePipe, LucideAngularModule, ConsumptionChartComponent],
+  imports: [FormsModule, DatePipe, RouterLink, TranslatePipe, LucideAngularModule, ConsumptionChartComponent, ConfirmationModalComponent, ErrorModalComponent],
   templateUrl: './home.component.html',
   styleUrl: './home.component.scss'
 })
@@ -35,6 +37,15 @@ export class HomeComponent {
   protected readonly ChevronDownIcon = ChevronDown;
   protected readonly ChevronLeftIcon = ChevronLeft;
   protected readonly ChevronRightIcon = ChevronRight;
+  protected readonly UploadIcon = Upload;
+
+  protected showImportConfirmModal = signal(false);
+  protected pendingImportFile = signal<File | null>(null);
+
+  // Error modal state
+  protected showImportErrorModal = signal(false);
+  protected importErrorMessage = signal('');
+  protected importErrorInstructions = signal<string[]>([]);
 
   protected records = signal<ConsumptionRecord[]>([]);
   protected nextSunday = signal<Date>(this.calculateNextSunday());
@@ -137,24 +148,69 @@ export class HomeComponent {
   }
 
   async exportData() {
-    const allData = await this.storage.exportAll();
-    this.fileStorage.exportToFile(allData, `water-consumption-${new Date().toISOString().split('T')[0]}.json`);
+    const records = await this.storage.exportRecords('consumption_records');
+    const dateStr = new Date().toISOString().split('T')[0];
+    this.fileStorage.exportToFile(records, `consumption-records-${dateStr}.json`);
   }
 
   async importData(event: Event) {
     const input = event.target as HTMLInputElement;
     const file = input.files?.[0];
     if (file) {
+      this.pendingImportFile.set(file);
+      this.showImportConfirmModal.set(true);
+      input.value = ''; // Reset input so same file can be selected again
+    }
+  }
+
+  async confirmImport() {
+    const file = this.pendingImportFile();
+    if (file) {
       try {
         const data = await this.fileStorage.importFromFile(file);
-        await this.storage.importAll(data);
+        // Validate imported data is an array of consumption records
+        if (!Array.isArray(data)) {
+          throw new Error('Invalid data format: expected an array of records');
+        }
+        // Validate each record has required fields
+        const isValidRecords = data.every(record =>
+          record &&
+          typeof record === 'object' &&
+          'date' in record &&
+          'kitchenWarm' in record &&
+          'kitchenCold' in record &&
+          'bathroomWarm' in record &&
+          'bathroomCold' in record
+        );
+        if (!isValidRecords) {
+          throw new Error('Invalid record structure');
+        }
+        await this.storage.importRecords('consumption_records', data);
         await this.loadData();
-        input.value = '';
       } catch (error) {
         console.error('Error importing data:', error);
-        alert('Failed to import data. Please check the file format.');
+        this.importErrorMessage.set(this.languageService.translate('HOME.IMPORT_INVALID_DATA'));
+        this.importErrorInstructions.set([
+          'HOME.IMPORT_ERROR_INSTRUCTION_1',
+          'HOME.IMPORT_ERROR_INSTRUCTION_2',
+          'HOME.IMPORT_ERROR_INSTRUCTION_3'
+        ]);
+        this.showImportErrorModal.set(true);
       }
     }
+    this.showImportConfirmModal.set(false);
+    this.pendingImportFile.set(null);
+  }
+
+  cancelImport() {
+    this.showImportConfirmModal.set(false);
+    this.pendingImportFile.set(null);
+  }
+
+  closeImportErrorModal() {
+    this.showImportErrorModal.set(false);
+    this.importErrorMessage.set('');
+    this.importErrorInstructions.set([]);
   }
 
   private calculateNextSunday(): Date {

@@ -123,6 +123,11 @@
   [deleteKey]="'HOME.DELETE_ALL_BUTTON'" [icon]="TrashIcon" (confirm)="confirmDeleteAll()" (cancel)="cancelDeleteAll()">
 </app-delete-confirmation-modal>
 
+<app-confirmation-modal [show]="showImportConfirmModal()" [titleKey]="'HOME.IMPORT_CONFIRM_TITLE'"
+  [messageKey]="'HOME.IMPORT_CONFIRM_MESSAGE'" [cancelKey]="'HOME.CANCEL'" [confirmKey]="'HOME.IMPORT_BUTTON'"
+  [icon]="UploadIcon" (confirm)="confirmImport()" (cancel)="cancelImport()">
+</app-confirmation-modal>
+
 <app-error-modal [show]="showErrorModal()" [title]="errorTitle()" [message]="errorMessage()" [details]="errorDetails()"
-  [instructions]="errorInstructions()" (cancel)="closeErrorModal()">
+  [instructions]="errorInstructions()" (cancel)="closeErrorModal()" [type]="errorType()">
 </app-error-modal>

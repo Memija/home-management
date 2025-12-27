@@ -1,0 +1,18 @@
+@if (show) {
+<div class="modal-overlay" (click)="onCancel()">
+  <div class="modal-content" (click)="$event.stopPropagation()">
+    <div class="modal-header">
+      <lucide-icon [img]="icon" size="32" class="info-icon"></lucide-icon>
+      <h3>{{ titleKey | translate }}</h3>
+      <button class="close-btn" (click)="onCancel()" title="Close">&times;</button>
+    </div>
+    <div class="modal-body">
+      <p>{{ translatedMessage() }}</p>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-secondary" (click)="onCancel()">{{ cancelKey | translate }}</button>
+      <button class="btn-primary" (click)="onConfirm()">{{ confirmKey | translate }}</button>
+    </div>
+  </div>
+</div>
+}

@@ -21,7 +21,9 @@ export const de = {
     IMPORT_EXCEL: 'Aus Excel importieren',
     EXCEL_IMPORT_SUCCESS: 'Excel-Daten erfolgreich importiert!',
     EXCEL_IMPORT_ERROR_TITLE: 'Excel-Import fehlgeschlagen',
-    EXCEL_IMPORT_ERROR: 'Excel-Daten konnten nicht importiert werden. Bitte überprüfen Sie die Details unten und befolgen Sie die Anweisungen zur Behebung des Problems.'
+    EXCEL_IMPORT_ERROR: 'Excel-Daten konnten nicht importiert werden. Bitte überprüfen Sie die Details unten und befolgen Sie die Anweisungen zur Behebung des Problems.',
+    JSON_IMPORT_ERROR_TITLE: 'JSON-Import fehlgeschlagen',
+    JSON_IMPORT_ERROR: 'JSON-Daten konnten nicht importiert werden. Bitte überprüfen Sie die Details unten und befolgen Sie die Anweisungen zur Behebung des Problems.'
   },
   CHART: {
     AXIS_DATE: 'Datum',
@@ -171,6 +173,8 @@ export const de = {
     EXCEL_IMPORT_SUCCESS: 'Excel-Daten erfolgreich importiert!',
     EXCEL_IMPORT_ERROR_TITLE: 'Excel-Import fehlgeschlagen',
     EXCEL_IMPORT_ERROR: 'Excel-Daten konnten nicht importiert werden. Bitte überprüfen Sie die Details unten und befolgen Sie die Anweisungen zur Behebung des Problems.',
+    JSON_IMPORT_ERROR_TITLE: 'JSON-Import fehlgeschlagen',
+    JSON_IMPORT_ERROR: 'JSON-Daten konnten nicht importiert werden. Bitte überprüfen Sie die Details unten und befolgen Sie die Anweisungen zur Behebung des Problems.',
     LIVING_AREAS: 'Wohnbereiche',
     SERVICE_AREAS: 'Servicebereiche',
     LIVING_ROOM: 'Wohnzimmer',
@@ -228,6 +232,14 @@ export const de = {
     DELETE_ALL_CONFIRM_MESSAGE_SINGULAR: 'Sind Sie sicher, dass Sie diesen gefilterten Eintrag löschen möchten? Diese Aktion kann nicht rückgängig gemacht werden.',
     DELETE_ALL_CONFIRM_MESSAGE_PLURAL: 'Sind Sie sicher, dass Sie alle {count} gefilterten Einträge löschen möchten? Diese Aktion kann nicht rückgängig gemacht werden.',
     DELETE_ALL_BUTTON: 'Alle löschen',
+    IMPORT_CONFIRM_TITLE: 'Import bestätigen',
+    IMPORT_CONFIRM_MESSAGE: 'Der Import wird mit Ihren bestehenden Einträgen zusammengeführt. Möchten Sie fortfahren?',
+    IMPORT_BUTTON: 'Importieren',
+    IMPORT_INVALID_DATA: 'Die ausgewählte Datei enthält keine gültigen Daten für diesen Bereich. Bitte stellen Sie sicher, dass Sie den richtigen Dateityp importieren.',
+    IMPORT_INVALID_FORMAT: 'Import fehlgeschlagen. Die Datei ist möglicherweise beschädigt oder hat ein falsches Format. Bitte exportieren Sie eine neue Kopie von der Quelle und versuchen Sie es erneut.',
+    IMPORT_ERROR_INSTRUCTION_1: 'Stellen Sie sicher, dass Sie die richtige Datei für diesen Bereich importieren',
+    IMPORT_ERROR_INSTRUCTION_2: 'Überprüfen Sie, ob die Datei aus dieser Anwendung exportiert wurde',
+    IMPORT_ERROR_INSTRUCTION_3: 'Versuchen Sie, ein neues Backup zu exportieren und erneut zu importieren',
     SORT: {
       DATE_DESC: 'Datum (Neueste zuerst)',
       DATE_ASC: 'Datum (Älteste zuerst)',
@@ -253,7 +265,10 @@ export const de = {
       OCTOBER: 'Oktober',
       NOVEMBER: 'November',
       DECEMBER: 'Dezember'
-    }
+    },
+    IMPORT_WARNING_TITLE: 'Spalten stimmen nicht überein',
+    IMPORT_WARNING_MESSAGE: 'Daten erfolgreich importiert, aber einige in den Einstellungen konfigurierte Spalten wurden in Ihrer Excel-Datei nicht gefunden. Werte für fehlende Spalten wurden auf 0 gesetzt.',
+    MISSING_COLUMNS: 'Spalten nicht in Datei gefunden'
   },
   CALENDAR: {
     TODAY: 'Heute',
@@ -311,7 +326,11 @@ export const de = {
     EXPORT_ADDRESS: 'Adresse exportieren',
     IMPORT_ADDRESS: 'Adresse importieren',
     IMPORT_SUCCESS: 'Adresse erfolgreich importiert!',
-    IMPORT_ERROR: 'Adresse konnte nicht importiert werden. Bitte überprüfen Sie das Dateiformat.',
+    IMPORT_ERROR: 'Adresse konnte nicht importiert werden. Die Datei scheint keine gültigen Adressdaten zu enthalten. Bitte stellen Sie sicher, dass Sie eine Adressdatei mit Straßenname, Hausnummer, Stadt, Postleitzahl und Land importieren.',
+    IMPORT_FAMILY_CONFIRM_TITLE: 'Import bestätigen',
+    IMPORT_FAMILY_CONFIRM_MESSAGE: 'Der Import ersetzt alle aktuellen Familienmitglieder. Möchten Sie fortfahren?',
+    IMPORT_ADDRESS_CONFIRM_TITLE: 'Import bestätigen',
+    IMPORT_ADDRESS_CONFIRM_MESSAGE: 'Der Import ersetzt Ihre aktuelle Adresse. Möchten Sie fortfahren?',
     GENDERS: {
       MALE: 'Männlich',
       FEMALE: 'Weiblich'
@@ -368,7 +387,17 @@ export const de = {
     EXCEL_COLUMN_FIX_1: 'Überprüfen Sie, ob Ihre Excel-Spaltennamen mit den in den Einstellungen konfigurierten Namen übereinstimmen',
     EXCEL_COLUMN_FIX_2: 'Gehen Sie zu Einstellungen → Excel-Integration, um die Spaltenzuordnungen anzuzeigen oder zu aktualisieren',
     EXCEL_GENERIC_FIX_1: 'Überprüfen Sie, ob Ihre Excel-Datei im .xlsx-Format vorliegt',
-    EXCEL_GENERIC_FIX_2: 'Stellen Sie sicher, dass alle erforderlichen Spalten mit korrekten Datentypen vorhanden sind'
+    EXCEL_GENERIC_FIX_2: 'Stellen Sie sicher, dass alle erforderlichen Spalten mit korrekten Datentypen vorhanden sind',
+    EXCEL_NUMBER_FIX_1: 'Stellen Sie sicher, dass alle Verbrauchswerte Zahlen sind',
+    EXCEL_NUMBER_FIX_2: 'Entfernen Sie Text oder Sonderzeichen aus numerischen Spalten',
+    EXCEL_DUPLICATE_FIX_1: 'Entfernen Sie doppelte Datumseinträge aus Ihrer Excel-Datei',
+    EXCEL_DUPLICATE_FIX_2: 'Jedes Datum sollte nur einmal in der Datei vorkommen',
+    JSON_DATE_FIX_1: 'Stellen Sie sicher, dass Datumsangaben im ISO-Format vorliegen (z.B. 2025-09-14T00:00:00.000Z)',
+    JSON_DATE_FIX_2: 'Oder verwenden Sie das Format JJJJ-MM-TT (z.B. 2025-09-14)',
+    JSON_NUMBER_FIX_1: 'Stellen Sie sicher, dass alle Verbrauchswerte Zahlen sind',
+    JSON_NUMBER_FIX_2: 'Entfernen Sie Text oder Sonderzeichen aus numerischen Feldern',
+    JSON_DUPLICATE_FIX_1: 'Entfernen Sie doppelte Datumseinträge aus Ihrer JSON-Datei',
+    JSON_DUPLICATE_FIX_2: 'Jedes Datum sollte nur einmal in der Datei vorkommen'
   },
   EXCEL: {
     DEFAULT_DATE: 'Datum',

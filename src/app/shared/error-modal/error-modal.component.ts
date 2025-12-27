@@ -1,6 +1,6 @@
 import { Component, input, output } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { LucideAngularModule, AlertCircle, X } from 'lucide-angular';
+import { LucideAngularModule, AlertCircle, AlertTriangle, X } from 'lucide-angular';
 import { TranslatePipe } from '../../pipes/translate.pipe';
 
 @Component({
@@ -16,9 +16,11 @@ export class ErrorModalComponent {
   message = input.required<string>();
   details = input<string>('');
   instructions = input<string[]>([]);
+  type = input<'error' | 'warning'>('error');
 
   cancel = output<void>();
 
   protected readonly AlertCircleIcon = AlertCircle;
+  protected readonly AlertTriangleIcon = AlertTriangle;
   protected readonly XIcon = X;
 }

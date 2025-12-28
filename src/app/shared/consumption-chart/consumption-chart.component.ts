@@ -1,16 +1,16 @@
-import { Component, Input, PLATFORM_ID, ViewChild, computed, effect, inject, input, signal } from '@angular/core';
-import { isPlatformBrowser } from '@angular/common';
+import { Component, Input, ViewChild, computed, effect, inject, input, signal } from '@angular/core';
 import { BaseChartDirective } from 'ng2-charts';
 import { Chart, ChartConfiguration, registerables } from 'chart.js';
 import { TranslatePipe } from '../../pipes/translate.pipe';
 import { LanguageService } from '../../services/language.service';
-import { WaterAveragesService } from '../../services/water-averages.service';
+import { ChartDataService, ChartView, DisplayMode } from '../../services/chart-data.service';
+import { LocalStorageService } from '../../services/local-storage.service';
 import { LucideAngularModule, BarChart3, DoorOpen, Droplet, Grid3x3, TrendingUp, Activity, Info } from 'lucide-angular';
 
 Chart.register(...registerables);
 
-export type ChartView = 'total' | 'by-room' | 'by-type' | 'detailed';
-export type DisplayMode = 'total' | 'incremental';
+// Re-export types for consumers
+export type { ChartView, DisplayMode } from '../../services/chart-data.service';
 
 export type ChartDataPoint = Record<string, number | Date> & { date: Date };
 
@@ -39,8 +39,8 @@ export class ConsumptionChartComponent {
   country = input<string>('');
 
   private languageService = inject(LanguageService);
-  private waterAveragesService = inject(WaterAveragesService);
-  private platformId = inject(PLATFORM_ID);
+  private chartDataService = inject(ChartDataService);
+  private localStorageService = inject(LocalStorageService);
 
   protected readonly BarChart3Icon = BarChart3;
   protected readonly DoorOpenIcon = DoorOpen;
@@ -57,7 +57,6 @@ export class ConsumptionChartComponent {
   protected showAverageComparison = signal<boolean>(this.getStoredAverageComparisonVisibility());
 
   // Computed property to check if there's enough data for features
-  // In incremental mode, we need 3 records to get 2 incremental data points for a trendline
   protected hasSufficientDataForTrendline = computed(() => {
     const dataLength = this.data().length;
     const mode = this.displayMode();
@@ -66,7 +65,7 @@ export class ConsumptionChartComponent {
 
   protected hasSufficientDataForComparison = computed(() => {
     const dataLength = this.data().length;
-    return dataLength >= 3; // Comparison only works in incremental mode, needs 3 original records
+    return dataLength >= 3;
   });
 
   protected currentLang = computed(() => this.languageService.currentLang());
@@ -80,71 +79,51 @@ export class ConsumptionChartComponent {
     this.currentLang();
     this.showTrendline();
     this.showAverageComparison();
-    const currentCountry = this.country();
-    const currentFamilySize = this.familySize();
 
     // Process data based on display mode
-    const processedData = mode === 'incremental' ? this.calculateIncrementalData(recs) : recs;
+    const processedData = mode === 'incremental' ? this.chartDataService.calculateIncrementalData(recs) : recs;
 
     if (this.chartType === 'water') {
-      return this.getWaterChartData(processedData, labels, view, mode, currentCountry, currentFamilySize);
+      return this.chartDataService.getWaterChartData({
+        records: processedData,
+        labels,
+        view,
+        mode,
+        showTrendline: this.showTrendline(),
+        showAverageComparison: this.showAverageComparison(),
+        country: this.country(),
+        familySize: this.familySize()
+      });
     } else if (this.chartType === 'home') {
-      return this.getHomeChartData(processedData, labels, view, mode);
+      return this.chartDataService.getWaterChartData({
+        records: processedData,
+        labels,
+        view,
+        mode,
+        showTrendline: false,
+        showAverageComparison: false,
+        country: '',
+        familySize: 0
+      });
     } else {
-      return this.getHeatingChartData(processedData, labels, view, mode);
+      return this.chartDataService.getHeatingChartData({
+        records: processedData,
+        labels,
+        view,
+        mode
+      });
     }
   });
 
   constructor() {
-    // Effect to update chart when data changes
     effect(() => {
-      // Read chartData to track it
       this.chartData();
-      // Trigger chart update
       this.chart?.update();
     });
   }
 
-  private generateComparisonData(processedData: any[], familySize: number, country: string): any[] {
-    // Generate realistic comparison using country-specific average
-    if (processedData.length === 0 || familySize === 0) return [];
-
-    const countryData = this.waterAveragesService.getCountryData(country);
-    const averageLitersPerPersonPerDay = countryData.averageLitersPerPersonPerDay;
-
-    // Calculate the average period across all measurements to keep the line constant
-    let totalDays = 0;
-    if (processedData.length > 1) {
-      const firstDate = new Date(processedData[0].date).getTime();
-      const lastDate = new Date(processedData[processedData.length - 1].date).getTime();
-      totalDays = Math.round((lastDate - firstDate) / (1000 * 60 * 60 * 24));
-    }
-    const averagePeriod = processedData.length > 1 ? totalDays / (processedData.length - 1) : 7;
-
-    return processedData.map((current) => {
-      const comparison: any = { date: current.date };
-
-      // Use consistent average period for all points to keep line straight
-      const totalConsumption = averageLitersPerPersonPerDay * familySize * averagePeriod;
-
-      // Distribute proportionally across rooms based on official statistics
-      // Normalized for kitchen+bathroom only: Kitchen 15%, Bathroom 85%
-      // Within each: Warm 40%, Cold 60% (estimated)
-      const kitchenTotal = totalConsumption * 0.15;
-      const bathroomTotal = totalConsumption * 0.85;
-
-      comparison['kitchenWarm'] = Math.round(kitchenTotal * 0.4);
-      comparison['kitchenCold'] = Math.round(kitchenTotal * 0.6);
-      comparison['bathroomWarm'] = Math.round(bathroomTotal * 0.4);
-      comparison['bathroomCold'] = Math.round(bathroomTotal * 0.6);
-
-      return comparison;
-    });
-  }
-
   protected chartOptions = computed<ChartConfiguration['options']>(() => {
-    // Reactive to language changes
-    const lang = this.currentLang();
+    this.currentLang();
 
     return {
       responsive: true,
@@ -164,386 +143,6 @@ export class ConsumptionChartComponent {
     };
   });
 
-  private calculateIncrementalData(recs: any[]): any[] {
-    if (recs.length <= 1) return recs;
-
-    const incrementalData: any[] = [];
-    for (let i = 1; i < recs.length; i++) {
-      const current = recs[i];
-      const previous = recs[i - 1];
-      const incremental: any = { date: current.date };
-
-      // Calculate differences for all numeric fields
-      Object.keys(current).forEach(key => {
-        if (key !== 'date' && typeof current[key] === 'number') {
-          incremental[key] = Math.max(0, (current[key] as number) - (previous[key] as number));
-        }
-      });
-
-      incrementalData.push(incremental);
-    }
-
-    return incrementalData;
-  }
-
-  /**
-   * Calculate linear regression (least squares method) for trendline
-   * Returns slope (m) and y-intercept (b) for equation: y = mx + b
-   */
-  private calculateLinearRegression(dataPoints: number[]): { slope: number; intercept: number } {
-    const n = dataPoints.length;
-    if (n < 2) return { slope: 0, intercept: dataPoints[0] || 0 };
-
-    // x values are just indices (0, 1, 2, ...)
-    let sumX = 0;
-    let sumY = 0;
-    let sumXY = 0;
-    let sumX2 = 0;
-
-    for (let i = 0; i < n; i++) {
-      sumX += i;
-      sumY += dataPoints[i];
-      sumXY += i * dataPoints[i];
-      sumX2 += i * i;
-    }
-
-    const denominator = n * sumX2 - sumX * sumX;
-    if (denominator === 0) return { slope: 0, intercept: sumY / n };
-
-    const slope = (n * sumXY - sumX * sumY) / denominator;
-    const intercept = (sumY - slope * sumX) / n;
-
-    return { slope, intercept };
-  }
-
-  /**
-   * Generate trendline data points from regression
-   */
-  private generateTrendlineData(dataPoints: number[]): number[] {
-    const { slope, intercept } = this.calculateLinearRegression(dataPoints);
-    return dataPoints.map((_, index) => Math.round(slope * index + intercept));
-  }
-
-  private getWaterChartData(recs: any[], labels: string[], view: ChartView, mode: DisplayMode, country: string, familySize: number): ChartConfiguration['data'] {
-    // Adjust labels for incremental mode (skip first measurement)
-    const chartLabels = mode === 'incremental' ? labels.slice(1) : labels;
-    const showComparison = familySize > 0 && mode === 'incremental' && this.showAverageComparison();
-    const comparisonData = showComparison ? this.generateComparisonData(recs, familySize, country) : [];
-
-    switch (view) {
-      case 'total':
-        const datasets: any[] = [{
-          label: showComparison ? this.languageService.translate('CHART.YOUR_FAMILY') :
-            mode === 'incremental' ? this.languageService.translate('CHART.INCREMENTAL_CONSUMPTION') :
-              this.languageService.translate('CHART.TOTAL_WEEKLY_CONSUMPTION'),
-          data: recs.map(r => (r['kitchenWarm'] as number) + (r['kitchenCold'] as number) + (r['bathroomWarm'] as number) + (r['bathroomCold'] as number)),
-          borderColor: '#007bff',
-          backgroundColor: 'rgba(0, 123, 255, 0.1)',
-          fill: true,
-          tension: 0.4,
-          pointRadius: recs.length === 1 ? 8 : 3,
-          pointHoverRadius: 6
-        }];
-
-        if (showComparison) {
-          datasets.push({
-            label: this.languageService.translate('CHART.AVERAGE_FAMILY'),
-            data: comparisonData.map(r => (r['kitchenWarm'] as number) + (r['kitchenCold'] as number) + (r['bathroomWarm'] as number) + (r['bathroomCold'] as number)),
-            borderColor: '#007bff',
-            backgroundColor: 'rgba(0, 123, 255, 0.05)',
-            fill: false,
-            tension: 0,
-            borderDash: [5, 5],
-            pointRadius: 0
-          });
-        }
-
-        // Add trendline if enabled and we have enough data points
-        if (this.showTrendline() && recs.length >= 2) {
-          const totalData = recs.map(r => (r['kitchenWarm'] as number) + (r['kitchenCold'] as number) + (r['bathroomWarm'] as number) + (r['bathroomCold'] as number));
-          const trendlineData = this.generateTrendlineData(totalData);
-          datasets.push({
-            label: this.languageService.translate('CHART.TRENDLINE'),
-            data: trendlineData,
-            borderColor: '#9b59b6',
-            backgroundColor: 'transparent',
-            fill: false,
-            tension: 0,
-            borderDash: [10, 5],
-            borderWidth: 2,
-            pointRadius: 0
-          });
-        }
-
-        return {
-          labels: chartLabels,
-          datasets
-        };
-      case 'by-room':
-        const byRoomDatasets: any[] = [
-          {
-            label: this.languageService.translate('CHART.KITCHEN_TOTAL'),
-            data: recs.map(r => (r['kitchenWarm'] as number) + (r['kitchenCold'] as number)),
-            borderColor: '#28a745',
-            backgroundColor: 'rgba(40, 167, 69, 0.1)',
-            fill: true,
-            tension: 0.4,
-            pointRadius: recs.length === 1 ? 8 : 3
-          },
-          {
-            label: this.languageService.translate('CHART.BATHROOM_TOTAL'),
-            data: recs.map(r => (r['bathroomWarm'] as number) + (r['bathroomCold'] as number)),
-            borderColor: '#17a2b8',
-            backgroundColor: 'rgba(23, 162, 184, 0.1)',
-            fill: true,
-            tension: 0.4,
-            pointRadius: recs.length === 1 ? 8 : 3
-          }
-        ];
-
-        if (showComparison) {
-          // Kitchen average in liters (using comparison data)
-          byRoomDatasets.push({
-            label: this.languageService.translate('CHART.KITCHEN_AVG'),
-            data: comparisonData.map(r => (r['kitchenWarm'] as number) + (r['kitchenCold'] as number)),
-            borderColor: '#28a745',
-            backgroundColor: 'transparent',
-            fill: false,
-            tension: 0,
-            borderDash: [5, 5],
-            pointRadius: 0
-          });
-          // Bathroom average in liters (using comparison data)
-          byRoomDatasets.push({
-            label: this.languageService.translate('CHART.BATHROOM_AVG'),
-            data: comparisonData.map(r => (r['bathroomWarm'] as number) + (r['bathroomCold'] as number)),
-            borderColor: '#17a2b8',
-            backgroundColor: 'transparent',
-            fill: false,
-            tension: 0,
-            borderDash: [5, 5],
-            pointRadius: 0
-          });
-        }
-
-        return {
-          labels: chartLabels,
-          datasets: byRoomDatasets
-        };
-      case 'by-type':
-        const byTypeDatasets: any[] = [
-          {
-            label: this.languageService.translate('CHART.WARM_WATER_TOTAL'),
-            data: recs.map(r => (r['kitchenWarm'] as number) + (r['bathroomWarm'] as number)),
-            borderColor: '#dc3545',
-            backgroundColor: 'rgba(220, 53, 69, 0.1)',
-            fill: true,
-            tension: 0.4,
-            pointRadius: recs.length === 1 ? 8 : 3
-          },
-          {
-            label: this.languageService.translate('CHART.COLD_WATER_TOTAL'),
-            data: recs.map(r => (r['kitchenCold'] as number) + (r['bathroomCold'] as number)),
-            borderColor: '#6c757d',
-            backgroundColor: 'rgba(108, 117, 125, 0.1)',
-            fill: true,
-            tension: 0.4,
-            pointRadius: recs.length === 1 ? 8 : 3
-          }
-        ];
-
-        if (showComparison) {
-          // Warm water average in liters (using comparison data)
-          byTypeDatasets.push({
-            label: this.languageService.translate('CHART.WARM_AVG'),
-            data: comparisonData.map(r => (r['kitchenWarm'] as number) + (r['bathroomWarm'] as number)),
-            borderColor: '#dc3545',
-            backgroundColor: 'transparent',
-            fill: false,
-            tension: 0,
-            borderDash: [5, 5],
-            pointRadius: 0
-          });
-          // Cold water average in liters (using comparison data)
-          byTypeDatasets.push({
-            label: this.languageService.translate('CHART.COLD_AVG'),
-            data: comparisonData.map(r => (r['kitchenCold'] as number) + (r['bathroomCold'] as number)),
-            borderColor: '#6c757d',
-            backgroundColor: 'transparent',
-            fill: false,
-            tension: 0,
-            borderDash: [5, 5],
-            pointRadius: 0
-          });
-        }
-
-        return {
-          labels: chartLabels,
-          datasets: byTypeDatasets
-        };
-      case 'detailed':
-        const detailedDatasets: any[] = [
-          {
-            label: this.languageService.translate('CHART.KITCHEN_WARM'),
-            data: recs.map(r => r['kitchenWarm'] as number),
-            borderColor: '#ff6384',
-            backgroundColor: 'rgba(255, 99, 132, 0.1)',
-            fill: false,
-            tension: 0.4,
-            pointRadius: recs.length === 1 ? 8 : 3
-          },
-          {
-            label: this.languageService.translate('CHART.KITCHEN_COLD'),
-            data: recs.map(r => r['kitchenCold'] as number),
-            borderColor: '#36a2eb',
-            backgroundColor: 'rgba(54, 162, 235, 0.1)',
-            fill: false,
-            tension: 0.4,
-            pointRadius: recs.length === 1 ? 8 : 3
-          },
-          {
-            label: this.languageService.translate('CHART.BATHROOM_WARM'),
-            data: recs.map(r => r['bathroomWarm'] as number),
-            borderColor: '#ffcd56',
-            backgroundColor: 'rgba(255, 205, 86, 0.1)',
-            fill: false,
-            tension: 0.4,
-            pointRadius: recs.length === 1 ? 8 : 3
-          },
-          {
-            label: this.languageService.translate('CHART.BATHROOM_COLD'),
-            data: recs.map(r => r['bathroomCold'] as number),
-            borderColor: '#4bc0c0',
-            backgroundColor: 'rgba(75, 192, 192, 0.1)',
-            fill: false,
-            tension: 0.4,
-            pointRadius: recs.length === 1 ? 8 : 3
-          }
-        ];
-
-        if (showComparison) {
-          // Kitchen Warm average in liters (using comparison data)
-          detailedDatasets.push({
-            label: this.languageService.translate('CHART.KITCHEN_WARM_AVG'),
-            data: comparisonData.map(r => r['kitchenWarm'] as number),
-            borderColor: '#ff6384',
-            backgroundColor: 'transparent',
-            fill: false,
-            tension: 0,
-            borderDash: [5, 5],
-            pointRadius: 0
-          });
-          // Kitchen Cold average in liters (using comparison data)
-          detailedDatasets.push({
-            label: this.languageService.translate('CHART.KITCHEN_COLD_AVG'),
-            data: comparisonData.map(r => r['kitchenCold'] as number),
-            borderColor: '#36a2eb',
-            backgroundColor: 'transparent',
-            fill: false,
-            tension: 0,
-            borderDash: [5, 5],
-            pointRadius: 0
-          });
-          // Bathroom Warm average in liters (using comparison data)
-          detailedDatasets.push({
-            label: this.languageService.translate('CHART.BATHROOM_WARM_AVG'),
-            data: comparisonData.map(r => r['bathroomWarm'] as number),
-            borderColor: '#ffcd56',
-            backgroundColor: 'transparent',
-            fill: false,
-            tension: 0,
-            borderDash: [5, 5],
-            pointRadius: 0
-          });
-          // Bathroom Cold average in liters (using comparison data)
-          detailedDatasets.push({
-            label: this.languageService.translate('CHART.BATHROOM_COLD_AVG'),
-            data: comparisonData.map(r => r['bathroomCold'] as number),
-            borderColor: '#4bc0c0',
-            backgroundColor: 'transparent',
-            fill: false,
-            tension: 0,
-            borderDash: [5, 5],
-            pointRadius: 0
-          });
-        }
-
-        return {
-          labels: chartLabels,
-          datasets: detailedDatasets
-        };
-    }
-  }
-
-  private getHomeChartData(recs: any[], labels: string[], view: ChartView, mode: DisplayMode): ChartConfiguration['data'] {
-    // Home component uses same structure as water but without comparison (pass empty values)
-    return this.getWaterChartData(recs, labels, view, mode, '', 0);
-  }
-
-  private getHeatingChartData(recs: any[], labels: string[], view: ChartView, mode: DisplayMode): ChartConfiguration['data'] {
-    // Adjust labels for incremental mode (skip first measurement)
-    const chartLabels = mode === 'incremental' ? labels.slice(1) : labels;
-    const chartTitle = mode === 'incremental'
-      ? this.languageService.translate('CHART.INCREMENTAL_CONSUMPTION')
-      : this.languageService.translate('CHART.TOTAL_WEEKLY_CONSUMPTION');
-    switch (view) {
-      case 'total':
-        return {
-          labels: chartLabels,
-          datasets: [{
-            label: chartTitle,
-            data: recs.map(r => (r['livingRoom'] as number) + (r['bedroom'] as number) + (r['kitchen'] as number) + (r['bathroom'] as number)),
-            borderColor: '#ff6f00',
-            backgroundColor: 'rgba(255, 111, 0, 0.1)',
-            fill: true,
-            tension: 0.4
-          }]
-        };
-      case 'by-room':
-        return {
-          labels: chartLabels,
-          datasets: [
-            {
-              label: this.languageService.translate('CHART.LIVING_ROOM'),
-              data: recs.map(r => r['livingRoom'] as number),
-              borderColor: '#e91e63',
-              backgroundColor: 'rgba(233, 30, 99, 0.1)',
-              fill: true,
-              tension: 0.4
-            },
-            {
-              label: this.languageService.translate('CHART.BEDROOM'),
-              data: recs.map(r => r['bedroom'] as number),
-              borderColor: '#9c27b0',
-              backgroundColor: 'rgba(156, 39, 176, 0.1)',
-              fill: true,
-              tension: 0.4
-            },
-            {
-              label: this.languageService.translate('CHART.KITCHEN'),
-              data: recs.map(r => r['kitchen'] as number),
-              borderColor: '#28a745',
-              backgroundColor: 'rgba(40, 167, 69, 0.1)',
-              fill: true,
-              tension: 0.4
-            },
-            {
-              label: this.languageService.translate('CHART.BATHROOM'),
-              data: recs.map(r => r['bathroom'] as number),
-              borderColor: '#ffa726',
-              backgroundColor: 'rgba(255, 167, 38, 0.1)',
-              fill: true,
-              tension: 0.4
-            }
-          ]
-        };
-      case 'by-type':
-      case 'detailed':
-        // For heating, by-type and detailed views are the same as by-room
-        return this.getHeatingChartData(recs, labels, 'by-room', mode);
-    }
-  }
-
   protected setView(view: ChartView): void {
     this.onViewChange(view);
   }
@@ -558,17 +157,12 @@ export class ConsumptionChartComponent {
   }
 
   private getStoredTrendlineVisibility(): boolean {
-    if (isPlatformBrowser(this.platformId)) {
-      const stored = localStorage.getItem('water_chart_trendline_visible');
-      return stored === null ? true : stored === 'true';
-    }
-    return true;
+    const stored = this.localStorageService.getPreference('water_chart_trendline_visible');
+    return stored === null ? true : stored === 'true';
   }
 
   private saveTrendlineVisibility(visible: boolean): void {
-    if (isPlatformBrowser(this.platformId)) {
-      localStorage.setItem('water_chart_trendline_visible', visible.toString());
-    }
+    this.localStorageService.setPreference('water_chart_trendline_visible', visible.toString());
   }
 
   protected toggleAverageComparison(): void {
@@ -577,16 +171,11 @@ export class ConsumptionChartComponent {
   }
 
   private getStoredAverageComparisonVisibility(): boolean {
-    if (isPlatformBrowser(this.platformId)) {
-      const stored = localStorage.getItem('water_chart_average_visible');
-      return stored === null ? true : stored === 'true';
-    }
-    return true;
+    const stored = this.localStorageService.getPreference('water_chart_average_visible');
+    return stored === null ? true : stored === 'true';
   }
 
   private saveAverageComparisonVisibility(visible: boolean): void {
-    if (isPlatformBrowser(this.platformId)) {
-      localStorage.setItem('water_chart_average_visible', visible.toString());
-    }
+    this.localStorageService.setPreference('water_chart_average_visible', visible.toString());
   }
 }

@@ -1,10 +1,11 @@
-import { Component, inject, computed, signal, PLATFORM_ID, effect } from '@angular/core';
-import { isPlatformBrowser, CommonModule } from '@angular/common';
+import { Component, inject, computed, signal, effect } from '@angular/core';
+import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ExcelSettingsService } from '../../services/excel-settings.service';
 import { TranslatePipe } from '../../pipes/translate.pipe';
 import { LucideAngularModule, FileSpreadsheet, RotateCcw, ChevronDown, ChevronUp } from 'lucide-angular';
 import { LanguageService } from '../../services/language.service';
+import { LocalStorageService } from '../../services/local-storage.service';
 
 @Component({
   selector: 'app-excel-settings',
@@ -14,7 +15,7 @@ import { LanguageService } from '../../services/language.service';
   styleUrl: './excel-settings.component.scss'
 })
 export class ExcelSettingsComponent {
-  private platformId = inject(PLATFORM_ID);
+  private localStorageService = inject(LocalStorageService);
   protected excelSettingsService = inject(ExcelSettingsService);
   protected languageService = inject(LanguageService);
   protected readonly FileSpreadsheetIcon = FileSpreadsheet;
@@ -75,21 +76,17 @@ export class ExcelSettingsComponent {
       this.heatingBathroomCol.set(settings.heatingMapping.bathroom);
     });
 
-    // Load collapsed state from localStorage (browser only)
-    if (isPlatformBrowser(this.platformId)) {
-      const savedCollapsedState = localStorage.getItem('excelPreviewCollapsed');
-      if (savedCollapsedState !== null) {
-        this.isPreviewCollapsed.set(savedCollapsedState === 'true');
-      }
+    // Load collapsed state from localStorage
+    const savedCollapsedState = this.localStorageService.getPreference('excelPreviewCollapsed');
+    if (savedCollapsedState !== null) {
+      this.isPreviewCollapsed.set(savedCollapsedState === 'true');
     }
   }
 
   protected togglePreview() {
     this.isPreviewCollapsed.update(val => !val);
-    // Save to localStorage (browser only)
-    if (isPlatformBrowser(this.platformId)) {
-      localStorage.setItem('excelPreviewCollapsed', this.isPreviewCollapsed().toString());
-    }
+    // Save to localStorage
+    this.localStorageService.setPreference('excelPreviewCollapsed', this.isPreviewCollapsed().toString());
   }
 
   /**

@@ -230,4 +230,9 @@ export class AddressComponent {
     this.importErrorMessage.set('');
     this.importErrorInstructions.set([]);
   }
+
+  // TrackBy for *ngFor performance
+  trackByCountry(index: number, country: string): string {
+    return country;
+  }
 }

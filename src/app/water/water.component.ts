@@ -1,5 +1,5 @@
-import { Component, signal, computed, inject, PLATFORM_ID } from '@angular/core';
-import { CommonModule, isPlatformBrowser } from '@angular/common';
+import { Component, signal, computed, inject } from '@angular/core';
+import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
 import { TranslatePipe } from '../pipes/translate.pipe';
@@ -12,11 +12,14 @@ import { LucideAngularModule, ArrowLeft, Download, Upload, CircleCheck, Trash2, 
 import { ConsumptionInputComponent, type ConsumptionGroup, type ConsumptionData } from '../shared/consumption-input/consumption-input.component';
 import { DeleteConfirmationModalComponent } from '../shared/delete-confirmation-modal/delete-confirmation-modal.component';
 import { ConfirmationModalComponent } from '../shared/confirmation-modal/confirmation-modal.component';
-import { DetailedRecordsComponent, type ConsumptionRecord } from '../shared/detailed-records/detailed-records.component';
+import { DetailedRecordsComponent } from '../shared/detailed-records/detailed-records.component';
+import { ConsumptionRecord, calculateWaterTotal, calculateKitchenTotal, calculateBathroomTotal } from '../models/records.model';
 import { ConsumptionChartComponent, type ChartView, type DisplayMode } from '../shared/consumption-chart/consumption-chart.component';
 import { ErrorModalComponent } from '../shared/error-modal/error-modal.component';
 import { HouseholdService } from '../services/household.service';
 import { WaterAveragesService } from '../services/water-averages.service';
+import { ImportValidationService } from '../services/import-validation.service';
+import { LocalStorageService } from '../services/local-storage.service';
 
 @Component({
   selector: 'app-water',
@@ -33,7 +36,8 @@ export class WaterComponent {
   protected excelSettings = inject(ExcelSettingsService);
   private householdService = inject(HouseholdService);
   private waterAveragesService = inject(WaterAveragesService);
-  private platformId = inject(PLATFORM_ID);
+  private importValidationService = inject(ImportValidationService);
+  private localStorageService = inject(LocalStorageService);
 
   protected readonly ArrowLeftIcon = ArrowLeft;
   protected readonly DownloadIcon = Download;
@@ -194,35 +198,27 @@ export class WaterComponent {
   };
 
   private getStoredChartView(): ChartView {
-    if (isPlatformBrowser(this.platformId)) {
-      const stored = localStorage.getItem('water_chart_view');
-      if (stored === 'total' || stored === 'by-room' || stored === 'by-type' || stored === 'detailed') {
-        return stored;
-      }
+    const stored = this.localStorageService.getPreference('water_chart_view');
+    if (stored === 'total' || stored === 'by-room' || stored === 'by-type' || stored === 'detailed') {
+      return stored;
     }
     return 'total';
   }
 
   private getStoredDisplayMode(): DisplayMode {
-    if (isPlatformBrowser(this.platformId)) {
-      const stored = localStorage.getItem('water_display_mode');
-      if (stored === 'total' || stored === 'incremental') {
-        return stored;
-      }
+    const stored = this.localStorageService.getPreference('water_display_mode');
+    if (stored === 'total' || stored === 'incremental') {
+      return stored;
     }
     return 'incremental';
   }
 
   private saveChartView(view: ChartView): void {
-    if (isPlatformBrowser(this.platformId)) {
-      localStorage.setItem('water_chart_view', view);
-    }
+    this.localStorageService.setPreference('water_chart_view', view);
   }
 
   private saveDisplayMode(mode: DisplayMode): void {
-    if (isPlatformBrowser(this.platformId)) {
-      localStorage.setItem('water_display_mode', mode);
-    }
+    this.localStorageService.setPreference('water_display_mode', mode);
   }
 
   constructor() {
@@ -281,103 +277,19 @@ export class WaterComponent {
       try {
         const data = await this.fileStorage.importFromFile(file);
 
-        // Validate imported data is an array
-        if (!Array.isArray(data)) {
-          throw new Error('Invalid data format: expected an array of records');
+        // Validate data array
+        const arrayError = this.importValidationService.validateDataArray(data);
+        if (arrayError) {
+          throw new Error(arrayError);
         }
 
-        if (data.length === 0) {
-          throw new Error('The file is empty or has no data records.');
+        // Validate records
+        const result = this.importValidationService.validateWaterJsonImport(data as any[]);
+        if (result.errors.length > 0) {
+          throw new Error(result.errors.join('\n'));
         }
 
-        // Validate each record and collect errors
-        const validationErrors: string[] = [];
-        const validRecords: ConsumptionRecord[] = [];
-        const seenDates = new Map<string, number>();
-
-        for (let index = 0; index < data.length; index++) {
-          const record = data[index];
-          const rowNumber = index + 1;
-
-          // Check record is an object
-          if (!record || typeof record !== 'object') {
-            validationErrors.push(`Record ${rowNumber}: Invalid record format`);
-            continue;
-          }
-
-          // Check required fields exist
-          if (!('date' in record)) {
-            validationErrors.push(`Record ${rowNumber}: Missing 'date' field`);
-            continue;
-          }
-
-          // Parse and validate date
-          const dateValue = record.date;
-          let parsedDate: Date | null = null;
-
-          if (typeof dateValue === 'string') {
-            parsedDate = new Date(dateValue);
-            if (isNaN(parsedDate.getTime())) {
-              validationErrors.push(`Record ${rowNumber}: Invalid date value '${dateValue}'`);
-              continue;
-            }
-          } else if (dateValue instanceof Date) {
-            parsedDate = dateValue;
-          } else {
-            validationErrors.push(`Record ${rowNumber}: Invalid date type`);
-            continue;
-          }
-
-          // Check for duplicate dates (use local date to match display)
-          const dateKey = `${parsedDate.getFullYear()}-${String(parsedDate.getMonth() + 1).padStart(2, '0')}-${String(parsedDate.getDate()).padStart(2, '0')}`;
-          if (seenDates.has(dateKey)) {
-            validationErrors.push(`Record ${rowNumber}: Duplicate date '${dateKey}' (first occurrence in record ${seenDates.get(dateKey)})`);
-            continue;
-          }
-          seenDates.set(dateKey, rowNumber);
-
-          // Validate numeric fields
-          const numericFields = ['kitchenWarm', 'kitchenCold', 'bathroomWarm', 'bathroomCold'];
-          const rowErrors: string[] = [];
-          const numericValues: Record<string, number> = {};
-
-          for (const field of numericFields) {
-            const value = record[field];
-            if (value === undefined || value === null || value === '') {
-              numericValues[field] = 0; // Default to 0 for missing
-            } else if (typeof value === 'number' && !isNaN(value)) {
-              numericValues[field] = value;
-            } else if (typeof value === 'string') {
-              const num = Number(value);
-              if (isNaN(num)) {
-                rowErrors.push(`Record ${rowNumber}: Invalid number value '${value}' for field '${field}'`);
-              } else {
-                numericValues[field] = num;
-              }
-            } else {
-              rowErrors.push(`Record ${rowNumber}: Invalid type for field '${field}'`);
-            }
-          }
-
-          if (rowErrors.length > 0) {
-            validationErrors.push(...rowErrors);
-            continue;
-          }
-
-          validRecords.push({
-            date: parsedDate,
-            kitchenWarm: numericValues['kitchenWarm'],
-            kitchenCold: numericValues['kitchenCold'],
-            bathroomWarm: numericValues['bathroomWarm'],
-            bathroomCold: numericValues['bathroomCold']
-          });
-        }
-
-        if (validationErrors.length > 0) {
-          throw new Error(validationErrors.join('\n'));
-        }
-
-        await this.storage.importRecords('water_consumption_records', validRecords);
+        await this.storage.importRecords('water_consumption_records', result.validRecords);
         await this.loadData();
         this.showSuccessModal.set(true);
       } catch (error) {
@@ -388,38 +300,7 @@ export class WaterComponent {
         this.errorTitle.set(this.languageService.translate('WATER.JSON_IMPORT_ERROR_TITLE'));
         this.errorMessage.set(this.languageService.translate('WATER.JSON_IMPORT_ERROR'));
         this.errorDetails.set(errorMsg);
-
-        // Provide specific instructions based on ALL error types present
-        const instructions: string[] = [];
-
-        if (errorMsg.includes('Invalid date')) {
-          instructions.push(
-            'ERROR.JSON_DATE_FIX_1',
-            'ERROR.JSON_DATE_FIX_2'
-          );
-        }
-        if (errorMsg.includes('Invalid number value')) {
-          instructions.push(
-            'ERROR.JSON_NUMBER_FIX_1',
-            'ERROR.JSON_NUMBER_FIX_2'
-          );
-        }
-        if (errorMsg.includes('Duplicate date')) {
-          instructions.push(
-            'ERROR.JSON_DUPLICATE_FIX_1',
-            'ERROR.JSON_DUPLICATE_FIX_2'
-          );
-        }
-
-        if (instructions.length === 0) {
-          instructions.push(
-            'HOME.IMPORT_ERROR_INSTRUCTION_1',
-            'HOME.IMPORT_ERROR_INSTRUCTION_2',
-            'HOME.IMPORT_ERROR_INSTRUCTION_3'
-          );
-        }
-
-        this.errorInstructions.set(instructions);
+        this.errorInstructions.set(this.importValidationService.getJsonErrorInstructions(errorMsg));
         this.showErrorModal.set(true);
       } finally {
         this.isImporting.set(false);
@@ -480,45 +361,7 @@ export class WaterComponent {
         this.errorTitle.set(this.languageService.translate('WATER.EXCEL_IMPORT_ERROR_TITLE'));
         this.errorMessage.set(this.languageService.translate('WATER.EXCEL_IMPORT_ERROR'));
         this.errorDetails.set(errorMsg);
-
-        // Provide specific instructions based on ALL error types present
-        const instructions: string[] = [];
-
-        if (errorMsg.includes('Invalid date')) {
-          instructions.push(
-            'ERROR.EXCEL_DATE_FIX_1',
-            'ERROR.EXCEL_DATE_FIX_2',
-            'ERROR.EXCEL_DATE_FIX_3'
-          );
-        }
-        if (errorMsg.includes('Invalid number value')) {
-          instructions.push(
-            'ERROR.EXCEL_NUMBER_FIX_1',
-            'ERROR.EXCEL_NUMBER_FIX_2'
-          );
-        }
-        if (errorMsg.includes('Duplicate date')) {
-          instructions.push(
-            'ERROR.EXCEL_DUPLICATE_FIX_1',
-            'ERROR.EXCEL_DUPLICATE_FIX_2'
-          );
-        }
-        if (errorMsg.includes('Missing required') && errorMsg.includes('column')) {
-          instructions.push(
-            'ERROR.EXCEL_COLUMN_FIX_1',
-            'ERROR.EXCEL_COLUMN_FIX_2'
-          );
-        }
-
-        // If no specific instructions matched, use generic ones
-        if (instructions.length === 0) {
-          instructions.push(
-            'ERROR.EXCEL_GENERIC_FIX_1',
-            'ERROR.EXCEL_GENERIC_FIX_2'
-          );
-        }
-
-        this.errorInstructions.set(instructions);
+        this.errorInstructions.set(this.importValidationService.getExcelErrorInstructions(errorMsg));
 
         this.showErrorModal.set(true);
       } finally {
@@ -529,15 +372,15 @@ export class WaterComponent {
   }
 
   protected calculateTotal(record: ConsumptionRecord): number {
-    return record.kitchenWarm + record.kitchenCold + record.bathroomWarm + record.bathroomCold;
+    return calculateWaterTotal(record);
   }
 
   protected calculateKitchenTotal(record: ConsumptionRecord): number {
-    return record.kitchenWarm + record.kitchenCold;
+    return calculateKitchenTotal(record);
   }
 
   protected calculateBathroomTotal(record: ConsumptionRecord): number {
-    return record.bathroomWarm + record.bathroomCold;
+    return calculateBathroomTotal(record);
   }
 
   protected editRecord(record: ConsumptionRecord) {

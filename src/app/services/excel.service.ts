@@ -1,21 +1,9 @@
 import { Injectable, inject } from '@angular/core';
 import { ExcelSettingsService, WaterColumnMapping, HeatingColumnMapping } from './excel-settings.service';
+import { WaterRecord, HeatingRecord } from '../models/records.model';
 
-export interface WaterRecord {
-  date: Date;
-  kitchenWarm: number;
-  kitchenCold: number;
-  bathroomWarm: number;
-  bathroomCold: number;
-}
-
-export interface HeatingRecord {
-  date: Date;
-  livingRoom: number;
-  bedroom: number;
-  kitchen: number;
-  bathroom: number;
-}
+// Re-export for consumers
+export type { WaterRecord, HeatingRecord } from '../models/records.model';
 
 @Injectable({
   providedIn: 'root'

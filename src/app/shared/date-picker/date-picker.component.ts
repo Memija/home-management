@@ -186,7 +186,7 @@ export class DatePickerComponent {
   }
 
   @HostListener('document:click', ['$event'])
-  clickout(event: any) {
+  clickout(event: Event) {
     if (!this.eRef.nativeElement.contains(event.target)) {
       this.isOpen.set(false);
     }

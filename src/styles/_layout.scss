@@ -49,9 +49,7 @@
     gap: 0.75rem;
   }
 
-  .hidden-input {
-    display: none;
-  }
+  // .hidden-input is defined globally in _forms.scss
 
   .action-btn {
     padding: 0.4rem 0.8rem;

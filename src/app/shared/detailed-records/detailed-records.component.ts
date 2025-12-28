@@ -6,14 +6,10 @@ import { TranslatePipe } from '../../pipes/translate.pipe';
 import { DatePickerComponent } from '../date-picker/date-picker.component';
 import { LanguageService } from '../../services/language.service';
 import { inject } from '@angular/core';
+import { ConsumptionRecord, calculateWaterTotal, calculateKitchenTotal, calculateBathroomTotal } from '../../models/records.model';
 
-export interface ConsumptionRecord {
-  date: Date;
-  kitchenWarm: number;
-  kitchenCold: number;
-  bathroomWarm: number;
-  bathroomCold: number;
-}
+// Re-export for consumers
+export type { ConsumptionRecord } from '../../models/records.model';
 
 export type SortOption = 'date-desc' | 'date-asc' | 'total-desc' | 'total-asc' | 'kitchen-desc' | 'kitchen-asc' | 'bathroom-desc' | 'bathroom-asc';
 
@@ -148,17 +144,17 @@ export class DetailedRecordsComponent {
     this.sortOption.set(this.defaultSortOption());
   }
 
-  // Helper methods
+  // Helper methods - using shared utility functions
   protected calculateTotal(record: ConsumptionRecord): number {
-    return record.kitchenWarm + record.kitchenCold + record.bathroomWarm + record.bathroomCold;
+    return calculateWaterTotal(record);
   }
 
   protected calculateKitchenTotal(record: ConsumptionRecord): number {
-    return record.kitchenWarm + record.kitchenCold;
+    return calculateKitchenTotal(record);
   }
 
   protected calculateBathroomTotal(record: ConsumptionRecord): number {
-    return record.bathroomWarm + record.bathroomCold;
+    return calculateBathroomTotal(record);
   }
 
   // Pagination methods

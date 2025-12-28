@@ -88,6 +88,12 @@ export class FamilyComponent {
         });
     }
 
+    // Helper to show save confirmation temporarily
+    private showTemporarySaveConfirmation(): void {
+        this.showSaveConfirmation.set(true);
+        setTimeout(() => this.showSaveConfirmation.set(false), 3000);
+    }
+
     // Computed property to check if there are unsaved changes (public for parent access)
     public hasUnsavedChanges = computed(() => {
         if (!this.isEditing()) return false;
@@ -171,8 +177,7 @@ export class FamilyComponent {
     saveFamily() {
         this.householdService.updateMembers(this.draftMembers());
         this.isEditing.set(false);
-        this.showSaveConfirmation.set(true);
-        setTimeout(() => this.showSaveConfirmation.set(false), 3000);
+        this.showTemporarySaveConfirmation();
         this.resetForm();
     }
 
@@ -248,8 +253,7 @@ export class FamilyComponent {
 
             this.editingMemberId.set(null);
             this.customPicturePreview.set(null);
-            this.showSaveConfirmation.set(true);
-            setTimeout(() => this.showSaveConfirmation.set(false), 3000);
+            this.showTemporarySaveConfirmation();
         }
     }
 
@@ -325,8 +329,7 @@ export class FamilyComponent {
         const imported = await this.fileStorage.importData<HouseholdMember[]>();
         if (imported && Array.isArray(imported)) {
             this.householdService.updateMembers(imported);
-            this.showSaveConfirmation.set(true);
-            setTimeout(() => this.showSaveConfirmation.set(false), 3000);
+            this.showTemporarySaveConfirmation();
         } else if (imported !== null) {
             // User selected a file but it was invalid
             this.importErrorMessage.set(this.languageService.translate('HOME.IMPORT_INVALID_DATA'));
@@ -358,5 +361,14 @@ export class FamilyComponent {
         this.selectedAvatar.set(undefined);
         this.newMemberPicturePreview.set(null);
         this.showAddMemberForm.set(false);
+    }
+
+    // TrackBy functions for *ngFor performance
+    trackByMemberId(index: number, member: HouseholdMember): string {
+        return member.id;
+    }
+
+    trackByAvatar(index: number, avatar: string): string {
+        return avatar;
     }
 }

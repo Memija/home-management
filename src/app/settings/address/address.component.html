@@ -65,7 +65,7 @@
           placeholder="{{ 'SETTINGS.SEARCH_COUNTRY' | translate }}">
         @if (filteredCountries().length > 0) {
         <ul class="country-dropdown">
-          <li *ngFor="let c of filteredCountries()" (click)="selectCountry(c)">{{ c }}</li>
+          <li *ngFor="let c of filteredCountries(); trackBy: trackByCountry" (click)="selectCountry(c)">{{ c }}</li>
         </ul>
         }
       </div>

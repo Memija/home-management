@@ -208,7 +208,8 @@
   gap: 0.5rem;
 }
 
-.file-input,
-.hidden-input {
+.file-input {
   display: none;
 }
+
+// .hidden-input is defined globally in _forms.scss

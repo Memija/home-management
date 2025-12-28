@@ -11,14 +11,7 @@ import { LucideAngularModule, Settings, TriangleAlert, ChevronDown, ChevronLeft,
 import { ConsumptionChartComponent, type ChartView, type DisplayMode } from '../shared/consumption-chart/consumption-chart.component';
 import { ConfirmationModalComponent } from '../shared/confirmation-modal/confirmation-modal.component';
 import { ErrorModalComponent } from '../shared/error-modal/error-modal.component';
-
-interface ConsumptionRecord {
-  date: Date;
-  kitchenWarm: number;
-  kitchenCold: number;
-  bathroomWarm: number;
-  bathroomCold: number;
-}
+import { ConsumptionRecord, calculateWaterTotal, calculateKitchenTotal, calculateBathroomTotal } from '../models/records.model';
 
 @Component({
   selector: 'app-home',
@@ -224,15 +217,15 @@ export class HomeComponent {
   }
 
   protected calculateTotal(record: ConsumptionRecord): number {
-    return record.kitchenWarm + record.kitchenCold + record.bathroomWarm + record.bathroomCold;
+    return calculateWaterTotal(record);
   }
 
   protected calculateKitchenTotal(record: ConsumptionRecord): number {
-    return record.kitchenWarm + record.kitchenCold;
+    return calculateKitchenTotal(record);
   }
 
   protected calculateBathroomTotal(record: ConsumptionRecord): number {
-    return record.bathroomWarm + record.bathroomCold;
+    return calculateBathroomTotal(record);
   }
 
   protected nextPage() {

@@ -47,7 +47,7 @@
     <div class="section-header">
       <h2>{{ 'HOME.DETAILED_RECORDS' | translate }}</h2>
       <div class="filters-container">
-        <select [ngModel]="sortOption()" (ngModelChange)="setSortOption($event)">
+        <select [ngModel]="sortOption()" (ngModelChange)="setSortOption($event)" title="Sort records">
           <option value="date-desc">↓ {{ 'HOME.SORT.DATE_DESC' | translate }}</option>
           <option value="date-asc">↑ {{ 'HOME.SORT.DATE_ASC' | translate }}</option>
           <option value="total-desc">↓ {{ 'HOME.SORT.TOTAL_DESC' | translate }}</option>

@@ -5,7 +5,7 @@
       <button (click)="exportData()" class="action-btn export-btn" title="Export Data">📥 Export</button>
       <label for="import-file" class="action-btn import-btn" title="Import Data">
         📤 Import
-        <input type="file" id="import-file" accept=".json" (change)="importData($event)" style="display: none">
+        <input type="file" id="import-file" accept=".json" (change)="importData($event)" class="hidden-input">
       </label>
       <button type="button" routerLink="/settings" class="action-btn settings-btn"
         title="{{ 'APP.SETTINGS' | translate }}">
@@ -24,7 +24,7 @@
     <div class="section-header">
       <h2>{{ 'HOME.DETAILED_RECORDS' | translate }}</h2>
       <div class="filters-container">
-        <select [ngModel]="sortOption()" (ngModelChange)="setSortOption($event)">
+        <select [ngModel]="sortOption()" (ngModelChange)="setSortOption($event)" title="Sort records">
           <option value="date-desc">↓ {{ 'HOME.SORT.DATE_DESC' | translate }}</option>
           <option value="date-asc">↑ {{ 'HOME.SORT.DATE_ASC' | translate }}</option>
           <option value="total-desc">↓ {{ 'HOME.SORT.TOTAL_DESC' | translate }}</option>

@@ -1,28 +1,19 @@
+// Error Modal - uses global styles from _modal.scss
+// Component-specific styles only
+
+// Override modal-overlay z-index for error modal
 .modal-overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: rgba(0, 0, 0, 0.5);
-  display: flex;
-  align-items: center;
-  justify-content: center;
   z-index: 1000;
-  animation: fadeIn 0.2s ease-out;
 }
 
+// Override modal-content max-width and add scroll
 .modal-content {
-  background: white;
-  border-radius: 12px;
   max-width: 600px;
-  width: 90%;
   max-height: 80vh;
   overflow-y: auto;
-  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
-  animation: slideUp 0.3s ease-out;
 }
 
+// Error modal specific border
 .error-modal {
   border-top: 4px solid #dc2626;
 
@@ -31,35 +22,12 @@
   }
 }
 
+// Override modal-header for error layout
 .modal-header {
-  padding: 1.5rem;
-  border-bottom: 1px solid #e5e7eb;
-  display: flex;
-  align-items: center;
-  gap: 1rem;
-  position: relative;
+  justify-content: flex-start;
 
   h3 {
-    margin: 0;
-    font-size: 1.25rem;
-    font-weight: 600;
-    color: #1f2937;
     flex: 1;
-  }
-
-  .close-btn {
-    background: none;
-    border: none;
-    cursor: pointer;
-    color: #6b7280;
-    padding: 0.25rem;
-    border-radius: 4px;
-    transition: all 0.2s;
-
-    &:hover {
-      background: #f3f4f6;
-      color: #1f2937;
-    }
   }
 }
 
@@ -77,8 +45,9 @@
   }
 }
 
+// Error-specific modal-body content
 .modal-body {
-  padding: 1.5rem;
+  text-align: left;
 
   .error-message {
     font-size: 1rem;
@@ -155,47 +124,7 @@
   }
 }
 
+// Override footer alignment
 .modal-footer {
-  padding: 1rem 1.5rem;
-  border-top: 1px solid #e5e7eb;
-  display: flex;
   justify-content: flex-end;
-  gap: 0.75rem;
-
-  .btn-primary {
-    padding: 0.625rem 1.5rem;
-    background: #2563eb;
-    color: white;
-    border: none;
-    border-radius: 6px;
-    font-weight: 500;
-    cursor: pointer;
-    transition: background 0.2s;
-
-    &:hover {
-      background: #1d4ed8;
-    }
-  }
-}
-
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-  }
-
-  to {
-    opacity: 1;
-  }
-}
-
-@keyframes slideUp {
-  from {
-    opacity: 0;
-    transform: translateY(20px);
-  }
-
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
 }

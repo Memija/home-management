@@ -3,6 +3,8 @@ $home-primary: #007bff;
 $home-primary-dark: #0056b3;
 $home-primary-light: #e7f3ff;
 
+// .hidden-input is defined globally in _forms.scss
+
 .chart-section .chart-header .chart-filters button {
   &:hover {
     border-color: $home-primary;

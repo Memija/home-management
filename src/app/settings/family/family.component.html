@@ -16,7 +16,7 @@
     <p class="empty-state">{{ 'SETTINGS.NO_MEMBERS' | translate }}</p>
     } @else {
     <ul>
-      <li *ngFor="let member of safeMembers()">
+      <li *ngFor="let member of safeMembers(); trackBy: trackByMemberId">
         <div class="member-info">
           <img [src]="member.avatar" [alt]="member.name" title="{{ member.name }}">
           <div class="details">
@@ -66,7 +66,7 @@
     <p class="empty-state">{{ 'SETTINGS.NO_MEMBERS' | translate }}</p>
     } @else {
     <ul>
-      <li *ngFor="let member of draftMembers()">
+      <li *ngFor="let member of draftMembers(); trackBy: trackByMemberId">
         @if (editingMemberId() === member.id) {
         <!-- Inline edit form in bulk mode -->
         <div class="member-edit-form">
@@ -129,7 +129,7 @@
           <div class="form-group">
             <span class="form-label">{{ 'SETTINGS.OR_SELECT_AVATAR' | translate }}</span>
             <div class="avatar-grid">
-              <img *ngFor="let avatar of householdService.avatars" [src]="avatar"
+              <img *ngFor="let avatar of householdService.avatars; trackBy: trackByAvatar" [src]="avatar"
                 [class.selected]="editMemberAvatar() === avatar && !customPicturePreview()"
                 (click)="selectEditAvatar(avatar)" alt="Hero Avatar" title="{{ 'SETTINGS.SELECT_AVATAR' | translate }}">
             </div>
@@ -241,7 +241,7 @@
     <div class="form-group">
       <span class="form-label">{{ 'SETTINGS.SELECT_AVATAR' | translate }}</span>
       <div class="avatar-grid">
-        <img *ngFor="let avatar of householdService.avatars" [src]="avatar"
+        <img *ngFor="let avatar of householdService.avatars; trackBy: trackByAvatar" [src]="avatar"
           [class.selected]="selectedAvatar() === avatar" (click)="selectAvatar(avatar)" alt="Hero Avatar"
           title="{{ 'SETTINGS.SELECT_AVATAR' | translate }}">
       </div>

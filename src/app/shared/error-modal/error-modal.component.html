@@ -7,8 +7,8 @@
       } @else {
       <lucide-icon [img]="AlertCircleIcon" size="32" class="error-icon"></lucide-icon>
       }
-      <h3>{{ title() }}</h3>
-      <button type="button" class="close-btn" (click)="cancel.emit()" aria-label="Close">
+      <h3>{{ title() | translate }}</h3>
+      <button type="button" class="close-btn" (click)="cancel.emit()" title="Close" aria-label="Close">
         <lucide-icon [img]="XIcon" size="20"></lucide-icon>
       </button>
     </div>

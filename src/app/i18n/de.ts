@@ -318,7 +318,8 @@ export const de = {
     UNSAVED_CHANGES_STAY: 'Bleiben und speichern',
     TYPES: {
       ADULT: 'Erwachsener',
-      KID: 'Kind'
+      KID: 'Kind',
+      OTHER: 'Andere'
     },
     ERRORS: {
       NUMBER_ONLY: 'Nur Zahlen sind erlaubt'
@@ -329,11 +330,28 @@ export const de = {
     IMPORT_ERROR: 'Adresse konnte nicht importiert werden. Die Datei scheint keine gültigen Adressdaten zu enthalten. Bitte stellen Sie sicher, dass Sie eine Adressdatei mit Straßenname, Hausnummer, Stadt, Postleitzahl und Land importieren.',
     IMPORT_FAMILY_CONFIRM_TITLE: 'Import bestätigen',
     IMPORT_FAMILY_CONFIRM_MESSAGE: 'Der Import ersetzt alle aktuellen Familienmitglieder. Möchten Sie fortfahren?',
+    IMPORT_FAMILY_ERROR_TITLE: 'Import fehlgeschlagen',
+    IMPORT_FAMILY_INVALID_FILE_TYPE: 'Ungültiger Dateityp. Bitte wählen Sie eine JSON-Datei (.json-Erweiterung) zum Importieren von Familiendaten.',
+    IMPORT_FAMILY_INVALID_FILE_TYPE_INSTRUCTION_1: 'Stellen Sie sicher, dass die Datei eine .json-Erweiterung hat',
+    IMPORT_FAMILY_INVALID_FILE_TYPE_INSTRUCTION_2: 'Exportieren Sie zuerst Familiendaten, um ein gültiges JSON-Dateiformat zu erhalten',
+    DUPLICATE_MEMBER_ERROR: 'Ein Familienmitglied mit diesem Namen existiert bereits',
+    DUPLICATE_MEMBER_NAME: 'Duplikat: {name} {surname}',
+    DUPLICATE_MEMBER_INSTRUCTION_1: 'Verwenden Sie einen anderen Vornamen oder Nachnamen für dieses Mitglied',
+    DUPLICATE_MEMBER_INSTRUCTION_2: 'Fügen Sie einen zweiten Vornamen oder Spitznamen hinzu, um sie zu unterscheiden',
+    DUPLICATE_MEMBER_INSTRUCTION_3: 'Bearbeiten Sie das bestehende Mitglied, wenn Sie dessen Informationen aktualisieren möchten',
+    IMPORT_FAMILY_INVALID_DATA: 'Die importierte Datei enthält ungültige Familienmitgliederdaten. Bitte überprüfen Sie die folgenden Probleme:',
+    IMPORT_FAMILY_ERROR_NOT_OBJECT: 'Jedes Familienmitglied muss ein Objekt mit Name, Nachname, Typ und Geschlecht sein',
+    IMPORT_FAMILY_ERROR_MISSING_NAME: 'Jedes Familienmitglied muss einen gültigen Namen haben (nicht-leere Zeichenkette)',
+    IMPORT_FAMILY_ERROR_MISSING_SURNAME: 'Jedes Familienmitglied muss einen gültigen Nachnamen haben (nicht-leere Zeichenkette)',
+    IMPORT_FAMILY_ERROR_INVALID_TYPE: 'Der Mitgliedstyp muss entweder "adult", "kid" oder "other" sein',
+    IMPORT_FAMILY_ERROR_INVALID_GENDER: 'Das Geschlecht muss entweder "male", "female" oder "other" sein',
+    IMPORT_FAMILY_ERROR_NO_VALID_MEMBERS: 'Keine gültigen Familienmitglieder in der importierten Datei gefunden',
     IMPORT_ADDRESS_CONFIRM_TITLE: 'Import bestätigen',
     IMPORT_ADDRESS_CONFIRM_MESSAGE: 'Der Import ersetzt Ihre aktuelle Adresse. Möchten Sie fortfahren?',
     GENDERS: {
       MALE: 'Männlich',
-      FEMALE: 'Weiblich'
+      FEMALE: 'Weiblich',
+      OTHER: 'Andere'
     },
     EXCEL_TITLE: 'Excel-Integration',
     EXCEL_ENABLED: 'Excel-Integration aktivieren',
@@ -352,7 +370,25 @@ export const de = {
     EXCEL_SAVE_SETTINGS: 'Excel-Einstellungen speichern',
     EXCEL_RESET_DEFAULTS: 'Auf Standardwerte zurücksetzen',
     EXCEL_SETTINGS_SAVED: 'Excel-Einstellungen erfolgreich gespeichert!',
-    EDIT_EXCEL_SETTINGS: 'Excel-Einstellungen bearbeiten'
+    EDIT_EXCEL_SETTINGS: 'Excel-Einstellungen bearbeiten',
+    FAMILY_HELP_TITLE: 'Familienmitglieder verwalten',
+    FAMILY_HELP_STEP_1_TITLE: 'Warum Familienmitglieder hinzufügen?',
+    FAMILY_HELP_STEP_1_DESC: 'Das Hinzufügen von Familienmitgliedern schaltet leistungsstarke Vergleichsfunktionen frei! Sehen Sie, wie Ihr Wasserverbrauch im Vergleich zum Landesdurchschnitt für Familien Ihrer Größe abschneidet.',
+    FAMILY_HELP_STEP_2_TITLE: 'Pro-Person Einblicke',
+    FAMILY_HELP_STEP_2_DESC: 'Verfolgen Sie den Verbrauch pro Person und finden Sie Möglichkeiten zum Wassersparen. Je genauer Ihre Familienanzahl, desto besser Ihre Vergleichsdaten!',
+    FAMILY_HELP_STEP_3_TITLE: 'Schritt 1: Bearbeitungsmodus',
+    FAMILY_HELP_STEP_3_DESC: 'Klicken Sie auf "Familie bearbeiten" um Familienmitglieder hinzuzufügen oder zu ändern.',
+    FAMILY_HELP_STEP_4_TITLE: 'Schritt 2: Details eingeben',
+    FAMILY_HELP_STEP_4_DESC: 'Geben Sie Name und Nachname für jedes Familienmitglied ein. Sie können auch Typ (Erwachsener/Kind) und Geschlecht wählen.',
+    FAMILY_HELP_STEP_5_TITLE: 'Schritt 3: Avatar wählen',
+    FAMILY_HELP_STEP_5_DESC: 'Wählen Sie ein lustiges Avatar-Bild für jede Person, oder laden Sie Ihr eigenes Foto hoch!',
+    FAMILY_HELP_STEP_6_TITLE: 'Schritt 4: Änderungen speichern',
+    FAMILY_HELP_STEP_6_DESC: 'Klicken Sie auf "Familie speichern" um alle Änderungen zu behalten. Vergessen Sie diesen Schritt nicht!',
+    FAMILY_HELP_STEP_7_TITLE: 'Schritt 5: Sichern & Wiederherstellen',
+    FAMILY_HELP_STEP_7_DESC: 'Verwenden Sie "Exportieren" um eine Sicherung Ihrer Familie in einer Datei zu speichern. Verwenden Sie "Importieren" um Familiendaten aus einer Sicherungsdatei zu laden.',
+    FAMILY_HELP_PREVIOUS: 'Zurück',
+    FAMILY_HELP_NEXT: 'Weiter',
+    FAMILY_HELP_DONE: 'Verstanden!'
   },
   FOOTER: {
     APP_NAME: 'Haushaltsmanagement',

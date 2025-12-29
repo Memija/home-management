@@ -6,7 +6,8 @@ import { StorageService } from './storage.service';
   providedIn: 'root'
 })
 export class LocalStorageService extends StorageService {
-  private readonly prefix = 'water-consumption-';
+  /** Prefix for all localStorage keys (hm = homemanagement) */
+  private readonly prefix = 'hm_';
   private platformId = inject(PLATFORM_ID);
 
   private get isBrowser(): boolean {

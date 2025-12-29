@@ -1,0 +1,91 @@
+// Help Modal - uses global styles from _modal.scss
+// Component-specific styling
+
+.help-modal {
+  max-width: 600px;
+  width: 95%;
+}
+
+.modal-header {
+  .help-icon {
+    color: #17a2b8;
+  }
+}
+
+.modal-body {
+  padding: 1.5rem;
+}
+
+.step-content {
+  text-align: center;
+}
+
+.step-image {
+  margin-bottom: 1.5rem;
+
+  img {
+    max-width: 100%;
+    max-height: 280px;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  }
+}
+
+.step-text {
+  padding: 1rem 0;
+
+  .step-title {
+    font-size: 1.4rem;
+    font-weight: 600;
+    margin-bottom: 1rem;
+    color: var(--text-color, #333);
+  }
+
+  .step-description {
+    font-size: 1.1rem;
+    line-height: 1.7;
+    color: var(--text-secondary, #555);
+    margin: 0;
+    max-width: 480px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+}
+
+.step-indicator {
+  display: flex;
+  justify-content: center;
+  gap: 0.5rem;
+  margin-top: 1.5rem;
+
+  .dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background-color: #ddd;
+    transition: background-color 0.2s ease;
+
+    &.active {
+      background-color: #17a2b8;
+    }
+  }
+}
+
+.modal-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+  padding: 1rem 1.5rem;
+
+  .step-counter {
+    font-size: 0.875rem;
+    color: var(--text-secondary, #666);
+  }
+
+  button {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+}

@@ -1,0 +1,57 @@
+@if (show()) {
+<div class="modal-overlay" (click)="onClose()">
+  <div class="modal-content help-modal" (click)="$event.stopPropagation()">
+    <div class="modal-header">
+      <lucide-icon [img]="HelpIcon" size="28" class="help-icon"></lucide-icon>
+      <h3>{{ titleKey() | translate }}</h3>
+      <button type="button" class="close-btn" (click)="onClose()" title="Close">
+        <lucide-icon [img]="CloseIcon" size="20"></lucide-icon>
+      </button>
+    </div>
+
+    <div class="modal-body">
+      @if (currentStepData(); as step) {
+      <div class="step-content">
+        @if (step.imageUrl) {
+        <div class="step-image">
+          <img [src]="step.imageUrl" [alt]="(step.titleKey | translate) || 'Help step image'" title="Help step image"
+            [attr.title]="(step.titleKey | translate) || 'Help step image'">
+        </div>
+        }
+        <div class="step-text">
+          <h4 class="step-title">{{ step.titleKey | translate }}</h4>
+          <p class="step-description">{{ step.descriptionKey | translate }}</p>
+        </div>
+      </div>
+      }
+
+      <div class="step-indicator">
+        @for (step of steps(); track $index) {
+        <span class="dot" [class.active]="$index === currentStep()"></span>
+        }
+      </div>
+    </div>
+
+    <div class="modal-footer">
+      <button type="button" class="btn-primary" (click)="previousStep()"
+        [style.visibility]="isFirstStep() ? 'hidden' : 'visible'">
+        <lucide-icon [img]="PrevIcon" size="16"></lucide-icon>
+        {{ 'SETTINGS.FAMILY_HELP_PREVIOUS' | translate }}
+      </button>
+
+      <span class="step-counter">{{ currentStep() + 1 }} / {{ totalSteps() }}</span>
+
+      @if (isLastStep()) {
+      <button type="button" class="btn-primary" (click)="onClose()">
+        {{ 'SETTINGS.FAMILY_HELP_DONE' | translate }}
+      </button>
+      } @else {
+      <button type="button" class="btn-primary" (click)="nextStep()">
+        {{ 'SETTINGS.FAMILY_HELP_NEXT' | translate }}
+        <lucide-icon [img]="NextIcon" size="16"></lucide-icon>
+      </button>
+      }
+    </div>
+  </div>
+</div>
+}

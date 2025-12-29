@@ -5,6 +5,41 @@
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   margin-bottom: 2rem;
 
+  .section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.5rem;
+    border-bottom: 1px solid #eee;
+    padding-bottom: 0.5rem;
+
+    h2 {
+      margin: 0;
+      color: #2c3e50;
+      font-size: 1.2rem;
+      border-bottom: none;
+      padding-bottom: 0;
+    }
+  }
+
+  .help-btn {
+    background: transparent;
+    border: none;
+    color: #17a2b8;
+    cursor: pointer;
+    padding: 0.25rem;
+    border-radius: 4px;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    &:hover {
+      background: #e7f5ff;
+      color: #0066cc;
+    }
+  }
+
   h2 {
     margin-top: 0;
     margin-bottom: 1.5rem;
@@ -25,63 +60,7 @@
   font-weight: 500;
 }
 
-.toggle-group {
-  display: flex;
-  gap: 0.5rem;
-
-  button {
-    flex: 1;
-    padding: 0.75rem;
-    border: 1px solid #ced4da;
-    background: white;
-    border-radius: 4px;
-    cursor: pointer;
-    font-size: 0.9rem;
-    color: #495057;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 0.5rem;
-    transition: all 0.2s;
-
-    &:hover:not(.active) {
-      background: #e7f3ff;
-      border-color: #007bff;
-      color: #007bff;
-    }
-
-    &.active {
-      background: #007bff;
-      color: white;
-      border-color: #007bff;
-    }
-  }
-}
-
-.avatar-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(60px, 1fr));
-  gap: 0.5rem;
-
-  img {
-    width: 100%;
-    border-radius: 8px;
-    cursor: pointer;
-    border: 3px solid transparent;
-    transition: all 0.2s;
-    aspect-ratio: 1;
-    object-fit: cover;
-
-    &:hover {
-      transform: scale(1.05);
-    }
-
-    &.selected {
-      border-color: #007bff;
-      transform: scale(1.05);
-    }
-  }
-}
+// .toggle-group, .avatar-grid defined globally in _forms.scss
 
 .members-list {
   h3 {
@@ -182,26 +161,7 @@
   }
 }
 
-.member-edit-form {
-  width: 100%;
-  padding: 1rem;
-  background: #f8f9fa;
-  border-radius: 8px;
-  border: 2px solid #007bff;
-}
-
-.picture-preview {
-  margin-top: 1rem;
-  text-align: center;
-
-  img {
-    max-width: 150px;
-    max-height: 150px;
-    border-radius: 8px;
-    border: 3px solid #007bff;
-    object-fit: cover;
-  }
-}
+// .member-edit-form, .picture-preview defined globally in _forms.scss
 
 .member-actions {
   display: flex;

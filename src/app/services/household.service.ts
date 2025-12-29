@@ -13,8 +13,8 @@ export interface HouseholdMember {
   id: string;
   name: string;
   surname: string;
-  type: 'adult' | 'kid';
-  gender: 'male' | 'female';
+  type?: 'adult' | 'kid' | 'other';
+  gender?: 'male' | 'female' | 'other';
   avatar: string;
 }
 

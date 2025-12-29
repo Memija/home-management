@@ -1,0 +1,80 @@
+<div class="member-edit-form">
+  <div class="form-grid">
+    <div class="form-group">
+      <label for="edit-member-name">{{ 'SETTINGS.NAME' | translate }}</label>
+      <input type="text" id="edit-member-name" name="edit-member-name" autocomplete="given-name" [ngModel]="editName()"
+        (ngModelChange)="editName.set($event)" title="{{ 'SETTINGS.NAME' | translate }}">
+    </div>
+    <div class="form-group">
+      <label for="edit-member-surname">{{ 'SETTINGS.SURNAME' | translate }}</label>
+      <input type="text" id="edit-member-surname" name="edit-member-surname" autocomplete="family-name"
+        [ngModel]="editSurname()" (ngModelChange)="editSurname.set($event)"
+        title="{{ 'SETTINGS.SURNAME' | translate }}">
+    </div>
+  </div>
+  <div class="form-grid">
+    <div class="form-group">
+      <span class="form-label">{{ 'SETTINGS.TYPE' | translate }}</span>
+      <div class="toggle-group">
+        <button type="button" [class.active]="editType() === 'adult'" (click)="editType.set('adult')"
+          title="{{ 'SETTINGS.TYPES.ADULT' | translate }}">
+          <lucide-icon [img]="AdultIcon" size="16"></lucide-icon>
+          {{ 'SETTINGS.TYPES.ADULT' | translate }}
+        </button>
+        <button type="button" [class.active]="editType() === 'kid'" (click)="editType.set('kid')"
+          title="{{ 'SETTINGS.TYPES.KID' | translate }}">
+          <lucide-icon [img]="KidIcon" size="16"></lucide-icon>
+          {{ 'SETTINGS.TYPES.KID' | translate }}
+        </button>
+      </div>
+    </div>
+    <div class="form-group">
+      <span class="form-label">{{ 'SETTINGS.GENDER' | translate }}</span>
+      <div class="toggle-group">
+        <button type="button" [class.active]="editGender() === 'male'" (click)="editGender.set('male')"
+          title="{{ 'SETTINGS.GENDERS.MALE' | translate }}">
+          <lucide-icon [img]="MaleIcon" size="16"></lucide-icon>
+          {{ 'SETTINGS.GENDERS.MALE' | translate }}
+        </button>
+        <button type="button" [class.active]="editGender() === 'female'" (click)="editGender.set('female')"
+          title="{{ 'SETTINGS.GENDERS.FEMALE' | translate }}">
+          <lucide-icon [img]="FemaleIcon" size="16"></lucide-icon>
+          {{ 'SETTINGS.GENDERS.FEMALE' | translate }}
+        </button>
+      </div>
+    </div>
+  </div>
+  <div class="form-group">
+    <span class="form-label">{{ 'SETTINGS.UPLOAD_PICTURE' | translate }}</span>
+    <label class="upload-btn">
+      <lucide-icon [img]="ImportIcon" size="16"></lucide-icon>
+      {{ 'SETTINGS.UPLOAD_PICTURE' | translate }}
+      <input type="file" id="edit-member-file" name="edit-member-file" accept="image/*"
+        (change)="handleFileUpload($event)" class="hidden-input">
+    </label>
+    @if (customPicturePreview()) {
+    <div class="picture-preview">
+      <img [src]="customPicturePreview()" alt="Preview">
+    </div>
+    }
+  </div>
+  <div class="form-group">
+    <span class="form-label">{{ 'SETTINGS.OR_SELECT_AVATAR' | translate }}</span>
+    <div class="avatar-grid">
+      @for (avatar of avatars(); track avatar) {
+      <img [src]="avatar" [class.selected]="editAvatar() === avatar && !customPicturePreview()"
+        (click)="selectAvatar(avatar)" alt="Hero Avatar" title="{{ 'SETTINGS.SELECT_AVATAR' | translate }}">
+      }
+    </div>
+  </div>
+  <div class="button-group">
+    <button type="button" class="save-btn" (click)="onSave()" title="{{ 'SETTINGS.SAVE_MEMBER' | translate }}">
+      <lucide-icon [img]="SaveIcon" size="16"></lucide-icon>
+      {{ 'SETTINGS.SAVE_MEMBER' | translate }}
+    </button>
+    <button type="button" class="cancel-btn" (click)="onCancel()" title="{{ 'SETTINGS.CANCEL' | translate }}">
+      <lucide-icon [img]="CancelIcon" size="16"></lucide-icon>
+      {{ 'SETTINGS.CANCEL' | translate }}
+    </button>
+  </div>
+</div>

@@ -318,7 +318,8 @@ export const en = {
     UNSAVED_CHANGES_STAY: 'Stay and Save',
     TYPES: {
       ADULT: 'Adult',
-      KID: 'Kid'
+      KID: 'Kid',
+      OTHER: 'Other'
     },
     ERRORS: {
       NUMBER_ONLY: 'Only numbers are allowed'
@@ -329,11 +330,28 @@ export const en = {
     IMPORT_ERROR: 'Failed to import address. The file does not appear to contain valid address data. Please make sure you are importing an address file with street name, number, city, zip code and country fields.',
     IMPORT_FAMILY_CONFIRM_TITLE: 'Confirm Import',
     IMPORT_FAMILY_CONFIRM_MESSAGE: 'Importing will replace all current family members. Are you sure you want to continue?',
+    IMPORT_FAMILY_ERROR_TITLE: 'Import Failed',
+    IMPORT_FAMILY_INVALID_FILE_TYPE: 'Invalid file type. Please select a JSON file (.json extension) to import family data.',
+    IMPORT_FAMILY_INVALID_FILE_TYPE_INSTRUCTION_1: 'Make sure the file has a .json extension',
+    IMPORT_FAMILY_INVALID_FILE_TYPE_INSTRUCTION_2: 'Export family data first to get a valid JSON file format',
+    DUPLICATE_MEMBER_ERROR: 'A family member with this name already exists',
+    DUPLICATE_MEMBER_NAME: 'Duplicate: {name} {surname}',
+    DUPLICATE_MEMBER_INSTRUCTION_1: 'Use a different first name or surname for this member',
+    DUPLICATE_MEMBER_INSTRUCTION_2: 'Add a middle name or nickname to distinguish them',
+    DUPLICATE_MEMBER_INSTRUCTION_3: 'Edit the existing member if you want to update their information',
+    IMPORT_FAMILY_INVALID_DATA: 'The imported file contains invalid family member data. Please check the following issues:',
+    IMPORT_FAMILY_ERROR_NOT_OBJECT: 'Each family member must be an object with name, surname, type, and gender fields',
+    IMPORT_FAMILY_ERROR_MISSING_NAME: 'Each family member must have a valid name (non-empty string)',
+    IMPORT_FAMILY_ERROR_MISSING_SURNAME: 'Each family member must have a valid surname (non-empty string)',
+    IMPORT_FAMILY_ERROR_INVALID_TYPE: 'Member type must be either "adult", "kid" or "other"',
+    IMPORT_FAMILY_ERROR_INVALID_GENDER: 'Member gender must be either "male", "female" or "other"',
+    IMPORT_FAMILY_ERROR_NO_VALID_MEMBERS: 'No valid family members found in the imported file',
     IMPORT_ADDRESS_CONFIRM_TITLE: 'Confirm Import',
     IMPORT_ADDRESS_CONFIRM_MESSAGE: 'Importing will replace your current address. Are you sure you want to continue?',
     GENDERS: {
       MALE: 'Male',
-      FEMALE: 'Female'
+      FEMALE: 'Female',
+      OTHER: 'Other'
     },
     EXCEL_TITLE: 'Excel Integration',
     EXCEL_ENABLED: 'Enable Excel Integration',
@@ -352,7 +370,25 @@ export const en = {
     EXCEL_SAVE_SETTINGS: 'Save Excel Settings',
     EXCEL_RESET_DEFAULTS: 'Reset to Defaults',
     EXCEL_SETTINGS_SAVED: 'Excel settings saved successfully!',
-    EDIT_EXCEL_SETTINGS: 'Edit Excel Settings'
+    EDIT_EXCEL_SETTINGS: 'Edit Excel Settings',
+    FAMILY_HELP_TITLE: 'How to Manage Family Members',
+    FAMILY_HELP_STEP_1_TITLE: 'Why Add Family Members?',
+    FAMILY_HELP_STEP_1_DESC: 'Adding family members unlocks powerful comparison features! See how your household\'s water usage compares to the national average for families of your size.',
+    FAMILY_HELP_STEP_2_TITLE: 'Per-Person Insights',
+    FAMILY_HELP_STEP_2_DESC: 'Track consumption per person and identify opportunities to save water. The more accurate your family count, the better your comparison data!',
+    FAMILY_HELP_STEP_3_TITLE: 'Step 1: Enter Edit Mode',
+    FAMILY_HELP_STEP_3_DESC: 'Click the "Edit Family" button to start adding or changing family members.',
+    FAMILY_HELP_STEP_4_TITLE: 'Step 2: Fill in Details',
+    FAMILY_HELP_STEP_4_DESC: 'Enter the name and surname for each family member. You can also select their type (Adult/Kid) and gender if you want.',
+    FAMILY_HELP_STEP_5_TITLE: 'Step 3: Choose an Avatar',
+    FAMILY_HELP_STEP_5_DESC: 'Pick a fun avatar picture for each person, or upload your own photo!',
+    FAMILY_HELP_STEP_6_TITLE: 'Step 4: Save Your Changes',
+    FAMILY_HELP_STEP_6_DESC: 'Click the "Save Family" button to keep all your changes. Don\'t forget this step!',
+    FAMILY_HELP_STEP_7_TITLE: 'Step 5: Backup & Restore',
+    FAMILY_HELP_STEP_7_DESC: 'Use "Export" to save a backup of your family to a file. Use "Import" to load family data from a backup file.',
+    FAMILY_HELP_PREVIOUS: 'Previous',
+    FAMILY_HELP_NEXT: 'Next',
+    FAMILY_HELP_DONE: 'Got it!'
   },
   FOOTER: {
     APP_NAME: 'Home Management',

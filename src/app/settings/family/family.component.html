@@ -1,5 +1,10 @@
 <div class="section family-section">
-  <h2>{{ 'SETTINGS.FAMILY_TITLE' | translate }}</h2>
+  <div class="section-header">
+    <h2>{{ 'SETTINGS.FAMILY_TITLE' | translate }}</h2>
+    <button type="button" class="help-btn" (click)="showHelp()" title="{{ 'SETTINGS.FAMILY_HELP_TITLE' | translate }}">
+      <lucide-icon [img]="HelpIcon" size="20"></lucide-icon>
+    </button>
+  </div>
 
   @if (showSaveConfirmation()) {
   <div class="success-message">
@@ -22,14 +27,18 @@
           <div class="details">
             <span class="name">{{ member.name }} {{ member.surname }}</span>
             <div class="badges">
+              @if (member.type && member.type !== 'other') {
               <span class="badge" [class.kid]="member.type === 'kid'">
                 <lucide-icon [img]="member.type === 'kid' ? KidIcon : AdultIcon" size="14"></lucide-icon>
                 {{ 'SETTINGS.TYPES.' + (member.type | uppercase) | translate }}
               </span>
+              }
+              @if (member.gender && member.gender !== 'other') {
               <span class="badge gender" [class.female]="member.gender === 'female'">
                 <lucide-icon [img]="member.gender === 'female' ? FemaleIcon : MaleIcon" size="14"></lucide-icon>
                 {{ 'SETTINGS.GENDERS.' + (member.gender | uppercase) | translate }}
               </span>
+              }
             </div>
           </div>
         </div>
@@ -44,7 +53,7 @@
       <lucide-icon [img]="EditIcon" size="16"></lucide-icon>
       {{ 'SETTINGS.EDIT_FAMILY' | translate }}
     </button>
-    <button type="button" class="export-btn" (click)="exportFamily()"
+    <button type="button" class="export-btn" (click)="exportFamily()" [disabled]="safeMembers().length === 0"
       title="{{ 'SETTINGS.EXPORT_FAMILY' | translate }}">
       <lucide-icon [img]="ExportIcon" size="16"></lucide-icon>
       {{ 'SETTINGS.EXPORT_FAMILY' | translate }}
@@ -68,85 +77,10 @@
     <ul>
       <li *ngFor="let member of draftMembers(); trackBy: trackByMemberId">
         @if (editingMemberId() === member.id) {
-        <!-- Inline edit form in bulk mode -->
-        <div class="member-edit-form">
-          <div class="form-grid">
-            <div class="form-group">
-              <label for="edit-member-name">{{ 'SETTINGS.NAME' | translate }}</label>
-              <input type="text" id="edit-member-name" name="edit-member-name" autocomplete="given-name"
-                [ngModel]="editMemberName()" (ngModelChange)="editMemberName.set($event)"
-                title="{{ 'SETTINGS.NAME' | translate }}">
-            </div>
-            <div class="form-group">
-              <label for="edit-member-surname">{{ 'SETTINGS.SURNAME' | translate }}</label>
-              <input type="text" id="edit-member-surname" name="edit-member-surname" autocomplete="family-name"
-                [ngModel]="editMemberSurname()" (ngModelChange)="editMemberSurname.set($event)"
-                title="{{ 'SETTINGS.SURNAME' | translate }}">
-            </div>
-          </div>
-          <div class="form-grid">
-            <div class="form-group">
-              <span class="form-label">{{ 'SETTINGS.TYPE' | translate }}</span>
-              <div class="toggle-group">
-                <button [class.active]="editMemberType() === 'adult'" (click)="editMemberType.set('adult')">
-                  <lucide-icon [img]="AdultIcon" size="16"></lucide-icon>
-                  {{ 'SETTINGS.TYPES.ADULT' | translate }}
-                </button>
-                <button [class.active]="editMemberType() === 'kid'" (click)="editMemberType.set('kid')">
-                  <lucide-icon [img]="KidIcon" size="16"></lucide-icon>
-                  {{ 'SETTINGS.TYPES.KID' | translate }}
-                </button>
-              </div>
-            </div>
-            <div class="form-group">
-              <span class="form-label">{{ 'SETTINGS.GENDER' | translate }}</span>
-              <div class="toggle-group">
-                <button [class.active]="editMemberGender() === 'male'" (click)="editMemberGender.set('male')">
-                  <lucide-icon [img]="MaleIcon" size="16"></lucide-icon>
-                  {{ 'SETTINGS.GENDERS.MALE' | translate }}
-                </button>
-                <button [class.active]="editMemberGender() === 'female'" (click)="editMemberGender.set('female')">
-                  <lucide-icon [img]="FemaleIcon" size="16"></lucide-icon>
-                  {{ 'SETTINGS.GENDERS.FEMALE' | translate }}
-                </button>
-              </div>
-            </div>
-          </div>
-          <div class="form-group">
-            <span class="form-label">{{ 'SETTINGS.UPLOAD_PICTURE' | translate }}</span>
-            <label class="upload-btn">
-              <lucide-icon [img]="ImportIcon" size="16"></lucide-icon>
-              {{ 'SETTINGS.UPLOAD_PICTURE' | translate }}
-              <input type="file" id="edit-member-file" name="edit-member-file" accept="image/*"
-                (change)="handleFileUpload($event)" class="hidden-input">
-            </label>
-            @if (customPicturePreview()) {
-            <div class="picture-preview">
-              <img [src]="customPicturePreview()" alt="Preview">
-            </div>
-            }
-          </div>
-          <div class="form-group">
-            <span class="form-label">{{ 'SETTINGS.OR_SELECT_AVATAR' | translate }}</span>
-            <div class="avatar-grid">
-              <img *ngFor="let avatar of householdService.avatars; trackBy: trackByAvatar" [src]="avatar"
-                [class.selected]="editMemberAvatar() === avatar && !customPicturePreview()"
-                (click)="selectEditAvatar(avatar)" alt="Hero Avatar" title="{{ 'SETTINGS.SELECT_AVATAR' | translate }}">
-            </div>
-          </div>
-          <div class="button-group">
-            <button type="button" class="save-btn" (click)="saveMemberEditInBulk()"
-              title="{{ 'SETTINGS.SAVE_MEMBER' | translate }}">
-              <lucide-icon [img]="SaveIcon" size="16"></lucide-icon>
-              {{ 'SETTINGS.SAVE_MEMBER' | translate }}
-            </button>
-            <button type="button" class="cancel-btn" (click)="cancelEditMember()"
-              title="{{ 'SETTINGS.CANCEL' | translate }}">
-              <lucide-icon [img]="CancelIcon" size="16"></lucide-icon>
-              {{ 'SETTINGS.CANCEL' | translate }}
-            </button>
-          </div>
-        </div>
+        <!-- Inline edit form using reusable component -->
+        <app-member-editor [member]="member" [avatars]="householdService.avatars" (save)="onMemberEditorSave($event)"
+          (cancel)="cancelEditMember()">
+        </app-member-editor>
         } @else {
         <!-- Normal member display with edit and remove buttons -->
         <div class="member-info">
@@ -154,14 +88,18 @@
           <div class="details">
             <span class="name">{{ member.name }} {{ member.surname }}</span>
             <div class="badges">
+              @if (member.type && member.type !== 'other') {
               <span class="badge" [class.kid]="member.type === 'kid'">
                 <lucide-icon [img]="member.type === 'kid' ? KidIcon : AdultIcon" size="14"></lucide-icon>
                 {{ 'SETTINGS.TYPES.' + (member.type | uppercase) | translate }}
               </span>
+              }
+              @if (member.gender && member.gender !== 'other') {
               <span class="badge gender" [class.female]="member.gender === 'female'">
                 <lucide-icon [img]="member.gender === 'female' ? FemaleIcon : MaleIcon" size="14"></lucide-icon>
                 {{ 'SETTINGS.GENDERS.' + (member.gender | uppercase) | translate }}
               </span>
+              }
             </div>
           </div>
         </div>
@@ -263,8 +201,7 @@
       {{ 'SETTINGS.SHOW_ADD_MEMBER_FORM' | translate }}
     </button>
     }
-    <button type="button" class="save-btn" (click)="saveFamily()" [disabled]="draftMembers().length === 0"
-      title="{{ 'SETTINGS.SAVE_FAMILY' | translate }}">
+    <button type="button" class="save-btn" (click)="saveFamily()" title="{{ 'SETTINGS.SAVE_FAMILY' | translate }}">
       <lucide-icon [img]="SaveIcon" size="16"></lucide-icon>
       {{ 'SETTINGS.SAVE_FAMILY' | translate }}
     </button>
@@ -295,6 +232,16 @@
   (cancel)="cancelImportFamily()">
 </app-confirmation-modal>
 
-<app-error-modal [show]="showImportErrorModal()" [title]="'SETTINGS.IMPORT_FAMILY_CONFIRM_TITLE'"
+<app-error-modal [show]="showImportErrorModal()" [title]="'SETTINGS.IMPORT_FAMILY_ERROR_TITLE'"
   [message]="importErrorMessage()" [instructions]="importErrorInstructions()" (cancel)="closeImportErrorModal()">
 </app-error-modal>
+
+<app-error-modal [show]="showDuplicateMemberError()" [title]="'SETTINGS.DUPLICATE_MEMBER_ERROR'"
+  [message]="(languageService.translate('SETTINGS.DUPLICATE_MEMBER_NAME')).replace('{name}', duplicateMemberName().split(' ')[0] || '').replace('{surname}', duplicateMemberName().split(' ')[1] || '')"
+  [instructions]="['SETTINGS.DUPLICATE_MEMBER_INSTRUCTION_1', 'SETTINGS.DUPLICATE_MEMBER_INSTRUCTION_2', 'SETTINGS.DUPLICATE_MEMBER_INSTRUCTION_3']"
+  (cancel)="closeDuplicateMemberError()">
+</app-error-modal>
+
+<app-help-modal [show]="showHelpModal()" [titleKey]="'SETTINGS.FAMILY_HELP_TITLE'" [steps]="helpSteps"
+  (close)="closeHelp()">
+</app-help-modal>

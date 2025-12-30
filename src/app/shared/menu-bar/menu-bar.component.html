@@ -1,0 +1,28 @@
+<nav class="menu-bar">
+  <div class="menu-content">
+    <a routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}" class="menu-item">
+      <span class="emoji-icon">🏠</span>
+      <span>{{ 'MENU.HOME' | translate }}</span>
+    </a>
+    <a routerLink="/water" routerLinkActive="active" class="menu-item">
+      <span class="emoji-icon">💧</span>
+      <span>{{ 'MENU.WATER' | translate }}</span>
+    </a>
+    <a routerLink="/heating" routerLinkActive="active" class="menu-item">
+      <span class="emoji-icon">🔥</span>
+      <span>{{ 'MENU.HEATING' | translate }}</span>
+    </a>
+    <a routerLink="/settings" routerLinkActive="active" class="menu-item">
+      <span class="emoji-icon">⚙️</span>
+      <span>{{ 'MENU.SETTINGS' | translate }}</span>
+    </a>
+    <button type="button" class="menu-item contact-btn" (click)="contactUs()">
+      <span class="emoji-icon">✉️</span>
+      <span>{{ 'MENU.CONTACT' | translate }}</span>
+    </button>
+  </div>
+</nav>
+
+@if (showContactModal()) {
+<app-contact-modal (close)="onCloseModal()" (compose)="onComposeEmail($event)"></app-contact-modal>
+}

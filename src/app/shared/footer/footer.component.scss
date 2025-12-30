@@ -5,7 +5,7 @@
   right: 0;
   background: #f8f9fa;
   color: #2c3e50;
-  padding: 1rem;
+  padding: 0.75rem 1rem;
   text-align: center;
   box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.08);
   border-top: 1px solid #e9ecef;
@@ -14,20 +14,10 @@
   .footer-content {
     max-width: 1200px;
     margin: 0 auto;
-    display: flex;
-    flex-direction: column;
-    gap: 0.75rem;
-    align-items: center;
-
-    @media (min-width: 768px) {
-      flex-direction: row;
-      justify-content: space-between;
-      gap: 1rem;
-    }
 
     p {
       margin: 0;
-      font-size: 0.9rem;
+      font-size: 0.85rem;
       color: #6c757d;
     }
 
@@ -35,25 +25,6 @@
       font-weight: 500;
     }
 
-    .contact-btn {
-      padding: 0.25rem 0.5rem;
-      border: 1px solid #ced4da;
-      background: white;
-      border-radius: 4px;
-      cursor: pointer;
-      font-size: 1rem;
-      font-weight: 500;
-      color: #495057;
-
-      &:hover {
-        background: #e9ecef;
-      }
-
-      &:active {
-        background: #007bff;
-        color: white;
-        border-color: #007bff;
-      }
-    }
+    // Future: Social links styles will go here
   }
 }

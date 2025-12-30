@@ -1,14 +1,15 @@
 import { Component, output, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { TranslatePipe } from '../../pipes/translate.pipe';
-import { LucideAngularModule, X, Mail, AtSign, Laptop, TriangleAlert } from 'lucide-angular';
+import { LucideAngularModule, X, Mail, AtSign, Laptop, TriangleAlert, HelpCircle } from 'lucide-angular';
+import { HelpModalComponent, HelpStep } from '../help-modal/help-modal.component';
 
 export type EmailClient = 'default' | 'outlook' | 'gmail';
 
 @Component({
   selector: 'app-contact-modal',
   standalone: true,
-  imports: [FormsModule, TranslatePipe, LucideAngularModule],
+  imports: [FormsModule, TranslatePipe, LucideAngularModule, HelpModalComponent],
   templateUrl: './contact-modal.component.html',
   styleUrl: './contact-modal.component.scss'
 })
@@ -18,6 +19,17 @@ export class ContactModalComponent {
   protected readonly AtSignIcon = AtSign;
   protected readonly LaptopIcon = Laptop;
   protected readonly TriangleAlertIcon = TriangleAlert;
+  protected readonly HelpIcon = HelpCircle;
+
+  // Help modal
+  protected showHelpModal = signal(false);
+  protected readonly helpSteps: HelpStep[] = [
+    { titleKey: 'CONTACT.HELP_STEP_1_TITLE', descriptionKey: 'CONTACT.HELP_STEP_1_DESC' },
+    { titleKey: 'CONTACT.HELP_STEP_2_TITLE', descriptionKey: 'CONTACT.HELP_STEP_2_DESC' },
+    { titleKey: 'CONTACT.HELP_STEP_3_TITLE', descriptionKey: 'CONTACT.HELP_STEP_3_DESC' },
+    { titleKey: 'CONTACT.HELP_STEP_4_TITLE', descriptionKey: 'CONTACT.HELP_STEP_4_DESC' },
+    { titleKey: 'CONTACT.HELP_STEP_5_TITLE', descriptionKey: 'CONTACT.HELP_STEP_5_DESC' }
+  ];
 
   // Form data
   name = signal('');

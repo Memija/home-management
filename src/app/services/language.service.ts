@@ -4,7 +4,8 @@ import { de } from '../i18n/de';
 
 export type Language = 'en' | 'de';
 
-const LANGUAGE_STORAGE_KEY = 'preferred_language';
+/** Storage key for user's preferred language (hm = homemanagement) */
+const LANGUAGE_STORAGE_KEY = 'hm_preferred_language';
 
 @Injectable({
   providedIn: 'root'

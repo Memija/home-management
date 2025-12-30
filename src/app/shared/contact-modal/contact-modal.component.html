@@ -2,9 +2,15 @@
   <div class="modal-container" (click)="$event.stopPropagation()">
     <div class="modal-header">
       <h2>{{ 'CONTACT.TITLE' | translate }}</h2>
-      <button type="button" class="close-btn" (click)="onClose()" title="Close">
-        <lucide-icon [img]="XIcon" size="24"></lucide-icon>
-      </button>
+      <div class="header-actions">
+        <button type="button" class="help-btn" (click)="showHelpModal.set(true)"
+          title="{{ 'CONTACT.HELP_TITLE' | translate }}">
+          <lucide-icon [img]="HelpIcon" size="20"></lucide-icon>
+        </button>
+        <button type="button" class="close-btn" (click)="onClose()" title="Close">
+          <lucide-icon [img]="XIcon" size="24"></lucide-icon>
+        </button>
+      </div>
     </div>
 
     <div class="modal-body">
@@ -106,3 +112,7 @@
     </div>
   </div>
 </div>
+
+<app-help-modal [show]="showHelpModal()" [titleKey]="'CONTACT.HELP_TITLE'" [steps]="helpSteps"
+  (close)="showHelpModal.set(false)">
+</app-help-modal>

@@ -1,23 +1,20 @@
 import { Component, inject, ViewChild, HostListener } from '@angular/core';
-import { RouterLink } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { LanguageService } from '../services/language.service';
 import { TranslatePipe } from '../pipes/translate.pipe';
 import { AddressComponent } from './address/address.component';
 import { FamilyComponent } from './family/family.component';
 import { ExcelSettingsComponent } from './excel-settings/excel-settings.component';
-import { LucideAngularModule, ArrowLeft } from 'lucide-angular';
 
 @Component({
   selector: 'app-settings',
   standalone: true,
-  imports: [RouterLink, TranslatePipe, CommonModule, AddressComponent, FamilyComponent, ExcelSettingsComponent, LucideAngularModule],
+  imports: [TranslatePipe, CommonModule, AddressComponent, FamilyComponent, ExcelSettingsComponent],
   templateUrl: './settings.component.html',
   styleUrl: './settings.component.scss'
 })
 export class SettingsComponent {
   protected languageService = inject(LanguageService);
-  protected readonly ArrowLeftIcon = ArrowLeft;
 
   @ViewChild(FamilyComponent) familyComponent!: FamilyComponent;
 

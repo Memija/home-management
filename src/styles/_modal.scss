@@ -203,6 +203,61 @@
   max-height: 90vh;
   overflow-y: auto;
   animation: slideUp 0.3s ease;
+
+  // Header with title and action buttons
+  .modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1.5rem;
+    border-bottom: 1px solid #e9ecef;
+
+    h2 {
+      margin: 0;
+      font-size: 1.5rem;
+      color: #212529;
+    }
+
+    .header-actions {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .help-btn {
+      background: transparent;
+      border: none;
+      color: #17a2b8;
+      cursor: pointer;
+      padding: 0.25rem;
+      border-radius: 4px;
+      transition: all 0.2s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+
+      &:hover {
+        background: #e7f5ff;
+        color: #0066cc;
+      }
+    }
+
+    .close-btn {
+      background: none;
+      border: none;
+      cursor: pointer;
+      padding: 0.25rem;
+      color: #6c757d;
+      transition: color 0.2s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+
+      &:hover {
+        color: #212529;
+      }
+    }
+  }
 }
 
 // Extended modal styles for forms

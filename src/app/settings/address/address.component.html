@@ -138,6 +138,12 @@
   }
 </div>
 
+<app-delete-confirmation-modal [show]="showUnsavedChangesModal()" [titleKey]="'SETTINGS.UNSAVED_CHANGES_TITLE'"
+  [messageKey]="'SETTINGS.UNSAVED_CHANGES_MESSAGE_GENERIC'" [cancelKey]="'SETTINGS.UNSAVED_CHANGES_STAY'"
+  [deleteKey]="'SETTINGS.UNSAVED_CHANGES_LEAVE'" [icon]="TriangleAlertIcon" (confirm)="confirmLeaveWithoutSaving()"
+  (cancel)="stayAndSave()">
+</app-delete-confirmation-modal>
+
 <app-confirmation-modal [show]="showImportConfirmModal()" [titleKey]="'SETTINGS.IMPORT_ADDRESS_CONFIRM_TITLE'"
   [messageKey]="'SETTINGS.IMPORT_ADDRESS_CONFIRM_MESSAGE'" [cancelKey]="'SETTINGS.CANCEL'"
   [confirmKey]="'HOME.IMPORT_BUTTON'" [icon]="ImportIcon" (confirm)="confirmImportAddress()"

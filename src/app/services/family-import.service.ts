@@ -68,7 +68,7 @@ export class FamilyImportService {
     if (!Array.isArray(result.data)) {
       return {
         success: false,
-        errorMessage: this.languageService.translate('HOME.IMPORT_INVALID_DATA'),
+        errorMessage: this.languageService.translate('SETTINGS.IMPORT_FAMILY_INVALID_FORMAT'),
         errorInstructions: [
           'HOME.IMPORT_ERROR_INSTRUCTION_1',
           'HOME.IMPORT_ERROR_INSTRUCTION_2',

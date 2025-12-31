@@ -21,7 +21,8 @@
     <p class="empty-state">{{ 'SETTINGS.NO_MEMBERS' | translate }}</p>
     } @else {
     <ul>
-      <li *ngFor="let member of safeMembers(); trackBy: trackByMemberId">
+      @for (member of safeMembers(); track member.id) {
+      <li>
         <div class="member-info">
           <img [src]="member.avatar" [alt]="member.name" title="{{ member.name }}">
           <div class="details">
@@ -43,6 +44,7 @@
           </div>
         </div>
       </li>
+      }
     </ul>
     }
   </div>
@@ -75,7 +77,8 @@
     <p class="empty-state">{{ 'SETTINGS.NO_MEMBERS' | translate }}</p>
     } @else {
     <ul>
-      <li *ngFor="let member of draftMembers(); trackBy: trackByMemberId">
+      @for (member of draftMembers(); track member.id) {
+      <li>
         @if (editingMemberId() === member.id) {
         <!-- Inline edit form using reusable component -->
         <app-member-editor [member]="member" [avatars]="householdService.avatars" (save)="onMemberEditorSave($event)"
@@ -114,6 +117,7 @@
         </div>
         }
       </li>
+      }
     </ul>
     }
   </div>
@@ -193,9 +197,10 @@
     <div class="form-group">
       <span class="form-label">{{ 'SETTINGS.SELECT_AVATAR' | translate }}</span>
       <div class="avatar-grid">
-        <img *ngFor="let avatar of householdService.avatars; trackBy: trackByAvatar" [src]="avatar"
-          [class.selected]="selectedAvatar() === avatar" (click)="selectAvatar(avatar)" alt="Hero Avatar"
-          title="{{ 'SETTINGS.SELECT_AVATAR' | translate }}">
+        @for (avatar of householdService.avatars; track avatar) {
+        <img [src]="avatar" [class.selected]="selectedAvatar() === avatar" (click)="selectAvatar(avatar)"
+          alt="Hero Avatar" title="{{ 'SETTINGS.SELECT_AVATAR' | translate }}">
+        }
       </div>
     </div>
     <button class="add-btn" (click)="addMember()"

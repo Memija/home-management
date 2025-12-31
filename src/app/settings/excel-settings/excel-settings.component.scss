@@ -1,15 +1,7 @@
+@use 'variables' as *;
+
 // Excel settings - minimal component-specific styles
-.sr-only {
-  position: absolute;
-  width: 1px;
-  height: 1px;
-  padding: 0;
-  margin: -1px;
-  overflow: hidden;
-  clip: rect(0, 0, 0, 0);
-  white-space: nowrap;
-  border: 0;
-}
+// .sr-only is now global in _layout.scss
 
 .excel-settings {
   background: white;
@@ -41,13 +33,23 @@
         margin: 0;
         font-size: 1.5rem;
         font-weight: 600;
-        color: #1f2937;
+        color: $gray-900;
       }
 
       // .help-btn defined globally in _buttons.scss
       .help-btn {
         margin-left: auto;
       }
+    }
+
+    .success-message {
+      background: #d1fae5;
+      color: #065f46;
+      padding: 0.75rem 1rem;
+      border-radius: 8px;
+      font-weight: 500;
+      border-left: 4px solid #10b981;
+      margin-bottom: 1rem;
     }
   }
 
@@ -73,14 +75,14 @@
     .toggle-text {
       font-size: 1rem;
       font-weight: 500;
-      color: #374151;
+      color: $gray-800;
     }
   }
 
   .column-preview {
     margin-top: 2rem;
     padding-top: 2rem;
-    border-top: 1px solid #e5e7eb;
+    border-top: 1px solid $border-light;
 
     .preview-header {
       display: flex;
@@ -92,13 +94,13 @@
       border-radius: 6px;
 
       &:hover {
-        background: #f9fafb;
+        background: $light;
       }
 
       h3 {
         font-size: 1.25rem;
         font-weight: 600;
-        color: #1f2937;
+        color: $gray-900;
         margin: 0;
       }
 
@@ -125,7 +127,7 @@
       h4 {
         font-size: 1rem;
         font-weight: 600;
-        color: #4b5563;
+        color: $gray-700;
         margin-bottom: .75rem;
       }
 
@@ -142,29 +144,33 @@
           font-size: .875rem;
           color: #374151;
           font-weight: 500;
+          max-width: 200px;
+          overflow: hidden;
+          text-overflow: ellipsis;
+          white-space: nowrap;
         }
       }
     }
   }
 
-  .action-buttons .btn-primary {
-    padding: .625rem 1.25rem;
-    border-radius: 6px;
-    font-weight: 500;
-    cursor: pointer;
-    border: none;
-    background: #217346;
-    color: white;
+  .action-buttons {
+    display: flex;
+    gap: 1rem;
+    align-items: center;
+  }
 
-    &:hover {
-      background: #185c37;
-    }
+  .hidden-input {
+    display: none;
   }
 }
 
-// Modal green theme
+// Modal customization for Excel theme (Green) using specificity to override shared styles
 .modal-content {
-  max-width: 800px;
+  // Shared .modal-content is imported via encapsulation or global styles?
+  // Since encapsulation is Emulated (default), global styles apply.
+  // We just need to ensure we don't duplicate the base styles.
+
+  // We only need to override heights/scroll behavior if unique
   max-height: 85vh;
   overflow-y: auto;
 }
@@ -175,30 +181,33 @@
   background: white;
   border-radius: 12px 12px 0 0;
   z-index: 2;
+  // padding etc are shared
 }
 
 .success-banner {
   position: sticky;
-  top: 73px;
+  top: 73px; // Adjust based on header height
   z-index: 1;
 }
 
 .modal-body .form-control:focus {
-  border-color: #217346;
+  border-color: $excel-green;
   box-shadow: 0 0 0 3px rgba(33, 115, 70, .1);
 }
 
 .modal-footer {
   position: sticky;
   bottom: 0;
-  background: white;
+  background: white; // Essential to cover content scrolling behind
   border-radius: 0 0 12px 12px;
+  // Shared footer styles handle flex/padding
 
+  // Override primary button to be Excel Green
   .btn-primary {
-    background: #217346;
+    background: $excel-green;
 
     &:hover:not(:disabled) {
-      background: #185c37;
+      background: $excel-green-dark;
     }
 
     &:disabled {
@@ -207,15 +216,7 @@
     }
   }
 
-  .btn-secondary {
-    background: #f3f4f6;
-    color: #374151;
-    border: 1px solid #d1d5db;
-
-    &:hover {
-      background: #e5e7eb;
-    }
-  }
+  // .btn-secondary is shared
 }
 
 @media (max-width: 768px) {
@@ -223,15 +224,26 @@
     padding: 1.5rem;
   }
 
-  .modal-content {
-    max-width: 95%;
-  }
+  // .modal-content max-width handled by .modal-lg class now
 
   .modal-footer {
     flex-direction: column;
 
     button {
       width: 100%;
+    }
+  }
+}
+
+// Validation styles for form inputs (warning-message styling is in global _forms.scss)
+.form-group {
+
+  // Only keeping specific error overrides if they differ
+  input.error {
+    border-color: $danger !important;
+
+    &:focus {
+      box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.1);
     }
   }
 }

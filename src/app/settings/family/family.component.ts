@@ -1,4 +1,4 @@
-import { Component, signal, inject, effect, computed, HostListener } from '@angular/core';
+import { Component, signal, inject, effect, computed, HostListener, ChangeDetectionStrategy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { LucideAngularModule, Pencil, Save, X, Trash2, Plus, Download, Upload, User, Baby, Mars, Venus, AlertTriangle, HelpCircle, TriangleAlert } from 'lucide-angular';
@@ -19,7 +19,8 @@ import { MemberEditorComponent, MemberEditData } from '../../shared/member-edito
   standalone: true,
   imports: [CommonModule, FormsModule, LucideAngularModule, TranslatePipe, DeleteConfirmationModalComponent, ConfirmationModalComponent, ErrorModalComponent, HelpModalComponent, MemberEditorComponent],
   templateUrl: './family.component.html',
-  styleUrl: './family.component.scss'
+  styleUrl: './family.component.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class FamilyComponent {
   protected languageService = inject(LanguageService);
@@ -116,6 +117,17 @@ export class FamilyComponent {
   // Computed property to check if there are unsaved changes
   public hasUnsavedChanges = computed(() => {
     if (!this.isEditing()) return false;
+
+    // Check if adding a new member and fields are populated
+    if (this.showAddMemberForm() && (this.newMemberName() || this.newMemberSurname())) {
+      return true;
+    }
+
+    // Check if inline editing is active
+    if (this.editingMemberId()) {
+      return true;
+    }
+
     const savedMembers = this.householdService.members();
     const draft = this.draftMembers();
     if (!Array.isArray(savedMembers) || !Array.isArray(draft)) return false;
@@ -352,13 +364,7 @@ export class FamilyComponent {
     this.showAddMemberForm.set(false);
   }
 
-  trackByMemberId(index: number, member: HouseholdMember): string {
-    return member.id;
-  }
 
-  trackByAvatar(index: number, avatar: string): string {
-    return avatar;
-  }
 
   showHelp() {
     this.showHelpModal.set(true);

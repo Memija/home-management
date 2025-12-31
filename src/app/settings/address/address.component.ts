@@ -1,4 +1,4 @@
-import { Component, signal, effect, inject, computed } from '@angular/core';
+import { Component, signal, effect, inject, computed, HostListener } from '@angular/core';
 import { LucideAngularModule, Pencil, Save, X, Download, Upload, HelpCircle, TriangleAlert } from 'lucide-angular';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
@@ -12,6 +12,7 @@ import { ConfirmationModalComponent } from '../../shared/confirmation-modal/conf
 import { ErrorModalComponent } from '../../shared/error-modal/error-modal.component';
 import { HelpModalComponent, HelpStep } from '../../shared/help-modal/help-modal.component';
 import { CountrySelectorComponent } from '../../shared/country-selector/country-selector.component';
+import { DeleteConfirmationModalComponent } from '../../shared/delete-confirmation-modal/delete-confirmation-modal.component';
 
 @Component({
   selector: 'app-address',
@@ -22,6 +23,7 @@ import { CountrySelectorComponent } from '../../shared/country-selector/country-
     TranslatePipe,
     LucideAngularModule,
     ConfirmationModalComponent,
+    DeleteConfirmationModalComponent,
     ErrorModalComponent,
     HelpModalComponent,
     CountrySelectorComponent
@@ -72,6 +74,10 @@ export class AddressComponent {
   protected zipCodeError = signal<string[]>([]);
   protected countryError = signal<string[]>([]);
 
+  // Navigation Guard State
+  protected showUnsavedChangesModal = signal(false);
+  protected pendingNavigation = signal<(() => void) | null>(null);
+
   // Import confirmation modal
   protected showImportConfirmModal = signal(false);
   protected pendingImportFile = signal<File | null>(null);
@@ -112,6 +118,42 @@ export class AddressComponent {
       this.countryError().length === 0 &&
       this.isValidCountry();
   });
+
+  // Check for unsaved changes
+  public hasUnsavedChanges = computed(() => {
+    // If not editing, no changes
+    if (!this.isEditingAddress()) return false;
+
+    const saved = this.householdService.address();
+    // If no saved address and we are editing, check if any field has content
+    if (!saved) {
+      return this.streetName().trim() !== '' ||
+        this.streetNumber().trim() !== '' ||
+        this.city().trim() !== '' ||
+        this.zipCode().trim() !== '' ||
+        this.country().trim() !== '';
+    }
+
+    // Compare strictly
+    return this.streetName() !== saved.streetName ||
+      this.streetNumber() !== saved.streetNumber ||
+      this.city() !== saved.city ||
+      this.zipCode() !== saved.zipCode ||
+      this.country() !== (saved.country || '');
+    // Note: saved.country logic in constructor might normalize to code,
+    // but here we just compare what is in signals vs what is in service.
+    // Ideally service should have Normalized data, but we'll assume equality check is sufficient
+    // for string primitives.
+  });
+
+  @HostListener('window:beforeunload', ['$event'])
+  onBeforeUnload(event: BeforeUnloadEvent) {
+    if (this.hasUnsavedChanges()) {
+      event.preventDefault();
+      return '';
+    }
+    return;
+  }
 
   constructor() {
     // Initialize address form if data exists
@@ -173,6 +215,14 @@ export class AddressComponent {
   }
 
   cancelEdit(): void {
+    if (this.hasUnsavedChanges()) {
+      this.triggerNavigationWarning(() => this.performCancel());
+    } else {
+      this.performCancel();
+    }
+  }
+
+  private performCancel(): void {
     const addr = this.householdService.address();
     if (addr) {
       this.streetName.set(addr.streetName);
@@ -197,7 +247,38 @@ export class AddressComponent {
       this.cityError.set([]);
       this.zipCodeError.set([]);
       this.countryError.set([]);
+      this.countryError.set([]);
+    } else {
+      // If no address existed (first time), clear fields and stop editing
+      this.streetName.set('');
+      this.streetNumber.set('');
+      this.city.set('');
+      this.zipCode.set('');
+      this.country.set('');
+      this.isEditingAddress.set(false);
     }
+  }
+
+  // Navigation Guard Methods
+  public triggerNavigationWarning(onLeave: () => void): boolean {
+    if (this.hasUnsavedChanges()) {
+      this.pendingNavigation.set(onLeave);
+      this.showUnsavedChangesModal.set(true);
+      return true;
+    }
+    return false;
+  }
+
+  confirmLeaveWithoutSaving() {
+    const navigation = this.pendingNavigation();
+    if (navigation) navigation();
+    this.showUnsavedChangesModal.set(false);
+    this.pendingNavigation.set(null);
+  }
+
+  stayAndSave() {
+    this.showUnsavedChangesModal.set(false);
+    this.pendingNavigation.set(null);
   }
 
   saveAddress(): void {
@@ -240,6 +321,19 @@ export class AddressComponent {
   async confirmImportAddress(): Promise<void> {
     const file = this.pendingImportFile();
     if (file) {
+      // Validate file extension
+      if (!file.name.toLowerCase().endsWith('.json')) {
+        this.importErrorMessage.set(this.languageService.translate('SETTINGS.IMPORT_ADDRESS_INVALID_FILE_TYPE'));
+        this.importErrorInstructions.set([
+          'SETTINGS.IMPORT_ADDRESS_INVALID_FILE_TYPE_INSTRUCTION_1',
+          'SETTINGS.IMPORT_ADDRESS_INVALID_FILE_TYPE_INSTRUCTION_2'
+        ]);
+        this.showImportErrorModal.set(true);
+        this.showImportConfirmModal.set(false);
+        this.pendingImportFile.set(null);
+        return;
+      }
+
       try {
         const data = await this.fileStorage.importFromFile<Address>(file);
 
@@ -304,18 +398,28 @@ export class AddressComponent {
         }
       } catch (error: any) {
         console.error('Error importing address:', error);
-        this.importErrorMessage.set(error.message || this.languageService.translate('SETTINGS.IMPORT_ERROR'));
-        this.importErrorDetails.set(error.details || '');
 
-        const instructions: any[] = [];
-        if (error.fieldKeys && Array.isArray(error.fieldKeys)) {
-          error.fieldKeys.forEach((key: string) => {
-            instructions.push({ key: 'HOME.IMPORT_ERROR_CHECK_FIELD', params: { field: this.languageService.translate(key) } });
-          });
+        // Handle explicit invalid file type errors from fileStorage import (if any)
+        if (error.message === 'invalid_file_type' || (error.error && error.error === 'invalid_file_type')) {
+          this.importErrorMessage.set(this.languageService.translate('SETTINGS.IMPORT_ADDRESS_INVALID_FILE_TYPE'));
+          this.importErrorInstructions.set([
+            'SETTINGS.IMPORT_ADDRESS_INVALID_FILE_TYPE_INSTRUCTION_1',
+            'SETTINGS.IMPORT_ADDRESS_INVALID_FILE_TYPE_INSTRUCTION_2'
+          ]);
+        } else {
+          this.importErrorMessage.set(error.message || this.languageService.translate('SETTINGS.IMPORT_ERROR'));
+          this.importErrorDetails.set(error.details || '');
+
+          const instructions: any[] = [];
+          if (error.fieldKeys && Array.isArray(error.fieldKeys)) {
+            error.fieldKeys.forEach((key: string) => {
+              instructions.push({ key: 'HOME.IMPORT_ERROR_CHECK_FIELD', params: { field: this.languageService.translate(key) } });
+            });
+          }
+          instructions.push('HOME.IMPORT_ERROR_INSTRUCTION_1', 'HOME.IMPORT_ERROR_INSTRUCTION_2', 'HOME.IMPORT_ERROR_INSTRUCTION_3');
+          this.importErrorInstructions.set(instructions);
         }
-        instructions.push('HOME.IMPORT_ERROR_INSTRUCTION_1', 'HOME.IMPORT_ERROR_INSTRUCTION_2', 'HOME.IMPORT_ERROR_INSTRUCTION_3');
 
-        this.importErrorInstructions.set(instructions);
         this.showImportErrorModal.set(true);
       }
     }

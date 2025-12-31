@@ -1,33 +1,35 @@
+@use 'variables' as *;
+
 // Detailed records - only component-specific overrides
 // Base styles inherited from global _history.scss
 
 .history-section {
-  background: #e9ecef;
+  background: $border-light;
   padding: 1.5rem;
 
   .filters-container .search-box {
     padding-bottom: 0.75rem;
 
     lucide-icon {
-      color: #6c757d;
+      color: $secondary;
     }
   }
 
   .record-header .record-actions .total {
     font-weight: 700;
     font-size: 1.2rem;
-    color: #7c3aed;
-    background: #ede9fe;
+    color: $purple;
+    background: $purple-light;
     padding: 0.25rem 0.75rem;
     border-radius: 4px;
   }
 
   .pagination-container .pagination-controls .pagination-btn {
-    background: #007bff;
+    background: $primary;
     box-shadow: 0 2px 4px rgba(0, 123, 255, 0.2);
 
     &:hover:not(:disabled) {
-      background: #0056b3;
+      background: $primary-dark;
       box-shadow: 0 4px 12px rgba(0, 123, 255, 0.35);
     }
   }

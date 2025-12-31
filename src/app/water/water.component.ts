@@ -1,4 +1,4 @@
-import { Component, signal, computed, inject } from '@angular/core';
+import { Component, signal, computed, inject, ChangeDetectionStrategy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
@@ -26,7 +26,8 @@ import { LocalStorageService } from '../services/local-storage.service';
   standalone: true,
   imports: [CommonModule, FormsModule, RouterLink, TranslatePipe, LucideAngularModule, ConsumptionInputComponent, DeleteConfirmationModalComponent, ConfirmationModalComponent, DetailedRecordsComponent, ConsumptionChartComponent, ErrorModalComponent],
   templateUrl: './water.component.html',
-  styleUrl: './water.component.scss'
+  styleUrl: './water.component.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class WaterComponent {
   private storage = inject(STORAGE_SERVICE);

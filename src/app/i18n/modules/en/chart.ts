@@ -42,6 +42,7 @@ export const chart = {
     AVERAGE_REQUIRES_FAMILY: 'Add family members in Settings to enable comparison',
     AVERAGE_REQUIRES_DATA: 'At least 2 data points are required for comparison',
     TRENDLINE_REQUIRES_DATA: 'At least 2 data points are required for trendline',
-    TRENDLINE_REQUIRES_DATA_INCREMENTAL: 'At least 3 entries are required for trendline in Between Measurements mode'
+    TRENDLINE_REQUIRES_DATA_INCREMENTAL: 'At least 3 entries are required for trendline in Between Measurements mode',
+    COUNTRY_FLAG_ALT: 'Country flag for {country}'
   }
 };

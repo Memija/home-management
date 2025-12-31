@@ -42,6 +42,7 @@ export const chart = {
     AVERAGE_REQUIRES_FAMILY: 'Fügen Sie Familienmitglieder in den Einstellungen hinzu, um den Vergleich zu aktivieren',
     AVERAGE_REQUIRES_DATA: 'Mindestens 2 Datenpunkte sind für den Vergleich erforderlich',
     TRENDLINE_REQUIRES_DATA: 'Mindestens 2 Datenpunkte sind für die Trendlinie erforderlich',
-    TRENDLINE_REQUIRES_DATA_INCREMENTAL: 'Mindestens 3 Einträge sind für die Trendlinie im Modus "Zwischen Messungen" erforderlich'
+    TRENDLINE_REQUIRES_DATA_INCREMENTAL: 'Mindestens 3 Einträge sind für die Trendlinie im Modus "Zwischen Messungen" erforderlich',
+    COUNTRY_FLAG_ALT: 'Landesflagge für {country}'
   }
 };

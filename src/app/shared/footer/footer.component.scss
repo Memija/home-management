@@ -1,14 +1,16 @@
+@use 'variables' as *;
+
 .app-footer {
   position: fixed;
   bottom: 0;
   left: 0;
   right: 0;
-  background: #f8f9fa;
-  color: #2c3e50;
+  background: $light;
+  color: $text-color;
   padding: 0.75rem 1rem;
   text-align: center;
   box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.08);
-  border-top: 1px solid #e9ecef;
+  border-top: 1px solid $border-light;
   z-index: 1000;
   margin-bottom: -1px;
 
@@ -19,7 +21,7 @@
     p {
       margin: 0;
       font-size: 0.85rem;
-      color: #6c757d;
+      color: $text-secondary;
     }
 
     .copyright {

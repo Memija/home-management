@@ -1,11 +1,12 @@
+@use 'variables' as *;
+
 .menu-bar {
   position: fixed;
   top: 132px; // Below header (padding 32px + logo 100px)
   left: 0;
   right: 0;
-  background: #f8f9fa;
-  border-bottom: 1px solid #e9ecef;
-  padding: 0.7rem 1.5rem 0 1.5rem;
+  background: $light;
+  padding: 0rem 1.5rem;
   z-index: 999;
 
   @media (max-width: 768px) {
@@ -23,8 +24,9 @@
     align-items: center;
     gap: 0.25rem;
     overflow-x: auto; // Allow scrolling on very small screens
-    //stylelint-disable-next-line plugin/no-unsupported-browser-features
+    /* stylelint-disable plugin/no-unsupported-browser-features */
     scrollbar-width: none; // Hide scrollbar Firefox + Chrome 121+
+    /* stylelint-enable plugin/no-unsupported-browser-features */
     -ms-overflow-style: none; // Hide scrollbar IE/Edge
     // Fallback for Safari/older Chrome is ::-webkit-scrollbar below
 
@@ -43,7 +45,7 @@
     align-items: center;
     gap: 0.5rem;
     padding: 0.75rem 1rem;
-    color: #495057;
+    color: $gray-700;
     text-decoration: none;
     font-size: 0.9rem;
     font-weight: 500;
@@ -65,12 +67,12 @@
     }
 
     &:hover {
-      background: #e9ecef;
+      background: $border-light;
     }
 
     &.active {
-      color: #007bff;
-      background: #e7f3ff;
+      color: $primary;
+      background: $primary-light-bg;
     }
 
     // Emoji icon styling

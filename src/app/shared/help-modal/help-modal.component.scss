@@ -1,3 +1,5 @@
+@use 'variables' as *;
+
 // Help Modal - uses global styles from _modal.scss
 // Component-specific styling
 
@@ -8,7 +10,7 @@
 
 .modal-header {
   .help-icon {
-    color: #17a2b8;
+    color: $info;
   }
 }
 
@@ -36,13 +38,13 @@
     font-size: 1.4rem;
     font-weight: 600;
     margin-bottom: 1rem;
-    color: var(--text-color, #333);
+    color: var(--text-color, $text-color);
   }
 
   .step-description {
     font-size: 1.1rem;
     line-height: 1.7;
-    color: var(--text-secondary, #555);
+    color: var(--text-secondary, $text-secondary);
     margin: 0;
     max-width: 480px;
     margin-left: auto;
@@ -60,11 +62,11 @@
     width: 10px;
     height: 10px;
     border-radius: 50%;
-    background-color: #ddd;
+    background-color: $border-color;
     transition: background-color 0.2s ease;
 
     &.active {
-      background-color: #17a2b8;
+      background-color: $info;
     }
   }
 }
@@ -78,7 +80,7 @@
 
   .step-counter {
     font-size: 0.875rem;
-    color: var(--text-secondary, #666);
+    color: var(--text-secondary, $text-secondary);
   }
 
   button {

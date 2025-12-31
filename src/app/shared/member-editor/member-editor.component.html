@@ -76,7 +76,7 @@
     <div class="avatar-grid">
       @for (avatar of avatars(); track avatar) {
       <img [src]="avatar" [class.selected]="editAvatar() === avatar && !customPicturePreview()"
-        (click)="selectAvatar(avatar)" alt="Hero Avatar" title="{{ 'SETTINGS.SELECT_AVATAR' | translate }}">
+        (click)="selectAvatar(avatar)" alt="Avatar option" title="{{ 'SETTINGS.SELECT_AVATAR' | translate }}">
       }
     </div>
   </div>

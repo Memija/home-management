@@ -10,17 +10,8 @@ export class TranslatePipe implements PipeTransform {
   private languageService = inject(LanguageService);
 
   transform(key: string, params?: Record<string, any>): string {
-    // Reading the signal here creates a dependency
+    // Reading the signal here creates a dependency so the pipe updates when language changes
     this.languageService.currentLang();
-    let translation = this.languageService.translate(key);
-
-    // Replace parameters in the translation if provided
-    if (params) {
-      Object.keys(params).forEach(param => {
-        translation = translation.replace(`{${param}}`, params[param]);
-      });
-    }
-
-    return translation;
+    return this.languageService.translate(key, params);
   }
 }

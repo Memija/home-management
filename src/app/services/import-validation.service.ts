@@ -14,14 +14,14 @@ export class ImportValidationService {
     /**
      * Validates JSON import data for water consumption records
      */
-    validateWaterJsonImport(data: any[]): ValidationResult<ConsumptionRecord> {
+    validateWaterJsonImport(data: unknown[]): ValidationResult<ConsumptionRecord> {
         const validationErrors: string[] = [];
         const validRecords: ConsumptionRecord[] = [];
         const seenDates = new Map<string, number>();
         const numericFields = ['kitchenWarm', 'kitchenCold', 'bathroomWarm', 'bathroomCold'];
 
         for (let index = 0; index < data.length; index++) {
-            const record = data[index];
+            const record = data[index] as Record<string, unknown>;
             const rowNumber = index + 1;
 
             // Validate record structure and date
@@ -53,14 +53,14 @@ export class ImportValidationService {
     /**
      * Validates JSON import data for heating consumption records
      */
-    validateHeatingJsonImport(data: any[]): ValidationResult<HeatingRecord> {
+    validateHeatingJsonImport(data: unknown[]): ValidationResult<HeatingRecord> {
         const validationErrors: string[] = [];
         const validRecords: HeatingRecord[] = [];
         const seenDates = new Map<string, number>();
         const numericFields = ['livingRoom', 'bedroom', 'kitchen', 'bathroom'];
 
         for (let index = 0; index < data.length; index++) {
-            const record = data[index];
+            const record = data[index] as Record<string, unknown>;
             const rowNumber = index + 1;
 
             // Validate record structure and date
@@ -145,7 +145,7 @@ export class ImportValidationService {
     /**
      * Validates that data is a non-empty array
      */
-    validateDataArray(data: any): string | null {
+    validateDataArray(data: unknown): string | null {
         if (!Array.isArray(data)) {
             return 'Invalid data format: expected an array of records';
         }
@@ -158,7 +158,7 @@ export class ImportValidationService {
     // Private helper methods
 
     private validateRecordAndDate(
-        record: any,
+        record: unknown,
         rowNumber: number,
         seenDates: Map<string, number>
     ): { valid: boolean; date?: Date; errors: string[] } {
@@ -170,14 +170,16 @@ export class ImportValidationService {
             return { valid: false, errors };
         }
 
+        const rec = record as Record<string, unknown>;
+
         // Check required date field exists
-        if (!('date' in record)) {
+        if (!('date' in rec)) {
             errors.push(`Record ${rowNumber}: Missing 'date' field`);
             return { valid: false, errors };
         }
 
         // Parse and validate date
-        const dateValue = record.date;
+        const dateValue = rec['date'];
         let parsedDate: Date | null = null;
 
         if (typeof dateValue === 'string') {
@@ -205,7 +207,7 @@ export class ImportValidationService {
     }
 
     private validateNumericFields(
-        record: any,
+        record: Record<string, unknown>,
         rowNumber: number,
         fields: string[]
     ): { values: Record<string, number>; errors: string[] } {

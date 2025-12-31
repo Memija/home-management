@@ -32,7 +32,11 @@
           {{ 'CHART.COMPARE_WITH' | translate }}:
         </label>
         <div class="select-with-flag" [class.disabled]="!hasSufficientDataForComparison()">
-          <img [src]="getSelectedCountryFlag()" alt="" class="country-flag" />
+          <img [src]="getSelectedCountryFlag()" alt="Country flag"
+            [alt]="'CHART.COUNTRY_FLAG_ALT' | translate: { country: effectiveComparisonCountryCode() }"
+            title="Country flag"
+            [title]="'CHART.COUNTRY_FLAG_ALT' | translate: { country: effectiveComparisonCountryCode() }"
+            class="country-flag" />
           <select id="comparison-country" [value]="effectiveComparisonCountryCode()"
             (change)="onComparisonCountryChange($any($event.target).value)"
             [disabled]="!hasSufficientDataForComparison()">
@@ -74,18 +78,20 @@
       </label>
 
       <!-- Excel Export/Import (conditional) -->
-      <button *ngIf="excelSettings.isEnabled()" type="button" (click)="exportToExcel()" class="export-btn excel-btn"
-        [disabled]="isExporting()" title="{{ 'WATER.EXPORT_EXCEL' | translate }}">
+      @if (excelSettings.isEnabled()) {
+      <button type="button" (click)="exportToExcel()" class="export-btn excel-btn" [disabled]="isExporting()"
+        title="{{ 'WATER.EXPORT_EXCEL' | translate }}">
         <lucide-icon [img]="FileSpreadsheetIcon" size="16"></lucide-icon>
         {{ isExporting() ? 'Exporting...' : ('WATER.EXPORT_EXCEL' | translate) }}
       </button>
-      <label *ngIf="excelSettings.isEnabled()" for="import-excel-file" class="import-btn excel-btn"
-        [class.disabled]="isImporting()" title="{{ 'WATER.IMPORT_EXCEL' | translate }}">
+      <label for="import-excel-file" class="import-btn excel-btn" [class.disabled]="isImporting()"
+        title="{{ 'WATER.IMPORT_EXCEL' | translate }}">
         <lucide-icon [img]="FileSpreadsheetIcon" size="16"></lucide-icon>
         {{ isImporting() ? 'Importing...' : ('WATER.IMPORT_EXCEL' | translate) }}
         <input type="file" id="import-excel-file" accept=".xlsx,.xls" (change)="importFromExcel($event)"
           class="hidden-input" [disabled]="isImporting()">
       </label>
+      }
     </div>
   </app-detailed-records>
 

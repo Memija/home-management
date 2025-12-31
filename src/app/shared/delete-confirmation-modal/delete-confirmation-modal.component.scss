@@ -1,9 +1,11 @@
+@use 'variables' as *;
+
 // Delete Confirmation Modal - uses global styles from _modal.scss
 // Only component-specific overrides here
 
 // Warning icon color override
 .modal-header .warning-icon {
-  color: #dc3545;
+  color: $danger;
 }
 
 // Danger button specific styling (extends global .btn-danger)

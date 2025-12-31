@@ -1,22 +1,33 @@
-import { Component, inject, computed, signal, effect } from '@angular/core';
+import { Component, inject, computed, signal, effect, ChangeDetectionStrategy, HostListener } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ExcelSettingsService } from '../../services/excel-settings.service';
 import { TranslatePipe } from '../../pipes/translate.pipe';
-import { LucideAngularModule, FileSpreadsheet, RotateCcw, ChevronDown, ChevronUp, HelpCircle } from 'lucide-angular';
+import { LucideAngularModule, FileSpreadsheet, RotateCcw, ChevronDown, ChevronUp, HelpCircle, Download, Upload, Pencil, TriangleAlert } from 'lucide-angular';
 import { LanguageService } from '../../services/language.service';
 import { LocalStorageService } from '../../services/local-storage.service';
+import { FileStorageService } from '../../services/file-storage.service';
+import { ExcelSettings } from '../../services/excel-settings.service';
 import { HelpModalComponent, HelpStep } from '../../shared/help-modal/help-modal.component';
+import { ConfirmationModalComponent } from '../../shared/confirmation-modal/confirmation-modal.component';
+import { ErrorModalComponent } from '../../shared/error-modal/error-modal.component';
+import { ExcelValidationService } from '../../services/excel-validation.service';
+import { ExcelImportService, ImportError } from '../../services/excel-import.service';
+import { DeleteConfirmationModalComponent } from '../../shared/delete-confirmation-modal/delete-confirmation-modal.component';
 
 @Component({
   selector: 'app-excel-settings',
   standalone: true,
-  imports: [CommonModule, FormsModule, TranslatePipe, LucideAngularModule, HelpModalComponent],
+  imports: [CommonModule, FormsModule, TranslatePipe, LucideAngularModule, HelpModalComponent, ConfirmationModalComponent, DeleteConfirmationModalComponent, ErrorModalComponent],
   templateUrl: './excel-settings.component.html',
-  styleUrl: './excel-settings.component.scss'
+  styleUrl: './excel-settings.component.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class ExcelSettingsComponent {
   private localStorageService = inject(LocalStorageService);
+  private fileStorage = inject(FileStorageService);
+  protected validationService = inject(ExcelValidationService);
+  private importService = inject(ExcelImportService);
   protected excelSettingsService = inject(ExcelSettingsService);
   protected languageService = inject(LanguageService);
   protected readonly FileSpreadsheetIcon = FileSpreadsheet;
@@ -24,6 +35,10 @@ export class ExcelSettingsComponent {
   protected readonly ChevronDownIcon = ChevronDown;
   protected readonly ChevronUpIcon = ChevronUp;
   protected readonly HelpIcon = HelpCircle;
+  protected readonly ExportIcon = Download;
+  protected readonly ImportIcon = Upload;
+  protected readonly EditIcon = Pencil;
+  protected readonly TriangleAlertIcon = TriangleAlert;
 
   // Help modal
   protected showHelpModal = signal(false);
@@ -36,8 +51,21 @@ export class ExcelSettingsComponent {
 
   protected showModal = signal(false);
   protected showSaveSuccess = signal(false);
+  protected showImportSuccess = signal(false);
   protected validationError = signal('');
-  protected isPreviewCollapsed = signal(true); // Collapsed by default
+  protected isPreviewCollapsed = signal(false); // Expanded by default
+
+  // Import confirmation & error modals
+  protected showImportConfirmModal = signal(false);
+  protected pendingImportFile = signal<File | null>(null);
+  protected showImportErrorModal = signal(false);
+  protected importErrorMessage = signal('');
+  protected importErrorDetails = signal('');
+  protected importErrorInstructions = signal<string[]>([]);
+
+  // Navigation Guard State
+  protected showUnsavedChangesModal = signal(false);
+  protected pendingNavigation = signal<(() => void) | null>(null);
 
   // Local state for editing - using signals for reactivity
   protected enabled = signal(false);
@@ -52,22 +80,20 @@ export class ExcelSettingsComponent {
   protected heatingKitchenCol = signal('');
   protected heatingBathroomCol = signal('');
 
+  // Computed column arrays for validation
+  protected waterColumns = computed(() => [
+    this.waterDateCol(), this.waterKitchenWarmCol(), this.waterKitchenColdCol(),
+    this.waterBathroomWarmCol(), this.waterBathroomColdCol()
+  ]);
+
+  protected heatingColumns = computed(() => [
+    this.heatingDateCol(), this.heatingLivingRoomCol(), this.heatingBedroomCol(),
+    this.heatingKitchenCol(), this.heatingBathroomCol()
+  ]);
+
   // Validation: check if form is valid
   protected isFormValid = computed(() => {
-    const allFields = [
-      this.waterDateCol(), this.waterKitchenWarmCol(), this.waterKitchenColdCol(),
-      this.waterBathroomWarmCol(), this.waterBathroomColdCol(),
-      this.heatingDateCol(), this.heatingLivingRoomCol(), this.heatingBedroomCol(),
-      this.heatingKitchenCol(), this.heatingBathroomCol()
-    ];
-
-    // Check if all fields are filled
-    if (allFields.some(field => !field || field.trim() === '')) {
-      return false;
-    }
-
-    // Check if all fields pass validation
-    return allFields.every(field => this.isValidColumnName(field));
+    return this.validationService.validateMappings(this.waterColumns(), this.heatingColumns()).isValid;
   });
 
   constructor() {
@@ -88,56 +114,62 @@ export class ExcelSettingsComponent {
     });
 
     // Load collapsed state from localStorage
-    const savedCollapsedState = this.localStorageService.getPreference('excelPreviewCollapsed');
+    const savedCollapsedState = this.localStorageService.getPreference('hm_excel_preview_is_collapsed');
     if (savedCollapsedState !== null) {
       this.isPreviewCollapsed.set(savedCollapsedState === 'true');
+    } else {
+      // If no preference saved, save default (false)
+      this.localStorageService.setPreference('hm_excel_preview_is_collapsed', 'false');
     }
   }
 
   protected togglePreview() {
     this.isPreviewCollapsed.update(val => !val);
     // Save to localStorage
-    this.localStorageService.setPreference('excelPreviewCollapsed', this.isPreviewCollapsed().toString());
+    this.localStorageService.setPreference('hm_excel_preview_is_collapsed', this.isPreviewCollapsed().toString());
+  }
+
+
+
+  // Check for unsaved changes
+  public hasUnsavedChanges = computed(() => {
+    // Only check if edit modal is open. If modal is closed, we assume changes were saved or discarded.
+    if (!this.showModal()) return false;
+
+    const saved = this.excelSettingsService.settings();
+    return this.waterDateCol().trim() !== saved.waterMapping.date ||
+      this.waterKitchenWarmCol().trim() !== saved.waterMapping.kitchenWarm ||
+      this.waterKitchenColdCol().trim() !== saved.waterMapping.kitchenCold ||
+      this.waterBathroomWarmCol().trim() !== saved.waterMapping.bathroomWarm ||
+      this.waterBathroomColdCol().trim() !== saved.waterMapping.bathroomCold ||
+      this.heatingDateCol().trim() !== saved.heatingMapping.date ||
+      this.heatingLivingRoomCol().trim() !== saved.heatingMapping.livingRoom ||
+      this.heatingBedroomCol().trim() !== saved.heatingMapping.bedroom ||
+      this.heatingKitchenCol().trim() !== saved.heatingMapping.kitchen ||
+      this.heatingBathroomCol().trim() !== saved.heatingMapping.bathroom;
+  });
+
+  @HostListener('window:beforeunload', ['$event'])
+  onBeforeUnload(event: BeforeUnloadEvent) {
+    if (this.hasUnsavedChanges()) {
+      event.preventDefault();
+      return '';
+    }
+    return;
   }
 
   /**
-   * Validate Excel column name
-   * Rules:
-   * - Not empty
-   * - Max 255 characters
-   * - No invalid characters: [ ] * / \ ? :
-   * - No leading/trailing whitespace
+   * Check if a water column name is duplicated within the water section
    */
-  private isValidColumnName(name: string): boolean {
-    if (!name || name.trim() === '') return false;
-    if (name.length > 255) return false;
-    if (name !== name.trim()) return false;
-
-    // Check for invalid characters
-    const invalidChars = /[\[\]\*\/\\\?\:]/;
-    if (invalidChars.test(name)) return false;
-
-    return true;
+  protected isDuplicateWater(value: string): boolean {
+    return this.validationService.isDuplicate(value, this.waterColumns());
   }
 
   /**
-   * Get validation error message for a column name
+   * Check if a heating column name is duplicated within the heating section
    */
-  protected getValidationError(name: string): string {
-    if (!name || name.trim() === '') {
-      return this.languageService.translate('EXCEL.VALIDATION_REQUIRED');
-    }
-    if (name.length > 255) {
-      return this.languageService.translate('EXCEL.VALIDATION_TOO_LONG');
-    }
-    if (name !== name.trim()) {
-      return this.languageService.translate('EXCEL.VALIDATION_NO_WHITESPACE');
-    }
-    const invalidChars = /[\[\]\*\/\\\?\:]/;
-    if (invalidChars.test(name)) {
-      return this.languageService.translate('EXCEL.VALIDATION_INVALID_CHARS');
-    }
-    return '';
+  protected isDuplicateHeating(value: string): boolean {
+    return this.validationService.isDuplicate(value, this.heatingColumns());
   }
 
   protected onEnabledChange(event?: Event) {
@@ -160,33 +192,60 @@ export class ExcelSettingsComponent {
   }
 
   protected closeModal() {
+    if (this.hasUnsavedChanges()) {
+      this.triggerNavigationWarning(() => this.performCloseModal());
+    } else {
+      this.performCloseModal();
+    }
+  }
+
+  private performCloseModal() {
+    // Reset local state to saved settings
+    const settings = this.excelSettingsService.settings();
+    this.waterDateCol.set(settings.waterMapping.date);
+    this.waterKitchenWarmCol.set(settings.waterMapping.kitchenWarm);
+    this.waterKitchenColdCol.set(settings.waterMapping.kitchenCold);
+    this.waterBathroomWarmCol.set(settings.waterMapping.bathroomWarm);
+    this.waterBathroomColdCol.set(settings.waterMapping.bathroomCold);
+    this.heatingDateCol.set(settings.heatingMapping.date);
+    this.heatingLivingRoomCol.set(settings.heatingMapping.livingRoom);
+    this.heatingBedroomCol.set(settings.heatingMapping.bedroom);
+    this.heatingKitchenCol.set(settings.heatingMapping.kitchen);
+    this.heatingBathroomCol.set(settings.heatingMapping.bathroom);
+
     this.showModal.set(false);
     this.showSaveSuccess.set(false);
     this.validationError.set('');
   }
 
-  protected saveSettings() {
-    // Validate all fields
-    if (!this.isFormValid()) {
-      this.validationError.set(this.languageService.translate('EXCEL.VALIDATION_FORM_INVALID'));
-      return;
+  // Navigation Guard Methods
+  public triggerNavigationWarning(onLeave: () => void): boolean {
+    if (this.hasUnsavedChanges()) {
+      this.pendingNavigation.set(onLeave);
+      this.showUnsavedChangesModal.set(true);
+      return true;
     }
+    return false;
+  }
 
-    // Check for duplicate column names within each mapping
-    const waterColumns = [
-      this.waterDateCol(), this.waterKitchenWarmCol(), this.waterKitchenColdCol(),
-      this.waterBathroomWarmCol(), this.waterBathroomColdCol()
-    ];
-    const heatingColumns = [
-      this.heatingDateCol(), this.heatingLivingRoomCol(), this.heatingBedroomCol(),
-      this.heatingKitchenCol(), this.heatingBathroomCol()
-    ];
+  confirmLeaveWithoutSaving() {
+    const navigation = this.pendingNavigation();
+    if (navigation) navigation();
+    this.showUnsavedChangesModal.set(false);
+    this.pendingNavigation.set(null);
+  }
 
-    const hasDuplicatesWater = new Set(waterColumns).size !== waterColumns.length;
-    const hasDuplicatesHeating = new Set(heatingColumns).size !== heatingColumns.length;
+  stayAndSave() {
+    this.showUnsavedChangesModal.set(false);
+    this.pendingNavigation.set(null);
+  }
 
-    if (hasDuplicatesWater || hasDuplicatesHeating) {
-      this.validationError.set(this.languageService.translate('EXCEL.VALIDATION_DUPLICATES'));
+  protected saveSettings() {
+    // Validate all fields and check for duplicates
+    const validation = this.validationService.validateMappings(this.waterColumns(), this.heatingColumns());
+    if (!validation.isValid) {
+      // Use the returned error key or default
+      this.validationError.set(this.languageService.translate(validation.errorKey || 'EXCEL.VALIDATION_FORM_INVALID'));
       return;
     }
 
@@ -221,5 +280,80 @@ export class ExcelSettingsComponent {
   protected resetDefaults() {
     this.excelSettingsService.resetToDefaults();
     this.validationError.set('');
+  }
+
+  protected async exportSettings() {
+    try {
+      const settings = this.excelSettingsService.settings();
+      await this.fileStorage.exportData(settings, 'excel-settings.json');
+    } catch (error) {
+      console.error('Failed to export settings:', error);
+    }
+  }
+
+  protected async importSettings(event: Event) {
+    const input = event.target as HTMLInputElement;
+    const file = input.files?.[0];
+    if (file) {
+      this.pendingImportFile.set(file);
+      this.showImportConfirmModal.set(true);
+      input.value = '';
+    }
+  }
+
+  protected async confirmImportSettings() {
+    const file = this.pendingImportFile();
+    if (file) {
+      // Validate file extension
+      if (!file.name.toLowerCase().endsWith('.json')) {
+        this.importErrorMessage.set(this.languageService.translate('SETTINGS.IMPORT_EXCEL_SETTINGS_INVALID_FILE_TYPE'));
+        this.importErrorInstructions.set([
+          'SETTINGS.IMPORT_EXCEL_SETTINGS_INVALID_FILE_TYPE_INSTRUCTION_1',
+          'SETTINGS.IMPORT_EXCEL_SETTINGS_INVALID_FILE_TYPE_INSTRUCTION_2'
+        ]);
+        this.showImportErrorModal.set(true);
+        this.showImportConfirmModal.set(false);
+        this.pendingImportFile.set(null);
+        return;
+      }
+
+      try {
+        const rawData = await this.fileStorage.importFromFile<any>(file);
+        const settings = this.importService.validateImportedSettings(rawData);
+
+        // Update settings
+        this.excelSettingsService.updateSettings(settings);
+
+        this.showImportSuccess.set(true);
+        setTimeout(() => this.showImportSuccess.set(false), 3000);
+
+      } catch (error: any) {
+        console.error('Failed to import settings:', error);
+
+        const { message, details, instructions } = this.importService.mapImportError(error);
+
+        this.importErrorMessage.set(this.languageService.translate(message));
+        this.importErrorDetails.set(details);
+        this.importErrorInstructions.set(instructions);
+
+        this.showImportErrorModal.set(true);
+      }
+    }
+    this.showImportConfirmModal.set(false);
+    this.pendingImportFile.set(null);
+  }
+
+
+
+  protected cancelImportSettings() {
+    this.showImportConfirmModal.set(false);
+    this.pendingImportFile.set(null);
+  }
+
+  protected closeImportErrorModal() {
+    this.showImportErrorModal.set(false);
+    this.importErrorMessage.set('');
+    this.importErrorDetails.set('');
+    this.importErrorInstructions.set([]);
   }
 }

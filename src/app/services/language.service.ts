@@ -58,8 +58,17 @@ export class LanguageService {
     this.appRef.tick();
   }
 
-  translate(key: string): string {
-    return this.translateForLanguage(key, this.currentLang());
+  translate(key: string, params?: Record<string, any>): string {
+    let translation = this.translateForLanguage(key, this.currentLang());
+
+    // Replace parameters in the translation if provided
+    if (params) {
+      Object.keys(params).forEach(param => {
+        translation = translation.replace(`{${param}}`, params[param]);
+      });
+    }
+
+    return translation;
   }
 
   /**

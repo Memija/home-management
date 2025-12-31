@@ -1,4 +1,4 @@
-import { Component, signal, computed, inject } from '@angular/core';
+import { Component, signal, computed, inject, ChangeDetectionStrategy } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { DatePipe } from '@angular/common';
 import { RouterLink } from '@angular/router';
@@ -18,7 +18,8 @@ import { ConsumptionRecord, calculateWaterTotal, calculateKitchenTotal, calculat
   standalone: true,
   imports: [FormsModule, DatePipe, RouterLink, TranslatePipe, LucideAngularModule, ConsumptionChartComponent, ConfirmationModalComponent, ErrorModalComponent],
   templateUrl: './home.component.html',
-  styleUrl: './home.component.scss'
+  styleUrl: './home.component.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class HomeComponent {
   private storage = inject(STORAGE_SERVICE);

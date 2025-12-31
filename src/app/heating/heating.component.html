@@ -22,19 +22,20 @@
       </label>
 
       <!-- Excel Export/Import (conditional) -->
-      <button *ngIf="excelSettings.isEnabled()" type="button" (click)="exportToExcel()"
-        class="action-btn export-btn excel-btn" [disabled]="isExporting()"
+      @if (excelSettings.isEnabled()) {
+      <button type="button" (click)="exportToExcel()" class="action-btn export-btn excel-btn" [disabled]="isExporting()"
         title="{{ 'HEATING.EXPORT_EXCEL' | translate }}">
         <lucide-icon [img]="FileSpreadsheetIcon" size="16"></lucide-icon>
         {{ isExporting() ? 'Exporting...' : ('HEATING.EXPORT_EXCEL' | translate) }}
       </button>
-      <label *ngIf="excelSettings.isEnabled()" for="import-excel-file" class="action-btn import-btn excel-btn"
-        [class.disabled]="isImporting()" title="{{ 'HEATING.IMPORT_EXCEL' | translate }}">
+      <label for="import-excel-file" class="action-btn import-btn excel-btn" [class.disabled]="isImporting()"
+        title="{{ 'HEATING.IMPORT_EXCEL' | translate }}">
         <lucide-icon [img]="FileSpreadsheetIcon" size="16"></lucide-icon>
         {{ isImporting() ? 'Importing...' : ('HEATING.IMPORT_EXCEL' | translate) }}
         <input type="file" id="import-excel-file" accept=".xlsx,.xls" (change)="importFromExcel($event)"
           class="hidden-input" [disabled]="isImporting()">
       </label>
+      }
     </div>
   </div>
 

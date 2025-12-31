@@ -1,4 +1,4 @@
-import { Component, signal, computed, inject } from '@angular/core';
+import { Component, signal, computed, inject, ChangeDetectionStrategy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
@@ -20,7 +20,8 @@ import { HeatingRecord, calculateHeatingTotal } from '../models/records.model';
   standalone: true,
   imports: [CommonModule, FormsModule, RouterLink, TranslatePipe, LucideAngularModule, ConsumptionChartComponent, ErrorModalComponent, ConfirmationModalComponent],
   templateUrl: './heating.component.html',
-  styleUrl: './heating.component.scss'
+  styleUrl: './heating.component.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class HeatingComponent {
   private storage = inject(STORAGE_SERVICE);

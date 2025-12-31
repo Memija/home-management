@@ -1,7 +1,9 @@
+@use 'variables' as *;
+
 // Water component - only theme color overrides
 // Base styles inherited from global partials (_comparison.scss, _buttons.scss)
-$water-primary: #007bff;
-$water-primary-dark: #0056b3;
+$water-primary: $primary;
+$water-primary-dark: $primary-dark;
 
 .chart-section .chart-header .chart-filters button {
   &:hover {

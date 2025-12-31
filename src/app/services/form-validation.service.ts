@@ -21,7 +21,7 @@ export class FormValidationService {
   /**
    * Validate street name: 2-50 characters, must contain at least one letter
    */
-  getStreetNameError(value: any): string[] {
+  getStreetNameError(value: unknown): string[] {
     const errors: string[] = [];
     if (!value) return [];
     if (typeof value !== 'string') return ['SETTINGS.ERRORS.INVALID_DATA_TYPE'];
@@ -36,7 +36,7 @@ export class FormValidationService {
   /**
    * Validate street number: max 10 characters, alphanumeric with hyphens/slashes
    */
-  getStreetNumberError(value: any): string[] {
+  getStreetNumberError(value: unknown): string[] {
     const errors: string[] = [];
     if (!value) return [];
     if (typeof value !== 'string') return ['SETTINGS.ERRORS.INVALID_DATA_TYPE'];
@@ -50,7 +50,7 @@ export class FormValidationService {
   /**
    * Validate city: 2-50 characters, must contain at least one letter
    */
-  getCityError(value: any): string[] {
+  getCityError(value: unknown): string[] {
     const errors: string[] = [];
     if (!value) return [];
     if (typeof value !== 'string') return ['SETTINGS.ERRORS.INVALID_DATA_TYPE'];
@@ -65,7 +65,7 @@ export class FormValidationService {
   /**
    * Validate zip code: numeric only, max 10 characters
    */
-  getZipCodeError(value: any): string[] {
+  getZipCodeError(value: unknown): string[] {
     const errors: string[] = [];
     if (!value) return [];
     if (typeof value !== 'string') return ['SETTINGS.ERRORS.INVALID_DATA_TYPE'];
@@ -79,7 +79,7 @@ export class FormValidationService {
   /**
    * Validate country: must be a valid country code
    */
-  getCountryError(value: any): string[] {
+  getCountryError(value: unknown): string[] {
     if (!value) return [];
     if (typeof value !== 'string') return ['SETTINGS.ERRORS.INVALID_DATA_TYPE'];
 
@@ -95,7 +95,7 @@ export class FormValidationService {
    * Validate a person's name: 2-50 characters, must contain at least one letter
    * Returns a single error key or empty string (unlike address methods which return arrays)
    */
-  getNameError(value: any): string {
+  getNameError(value: unknown): string {
     if (!value) return '';
     if (typeof value !== 'string') return 'SETTINGS.ERRORS.INVALID_DATA_TYPE';
 
@@ -109,7 +109,7 @@ export class FormValidationService {
   /**
    * Validate a person's surname: 2-50 characters, must contain at least one letter
    */
-  getSurnameError(value: any): string {
+  getSurnameError(value: unknown): string {
     return this.getNameError(value); // Same rules as name
   }
 }

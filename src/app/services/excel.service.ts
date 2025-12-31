@@ -29,7 +29,7 @@ export class ExcelService {
     const mapping = this.excelSettings.getWaterMapping();
 
     // Transform records to match column mapping
-    const data = records.map(record => ({
+    const data: Record<string, string | number>[] = records.map(record => ({
       [mapping.date]: this.formatDate(record.date),
       [mapping.kitchenWarm]: record.kitchenWarm,
       [mapping.kitchenCold]: record.kitchenCold,
@@ -47,7 +47,7 @@ export class ExcelService {
     const mapping = this.excelSettings.getHeatingMapping();
 
     // Transform records to match column mapping
-    const data = records.map(record => ({
+    const data: Record<string, string | number>[] = records.map(record => ({
       [mapping.date]: this.formatDate(record.date),
       [mapping.livingRoom]: record.livingRoom,
       [mapping.bedroom]: record.bedroom,
@@ -205,7 +205,7 @@ export class ExcelService {
   /**
    * Create Excel file and trigger download
    */
-  private async createAndDownloadExcel(data: any[], filename: string): Promise<void> {
+  private async createAndDownloadExcel(data: unknown[], filename: string): Promise<void> {
     const XLSX = await this.getXLSX();
     const worksheet = XLSX.utils.json_to_sheet(data);
     const workbook = XLSX.utils.book_new();
@@ -218,7 +218,7 @@ export class ExcelService {
   /**
    * Read Excel file and return data as array of objects
    */
-  private async readExcelFile(file: File): Promise<any[]> {
+  private async readExcelFile(file: File): Promise<Record<string, unknown>[]> {
     const XLSX = await this.getXLSX();
 
     return new Promise((resolve, reject) => {
@@ -234,7 +234,7 @@ export class ExcelService {
           const worksheet = workbook.Sheets[sheetName];
 
           // Convert to JSON
-          const jsonData = XLSX.utils.sheet_to_json(worksheet, { defval: '' });
+          const jsonData = XLSX.utils.sheet_to_json(worksheet, { defval: '' }) as Record<string, unknown>[];
           resolve(jsonData);
         } catch (error) {
           reject(new Error('Failed to parse Excel file'));
@@ -263,7 +263,7 @@ export class ExcelService {
   /**
  * Parse date from various formats
  */
-  private parseDate(value: any): Date | null {
+  private parseDate(value: unknown): Date | null {
     if (!value) return null;
 
     // If already a Date object
@@ -309,34 +309,10 @@ export class ExcelService {
   }
 
   /**
-   * Parse number from various formats
-   */
-  /**
-   * Parse number with strict validation
-   * Returns 0 for empty values (allowing partial data if intended)
-   * Throws error for invalid non-empty values
-   */
-  private validateAndParseNumber(value: any, rowIndex: number, columnName: string): number {
-    if (value === null || value === undefined || value === '') {
-      return 0; // Default to 0 for missing/empty values (partial import)
-    }
-
-    // Convert to number
-    const num = Number(value);
-
-    // strict check
-    if (isNaN(num)) {
-      throw new Error(`Row ${rowIndex}: Invalid number value '${value}' in column '${columnName}'`);
-    }
-
-    return num;
-  }
-
-  /**
    * Validate number and collect error instead of throwing
    * Returns 0 for empty/invalid values, pushes error message to errors array
    */
-  private validateNumberCollectError(value: any, rowIndex: number, columnName: string, errors: string[]): number {
+  private validateNumberCollectError(value: unknown, rowIndex: number, columnName: string, errors: string[]): number {
     if (value === null || value === undefined || value === '') {
       return 0; // Default to 0 for missing/empty values (partial import)
     }
@@ -351,17 +327,5 @@ export class ExcelService {
     }
 
     return num;
-  }
-
-  /**
-   * Parse number from various formats (Legacy/Loose)
-   */
-  private parseNumber(value: any): number | null {
-    if (value === null || value === undefined || value === '') {
-      return null;
-    }
-
-    const num = Number(value);
-    return isNaN(num) ? null : num;
   }
 }

@@ -81,6 +81,14 @@
   animation: slideIn 0.3s ease-out;
   position: relative;
 
+  &.modal-lg {
+    max-width: 800px;
+
+    @media (max-width: 768px) {
+      max-width: 95%;
+    }
+  }
+
   .modal-header {
     padding: 1.5rem;
     border-bottom: 1px solid #e9ecef;

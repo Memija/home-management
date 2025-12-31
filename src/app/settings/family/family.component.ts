@@ -1,9 +1,11 @@
 import { Component, signal, inject, effect, computed, HostListener } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { LucideAngularModule, Pencil, Save, X, Trash2, Plus, Download, Upload, User, Baby, Mars, Venus, AlertTriangle, HelpCircle } from 'lucide-angular';
+import { LucideAngularModule, Pencil, Save, X, Trash2, Plus, Download, Upload, User, Baby, Mars, Venus, AlertTriangle, HelpCircle, TriangleAlert } from 'lucide-angular';
 import { HouseholdService, HouseholdMember } from '../../services/household.service';
 import { LanguageService } from '../../services/language.service';
+import { FormValidationService } from '../../services/form-validation.service';
+import { FamilyImportService } from '../../services/family-import.service';
 import { FileStorageService } from '../../services/file-storage.service';
 import { TranslatePipe } from '../../pipes/translate.pipe';
 import { DeleteConfirmationModalComponent } from '../../shared/delete-confirmation-modal/delete-confirmation-modal.component';
@@ -23,6 +25,8 @@ export class FamilyComponent {
   protected languageService = inject(LanguageService);
   protected householdService = inject(HouseholdService);
   protected fileStorage = inject(FileStorageService);
+  private validationService = inject(FormValidationService);
+  private familyImportService = inject(FamilyImportService);
 
   // Icons
   protected readonly EditIcon = Pencil;
@@ -38,6 +42,7 @@ export class FamilyComponent {
   protected readonly FemaleIcon = Venus;
   protected readonly WarningIcon = AlertTriangle;
   protected readonly HelpIcon = HelpCircle;
+  protected readonly TriangleAlertIcon = TriangleAlert;
 
   // State
   protected isEditing = signal(false);
@@ -71,7 +76,7 @@ export class FamilyComponent {
     return Array.isArray(members) ? members : [];
   });
 
-  // Individual member edit state - only editingMemberId needed (rest in MemberEditorComponent)
+  // Individual member edit state
   protected editingMemberId = signal<string | null>(null);
 
   // Draft state for editing
@@ -85,16 +90,18 @@ export class FamilyComponent {
   protected selectedAvatar = signal<string | undefined>(undefined);
   protected newMemberPicturePreview = signal<string | null>(null);
 
+  // Validation Signals
+  protected newMemberNameError = signal('');
+  protected newMemberSurnameError = signal('');
+
   // Duplicate member error state
   protected showDuplicateMemberError = signal(false);
   protected duplicateMemberName = signal('');
 
   constructor() {
-    // Initialize draft members when entering edit mode or when members change while not editing
     effect(() => {
       const currentMembers = this.householdService.members();
       if (!this.isEditing()) {
-        // Ensure currentMembers is an array before spreading
         this.draftMembers.set(Array.isArray(currentMembers) ? [...currentMembers] : []);
       }
     });
@@ -106,20 +113,13 @@ export class FamilyComponent {
     setTimeout(() => this.showSaveConfirmation.set(false), 3000);
   }
 
-  // Computed property to check if there are unsaved changes (public for parent access)
+  // Computed property to check if there are unsaved changes
   public hasUnsavedChanges = computed(() => {
     if (!this.isEditing()) return false;
-
     const savedMembers = this.householdService.members();
     const draft = this.draftMembers();
-
-    // Ensure both are arrays
     if (!Array.isArray(savedMembers) || !Array.isArray(draft)) return false;
-
-    // Compare lengths first
     if (savedMembers.length !== draft.length) return true;
-
-    // Compare each member
     return !savedMembers.every((saved, index) => {
       const draftMember = draft[index];
       return saved.id === draftMember.id &&
@@ -131,7 +131,6 @@ export class FamilyComponent {
     });
   });
 
-  // Handle browser refresh/close
   @HostListener('window:beforeunload', ['$event'])
   onBeforeUnload(event: BeforeUnloadEvent) {
     if (this.hasUnsavedChanges()) {
@@ -160,12 +159,9 @@ export class FamilyComponent {
     }
   }
 
-  // Unsaved changes modal handlers
   confirmLeaveWithoutSaving() {
     const navigation = this.pendingNavigation();
-    if (navigation) {
-      navigation();
-    }
+    if (navigation) navigation();
     this.showUnsavedChangesModal.set(false);
     this.pendingNavigation.set(null);
   }
@@ -173,17 +169,15 @@ export class FamilyComponent {
   stayAndSave() {
     this.showUnsavedChangesModal.set(false);
     this.pendingNavigation.set(null);
-    // User chose to stay, they can save manually
   }
 
-  // Method for parent component to trigger navigation warning
   public triggerNavigationWarning(onLeave: () => void): boolean {
     if (this.hasUnsavedChanges()) {
       this.pendingNavigation.set(onLeave);
       this.showUnsavedChangesModal.set(true);
-      return true; // Navigation blocked
+      return true;
     }
-    return false; // Navigation allowed
+    return false;
   }
 
   saveFamily() {
@@ -194,8 +188,16 @@ export class FamilyComponent {
   }
 
   addMember() {
+    // Use validation service
+    const nameError = this.validationService.getNameError(this.newMemberName());
+    const surnameError = this.validationService.getSurnameError(this.newMemberSurname());
+    this.newMemberNameError.set(nameError);
+    this.newMemberSurnameError.set(surnameError);
+
+    if (nameError || surnameError) return;
+
     if (this.newMemberName() && this.newMemberSurname()) {
-      // Check for duplicate member (same name and surname, case-insensitive)
+      // Check for duplicate
       const newName = this.newMemberName().trim().toLowerCase();
       const newSurname = this.newMemberSurname().trim().toLowerCase();
       const existingMember = this.draftMembers().find(
@@ -224,6 +226,16 @@ export class FamilyComponent {
     }
   }
 
+  onNameChange(value: string) {
+    this.newMemberName.set(value);
+    this.newMemberNameError.set(this.validationService.getNameError(value));
+  }
+
+  onSurnameChange(value: string) {
+    this.newMemberSurname.set(value);
+    this.newMemberSurnameError.set(this.validationService.getSurnameError(value));
+  }
+
   removeMember(id: string) {
     this.memberToDelete.set(id);
     this.showDeleteModal.set(true);
@@ -247,7 +259,6 @@ export class FamilyComponent {
     this.selectedAvatar.set(avatar);
   }
 
-  // Individual member edit methods
   startEditMember(member: HouseholdMember) {
     this.editingMemberId.set(member.id);
   }
@@ -256,9 +267,7 @@ export class FamilyComponent {
     this.editingMemberId.set(null);
   }
 
-  /** Handler for MemberEditorComponent save event */
   onMemberEditorSave(data: MemberEditData) {
-    // Update in draft members list
     this.draftMembers.update(members =>
       members.map(m => m.id === data.id ? {
         ...m,
@@ -272,16 +281,13 @@ export class FamilyComponent {
     this.editingMemberId.set(null);
   }
 
-
   handleNewMemberFileUpload(event: Event) {
     const input = event.target as HTMLInputElement;
     const file = input.files?.[0];
-
     if (file && file.type.startsWith('image/')) {
       const reader = new FileReader();
       reader.onload = (e) => {
-        const result = e.target?.result as string;
-        this.newMemberPicturePreview.set(result);
+        this.newMemberPicturePreview.set(e.target?.result as string);
       };
       reader.readAsDataURL(file);
     }
@@ -292,14 +298,7 @@ export class FamilyComponent {
   }
 
   async exportFamily() {
-    const members = this.householdService.members();
-    // Ensure type and gender are always set (use 'other' as default for undefined)
-    const exportMembers = members.map(m => ({
-      ...m,
-      type: m.type || 'other',
-      gender: m.gender || 'other'
-    }));
-    await this.fileStorage.exportData(exportMembers, 'family.json');
+    await this.familyImportService.exportMembers(this.householdService.members());
   }
 
   async importFamily() {
@@ -307,143 +306,23 @@ export class FamilyComponent {
   }
 
   async confirmImportFamily() {
-    const result = await this.fileStorage.importData<HouseholdMember[]>(true);
+    const result = await this.familyImportService.importFromFile();
 
-    // User cancelled
-    if (result === null) {
-      this.showImportConfirmModal.set(false);
-      return;
-    }
-
-    // Handle errors
-    if ('error' in result) {
-      if (result.error === 'invalid_file_type') {
-        this.importErrorMessage.set(this.languageService.translate('SETTINGS.IMPORT_FAMILY_INVALID_FILE_TYPE'));
-        this.importErrorInstructions.set([
-          'SETTINGS.IMPORT_FAMILY_INVALID_FILE_TYPE_INSTRUCTION_1',
-          'SETTINGS.IMPORT_FAMILY_INVALID_FILE_TYPE_INSTRUCTION_2'
-        ]);
-      } else {
-        // parse_error
-        this.importErrorMessage.set(this.languageService.translate('HOME.IMPORT_INVALID_FORMAT'));
-        this.importErrorInstructions.set([
-          'HOME.IMPORT_ERROR_INSTRUCTION_1',
-          'HOME.IMPORT_ERROR_INSTRUCTION_2',
-          'HOME.IMPORT_ERROR_INSTRUCTION_3'
-        ]);
+    if (!result.success) {
+      if (result.errorMessage) {
+        this.importErrorMessage.set(result.errorMessage);
+        this.importErrorInstructions.set(result.errorInstructions || []);
+        this.showImportErrorModal.set(true);
       }
-      this.showImportErrorModal.set(true);
       this.showImportConfirmModal.set(false);
       return;
     }
 
-    // Validate data structure
-    if (!Array.isArray(result.data)) {
-      this.importErrorMessage.set(this.languageService.translate('HOME.IMPORT_INVALID_DATA'));
-      this.importErrorInstructions.set([
-        'HOME.IMPORT_ERROR_INSTRUCTION_1',
-        'HOME.IMPORT_ERROR_INSTRUCTION_2',
-        'HOME.IMPORT_ERROR_INSTRUCTION_3'
-      ]);
-      this.showImportErrorModal.set(true);
-      this.showImportConfirmModal.set(false);
-      return;
+    if (result.members) {
+      this.householdService.updateMembers(result.members);
+      this.showTemporarySaveConfirmation();
     }
-
-    // Validate each member
-    const validationResult = this.validateImportedMembers(result.data);
-    if (!validationResult.valid) {
-      this.importErrorMessage.set(this.languageService.translate('SETTINGS.IMPORT_FAMILY_INVALID_DATA'));
-      this.importErrorInstructions.set(validationResult.errors);
-      this.showImportErrorModal.set(true);
-      this.showImportConfirmModal.set(false);
-      return;
-    }
-
-    // Success - import validated members
-    this.householdService.updateMembers(validationResult.members);
-    this.showTemporarySaveConfirmation();
     this.showImportConfirmModal.set(false);
-  }
-
-  /**
-   * Validates imported member data and returns sanitized members or errors
-   */
-  private validateImportedMembers(data: any[]): { valid: true; members: HouseholdMember[]; errors?: never } | { valid: false; errors: string[]; members?: never } {
-    const errors: string[] = [];
-    const validatedMembers: HouseholdMember[] = [];
-
-    for (let i = 0; i < data.length; i++) {
-      const item = data[i];
-      const memberNum = i + 1;
-      let hasErrors = false;
-
-      // Check if item is an object
-      if (!item || typeof item !== 'object') {
-        errors.push('SETTINGS.IMPORT_FAMILY_ERROR_NOT_OBJECT');
-        continue;
-      }
-
-      // Validate required string fields
-      if (!item.name || typeof item.name !== 'string' || item.name.trim() === '') {
-        errors.push('SETTINGS.IMPORT_FAMILY_ERROR_MISSING_NAME');
-        hasErrors = true;
-      }
-      if (!item.surname || typeof item.surname !== 'string' || item.surname.trim() === '') {
-        errors.push('SETTINGS.IMPORT_FAMILY_ERROR_MISSING_SURNAME');
-        hasErrors = true;
-      }
-
-      // Validate type (required - must be adult, kid, or other)
-      if (!item.type || (item.type !== 'adult' && item.type !== 'kid' && item.type !== 'other')) {
-        errors.push('SETTINGS.IMPORT_FAMILY_ERROR_INVALID_TYPE');
-        hasErrors = true;
-      }
-
-      // Validate gender (required - must be male, female, or other)
-      if (!item.gender || (item.gender !== 'male' && item.gender !== 'female' && item.gender !== 'other')) {
-        errors.push('SETTINGS.IMPORT_FAMILY_ERROR_INVALID_GENDER');
-        hasErrors = true;
-      }
-
-      // Skip this record if it has validation errors
-      if (hasErrors) {
-        continue;
-      }
-
-      // Validate and sanitize avatar - accept known avatars or data URLs, otherwise use default
-      let validAvatar: string;
-      if (item.avatar && typeof item.avatar === 'string') {
-        const isKnownAvatar = this.householdService.avatars.includes(item.avatar);
-        const isDataUrl = item.avatar.startsWith('data:image/');
-        validAvatar = (isKnownAvatar || isDataUrl) ? item.avatar : this.householdService.avatars[Math.floor(Math.random() * this.householdService.avatars.length)];
-      } else {
-        validAvatar = this.householdService.avatars[Math.floor(Math.random() * this.householdService.avatars.length)];
-      }
-
-      // Create validated member with generated ID if missing
-      validatedMembers.push({
-        id: (item.id && typeof item.id === 'string') ? item.id : crypto.randomUUID(),
-        name: item.name.trim(),
-        surname: item.surname.trim(),
-        type: item.type,
-        gender: item.gender,
-        avatar: validAvatar
-      });
-    }
-
-    // Remove duplicate errors and keep unique ones
-    const uniqueErrors = [...new Set(errors)];
-
-    if (uniqueErrors.length > 0) {
-      return { valid: false, errors: uniqueErrors };
-    }
-
-    if (validatedMembers.length === 0 && data.length > 0) {
-      return { valid: false, errors: ['SETTINGS.IMPORT_FAMILY_ERROR_NO_VALID_MEMBERS'] };
-    }
-
-    return { valid: true, members: validatedMembers };
   }
 
   cancelImportFamily() {
@@ -463,7 +342,9 @@ export class FamilyComponent {
 
   private resetForm() {
     this.newMemberName.set('');
+    this.newMemberNameError.set('');
     this.newMemberSurname.set('');
+    this.newMemberSurnameError.set('');
     this.newMemberType.set(undefined);
     this.newMemberGender.set(undefined);
     this.selectedAvatar.set(undefined);
@@ -471,7 +352,6 @@ export class FamilyComponent {
     this.showAddMemberForm.set(false);
   }
 
-  // TrackBy functions for *ngFor performance
   trackByMemberId(index: number, member: HouseholdMember): string {
     return member.id;
   }
@@ -480,7 +360,6 @@ export class FamilyComponent {
     return avatar;
   }
 
-  // Help modal methods
   showHelp() {
     this.showHelpModal.set(true);
   }

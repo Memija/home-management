@@ -224,23 +224,7 @@
       gap: 0.5rem;
     }
 
-    .help-btn {
-      background: transparent;
-      border: none;
-      color: #17a2b8;
-      cursor: pointer;
-      padding: 0.25rem;
-      border-radius: 4px;
-      transition: all 0.2s;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-
-      &:hover {
-        background: #e7f5ff;
-        color: #0066cc;
-      }
-    }
+    // .help-btn defined globally in _buttons.scss
 
     .close-btn {
       background: none;

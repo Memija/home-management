@@ -51,17 +51,17 @@
   <div class="button-group">
     <button type="button" class="edit-btn" (click)="editFamily()" title="{{ 'SETTINGS.EDIT_FAMILY' | translate }}">
       <lucide-icon [img]="EditIcon" size="16"></lucide-icon>
-      {{ 'SETTINGS.EDIT_FAMILY' | translate }}
+      <span class="btn-text">{{ 'SETTINGS.EDIT_FAMILY' | translate }}</span>
     </button>
     <button type="button" class="export-btn" (click)="exportFamily()" [disabled]="safeMembers().length === 0"
       title="{{ 'SETTINGS.EXPORT_FAMILY' | translate }}">
       <lucide-icon [img]="ExportIcon" size="16"></lucide-icon>
-      {{ 'SETTINGS.EXPORT_FAMILY' | translate }}
+      <span class="btn-text">{{ 'SETTINGS.EXPORT_FAMILY' | translate }}</span>
     </button>
     <button type="button" class="import-btn" (click)="importFamily()"
       title="{{ 'SETTINGS.IMPORT_FAMILY' | translate }}">
       <lucide-icon [img]="ImportIcon" size="16"></lucide-icon>
-      {{ 'SETTINGS.IMPORT_FAMILY' | translate }}
+      <span class="btn-text">{{ 'SETTINGS.IMPORT_FAMILY' | translate }}</span>
     </button>
   </div>
 
@@ -126,12 +126,26 @@
       <div class="form-group">
         <label for="new-member-name">{{ 'SETTINGS.NAME' | translate }}</label>
         <input type="text" id="new-member-name" name="new-member-name" autocomplete="given-name"
-          [ngModel]="newMemberName()" (ngModelChange)="newMemberName.set($event)" placeholder="John">
+          [ngModel]="newMemberName()" (ngModelChange)="onNameChange($event)" placeholder="John"
+          [class.error]="newMemberNameError()">
+        @if (newMemberNameError()) {
+        <div class="warning-message">
+          <lucide-icon [img]="TriangleAlertIcon" size="20" class="warning-icon"></lucide-icon>
+          <span>{{ newMemberNameError() | translate }}</span>
+        </div>
+        }
       </div>
       <div class="form-group">
         <label for="new-member-surname">{{ 'SETTINGS.SURNAME' | translate }}</label>
         <input type="text" id="new-member-surname" name="new-member-surname" autocomplete="family-name"
-          [ngModel]="newMemberSurname()" (ngModelChange)="newMemberSurname.set($event)" placeholder="Doe">
+          [ngModel]="newMemberSurname()" (ngModelChange)="onSurnameChange($event)" placeholder="Doe"
+          [class.error]="newMemberSurnameError()">
+        @if (newMemberSurnameError()) {
+        <div class="warning-message">
+          <lucide-icon [img]="TriangleAlertIcon" size="20" class="warning-icon"></lucide-icon>
+          <span>{{ newMemberSurnameError() | translate }}</span>
+        </div>
+        }
       </div>
     </div>
     <div class="form-grid">
@@ -184,10 +198,11 @@
           title="{{ 'SETTINGS.SELECT_AVATAR' | translate }}">
       </div>
     </div>
-    <button class="add-btn" (click)="addMember()" [disabled]="!newMemberName() || !newMemberSurname()"
+    <button class="add-btn" (click)="addMember()"
+      [disabled]="!newMemberName() || !newMemberSurname() || newMemberNameError() || newMemberSurnameError()"
       title="{{ 'SETTINGS.ADD_MEMBER' | translate }}">
       <lucide-icon [img]="AddIcon" size="16"></lucide-icon>
-      {{ 'SETTINGS.ADD_MEMBER' | translate }}
+      <span class="btn-text">{{ 'SETTINGS.ADD_MEMBER' | translate }}</span>
     </button>
   </div>
   }
@@ -198,16 +213,16 @@
     <button type="button" class="add-btn" (click)="toggleAddMemberForm()"
       title="{{ 'SETTINGS.SHOW_ADD_MEMBER_FORM' | translate }}">
       <lucide-icon [img]="AddIcon" size="16"></lucide-icon>
-      {{ 'SETTINGS.SHOW_ADD_MEMBER_FORM' | translate }}
+      <span class="btn-text">{{ 'SETTINGS.SHOW_ADD_MEMBER_FORM' | translate }}</span>
     </button>
     }
     <button type="button" class="save-btn" (click)="saveFamily()" title="{{ 'SETTINGS.SAVE_FAMILY' | translate }}">
       <lucide-icon [img]="SaveIcon" size="16"></lucide-icon>
-      {{ 'SETTINGS.SAVE_FAMILY' | translate }}
+      <span class="btn-text">{{ 'SETTINGS.SAVE_FAMILY' | translate }}</span>
     </button>
     <button type="button" class="cancel-btn" (click)="cancelEdit()" title="{{ 'SETTINGS.CANCEL' | translate }}">
       <lucide-icon [img]="CancelIcon" size="16"></lucide-icon>
-      {{ 'SETTINGS.CANCEL' | translate }}
+      <span class="btn-text">{{ 'SETTINGS.CANCEL' | translate }}</span>
     </button>
   </div>
   }

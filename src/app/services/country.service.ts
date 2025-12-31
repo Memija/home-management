@@ -140,4 +140,39 @@ export class CountryService {
   getAllCountryData(): CountryInfo[] {
     return this.countryData;
   }
+
+  /**
+   * Get country info by name, searching across all languages.
+   * First tries current language, then English name from key, then other language translations.
+   */
+  getCountryInfoByNameAnyLanguage(name: string): CountryInfo | undefined {
+    if (!name) return undefined;
+    const normalizedName = name.toLowerCase().trim();
+
+    // Try current language first
+    const currentLangMatch = this.countryData.find(c =>
+      this.languageService.translate(c.translationKey).toLowerCase() === normalizedName
+    );
+    if (currentLangMatch) return currentLangMatch;
+
+    // Try matching the English name embedded in the translation key
+    // e.g., 'COUNTRIES.GERMANY' -> 'germany'
+    const keyMatch = this.countryData.find(c => {
+      const keyName = c.translationKey.replace('COUNTRIES.', '').toLowerCase().replace(/_/g, ' ');
+      return keyName === normalizedName;
+    });
+    if (keyMatch) return keyMatch;
+
+    // Try the other language (if current is 'en', try 'de' and vice versa)
+    const currentLang = this.languageService.currentLang();
+    const otherLang = currentLang === 'en' ? 'de' : 'en';
+
+    const otherLangMatch = this.countryData.find(c =>
+      this.languageService.translateForLanguage(c.translationKey, otherLang).toLowerCase() === normalizedName
+    );
+
+    if (otherLangMatch) return otherLangMatch;
+
+    return undefined;
+  }
 }

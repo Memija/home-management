@@ -10,6 +10,10 @@
         </svg>
       </div>
       <h2>{{ 'SETTINGS.EXCEL_TITLE' | translate }}</h2>
+      <button type="button" class="help-btn" (click)="showHelpModal.set(true)"
+        title="{{ 'SETTINGS.HELP' | translate }}">
+        <lucide-icon [img]="HelpIcon" size="20"></lucide-icon>
+      </button>
     </div>
 
     <!-- Enable/Disable Toggle -->
@@ -220,3 +224,7 @@
   </div>
 </div>
 }
+
+<app-help-modal [show]="showHelpModal()" [titleKey]="'SETTINGS.EXCEL_HELP_TITLE'" [steps]="helpSteps"
+  (close)="showHelpModal.set(false)">
+</app-help-modal>

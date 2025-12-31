@@ -22,23 +22,7 @@
     }
   }
 
-  .help-btn {
-    background: transparent;
-    border: none;
-    color: #17a2b8;
-    cursor: pointer;
-    padding: 0.25rem;
-    border-radius: 4px;
-    transition: all 0.2s;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-
-    &:hover {
-      background: #e7f5ff;
-      color: #0066cc;
-    }
-  }
+  // .help-btn defined globally in _buttons.scss
 
   h2 {
     margin-top: 0;
@@ -173,3 +157,5 @@
 }
 
 // .hidden-input is defined globally in _forms.scss
+
+// Form validation styling (.warning-message, input.error) defined globally in _forms.scss

@@ -1,0 +1,14 @@
+<div class="country-selector">
+  <input type="text" autocomplete="country-name" title="Search country" placeholder="Search country"
+    aria-label="Search country" [ngModel]="_countrySearch()" (ngModelChange)="onSearchChange($event)"
+    [class.error]="hasError" [placeholder]="placeholder | translate" [title]="placeholder | translate"
+    [attr.aria-label]="placeholder | translate">
+
+  @if (filteredCountries().length > 0) {
+  <ul class="country-dropdown">
+    @for (country of filteredCountries(); track trackByCountry($index, country)) {
+    <li (click)="selectCountry(country)">{{ country }}</li>
+    }
+  </ul>
+  }
+</div>

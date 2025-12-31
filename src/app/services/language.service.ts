@@ -21,11 +21,19 @@ export class LanguageService {
 
   private getStoredLanguage(): Language {
     if (typeof window !== 'undefined' && typeof localStorage !== 'undefined') {
+      // 1. Check local storage (explicit user preference)
       const stored = localStorage.getItem(LANGUAGE_STORAGE_KEY);
       if (stored === 'en' || stored === 'de') {
         return stored;
       }
+
+      // 2. Check browser language
+      const browserLang = navigator.language;
+      if (browserLang.startsWith('de')) {
+        return 'de';
+      }
     }
+    // 3. Default to English
     return 'en';
   }
 
@@ -51,7 +59,14 @@ export class LanguageService {
   }
 
   translate(key: string): string {
-    const lang = this.currentLang();
+    return this.translateForLanguage(key, this.currentLang());
+  }
+
+  /**
+   * Translate a key for a specific language without changing the current language.
+   * Useful for looking up translations across languages.
+   */
+  translateForLanguage(key: string, lang: Language): string {
     const keys = key.split('.');
     let value: any = this.translations[lang];
 

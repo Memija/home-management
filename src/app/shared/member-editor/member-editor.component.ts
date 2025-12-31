@@ -1,7 +1,7 @@
 import { Component, input, output, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { LucideAngularModule, Save, X, Upload, User, Baby, Mars, Venus } from 'lucide-angular';
+import { LucideAngularModule, Save, X, Upload, User, Baby, Mars, Venus, TriangleAlert } from 'lucide-angular';
 import { HouseholdMember } from '../../services/household.service';
 import { TranslatePipe } from '../../pipes/translate.pipe';
 
@@ -43,10 +43,13 @@ export class MemberEditorComponent {
   protected readonly KidIcon = Baby;
   protected readonly MaleIcon = Mars;
   protected readonly FemaleIcon = Venus;
+  protected readonly TriangleAlertIcon = TriangleAlert;
 
   // Edit state (initialized from member input)
   protected editName = signal('');
+  protected editNameError = signal('');
   protected editSurname = signal('');
+  protected editSurnameError = signal('');
   protected editType = signal<'adult' | 'kid' | 'other' | undefined>(undefined);
   protected editGender = signal<'male' | 'female' | 'other' | undefined>(undefined);
   protected editAvatar = signal('');
@@ -77,6 +80,8 @@ export class MemberEditorComponent {
     this.editGender.set(m.gender);
     this.editAvatar.set(m.avatar);
     this.customPicturePreview.set(null);
+    this.editNameError.set('');
+    this.editSurnameError.set('');
     this.initialized = true;
   }
 
@@ -100,6 +105,13 @@ export class MemberEditorComponent {
   }
 
   onSave() {
+    this.validateName(this.editName());
+    this.validateSurname(this.editSurname());
+
+    if (this.editNameError() || this.editSurnameError()) {
+      return;
+    }
+
     const avatar = this.customPicturePreview() || this.editAvatar();
 
     this.save.emit({
@@ -114,5 +126,62 @@ export class MemberEditorComponent {
 
   onCancel() {
     this.cancel.emit();
+  }
+
+  onNameChange(value: string) {
+    this.editName.set(value);
+    this.validateName(value);
+  }
+
+  onSurnameChange(value: string) {
+    this.editSurname.set(value);
+    this.validateSurname(value);
+  }
+
+  private validateName(value: string) {
+    if (value.trim() === '') {
+      this.editNameError.set(''); // Or required error? Usually valid members have names.
+      // If required check:
+      // this.editNameError.set('Required');
+      // But addMember checked 'if (value.trim() === "") return'.
+      // Creating empty member is bad. I should enforce required.
+      // FamilyComponent addMember check: if (this.newMemberName() && ...) => Required.
+      // So here I should set error if empty.
+      this.editNameError.set('SETTINGS.ERRORS.TOO_SHORT'); // Empty implies too short (<2)
+      return;
+    }
+    if (value.length < 2) {
+      this.editNameError.set('SETTINGS.ERRORS.TOO_SHORT');
+      return;
+    }
+    if (value.length > 50) {
+      this.editNameError.set('SETTINGS.ERRORS.TOO_LONG');
+      return;
+    }
+    if (!/[a-zA-Z]/.test(value)) {
+      this.editNameError.set('SETTINGS.ERRORS.MUST_CONTAIN_LETTERS');
+      return;
+    }
+    this.editNameError.set('');
+  }
+
+  private validateSurname(value: string) {
+    if (value.trim() === '') {
+      this.editSurnameError.set('SETTINGS.ERRORS.TOO_SHORT');
+      return;
+    }
+    if (value.length < 2) {
+      this.editSurnameError.set('SETTINGS.ERRORS.TOO_SHORT');
+      return;
+    }
+    if (value.length > 50) {
+      this.editSurnameError.set('SETTINGS.ERRORS.TOO_LONG');
+      return;
+    }
+    if (!/[a-zA-Z]/.test(value)) {
+      this.editSurnameError.set('SETTINGS.ERRORS.MUST_CONTAIN_LETTERS');
+      return;
+    }
+    this.editSurnameError.set('');
   }
 }

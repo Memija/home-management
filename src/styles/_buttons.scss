@@ -148,3 +148,43 @@
     background: #e9ecef;
   }
 }
+
+// Help/Info icon button (teal colored)
+.help-btn {
+  background: transparent;
+  border: none;
+  color: #17a2b8;
+  cursor: pointer;
+  padding: 0.25rem;
+  border-radius: 4px;
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  &:hover {
+    background: #e7f5ff;
+    color: #0066cc;
+  }
+}
+
+// Responsive behavior: hide text on small screens, show only icon
+@media (max-width: 768px) {
+
+  .save-btn,
+  .edit-btn,
+  .cancel-btn,
+  .export-btn,
+  .import-btn,
+  .add-btn,
+  .upload-btn,
+  .btn-outline {
+    .btn-text {
+      display: none;
+    }
+
+    justify-content: center;
+    padding: 0.6rem; // Adjust for icon-only look
+    min-width: 38px;
+  }
+}

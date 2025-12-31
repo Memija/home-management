@@ -3,14 +3,15 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ExcelSettingsService } from '../../services/excel-settings.service';
 import { TranslatePipe } from '../../pipes/translate.pipe';
-import { LucideAngularModule, FileSpreadsheet, RotateCcw, ChevronDown, ChevronUp } from 'lucide-angular';
+import { LucideAngularModule, FileSpreadsheet, RotateCcw, ChevronDown, ChevronUp, HelpCircle } from 'lucide-angular';
 import { LanguageService } from '../../services/language.service';
 import { LocalStorageService } from '../../services/local-storage.service';
+import { HelpModalComponent, HelpStep } from '../../shared/help-modal/help-modal.component';
 
 @Component({
   selector: 'app-excel-settings',
   standalone: true,
-  imports: [CommonModule, FormsModule, TranslatePipe, LucideAngularModule],
+  imports: [CommonModule, FormsModule, TranslatePipe, LucideAngularModule, HelpModalComponent],
   templateUrl: './excel-settings.component.html',
   styleUrl: './excel-settings.component.scss'
 })
@@ -22,6 +23,16 @@ export class ExcelSettingsComponent {
   protected readonly RotateCcwIcon = RotateCcw;
   protected readonly ChevronDownIcon = ChevronDown;
   protected readonly ChevronUpIcon = ChevronUp;
+  protected readonly HelpIcon = HelpCircle;
+
+  // Help modal
+  protected showHelpModal = signal(false);
+  protected readonly helpSteps: HelpStep[] = [
+    { titleKey: 'SETTINGS.EXCEL_HELP_STEP_1_TITLE', descriptionKey: 'SETTINGS.EXCEL_HELP_STEP_1_DESC' },
+    { titleKey: 'SETTINGS.EXCEL_HELP_STEP_2_TITLE', descriptionKey: 'SETTINGS.EXCEL_HELP_STEP_2_DESC' },
+    { titleKey: 'SETTINGS.EXCEL_HELP_STEP_3_TITLE', descriptionKey: 'SETTINGS.EXCEL_HELP_STEP_3_DESC' },
+    { titleKey: 'SETTINGS.EXCEL_HELP_STEP_4_TITLE', descriptionKey: 'SETTINGS.EXCEL_HELP_STEP_4_DESC' }
+  ];
 
   protected showModal = signal(false);
   protected showSaveSuccess = signal(false);

@@ -1,19 +1,31 @@
 import { Component, signal, effect, inject, computed } from '@angular/core';
-import { LucideAngularModule, Pencil, Save, X, Download, Upload } from 'lucide-angular';
+import { LucideAngularModule, Pencil, Save, X, Download, Upload, HelpCircle, TriangleAlert } from 'lucide-angular';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { HouseholdService, Address } from '../../services/household.service';
 import { LanguageService } from '../../services/language.service';
 import { FileStorageService } from '../../services/file-storage.service';
 import { CountryService } from '../../services/country.service';
+import { FormValidationService } from '../../services/form-validation.service';
 import { TranslatePipe } from '../../pipes/translate.pipe';
 import { ConfirmationModalComponent } from '../../shared/confirmation-modal/confirmation-modal.component';
 import { ErrorModalComponent } from '../../shared/error-modal/error-modal.component';
+import { HelpModalComponent, HelpStep } from '../../shared/help-modal/help-modal.component';
+import { CountrySelectorComponent } from '../../shared/country-selector/country-selector.component';
 
 @Component({
   selector: 'app-address',
   standalone: true,
-  imports: [FormsModule, CommonModule, TranslatePipe, LucideAngularModule, ConfirmationModalComponent, ErrorModalComponent],
+  imports: [
+    FormsModule,
+    CommonModule,
+    TranslatePipe,
+    LucideAngularModule,
+    ConfirmationModalComponent,
+    ErrorModalComponent,
+    HelpModalComponent,
+    CountrySelectorComponent
+  ],
   templateUrl: './address.component.html',
   styleUrl: './address.component.scss'
 })
@@ -22,6 +34,7 @@ export class AddressComponent {
   protected householdService = inject(HouseholdService);
   protected fileStorage = inject(FileStorageService);
   protected countryService = inject(CountryService);
+  private validationService = inject(FormValidationService);
 
   // Icons
   protected readonly EditIcon = Pencil;
@@ -29,22 +42,35 @@ export class AddressComponent {
   protected readonly CancelIcon = X;
   protected readonly ExportIcon = Download;
   protected readonly ImportIcon = Upload;
+  protected readonly HelpIcon = HelpCircle;
+  protected readonly TriangleAlertIcon = TriangleAlert;
+
+  // Help modal
+  protected showHelpModal = signal(false);
+  protected readonly helpSteps: HelpStep[] = [
+    { titleKey: 'SETTINGS.ADDRESS_HELP_STEP_1_TITLE', descriptionKey: 'SETTINGS.ADDRESS_HELP_STEP_1_DESC' },
+    { titleKey: 'SETTINGS.ADDRESS_HELP_STEP_2_TITLE', descriptionKey: 'SETTINGS.ADDRESS_HELP_STEP_2_DESC' },
+    { titleKey: 'SETTINGS.ADDRESS_HELP_STEP_3_TITLE', descriptionKey: 'SETTINGS.ADDRESS_HELP_STEP_3_DESC' },
+    { titleKey: 'SETTINGS.ADDRESS_HELP_STEP_4_TITLE', descriptionKey: 'SETTINGS.ADDRESS_HELP_STEP_4_DESC' }
+  ];
 
   // Address Form Signals with defaults
-  protected streetName = signal('Broadway');
-  protected streetNumber = signal('2156');
-  protected city = signal('New York');
-  protected zipCode = signal('10024');
-  protected country = signal('United States');
-  protected countrySearch = signal('');
+  protected streetName = signal('');
+  protected streetNumber = signal('');
+  protected city = signal('');
+  protected zipCode = signal('');
+  protected country = signal(''); // Stores COUNTRY CODE (e.g., 'de')
 
   // Address UI State
   protected isEditingAddress = signal(true);
   protected showSaveConfirmation = signal(false);
 
   // Validation Errors
-  protected streetNumberError = signal('');
-  protected zipCodeError = signal('');
+  protected streetNameError = signal<string[]>([]);
+  protected streetNumberError = signal<string[]>([]);
+  protected cityError = signal<string[]>([]);
+  protected zipCodeError = signal<string[]>([]);
+  protected countryError = signal<string[]>([]);
 
   // Import confirmation modal
   protected showImportConfirmModal = signal(false);
@@ -53,17 +79,23 @@ export class AddressComponent {
   // Error modal state
   protected showImportErrorModal = signal(false);
   protected importErrorMessage = signal('');
+  protected importErrorDetails = signal('');
   protected importErrorInstructions = signal<string[]>([]);
 
-  // Filtered countries based on search (reactive to language changes)
-  protected filteredCountries = computed(() => {
-    const search = this.countrySearch().toLowerCase();
-    if (!search) return [];
-    // Get countries fresh each time (they're translated based on current language)
-    const countries = this.countryService.getCountries();
-    return countries
-      .filter(c => c.toLowerCase().includes(search))
-      .slice(0, 10); // Limit to 10 results
+  // Country display name (computed for read-only view)
+  protected countryDisplayName = computed(() => {
+    this.languageService.currentLang();
+    const code = this.country();
+    if (!code) return '';
+    const info = this.countryService.getCountryInfoByCode(code);
+    return info ? this.languageService.translate(info.translationKey) : code;
+  });
+
+  // Check if country code is valid
+  protected isValidCountry = computed(() => {
+    const code = this.country().trim().toLowerCase();
+    if (!code) return false;
+    return !!this.countryService.getCountryInfoByCode(code);
   });
 
   // Form validation
@@ -73,8 +105,12 @@ export class AddressComponent {
       this.city().trim() !== '' &&
       this.zipCode().trim() !== '' &&
       this.country().trim() !== '' &&
-      this.streetNumberError() === '' &&
-      this.zipCodeError() === '';
+      this.streetNameError().length === 0 &&
+      this.streetNumberError().length === 0 &&
+      this.cityError().length === 0 &&
+      this.zipCodeError().length === 0 &&
+      this.countryError().length === 0 &&
+      this.isValidCountry();
   });
 
   constructor() {
@@ -86,53 +122,49 @@ export class AddressComponent {
         this.streetNumber.set(addr.streetNumber);
         this.city.set(addr.city);
         this.zipCode.set(addr.zipCode);
-        this.country.set(addr.country);
+
+        // Migrate legacy name-based country to code if needed
+        let countryCode = addr.country;
+        if (addr.country && addr.country.length > 2) {
+          const info = this.countryService.getCountryInfoByNameAnyLanguage(addr.country);
+          if (info) {
+            countryCode = info.code;
+          }
+        }
+        this.country.set(countryCode);
         this.isEditingAddress.set(false);
       }
     });
   }
 
-  validateNumericField(field: 'number' | 'zip', value: string): void {
-    const numericRegex = /^\d*$/;
-
-    if (!numericRegex.test(value)) {
-      if (field === 'number') {
-        this.streetNumberError.set('SETTINGS.ERRORS.NUMBER_ONLY');
-      } else {
-        this.zipCodeError.set('SETTINGS.ERRORS.NUMBER_ONLY');
-      }
-    } else {
-      if (field === 'number') {
-        this.streetNumberError.set('');
-      } else {
-        this.zipCodeError.set('');
-      }
-    }
+  // Field change handlers using validation service
+  onStreetNameChange(value: string): void {
+    this.streetName.set(value);
+    this.streetNameError.set(this.validationService.getStreetNameError(value));
   }
 
   onStreetNumberChange(value: string): void {
-    // Only set if value is numeric or empty
-    if (/^\d*$/.test(value)) {
-      this.streetNumber.set(value);
-      this.streetNumberError.set('');
-    } else {
-      this.streetNumberError.set('SETTINGS.ERRORS.NUMBER_ONLY');
-    }
+    this.streetNumber.set(value);
+    this.streetNumberError.set(this.validationService.getStreetNumberError(value));
+  }
+
+  onCityChange(value: string): void {
+    this.city.set(value);
+    this.cityError.set(this.validationService.getCityError(value));
   }
 
   onZipCodeChange(value: string): void {
-    // Only set if value is numeric or empty
-    if (/^\d*$/.test(value)) {
-      this.zipCode.set(value);
-      this.zipCodeError.set('');
-    } else {
-      this.zipCodeError.set('SETTINGS.ERRORS.NUMBER_ONLY');
-    }
+    this.zipCode.set(value);
+    this.zipCodeError.set(this.validationService.getZipCodeError(value));
   }
 
-  selectCountry(country: string): void {
-    this.country.set(country);
-    this.countrySearch.set('');
+  // Country change handler (from CountrySelectorComponent)
+  onCountryChange(countryCode: string): void {
+    this.country.set(countryCode);
+  }
+
+  onCountryValidationChange(errors: string[]): void {
+    this.countryError.set(errors);
   }
 
   editAddress(): void {
@@ -141,17 +173,30 @@ export class AddressComponent {
   }
 
   cancelEdit(): void {
-    // Restore from saved address
     const addr = this.householdService.address();
     if (addr) {
       this.streetName.set(addr.streetName);
       this.streetNumber.set(addr.streetNumber);
       this.city.set(addr.city);
       this.zipCode.set(addr.zipCode);
-      this.country.set(addr.country);
+
+      // Handle legacy name vs code
+      let countryCode = addr.country;
+      if (addr.country && addr.country.length > 2) {
+        const info = this.countryService.getCountryInfoByNameAnyLanguage(addr.country);
+        if (info) {
+          countryCode = info.code;
+        }
+      }
+      this.country.set(countryCode);
       this.isEditingAddress.set(false);
-      this.streetNumberError.set('');
-      this.zipCodeError.set('');
+
+      // Clear all validation errors
+      this.streetNameError.set([]);
+      this.streetNumberError.set([]);
+      this.cityError.set([]);
+      this.zipCodeError.set([]);
+      this.countryError.set([]);
     }
   }
 
@@ -167,18 +212,18 @@ export class AddressComponent {
       this.householdService.updateAddress(address);
       this.isEditingAddress.set(false);
       this.showSaveConfirmation.set(true);
-
-      // Hide confirmation after 3 seconds
-      setTimeout(() => {
-        this.showSaveConfirmation.set(false);
-      }, 3000);
+      setTimeout(() => this.showSaveConfirmation.set(false), 3000);
     }
   }
 
   exportAddress(): void {
     const address = this.householdService.address();
     if (address) {
-      this.fileStorage.exportToFile(address, 'address.json');
+      const exportData = { ...address };
+      if (address.country) {
+        exportData.country = address.country.toUpperCase();
+      }
+      this.fileStorage.exportToFile(exportData, 'address.json');
     }
   }
 
@@ -188,7 +233,7 @@ export class AddressComponent {
     if (file) {
       this.pendingImportFile.set(file);
       this.showImportConfirmModal.set(true);
-      input.value = ''; // Reset input so same file can be selected again
+      input.value = '';
     }
   }
 
@@ -197,22 +242,80 @@ export class AddressComponent {
     if (file) {
       try {
         const data = await this.fileStorage.importFromFile<Address>(file);
+
+        // Normalize country to code format
+        if (data && data.country && typeof data.country === 'string') {
+          const lowerValue = data.country.toLowerCase().trim();
+          const infoByCode = this.countryService.getCountryInfoByCode(lowerValue);
+          if (infoByCode) {
+            data.country = infoByCode.code;
+          } else {
+            const infoByName = this.countryService.getCountryInfoByNameAnyLanguage(data.country);
+            if (infoByName) {
+              data.country = infoByName.code;
+            }
+          }
+        }
+
         // Validate required fields
         if (data && data.streetName && data.streetNumber && data.city && data.zipCode && data.country) {
+          const errors: string[] = [];
+          const fieldKeys: string[] = [];
+
+          const streetNameErrs = this.validationService.getStreetNameError(data.streetName);
+          if (streetNameErrs.length > 0) {
+            fieldKeys.push('SETTINGS.STREET_NAME');
+            errors.push(`${this.languageService.translate('SETTINGS.STREET_NAME')}: ${streetNameErrs.map(e => this.languageService.translate(e)).join(', ')}`);
+          }
+
+          const streetNumErrs = this.validationService.getStreetNumberError(data.streetNumber);
+          if (streetNumErrs.length > 0) {
+            fieldKeys.push('SETTINGS.NUMBER');
+            errors.push(`${this.languageService.translate('SETTINGS.NUMBER')}: ${streetNumErrs.map(e => this.languageService.translate(e)).join(', ')}`);
+          }
+
+          const cityErrs = this.validationService.getCityError(data.city);
+          if (cityErrs.length > 0) {
+            fieldKeys.push('SETTINGS.CITY');
+            errors.push(`${this.languageService.translate('SETTINGS.CITY')}: ${cityErrs.map(e => this.languageService.translate(e)).join(', ')}`);
+          }
+
+          const zipErrs = this.validationService.getZipCodeError(data.zipCode);
+          if (zipErrs.length > 0) {
+            fieldKeys.push('SETTINGS.ZIP_CODE');
+            errors.push(`${this.languageService.translate('SETTINGS.ZIP_CODE')}: ${zipErrs.map(e => this.languageService.translate(e)).join(', ')}`);
+          }
+
+          const countryErrs = this.validationService.getCountryError(data.country);
+          if (countryErrs.length > 0) {
+            fieldKeys.push('SETTINGS.COUNTRY');
+            errors.push(`${this.languageService.translate('SETTINGS.COUNTRY')}: ${countryErrs.map(e => this.languageService.translate(e)).join(', ')}`);
+          }
+
+          if (errors.length > 0) {
+            throw { message: this.languageService.translate('SETTINGS.VALIDATION_FAILED'), details: errors.join('\n'), fieldKeys };
+          }
+
           this.householdService.updateAddress(data);
           this.showSaveConfirmation.set(true);
           setTimeout(() => this.showSaveConfirmation.set(false), 3000);
         } else {
-          throw new Error('Invalid address format');
+          throw new Error(this.languageService.translate('SETTINGS.IMPORT_ERROR'));
         }
-      } catch (error) {
+      } catch (error: any) {
         console.error('Error importing address:', error);
-        this.importErrorMessage.set(this.languageService.translate('SETTINGS.IMPORT_ERROR'));
-        this.importErrorInstructions.set([
-          'HOME.IMPORT_ERROR_INSTRUCTION_1',
-          'HOME.IMPORT_ERROR_INSTRUCTION_2',
-          'HOME.IMPORT_ERROR_INSTRUCTION_3'
-        ]);
+        this.importErrorMessage.set(error.message || this.languageService.translate('SETTINGS.IMPORT_ERROR'));
+        this.importErrorDetails.set(error.details || '');
+
+        const instructions: any[] = [];
+        if (error.fieldKeys && Array.isArray(error.fieldKeys)) {
+          error.fieldKeys.forEach((key: string) => {
+            instructions.push({ key: 'HOME.IMPORT_ERROR_CHECK_FIELD', params: { field: this.languageService.translate(key) } });
+          });
+        }
+        instructions.push('HOME.IMPORT_ERROR_INSTRUCTION_1', 'HOME.IMPORT_ERROR_INSTRUCTION_2', 'HOME.IMPORT_ERROR_INSTRUCTION_3');
+
+        this.importErrorInstructions.set(instructions);
         this.showImportErrorModal.set(true);
       }
     }
@@ -228,11 +331,7 @@ export class AddressComponent {
   closeImportErrorModal(): void {
     this.showImportErrorModal.set(false);
     this.importErrorMessage.set('');
+    this.importErrorDetails.set('');
     this.importErrorInstructions.set([]);
-  }
-
-  // TrackBy for *ngFor performance
-  trackByCountry(index: number, country: string): string {
-    return country;
   }
 }

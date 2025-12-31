@@ -25,7 +25,11 @@
         <strong>{{ 'ERROR.HOW_TO_FIX' | translate }}:</strong>
         <ul>
           @for (instruction of instructions(); track $index) {
+          @if (isString(instruction)) {
           <li>{{ instruction | translate }}</li>
+          } @else {
+          <li>{{ instruction.key | translate:instruction.params }}</li>
+          }
           }
         </ul>
       </div>

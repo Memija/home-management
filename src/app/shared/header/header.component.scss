@@ -8,9 +8,16 @@
   border-bottom: 1px solid #e9ecef;
   z-index: 1000;
   padding: 1rem 1.5rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 
   .header-content {
-    display: contents;
+    display: contents; // Keep contents to expose children to grid/flex if parent was grid, but here parent is flex.
+    // Actually if parent is flex, display: contents makes children (.logo-section, .header-actions) direct children of .app-header.
+    // This allows us to modify .app-header to control layout.
+    // So current approach works: .app-header is flex container. .header-content vanishes. .logo-section and .header-actions are flex items.
+    // .app-header { justify-content: space-between } works perfectly.
 
     .logo-section {
       display: flex;
@@ -21,6 +28,16 @@
         height: 100px;
         width: 100px;
         object-fit: contain;
+
+        @media (max-width: 768px) {
+          height: 60px;
+          width: 60px;
+        }
+
+        @media (max-width: 444px) {
+          height: 30px;
+          width: 30px;
+        }
       }
 
       .app-title {
@@ -30,8 +47,12 @@
         color: #2c3e50;
         letter-spacing: -0.5px;
 
-        @media (max-width: 480px) {
-          font-size: 1.5rem;
+        @media (max-width: 768px) {
+          font-size: 1.2rem;
+        }
+
+        @media (max-width: 444px) {
+          font-size: 1rem;
         }
       }
     }

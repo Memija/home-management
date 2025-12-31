@@ -3,13 +3,26 @@
     <div class="form-group">
       <label for="edit-member-name">{{ 'SETTINGS.NAME' | translate }}</label>
       <input type="text" id="edit-member-name" name="edit-member-name" autocomplete="given-name" [ngModel]="editName()"
-        (ngModelChange)="editName.set($event)" title="{{ 'SETTINGS.NAME' | translate }}">
+        (ngModelChange)="onNameChange($event)" title="{{ 'SETTINGS.NAME' | translate }}"
+        [class.error]="editNameError()">
+      @if (editNameError()) {
+      <div class="warning-message">
+        <lucide-icon [img]="TriangleAlertIcon" size="20" class="warning-icon"></lucide-icon>
+        <span>{{ editNameError() | translate }}</span>
+      </div>
+      }
     </div>
     <div class="form-group">
       <label for="edit-member-surname">{{ 'SETTINGS.SURNAME' | translate }}</label>
       <input type="text" id="edit-member-surname" name="edit-member-surname" autocomplete="family-name"
-        [ngModel]="editSurname()" (ngModelChange)="editSurname.set($event)"
-        title="{{ 'SETTINGS.SURNAME' | translate }}">
+        [ngModel]="editSurname()" (ngModelChange)="onSurnameChange($event)" title="{{ 'SETTINGS.SURNAME' | translate }}"
+        [class.error]="editSurnameError()">
+      @if (editSurnameError()) {
+      <div class="warning-message">
+        <lucide-icon [img]="TriangleAlertIcon" size="20" class="warning-icon"></lucide-icon>
+        <span>{{ editSurnameError() | translate }}</span>
+      </div>
+      }
     </div>
   </div>
   <div class="form-grid">
@@ -68,13 +81,15 @@
     </div>
   </div>
   <div class="button-group">
-    <button type="button" class="save-btn" (click)="onSave()" title="{{ 'SETTINGS.SAVE_MEMBER' | translate }}">
+    <button type="button" class="save-btn" (click)="onSave()"
+      [disabled]="!editName() || !editSurname() || editNameError() || editSurnameError()"
+      title="{{ 'SETTINGS.SAVE_MEMBER' | translate }}">
       <lucide-icon [img]="SaveIcon" size="16"></lucide-icon>
-      {{ 'SETTINGS.SAVE_MEMBER' | translate }}
+      <span class="btn-text">{{ 'SETTINGS.SAVE_MEMBER' | translate }}</span>
     </button>
     <button type="button" class="cancel-btn" (click)="onCancel()" title="{{ 'SETTINGS.CANCEL' | translate }}">
       <lucide-icon [img]="CancelIcon" size="16"></lucide-icon>
-      {{ 'SETTINGS.CANCEL' | translate }}
+      <span class="btn-text">{{ 'SETTINGS.CANCEL' | translate }}</span>
     </button>
   </div>
 </div>

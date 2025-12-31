@@ -15,7 +15,7 @@ export class ErrorModalComponent {
   title = input<string>('ERROR.TITLE');
   message = input.required<string>();
   details = input<string>('');
-  instructions = input<string[]>([]);
+  instructions = input<any[]>([]); // Allow string or object
   type = input<'error' | 'warning'>('error');
 
   cancel = output<void>();
@@ -23,4 +23,8 @@ export class ErrorModalComponent {
   protected readonly AlertCircleIcon = AlertCircle;
   protected readonly AlertTriangleIcon = AlertTriangle;
   protected readonly XIcon = X;
+
+  protected isString(val: any): boolean {
+    return typeof val === 'string';
+  }
 }

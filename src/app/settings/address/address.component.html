@@ -1,5 +1,10 @@
 <div class="section address-section">
-  <h2>{{ 'SETTINGS.ADDRESS_TITLE' | translate }}</h2>
+  <div class="section-header">
+    <h2>{{ 'SETTINGS.ADDRESS_TITLE' | translate }}</h2>
+    <button type="button" class="help-btn" (click)="showHelpModal.set(true)" title="{{ 'SETTINGS.HELP' | translate }}">
+      <lucide-icon [img]="HelpIcon" size="20"></lucide-icon>
+    </button>
+  </div>
 
   @if (showSaveConfirmation()) {
   <div class="success-message">
@@ -13,17 +18,20 @@
     <p><strong>{{ 'SETTINGS.STREET_NAME' | translate }}:</strong> {{ streetName() }} {{ streetNumber() }}</p>
     <p><strong>{{ 'SETTINGS.CITY' | translate }}:</strong> {{ city() }}</p>
     <p><strong>{{ 'SETTINGS.ZIP_CODE' | translate }}:</strong> {{ zipCode() }}</p>
-    <p><strong>{{ 'SETTINGS.COUNTRY' | translate }}:</strong> {{ country() }}</p>
+    <p><strong>{{ 'SETTINGS.COUNTRY' | translate }}:</strong> {{ countryDisplayName() }}</p>
   </div>
   <div class="button-group">
     <button type="button" class="edit-btn" (click)="editAddress()">
-      <lucide-icon [img]="EditIcon" size="16"></lucide-icon> {{ 'SETTINGS.EDIT_ADDRESS' | translate }}
+      <lucide-icon [img]="EditIcon" size="16"></lucide-icon> <span class="btn-text">{{ 'SETTINGS.EDIT_ADDRESS' |
+        translate }}</span>
     </button>
     <button type="button" class="export-btn" (click)="exportAddress()">
-      <lucide-icon [img]="ExportIcon" size="16"></lucide-icon> {{ 'SETTINGS.EXPORT_ADDRESS' | translate }}
+      <lucide-icon [img]="ExportIcon" size="16"></lucide-icon> <span class="btn-text">{{ 'SETTINGS.EXPORT_ADDRESS' |
+        translate }}</span>
     </button>
     <button type="button" class="import-btn" (click)="fileInput.click()">
-      <lucide-icon [img]="ImportIcon" size="16"></lucide-icon> {{ 'SETTINGS.IMPORT_ADDRESS' | translate }}
+      <lucide-icon [img]="ImportIcon" size="16"></lucide-icon> <span class="btn-text">{{ 'SETTINGS.IMPORT_ADDRESS' |
+        translate }}</span>
     </button>
     <input #fileInput type="file" id="import-address-file" name="import-address-file" (change)="importAddress($event)"
       accept=".json" class="hidden-input" title="Import Address">
@@ -34,52 +42,98 @@
     <div class="form-group span-2">
       <label for="street-name">{{ 'SETTINGS.STREET_NAME' | translate }}</label>
       <input type="text" id="street-name" name="street-name" autocomplete="address-line1" [ngModel]="streetName()"
-        (ngModelChange)="streetName.set($event)" placeholder="Broadway">
+        (ngModelChange)="onStreetNameChange($event)" placeholder="Broadway"
+        [class.error]="streetNameError().length > 0">
+      @if (streetNameError().length > 0) {
+      <div class="warning-message">
+        <lucide-icon [img]="TriangleAlertIcon" size="20" class="warning-icon"></lucide-icon>
+        <div class="error-list">
+          @for (err of streetNameError(); track err) {
+          <div>{{ err | translate }}</div>
+          }
+        </div>
+      </div>
+      }
     </div>
     <div class="form-group">
       <label for="street-number">{{ 'SETTINGS.NUMBER' | translate }}</label>
       <input type="text" id="street-number" name="street-number" autocomplete="address-line2" [ngModel]="streetNumber()"
-        (ngModelChange)="onStreetNumberChange($event)" placeholder="2156" [class.error]="streetNumberError()">
-      @if (streetNumberError()) {
-      <span class="error-message">{{ streetNumberError() | translate }}</span>
+        (ngModelChange)="onStreetNumberChange($event)" placeholder="12A" [class.error]="streetNumberError().length > 0">
+      @if (streetNumberError().length > 0) {
+      <div class="warning-message">
+        <lucide-icon [img]="TriangleAlertIcon" size="20" class="warning-icon"></lucide-icon>
+        <div class="error-list">
+          @for (err of streetNumberError(); track err) {
+          <div>{{ err | translate }}</div>
+          }
+        </div>
+      </div>
       }
     </div>
     <div class="form-group">
       <label for="city">{{ 'SETTINGS.CITY' | translate }}</label>
       <input type="text" id="city" name="city" autocomplete="address-level2" [ngModel]="city()"
-        (ngModelChange)="city.set($event)" placeholder="New York">
+        (ngModelChange)="onCityChange($event)" placeholder="New York" [class.error]="cityError().length > 0">
+      @if (cityError().length > 0) {
+      <div class="warning-message">
+        <lucide-icon [img]="TriangleAlertIcon" size="20" class="warning-icon"></lucide-icon>
+        <div class="error-list">
+          @for (err of cityError(); track err) {
+          <div>{{ err | translate }}</div>
+          }
+        </div>
+      </div>
+      }
     </div>
     <div class="form-group">
       <label for="zip-code">{{ 'SETTINGS.ZIP_CODE' | translate }}</label>
       <input type="text" id="zip-code" name="zip-code" autocomplete="postal-code" [ngModel]="zipCode()"
-        (ngModelChange)="onZipCodeChange($event)" placeholder="10024" [class.error]="zipCodeError()">
-      @if (zipCodeError()) {
-      <span class="error-message">{{ zipCodeError() | translate }}</span>
+        (ngModelChange)="onZipCodeChange($event)" placeholder="10024" [class.error]="zipCodeError().length > 0">
+      @if (zipCodeError().length > 0) {
+      <div class="warning-message">
+        <lucide-icon [img]="TriangleAlertIcon" size="20" class="warning-icon"></lucide-icon>
+        <div class="error-list">
+          @for (err of zipCodeError(); track err) {
+          <div>{{ err | translate }}</div>
+          }
+        </div>
+      </div>
       }
     </div>
     <div class="form-group span-2">
       <label for="country">{{ 'SETTINGS.COUNTRY' | translate }}</label>
-      <div class="country-selector">
-        <input type="text" id="country" name="country" autocomplete="country-name" [ngModel]="country()"
-          (ngModelChange)="country.set($event); countrySearch.set($event)"
-          placeholder="{{ 'SETTINGS.SEARCH_COUNTRY' | translate }}">
-        @if (filteredCountries().length > 0) {
-        <ul class="country-dropdown">
-          <li *ngFor="let c of filteredCountries(); trackBy: trackByCountry" (click)="selectCountry(c)">{{ c }}</li>
-        </ul>
-        }
+      <app-country-selector [countryCode]="country()" [hasError]="countryError().length > 0"
+        (countryCodeChange)="onCountryChange($event)" (validationErrors)="onCountryValidationChange($event)">
+      </app-country-selector>
+      @if (countryError().length > 0) {
+      <div class="warning-message">
+        <lucide-icon [img]="TriangleAlertIcon" size="20" class="warning-icon"></lucide-icon>
+        <div class="error-list">
+          @for (err of countryError(); track err) {
+          <div>{{ err | translate }}</div>
+          }
+        </div>
       </div>
+      }
     </div>
   </div>
   <div class="button-group">
     <button type="button" class="save-btn" (click)="saveAddress()" [disabled]="!isAddressFormValid()">
-      <lucide-icon [img]="SaveIcon" size="16"></lucide-icon> {{ 'SETTINGS.SAVE_ADDRESS' | translate }}
+      <lucide-icon [img]="SaveIcon" size="16"></lucide-icon> <span class="btn-text">{{ 'SETTINGS.SAVE_ADDRESS' |
+        translate }}</span>
     </button>
     @if (householdService.address()) {
     <button type="button" class="cancel-btn" (click)="cancelEdit()">
-      <lucide-icon [img]="CancelIcon" size="16"></lucide-icon> {{ 'SETTINGS.CANCEL' | translate }}
+      <lucide-icon [img]="CancelIcon" size="16"></lucide-icon> <span class="btn-text">{{ 'SETTINGS.CANCEL' | translate
+        }}</span>
     </button>
     }
+    <button type="button" class="import-btn" (click)="editFileInput.click()">
+      <lucide-icon [img]="ImportIcon" size="16"></lucide-icon> <span class="btn-text">{{ 'SETTINGS.IMPORT_ADDRESS' |
+        translate }}</span>
+    </button>
+    <input #editFileInput type="file" id="import-address-file-edit" name="import-address-file-edit"
+      (change)="importAddress($event)" accept=".json" class="hidden-input" title="Import Address">
   </div>
   }
 </div>
@@ -91,5 +145,10 @@
 </app-confirmation-modal>
 
 <app-error-modal [show]="showImportErrorModal()" [title]="'SETTINGS.IMPORT_ADDRESS_CONFIRM_TITLE'"
-  [message]="importErrorMessage()" [instructions]="importErrorInstructions()" (cancel)="closeImportErrorModal()">
+  [message]="importErrorMessage()" [details]="importErrorDetails()" [instructions]="importErrorInstructions()"
+  (cancel)="closeImportErrorModal()">
 </app-error-modal>
+
+<app-help-modal [show]="showHelpModal()" [titleKey]="'SETTINGS.ADDRESS_HELP_TITLE'" [steps]="helpSteps"
+  (close)="showHelpModal.set(false)">
+</app-help-modal>

@@ -1,7 +1,15 @@
 <div class="history-section">
   <div class="section-header">
-    <h2>{{ 'HOME.DETAILED_RECORDS' | translate }}</h2>
+    <div class="title-with-help">
+      <h2>{{ 'HOME.DETAILED_RECORDS' | translate }}</h2>
+      @if (helpSteps().length > 0) {
+      <button type="button" class="help-btn" (click)="showHelp()" title="{{ helpTitleKey() | translate }}">
+        <lucide-icon [img]="HelpIcon" size="20"></lucide-icon>
+      </button>
+      }
+    </div>
     <div class="filters-container">
+      @if (records().length > 0) {
       @if (showSearchDate()) {
       <div class="search-box">
         <app-date-picker [date]="searchDate() || ''" (dateChange)="searchDate.set($event || null)"
@@ -58,13 +66,14 @@
           </select>
         </div>
       </div>
+      }
       <!-- Slot for parent component to project buttons (e.g., Import/Export) -->
       <ng-content select="[slot=action-buttons]"></ng-content>
       @if (filteredRecords().length > 0 && showEditDelete()) {
       <button type="button" class="delete-all-btn" (click)="onDeleteAllRecords()"
         title="{{ 'HOME.DELETE_ALL_TOOLTIP' | translate }}">
         <lucide-icon [img]="TrashIcon" size="16"></lucide-icon>
-        {{ 'HOME.DELETE_ALL_BUTTON' | translate }} ({{ filteredRecords().length }})
+        <span class="btn-text">{{ 'HOME.DELETE_ALL_BUTTON' | translate }} ({{ filteredRecords().length }})</span>
       </button>
       }
     </div>
@@ -88,7 +97,7 @@
           <div class="record-actions">
             <span class="total">{{ 'HOME.TOTAL' | translate }}: {{ calculateTotal(record) }}</span>
             @if (showEditDelete()) {
-            <button type="button" class="edit-member-btn" (click)="onEditRecord(record)"
+            <button type="button" class="edit-btn" (click)="onEditRecord(record)"
               title="{{ 'HOME.EDIT_TOOLTIP' | translate }}">
               <lucide-icon [img]="EditIcon" size="16"></lucide-icon>
             </button>
@@ -153,3 +162,8 @@
   }
   }
 </div>
+
+@if (helpSteps().length > 0) {
+<app-help-modal [show]="showHelpModal()" [titleKey]="helpTitleKey()" [steps]="helpSteps()" (close)="closeHelp()">
+</app-help-modal>
+}

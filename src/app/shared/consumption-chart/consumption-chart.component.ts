@@ -5,7 +5,8 @@ import { TranslatePipe } from '../../pipes/translate.pipe';
 import { LanguageService } from '../../services/language.service';
 import { ChartDataService, ChartView, DisplayMode } from '../../services/chart-data.service';
 import { LocalStorageService } from '../../services/local-storage.service';
-import { LucideAngularModule, BarChart3, DoorOpen, Droplet, Grid3x3, TrendingUp, Activity, Info } from 'lucide-angular';
+import { LucideAngularModule, BarChart3, DoorOpen, Droplet, Grid3x3, TrendingUp, Activity, Info, HelpCircle } from 'lucide-angular';
+import { HelpModalComponent, HelpStep } from '../help-modal/help-modal.component';
 
 Chart.register(...registerables);
 
@@ -22,7 +23,7 @@ export interface ChartConfig {
 @Component({
   selector: 'app-consumption-chart',
   standalone: true,
-  imports: [BaseChartDirective, TranslatePipe, LucideAngularModule],
+  imports: [BaseChartDirective, TranslatePipe, LucideAngularModule, HelpModalComponent],
   templateUrl: './consumption-chart.component.html',
   styleUrl: './consumption-chart.component.scss'
 })
@@ -37,6 +38,8 @@ export class ConsumptionChartComponent {
   @Input({ required: true }) onDisplayModeChange!: (mode: DisplayMode) => void;
   familySize = input<number>(0);
   country = input<string>('');
+  helpTitleKey = input<string>('HOME.CHART_HELP_TITLE');
+  helpSteps = input<HelpStep[]>([]);
 
   private languageService = inject(LanguageService);
   private chartDataService = inject(ChartDataService);
@@ -49,12 +52,16 @@ export class ConsumptionChartComponent {
   protected readonly TrendingUpIcon = TrendingUp;
   protected readonly ActivityIcon = Activity;
   protected readonly InfoIcon = Info;
+  protected readonly HelpIcon = HelpCircle;
 
   // Trendline visibility toggle (only for water charts)
   protected showTrendline = signal<boolean>(this.getStoredTrendlineVisibility());
 
   // Average comparison visibility toggle (only for water charts)
   protected showAverageComparison = signal<boolean>(this.getStoredAverageComparisonVisibility());
+
+  // Help modal state
+  protected showHelpModal = signal(false);
 
   // Computed property to check if there's enough data for features
   protected hasSufficientDataForTrendline = computed(() => {
@@ -70,9 +77,29 @@ export class ConsumptionChartComponent {
 
   protected currentLang = computed(() => this.languageService.currentLang());
 
+  // Helper to generate smart labels - includes year when data spans multiple years
+  private generateSmartLabels(recs: any[]): string[] {
+    if (recs.length === 0) return [];
+
+    const dates = recs.map(r => new Date(r.date));
+    const years = new Set(dates.map(d => d.getFullYear()));
+    const spansMultipleYears = years.size > 1;
+
+    return dates.map(date => {
+      if (spansMultipleYears) {
+        // Include abbreviated year for multi-year data: "Feb 3 '17"
+        const year = date.getFullYear().toString().slice(-2);
+        return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) + ` '${year}`;
+      } else {
+        // Just month and day for single-year data
+        return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+      }
+    });
+  }
+
   protected chartData = computed<ChartConfiguration['data']>(() => {
     const recs = this.data();
-    const labels = recs.map(r => new Date(r.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }));
+    const labels = this.generateSmartLabels(recs);
     const view = this.currentView();
     const mode = this.displayMode();
     // Reactive to language, country, and toggle changes
@@ -138,7 +165,13 @@ export class ConsumptionChartComponent {
       },
       scales: {
         y: { beginAtZero: true, title: { display: true, text: this.languageService.translate('CHART.AXIS_LITERS') } },
-        x: { title: { display: true, text: this.languageService.translate('CHART.AXIS_DATE') } }
+        x: {
+          title: { display: true, text: this.languageService.translate('CHART.AXIS_DATE') },
+          ticks: {
+            maxRotation: 45,
+            minRotation: 0
+          }
+        }
       }
     };
   });
@@ -177,5 +210,13 @@ export class ConsumptionChartComponent {
 
   private saveAverageComparisonVisibility(visible: boolean): void {
     this.localStorageService.setPreference('water_chart_average_visible', visible.toString());
+  }
+
+  protected showHelp() {
+    this.showHelpModal.set(true);
+  }
+
+  protected closeHelp() {
+    this.showHelpModal.set(false);
   }
 }

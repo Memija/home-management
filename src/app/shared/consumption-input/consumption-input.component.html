@@ -1,6 +1,11 @@
 <div class="input-section">
   <div class="section-header">
     <h2>{{ editingMode() ? (editTitleKey() | translate) : (titleKey() | translate) }}</h2>
+    @if (helpSteps().length > 0) {
+    <button type="button" class="help-btn" (click)="showHelp()" title="{{ helpTitleKey() | translate }}">
+      <lucide-icon [img]="HelpIcon" size="20"></lucide-icon>
+    </button>
+    }
   </div>
 
   <div class="date-selection">
@@ -50,3 +55,8 @@
     </button>
   </div>
 </div>
+
+@if (helpSteps().length > 0) {
+<app-help-modal [show]="showHelpModal()" [titleKey]="helpTitleKey()" [steps]="helpSteps()" (close)="closeHelp()">
+</app-help-modal>
+}

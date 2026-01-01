@@ -11,83 +11,49 @@
   </div>
 
   @if (familySize() > 0 && displayMode() === 'incremental') {
-  <div class="comparison-note" [class.disabled]="!hasSufficientDataForComparison()">
-    <div class="comparison-content">
-      @if (hasSufficientDataForComparison()) {
-      <p>{{ 'CHART.COMPARISON_NOTE_COUNTRY' | translate:{ country: effectiveComparisonCountryName(), average:
-        countryAverage(), size: familySize() } }}</p>
-      } @else {
-      <p class="disabled-message">
-        <lucide-icon [img]="InfoIcon" size="16" class="info-icon"></lucide-icon>
-        {{ 'CHART.COMPARISON_REQUIRES_DATA' | translate }}
-      </p>
-      }
-      <div class="country-selector" [class.disabled]="!hasSufficientDataForComparison()">
-        <label for="comparison-country" [class.disabled]="!hasSufficientDataForComparison()">
-          <span class="info-tooltip-container">
-            <lucide-icon [img]="InfoIcon" size="14" class="info-icon"></lucide-icon>
-            <span class="info-tooltip">{{ hasSufficientDataForComparison() ? ('CHART.COMPARE_WITH_INFO' | translate) :
-              ('CHART.COMPARISON_REQUIRES_DATA' | translate) }}</span>
-          </span>
-          {{ 'CHART.COMPARE_WITH' | translate }}:
-        </label>
-        <div class="select-with-flag" [class.disabled]="!hasSufficientDataForComparison()">
-          <img [src]="getSelectedCountryFlag()" alt="Country flag"
-            [alt]="'CHART.COUNTRY_FLAG_ALT' | translate: { country: effectiveComparisonCountryCode() }"
-            title="Country flag"
-            [title]="'CHART.COUNTRY_FLAG_ALT' | translate: { country: effectiveComparisonCountryCode() }"
-            class="country-flag" />
-          <select id="comparison-country" [value]="effectiveComparisonCountryCode()"
-            (change)="onComparisonCountryChange($any($event.target).value)"
-            [disabled]="!hasSufficientDataForComparison()">
-            @for (country of availableCountries(); track country.code) {
-            <option [value]="country.code"
-              [selected]="country.code.toLowerCase() === effectiveComparisonCountryCode().toLowerCase()">
-              {{ country.translationKey | translate }} ({{ country.average }} L)
-            </option>
-            }
-          </select>
-        </div>
-      </div>
-    </div>
-  </div>
+  <app-comparison-note [records]="records()"
+    (countryCodeChange)="handleCountryCodeChange($event)"></app-comparison-note>
   }
 
   <app-consumption-chart [data]="records()" [currentView]="chartView()" [onViewChange]="onChartViewChange"
     [chartType]="'water'" [displayMode]="displayMode()" [onDisplayModeChange]="onDisplayModeChange"
-    [familySize]="familySize()" [country]="effectiveComparisonCountryCode()">
+    [familySize]="familySize()" [country]="effectiveComparisonCountryCode()" [helpSteps]="chartHelpSteps">
   </app-consumption-chart>
 
 
   <app-detailed-records [records]="records()" [defaultSortOption]="'date-desc'" [showSearchDate]="true"
-    [showYearMonth]="true" [showEditDelete]="true" [recordType]="'water'" (editRecord)="editRecord($event)"
-    (deleteRecord)="deleteRecord($event)" (deleteAllRecords)="deleteAllRecords($event)">
+    [showYearMonth]="true" [showEditDelete]="true" [recordType]="'water'" [helpSteps]="recordsHelpSteps"
+    (editRecord)="editRecord($event)" (deleteRecord)="deleteRecord($event)"
+    (deleteAllRecords)="deleteAllRecords($event)" (filteredRecordsChange)="onFilteredRecordsChange($event)"
+    (filterStateChange)="onFilterStateChange($event)">
     <!-- Import/Export buttons projected into detailed-records -->
     <div slot="action-buttons" class="action-buttons-group">
-      <button type="button" (click)="exportData()" class="export-btn" [disabled]="isExporting()"
-        title="{{ 'WATER.EXPORT' | translate }}">
+      <button type="button" (click)="exportData()" class="export-btn"
+        [disabled]="isExporting() || filteredRecords().length === 0"
+        title="{{ (filteredRecords().length === 0 ? 'WATER.EXPORT_DISABLED_TOOLTIP' : 'WATER.EXPORT') | translate }}">
         <lucide-icon [img]="DownloadIcon" size="16"></lucide-icon>
-        {{ isExporting() ? 'Exporting...' : ('WATER.EXPORT' | translate) }}
+        <span class="btn-text">{{ isExporting() ? 'Exporting...' : ('WATER.EXPORT' | translate) }}</span>
       </button>
       <label for="import-file" class="import-btn" [class.disabled]="isImporting()"
         title="{{ 'WATER.IMPORT' | translate }}">
         <lucide-icon [img]="UploadIcon" size="16"></lucide-icon>
-        {{ isImporting() ? 'Importing...' : ('WATER.IMPORT' | translate) }}
+        <span class="btn-text">{{ isImporting() ? 'Importing...' : ('WATER.IMPORT' | translate) }}</span>
         <input type="file" id="import-file" accept=".json" (change)="importData($event)" class="hidden-input"
           [disabled]="isImporting()">
       </label>
 
       <!-- Excel Export/Import (conditional) -->
       @if (excelSettings.isEnabled()) {
-      <button type="button" (click)="exportToExcel()" class="export-btn excel-btn" [disabled]="isExporting()"
-        title="{{ 'WATER.EXPORT_EXCEL' | translate }}">
+      <button type="button" (click)="exportToExcel()" class="export-btn excel-btn"
+        [disabled]="isExporting() || filteredRecords().length === 0"
+        title="{{ (filteredRecords().length === 0 ? 'WATER.EXPORT_DISABLED_TOOLTIP' : 'WATER.EXPORT_EXCEL') | translate }}">
         <lucide-icon [img]="FileSpreadsheetIcon" size="16"></lucide-icon>
-        {{ isExporting() ? 'Exporting...' : ('WATER.EXPORT_EXCEL' | translate) }}
+        <span class="btn-text">{{ isExporting() ? 'Exporting...' : ('WATER.EXPORT_EXCEL' | translate) }}</span>
       </button>
       <label for="import-excel-file" class="import-btn excel-btn" [class.disabled]="isImporting()"
         title="{{ 'WATER.IMPORT_EXCEL' | translate }}">
         <lucide-icon [img]="FileSpreadsheetIcon" size="16"></lucide-icon>
-        {{ isImporting() ? 'Importing...' : ('WATER.IMPORT_EXCEL' | translate) }}
+        <span class="btn-text">{{ isImporting() ? 'Importing...' : ('WATER.IMPORT_EXCEL' | translate) }}</span>
         <input type="file" id="import-excel-file" accept=".xlsx,.xls" (change)="importFromExcel($event)"
           class="hidden-input" [disabled]="isImporting()">
       </label>
@@ -96,8 +62,9 @@
   </app-detailed-records>
 
   <app-consumption-input [groups]="consumptionGroups()" [selectedDate]="selectedDate()" [maxDate]="maxDate"
-    [editingMode]="!!editingRecord()" [dateExists]="dateExists()" (dateChange)="selectedDate.set($event)"
-    (fieldChange)="onFieldChange($event)" (save)="onConsumptionSave($event)" (cancel)="cancelEdit()">
+    [editingMode]="!!editingRecord()" [dateExists]="dateExists()" [helpSteps]="helpSteps"
+    (dateChange)="selectedDate.set($event)" (fieldChange)="onFieldChange($event)" (save)="onConsumptionSave($event)"
+    (cancel)="cancelEdit()">
   </app-consumption-input>
 </div>
 
@@ -132,6 +99,12 @@
 <app-confirmation-modal [show]="showImportConfirmModal()" [titleKey]="'HOME.IMPORT_CONFIRM_TITLE'"
   [messageKey]="'HOME.IMPORT_CONFIRM_MESSAGE'" [cancelKey]="'HOME.CANCEL'" [confirmKey]="'HOME.IMPORT_BUTTON'"
   [icon]="UploadIcon" (confirm)="confirmImport()" (cancel)="cancelImport()">
+</app-confirmation-modal>
+
+<app-confirmation-modal [show]="showFilterWarningModal()" [titleKey]="'WATER.IMPORT_FILTER_WARNING_TITLE'"
+  [messageKey]="'WATER.IMPORT_FILTER_WARNING_MESSAGE'" [cancelKey]="'WATER.IMPORT_CANCEL'"
+  [confirmKey]="'WATER.IMPORT_CONTINUE'" [icon]="AlertTriangleIcon" (confirm)="confirmFilterWarningImport()"
+  (cancel)="cancelFilterWarningImport()">
 </app-confirmation-modal>
 
 <app-error-modal [show]="showErrorModal()" [title]="errorTitle()" [message]="errorMessage()" [details]="errorDetails()"

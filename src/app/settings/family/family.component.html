@@ -107,8 +107,7 @@
           </div>
         </div>
         <div class="member-actions">
-          <button class="edit-member-btn" (click)="startEditMember(member)"
-            title="{{ 'SETTINGS.EDIT_MEMBER' | translate }}">
+          <button class="edit-btn" (click)="startEditMember(member)" title="{{ 'SETTINGS.EDIT_MEMBER' | translate }}">
             <lucide-icon [img]="EditIcon" size="16"></lucide-icon>
           </button>
           <button class="remove-btn" (click)="removeMember(member.id)" title="{{ 'SETTINGS.REMOVE' | translate }}">
@@ -215,8 +214,10 @@
   <!-- Action buttons for bulk edit view -->
   <div class="button-group">
     @if (!showAddMemberForm()) {
-    <button type="button" class="add-btn" (click)="toggleAddMemberForm()"
-      title="{{ 'SETTINGS.SHOW_ADD_MEMBER_FORM' | translate }}">
+    <button type="button" class="add-btn"
+      (click)="isAtMaxMembers() ? showMaxMembersError.set(true) : toggleAddMemberForm()"
+      [class.disabled]="isAtMaxMembers()"
+      title="{{ isAtMaxMembers() ? ('SETTINGS.MAX_MEMBERS_ERROR' | translate) : ('SETTINGS.SHOW_ADD_MEMBER_FORM' | translate) }}">
       <lucide-icon [img]="AddIcon" size="16"></lucide-icon>
       <span class="btn-text">{{ 'SETTINGS.SHOW_ADD_MEMBER_FORM' | translate }}</span>
     </button>
@@ -260,6 +261,12 @@
   [message]="(languageService.translate('SETTINGS.DUPLICATE_MEMBER_NAME')).replace('{name}', duplicateMemberName().split(' ')[0] || '').replace('{surname}', duplicateMemberName().split(' ')[1] || '')"
   [instructions]="['SETTINGS.DUPLICATE_MEMBER_INSTRUCTION_1', 'SETTINGS.DUPLICATE_MEMBER_INSTRUCTION_2', 'SETTINGS.DUPLICATE_MEMBER_INSTRUCTION_3']"
   (cancel)="closeDuplicateMemberError()">
+</app-error-modal>
+
+<app-error-modal [show]="showMaxMembersError()" [title]="'SETTINGS.MAX_MEMBERS_ERROR'"
+  [message]="(languageService.translate('SETTINGS.MAX_MEMBERS_MESSAGE')).replace('{max}', MAX_FAMILY_MEMBERS.toString())"
+  [instructions]="['SETTINGS.MAX_MEMBERS_INSTRUCTION_1', 'SETTINGS.MAX_MEMBERS_INSTRUCTION_2']"
+  (cancel)="showMaxMembersError.set(false)">
 </app-error-modal>
 
 <app-help-modal [show]="showHelpModal()" [titleKey]="'SETTINGS.FAMILY_HELP_TITLE'" [steps]="helpSteps"

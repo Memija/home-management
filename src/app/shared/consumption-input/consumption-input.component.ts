@@ -2,8 +2,9 @@ import { Component, input, output, signal, computed, inject } from '@angular/cor
 import { FormsModule } from '@angular/forms';
 import { LanguageService } from '../../services/language.service';
 import { TranslatePipe } from '../../pipes/translate.pipe';
-import { LucideAngularModule, TriangleAlert } from 'lucide-angular';
+import { LucideAngularModule, TriangleAlert, HelpCircle } from 'lucide-angular';
 import { DatePickerComponent } from '../date-picker/date-picker.component';
+import { HelpModalComponent, HelpStep } from '../help-modal/help-modal.component';
 
 export interface ConsumptionField {
   key: string;
@@ -24,7 +25,7 @@ export interface ConsumptionData {
 @Component({
   selector: 'app-consumption-input',
   standalone: true,
-  imports: [FormsModule, TranslatePipe, LucideAngularModule, DatePickerComponent],
+  imports: [FormsModule, TranslatePipe, LucideAngularModule, DatePickerComponent, HelpModalComponent],
   templateUrl: './consumption-input.component.html',
   styleUrl: './consumption-input.component.scss'
 })
@@ -32,6 +33,7 @@ export class ConsumptionInputComponent {
   private languageService = inject(LanguageService);
 
   protected readonly TriangleAlertIcon = TriangleAlert;
+  protected readonly HelpIcon = HelpCircle;
 
   // Inputs
   groups = input.required<ConsumptionGroup[]>();
@@ -46,9 +48,12 @@ export class ConsumptionInputComponent {
   saveKey = input<string>('HOME.SAVE');
   updateKey = input<string>('HOME.UPDATE_RECORD');
   cancelKey = input<string>('HOME.CANCEL');
+  helpTitleKey = input<string>('HOME.RECORD_HELP_TITLE');
+  helpSteps = input<HelpStep[]>([]);
 
   // State
   protected errorMessage = signal<string | null>(null);
+  protected showHelpModal = signal(false);
 
   // Outputs
   dateChange = output<string>();
@@ -152,5 +157,13 @@ export class ConsumptionInputComponent {
 
   protected onCancel() {
     this.cancel.emit();
+  }
+
+  protected showHelp() {
+    this.showHelpModal.set(true);
+  }
+
+  protected closeHelp() {
+    this.showHelpModal.set(false);
   }
 }

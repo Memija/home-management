@@ -8,13 +8,20 @@
   background: $light;
   padding: 0rem 1.5rem;
   z-index: 999;
+  width: 100%;
+  box-sizing: border-box;
 
   @media (max-width: 768px) {
     top: 92px; // padding 32px + logo 60px
   }
 
+  @media (max-width: 480px) {
+    top: 84px; // padding 24px + logo 60px (smaller padding)
+    padding: 0 1rem;
+  }
+
   @media (max-width: 444px) {
-    top: 62px; // padding 32px + logo 30px
+    top: 54px; // padding 24px + logo 30px
   }
 
   .menu-content {

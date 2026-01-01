@@ -23,6 +23,9 @@ import { MemberEditorComponent, MemberEditData } from '../../shared/member-edito
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class FamilyComponent {
+  // Maximum number of family members allowed
+  protected readonly MAX_FAMILY_MEMBERS = 9;
+
   protected languageService = inject(LanguageService);
   protected householdService = inject(HouseholdService);
   protected fileStorage = inject(FileStorageService);
@@ -98,6 +101,10 @@ export class FamilyComponent {
   // Duplicate member error state
   protected showDuplicateMemberError = signal(false);
   protected duplicateMemberName = signal('');
+
+  // Max members limit check
+  protected isAtMaxMembers = computed(() => this.draftMembers().length >= this.MAX_FAMILY_MEMBERS);
+  protected showMaxMembersError = signal(false);
 
   constructor() {
     effect(() => {

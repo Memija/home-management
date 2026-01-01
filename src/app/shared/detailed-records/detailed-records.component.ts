@@ -1,9 +1,10 @@
-import { Component, signal, computed, input, output } from '@angular/core';
+import { Component, signal, computed, input, output, effect } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { DatePipe } from '@angular/common';
-import { LucideAngularModule, Edit, Trash2, Calendar, Info, ChevronDown, ChevronLeft, ChevronRight, CalendarDays, ArrowUpDown } from 'lucide-angular';
+import { LucideAngularModule, Edit, Trash2, Calendar, Info, ChevronDown, ChevronLeft, ChevronRight, CalendarDays, ArrowUpDown, HelpCircle } from 'lucide-angular';
 import { TranslatePipe } from '../../pipes/translate.pipe';
 import { DatePickerComponent } from '../date-picker/date-picker.component';
+import { HelpModalComponent, HelpStep } from '../help-modal/help-modal.component';
 import { LanguageService } from '../../services/language.service';
 import { inject } from '@angular/core';
 import { ConsumptionRecord, calculateWaterTotal, calculateKitchenTotal, calculateBathroomTotal } from '../../models/records.model';
@@ -16,7 +17,7 @@ export type SortOption = 'date-desc' | 'date-asc' | 'total-desc' | 'total-asc' |
 @Component({
   selector: 'app-detailed-records',
   standalone: true,
-  imports: [FormsModule, DatePipe, LucideAngularModule, TranslatePipe, DatePickerComponent],
+  imports: [FormsModule, DatePipe, LucideAngularModule, TranslatePipe, DatePickerComponent, HelpModalComponent],
   templateUrl: './detailed-records.component.html',
   styleUrl: './detailed-records.component.scss'
 })
@@ -33,6 +34,7 @@ export class DetailedRecordsComponent {
   protected readonly ChevronRightIcon = ChevronRight;
   protected readonly CalendarDaysIcon = CalendarDays;
   protected readonly ArrowUpDownIcon = ArrowUpDown;
+  protected readonly HelpIcon = HelpCircle;
 
   // Inputs
   records = input.required<ConsumptionRecord[]>();
@@ -41,11 +43,15 @@ export class DetailedRecordsComponent {
   showYearMonth = input<boolean>(true);
   showEditDelete = input<boolean>(true);
   recordType = input<string>('water');
+  helpTitleKey = input<string>('HOME.RECORDS_HELP_TITLE');
+  helpSteps = input<HelpStep[]>([]);
 
   // Outputs
   editRecord = output<ConsumptionRecord>();
   deleteRecord = output<ConsumptionRecord>();
   deleteAllRecords = output<ConsumptionRecord[]>();
+  filteredRecordsChange = output<ConsumptionRecord[]>();
+  filterStateChange = output<{ year: number | null; month: number | null; date: string | null }>();
 
   // State
   protected searchDate = signal<string | null>(null);
@@ -54,6 +60,7 @@ export class DetailedRecordsComponent {
   protected currentPage = signal<number>(1);
   protected paginationSize = signal<number>(5);
   protected sortOption = signal<SortOption>('date-desc');
+  protected showHelpModal = signal(false);
 
   // Computed properties
   protected currentLang = computed(() => this.languageService.currentLang());
@@ -95,9 +102,9 @@ export class DetailedRecordsComponent {
     records.sort((a, b) => {
       switch (sortOption) {
         case 'date-desc':
-          return b.date.getTime() - a.date.getTime();
+          return new Date(b.date).getTime() - new Date(a.date).getTime();
         case 'date-asc':
-          return a.date.getTime() - b.date.getTime();
+          return new Date(a.date).getTime() - new Date(b.date).getTime();
         case 'total-desc':
           return this.calculateTotal(b) - this.calculateTotal(a);
         case 'total-asc':
@@ -142,6 +149,20 @@ export class DetailedRecordsComponent {
   constructor() {
     // Initialize sort option from input
     this.sortOption.set(this.defaultSortOption());
+
+    // Emit filtered records and filter state whenever they change
+    effect(() => {
+      const filtered = this.filteredRecords();
+      this.filteredRecordsChange.emit(filtered);
+    });
+
+    effect(() => {
+      this.filterStateChange.emit({
+        year: this.searchYear(),
+        month: this.searchMonth(),
+        date: this.searchDate()
+      });
+    });
   }
 
   // Helper methods - using shared utility functions
@@ -190,5 +211,13 @@ export class DetailedRecordsComponent {
 
   protected onDeleteAllRecords() {
     this.deleteAllRecords.emit(this.filteredRecords());
+  }
+
+  protected showHelp() {
+    this.showHelpModal.set(true);
+  }
+
+  protected closeHelp() {
+    this.showHelpModal.set(false);
   }
 }

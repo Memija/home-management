@@ -1,4 +1,4 @@
-import { Component, input, output } from '@angular/core';
+import { Component, input, output, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { LucideAngularModule, AlertCircle, AlertTriangle, X } from 'lucide-angular';
 import { TranslatePipe } from '../../pipes/translate.pipe';
@@ -17,6 +17,12 @@ export class ErrorModalComponent {
   details = input<string>('');
   instructions = input<any[]>([]); // Allow string or object
   type = input<'error' | 'warning'>('error');
+
+  // Split details into lines for better display
+  protected detailLines = computed(() => {
+    const d = this.details();
+    return d ? d.split('\n').filter(line => line.trim() !== '') : [];
+  });
 
   cancel = output<void>();
 

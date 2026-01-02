@@ -51,8 +51,17 @@ export function calculateHeatingTotal(record: HeatingRecord): number {
 }
 
 /**
+ * Get normalized date key (YYYY-MM-DD) for deduplication.
+ * Strips time component to ensure same dates with different times are treated as duplicates.
+ */
+function getDateKey(date: Date): string {
+    const d = new Date(date);
+    return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+}
+
+/**
  * Merge new records into existing records, ensuring uniqueness by date.
- * New records overwrite existing ones with the same date.
+ * New records overwrite existing ones with the same date (ignoring time component).
  * Result is sorted by date ascending.
  *
  * @param existing Existing records array
@@ -61,8 +70,9 @@ export function calculateHeatingTotal(record: HeatingRecord): number {
  */
 export function mergeRecords(existing: ConsumptionRecord[], incoming: ConsumptionRecord[]): ConsumptionRecord[] {
     const merged = [...existing, ...incoming];
-    const uniqueMap = new Map<number, ConsumptionRecord>();
-    merged.forEach(r => uniqueMap.set(new Date(r.date).getTime(), r));
+    const uniqueMap = new Map<string, ConsumptionRecord>();
+    // Use date string as key to ignore time component differences
+    merged.forEach(r => uniqueMap.set(getDateKey(r.date), r));
     return Array.from(uniqueMap.values())
         .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
 }

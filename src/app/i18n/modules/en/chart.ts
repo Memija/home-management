@@ -43,6 +43,10 @@ export const chart = {
     AVERAGE_REQUIRES_DATA: 'At least 2 data points are required for comparison',
     TRENDLINE_REQUIRES_DATA: 'At least 2 data points are required for trendline',
     TRENDLINE_REQUIRES_DATA_INCREMENTAL: 'At least 3 entries are required for trendline in Between Measurements mode',
-    COUNTRY_FLAG_ALT: 'Country flag for {country}'
+    COUNTRY_FLAG_ALT: 'Country flag for {country}',
+    METER_CHANGE_DETECTED: 'Water Meter Change Detected',
+    METER_CHANGE_MESSAGE: 'A drop in consumption readings was detected on {date}. This typically happens when a water meter is replaced. Would you like the chart to be adjusted?',
+    CONFIRM_METER_CHANGE: 'Yes, adjust chart',
+    DISMISS_METER_CHANGE: 'No, keep as is'
   }
 };

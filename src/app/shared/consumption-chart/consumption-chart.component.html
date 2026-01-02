@@ -20,7 +20,7 @@
           {{ 'CHART.DISPLAY_MODE_INCREMENTAL' | translate }}
         </button>
       </div>
-      @if (chartType === 'water' && currentView() === 'total') {
+      @if (chartType === 'water' && currentView() === 'total' && displayMode() === 'incremental') {
       <label class="trendline-toggle" for="show-trendline" [class.disabled]="!hasSufficientDataForTrendline()">
         <input id="show-trendline" type="checkbox" [checked]="showTrendline()" (change)="toggleTrendline()"
           [disabled]="!hasSufficientDataForTrendline()">
@@ -29,8 +29,7 @@
         @if (!hasSufficientDataForTrendline()) {
         <span class="info-tooltip-container">
           <lucide-icon [img]="InfoIcon" size="14" class="info-icon"></lucide-icon>
-          <span class="info-tooltip">{{ (displayMode() === 'incremental' ? 'CHART.TRENDLINE_REQUIRES_DATA_INCREMENTAL' :
-            'CHART.TRENDLINE_REQUIRES_DATA') | translate }}</span>
+          <span class="info-tooltip">{{ 'CHART.TRENDLINE_REQUIRES_DATA_INCREMENTAL' | translate }}</span>
         </span>
         }
       </label>

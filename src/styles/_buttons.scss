@@ -33,6 +33,18 @@
   }
 }
 
+.delete-all-btn {
+  @extend %btn-base;
+  background: #dc3545; // Red
+  width: auto;
+  flex-shrink: 0;
+
+  &:hover {
+    background: #c82333;
+    box-shadow: 0 2px 8px rgba(220, 53, 69, 0.3);
+  }
+}
+
 .save-btn {
   @extend %btn-base;
   background: #007bff;
@@ -116,6 +128,50 @@
   }
 }
 
+// Reset filters button - secondary/muted style
+.reset-filters-btn {
+  @extend %btn-base;
+  background: #6c757d; // Gray/Secondary
+  width: auto;
+  white-space: nowrap;
+  flex-shrink: 0;
+
+  &:hover:not(:disabled) {
+    background: #5a6268;
+    box-shadow: 0 2px 8px rgba(108, 117, 125, 0.3);
+  }
+}
+
+// PDF export button - distinct from Excel
+.pdf-btn {
+  background: #dc3545 !important; // Red for PDF
+
+  &:hover:not(:disabled) {
+    background: #c82333 !important;
+    box-shadow: 0 2px 8px rgba(220, 53, 69, 0.3);
+  }
+}
+
+// Excel button - keep green but ensure consistency
+.excel-btn {
+  background: #28a745 !important; // Green for Excel
+
+  &:hover:not(:disabled) {
+    background: #218838 !important;
+  }
+}
+
+// JSON button - purple/indigo to distinguish from Excel
+.json-btn {
+  background: #6f42c1 !important; // Purple for JSON
+
+  &:hover:not(:disabled) {
+    background: #5a32a3 !important;
+    box-shadow: 0 2px 8px rgba(111, 66, 193, 0.3);
+  }
+}
+
+
 .upload-btn {
   @extend %btn-base;
   background: #17a2b8; // Teal
@@ -169,7 +225,7 @@
 }
 
 // Responsive behavior: hide text on small screens, show only icon
-@media (max-width: 600px) {
+@media (max-width: 880px) {
 
   .save-btn,
   .edit-btn,
@@ -179,7 +235,8 @@
   .add-btn,
   .upload-btn,
   .btn-outline,
-  .delete-all-btn {
+  .delete-all-btn,
+  .reset-filters-btn {
     .btn-text {
       display: none;
     }

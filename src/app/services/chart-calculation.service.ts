@@ -105,4 +105,69 @@ export class ChartCalculationService {
             return comparison;
         });
     }
+
+    /**
+     * Detect potential meter changes (drops in cumulative readings)
+     * Returns array of date strings where drops were detected
+     */
+    detectMeterChanges(records: ConsumptionRecord[]): string[] {
+        if (records.length < 2) return [];
+
+        const changes: string[] = [];
+        for (let i = 1; i < records.length; i++) {
+            const prevTotal = this.calculateTotal(records[i - 1]);
+            const currTotal = this.calculateTotal(records[i]);
+
+            // A drop indicates a meter change
+            if (currTotal < prevTotal) {
+                changes.push(new Date(records[i].date).toISOString().split('T')[0]);
+            }
+        }
+        return changes;
+    }
+
+    /**
+     * Adjust records for confirmed meter changes by applying offsets
+     * This makes the chart continuous after meter replacements
+     */
+    adjustForMeterChanges(records: ConsumptionRecord[], confirmedChangeDates: string[]): ConsumptionRecord[] {
+        if (records.length < 2 || confirmedChangeDates.length === 0) return records;
+
+        const adjustedRecords: ConsumptionRecord[] = [];
+        let cumulativeOffset = 0;
+
+        for (let i = 0; i < records.length; i++) {
+            const record = records[i];
+            const recordDate = new Date(record.date).toISOString().split('T')[0];
+
+            // Check if this is a confirmed meter change point
+            if (i > 0 && confirmedChangeDates.includes(recordDate)) {
+                const prevTotal = this.calculateTotal(records[i - 1]);
+                cumulativeOffset += prevTotal;
+            }
+
+            // Apply offset to all fields proportionally
+            if (cumulativeOffset > 0) {
+                const originalTotal = this.calculateTotal(record);
+                const ratio = originalTotal > 0 ? 1 : 0;
+                const offsetPerField = cumulativeOffset / 4; // Distribute evenly across 4 fields
+
+                adjustedRecords.push({
+                    date: record.date,
+                    kitchenWarm: record.kitchenWarm + (ratio ? offsetPerField : 0),
+                    kitchenCold: record.kitchenCold + (ratio ? offsetPerField : 0),
+                    bathroomWarm: record.bathroomWarm + (ratio ? offsetPerField : 0),
+                    bathroomCold: record.bathroomCold + (ratio ? offsetPerField : 0)
+                });
+            } else {
+                adjustedRecords.push({ ...record });
+            }
+        }
+
+        return adjustedRecords;
+    }
+
+    private calculateTotal(record: ConsumptionRecord): number {
+        return record.kitchenWarm + record.kitchenCold + record.bathroomWarm + record.bathroomCold;
+    }
 }

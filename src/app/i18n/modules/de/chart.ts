@@ -43,6 +43,10 @@ export const chart = {
     AVERAGE_REQUIRES_DATA: 'Mindestens 2 Datenpunkte sind für den Vergleich erforderlich',
     TRENDLINE_REQUIRES_DATA: 'Mindestens 2 Datenpunkte sind für die Trendlinie erforderlich',
     TRENDLINE_REQUIRES_DATA_INCREMENTAL: 'Mindestens 3 Einträge sind für die Trendlinie im Modus "Zwischen Messungen" erforderlich',
-    COUNTRY_FLAG_ALT: 'Landesflagge für {country}'
+    COUNTRY_FLAG_ALT: 'Landesflagge für {country}',
+    METER_CHANGE_DETECTED: 'Wasserzählerwechsel erkannt',
+    METER_CHANGE_MESSAGE: 'Am {date} wurde ein Rückgang der Verbrauchswerte festgestellt. Dies passiert typischerweise bei einem Wasserzählerwechsel. Soll das Diagramm angepasst werden?',
+    CONFIRM_METER_CHANGE: 'Ja, Diagramm anpassen',
+    DISMISS_METER_CHANGE: 'Nein, beibehalten'
   }
 };

@@ -7,8 +7,30 @@
   background: $border-light;
   padding: 1.5rem;
 
+  // Push help button to the right
+  .title-with-help {
+    display: flex;
+    align-items: center;
+    width: 100%;
+
+    .header-spacer {
+      flex: 1;
+    }
+  }
+
   .filters-container .search-box {
     padding-bottom: 0.75rem;
+
+    &.date-range {
+      display: flex;
+      gap: 0.5rem;
+      align-items: center;
+      flex-wrap: wrap;
+
+      app-date-picker {
+        min-width: 140px;
+      }
+    }
 
     lucide-icon {
       color: $secondary;

@@ -2,6 +2,7 @@
   <div class="section-header">
     <div class="title-with-help">
       <h2>{{ 'HOME.DETAILED_RECORDS' | translate }}</h2>
+      <div class="header-spacer"></div>
       @if (helpSteps().length > 0) {
       <button type="button" class="help-btn" (click)="showHelp()" title="{{ helpTitleKey() | translate }}">
         <lucide-icon [img]="HelpIcon" size="20"></lucide-icon>
@@ -11,9 +12,12 @@
     <div class="filters-container">
       @if (records().length > 0) {
       @if (showSearchDate()) {
-      <div class="search-box">
-        <app-date-picker [date]="searchDate() || ''" (dateChange)="searchDate.set($event || null)"
-          [placeholder]="'HOME.SEARCH_DATE' | translate">
+      <div class="search-box date-range">
+        <app-date-picker [date]="startDate() || ''" (dateChange)="startDate.set($event || null)"
+          [placeholder]="'HOME.FILTER_DATE_FROM' | translate">
+        </app-date-picker>
+        <app-date-picker [date]="endDate() || ''" (dateChange)="endDate.set($event || null)"
+          [placeholder]="'HOME.FILTER_DATE_TO' | translate">
         </app-date-picker>
       </div>
       }
@@ -25,7 +29,7 @@
             (ngModelChange)="searchYear.set($event === '' ? null : +$event)" aria-label="Filter by year">
             <option value="">{{ 'HOME.FILTER_YEAR' | translate }}</option>
             @for (year of availableYears(); track year) {
-            <option [value]="year">{{ year }}</option>
+            <option [value]="year" [disabled]="isYearDisabled(year)">{{ year }}</option>
             }
           </select>
         </div>
@@ -34,22 +38,30 @@
           <select id="month-filter" name="month-filter" [ngModel]="searchMonth()"
             (ngModelChange)="searchMonth.set($event !== 'null' ? +$event : null)" aria-label="Filter by month">
             <option value="null">{{ 'HOME.FILTER_MONTH' | translate }}</option>
-            <option value="0">{{ 'HOME.MONTHS.JANUARY' | translate }}</option>
-            <option value="1">{{ 'HOME.MONTHS.FEBRUARY' | translate }}</option>
-            <option value="2">{{ 'HOME.MONTHS.MARCH' | translate }}</option>
-            <option value="3">{{ 'HOME.MONTHS.APRIL' | translate }}</option>
-            <option value="4">{{ 'HOME.MONTHS.MAY' | translate }}</option>
-            <option value="5">{{ 'HOME.MONTHS.JUNE' | translate }}</option>
-            <option value="6">{{ 'HOME.MONTHS.JULY' | translate }}</option>
-            <option value="7">{{ 'HOME.MONTHS.AUGUST' | translate }}</option>
-            <option value="8">{{ 'HOME.MONTHS.SEPTEMBER' | translate }}</option>
-            <option value="9">{{ 'HOME.MONTHS.OCTOBER' | translate }}</option>
-            <option value="10">{{ 'HOME.MONTHS.NOVEMBER' | translate }}</option>
-            <option value="11">{{ 'HOME.MONTHS.DECEMBER' | translate }}</option>
+            <option value="0" [disabled]="isMonthDisabled(0)">{{ 'HOME.MONTHS.JANUARY' | translate }}</option>
+            <option value="1" [disabled]="isMonthDisabled(1)">{{ 'HOME.MONTHS.FEBRUARY' | translate }}</option>
+            <option value="2" [disabled]="isMonthDisabled(2)">{{ 'HOME.MONTHS.MARCH' | translate }}</option>
+            <option value="3" [disabled]="isMonthDisabled(3)">{{ 'HOME.MONTHS.APRIL' | translate }}</option>
+            <option value="4" [disabled]="isMonthDisabled(4)">{{ 'HOME.MONTHS.MAY' | translate }}</option>
+            <option value="5" [disabled]="isMonthDisabled(5)">{{ 'HOME.MONTHS.JUNE' | translate }}</option>
+            <option value="6" [disabled]="isMonthDisabled(6)">{{ 'HOME.MONTHS.JULY' | translate }}</option>
+            <option value="7" [disabled]="isMonthDisabled(7)">{{ 'HOME.MONTHS.AUGUST' | translate }}</option>
+            <option value="8" [disabled]="isMonthDisabled(8)">{{ 'HOME.MONTHS.SEPTEMBER' | translate }}</option>
+            <option value="9" [disabled]="isMonthDisabled(9)">{{ 'HOME.MONTHS.OCTOBER' | translate }}</option>
+            <option value="10" [disabled]="isMonthDisabled(10)">{{ 'HOME.MONTHS.NOVEMBER' | translate }}</option>
+            <option value="11" [disabled]="isMonthDisabled(11)">{{ 'HOME.MONTHS.DECEMBER' | translate }}</option>
           </select>
         </div>
       </div>
       }
+      @if (isFilterActive()) {
+      <button type="button" class="reset-filters-btn" (click)="resetFilters()"
+        title="{{ 'HOME.RESET_FILTERS' | translate }}">
+        <lucide-icon [img]="ResetIcon" size="16"></lucide-icon>
+        <span class="btn-text">{{ 'HOME.RESET_FILTERS' | translate }}</span>
+      </button>
+      }
+      @if (filteredRecords().length > 0) {
       <div class="filter-box">
         <div class="select-with-icon">
           <lucide-icon [img]="ArrowUpDownIcon" size="16"></lucide-icon>
@@ -66,6 +78,7 @@
           </select>
         </div>
       </div>
+      }
       }
       <!-- Slot for parent component to project buttons (e.g., Import/Export) -->
       <ng-content select="[slot=action-buttons]"></ng-content>

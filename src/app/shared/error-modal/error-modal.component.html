@@ -17,7 +17,14 @@
       @if (details()) {
       <div class="error-details" [class.warning]="type() === 'warning'">
         <strong>{{ 'ERROR.DETAILS' | translate }}:</strong>
-        <pre>{{ details() }}</pre>
+        <div class="error-list">
+          @for (line of detailLines(); track $index) {
+          <div class="error-line">
+            <span class="error-record-marker">•</span>
+            <span class="error-record-text">{{ line }}</span>
+          </div>
+          }
+        </div>
       </div>
       }
       @if (instructions().length > 0) {

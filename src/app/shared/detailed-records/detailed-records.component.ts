@@ -1,7 +1,7 @@
 import { Component, signal, computed, input, output, effect } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { DatePipe } from '@angular/common';
-import { LucideAngularModule, Edit, Trash2, Calendar, Info, ChevronDown, ChevronLeft, ChevronRight, CalendarDays, ArrowUpDown, HelpCircle } from 'lucide-angular';
+import { LucideAngularModule, Edit, Trash2, Calendar, Info, ChevronDown, ChevronLeft, ChevronRight, CalendarDays, ArrowUpDown, HelpCircle, RotateCcw } from 'lucide-angular';
 import { TranslatePipe } from '../../pipes/translate.pipe';
 import { DatePickerComponent } from '../date-picker/date-picker.component';
 import { HelpModalComponent, HelpStep } from '../help-modal/help-modal.component';
@@ -35,6 +35,7 @@ export class DetailedRecordsComponent {
   protected readonly CalendarDaysIcon = CalendarDays;
   protected readonly ArrowUpDownIcon = ArrowUpDown;
   protected readonly HelpIcon = HelpCircle;
+  protected readonly ResetIcon = RotateCcw;
 
   // Inputs
   records = input.required<ConsumptionRecord[]>();
@@ -51,10 +52,11 @@ export class DetailedRecordsComponent {
   deleteRecord = output<ConsumptionRecord>();
   deleteAllRecords = output<ConsumptionRecord[]>();
   filteredRecordsChange = output<ConsumptionRecord[]>();
-  filterStateChange = output<{ year: number | null; month: number | null; date: string | null }>();
+  filterStateChange = output<{ year: number | null; month: number | null; startDate: string | null; endDate: string | null }>();
 
   // State
-  protected searchDate = signal<string | null>(null);
+  protected startDate = signal<string | null>(null);
+  protected endDate = signal<string | null>(null);
   protected searchYear = signal<number | null>(null);
   protected searchMonth = signal<number | null>(null);
   protected currentPage = signal<number>(1);
@@ -71,15 +73,25 @@ export class DetailedRecordsComponent {
   });
 
   protected filteredRecords = computed(() => {
-    const searchDate = this.searchDate();
+    const startDate = this.startDate();
+    const endDate = this.endDate();
     const searchYear = this.searchYear();
     const searchMonth = this.searchMonth();
     let records = this.records();
 
-    if (searchDate) {
+    if (startDate) {
       records = records.filter(r => {
-        const recordDate = new Date(r.date).toISOString().split('T')[0];
-        return recordDate === searchDate;
+        const date = new Date(r.date);
+        const recordDate = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
+        return recordDate >= startDate;
+      });
+    }
+
+    if (endDate) {
+      records = records.filter(r => {
+        const date = new Date(r.date);
+        const recordDate = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
+        return recordDate <= endDate;
       });
     }
 
@@ -92,6 +104,13 @@ export class DetailedRecordsComponent {
     }
 
     return records;
+  });
+
+  protected isFilterActive = computed(() => {
+    return this.startDate() !== null ||
+      this.endDate() !== null ||
+      this.searchYear() !== null ||
+      this.searchMonth() !== null;
   });
 
   protected displayedRecords = computed(() => {
@@ -160,9 +179,95 @@ export class DetailedRecordsComponent {
       this.filterStateChange.emit({
         year: this.searchYear(),
         month: this.searchMonth(),
-        date: this.searchDate()
+        startDate: this.startDate(),
+        endDate: this.endDate()
       });
     });
+  }
+
+  // Filter Constraint Helpers
+  protected isYearDisabled(year: number): boolean {
+    const start = this.startDate();
+    const end = this.endDate();
+
+    if (start) {
+      const startYear = new Date(start).getFullYear();
+      if (year < startYear) return true;
+    }
+
+    if (end) {
+      const endYear = new Date(end).getFullYear();
+      if (year > endYear) return true;
+    }
+
+    return false;
+  }
+
+  protected isMonthDisabled(monthIndex: number): boolean {
+    const start = this.startDate();
+    const end = this.endDate();
+    const year = this.searchYear();
+
+    // If year is selected, check constraints against that specific year
+    if (year !== null) {
+      if (start) {
+        const startDate = new Date(start);
+        if (year < startDate.getFullYear()) return true;
+        if (year === startDate.getFullYear() && monthIndex < startDate.getMonth()) return true;
+      }
+
+      if (end) {
+        const endDate = new Date(end);
+        if (year > endDate.getFullYear()) return true;
+        if (year === endDate.getFullYear() && monthIndex > endDate.getMonth()) return true;
+      }
+      return false;
+    }
+
+    // If NO year is selected, we only disable if the range is stricly within a partial year span
+    // For example: Range Jan 2024 - Mar 2024 (3 months)
+    // Then months April-Dec should be disabled because they can't possibly match anything in that range.
+    // But if Range is Nov 2023 - Feb 2024, then Nov, Dec, Jan, Feb are valid.
+
+    if (start && end) {
+      const startDate = new Date(start);
+      const endDate = new Date(end);
+
+      // Calculate month difference
+      const monthsDiff = (endDate.getFullYear() - startDate.getFullYear()) * 12 + (endDate.getMonth() - startDate.getMonth());
+
+      // If range covers 12 months or more, all months are valid
+      if (monthsDiff >= 11) return false;
+
+      // If range is within the same year
+      if (startDate.getFullYear() === endDate.getFullYear()) {
+        return monthIndex < startDate.getMonth() || monthIndex > endDate.getMonth();
+      }
+
+      // If range spans across adjacent years (e.g. Nov 2023 - Feb 2024)
+      // This is tricky without a year selected.
+      // A record in "March" could be March 2023 (outside) or March 2024 (outside).
+      // But if user didn't pick a year, they usually mean "Month X in ANY year within range".
+      // If the range is small (e.g. 2 months), likely they only want those 2 months.
+
+      // Simplified Logic as per plan:
+      // If spans < 12 months, check if monthIndex is roughly inside the varying window.
+      // Actually simpler:
+      // If (monthIndex < startMonth AND monthIndex > endMonth) -> potentially disabled?
+      // No, because of wrap around.
+      // Example: Nov(10) to Feb(1). Valid: 10,11, 0, 1. Invalid: 2..9.
+
+      const startMonth = startDate.getMonth();
+      const endMonth = endDate.getMonth();
+
+      if (startDate.getFullYear() < endDate.getFullYear()) {
+        // Spans year boundary. Valid months are [startMonth...11] AND [0...endMonth]
+        // Invalid are (endMonth ... startMonth)
+        return monthIndex > endMonth && monthIndex < startMonth;
+      }
+    }
+
+    return false;
   }
 
   // Helper methods - using shared utility functions
@@ -219,5 +324,13 @@ export class DetailedRecordsComponent {
 
   protected closeHelp() {
     this.showHelpModal.set(false);
+  }
+
+  protected resetFilters() {
+    this.startDate.set(null);
+    this.endDate.set(null);
+    this.searchYear.set(null);
+    this.searchMonth.set(null);
+    this.currentPage.set(1);
   }
 }

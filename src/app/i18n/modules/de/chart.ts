@@ -32,6 +32,8 @@ export const chart = {
     BATHROOM_AVG: 'Bad Durchschnitt',
     WARM_AVG: 'Warmwasser Durchschnitt',
     COLD_AVG: 'Kaltwasser Durchschnitt',
+    WARM_WATER_AVG: 'Warmwasser Durchschnitt',
+    COLD_WATER_AVG: 'Kaltwasser Durchschnitt',
     KITCHEN_WARM_AVG: 'Küche Warm Durchschnitt',
     KITCHEN_COLD_AVG: 'Küche Kalt Durchschnitt',
     BATHROOM_WARM_AVG: 'Bad Warm Durchschnitt',

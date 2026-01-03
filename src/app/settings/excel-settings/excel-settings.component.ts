@@ -114,19 +114,19 @@ export class ExcelSettingsComponent {
     });
 
     // Load collapsed state from localStorage
-    const savedCollapsedState = this.localStorageService.getPreference('hm_excel_preview_is_collapsed');
+    const savedCollapsedState = this.localStorageService.getPreference('excel_preview_is_collapsed');
     if (savedCollapsedState !== null) {
       this.isPreviewCollapsed.set(savedCollapsedState === 'true');
     } else {
       // If no preference saved, save default (false)
-      this.localStorageService.setPreference('hm_excel_preview_is_collapsed', 'false');
+      this.localStorageService.setPreference('excel_preview_is_collapsed', 'false');
     }
   }
 
   protected togglePreview() {
     this.isPreviewCollapsed.update(val => !val);
     // Save to localStorage
-    this.localStorageService.setPreference('hm_excel_preview_is_collapsed', this.isPreviewCollapsed().toString());
+    this.localStorageService.setPreference('excel_preview_is_collapsed', this.isPreviewCollapsed().toString());
   }
 
 

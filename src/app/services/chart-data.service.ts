@@ -47,10 +47,12 @@ export class ChartDataService {
     const chartLabels = mode === 'incremental' ? labels.slice(1) : labels;
     const showComparison = (familySize ?? 0) > 0 && mode === 'incremental' && (showAverageComparison ?? false);
     const comparisonData = showComparison ? this.generateComparisonData(recs, familySize ?? 0, country ?? '') : [];
+    // Trendline only makes sense for incremental mode (total consumption always goes up)
+    const effectiveShowTrendline = mode === 'incremental' && (showTrendline ?? false);
 
     switch (view) {
       case 'total':
-        return this.getWaterTotalView(recs as ConsumptionRecord[], chartLabels, showComparison, comparisonData, showTrendline);
+        return this.getWaterTotalView(recs as ConsumptionRecord[], chartLabels, showComparison, comparisonData, effectiveShowTrendline);
       case 'by-room':
         return this.getWaterByRoomView(recs as ConsumptionRecord[], chartLabels, showComparison, comparisonData);
       case 'by-type':
@@ -98,10 +100,14 @@ export class ChartDataService {
       });
     }
 
-    return { labels, datasets };
+    return { labels, datasets: this.filterEmptyDatasets(datasets) };
   }
 
   private getWaterByRoomView(recs: ConsumptionRecord[], labels: string[], showComparison: boolean, comparisonData: any[]): ChartConfiguration['data'] {
+    // Check if each category has data
+    const hasKitchenData = recs.some(r => (r.kitchenWarm + r.kitchenCold) > 0);
+    const hasBathroomData = recs.some(r => (r.bathroomWarm + r.bathroomCold) > 0);
+
     const datasets: any[] = [
       {
         data: recs.map(r => r.kitchenWarm + r.kitchenCold),
@@ -120,32 +126,41 @@ export class ChartDataService {
     ];
 
     if (showComparison && comparisonData.length > 0) {
-      datasets.push({
-        type: 'line',
-        label: this.languageService.translate('CHART.KITCHEN_AVERAGE'),
-        data: comparisonData.map((d: any) => (d.kitchenWarm || 0) + (d.kitchenCold || 0)),
-        borderColor: '#17a2b8',
-        borderWidth: 2,
-        borderDash: [5, 5],
-        pointRadius: 0,
-        fill: false
-      });
-      datasets.push({
-        type: 'line',
-        label: this.languageService.translate('CHART.BATHROOM_AVERAGE'),
-        data: comparisonData.map((d: any) => (d.bathroomWarm || 0) + (d.bathroomCold || 0)),
-        borderColor: '#6c757d',
-        borderWidth: 2,
-        borderDash: [5, 5],
-        pointRadius: 0,
-        fill: false
-      });
+      // Only show average if corresponding real data exists
+      if (hasKitchenData) {
+        datasets.push({
+          type: 'line',
+          label: this.languageService.translate('CHART.KITCHEN_AVERAGE'),
+          data: comparisonData.map((d: any) => (d.kitchenWarm || 0) + (d.kitchenCold || 0)),
+          borderColor: '#17a2b8',
+          borderWidth: 2,
+          borderDash: [5, 5],
+          pointRadius: 0,
+          fill: false
+        });
+      }
+      if (hasBathroomData) {
+        datasets.push({
+          type: 'line',
+          label: this.languageService.translate('CHART.BATHROOM_AVERAGE'),
+          data: comparisonData.map((d: any) => (d.bathroomWarm || 0) + (d.bathroomCold || 0)),
+          borderColor: '#6c757d',
+          borderWidth: 2,
+          borderDash: [5, 5],
+          pointRadius: 0,
+          fill: false
+        });
+      }
     }
 
-    return { labels, datasets };
+    return { labels, datasets: this.filterEmptyDatasets(datasets) };
   }
 
   private getWaterByTypeView(recs: ConsumptionRecord[], labels: string[], showComparison: boolean, comparisonData: any[]): ChartConfiguration['data'] {
+    // Check if each category has data
+    const hasWarmData = recs.some(r => (r.kitchenWarm + r.bathroomWarm) > 0);
+    const hasColdData = recs.some(r => (r.kitchenCold + r.bathroomCold) > 0);
+
     const datasets: any[] = [
       {
         data: recs.map(r => r.kitchenWarm + r.bathroomWarm),
@@ -164,32 +179,43 @@ export class ChartDataService {
     ];
 
     if (showComparison && comparisonData.length > 0) {
-      datasets.push({
-        type: 'line',
-        label: this.languageService.translate('CHART.WARM_WATER_AVG'),
-        data: comparisonData.map((d: any) => (d.kitchenWarm || 0) + (d.bathroomWarm || 0)),
-        borderColor: '#ffc107',
-        borderWidth: 2,
-        borderDash: [5, 5],
-        pointRadius: 0,
-        fill: false
-      });
-      datasets.push({
-        type: 'line',
-        label: this.languageService.translate('CHART.COLD_WATER_AVG'),
-        data: comparisonData.map((d: any) => (d.kitchenCold || 0) + (d.bathroomCold || 0)),
-        borderColor: '#6c757d',
-        borderWidth: 2,
-        borderDash: [5, 5],
-        pointRadius: 0,
-        fill: false
-      });
+      // Only show average if corresponding real data exists
+      if (hasWarmData) {
+        datasets.push({
+          type: 'line',
+          label: this.languageService.translate('CHART.WARM_WATER_AVG'),
+          data: comparisonData.map((d: any) => (d.kitchenWarm || 0) + (d.bathroomWarm || 0)),
+          borderColor: '#ffc107',
+          borderWidth: 2,
+          borderDash: [5, 5],
+          pointRadius: 0,
+          fill: false
+        });
+      }
+      if (hasColdData) {
+        datasets.push({
+          type: 'line',
+          label: this.languageService.translate('CHART.COLD_WATER_AVG'),
+          data: comparisonData.map((d: any) => (d.kitchenCold || 0) + (d.bathroomCold || 0)),
+          borderColor: '#6c757d',
+          borderWidth: 2,
+          borderDash: [5, 5],
+          pointRadius: 0,
+          fill: false
+        });
+      }
     }
 
-    return { labels, datasets };
+    return { labels, datasets: this.filterEmptyDatasets(datasets) };
   }
 
   private getWaterDetailedView(recs: ConsumptionRecord[], labels: string[], showComparison: boolean, comparisonData: any[]): ChartConfiguration['data'] {
+    // Check if each category has data
+    const hasKitchenWarmData = recs.some(r => r.kitchenWarm > 0);
+    const hasKitchenColdData = recs.some(r => r.kitchenCold > 0);
+    const hasBathroomWarmData = recs.some(r => r.bathroomWarm > 0);
+    const hasBathroomColdData = recs.some(r => r.bathroomCold > 0);
+
     const datasets: any[] = [
       {
         label: this.languageService.translate('CHART.KITCHEN_WARM'),
@@ -230,8 +256,9 @@ export class ChartDataService {
     ];
 
     if (showComparison && comparisonData.length > 0) {
-      datasets.push(
-        {
+      // Only show average if corresponding real data exists
+      if (hasKitchenWarmData) {
+        datasets.push({
           label: this.languageService.translate('CHART.KITCHEN_WARM_AVG'),
           data: comparisonData.map((r: any) => r['kitchenWarm'] as number),
           borderColor: '#ff6384',
@@ -240,8 +267,10 @@ export class ChartDataService {
           tension: 0,
           borderDash: [5, 5],
           pointRadius: 0
-        },
-        {
+        });
+      }
+      if (hasKitchenColdData) {
+        datasets.push({
           label: this.languageService.translate('CHART.KITCHEN_COLD_AVG'),
           data: comparisonData.map((r: any) => r['kitchenCold'] as number),
           borderColor: '#36a2eb',
@@ -250,8 +279,10 @@ export class ChartDataService {
           tension: 0,
           borderDash: [5, 5],
           pointRadius: 0
-        },
-        {
+        });
+      }
+      if (hasBathroomWarmData) {
+        datasets.push({
           label: this.languageService.translate('CHART.BATHROOM_WARM_AVG'),
           data: comparisonData.map((r: any) => r['bathroomWarm'] as number),
           borderColor: '#ffcd56',
@@ -260,8 +291,10 @@ export class ChartDataService {
           tension: 0,
           borderDash: [5, 5],
           pointRadius: 0
-        },
-        {
+        });
+      }
+      if (hasBathroomColdData) {
+        datasets.push({
           label: this.languageService.translate('CHART.BATHROOM_COLD_AVG'),
           data: comparisonData.map((r: any) => r['bathroomCold'] as number),
           borderColor: '#4bc0c0',
@@ -270,11 +303,11 @@ export class ChartDataService {
           tension: 0,
           borderDash: [5, 5],
           pointRadius: 0
-        }
-      );
+        });
+      }
     }
 
-    return { labels, datasets };
+    return { labels, datasets: this.filterEmptyDatasets(datasets) };
   }
 
   /**
@@ -344,5 +377,16 @@ export class ChartDataService {
         // For heating, by-type and detailed views are the same as by-room
         return this.getHeatingChartData({ ...params, view: 'by-room' });
     }
+  }
+
+  /**
+   * Filter out datasets where all values are 0 (no data entered for that category)
+   */
+  private filterEmptyDatasets(datasets: any[]): any[] {
+    return datasets.filter(dataset => {
+      if (!dataset.data || !Array.isArray(dataset.data)) return true;
+      // Keep dataset if at least one value is non-zero
+      return dataset.data.some((value: number) => value !== 0 && value !== null && value !== undefined);
+    });
   }
 }

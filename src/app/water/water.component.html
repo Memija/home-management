@@ -10,18 +10,18 @@
 
   </div>
 
-  @if (familySize() > 0 && displayMode() === 'incremental') {
+  @if (records().length > 0 && familySize() > 0 && displayMode() === 'incremental') {
   <app-comparison-note [records]="records()"
     (countryCodeChange)="handleCountryCodeChange($event)"></app-comparison-note>
   }
 
-  @if (unconfirmedMeterChanges().length > 0) {
+  @if (displayMode() === 'total' && unconfirmedMeterChanges().length > 0) {
   <div class="meter-change-notification">
     <div class="notification-content">
       <lucide-icon [img]="AlertTriangleIcon" size="20" class="warning-icon"></lucide-icon>
       <div class="notification-text">
         <strong>{{ 'CHART.METER_CHANGE_DETECTED' | translate }}</strong>
-        <p>{{ 'CHART.METER_CHANGE_MESSAGE' | translate:{ date: unconfirmedMeterChanges()[0] } }}</p>
+        <p>{{ 'CHART.METER_CHANGE_MESSAGE' | translate:{ date: formattedMeterChangeDate() } }}</p>
       </div>
     </div>
     <div class="notification-actions">
@@ -31,6 +31,16 @@
       <button type="button" class="btn-dismiss" (click)="dismissMeterChange(unconfirmedMeterChanges()[0])">
         {{ 'CHART.DISMISS_METER_CHANGE' | translate }}
       </button>
+    </div>
+  </div>
+  } @else if (waterFact()) {
+  <div class="info-notification">
+    <div class="notification-content">
+      <lucide-icon [img]="LightbulbIcon" size="20" class="info-icon"></lucide-icon>
+      <div class="notification-text">
+        <strong>{{ waterFact()!.title }}</strong>
+        <p>{{ waterFact()!.message }}</p>
+      </div>
     </div>
   </div>
   }

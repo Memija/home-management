@@ -8,6 +8,7 @@ import { countries } from './modules/de/countries';
 import { contact } from './modules/de/contact';
 import { errors } from './modules/de/errors';
 import { excel } from './modules/de/excel';
+import { waterFacts } from './modules/de/water-facts';
 
 export const de = {
   ...common,
@@ -18,5 +19,6 @@ export const de = {
   ...countries,
   ...contact,
   ...errors,
-  ...excel
+  ...excel,
+  WATER_FACTS: waterFacts
 };

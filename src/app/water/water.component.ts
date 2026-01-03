@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
 import { TranslatePipe } from '../pipes/translate.pipe';
-import { LucideAngularModule, ArrowLeft, Download, Upload, CircleCheck, Trash2, FileSpreadsheet, FileText, FileInput, FileOutput, Info, AlertTriangle } from 'lucide-angular';
+import { LucideAngularModule, ArrowLeft, Download, Upload, CircleCheck, Trash2, FileSpreadsheet, FileText, FileInput, FileOutput, Info, AlertTriangle, Lightbulb } from 'lucide-angular';
 import { ConsumptionInputComponent, type ConsumptionData, type ConsumptionGroup } from '../shared/consumption-input/consumption-input.component';
 import { DeleteConfirmationModalComponent } from '../shared/delete-confirmation-modal/delete-confirmation-modal.component';
 import { ConfirmationModalComponent } from '../shared/confirmation-modal/confirmation-modal.component';
@@ -19,6 +19,8 @@ import { ConsumptionDataService } from '../services/consumption-data.service';
 import { ExcelSettingsService } from '../services/excel-settings.service';
 import { ChartCalculationService } from '../services/chart-calculation.service';
 import { LocalStorageService } from '../services/local-storage.service';
+import { LanguageService } from '../services/language.service';
+import { WaterFactsService, WaterFact } from '../services/water-facts.service';
 import { CHART_HELP_STEPS, RECORD_HELP_STEPS, RECORDS_LIST_HELP_STEPS } from './water.constants';
 
 @Component({
@@ -37,6 +39,8 @@ export class WaterComponent {
   private householdService = inject(HouseholdService);
   private chartCalculationService = inject(ChartCalculationService);
   private localStorageService = inject(LocalStorageService);
+  private languageService = inject(LanguageService);
+  private waterFactsService = inject(WaterFactsService);
 
   // Icons
   protected readonly ArrowLeftIcon = ArrowLeft;
@@ -50,6 +54,7 @@ export class WaterComponent {
   protected readonly FileTextIcon = FileText;
   protected readonly InfoIcon = Info;
   protected readonly AlertTriangleIcon = AlertTriangle;
+  protected readonly LightbulbIcon = Lightbulb;
 
   // Constants
   protected readonly helpSteps = RECORD_HELP_STEPS;
@@ -136,11 +141,94 @@ export class WaterComponent {
     return detected.filter(d => !confirmed.includes(d) && !dismissed.includes(d));
   });
 
+  protected formattedMeterChangeDate = computed(() => {
+    const unconfirmed = this.unconfirmedMeterChanges();
+    if (unconfirmed.length === 0) return '';
+
+    const dateStr = unconfirmed[0];
+    const date = new Date(dateStr);
+    const lang = this.languageService.currentLang();
+    const locale = lang === 'de' ? 'de-DE' : 'en-US';
+
+    return date.toLocaleDateString(locale, {
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric'
+    });
+  });
+
   protected adjustedRecords = computed(() => {
     const records = this.records();
+    const mode = this.displayMode();
     const confirmed = this.confirmedMeterChanges();
-    if (confirmed.length === 0) return records;
+
+    // Only apply meter change adjustments for Total mode
+    // For incremental mode, the difference calculation handles this correctly
+    if (mode === 'incremental' || confirmed.length === 0) {
+      return records;
+    }
     return this.chartCalculationService.adjustForMeterChanges(records, confirmed);
+  });
+
+  // Random seed for water facts - changes when chart view changes
+  private factRandomSeed = signal(Math.random());
+
+  // Water fun fact - changes when chart view changes and is context-aware
+  protected waterFact = computed(() => {
+    const records = this.adjustedRecords();
+    const chartView = this.chartView();
+    const mode = this.displayMode();
+    const lang = this.languageService.currentLang(); // Reactively update on language change
+    const seed = this.factRandomSeed(); // React to seed changes
+
+    // Only show facts in total consumption mode
+    if (mode !== 'total' || records.length === 0) {
+      return null;
+    }
+
+    // Calculate values from the latest record
+    const latestRecord = records[records.length - 1];
+    const kitchenTotal = latestRecord.kitchenWarm + latestRecord.kitchenCold;
+    const bathroomTotal = latestRecord.bathroomWarm + latestRecord.bathroomCold;
+    const warmTotal = latestRecord.kitchenWarm + latestRecord.bathroomWarm;
+    const coldTotal = latestRecord.kitchenCold + latestRecord.bathroomCold;
+    const totalLiters = kitchenTotal + bathroomTotal;
+
+    // Use random seed to get a random fact index
+    const factIndex = Math.floor(seed * 20);
+
+    // Determine context and liters based on chart view
+    type FactContext = 'total' | 'kitchen' | 'bathroom' | 'warm' | 'cold';
+    let context: FactContext = 'total';
+    let liters = totalLiters;
+
+    switch (chartView) {
+      case 'by-room':
+        // Randomly pick kitchen or bathroom, fallback to the other if empty
+        if (seed > 0.5) {
+          context = kitchenTotal > 0 ? 'kitchen' : (bathroomTotal > 0 ? 'bathroom' : 'total');
+          liters = context === 'kitchen' ? kitchenTotal : (context === 'bathroom' ? bathroomTotal : totalLiters);
+        } else {
+          context = bathroomTotal > 0 ? 'bathroom' : (kitchenTotal > 0 ? 'kitchen' : 'total');
+          liters = context === 'bathroom' ? bathroomTotal : (context === 'kitchen' ? kitchenTotal : totalLiters);
+        }
+        break;
+      case 'by-type':
+        // Randomly pick warm or cold, fallback to the other if empty
+        if (seed > 0.5) {
+          context = warmTotal > 0 ? 'warm' : (coldTotal > 0 ? 'cold' : 'total');
+          liters = context === 'warm' ? warmTotal : (context === 'cold' ? coldTotal : totalLiters);
+        } else {
+          context = coldTotal > 0 ? 'cold' : (warmTotal > 0 ? 'warm' : 'total');
+          liters = context === 'cold' ? coldTotal : (context === 'warm' ? warmTotal : totalLiters);
+        }
+        break;
+      default:
+        context = 'total';
+        liters = totalLiters;
+    }
+
+    return this.waterFactsService.getFactByIndex(liters, factIndex, context);
   });
 
   // Methods
@@ -149,7 +237,10 @@ export class WaterComponent {
   }
 
   // UI Handlers
-  protected onChartViewChange = (view: ChartView) => this.preferencesService.setChartView(view);
+  protected onChartViewChange = (view: ChartView) => {
+    this.preferencesService.setChartView(view);
+    this.factRandomSeed.set(Math.random()); // Trigger new random fact
+  };
   protected onDisplayModeChange = (mode: DisplayMode) => this.preferencesService.setDisplayMode(mode);
 
   protected onFilterStateChange(state: { year: number | null; month: number | null; startDate: string | null; endDate: string | null }) {

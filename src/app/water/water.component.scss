@@ -35,8 +35,7 @@ $water-primary-dark: $primary-dark;
 
 // Meter Change Notification
 .meter-change-notification {
-  background: linear-gradient(135deg, rgba($warning, 0.1) 0%, rgba($warning, 0.05) 100%);
-  border: 1px solid rgba($warning, 0.3);
+  background: #ffffff;
   border-radius: 12px;
   padding: 1rem 1.25rem;
   margin-bottom: 1.5rem;
@@ -112,6 +111,49 @@ $water-primary-dark: $primary-dark;
       &:hover {
         border-color: $text-secondary;
         color: $text-color;
+      }
+    }
+  }
+}
+
+// Info Notification (Water Facts)
+.info-notification {
+  background: #ffffff;
+  border-radius: 12px;
+  padding: 1rem 1.25rem;
+  margin-bottom: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+
+  @media (min-width: 640px) {
+    flex-direction: row;
+    align-items: center;
+  }
+
+  .notification-content {
+    display: flex;
+    gap: 0.75rem;
+    align-items: flex-start;
+
+    .info-icon {
+      color: #0ea5e9;
+      flex-shrink: 0;
+      margin-top: 2px;
+    }
+
+    .notification-text {
+      strong {
+        color: #0369a1;
+        display: block;
+        margin-bottom: 0.25rem;
+      }
+
+      p {
+        margin: 0;
+        font-size: 0.9rem;
+        color: $text-secondary;
+        line-height: 1.4;
       }
     }
   }

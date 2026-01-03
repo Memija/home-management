@@ -92,19 +92,19 @@ export class LocalStorageService extends StorageService {
     await this.save(recordKey, records);
   }
 
-  // Sync methods for simple preference storage (no prefix, for UI state)
+  // Sync methods for simple preference storage (uses hm_ prefix for consistency)
   getPreference(key: string): string | null {
     if (!this.isBrowser) return null;
-    return localStorage.getItem(key);
+    return localStorage.getItem(this.prefix + key);
   }
 
   setPreference(key: string, value: string): void {
     if (!this.isBrowser) return;
-    localStorage.setItem(key, value);
+    localStorage.setItem(this.prefix + key, value);
   }
 
   removePreference(key: string): void {
     if (!this.isBrowser) return;
-    localStorage.removeItem(key);
+    localStorage.removeItem(this.prefix + key);
   }
 }

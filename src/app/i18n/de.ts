@@ -9,6 +9,7 @@ import { contact } from './modules/de/contact';
 import { errors } from './modules/de/errors';
 import { excel } from './modules/de/excel';
 import { waterFacts } from './modules/de/water-facts';
+import { countryFacts } from './modules/de/country-facts/index';
 
 export const de = {
   ...common,
@@ -20,5 +21,6 @@ export const de = {
   ...contact,
   ...errors,
   ...excel,
-  WATER_FACTS: waterFacts
+  WATER_FACTS: waterFacts,
+  COUNTRY_FACTS: countryFacts
 };

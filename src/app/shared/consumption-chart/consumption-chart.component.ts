@@ -156,7 +156,81 @@ export class ConsumptionChartComponent {
       responsive: true,
       maintainAspectRatio: false,
       plugins: {
-        legend: { display: true, position: 'top' },
+        legend: {
+          display: true,
+          position: 'top',
+          onClick: (e: any, legendItem: any, legend: any) => {
+            const chart = legend.chart;
+            const clickedIndex = legendItem.datasetIndex;
+            const clickedDataset = chart.data.datasets[clickedIndex];
+            const clickedLabel = clickedDataset.label || '';
+
+            // Default toggle behavior for the clicked item
+            const isHidden = !chart.isDatasetVisible(clickedIndex);
+            chart.setDatasetVisibility(clickedIndex, isHidden);
+
+            // Keywords that identify trendlines and averages
+            const trendlineKeywords = ['Trendline', 'Trendlinie'];
+            const averageKeywords = ['Average', 'Durchschnitt', 'Landesdurchschnitt', 'Country Average'];
+            const suffixKeywords = [...trendlineKeywords, ...averageKeywords];
+
+            // Check if clicked label is a main data line (not a trendline or average)
+            const isTrendlineOrAverage = suffixKeywords.some(kw => clickedLabel.includes(kw));
+
+            if (!isTrendlineOrAverage) {
+              // Special case for Total view: "Total Weekly Consumption" / "Gesamtverbrauch pro Woche"
+              // These have standalone "Trendline" and "Country Average" labels (no shared prefix)
+              const totalViewLabels = ['Total Weekly Consumption', 'Gesamtverbrauch pro Woche', 'Gesamtverbrauch'];
+              const isTotalView = totalViewLabels.some(lbl => clickedLabel.includes(lbl) || clickedLabel.startsWith(lbl.split(' ')[0]));
+
+              if (isTotalView) {
+                // In Total view, hide/show all standalone trendline and average datasets
+                chart.data.datasets.forEach((dataset: any, index: number) => {
+                  if (index === clickedIndex) return;
+                  const label = dataset.label || '';
+                  // Match standalone "Trendline" or "Country Average" (not prefixed with category)
+                  if (trendlineKeywords.includes(label) ||
+                    averageKeywords.some(kw => label === kw || label.includes('Country') || label.includes('Landes'))) {
+                    chart.setDatasetVisibility(index, isHidden);
+                  }
+                });
+              } else {
+                // For other views, extract category from label
+                const suffixesToRemove = [' Total', ' Gesamt', ' Warm', ' Kalt', ' Cold'];
+                let category = clickedLabel;
+                for (const suffix of suffixesToRemove) {
+                  if (category.endsWith(suffix)) {
+                    category = category.slice(0, -suffix.length);
+                    break;
+                  }
+                }
+
+                // For detailed view labels like "Kitchen Warm", keep the full label as category
+                if (clickedLabel.includes(' Warm') || clickedLabel.includes(' Cold') ||
+                  clickedLabel.includes(' Kalt')) {
+                  category = clickedLabel;
+                }
+
+                // Find related trendlines and averages
+                chart.data.datasets.forEach((dataset: any, index: number) => {
+                  if (index === clickedIndex) return;
+
+                  const label = dataset.label || '';
+                  const isRelatedTrendlineOrAverage = suffixKeywords.some(kw => label.includes(kw));
+
+                  if (isRelatedTrendlineOrAverage) {
+                    // Check if this dataset belongs to the same category
+                    if (label.startsWith(category)) {
+                      chart.setDatasetVisibility(index, isHidden);
+                    }
+                  }
+                });
+              }
+            }
+
+            chart.update();
+          }
+        },
         tooltip: {
           callbacks: {
             label: (context) => `${context.dataset.label}: ${context.parsed.y} L`

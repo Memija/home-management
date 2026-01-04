@@ -108,7 +108,6 @@
 .remove-btn {
   @extend %btn-base;
   background: #dc3545; // Red
-  padding: 0.5rem;
   width: auto;
 
   &:hover {
@@ -120,7 +119,6 @@
   @extend %btn-base;
   background: #ffc107; // Yellow/Warning
   color: #212529;
-  padding: 0.5rem;
   width: auto;
 
   &:hover {

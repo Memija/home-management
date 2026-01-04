@@ -20,7 +20,7 @@
           {{ 'CHART.DISPLAY_MODE_INCREMENTAL' | translate }}
         </button>
       </div>
-      @if (chartType === 'water' && currentView() === 'total' && displayMode() === 'incremental') {
+      @if (chartType === 'water' && displayMode() === 'incremental') {
       <label class="trendline-toggle" for="show-trendline" [class.disabled]="!hasSufficientDataForTrendline()">
         <input id="show-trendline" type="checkbox" [checked]="showTrendline()" (change)="toggleTrendline()"
           [disabled]="!hasSufficientDataForTrendline()">

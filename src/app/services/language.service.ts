@@ -1,6 +1,5 @@
 import { Injectable, signal, inject, ApplicationRef } from '@angular/core';
-import { en } from '../i18n/en';
-import { de } from '../i18n/de';
+
 
 export type Language = 'en' | 'de';
 
@@ -13,11 +12,18 @@ const LANGUAGE_STORAGE_KEY = 'hm_preferred_language';
 export class LanguageService {
   private appRef = inject(ApplicationRef);
   readonly currentLang = signal<Language>(this.getStoredLanguage());
+  readonly isLoading = signal<boolean>(false);
 
-  private translations: Record<Language, any> = {
-    en,
-    de
+  // Store loaded translations
+  private translations: Record<string, any> = {
+    en: {},
+    de: {}
   };
+
+  constructor() {
+    // Load initial language
+    this.loadLanguage(this.currentLang());
+  }
 
   private getStoredLanguage(): Language {
     if (typeof window !== 'undefined' && typeof localStorage !== 'undefined') {
@@ -37,8 +43,12 @@ export class LanguageService {
     return 'en';
   }
 
-  setLanguage(lang: Language) {
+  async setLanguage(lang: Language) {
+    if (lang === this.currentLang()) return;
+
+    await this.loadLanguage(lang);
     this.currentLang.set(lang);
+
     if (typeof window !== 'undefined' && typeof localStorage !== 'undefined') {
       localStorage.setItem(LANGUAGE_STORAGE_KEY, lang);
     }
@@ -53,9 +63,32 @@ export class LanguageService {
       document.head.appendChild(meta);
     }
     meta.setAttribute('content', locale);
+  }
 
-    // Force change detection to ensure all components update
-    this.appRef.tick();
+  private async loadLanguage(lang: Language) {
+    // If already loaded (check a key usually present), skip
+    if (this.translations[lang] && Object.keys(this.translations[lang]).length > 0) {
+      return;
+    }
+
+    this.isLoading.set(true);
+    try {
+      let module;
+      if (lang === 'de') {
+        module = await import('../i18n/de');
+        this.translations['de'] = module.de;
+      } else {
+        module = await import('../i18n/en');
+        this.translations['en'] = module.en;
+      }
+
+      // Force UI update after loading
+      this.appRef.tick();
+    } catch (error) {
+      console.error(`Failed to load language ${lang}:`, error);
+    } finally {
+      this.isLoading.set(false);
+    }
   }
 
   translate(key: string, params?: Record<string, any>): string {

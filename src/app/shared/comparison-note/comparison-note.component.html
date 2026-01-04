@@ -38,4 +38,18 @@
             </div>
         </div>
     </div>
+
+    <!-- Country Fun Fact -->
+    @if (countryFact()) {
+    <div class="country-fact">
+        <lucide-icon [img]="LightbulbIcon" size="20" class="fact-icon"></lucide-icon>
+        <div class="fact-content">
+            <div class="fact-label">{{ 'CHART.DID_YOU_KNOW' | translate }}</div>
+            <p class="fact-text">{{ countryFact() }}</p>
+        </div>
+        <button type="button" class="refresh-btn" (click)="refreshFact()" title="{{ 'CHART.NEW_FACT' | translate }}">
+            ↻
+        </button>
+    </div>
+    }
 </div>

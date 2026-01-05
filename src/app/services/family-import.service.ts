@@ -93,12 +93,22 @@ export class FamilyImportService {
   /**
    * Validates imported member data and returns sanitized members or errors.
    */
-  validateImportedMembers(data: any[]): MemberValidationResult {
+  validateImportedMembers(data: unknown[]): MemberValidationResult {
     const errors: string[] = [];
     const validatedMembers: HouseholdMember[] = [];
 
+    // Local interface for validation
+    interface RawMember {
+      id?: unknown;
+      name?: unknown;
+      surname?: unknown;
+      type?: unknown;
+      gender?: unknown;
+      avatar?: unknown;
+    }
+
     for (let i = 0; i < data.length; i++) {
-      const item = data[i];
+      const item = data[i] as RawMember; // Helper cast
       let hasErrors = false;
 
       // Check if item is an object
@@ -118,13 +128,15 @@ export class FamilyImportService {
       }
 
       // Validate type (required - must be adult, kid, or other)
-      if (!item.type || (item.type !== 'adult' && item.type !== 'kid' && item.type !== 'other')) {
+      const type = item.type as string; // Check value below
+      if (!type || (type !== 'adult' && type !== 'kid' && type !== 'other')) {
         errors.push('SETTINGS.IMPORT_FAMILY_ERROR_INVALID_TYPE');
         hasErrors = true;
       }
 
       // Validate gender (required - must be male, female, or other)
-      if (!item.gender || (item.gender !== 'male' && item.gender !== 'female' && item.gender !== 'other')) {
+      const gender = item.gender as string;
+      if (!gender || (gender !== 'male' && gender !== 'female' && gender !== 'other')) {
         errors.push('SETTINGS.IMPORT_FAMILY_ERROR_INVALID_GENDER');
         hasErrors = true;
       }
@@ -149,10 +161,10 @@ export class FamilyImportService {
       // Create validated member with generated ID if missing
       validatedMembers.push({
         id: (item.id && typeof item.id === 'string') ? item.id : crypto.randomUUID(),
-        name: item.name.trim(),
-        surname: item.surname.trim(),
-        type: item.type,
-        gender: item.gender,
+        name: (item.name as string).trim(),
+        surname: (item.surname as string).trim(),
+        type: type as 'adult' | 'kid' | 'other',
+        gender: gender as 'male' | 'female' | 'other',
         avatar: validAvatar
       });
     }

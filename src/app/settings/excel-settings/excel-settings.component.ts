@@ -327,7 +327,8 @@ export class ExcelSettingsComponent {
         this.showImportSuccess.set(true);
         setTimeout(() => this.showImportSuccess.set(false), 3000);
 
-      } catch (error: any) {
+      } catch (err: unknown) {
+        const error = err as any;
         console.error('Failed to import settings:', error);
 
         const { message, details, instructions } = this.importService.mapImportError(error);

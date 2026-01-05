@@ -9,7 +9,7 @@ export class FileStorageService {
    * @param data The data to export
    * @param filename The name of the file to download
    */
-  exportToFile(data: Record<string, any>, filename: string = 'water-consumption-data.json'): void {
+  exportToFile(data: unknown, filename: string = 'water-consumption-data.json'): void {
     const json = JSON.stringify(data, null, 2);
     const blob = new Blob([json], { type: 'application/json' });
     const url = URL.createObjectURL(blob);
@@ -28,7 +28,7 @@ export class FileStorageService {
    * @param file The file to import
    * @returns The parsed data from the file
    */
-  async importFromFile<T = Record<string, any>>(file: File): Promise<T> {
+  async importFromFile<T = unknown>(file: File): Promise<T> {
     return new Promise((resolve, reject) => {
       const reader = new FileReader();
 
@@ -55,7 +55,7 @@ export class FileStorageService {
    * @param data The data to export
    * @param filename The name of the file to download
    */
-  async exportData(data: any, filename: string): Promise<void> {
+  async exportData(data: unknown, filename: string): Promise<void> {
     this.exportToFile(data, filename);
   }
 

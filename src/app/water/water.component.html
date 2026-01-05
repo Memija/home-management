@@ -1,10 +1,6 @@
-<div class="container">
+<div class="water-container">
   <div class="app-header">
     <div class="header-left">
-      <button type="button" routerLink="/" class="btn-outline" title="{{ 'DASHBOARD.BACK_TO_DASHBOARD' | translate }}">
-        <lucide-icon [img]="ArrowLeftIcon" size="16"></lucide-icon>
-        {{ 'DASHBOARD.BACK_TO_DASHBOARD' | translate }}
-      </button>
       <h1>{{ 'WATER.TITLE' | translate }}</h1>
     </div>
 
@@ -16,9 +12,9 @@
   }
 
   @if (displayMode() === 'total' && unconfirmedMeterChanges().length > 0) {
-  <div class="meter-change-notification">
+  <div class="notification-card notification-card--warning">
     <div class="notification-content">
-      <lucide-icon [img]="AlertTriangleIcon" size="20" class="warning-icon"></lucide-icon>
+      <lucide-icon [img]="AlertTriangleIcon" size="20" class="notification-icon"></lucide-icon>
       <div class="notification-text">
         <strong>{{ 'CHART.METER_CHANGE_DETECTED' | translate }}</strong>
         <p>{{ 'CHART.METER_CHANGE_MESSAGE' | translate:{ date: formattedMeterChangeDate() } }}</p>
@@ -34,9 +30,9 @@
     </div>
   </div>
   } @else if (waterFact()) {
-  <div class="info-notification">
+  <div class="notification-card notification-card--info">
     <div class="notification-content">
-      <lucide-icon [img]="LightbulbIcon" size="20" class="info-icon"></lucide-icon>
+      <lucide-icon [img]="LightbulbIcon" size="20" class="notification-icon"></lucide-icon>
       <div class="notification-text">
         <strong>{{ waterFact()!.title }}</strong>
         <p>{{ waterFact()!.message }}</p>

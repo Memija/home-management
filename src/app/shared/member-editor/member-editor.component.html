@@ -74,9 +74,10 @@
   <div class="form-group">
     <span class="form-label">{{ 'SETTINGS.OR_SELECT_AVATAR' | translate }}</span>
     <div class="avatar-grid">
-      @for (avatar of avatars(); track avatar) {
+      @for (avatar of avatars(); track avatar; let i = $index) {
       <img [src]="avatar" [class.selected]="editAvatar() === avatar && !customPicturePreview()"
-        (click)="selectAvatar(avatar)" alt="Avatar option" title="{{ 'SETTINGS.SELECT_AVATAR' | translate }}">
+        alt="Avatar option {{ i + 1 }}" (click)="selectAvatar(avatar)"
+        title="{{ 'SETTINGS.SELECT_AVATAR' | translate }}">
       }
     </div>
   </div>

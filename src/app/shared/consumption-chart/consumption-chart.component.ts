@@ -1,6 +1,6 @@
 import { Component, Input, ViewChild, computed, effect, inject, input, signal } from '@angular/core';
 import { BaseChartDirective } from 'ng2-charts';
-import { Chart, ChartConfiguration, registerables } from 'chart.js';
+import { Chart, ChartConfiguration, registerables, ChartEvent, LegendItem, LegendElement } from 'chart.js';
 import { TranslatePipe } from '../../pipes/translate.pipe';
 import { LanguageService } from '../../services/language.service';
 import { ChartDataService, ChartView, DisplayMode } from '../../services/chart-data.service';
@@ -10,10 +10,12 @@ import { HelpModalComponent, HelpStep } from '../help-modal/help-modal.component
 
 Chart.register(...registerables);
 
+import { ConsumptionRecord, HeatingRecord } from '../../models/records.model';
+
 // Re-export types for consumers
 export type { ChartView, DisplayMode } from '../../services/chart-data.service';
 
-export type ChartDataPoint = Record<string, number | Date> & { date: Date };
+export type ChartDataPoint = ConsumptionRecord | HeatingRecord;
 
 export interface ChartConfig {
   view: ChartView;
@@ -30,14 +32,14 @@ export interface ChartConfig {
 export class ConsumptionChartComponent {
   @ViewChild(BaseChartDirective) chart?: BaseChartDirective;
 
-  data = input.required<any[]>();
+  data = input.required<ChartDataPoint[]>();
   currentView = input.required<ChartView>();
   @Input({ required: true }) onViewChange!: (view: ChartView) => void;
   @Input({ required: true }) chartType!: 'water' | 'home' | 'heating';
   displayMode = input<DisplayMode>('total');
   @Input({ required: true }) onDisplayModeChange!: (mode: DisplayMode) => void;
-  familySize = input<number>(0);
-  country = input<string>('');
+  familySize = input<any>(0);
+  country = input<any>('');
   helpTitleKey = input<string>('HOME.CHART_HELP_TITLE');
   helpSteps = input<HelpStep[]>([]);
 
@@ -78,7 +80,7 @@ export class ConsumptionChartComponent {
   protected currentLang = computed(() => this.languageService.currentLang());
 
   // Helper to generate smart labels - includes year when data spans multiple years
-  private generateSmartLabels(recs: any[]): string[] {
+  private generateSmartLabels(recs: ChartDataPoint[]): string[] {
     if (recs.length === 0) return [];
 
     const dates = recs.map(r => new Date(r.date));
@@ -98,8 +100,10 @@ export class ConsumptionChartComponent {
   }
 
   protected chartData = computed<ChartConfiguration['data']>(() => {
-    const recs = this.data();
-    const labels = this.generateSmartLabels(recs);
+    // Cast to internal record types for service compatibility
+    // This is safe because ChartDataPoint is compatible with ConsumptionRecord/HeatingRecord base structure for date
+    const recs = this.data() as any;
+    const labels = this.generateSmartLabels(this.data());
     const view = this.currentView();
     const mode = this.displayMode();
     // Reactive to language, country, and toggle changes
@@ -118,8 +122,8 @@ export class ConsumptionChartComponent {
         mode,
         showTrendline: this.showTrendline(),
         showAverageComparison: this.showAverageComparison(),
-        country: this.country(),
-        familySize: this.familySize()
+        country: this.country() ?? '',
+        familySize: this.familySize() ?? 0
       });
     } else if (this.chartType === 'home') {
       return this.chartDataService.getWaterChartData({
@@ -159,9 +163,12 @@ export class ConsumptionChartComponent {
         legend: {
           display: true,
           position: 'top',
-          onClick: (e: any, legendItem: any, legend: any) => {
+          onClick: (e: ChartEvent, legendItem: LegendItem, legend: LegendElement<any>) => {
             const chart = legend.chart;
             const clickedIndex = legendItem.datasetIndex;
+
+            if (clickedIndex === undefined) return;
+
             const clickedDataset = chart.data.datasets[clickedIndex];
             const clickedLabel = clickedDataset.label || '';
 
@@ -185,7 +192,7 @@ export class ConsumptionChartComponent {
 
               if (isTotalView) {
                 // In Total view, hide/show all standalone trendline and average datasets
-                chart.data.datasets.forEach((dataset: any, index: number) => {
+                chart.data.datasets.forEach((dataset: ChartConfiguration['data']['datasets'][0], index: number) => {
                   if (index === clickedIndex) return;
                   const label = dataset.label || '';
                   // Match standalone "Trendline" or "Country Average" (not prefixed with category)
@@ -212,7 +219,7 @@ export class ConsumptionChartComponent {
                 }
 
                 // Find related trendlines and averages
-                chart.data.datasets.forEach((dataset: any, index: number) => {
+                chart.data.datasets.forEach((dataset: ChartConfiguration['data']['datasets'][0], index: number) => {
                   if (index === clickedIndex) return;
 
                   const label = dataset.label || '';

@@ -3,6 +3,11 @@ import { CommonModule } from '@angular/common';
 import { LucideAngularModule, AlertCircle, AlertTriangle, X } from 'lucide-angular';
 import { TranslatePipe } from '../../pipes/translate.pipe';
 
+export interface ErrorInstruction {
+  key: string;
+  params?: Record<string, string | number>;
+}
+
 @Component({
   selector: 'app-error-modal',
   standalone: true,
@@ -15,7 +20,7 @@ export class ErrorModalComponent {
   title = input<string>('ERROR.TITLE');
   message = input.required<string>();
   details = input<string>('');
-  instructions = input<any[]>([]); // Allow string or object
+  instructions = input<(string | ErrorInstruction)[]>([]); // Allow string or object
   type = input<'error' | 'warning'>('error');
 
   // Split details into lines for better display
@@ -30,7 +35,7 @@ export class ErrorModalComponent {
   protected readonly AlertTriangleIcon = AlertTriangle;
   protected readonly XIcon = X;
 
-  protected isString(val: any): boolean {
+  protected isString(val: unknown): val is string {
     return typeof val === 'string';
   }
 }

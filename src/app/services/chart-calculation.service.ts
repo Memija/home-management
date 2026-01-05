@@ -1,6 +1,6 @@
 import { Injectable, inject } from '@angular/core';
 import { WaterAveragesService } from './water-averages.service';
-import { ConsumptionRecord, HeatingRecord } from '../models/records.model';
+import { ConsumptionRecord, HeatingRecord, CombinedData, ComparisonData } from '../models/records.model';
 
 @Injectable({
   providedIn: 'root'
@@ -11,21 +11,28 @@ export class ChartCalculationService {
   /**
    * Calculate incremental (delta) data between consecutive readings
    */
-  calculateIncrementalData(recs: (ConsumptionRecord | HeatingRecord)[]): any[] {
-    if (recs.length <= 1) return recs;
+  calculateIncrementalData(recs: (ConsumptionRecord | HeatingRecord)[]): CombinedData[] {
+    if (recs.length <= 1) return [];
 
-    const incrementalData: any[] = [];
+    const incrementalData: CombinedData[] = [];
     for (let i = 1; i < recs.length; i++) {
       const current = recs[i];
       const previous = recs[i - 1];
-      const incremental: Record<string, any> = { date: current.date };
 
-      const currentData = current as unknown as Record<string, number>;
-      const previousData = previous as unknown as Record<string, number>;
+      // Initialize with date
+      const incremental: CombinedData = { date: current.date };
+
+      // We need to type cast to access keys dynamically, but safely
+      // CombinedRecord is a union type, so we treat it as an object with possible number keys
+      const currentObj = current as unknown as Record<string, unknown>;
+      const previousObj = previous as unknown as Record<string, unknown>;
 
       Object.keys(current).forEach(key => {
-        if (key !== 'date' && typeof currentData[key] === 'number') {
-          incremental[key] = Math.max(0, (currentData[key]) - (previousData[key] || 0));
+        const currVal = currentObj[key];
+        const prevVal = previousObj[key];
+
+        if (key !== 'date' && typeof currVal === 'number' && typeof prevVal === 'number') {
+          incremental[key] = Math.max(0, currVal - prevVal);
         }
       });
 
@@ -74,7 +81,7 @@ export class ChartCalculationService {
   /**
    * Generate comparison data based on country averages
    */
-  generateComparisonData(processedData: (ConsumptionRecord | HeatingRecord)[], familySize: number, country: string): any[] {
+  generateComparisonData(processedData: (ConsumptionRecord | HeatingRecord)[], familySize: number, country: string): ComparisonData[] {
     if (processedData.length === 0 || familySize === 0) return [];
 
     const countryData = this.waterAveragesService.getCountryData(country);
@@ -89,7 +96,7 @@ export class ChartCalculationService {
     const averagePeriod = processedData.length > 1 ? totalDays / (processedData.length - 1) : 7;
 
     return processedData.map((current) => {
-      const comparison: any = { date: current.date };
+      const comparison: ComparisonData = { date: current.date };
       const totalConsumption = averageLitersPerPersonPerDay * familySize * averagePeriod;
 
       // Distribute proportionally: Kitchen 15%, Bathroom 85%
@@ -97,10 +104,10 @@ export class ChartCalculationService {
       const kitchenTotal = totalConsumption * 0.15;
       const bathroomTotal = totalConsumption * 0.85;
 
-      comparison['kitchenWarm'] = Math.round(kitchenTotal * 0.4);
-      comparison['kitchenCold'] = Math.round(kitchenTotal * 0.6);
-      comparison['bathroomWarm'] = Math.round(bathroomTotal * 0.4);
-      comparison['bathroomCold'] = Math.round(bathroomTotal * 0.6);
+      comparison.kitchenWarm = Math.round(kitchenTotal * 0.4);
+      comparison.kitchenCold = Math.round(kitchenTotal * 0.6);
+      comparison.bathroomWarm = Math.round(bathroomTotal * 0.4);
+      comparison.bathroomCold = Math.round(bathroomTotal * 0.6);
 
       return comparison;
     });

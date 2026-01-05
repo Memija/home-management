@@ -52,10 +52,10 @@ export class LocalStorageService extends StorageService {
     return localStorage.getItem(this.prefix + key) !== null;
   }
 
-  async exportAll(): Promise<Record<string, any>> {
+  async exportAll(): Promise<Record<string, unknown>> {
     if (!this.isBrowser) return {};
 
-    const data: Record<string, any> = {};
+    const data: Record<string, unknown> = {};
     for (let i = 0; i < localStorage.length; i++) {
       const key = localStorage.key(i);
       if (key?.startsWith(this.prefix)) {
@@ -69,7 +69,7 @@ export class LocalStorageService extends StorageService {
     return data;
   }
 
-  async importAll(data: Record<string, any>): Promise<void> {
+  async importAll(data: Record<string, unknown>): Promise<void> {
     if (!this.isBrowser) return;
 
     for (const [key, value] of Object.entries(data)) {
@@ -78,15 +78,15 @@ export class LocalStorageService extends StorageService {
   }
 
   // Export only specific record keys
-  async exportRecords(recordKey: string): Promise<any[]> {
+  async exportRecords(recordKey: string): Promise<unknown[]> {
     if (!this.isBrowser) return [];
 
-    const data = await this.load<any[]>(recordKey);
+    const data = await this.load<unknown[]>(recordKey);
     return data || [];
   }
 
   // Import records with validation
-  async importRecords(recordKey: string, records: any[]): Promise<void> {
+  async importRecords(recordKey: string, records: unknown[]): Promise<void> {
     if (!this.isBrowser) return;
 
     await this.save(recordKey, records);

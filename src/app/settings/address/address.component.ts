@@ -396,7 +396,8 @@ export class AddressComponent {
         } else {
           throw new Error(this.languageService.translate('SETTINGS.IMPORT_ERROR'));
         }
-      } catch (error: any) {
+      } catch (err: unknown) {
+        const error = err as any; // Cast to any for legacy structure compatibility, or strictly type if possible
         console.error('Error importing address:', error);
 
         // Handle explicit invalid file type errors from fileStorage import (if any)

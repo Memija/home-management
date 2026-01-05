@@ -41,7 +41,13 @@ export class ComparisonNoteComponent {
     protected countryName = computed(() => this.householdService.address()?.country || '');
 
     protected availableCountries = computed(() => {
-        return this.waterAveragesService.getAvailableCountries();
+        const countries = this.waterAveragesService.getAvailableCountries();
+        // Sort alphabetically by translated name
+        return countries.sort((a, b) => {
+            const nameA = this.languageService.translate(a.translationKey);
+            const nameB = this.languageService.translate(b.translationKey);
+            return nameA.localeCompare(nameB);
+        });
     });
 
     protected effectiveComparisonCountryCode = computed(() => {

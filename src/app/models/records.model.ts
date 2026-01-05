@@ -32,6 +32,32 @@ export interface HeatingRecord {
 }
 
 /**
+ * Merged chart data interface for calculations that handle both Water and Heating
+ */
+export type CombinedRecord = ConsumptionRecord | HeatingRecord;
+
+export interface CombinedData extends Partial<ConsumptionRecord>, Partial<HeatingRecord> {
+    date: Date;
+    [key: string]: any; // Allow indexing
+}
+
+/**
+ * Interface for comparison averages
+ */
+export interface ComparisonData {
+    date: Date;
+    kitchenWarm?: number;
+    kitchenCold?: number;
+    bathroomWarm?: number;
+    bathroomCold?: number;
+    livingRoom?: number;
+    bedroom?: number;
+    kitchen?: number;
+    bathroom?: number;
+    [key: string]: any;
+}
+
+/**
  * Utility functions for record calculations
  */
 export function calculateWaterTotal(record: ConsumptionRecord): number {
@@ -68,9 +94,9 @@ function getDateKey(date: Date): string {
  * @param incoming New records to merge
  * @returns New array of merged and sorted records
  */
-export function mergeRecords(existing: ConsumptionRecord[], incoming: ConsumptionRecord[]): ConsumptionRecord[] {
+export function mergeRecords<T extends { date: Date }>(existing: T[], incoming: T[]): T[] {
     const merged = [...existing, ...incoming];
-    const uniqueMap = new Map<string, ConsumptionRecord>();
+    const uniqueMap = new Map<string, T>();
     // Use date string as key to ignore time component differences
     merged.forEach(r => uniqueMap.set(getDateKey(r.date), r));
     return Array.from(uniqueMap.values())

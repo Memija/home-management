@@ -21,7 +21,7 @@ export class ExcelImportService {
      * Validate imported settings data structure and content
      * Throws an ImportError if invalid
      */
-    validateImportedSettings(data: any): ExcelSettings {
+    validateImportedSettings(data: unknown): ExcelSettings {
         const errors: string[] = [];
         const fieldKeys: string[] = [];
         const hintKeys: string[] = [];
@@ -31,9 +31,17 @@ export class ExcelImportService {
             throw { message: 'SETTINGS.IMPORT_EXCEL_SETTINGS_INVALID_FORMAT' } as ImportError;
         }
 
-        const hasEnabled = 'enabled' in data;
-        const hasWaterMapping = 'waterMapping' in data && data.waterMapping && typeof data.waterMapping === 'object';
-        const hasHeatingMapping = 'heatingMapping' in data && data.heatingMapping && typeof data.heatingMapping === 'object';
+        // Loose interface for initial validation
+        interface RawSettings {
+            enabled?: boolean;
+            waterMapping?: any;
+            heatingMapping?: any;
+        }
+
+        const typedData = data as RawSettings;
+        const hasEnabled = 'enabled' in typedData;
+        const hasWaterMapping = 'waterMapping' in typedData && typedData.waterMapping && typeof typedData.waterMapping === 'object';
+        const hasHeatingMapping = 'heatingMapping' in typedData && typedData.heatingMapping && typeof typedData.heatingMapping === 'object';
 
         // If none of the expected fields exist
         if (!hasEnabled && !hasWaterMapping && !hasHeatingMapping) {
@@ -41,7 +49,7 @@ export class ExcelImportService {
         }
 
         // Validation
-        if (!hasEnabled || typeof data.enabled !== 'boolean') {
+        if (!hasEnabled || typeof typedData.enabled !== 'boolean') {
             errors.push(this.languageService.translate('SETTINGS.IMPORT_EXCEL_INVALID_ENABLED'));
             hintKeys.push('SETTINGS.IMPORT_EXCEL_INVALID_ENABLED_HINT');
         }
@@ -51,7 +59,7 @@ export class ExcelImportService {
             errors.push(this.languageService.translate('SETTINGS.IMPORT_EXCEL_MISSING_WATER'));
             hintKeys.push('SETTINGS.IMPORT_EXCEL_MISSING_WATER_HINT');
         } else {
-            const w = data.waterMapping;
+            const w = typedData.waterMapping;
             this.validateField(w.date, 'SETTINGS.EXCEL_COLUMN_DATE_NAME', 'Water', errors, fieldKeys, hintKeys);
             this.validateField(w.kitchenWarm, 'SETTINGS.EXCEL_COLUMN_KITCHEN_WARM_NAME', 'Water', errors, fieldKeys, hintKeys);
             this.validateField(w.kitchenCold, 'SETTINGS.EXCEL_COLUMN_KITCHEN_COLD_NAME', 'Water', errors, fieldKeys, hintKeys);
@@ -75,7 +83,7 @@ export class ExcelImportService {
             errors.push(this.languageService.translate('SETTINGS.IMPORT_EXCEL_MISSING_HEATING'));
             hintKeys.push('SETTINGS.IMPORT_EXCEL_MISSING_HEATING_HINT');
         } else {
-            const h = data.heatingMapping;
+            const h = typedData.heatingMapping;
             this.validateField(h.date, 'SETTINGS.EXCEL_COLUMN_DATE_NAME', 'Heating', errors, fieldKeys, hintKeys);
             this.validateField(h.livingRoom, 'SETTINGS.EXCEL_COLUMN_LIVING_ROOM_NAME', 'Heating', errors, fieldKeys, hintKeys);
             this.validateField(h.bedroom, 'SETTINGS.EXCEL_COLUMN_BEDROOM_NAME', 'Heating', errors, fieldKeys, hintKeys);
@@ -105,13 +113,13 @@ export class ExcelImportService {
 
         // Return sanitized settings
         return {
-            enabled: data.enabled ?? false,
-            waterMapping: data.waterMapping,
-            heatingMapping: data.heatingMapping
+            enabled: typedData.enabled ?? false,
+            waterMapping: typedData.waterMapping,
+            heatingMapping: typedData.heatingMapping
         };
     }
 
-    private validateField(value: any, fieldLabelKey: string, section: string, errors: string[], fieldKeys: string[], hintKeys: string[]) {
+    private validateField(value: unknown, fieldLabelKey: string, section: string, errors: string[], fieldKeys: string[], hintKeys: string[]) {
         const fieldName = this.languageService.translate(fieldLabelKey);
 
         if (typeof value !== 'string') {

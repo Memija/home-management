@@ -189,7 +189,7 @@
       </label>
       @if (newMemberPicturePreview()) {
       <div class="picture-preview">
-        <img [src]="newMemberPicturePreview()" alt="Preview">
+        <img [src]="newMemberPicturePreview()" alt="New member avatar preview">
       </div>
       }
     </div>
@@ -198,7 +198,7 @@
       <div class="avatar-grid">
         @for (avatar of householdService.avatars; track avatar) {
         <img [src]="avatar" [class.selected]="selectedAvatar() === avatar" (click)="selectAvatar(avatar)"
-          alt="Hero Avatar" title="{{ 'SETTINGS.SELECT_AVATAR' | translate }}">
+          alt="Avatar option" alt="Hero Avatar" title="{{ 'SETTINGS.SELECT_AVATAR' | translate }}">
         }
       </div>
     </div>

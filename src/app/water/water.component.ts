@@ -1,9 +1,9 @@
-import { Component, computed, inject, ChangeDetectionStrategy, signal, effect } from '@angular/core';
+import { Component, computed, inject, signal, effect } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { RouterLink } from '@angular/router';
+
 import { TranslatePipe } from '../pipes/translate.pipe';
-import { LucideAngularModule, ArrowLeft, Download, Upload, CircleCheck, Trash2, FileSpreadsheet, FileText, FileInput, FileOutput, Info, AlertTriangle, Lightbulb } from 'lucide-angular';
+import { LucideAngularModule, Download, Upload, CircleCheck, Trash2, FileSpreadsheet, FileText, FileInput, FileOutput, Info, AlertTriangle, Lightbulb } from 'lucide-angular';
 import { ConsumptionInputComponent, type ConsumptionData, type ConsumptionGroup } from '../shared/consumption-input/consumption-input.component';
 import { DeleteConfirmationModalComponent } from '../shared/delete-confirmation-modal/delete-confirmation-modal.component';
 import { ConfirmationModalComponent } from '../shared/confirmation-modal/confirmation-modal.component';
@@ -26,10 +26,10 @@ import { CHART_HELP_STEPS, RECORD_HELP_STEPS, RECORDS_LIST_HELP_STEPS } from './
 @Component({
   selector: 'app-water',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterLink, TranslatePipe, LucideAngularModule, ConsumptionInputComponent, DeleteConfirmationModalComponent, ConfirmationModalComponent, DetailedRecordsComponent, ConsumptionChartComponent, ComparisonNoteComponent, ErrorModalComponent],
+  imports: [CommonModule, FormsModule, TranslatePipe, LucideAngularModule, ConsumptionInputComponent, DeleteConfirmationModalComponent, ConfirmationModalComponent, DetailedRecordsComponent, ConsumptionChartComponent, ComparisonNoteComponent, ErrorModalComponent],
   templateUrl: './water.component.html',
   styleUrl: './water.component.scss',
-  changeDetection: ChangeDetectionStrategy.OnPush
+
 })
 export class WaterComponent {
   protected preferencesService = inject(ConsumptionPreferencesService);
@@ -43,7 +43,7 @@ export class WaterComponent {
   private waterFactsService = inject(WaterFactsService);
 
   // Icons
-  protected readonly ArrowLeftIcon = ArrowLeft;
+
   protected readonly DownloadIcon = Download;
   protected readonly UploadIcon = Upload;
   protected readonly CheckCircleIcon = CircleCheck;

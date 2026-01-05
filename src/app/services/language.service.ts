@@ -15,10 +15,13 @@ export class LanguageService {
   readonly isLoading = signal<boolean>(false);
 
   // Store loaded translations
-  private translations: Record<string, any> = {
+  private translations: Record<string, Record<string, unknown>> = {
     en: {},
     de: {}
   };
+
+  // Signal to notify when translations are loaded/updated
+  private readonly translationChanged = signal(0);
 
   constructor() {
     // Load initial language
@@ -76,14 +79,14 @@ export class LanguageService {
       let module;
       if (lang === 'de') {
         module = await import('../i18n/de');
-        this.translations['de'] = module.de;
+        this.translations['de'] = module.de as Record<string, unknown>;
       } else {
         module = await import('../i18n/en');
-        this.translations['en'] = module.en;
+        this.translations['en'] = module.en as Record<string, unknown>;
       }
 
-      // Force UI update after loading
-      this.appRef.tick();
+      // Notify signals that translations have changed
+      this.translationChanged.update(v => v + 1);
     } catch (error) {
       console.error(`Failed to load language ${lang}:`, error);
     } finally {
@@ -91,13 +94,16 @@ export class LanguageService {
     }
   }
 
-  translate(key: string, params?: Record<string, any>): string {
+  translate(key: string, params?: Record<string, string | number>): string {
+    // Depend on the signal to trigger updates when translations load
+    this.translationChanged();
+
     let translation = this.translateForLanguage(key, this.currentLang());
 
     // Replace parameters in the translation if provided
     if (params) {
       Object.keys(params).forEach(param => {
-        translation = translation.replace(`{${param}}`, params[param]);
+        translation = translation.replace(`{${param}}`, String(params[param]));
       });
     }
 
@@ -110,11 +116,11 @@ export class LanguageService {
    */
   translateForLanguage(key: string, lang: Language): string {
     const keys = key.split('.');
-    let value: any = this.translations[lang];
+    let value: unknown = this.translations[lang];
 
     for (const k of keys) {
       if (value && typeof value === 'object') {
-        value = value[k];
+        value = (value as Record<string, unknown>)[k];
       } else {
         return key;
       }

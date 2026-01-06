@@ -1,25 +1,27 @@
-.dashboard-container {
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 3rem 1rem;
-  font-family: system-ui, -apple-system, sans-serif;
-}
+@use 'variables' as *;
+
+// Dashboard - uses global .page-container from _layout.scss
+// Component-specific styles only
 
 .welcome-section {
   text-align: center;
-  margin-bottom: 3rem;
+  margin-bottom: 1.5rem;
 
   h1 {
     margin: 0 0 0.5rem 0;
     font-size: 2.5rem;
-    color: #2c3e50;
+    color: $text-color;
   }
 
   .subtitle {
     margin: 0;
     font-size: 1.2rem;
-    color: #6c757d;
+    color: $secondary;
   }
+}
+
+.notifications-section {
+  margin-bottom: 2rem;
 }
 
 .tracker-grid {
@@ -32,7 +34,7 @@
 
 .tracker-card {
   background: white;
-  border: 2px solid #e9ecef;
+  border: 2px solid $border-light;
   border-radius: 16px;
   padding: 3rem 2rem;
   text-align: center;
@@ -62,13 +64,13 @@
   h2 {
     margin: 0;
     font-size: 1.8rem;
-    color: #2c3e50;
+    color: $text-color;
   }
 
   p {
     margin: 0;
     font-size: 1rem;
-    color: #6c757d;
+    color: $secondary;
     line-height: 1.5;
   }
 }
@@ -128,6 +130,131 @@
 
     h2 {
       font-size: 1.5rem;
+    }
+  }
+}
+
+// Demo Mode Banner
+.demo-banner {
+  background: linear-gradient(135deg, #7c3aed 0%, #a855f7 100%);
+  color: white;
+  padding: 0.75rem 1.25rem;
+  border-radius: 12px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+
+  .demo-banner-content {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-weight: 500;
+  }
+
+  .exit-demo-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.5rem 1rem;
+    background: rgba(255, 255, 255, 0.2);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    border-radius: 6px;
+    color: white;
+    font-size: 0.9rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+
+    &:hover:not(:disabled) {
+      background: rgba(255, 255, 255, 0.3);
+    }
+
+    &:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+  }
+}
+
+// Demo Section (Try Demo Card)
+.demo-section {
+  margin-top: 3rem;
+  max-width: 800px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.demo-card {
+  background: white;
+  border: 2px dashed $purple;
+  border-radius: 16px;
+  padding: 2rem;
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+  flex-wrap: wrap;
+
+  @media (max-width: 600px) {
+    flex-direction: column;
+    text-align: center;
+  }
+
+  .demo-icon {
+    width: 64px;
+    height: 64px;
+    background: linear-gradient(135deg, #ede9fe 0%, #ddd6fe 100%);
+    color: #7c3aed;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+
+  .demo-content {
+    flex: 1;
+    min-width: 200px;
+
+    h3 {
+      margin: 0 0 0.5rem 0;
+      font-size: 1.25rem;
+      color: #2c3e50;
+    }
+
+    p {
+      margin: 0;
+      font-size: 0.95rem;
+      color: #6c757d;
+      line-height: 1.5;
+    }
+  }
+
+  .try-demo-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.75rem 1.5rem;
+    background: linear-gradient(135deg, #7c3aed 0%, #a855f7 100%);
+    border: none;
+    border-radius: 8px;
+    color: white;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    white-space: nowrap;
+
+    &:hover:not(:disabled) {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(124, 58, 237, 0.4);
+    }
+
+    &:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
     }
   }
 }

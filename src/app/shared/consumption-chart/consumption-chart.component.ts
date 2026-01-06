@@ -102,7 +102,7 @@ export class ConsumptionChartComponent {
   protected chartData = computed<ChartConfiguration['data']>(() => {
     // Cast to internal record types for service compatibility
     // This is safe because ChartDataPoint is compatible with ConsumptionRecord/HeatingRecord base structure for date
-    const recs = this.data() as any;
+    const recs = this.data();
     const labels = this.generateSmartLabels(this.data());
     const view = this.currentView();
     const mode = this.displayMode();
@@ -116,7 +116,7 @@ export class ConsumptionChartComponent {
 
     if (this.chartType === 'water') {
       return this.chartDataService.getWaterChartData({
-        records: processedData,
+        records: processedData as ConsumptionRecord[],
         labels,
         view,
         mode,
@@ -127,7 +127,7 @@ export class ConsumptionChartComponent {
       });
     } else if (this.chartType === 'home') {
       return this.chartDataService.getWaterChartData({
-        records: processedData,
+        records: processedData as ConsumptionRecord[],
         labels,
         view,
         mode,
@@ -138,7 +138,7 @@ export class ConsumptionChartComponent {
       });
     } else {
       return this.chartDataService.getHeatingChartData({
-        records: processedData,
+        records: processedData as HeatingRecord[],
         labels,
         view,
         mode

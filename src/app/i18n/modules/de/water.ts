@@ -33,6 +33,8 @@ export const water = {
     },
     NO_RECORDS: 'Noch keine Einträge.',
     DETAILED_RECORDS: 'Detaillierte Einträge',
+    EXPAND: 'Einträge ausklappen',
+    COLLAPSE: 'Einträge einklappen',
     ALL_VALUES_IN_LITERS: 'Alle Werte sind in Litern (L)',
     RECORD_CONSUMPTION: 'Verbrauch erfassen',
     RECORD_HELP_TITLE: 'Wasserverbrauch erfassen',

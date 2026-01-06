@@ -1,12 +1,13 @@
-import { Component, signal, computed, input, output, effect } from '@angular/core';
+import { Component, signal, computed, input, output, effect, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { DatePipe } from '@angular/common';
-import { LucideAngularModule, Edit, Trash2, Calendar, Info, ChevronDown, ChevronLeft, ChevronRight, CalendarDays, ArrowUpDown, HelpCircle, RotateCcw } from 'lucide-angular';
+import { LucideAngularModule, Edit, Trash2, Calendar, Info, ChevronDown, ChevronUp, ChevronLeft, ChevronRight, CalendarDays, ArrowUpDown, HelpCircle, RotateCcw } from 'lucide-angular';
 import { TranslatePipe } from '../../pipes/translate.pipe';
 import { DatePickerComponent } from '../date-picker/date-picker.component';
 import { HelpModalComponent, HelpStep } from '../help-modal/help-modal.component';
 import { LanguageService } from '../../services/language.service';
-import { inject } from '@angular/core';
+import { LocalStorageService } from '../../services/local-storage.service';
+
 import { ConsumptionRecord, calculateWaterTotal, calculateKitchenTotal, calculateBathroomTotal } from '../../models/records.model';
 
 // Re-export for consumers
@@ -23,6 +24,7 @@ export type SortOption = 'date-desc' | 'date-asc' | 'total-desc' | 'total-asc' |
 })
 export class DetailedRecordsComponent {
   private languageService = inject(LanguageService);
+  private localStorageService = inject(LocalStorageService);
 
   // Icons
   protected readonly EditIcon = Edit;
@@ -36,6 +38,7 @@ export class DetailedRecordsComponent {
   protected readonly ArrowUpDownIcon = ArrowUpDown;
   protected readonly HelpIcon = HelpCircle;
   protected readonly ResetIcon = RotateCcw;
+  protected readonly ChevronUpIcon = ChevronUp;
 
   // Inputs
   records = input.required<ConsumptionRecord[]>();
@@ -63,6 +66,37 @@ export class DetailedRecordsComponent {
   protected paginationSize = signal<number>(5);
   protected sortOption = signal<SortOption>('date-desc');
   protected showHelpModal = signal(false);
+  protected isCollapsed = signal(this.getInitialCollapsedState());
+
+  constructor() {
+    // Initialize sort option from input
+    this.sortOption.set(this.defaultSortOption());
+
+    // Save collapsed state whenever it changes
+    effect(() => {
+      this.localStorageService.setPreference('detailed_records_are_collapsed', String(this.isCollapsed()));
+    });
+
+    // Emit filtered records and filter state whenever they change
+    effect(() => {
+      const filtered = this.filteredRecords();
+      this.filteredRecordsChange.emit(filtered);
+    });
+
+    effect(() => {
+      this.filterStateChange.emit({
+        year: this.searchYear(),
+        month: this.searchMonth(),
+        startDate: this.startDate(),
+        endDate: this.endDate()
+      });
+    });
+  }
+
+  private getInitialCollapsedState(): boolean {
+    const stored = this.localStorageService.getPreference('detailed_records_are_collapsed');
+    return stored !== null ? stored === 'true' : true; // Default to collapsed (true)
+  }
 
   // Computed properties
   protected currentLang = computed(() => this.languageService.currentLang());
@@ -165,25 +199,7 @@ export class DetailedRecordsComponent {
       .replace('{total}', this.filteredRecords().length.toString());
   });
 
-  constructor() {
-    // Initialize sort option from input
-    this.sortOption.set(this.defaultSortOption());
 
-    // Emit filtered records and filter state whenever they change
-    effect(() => {
-      const filtered = this.filteredRecords();
-      this.filteredRecordsChange.emit(filtered);
-    });
-
-    effect(() => {
-      this.filterStateChange.emit({
-        year: this.searchYear(),
-        month: this.searchMonth(),
-        startDate: this.startDate(),
-        endDate: this.endDate()
-      });
-    });
-  }
 
   // Filter Constraint Helpers
   protected isYearDisabled(year: number): boolean {

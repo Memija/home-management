@@ -39,11 +39,10 @@ export class ChartDataService {
   /**
    * Generate chart data for heating consumption
    */
-  getHeatingChartData(params: ChartDataParams): ChartConfiguration['data'] {
-    const { records: recs, labels, view, mode } = params;
+  getHeatingChartData(params: ChartDataParams<HeatingRecord>): ChartConfiguration['data'] {
+    const { records: heatingRecs, labels, view, mode } = params;
     const chartLabels = mode === 'incremental' ? labels.slice(1) : labels;
 
-    const heatingRecs = recs as unknown as HeatingRecord[];
 
     switch (view) {
       case 'total':
@@ -112,7 +111,7 @@ export class ChartDataService {
     return datasets.filter(dataset => {
       if (!dataset.data || !Array.isArray(dataset.data)) return true;
       // Keep dataset if at least one value is non-zero
-      return dataset.data.some((value: any) => value !== 0 && value !== null && value !== undefined);
+      return dataset.data.some((value: unknown) => value !== 0 && value !== null && value !== undefined);
     });
   }
 }

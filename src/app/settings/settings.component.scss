@@ -1,9 +1,7 @@
-.settings-container {
-  max-width: 800px;
-  margin: auto auto auto auto;
-  padding: 1rem;
-  font-family: system-ui, -apple-system, sans-serif;
-}
+@use 'variables' as *;
+
+// Settings page - uses global .page-container from _layout.scss
+// Component-specific overrides only
 
 .header {
   margin-bottom: 2rem;
@@ -17,7 +15,7 @@
 
   h1 {
     margin: 0;
-    color: #2c3e50;
+    color: $text-color;
   }
 }
 

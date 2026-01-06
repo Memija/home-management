@@ -1,10 +1,55 @@
 // Shared Layout Styles
+@use 'sass:color';
+@use 'variables' as *;
 
+// ==========================================================================
+// Page Container - Use on every page's root element
+// ==========================================================================
+.page-container {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 1rem;
+  font-family: system-ui, -apple-system, sans-serif;
+}
+
+// Legacy container (for backward compatibility)
 .container {
   max-width: 1000px;
   margin: 5rem auto;
   padding: 1rem;
   font-family: system-ui, -apple-system, sans-serif;
+}
+
+// ==========================================================================
+// Section Classes - Standardized backgrounds
+// ==========================================================================
+
+// Primary content section (white background with shadow)
+// Use for: charts, main content areas, cards
+.section-card {
+  background: white;
+  border-radius: 8px;
+  padding: 1.5rem;
+  margin-bottom: 2rem;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+// Input/interactive section (gray background)
+// Use for: forms, data entry areas
+.section-input {
+  background: $border-light;
+  border-radius: 8px;
+  padding: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+// Data display section (light gray background)
+// Use for: history/records lists, data tables
+.section-data {
+  background: $light;
+  border-radius: 8px;
+  padding: 1rem;
+  margin-bottom: 2rem;
 }
 
 .app-header {
@@ -27,20 +72,20 @@
     align-items: center;
     gap: 0.5rem;
     padding: 0.5rem 1rem;
-    border: 1px solid #ced4da;
+    border: 1px solid $gray-400;
     background: white;
     border-radius: 4px;
     cursor: pointer;
     font-size: 0.9rem;
     font-weight: 500;
-    color: #495057;
+    color: $gray-700;
     text-decoration: none;
     transition: all 0.2s;
   }
 
   h1 {
     margin: 0;
-    color: #2c3e50;
+    color: $text-color;
   }
 
   .header-actions {
@@ -49,17 +94,15 @@
     gap: 0.75rem;
   }
 
-  // .hidden-input is defined globally in _forms.scss
-
   .action-btn {
     padding: 0.4rem 0.8rem;
-    border: 1px solid #ced4da;
+    border: 1px solid $gray-400;
     background: white;
     border-radius: 4px;
     cursor: pointer;
     font-size: 0.85rem;
     font-weight: 500;
-    color: #495057;
+    color: $gray-700;
     text-decoration: none;
     display: inline-flex;
     align-items: center;
@@ -67,15 +110,15 @@
     transition: all 0.2s;
 
     &:hover {
-      background: #e9ecef;
-      border-color: #adb5bd;
+      background: $border-light;
+      border-color: $gray-500;
     }
 
     &.settings-btn {
       &:hover {
-        background: #fff3cd;
-        border-color: #ffc107;
-        color: #ffc107;
+        background: color.adjust($warning, $lightness: 35%);
+        border-color: $warning;
+        color: $warning;
       }
     }
   }
@@ -91,7 +134,7 @@
 
   h2 {
     margin: 0;
-    color: #2c3e50;
+    color: $text-color;
   }
 }
 
@@ -116,24 +159,9 @@
 
   h2 {
     margin: 0;
-    color: #2c3e50;
+    color: $text-color;
     font-size: 1.5rem;
   }
 
-  .help-btn {
-    background: transparent;
-    border: none;
-    color: #17a2b8;
-    cursor: pointer;
-    padding: 0.25rem;
-    border-radius: 4px;
-    transition: all 0.2s;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-
-    &:hover {
-      background: rgba(23, 162, 184, 0.1);
-    }
-  }
+  // .help-btn is defined globally in _buttons.scss
 }

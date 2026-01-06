@@ -38,7 +38,7 @@ export type CombinedRecord = ConsumptionRecord | HeatingRecord;
 
 export interface CombinedData extends Partial<ConsumptionRecord>, Partial<HeatingRecord> {
     date: Date;
-    [key: string]: any; // Allow indexing
+    [key: string]: number | Date | undefined; // Allow indexing
 }
 
 /**
@@ -54,7 +54,7 @@ export interface ComparisonData {
     bedroom?: number;
     kitchen?: number;
     bathroom?: number;
-    [key: string]: any;
+    [key: string]: number | Date | undefined;
 }
 
 /**

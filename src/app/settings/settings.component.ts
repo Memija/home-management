@@ -6,6 +6,12 @@ import { AddressComponent } from './address/address.component';
 import { FamilyComponent } from './family/family.component';
 import { ExcelSettingsComponent } from './excel-settings/excel-settings.component';
 
+interface ComponentWithUnsavedChanges {
+  hasUnsavedChanges(): boolean;
+  triggerNavigationWarning(callback: () => void): void;
+  stayAndSave(): void;
+}
+
 @Component({
   selector: 'app-settings',
   standalone: true,
@@ -55,7 +61,7 @@ export class SettingsComponent {
   }
 
   // Helper to handle the promise logic for any component having unsaved changes
-  private handleComponentUnsavedChanges(component: any): Promise<boolean> {
+  private handleComponentUnsavedChanges(component: ComponentWithUnsavedChanges): Promise<boolean> {
     return new Promise((resolve) => {
       component.triggerNavigationWarning(() => {
         resolve(true); // Allow navigation after user confirms

@@ -2,14 +2,13 @@ import { Injectable, inject } from '@angular/core';
 import { ChartConfiguration } from 'chart.js';
 import { LanguageService } from './language.service';
 import { ChartCalculationService } from './chart-calculation.service';
-import { ConsumptionRecord } from '../models/records.model';
-import { ComparisonData } from '../models/records.model';
+import { ConsumptionRecord, HeatingRecord, ComparisonData } from '../models/records.model';
 
 export type ChartView = 'total' | 'by-room' | 'by-type' | 'detailed';
 export type DisplayMode = 'total' | 'incremental';
 
-export interface ChartDataParams {
-  records: ConsumptionRecord[];
+export interface ChartDataParams<T = ConsumptionRecord> {
+  records: T[];
   labels: string[];
   view: ChartView;
   mode: DisplayMode;
@@ -423,7 +422,7 @@ export class WaterChartService {
     return datasets.filter(dataset => {
       if (!dataset.data || !Array.isArray(dataset.data)) return true;
       // Keep dataset if at least one value is non-zero
-      return dataset.data.some((value: any) => value !== 0 && value !== null && value !== undefined);
+      return dataset.data.some((value: unknown) => value !== 0 && value !== null && value !== undefined);
     });
   }
 }

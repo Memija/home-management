@@ -1,0 +1,17 @@
+{
+  "enabled": true,
+  "waterMapping": {
+    "date": "Date of measurement",
+    "kitchenWarm": "Kitchen Warm Water",
+    "kitchenCold": "Kitchen Cold Water",
+    "bathroomWarm": "Bathroom hot water value",
+    "bathroomCold": "Bathroom cold water value"
+  },
+  "heatingMapping": {
+    "date": "Date",
+    "livingRoom": "Living Room",
+    "bedroom": "Bedroom",
+    "kitchen": "Kitchen",
+    "bathroom": "Bathroom"
+  }
+}

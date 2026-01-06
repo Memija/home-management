@@ -33,6 +33,8 @@ export const water = {
     },
     NO_RECORDS: 'No records yet.',
     DETAILED_RECORDS: 'Detailed Records',
+    EXPAND: 'Expand records',
+    COLLAPSE: 'Collapse records',
     ALL_VALUES_IN_LITERS: 'All values are in liters (L)',
     RECORD_CONSUMPTION: 'Record Consumption',
     RECORD_HELP_TITLE: 'Recording Water Consumption',

@@ -21,6 +21,19 @@
   }
 }
 
+.title-with-help {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+
+  h2 {
+    margin: 0;
+  }
+
+  // .help-btn uses global styles from _buttons.scss
+}
+
 .chart-controls {
   display: flex;
   flex-direction: column;
@@ -111,7 +124,7 @@
     position: relative;
     display: inline-flex;
     align-items: center;
-    margin-left: 4px;
+    margin-left: auto;
 
     .info-icon {
       color: #6c757d;
@@ -204,6 +217,7 @@
   }
 
   .display-mode-toggle {
+    display: block;
     width: 100%;
 
     button {

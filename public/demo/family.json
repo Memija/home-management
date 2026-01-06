@@ -1,0 +1,23 @@
+[
+  {
+    "name": "Bruce",
+    "surname": "Wayne",
+    "type": "adult",
+    "gender": "male",
+    "avatar": "/avatars/batman.jpg"
+  },
+  {
+    "name": "Diana",
+    "surname": "Prince",
+    "type": "adult",
+    "gender": "female",
+    "avatar": "/avatars/wonder-woman.jpg"
+  },
+  {
+    "name": "Barry",
+    "surname": "Allen",
+    "type": "kid",
+    "gender": "male",
+    "avatar": "/avatars/flash.jpg"
+  }
+]

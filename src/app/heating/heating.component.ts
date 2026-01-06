@@ -14,6 +14,7 @@ import { ErrorModalComponent } from '../shared/error-modal/error-modal.component
 import { ConfirmationModalComponent } from '../shared/confirmation-modal/confirmation-modal.component';
 import { ImportValidationService } from '../services/import-validation.service';
 import { HeatingRecord, calculateHeatingTotal } from '../models/records.model';
+import { NotificationService } from '../services/notification.service';
 
 @Component({
   selector: 'app-heating',
@@ -30,6 +31,7 @@ export class HeatingComponent {
   protected excelService = inject(ExcelService);
   protected excelSettings = inject(ExcelSettingsService);
   private importValidationService = inject(ImportValidationService);
+  private notificationService = inject(NotificationService);
 
   protected readonly ArrowLeftIcon = ArrowLeft;
   protected readonly ChevronDownIcon = ChevronDown;
@@ -195,13 +197,15 @@ export class HeatingComponent {
         }
 
         // Validate records
-        const result = this.importValidationService.validateHeatingJsonImport(data as any[]);
+        const result = this.importValidationService.validateHeatingJsonImport(data as unknown[]);
         if (result.errors.length > 0) {
           throw new Error(result.errors.join('\n'));
         }
 
         await this.storage.importRecords('heating_consumption_records', result.validRecords);
         await this.loadData();
+        // Update notification service
+        this.notificationService.setHeatingRecords(this.records());
       } catch (error) {
         console.error('Error importing data:', error);
         const errorMsg = error instanceof Error ? error.message : 'Unknown error';
@@ -250,6 +254,8 @@ export class HeatingComponent {
         });
 
         await this.storage.save('heating_consumption_records', this.records());
+        // Update notification service
+        this.notificationService.setHeatingRecords(this.records());
         input.value = '';
 
         if (missingColumns.length > 0) {
@@ -332,6 +338,8 @@ export class HeatingComponent {
       ]);
 
       void this.storage.save('heating_consumption_records', this.records());
+      // Update notification service
+      this.notificationService.setHeatingRecords(this.records());
 
       const currentSunday = this.nextSunday();
       const nextDate = new Date(currentSunday);

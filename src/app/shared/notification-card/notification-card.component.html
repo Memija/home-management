@@ -1,0 +1,24 @@
+<div class="notification-card" [class.high-priority]="notification().priority === 'high'">
+  <div class="notification-content">
+    <div class="notification-icon">
+      <lucide-icon [img]="BellIcon" size="20"></lucide-icon>
+    </div>
+    <div class="notification-text">
+      <strong>{{ notification().titleKey | translate }}</strong>
+      <p>{{ notification().messageKey | translate:notification().messageParams }}</p>
+    </div>
+  </div>
+  <div class="notification-actions">
+    @if (notification().route) {
+    <a [routerLink]="notification().route" class="btn-action">
+      {{ 'NOTIFICATIONS.GO_TO_TRACKER' | translate }}
+      <lucide-icon [img]="ArrowRightIcon" size="14"></lucide-icon>
+    </a>
+    }
+    @if (notification().dismissible) {
+    <button type="button" class="btn-dismiss" (click)="dismiss()" title="{{ 'NOTIFICATIONS.DISMISS' | translate }}">
+      <lucide-icon [img]="XIcon" size="16"></lucide-icon>
+    </button>
+    }
+  </div>
+</div>

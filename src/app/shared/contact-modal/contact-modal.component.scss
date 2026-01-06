@@ -1,8 +1,8 @@
+@use 'sass:color';
 @use 'variables' as *;
 
-// Contact modal - component-specific styles only
-// Modal header/container styles are in global _modal.scss
-// Custom dropdown styles are in global _forms.scss
+// Contact modal - uses global styles from _modal.scss and _forms.scss
+// Component-specific overrides only
 
 .modal-body {
   padding: 1.5rem;
@@ -12,72 +12,27 @@
     flex-direction: column;
   }
 
-  .form-group {
+  // Error message specific styling for contact form
+  .form-group .error-message {
     display: flex;
-    flex-direction: column;
+    align-items: center;
     gap: 0.5rem;
+    padding: 0.5rem 0.75rem;
+    background: $alert-danger-bg;
+    border: 1px solid $alert-danger-border;
+    border-radius: 4px;
+    color: $alert-danger-text;
+    font-size: 0.875rem;
 
-    label {
-      font-weight: 500;
-      color: $gray-700;
-      font-size: 0.9rem;
-    }
-
-    input,
-    textarea,
-    select {
-      padding: 0.75rem;
-      border: 1px solid $gray-400;
-      border-radius: 4px;
-      font-size: 1rem;
-      font-family: inherit;
-      transition: border-color 0.2s;
-
-      &:focus {
-        outline: none;
-        border-color: $primary;
-        box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.1);
-      }
-
-      &::placeholder {
-        color: $gray-500;
-      }
-
-      &.invalid {
-        border-color: $danger;
-
-        &:focus {
-          box-shadow: 0 0 0 3px rgba(220, 53, 69, 0.1);
-        }
-      }
-    }
-
-    .error-message {
-      display: flex;
-      align-items: center;
-      gap: 0.5rem;
-      padding: 0.5rem 0.75rem;
-      background: $alert-danger-bg;
-      border: 1px solid $alert-danger-border;
-      border-radius: 4px;
+    .error-icon {
       color: $alert-danger-text;
-      font-size: 0.875rem;
-
-      .error-icon {
-        color: $alert-danger-text;
-        flex-shrink: 0;
-      }
+      flex-shrink: 0;
     }
+  }
 
-    select {
-      background-color: white;
-      cursor: pointer;
-    }
-
-    textarea {
-      resize: vertical;
-      min-height: 120px;
-    }
+  textarea {
+    resize: vertical;
+    min-height: 120px;
   }
 
   .modal-actions {
@@ -88,36 +43,34 @@
 
     button {
       padding: 0.75rem 1.5rem;
-      border-radius: 4px;
+      border: none;
+      border-radius: 6px;
       font-size: 1rem;
       font-weight: 500;
       cursor: pointer;
       transition: all 0.2s;
 
       &:disabled {
-        opacity: 0.5;
+        opacity: 0.6;
         cursor: not-allowed;
       }
     }
 
     .btn-secondary {
-      background: white;
-      color: $gray-700;
-      border: 1px solid $gray-400;
+      background: $secondary;
+      color: white;
 
       &:hover:not(:disabled) {
-        background: $border-light;
+        background: color.adjust($secondary, $lightness: -10%);
       }
     }
 
     .btn-primary {
       background: $primary;
       color: white;
-      border: 1px solid $primary;
 
       &:hover:not(:disabled) {
         background: $primary-dark;
-        border-color: $primary-dark;
       }
     }
   }

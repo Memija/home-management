@@ -2,26 +2,19 @@
 
 .menu-bar {
   position: fixed;
-  top: 132px; // Below header (padding 32px + logo 100px)
+  top: 113px; // Below header (desktop: padding 32px + logo 80px + border 2px)
   left: 0;
   right: 0;
   background: $light;
-  padding: 0rem 1.5rem;
+  padding: 0 1.5rem;
   z-index: 999;
   width: 100%;
   box-sizing: border-box;
 
+  // Mobile
   @media (max-width: 768px) {
-    top: 92px; // padding 32px + logo 60px
-  }
-
-  @media (max-width: 480px) {
-    top: 84px; // padding 24px + logo 60px (smaller padding)
-    padding: 0 1rem;
-  }
-
-  @media (max-width: 444px) {
-    top: 54px; // padding 24px + logo 30px
+    top: 57px; // Below header (mobile: padding 16px + logo 40px + border 2px)
+    padding: 0 0.5rem;
   }
 
   .menu-content {
@@ -30,20 +23,14 @@
     display: flex;
     align-items: center;
     gap: 0.25rem;
-    overflow-x: auto; // Allow scrolling on very small screens
+    overflow-x: auto;
     /* stylelint-disable plugin/no-unsupported-browser-features */
-    scrollbar-width: none; // Hide scrollbar Firefox + Chrome 121+
+    scrollbar-width: none;
     /* stylelint-enable plugin/no-unsupported-browser-features */
-    -ms-overflow-style: none; // Hide scrollbar IE/Edge
-    // Fallback for Safari/older Chrome is ::-webkit-scrollbar below
+    -ms-overflow-style: none;
 
     &::-webkit-scrollbar {
-      display: none; // Hide scrollbar Chrome/Safari
-    }
-
-    @media (max-width: 768px) {
-      gap: 0;
-      padding-bottom: 5px; // Space for touch scroll
+      display: none;
     }
   }
 
@@ -62,12 +49,12 @@
     transition: all 0.2s;
     white-space: nowrap;
     border-radius: 6px;
+    flex-shrink: 0;
 
+    // Mobile: hide text, show only emoji
     @media (max-width: 768px) {
-      padding: 0.75rem 0.5rem;
-      font-size: 0.8rem;
+      padding: 0.6rem 0.5rem;
 
-      // Hide text labels on mobile, but keep emoji icons
       span:not(.emoji-icon) {
         display: none;
       }
@@ -82,15 +69,14 @@
       background: $primary-light-bg;
     }
 
-    // Emoji icon styling
     .emoji-icon {
       font-size: 1.2rem;
       line-height: 1;
     }
   }
 
+  // Contact button floats right
   .contact-btn {
     margin-left: auto;
-    // Removed mobile override to keep it on the right
   }
 }

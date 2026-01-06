@@ -9,7 +9,7 @@ import { CountryService } from '../../services/country.service';
 import { FormValidationService } from '../../services/form-validation.service';
 import { TranslatePipe } from '../../pipes/translate.pipe';
 import { ConfirmationModalComponent } from '../../shared/confirmation-modal/confirmation-modal.component';
-import { ErrorModalComponent } from '../../shared/error-modal/error-modal.component';
+import { ErrorModalComponent, ErrorInstruction } from '../../shared/error-modal/error-modal.component';
 import { HelpModalComponent, HelpStep } from '../../shared/help-modal/help-modal.component';
 import { CountrySelectorComponent } from '../../shared/country-selector/country-selector.component';
 import { DeleteConfirmationModalComponent } from '../../shared/delete-confirmation-modal/delete-confirmation-modal.component';
@@ -86,7 +86,7 @@ export class AddressComponent {
   protected showImportErrorModal = signal(false);
   protected importErrorMessage = signal('');
   protected importErrorDetails = signal('');
-  protected importErrorInstructions = signal<string[]>([]);
+  protected importErrorInstructions = signal<(string | ErrorInstruction)[]>([]);
 
   // Country display name (computed for read-only view)
   protected countryDisplayName = computed(() => {
@@ -397,7 +397,13 @@ export class AddressComponent {
           throw new Error(this.languageService.translate('SETTINGS.IMPORT_ERROR'));
         }
       } catch (err: unknown) {
-        const error = err as any; // Cast to any for legacy structure compatibility, or strictly type if possible
+        interface AddressImportError {
+          message: string;
+          details?: string;
+          fieldKeys?: string[];
+          error?: string;
+        }
+        const error = err as AddressImportError;
         console.error('Error importing address:', error);
 
         // Handle explicit invalid file type errors from fileStorage import (if any)
@@ -411,7 +417,7 @@ export class AddressComponent {
           this.importErrorMessage.set(error.message || this.languageService.translate('SETTINGS.IMPORT_ERROR'));
           this.importErrorDetails.set(error.details || '');
 
-          const instructions: any[] = [];
+          const instructions: (string | ErrorInstruction)[] = [];
           if (error.fieldKeys && Array.isArray(error.fieldKeys)) {
             error.fieldKeys.forEach((key: string) => {
               instructions.push({ key: 'HOME.IMPORT_ERROR_CHECK_FIELD', params: { field: this.languageService.translate(key) } });

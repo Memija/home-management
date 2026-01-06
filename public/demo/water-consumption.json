@@ -1,0 +1,121 @@
+[
+  {
+    "date": "2025-09-06T22:00:00.000Z",
+    "kitchenWarm": 0,
+    "kitchenCold": 0,
+    "bathroomWarm": 111172,
+    "bathroomCold": 277782
+  },
+  {
+    "date": "2025-09-13T22:00:00.000Z",
+    "kitchenWarm": 0,
+    "kitchenCold": 0,
+    "bathroomWarm": 111884,
+    "bathroomCold": 279111
+  },
+  {
+    "date": "2025-09-20T22:00:00.000Z",
+    "kitchenWarm": 0,
+    "kitchenCold": 0,
+    "bathroomWarm": 112457,
+    "bathroomCold": 280292
+  },
+  {
+    "date": "2025-09-27T22:00:00.000Z",
+    "kitchenWarm": 0,
+    "kitchenCold": 0,
+    "bathroomWarm": 113056,
+    "bathroomCold": 281604
+  },
+  {
+    "date": "2025-10-04T22:00:00.000Z",
+    "kitchenWarm": 0,
+    "kitchenCold": 0,
+    "bathroomWarm": 113645,
+    "bathroomCold": 282866
+  },
+  {
+    "date": "2025-10-11T22:00:00.000Z",
+    "kitchenWarm": 0,
+    "kitchenCold": 0,
+    "bathroomWarm": 114317,
+    "bathroomCold": 284107
+  },
+  {
+    "date": "2025-10-18T22:00:00.000Z",
+    "kitchenWarm": 0,
+    "kitchenCold": 0,
+    "bathroomWarm": 114891,
+    "bathroomCold": 285341
+  },
+  {
+    "date": "2025-10-25T22:00:00.000Z",
+    "kitchenWarm": 0,
+    "kitchenCold": 0,
+    "bathroomWarm": 115551,
+    "bathroomCold": 286685
+  },
+  {
+    "date": "2025-11-01T23:00:00.000Z",
+    "kitchenWarm": 0,
+    "kitchenCold": 0,
+    "bathroomWarm": 116210,
+    "bathroomCold": 287843
+  },
+  {
+    "date": "2025-11-08T23:00:00.000Z",
+    "kitchenWarm": 0,
+    "kitchenCold": 0,
+    "bathroomWarm": 587,
+    "bathroomCold": 289560
+  },
+  {
+    "date": "2025-11-15T23:00:00.000Z",
+    "kitchenWarm": 0,
+    "kitchenCold": 0,
+    "bathroomWarm": 1236,
+    "bathroomCold": 290692
+  },
+  {
+    "date": "2025-11-22T23:00:00.000Z",
+    "kitchenWarm": 0,
+    "kitchenCold": 0,
+    "bathroomWarm": 1844,
+    "bathroomCold": 227
+  },
+  {
+    "date": "2025-11-29T23:00:00.000Z",
+    "kitchenWarm": 0,
+    "kitchenCold": 0,
+    "bathroomWarm": 2493,
+    "bathroomCold": 1417
+  },
+  {
+    "date": "2025-12-06T23:00:00.000Z",
+    "kitchenWarm": 0,
+    "kitchenCold": 0,
+    "bathroomWarm": 3103,
+    "bathroomCold": 2544
+  },
+  {
+    "date": "2025-12-13T23:00:00.000Z",
+    "kitchenWarm": 0,
+    "kitchenCold": 0,
+    "bathroomWarm": 3629,
+    "bathroomCold": 3821
+  },
+  {
+    "date": "2025-12-20T23:00:00.000Z",
+    "kitchenWarm": 0,
+    "kitchenCold": 0,
+    "bathroomWarm": 4187,
+    "bathroomCold": 4742
+  },
+  {
+    "date": "2025-12-27T23:00:00.000Z",
+    "kitchenWarm": 0,
+    "kitchenCold": 0,
+    "bathroomWarm": 4890,
+    "bathroomCold": 6157
+  }
+]

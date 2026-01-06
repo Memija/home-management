@@ -1,9 +1,11 @@
 // Shared History Section Styles
+@use 'sass:color';
+@use 'variables' as *;
 
 .history-section {
   margin-bottom: 2rem;
   padding: 1rem;
-  background: #f8f9fa;
+  background: $light;
   border-radius: 8px;
 
   ul {
@@ -17,9 +19,9 @@
   li {
     padding: 1rem;
     margin-bottom: 0.75rem;
-    border: 1px solid #dee2e6;
+    border: 1px solid $border-color;
     border-radius: 4px;
-    background: white;
+    background: #f8f9fa;
 
     &:last-child {
       margin-bottom: 0;
@@ -32,7 +34,7 @@
     align-items: center;
     margin-bottom: 0.5rem;
     padding-bottom: 0.5rem;
-    border-bottom: 1px solid #e9ecef;
+    border-bottom: 1px solid $border-light;
     flex-wrap: wrap;
     gap: 0.5rem;
 
@@ -44,7 +46,7 @@
     .date {
       font-weight: 600;
       font-size: 1.1rem;
-      color: #2c3e50;
+      color: $text-color;
 
       @media (max-width: 600px) {
         font-size: 0.95rem;
@@ -71,7 +73,7 @@
 
     .location {
       font-size: 0.95rem;
-      color: #495057;
+      color: $gray-700;
     }
   }
 
@@ -82,7 +84,7 @@
     gap: 1rem;
     margin-top: 1.5rem;
     padding-top: 1rem;
-    border-top: 1px solid #dee2e6;
+    border-top: 1px solid $border-color;
     flex-wrap: wrap;
 
     .pagination-info {
@@ -98,17 +100,17 @@
 
         label {
           font-size: 0.9rem;
-          color: #495057;
+          color: $gray-700;
           font-weight: 500;
           white-space: nowrap;
         }
 
         select {
           padding: 0.4rem 2rem 0.4rem 0.8rem;
-          border: 1px solid #ced4da;
+          border: 1px solid $gray-400;
           border-radius: 4px;
           background-color: white;
-          color: #495057;
+          color: $gray-700;
           font-size: 0.9rem;
           cursor: pointer;
           appearance: none;
@@ -127,7 +129,7 @@
       .page-info {
         margin: 0;
         font-size: 0.9rem;
-        color: #6c757d;
+        color: $secondary;
         font-weight: 500;
       }
     }
@@ -158,7 +160,7 @@
         }
 
         &:disabled {
-          background: #6c757d;
+          background: $secondary;
           cursor: not-allowed;
           opacity: 0.5;
           box-shadow: none;
@@ -179,10 +181,10 @@
 
     select {
       padding: 0.4rem 2rem 0.4rem 0.8rem;
-      border: 1px solid #ced4da;
+      border: 1px solid $gray-400;
       border-radius: 4px;
       background-color: white;
-      color: #495057;
+      color: $gray-700;
       font-size: 0.9rem;
       cursor: pointer;
       appearance: none;
@@ -209,7 +211,7 @@
 
       label {
         font-size: 0.9rem;
-        color: #495057;
+        color: $gray-700;
         font-weight: 500;
         white-space: nowrap;
       }
@@ -230,7 +232,7 @@
       }
 
       lucide-icon {
-        color: #6c757d;
+        color: $secondary;
         flex-shrink: 0;
         pointer-events: none;
       }
@@ -249,7 +251,7 @@
 
     h2 {
       margin: 0;
-      color: #2c3e50;
+      color: $text-color;
     }
   }
 
@@ -259,7 +261,7 @@
     align-items: center;
     gap: 0.4rem;
     font-size: 0.85rem;
-    color: #6c757d;
+    color: $secondary;
     font-style: italic;
     margin-top: 0;
     padding-left: 0.25rem;
@@ -292,14 +294,14 @@
       align-items: center;
       justify-content: center;
       transition: all 0.2s;
-      background: #ffc107;
+      background: $warning;
 
       lucide-icon {
-        color: #212529;
+        color: $dark;
       }
 
       &:hover {
-        background: #e0a800;
+        background: color.adjust($warning, $lightness: -10%);
       }
     }
 
@@ -312,14 +314,14 @@
       align-items: center;
       justify-content: center;
       transition: all 0.2s;
-      background: #dc3545;
+      background: $danger;
 
       lucide-icon {
         color: white;
       }
 
       &:hover {
-        background: #c82333;
+        background: $danger-dark;
       }
     }
   }
@@ -340,7 +342,7 @@
       }
 
       strong {
-        color: #007bff;
+        color: $primary;
       }
 
       .warm-water {
@@ -369,7 +371,7 @@
     .combined-totals {
       margin-top: 0.25rem;
       padding-top: 0.5rem;
-      border-top: 1px solid #e9ecef;
+      border-top: 1px solid $border-light;
       font-weight: 600;
 
       @media (max-width: 600px) {

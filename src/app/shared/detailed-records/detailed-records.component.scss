@@ -1,17 +1,25 @@
 @use 'variables' as *;
 
-// Detailed records - only component-specific overrides
+// Detailed records - Uses unified white card pattern
 // Base styles inherited from global _history.scss
 
 .history-section {
-  background: $border-light;
+  background: white;
   padding: 1.5rem;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  margin-bottom: 2rem;
 
   // Push help button to the right
   .title-with-help {
     display: flex;
     align-items: center;
     width: 100%;
+    gap: 0.5rem;
+
+    h2 {
+      margin: 0;
+    }
 
     .header-spacer {
       flex: 1;
@@ -34,6 +42,66 @@
 
     lucide-icon {
       color: $secondary;
+    }
+  }
+
+  .liters-note-container {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 1rem;
+
+    .liters-note {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      color: $secondary;
+      font-size: 0.9rem;
+      margin: 0;
+
+      lucide-icon {
+        color: $secondary;
+      }
+    }
+
+    .collapse-toggle {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: transparent;
+      border: none;
+      cursor: pointer;
+      padding: 0.25rem;
+      border-radius: 4px;
+      color: $gray-700;
+      transition: all 0.2s;
+
+      &:hover {
+        background: $border-light;
+        color: $primary;
+      }
+    }
+  }
+
+  .history-list {
+    transition: max-height 0.3s ease-out;
+    position: relative;
+    max-height: 600px; // Default expanded height (or unset if relying on scroll)
+
+    &.collapsed {
+      max-height: 180px; // Approx height for one item
+      overflow: hidden;
+
+      &::after {
+        content: '';
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        height: 60px;
+        background: linear-gradient(to bottom, rgba(255, 255, 255, 0), rgba(255, 255, 255, 1));
+        pointer-events: none;
+      }
     }
   }
 

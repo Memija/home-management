@@ -1,14 +1,8 @@
 @use 'variables' as *;
 
-.water-container {
-  max-width: 800px;
-  margin: 0 auto;
-  padding: 1rem;
-  font-family: system-ui, -apple-system, sans-serif;
-}
+// Water component - uses global .page-container from _layout.scss
+// Only theme color overrides and component-specific styles
 
-// Water component - only theme color overrides
-// Base styles inherited from global partials (_comparison.scss, _buttons.scss)
 $water-primary: $primary;
 $water-primary-dark: $primary-dark;
 
@@ -31,13 +25,8 @@ $water-primary-dark: $primary-dark;
   gap: 0.5rem;
   flex-wrap: wrap;
 
-  // Ensure individual buttons don't grow too wide
   button,
   label {
     flex-shrink: 0;
   }
-
-  // .hidden-input is defined globally in _forms.scss
 }
-
-// Notifications are now handled by global components via _notifications.scss

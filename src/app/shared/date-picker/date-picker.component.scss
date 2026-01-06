@@ -49,7 +49,7 @@
   background: white;
   border-radius: 8px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-  border: 1px solid #e9ecef;
+  border: 1px solid $border-light;
   z-index: 1000;
   width: 280px;
   padding: 1rem;
@@ -63,7 +63,7 @@
 
     .month-year {
       font-weight: 600;
-      color: #2c3e50;
+      color: $text-color;
     }
 
     .nav-btn {
@@ -71,12 +71,12 @@
       border: none;
       padding: 0.25rem;
       cursor: pointer;
-      color: #6c757d;
+      color: $secondary;
       border-radius: 4px;
 
       &:hover {
         background: #f8f9fa;
-        color: #2c3e50;
+        color: $text-color;
       }
     }
   }
@@ -90,7 +90,7 @@
       .weekday {
         text-align: center;
         font-size: 0.8rem;
-        color: #6c757d;
+        color: $secondary;
         font-weight: 500;
       }
     }
@@ -107,7 +107,7 @@
       border: none;
       cursor: pointer;
       font-size: 0.9rem;
-      color: #2c3e50;
+      color: $text-color;
       border-radius: 50%;
       display: flex;
       align-items: center;
@@ -115,26 +115,26 @@
       padding: 0;
 
       &:hover:not(:disabled):not(.empty) {
-        background: #e9ecef;
+        background: $border-light;
       }
 
       &.selected {
-        background: #007bff;
+        background: $primary;
         color: white;
       }
 
       &.today:not(.selected) {
-        border: 1px solid #007bff;
-        color: #007bff;
+        border: 1px solid $primary;
+        color: $primary;
       }
 
       &.sunday {
-        color: #dc3545;
+        color: $danger;
         font-weight: 500;
       }
 
       &.disabled {
-        color: #adb5bd;
+        color: $gray-500;
         cursor: not-allowed;
       }
 
@@ -147,7 +147,7 @@
   .calendar-footer {
     margin-top: 1rem;
     padding-top: 0.75rem;
-    border-top: 1px solid #e9ecef;
+    border-top: 1px solid $border-light;
     display: flex;
     justify-content: space-between;
 
@@ -157,7 +157,7 @@
       padding: 0.25rem 0.5rem;
       cursor: pointer;
       font-size: 0.9rem;
-      color: #007bff;
+      color: $primary;
       font-weight: 500;
 
       &:hover {
@@ -165,7 +165,7 @@
       }
 
       &.danger {
-        color: #dc3545;
+        color: $danger;
       }
     }
   }

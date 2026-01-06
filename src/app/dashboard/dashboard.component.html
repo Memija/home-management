@@ -1,24 +1,47 @@
-<div class="dashboard-container">
-    <div class="welcome-section">
-        <h1>{{ 'DASHBOARD.TITLE' | translate }}</h1>
-        <p class="subtitle">{{ 'DASHBOARD.SUBTITLE' | translate }}</p>
-    </div>
+<div class="page-container">
+  <div class="welcome-section">
+    <h1>{{ 'DASHBOARD.TITLE' | translate }}</h1>
+    <p class="subtitle">{{ 'DASHBOARD.SUBTITLE' | translate }}</p>
+  </div>
 
-    <div class="tracker-grid">
-        <button type="button" routerLink="/water" class="tracker-card water-card">
-            <div class="icon-wrapper">
-                <lucide-icon [img]="DropletsIcon" [size]="64"></lucide-icon>
-            </div>
-            <h2>{{ 'DASHBOARD.WATER_TRACKER' | translate }}</h2>
-            <p>{{ 'DASHBOARD.WATER_DESC' | translate }}</p>
-        </button>
+  <div class="tracker-grid">
+    <button type="button" routerLink="/water" class="tracker-card water-card">
+      <div class="icon-wrapper">
+        <lucide-icon [img]="DropletsIcon" [size]="64"></lucide-icon>
+      </div>
+      <h2>{{ 'DASHBOARD.WATER_TRACKER' | translate }}</h2>
+      <p>{{ 'DASHBOARD.WATER_DESC' | translate }}</p>
+    </button>
 
-        <button type="button" routerLink="/heating" class="tracker-card heating-card">
-            <div class="icon-wrapper">
-                <lucide-icon [img]="FlameIcon" [size]="64"></lucide-icon>
-            </div>
-            <h2>{{ 'DASHBOARD.HEATING_TRACKER' | translate }}</h2>
-            <p>{{ 'DASHBOARD.HEATING_DESC' | translate }}</p>
-        </button>
+    <button type="button" routerLink="/heating" class="tracker-card heating-card">
+      <div class="icon-wrapper">
+        <lucide-icon [img]="FlameIcon" [size]="64"></lucide-icon>
+      </div>
+      <h2>{{ 'DASHBOARD.HEATING_TRACKER' | translate }}</h2>
+      <p>{{ 'DASHBOARD.HEATING_DESC' | translate }}</p>
+    </button>
+  </div>
+
+  <!-- Try Demo Section (always visible) -->
+  @if (!demoService.isDemoMode()) {
+  <div class="demo-section">
+    <div class="demo-card">
+      <div class="demo-icon">
+        <lucide-icon [img]="PlayIcon" size="32"></lucide-icon>
+      </div>
+      <div class="demo-content">
+        <h3>{{ 'DEMO.TITLE' | translate }}</h3>
+        <p>{{ 'DEMO.DESCRIPTION' | translate }}</p>
+      </div>
+      <button type="button" class="try-demo-btn" (click)="activateDemo()" [disabled]="demoService.isLoading()">
+        @if (demoService.isLoading()) {
+        <span>{{ 'DEMO.LOADING' | translate }}</span>
+        } @else {
+        <lucide-icon [img]="PlayIcon" size="18"></lucide-icon>
+        <span>{{ 'DEMO.TRY_BUTTON' | translate }}</span>
+        }
+      </button>
     </div>
+  </div>
+  }
 </div>

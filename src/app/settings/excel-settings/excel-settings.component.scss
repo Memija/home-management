@@ -8,16 +8,21 @@
   border-radius: 12px;
   padding: 2rem;
   box-shadow: 0 2px 8px rgba(0, 0, 0, .1);
-  margin-bottom: 2rem;
 
   .settings-header {
     margin-bottom: 2rem;
 
-    .title-row {
+    .title-with-help {
       display: flex;
       align-items: center;
-      gap: .75rem;
+      justify-content: space-between;
       margin-bottom: 1.5rem;
+
+      .title-content {
+        display: flex;
+        align-items: center;
+        gap: .75rem;
+      }
 
       .excel-icon {
         display: flex;
@@ -36,10 +41,7 @@
         color: $gray-900;
       }
 
-      // .help-btn defined globally in _buttons.scss
-      .help-btn {
-        margin-left: auto;
-      }
+      // .help-btn uses global styles from _buttons.scss
     }
 
     .success-message {

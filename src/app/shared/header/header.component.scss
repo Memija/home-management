@@ -16,16 +16,16 @@
   justify-content: space-between;
   align-items: center;
 
-  @media (max-width: 480px) {
-    padding: 0.75rem 1rem;
+  // Mobile: smaller padding
+  @media (max-width: 768px) {
+    padding: 0.5rem 1rem;
   }
 
   .header-content {
-    display: contents; // Keep contents to expose children to grid/flex if parent was grid, but here parent is flex.
-    // Actually if parent is flex, display: contents makes children (.logo-section, .header-actions) direct children of .app-header.
-    // This allows us to modify .app-header to control layout.
-    // So current approach works: .app-header is flex container. .header-content vanishes. .logo-section and .header-actions are flex items.
-    // .app-header { justify-content: space-between } works perfectly.
+    display: flex;
+    width: 100%;
+    justify-content: space-between;
+    align-items: center;
 
     .logo-section {
       display: flex;
@@ -33,33 +33,24 @@
       gap: 1rem;
 
       .logo {
-        height: 100px;
-        width: 100px;
+        height: 80px;
+        width: 80px;
         object-fit: contain;
 
         @media (max-width: 768px) {
-          height: 60px;
-          width: 60px;
-        }
-
-        @media (max-width: 444px) {
-          height: 30px;
-          width: 30px;
+          height: 40px;
+          width: 40px;
         }
       }
 
       .app-title {
         margin: 0;
-        font-size: 2rem;
+        font-size: 1.75rem;
         font-weight: 600;
         color: $text-color;
         letter-spacing: -0.5px;
 
         @media (max-width: 768px) {
-          font-size: 1.2rem;
-        }
-
-        @media (max-width: 444px) {
           font-size: 1rem;
         }
       }
@@ -69,6 +60,79 @@
       display: flex;
       align-items: center;
       gap: 1rem;
+
+      @media (max-width: 768px) {
+        gap: 0.5rem;
+      }
+    }
+  }
+}
+
+// Global Demo Mode Banner
+.demo-banner-global {
+  position: fixed;
+  top: 156px; // Below header + menu bar (desktop)
+  left: 0;
+  right: 0;
+  background: linear-gradient(135deg, #7c3aed 0%, #a855f7 100%);
+  color: white;
+  padding: 0.5rem 1.5rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 1rem;
+  z-index: 998;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  flex-wrap: wrap;
+
+  @media (max-width: 768px) {
+    top: 95px; // Below header + menu bar (mobile)
+    padding: 0.5rem 1rem;
+    gap: 0.5rem;
+  }
+
+  .demo-banner-content {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-weight: 500;
+    font-size: 0.9rem;
+
+    @media (max-width: 768px) {
+      font-size: 0.8rem;
+    }
+  }
+
+  .exit-demo-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+    padding: 0.35rem 0.75rem;
+    background: rgba(255, 255, 255, 0.2);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    border-radius: 4px;
+    color: white;
+    font-size: 0.85rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+
+    @media (max-width: 768px) {
+      font-size: 0.75rem;
+      padding: 0.25rem 0.5rem;
+
+      .btn-text {
+        display: none;
+      }
+    }
+
+    &:hover:not(:disabled) {
+      background: rgba(255, 255, 255, 0.3);
+    }
+
+    &:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
     }
   }
 }

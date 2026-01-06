@@ -7,6 +7,7 @@ import { PdfService } from './pdf.service';
 import { ImportValidationService } from './import-validation.service';
 import { LanguageService } from './language.service';
 import { HouseholdService } from './household.service';
+import { NotificationService } from './notification.service';
 
 @Injectable({
   providedIn: 'root'
@@ -19,6 +20,7 @@ export class ConsumptionDataService {
   private importValidationService = inject(ImportValidationService);
   private languageService = inject(LanguageService);
   private householdService = inject(HouseholdService);
+  private notificationService = inject(NotificationService);
 
   // Main    // State
   readonly records = signal<ConsumptionRecord[]>([]);
@@ -170,6 +172,8 @@ export class ConsumptionDataService {
     });
 
     await this.storage.save('water_consumption_records', this.records());
+    // Update notification service with new records
+    this.notificationService.setWaterRecords(this.records());
     this.showSuccessModal.set(true);
   }
 
@@ -260,7 +264,7 @@ export class ConsumptionDataService {
         const arrayError = this.importValidationService.validateDataArray(data);
         if (arrayError) throw new Error(arrayError);
 
-        const result = this.importValidationService.validateWaterJsonImport(data as any[]);
+        const result = this.importValidationService.validateWaterJsonImport(data as unknown[]);
         if (result.errors.length > 0) throw new Error(result.errors.join('\n'));
 
         await this.processImport(result.validRecords);
@@ -316,6 +320,8 @@ export class ConsumptionDataService {
     try {
       this.records.update(existing => mergeRecords(existing, records));
       await this.storage.save('water_consumption_records', this.records());
+      // Update notification service
+      this.notificationService.setWaterRecords(this.records());
 
       if (warnings.length > 0) {
         this.errorTitle.set(this.languageService.translate('HOME.IMPORT_WARNING_TITLE'));

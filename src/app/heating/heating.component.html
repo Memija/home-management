@@ -1,4 +1,4 @@
-<div class="container">
+<div class="page-container">
   <div class="app-header">
     <div class="header-left">
       <button type="button" routerLink="/" class="back-btn" title="{{ 'DASHBOARD.BACK_TO_DASHBOARD' | translate }}">
@@ -121,7 +121,7 @@
     }
   </div>
 
-  <div class="input-section">
+  <div class="input-section" id="input-section">
     <h2>{{ 'HEATING.RECORD_CONSUMPTION' | translate }}</h2>
     <div class="date-label">{{ 'HOME.READINGS_FOR' | translate }} {{ nextSunday() | date:'fullDate' }}</div>
 

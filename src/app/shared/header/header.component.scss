@@ -7,14 +7,15 @@
   right: 0;
   width: 100%;
   box-sizing: border-box;
-  background: $white;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
-  border-bottom: 1px solid $border-light;
+  background: var(--card-bg);
+  box-shadow: var(--shadow-sm);
+  border-bottom: 1px solid var(--border-light);
   z-index: 1000;
   padding: 1rem 1.5rem;
   display: flex;
   justify-content: space-between;
   align-items: center;
+  transition: background 0.3s ease, box-shadow 0.3s ease;
 
   // Mobile: smaller padding
   @media (max-width: 768px) {
@@ -47,7 +48,7 @@
         margin: 0;
         font-size: 1.75rem;
         font-weight: 600;
-        color: $text-color;
+        color: var(--text-primary);
         letter-spacing: -0.5px;
 
         @media (max-width: 768px) {

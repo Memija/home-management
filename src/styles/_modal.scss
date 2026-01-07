@@ -66,7 +66,7 @@
   left: 0;
   right: 0;
   bottom: 0;
-  background: rgba(0, 0, 0, 0.5);
+  background: var(--overlay-bg);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -76,7 +76,7 @@
 
 // Modal content container
 .modal-content {
-  background: white;
+  background: var(--modal-bg);
   border-radius: 12px;
   max-width: 500px;
   width: 90%;
@@ -93,7 +93,7 @@
 
   .modal-header {
     padding: 1.5rem;
-    border-bottom: 1px solid $border-light;
+    border-bottom: 1px solid var(--border-light);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -113,7 +113,7 @@
     h3 {
       margin: 0;
       font-size: 1.5rem;
-      color: $text-color;
+      color: var(--text-primary);
     }
 
     .close-btn {
@@ -123,7 +123,7 @@
       background: none;
       border: none;
       font-size: 1.5rem;
-      color: $secondary;
+      color: var(--text-secondary);
       cursor: pointer;
       width: 32px;
       height: 32px;
@@ -134,8 +134,8 @@
       transition: all 0.2s;
 
       &:hover {
-        background: $light;
-        color: $gray-700;
+        background: var(--bg-secondary);
+        color: var(--text-primary);
       }
     }
   }
@@ -147,13 +147,13 @@
     p {
       margin: 0;
       font-size: 1.1rem;
-      color: $gray-700;
+      color: var(--text-secondary);
     }
   }
 
   .modal-footer {
     padding: 1rem 1.5rem;
-    border-top: 1px solid $border-light;
+    border-top: 1px solid var(--border-light);
     display: flex;
     justify-content: center;
     gap: 0.75rem;
@@ -205,9 +205,9 @@
 
 // Alternative modal container for contact modal style
 .modal-container {
-  background: white;
+  background: var(--modal-bg);
   border-radius: 8px;
-  box-shadow: $shadow;
+  box-shadow: var(--shadow);
   max-width: 500px;
   width: 90%;
   max-height: 90vh;
@@ -219,12 +219,12 @@
     justify-content: space-between;
     align-items: center;
     padding: 1.5rem;
-    border-bottom: 1px solid $border-light;
+    border-bottom: 1px solid var(--border-light);
 
     h2 {
       margin: 0;
       font-size: 1.5rem;
-      color: $dark;
+      color: var(--text-primary);
     }
 
     .header-actions {
@@ -238,14 +238,14 @@
       border: none;
       cursor: pointer;
       padding: 0.25rem;
-      color: $secondary;
+      color: var(--text-secondary);
       transition: color 0.2s;
       display: flex;
       align-items: center;
       justify-content: center;
 
       &:hover {
-        color: $dark;
+        color: var(--text-primary);
       }
     }
   }
@@ -352,11 +352,11 @@
 
 // Extended footer button styles
 .modal-footer .btn-outline {
-  background: white;
-  color: $gray-600;
-  border: 1px solid $gray-400;
+  background: var(--card-bg);
+  color: var(--text-secondary);
+  border: 1px solid var(--border-color);
 
   &:hover {
-    background: $light;
+    background: var(--bg-secondary);
   }
 }

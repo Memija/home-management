@@ -1,0 +1,72 @@
+@use 'variables' as *;
+
+.settings-section {
+  margin-bottom: 1.5rem;
+}
+
+.theme-options {
+  .form-label {
+    display: block;
+    margin-bottom: 0.75rem;
+    font-weight: 500;
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+  }
+}
+
+.theme-toggle-group {
+  display: inline-flex;
+  background: var(--bg-secondary);
+  border-radius: 12px;
+  padding: 4px;
+  gap: 4px;
+
+  .theme-option {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    padding: 0.625rem 1.25rem;
+    border: none;
+    border-radius: 8px;
+    background: transparent;
+    color: var(--text-secondary);
+    cursor: pointer;
+    font-size: 0.875rem;
+    font-weight: 500;
+    transition: all 0.2s ease;
+
+    &:hover:not(.active) {
+      color: var(--text-primary);
+      background: var(--bg-tertiary);
+    }
+
+    &.active {
+      background: var(--card-bg);
+      color: $primary;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+
+      lucide-icon {
+        color: $primary;
+      }
+    }
+
+    lucide-icon {
+      width: 16px;
+      height: 16px;
+      transition: color 0.2s ease;
+    }
+  }
+}
+
+@media (max-width: 480px) {
+  .theme-toggle-group {
+    width: 100%;
+    display: flex;
+
+    .theme-option {
+      flex: 1;
+      padding: 0.5rem 0.75rem;
+    }
+  }
+}

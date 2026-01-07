@@ -3,23 +3,24 @@
 
 // Address Section - Uses unified white card pattern
 .section {
-  background: white;
+  background: var(--card-bg);
   padding: 1.5rem;
   border-radius: 8px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  box-shadow: var(--shadow);
   margin-bottom: 2rem;
+  transition: background 0.3s ease;
 
   .title-with-help {
     display: flex;
     justify-content: space-between;
     align-items: center;
     margin-bottom: 1.5rem;
-    border-bottom: 1px solid $border-light;
+    border-bottom: 1px solid var(--border-light);
     padding-bottom: 0.5rem;
 
     h2 {
       margin: 0;
-      color: $text-color;
+      color: var(--text-primary);
       font-size: 1.2rem;
       border-bottom: none;
       padding-bottom: 0;
@@ -31,9 +32,9 @@
   h2 {
     margin-top: 0;
     margin-bottom: 1.5rem;
-    color: $text-color;
+    color: var(--text-primary);
     font-size: 1.2rem;
-    border-bottom: 1px solid $border-light;
+    border-bottom: 1px solid var(--border-light);
     padding-bottom: 0.5rem;
   }
 }
@@ -49,17 +50,17 @@
 }
 
 .address-display {
-  background: $light;
+  background: var(--bg-secondary);
   padding: 1rem;
   border-radius: 4px;
   margin-bottom: 1rem;
 
   p {
     margin: 0.5rem 0;
-    color: $gray-700;
+    color: var(--text-secondary);
 
     strong {
-      color: $text-color;
+      color: var(--text-primary);
     }
   }
 }

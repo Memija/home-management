@@ -1,9 +1,10 @@
 .chart-section {
-  background: white;
+  background: var(--card-bg);
   border-radius: 12px;
   padding: 24px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  box-shadow: var(--shadow);
   margin-bottom: 32px;
+  transition: background 0.3s ease;
 }
 
 .chart-header {
@@ -16,7 +17,7 @@
 
   h2 {
     margin: 0;
-    color: #2c3e50;
+    color: var(--text-primary);
     font-size: 1.5rem;
   }
 }
@@ -44,9 +45,9 @@
   display: flex;
   gap: 8px;
   padding: 4px;
-  background: #f8f9fa;
+  background: var(--bg-secondary);
   border-radius: 8px;
-  border: 1px solid #e0e0e0;
+  border: 1px solid var(--border-color);
 
   button {
     padding: 6px 12px;
@@ -59,19 +60,19 @@
     display: flex;
     align-items: center;
     gap: 6px;
-    color: #6c757d;
+    color: var(--text-secondary);
 
     lucide-icon {
       flex-shrink: 0;
     }
 
     &:hover {
-      background: white;
+      background: var(--card-bg);
       color: #007bff;
     }
 
     &.active {
-      background: white;
+      background: var(--card-bg);
       color: #007bff;
       border-color: #007bff;
       box-shadow: 0 1px 3px rgba(0, 123, 255, 0.2);
@@ -84,11 +85,11 @@
   align-items: center;
   gap: 6px;
   padding: 6px 12px;
-  background: #f8f9fa;
-  border: 1px solid #e0e0e0;
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-color);
   border-radius: 6px;
   font-size: 0.875rem;
-  color: #6c757d;
+  color: var(--text-secondary);
   cursor: pointer;
   transition: all 0.2s;
 
@@ -102,7 +103,7 @@
   }
 
   &:hover:not(.disabled) {
-    background: white;
+    background: var(--card-bg);
     border-color: #9b59b6;
     color: #9b59b6;
   }
@@ -173,8 +174,8 @@
 
   button {
     padding: 8px 16px;
-    border: 1px solid #e0e0e0;
-    background: white;
+    border: 1px solid var(--border-color);
+    background: var(--card-bg);
     border-radius: 6px;
     cursor: pointer;
     transition: all 0.2s;
@@ -182,13 +183,14 @@
     display: flex;
     align-items: center;
     gap: 6px;
+    color: var(--text-primary);
 
     lucide-icon {
       flex-shrink: 0;
     }
 
     &:hover {
-      background: #f8f9fa;
+      background: var(--bg-secondary);
       border-color: #007bff;
     }
 

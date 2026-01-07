@@ -1,14 +1,14 @@
 .comparison-note {
   padding: 0.75rem 1rem;
-  background: #e8f4f8; // Solid light blue background
+  background: var(--info-bg);
   border-radius: 8px;
   border-left: 4px solid #17a2b8;
+  transition: background 0.3s ease;
 
   &.disabled {
-    background: #f8f9fa; // Very light gray for disabled
-    border-left-color: #dee2e6;
-    color: #aeaeae;
-    // Removed opacity: 0.6 to ensure background remains solid
+    background: var(--bg-secondary);
+    border-left-color: var(--border-color);
+    color: var(--text-muted);
   }
 }
 
@@ -23,14 +23,14 @@
     flex: 1;
     min-width: 200px;
     font-size: 0.9rem;
-    color: var(--text-color, #333);
+    color: var(--text-primary);
   }
 
   .disabled-message {
     display: flex;
     align-items: center;
     gap: 0.5rem;
-    color: #6c757d;
+    color: var(--text-secondary);
     font-style: italic;
   }
 }
@@ -51,11 +51,11 @@
     gap: 0.25rem;
     font-size: 0.85rem;
     font-weight: 500;
-    color: var(--text-secondary, #666);
+    color: var(--text-secondary);
     white-space: nowrap;
 
     &.disabled {
-      color: #999;
+      color: var(--text-muted);
     }
   }
 }
@@ -64,13 +64,13 @@
   display: flex;
   align-items: center;
   gap: 0.5rem;
-  background: var(--bg-color, #fff);
-  border: 1px solid #ddd;
+  background: var(--input-bg);
+  border: 1px solid var(--border-color);
   border-radius: 6px;
   padding: 0.25rem 0.5rem;
 
   &.disabled {
-    background: #f5f5f5;
+    background: var(--bg-secondary);
   }
 
   .country-flag {
@@ -87,6 +87,7 @@
     padding: 0.25rem 0;
     cursor: pointer;
     min-width: 150px;
+    color: var(--text-primary);
 
     &:focus {
       outline: none;
@@ -94,7 +95,7 @@
 
     &:disabled {
       cursor: not-allowed;
-      color: #999;
+      color: var(--text-muted);
     }
   }
 }
@@ -142,19 +143,19 @@
 }
 
 // Country fact styling - similar to water facts
-// Country fact styling - matched to info-notification in water.component.scss
 .country-fact {
   margin-top: 1rem;
-  background: #ffffff;
+  background: var(--card-bg);
   border-radius: 12px;
   padding: 1rem 1.25rem;
   display: flex;
   align-items: flex-start;
   gap: 0.75rem;
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05); // Add subtle shadow for card definition
+  box-shadow: var(--shadow-sm);
+  transition: background 0.3s ease;
 
   .fact-icon {
-    color: #0ea5e9; // Match blue icon color
+    color: #0ea5e9;
     flex-shrink: 0;
     margin-top: 2px;
   }
@@ -163,16 +164,15 @@
     flex: 1;
 
     .fact-label {
-      font-size: 0.9rem; // Slightly larger to match standard text
+      font-size: 0.9rem;
       font-weight: 700;
-      color: #0369a1; // Match blue title color
+      color: #0ea5e9;
       margin-bottom: 0.25rem;
-      // Removed text-transform: uppercase
     }
 
     .fact-text {
       font-size: 0.9rem;
-      color: #6c757d; // Match text-secondary
+      color: var(--text-secondary);
       line-height: 1.4;
       margin: 0;
     }
@@ -183,51 +183,14 @@
     border: none;
     cursor: pointer;
     padding: 0.25rem;
-    color: #0369a1; // Match title color
+    color: #0ea5e9;
     opacity: 0.6;
     transition: all 0.2s;
     font-size: 1.1rem;
 
     &:hover {
       opacity: 1;
-      transform: rotate(180deg); // Add simple interaction
-    }
-  }
-}
-
-// Dark mode support
-@media (prefers-color-scheme: dark) {
-  .comparison-note {
-    background: #1a3a40; // Solid dark teal background
-
-    &.disabled {
-      background: #23272b; // Dark gray for disabled state
-      border-left-color: #495057;
-      color: #6c757d;
-    }
-  }
-
-  .select-with-flag {
-    background: #2a2a2a;
-    border-color: #444;
-  }
-
-  .country-fact {
-    background: #2a2a2a; // Dark card background
-    box-shadow: none;
-
-    .fact-content {
-      .fact-label {
-        color: #38bdf8; // Lighter blue for dark mode
-      }
-
-      .fact-text {
-        color: #e5e5e5;
-      }
-    }
-
-    .refresh-btn {
-      color: #38bdf8;
+      transform: rotate(180deg);
     }
   }
 }

@@ -1,13 +1,11 @@
 @use 'variables' as *;
 
-// Excel settings - minimal component-specific styles
-// .sr-only is now global in _layout.scss
-
 .excel-settings {
-  background: white;
+  background: var(--card-bg);
   border-radius: 12px;
   padding: 2rem;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, .1);
+  box-shadow: var(--shadow);
+  transition: background 0.3s ease;
 
   .settings-header {
     margin-bottom: 2rem;
@@ -28,20 +26,14 @@
         display: flex;
         align-items: center;
         justify-content: center;
-
-        svg {
-          filter: drop-shadow(0 2px 4px rgba(33, 115, 70, .3));
-        }
       }
 
       h2 {
         margin: 0;
         font-size: 1.5rem;
         font-weight: 600;
-        color: $gray-900;
+        color: var(--text-primary);
       }
-
-      // .help-btn uses global styles from _buttons.scss
     }
 
     .success-message {
@@ -60,8 +52,8 @@
     align-items: center;
     gap: .75rem;
     cursor: pointer;
-    -webkit-user-select: none;
     user-select: none;
+    -webkit-user-select: none;
 
     .toggle-input {
       width: 20px;
@@ -77,14 +69,14 @@
     .toggle-text {
       font-size: 1rem;
       font-weight: 500;
-      color: $gray-800;
+      color: var(--text-primary);
     }
   }
 
   .column-preview {
     margin-top: 2rem;
     padding-top: 2rem;
-    border-top: 1px solid $border-light;
+    border-top: 1px solid var(--border-light);
 
     .preview-header {
       display: flex;
@@ -96,13 +88,13 @@
       border-radius: 6px;
 
       &:hover {
-        background: $light;
+        background: var(--bg-secondary);
       }
 
       h3 {
         font-size: 1.25rem;
         font-weight: 600;
-        color: $gray-900;
+        color: var(--text-primary);
         margin: 0;
       }
 
@@ -112,13 +104,13 @@
         cursor: pointer;
         display: flex;
         align-items: center;
-        color: #6b7280;
+        color: var(--text-secondary);
         padding: .25rem;
         border-radius: 4px;
 
         &:hover {
-          color: #1f2937;
-          background: #e5e7eb;
+          color: var(--text-primary);
+          background: var(--bg-secondary);
         }
       }
     }
@@ -129,7 +121,7 @@
       h4 {
         font-size: 1rem;
         font-weight: 600;
-        color: $gray-700;
+        color: var(--text-secondary);
         margin-bottom: .75rem;
       }
 
@@ -139,17 +131,13 @@
         gap: .5rem;
 
         .preview-item {
-          background: #f3f4f6;
-          border: 1px solid #d1d5db;
+          background: var(--bg-secondary);
+          border: 1px solid var(--border-color);
           border-radius: 6px;
           padding: .5rem .75rem;
           font-size: .875rem;
-          color: #374151;
+          color: var(--text-primary);
           font-weight: 500;
-          max-width: 200px;
-          overflow: hidden;
-          text-overflow: ellipsis;
-          white-space: nowrap;
         }
       }
     }
@@ -166,86 +154,8 @@
   }
 }
 
-// Modal customization for Excel theme (Green) using specificity to override shared styles
-.modal-content {
-  // Shared .modal-content is imported via encapsulation or global styles?
-  // Since encapsulation is Emulated (default), global styles apply.
-  // We just need to ensure we don't duplicate the base styles.
-
-  // We only need to override heights/scroll behavior if unique
-  max-height: 85vh;
-  overflow-y: auto;
-}
-
-.modal-header {
-  position: sticky;
-  top: 0;
-  background: white;
-  border-radius: 12px 12px 0 0;
-  z-index: 2;
-  // padding etc are shared
-}
-
-.success-banner {
-  position: sticky;
-  top: 73px; // Adjust based on header height
-  z-index: 1;
-}
-
-.modal-body .form-control:focus {
-  border-color: $excel-green;
-  box-shadow: 0 0 0 3px rgba(33, 115, 70, .1);
-}
-
-.modal-footer {
-  position: sticky;
-  bottom: 0;
-  background: white; // Essential to cover content scrolling behind
-  border-radius: 0 0 12px 12px;
-  // Shared footer styles handle flex/padding
-
-  // Override primary button to be Excel Green
-  .btn-primary {
-    background: $excel-green;
-
-    &:hover:not(:disabled) {
-      background: $excel-green-dark;
-    }
-
-    &:disabled {
-      background: #9ca3af;
-      cursor: not-allowed;
-    }
-  }
-
-  // .btn-secondary is shared
-}
-
 @media (max-width: 768px) {
   .excel-settings {
     padding: 1.5rem;
-  }
-
-  // .modal-content max-width handled by .modal-lg class now
-
-  .modal-footer {
-    flex-direction: column;
-
-    button {
-      width: 100%;
-    }
-  }
-}
-
-// Validation styles for form inputs (warning-message styling is in global _forms.scss)
-.form-group {
-
-  // Only keeping specific error overrides if they differ
-  input.error {
-    border-color: $danger !important;
-
-    &:focus {
-      box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.1);
-    }
   }
 }

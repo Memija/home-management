@@ -27,29 +27,32 @@
 // Primary content section (white background with shadow)
 // Use for: charts, main content areas, cards
 .section-card {
-  background: white;
+  background: var(--card-bg);
   border-radius: 8px;
   padding: 1.5rem;
   margin-bottom: 2rem;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  box-shadow: var(--shadow);
+  transition: background 0.3s ease, box-shadow 0.3s ease;
 }
 
 // Input/interactive section (gray background)
 // Use for: forms, data entry areas
 .section-input {
-  background: $border-light;
+  background: var(--bg-secondary);
   border-radius: 8px;
   padding: 1.5rem;
   margin-bottom: 2rem;
+  transition: background 0.3s ease;
 }
 
 // Data display section (light gray background)
 // Use for: history/records lists, data tables
 .section-data {
-  background: $light;
+  background: var(--bg-secondary);
   border-radius: 8px;
   padding: 1rem;
   margin-bottom: 2rem;
+  transition: background 0.3s ease;
 }
 
 .app-header {
@@ -72,8 +75,8 @@
     align-items: center;
     gap: 0.5rem;
     padding: 0.5rem 1rem;
-    border: 1px solid $gray-400;
-    background: white;
+    border: 1px solid var(--border-color);
+    background: var(--card-bg);
     border-radius: 4px;
     cursor: pointer;
     font-size: 0.9rem;
@@ -85,7 +88,7 @@
 
   h1 {
     margin: 0;
-    color: $text-color;
+    color: var(--text-primary);
   }
 
   .header-actions {
@@ -96,13 +99,13 @@
 
   .action-btn {
     padding: 0.4rem 0.8rem;
-    border: 1px solid $gray-400;
-    background: white;
+    border: 1px solid var(--border-color);
+    background: var(--card-bg);
     border-radius: 4px;
     cursor: pointer;
     font-size: 0.85rem;
     font-weight: 500;
-    color: $gray-700;
+    color: var(--text-secondary);
     text-decoration: none;
     display: inline-flex;
     align-items: center;
@@ -110,8 +113,8 @@
     transition: all 0.2s;
 
     &:hover {
-      background: $border-light;
-      border-color: $gray-500;
+      background: var(--bg-tertiary);
+      border-color: var(--border-light);
     }
 
     &.settings-btn {
@@ -134,7 +137,7 @@
 
   h2 {
     margin: 0;
-    color: $text-color;
+    color: var(--text-primary);
   }
 }
 
@@ -159,7 +162,7 @@
 
   h2 {
     margin: 0;
-    color: $text-color;
+    color: var(--text-primary);
     font-size: 1.5rem;
   }
 

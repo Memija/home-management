@@ -5,11 +5,12 @@
   top: 113px; // Below header (desktop: padding 32px + logo 80px + border 2px)
   left: 0;
   right: 0;
-  background: $light;
+  background: var(--bg-secondary);
   padding: 0 1.5rem;
   z-index: 999;
   width: 100%;
   box-sizing: border-box;
+  transition: background 0.3s ease;
 
   // Mobile
   @media (max-width: 768px) {
@@ -39,7 +40,7 @@
     align-items: center;
     gap: 0.5rem;
     padding: 0.75rem 1rem;
-    color: $gray-700;
+    color: var(--text-secondary);
     text-decoration: none;
     font-size: 0.9rem;
     font-weight: 500;
@@ -61,7 +62,8 @@
     }
 
     &:hover {
-      background: $border-light;
+      background: var(--bg-tertiary);
+      color: var(--text-primary);
     }
 
     &.active {

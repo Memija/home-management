@@ -13,7 +13,7 @@ import { ConsumptionChartComponent, type ChartView, type DisplayMode } from '../
 import { ErrorModalComponent } from '../shared/error-modal/error-modal.component';
 import { ConfirmationModalComponent } from '../shared/confirmation-modal/confirmation-modal.component';
 import { ImportValidationService } from '../services/import-validation.service';
-import { HeatingRecord, calculateHeatingTotal } from '../models/records.model';
+import { HeatingRecord, calculateHeatingTotal, filterZeroPlaceholders, isHeatingRecordAllZero } from '../models/records.model';
 import { NotificationService } from '../services/notification.service';
 
 @Component({
@@ -202,10 +202,24 @@ export class HeatingComponent {
           throw new Error(result.errors.join('\n'));
         }
 
-        await this.storage.importRecords('heating_consumption_records', result.validRecords);
+        // Filter out zero-value placeholders on the freshest date
+        const { filtered, skippedCount } = filterZeroPlaceholders(result.validRecords, isHeatingRecordAllZero);
+
+        await this.storage.importRecords('heating_consumption_records', filtered);
         await this.loadData();
         // Update notification service
         this.notificationService.setHeatingRecords(this.records());
+
+        // Show warning if placeholders were skipped
+        if (skippedCount > 0) {
+          const key = skippedCount === 1 ? 'HEATING.IMPORT_PLACEHOLDER_SKIPPED_SINGULAR' : 'HEATING.IMPORT_PLACEHOLDER_SKIPPED_PLURAL';
+          this.errorType.set('warning');
+          this.errorTitle.set(this.languageService.translate('HOME.IMPORT_WARNING_TITLE'));
+          this.errorMessage.set(this.languageService.translate(key).replace('{count}', skippedCount.toString()));
+          this.errorDetails.set('');
+          this.errorInstructions.set([]);
+          this.showErrorModal.set(true);
+        }
       } catch (error) {
         console.error('Error importing data:', error);
         const errorMsg = error instanceof Error ? error.message : 'Unknown error';
@@ -244,9 +258,12 @@ export class HeatingComponent {
 
         const { records, missingColumns } = await this.excelService.importHeatingFromExcel(file);
 
+        // Filter out zero-value placeholders on the freshest date
+        const { filtered, skippedCount } = filterZeroPlaceholders(records, isHeatingRecordAllZero);
+
         // Merge with existing records, avoiding duplicates by date
         this.records.update(existing => {
-          const merged = [...existing, ...records];
+          const merged = [...existing, ...filtered];
           const uniqueMap = new Map<number, HeatingRecord>();
           merged.forEach(r => uniqueMap.set(r.date.getTime(), r));
           return Array.from(uniqueMap.values())
@@ -258,10 +275,20 @@ export class HeatingComponent {
         this.notificationService.setHeatingRecords(this.records());
         input.value = '';
 
+        // Build combined warning message
+        const warnings: string[] = [];
         if (missingColumns.length > 0) {
+          warnings.push(this.languageService.translate('HOME.MISSING_COLUMNS') + ': ' + missingColumns.join(', '));
+        }
+        if (skippedCount > 0) {
+          const key = skippedCount === 1 ? 'HEATING.IMPORT_PLACEHOLDER_SKIPPED_SINGULAR' : 'HEATING.IMPORT_PLACEHOLDER_SKIPPED_PLURAL';
+          warnings.push(this.languageService.translate(key).replace('{count}', skippedCount.toString()));
+        }
+
+        if (warnings.length > 0) {
           this.errorTitle.set(this.languageService.translate('HOME.IMPORT_WARNING_TITLE'));
           this.errorMessage.set(this.languageService.translate('HOME.IMPORT_WARNING_MESSAGE'));
-          this.errorDetails.set(this.languageService.translate('HOME.MISSING_COLUMNS') + ': ' + missingColumns.join(', '));
+          this.errorDetails.set(warnings.join('\n'));
           this.errorInstructions.set([]);
           this.errorType.set('warning');
           this.showErrorModal.set(true);

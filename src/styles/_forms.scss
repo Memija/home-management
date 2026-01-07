@@ -25,7 +25,7 @@
   font-weight: 500;
   font-size: 1.1rem;
   margin-bottom: 1.5rem;
-  color: $gray-700;
+  color: var(--text-secondary);
 }
 
 .form-group {
@@ -36,7 +36,7 @@
     display: block;
     margin-bottom: 0.5rem;
     font-weight: 500;
-    color: $gray-700;
+    color: var(--text-secondary);
     font-size: 0.9rem;
   }
 
@@ -47,10 +47,13 @@
   select {
     width: 100%;
     padding: 0.75rem;
-    border: 1px solid $gray-400;
+    border: 1px solid var(--border-color);
     border-radius: 4px;
     font-size: 1rem;
     box-sizing: border-box;
+    background: var(--input-bg);
+    color: var(--text-primary);
+    transition: background 0.3s ease, border-color 0.2s ease;
 
     &:focus {
       outline: none;
@@ -72,9 +75,10 @@
   .file-input {
     width: 100%;
     padding: 0.5rem;
-    border: 1px solid $gray-400;
+    border: 1px solid var(--border-color);
     border-radius: 4px;
-    background: white;
+    background: var(--input-bg);
+    color: var(--text-primary);
   }
 }
 
@@ -133,8 +137,8 @@ select.error {
     top: 100%;
     left: 0;
     right: 0;
-    background: white;
-    border: 1px solid $gray-400;
+    background: var(--card-bg);
+    border: 1px solid var(--border-color);
     border-top: none;
     border-radius: 0 0 4px 4px;
     max-height: 200px;
@@ -143,19 +147,20 @@ select.error {
     padding: 0;
     margin: 0;
     z-index: 10;
-    box-shadow: $shadow;
+    box-shadow: var(--shadow);
 
     li {
       padding: 0.75rem;
       cursor: pointer;
-      border-bottom: 1px solid $border-light;
+      border-bottom: 1px solid var(--border-light);
+      color: var(--text-primary);
 
       &:last-child {
         border-bottom: none;
       }
 
       &:hover {
-        background: $light;
+        background: var(--bg-secondary);
       }
     }
   }
@@ -173,9 +178,9 @@ select.error {
     align-items: center;
     justify-content: space-between;
     padding: 0.75rem;
-    border: 1px solid $gray-400;
+    border: 1px solid var(--border-color);
     border-radius: 4px;
-    background: white;
+    background: var(--input-bg);
     transition: border-color 0.2s;
 
     &:hover {
@@ -188,7 +193,7 @@ select.error {
       gap: 0.5rem;
 
       lucide-icon {
-        color: $secondary;
+        color: var(--text-secondary);
       }
 
       .logo-icon {
@@ -199,12 +204,12 @@ select.error {
 
       span {
         font-size: 1rem;
-        color: $gray-700;
+        color: var(--text-primary);
       }
     }
 
     .chevron {
-      color: $secondary;
+      color: var(--text-secondary);
       transition: transform 0.2s;
     }
   }
@@ -214,10 +219,10 @@ select.error {
     top: calc(100% + 4px);
     left: 0;
     right: 0;
-    background: white;
-    border: 1px solid $gray-400;
+    background: var(--card-bg);
+    border: 1px solid var(--border-color);
     border-radius: 4px;
-    box-shadow: $shadow;
+    box-shadow: var(--shadow);
     z-index: 10;
     max-height: 200px;
     overflow-y: auto;
@@ -231,7 +236,7 @@ select.error {
       transition: background-color 0.2s;
 
       lucide-icon {
-        color: $secondary;
+        color: var(--text-secondary);
       }
 
       .logo-icon {
@@ -242,11 +247,11 @@ select.error {
 
       span {
         font-size: 1rem;
-        color: $gray-700;
+        color: var(--text-primary);
       }
 
       &:hover {
-        background: $light;
+        background: var(--bg-secondary);
       }
 
       &.selected {
@@ -273,12 +278,12 @@ select.error {
   button {
     flex: 1;
     padding: 0.75rem;
-    border: 1px solid $gray-400;
-    background: white;
+    border: 1px solid var(--border-color);
+    background: var(--card-bg);
     border-radius: 4px;
     cursor: pointer;
     font-size: 0.9rem;
-    color: $gray-700;
+    color: var(--text-primary);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -343,7 +348,7 @@ select.error {
 .member-edit-form {
   width: 100%;
   padding: 1rem;
-  background: $light;
+  background: var(--bg-secondary);
   border-radius: 8px;
   border: 2px solid $primary;
 }

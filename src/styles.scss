@@ -6,6 +6,7 @@
 @use 'styles/modal';
 @use 'styles/notifications';
 @use 'styles/comparison';
+@use 'styles/demo';
 
 /* You can add global styles to this file, and also import other style files */
 
@@ -20,10 +21,12 @@ body {
   margin: 0;
   padding: 0;
   font-family: 'Roboto', sans-serif;
-  background: linear-gradient(to right, #008080, #90EE90);
+  background: linear-gradient(to right, var(--bg-gradient-start), var(--bg-gradient-end));
+  color: var(--text-primary);
   padding-top: 180px;
   padding-bottom: 60px; // Space for sticky footer
   overflow-x: hidden;
+  transition: background 0.3s ease, color 0.3s ease;
 
   @media (max-width: 768px) {
     padding-top: 140px; // header (92px) + menu bar (~48px)

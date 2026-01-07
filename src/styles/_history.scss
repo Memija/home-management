@@ -5,8 +5,9 @@
 .history-section {
   margin-bottom: 2rem;
   padding: 1rem;
-  background: $light;
+  background: var(--bg-secondary);
   border-radius: 8px;
+  transition: background 0.3s ease;
 
   ul {
     list-style: none;
@@ -19,9 +20,9 @@
   li {
     padding: 1rem;
     margin-bottom: 0.75rem;
-    border: 1px solid $border-color;
+    border: 1px solid var(--border-color);
     border-radius: 4px;
-    background: #f8f9fa;
+    background: var(--card-bg);
 
     &:last-child {
       margin-bottom: 0;
@@ -34,7 +35,7 @@
     align-items: center;
     margin-bottom: 0.5rem;
     padding-bottom: 0.5rem;
-    border-bottom: 1px solid $border-light;
+    border-bottom: 1px solid var(--border-light);
     flex-wrap: wrap;
     gap: 0.5rem;
 
@@ -46,7 +47,7 @@
     .date {
       font-weight: 600;
       font-size: 1.1rem;
-      color: $text-color;
+      color: var(--text-primary);
 
       @media (max-width: 600px) {
         font-size: 0.95rem;
@@ -73,7 +74,7 @@
 
     .location {
       font-size: 0.95rem;
-      color: $gray-700;
+      color: var(--text-secondary);
     }
   }
 
@@ -84,7 +85,7 @@
     gap: 1rem;
     margin-top: 1.5rem;
     padding-top: 1rem;
-    border-top: 1px solid $border-color;
+    border-top: 1px solid var(--border-color);
     flex-wrap: wrap;
 
     .pagination-info {
@@ -100,17 +101,17 @@
 
         label {
           font-size: 0.9rem;
-          color: $gray-700;
+          color: var(--text-secondary);
           font-weight: 500;
           white-space: nowrap;
         }
 
         select {
           padding: 0.4rem 2rem 0.4rem 0.8rem;
-          border: 1px solid $gray-400;
+          border: 1px solid var(--border-color);
           border-radius: 4px;
-          background-color: white;
-          color: $gray-700;
+          background-color: var(--input-bg);
+          color: var(--text-primary);
           font-size: 0.9rem;
           cursor: pointer;
           appearance: none;
@@ -129,7 +130,7 @@
       .page-info {
         margin: 0;
         font-size: 0.9rem;
-        color: $secondary;
+        color: var(--text-secondary);
         font-weight: 500;
       }
     }
@@ -181,10 +182,10 @@
 
     select {
       padding: 0.4rem 2rem 0.4rem 0.8rem;
-      border: 1px solid $gray-400;
+      border: 1px solid var(--border-color);
       border-radius: 4px;
-      background-color: white;
-      color: $gray-700;
+      background-color: var(--input-bg);
+      color: var(--text-primary);
       font-size: 0.9rem;
       cursor: pointer;
       appearance: none;
@@ -211,7 +212,7 @@
 
       label {
         font-size: 0.9rem;
-        color: $gray-700;
+        color: var(--text-secondary);
         font-weight: 500;
         white-space: nowrap;
       }
@@ -251,7 +252,7 @@
 
     h2 {
       margin: 0;
-      color: $text-color;
+      color: var(--text-primary);
     }
   }
 
@@ -261,7 +262,7 @@
     align-items: center;
     gap: 0.4rem;
     font-size: 0.85rem;
-    color: $secondary;
+    color: var(--text-secondary);
     font-style: italic;
     margin-top: 0;
     padding-left: 0.25rem;
@@ -371,7 +372,7 @@
     .combined-totals {
       margin-top: 0.25rem;
       padding-top: 0.5rem;
-      border-top: 1px solid $border-light;
+      border-top: 1px solid var(--border-light);
       font-weight: 600;
 
       @media (max-width: 600px) {

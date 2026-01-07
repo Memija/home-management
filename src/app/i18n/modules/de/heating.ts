@@ -17,6 +17,8 @@ export const heating = {
     BEDROOM: 'Schlafzimmer',
     KITCHEN: 'Küche',
     BATHROOM: 'Badezimmer',
-    RECORD_CONSUMPTION: 'Heizungsverbrauch erfassen'
+    RECORD_CONSUMPTION: 'Heizungsverbrauch erfassen',
+    IMPORT_PLACEHOLDER_SKIPPED_SINGULAR: '1 potenzieller Platzhalter-Datensatz mit Nullwerten am aktuellsten Datum wurde übersprungen.',
+    IMPORT_PLACEHOLDER_SKIPPED_PLURAL: '{count} potenzielle Platzhalter-Datensätze mit Nullwerten am aktuellsten Datum wurden übersprungen.'
   }
 };

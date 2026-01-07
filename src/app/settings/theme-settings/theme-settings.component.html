@@ -1,0 +1,19 @@
+<div class="settings-section section-card">
+  <div class="section-header">
+    <h2>{{ 'SETTINGS.THEME_TITLE' | translate }}</h2>
+  </div>
+
+  <div class="theme-options">
+    <label class="form-label">{{ 'SETTINGS.THEME_LABEL' | translate }}</label>
+    <div class="theme-toggle-group">
+      @for (option of themeOptions; track option.value) {
+      <button type="button" class="theme-option" [class.active]="themeService.currentTheme() === option.value"
+        (click)="setTheme(option.value)" [attr.aria-pressed]="themeService.currentTheme() === option.value"
+        [title]="option.labelKey | translate">
+        <lucide-icon [img]="option.icon" [size]="18"></lucide-icon>
+        <span>{{ option.labelKey | translate }}</span>
+      </button>
+      }
+    </div>
+  </div>
+</div>

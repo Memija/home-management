@@ -4,11 +4,12 @@
 // Base styles inherited from global _history.scss
 
 .history-section {
-  background: white;
+  background: var(--card-bg);
   padding: 1.5rem;
   border-radius: 8px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  box-shadow: var(--shadow);
   margin-bottom: 2rem;
+  transition: background 0.3s ease;
 
   // Push help button to the right
   .title-with-help {
@@ -55,12 +56,12 @@
       display: flex;
       align-items: center;
       gap: 0.5rem;
-      color: $secondary;
+      color: var(--text-secondary);
       font-size: 0.9rem;
       margin: 0;
 
       lucide-icon {
-        color: $secondary;
+        color: var(--text-secondary);
       }
     }
 
@@ -73,11 +74,11 @@
       cursor: pointer;
       padding: 0.25rem;
       border-radius: 4px;
-      color: $gray-700;
+      color: var(--text-secondary);
       transition: all 0.2s;
 
       &:hover {
-        background: $border-light;
+        background: var(--bg-secondary);
         color: $primary;
       }
     }
@@ -99,7 +100,7 @@
         left: 0;
         right: 0;
         height: 60px;
-        background: linear-gradient(to bottom, rgba(255, 255, 255, 0), rgba(255, 255, 255, 1));
+        background: linear-gradient(to bottom, transparent, var(--card-bg));
         pointer-events: none;
       }
     }

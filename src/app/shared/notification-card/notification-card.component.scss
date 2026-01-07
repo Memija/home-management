@@ -1,7 +1,7 @@
 @use 'variables' as *;
 
 .notification-card {
-  background: #fff;
+  background: var(--card-bg);
   border-left: 4px solid $info;
   border-radius: 8px;
   padding: 1rem;
@@ -10,8 +10,9 @@
   align-items: center;
   justify-content: space-between;
   gap: 1rem;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  box-shadow: var(--shadow-sm);
   flex-wrap: wrap;
+  transition: background 0.3s ease;
 
   &.high-priority {
     border-left-color: $warning;
@@ -39,14 +40,14 @@
       strong {
         display: block;
         margin-bottom: 0.25rem;
-        color: $text-color;
+        color: var(--text-primary);
         font-size: 0.95rem;
       }
 
       p {
         margin: 0;
         font-size: 0.85rem;
-        color: $text-secondary;
+        color: var(--text-secondary);
         line-height: 1.4;
       }
     }
@@ -86,15 +87,15 @@
       height: 32px;
       padding: 0;
       background: transparent;
-      border: 1px solid $border-color;
+      border: 1px solid var(--border-color);
       border-radius: 6px;
-      color: $text-secondary;
+      color: var(--text-secondary);
       cursor: pointer;
       transition: all 0.2s ease;
 
       &:hover {
-        border-color: $text-secondary;
-        color: $text-color;
+        border-color: var(--text-secondary);
+        color: var(--text-primary);
       }
     }
   }

@@ -2,6 +2,11 @@
 export const settings = {
   SETTINGS: {
     TITLE: 'Household Settings',
+    THEME_TITLE: 'Appearance',
+    THEME_LABEL: 'Theme',
+    THEME_LIGHT: 'Light',
+    THEME_DARK: 'Dark',
+    THEME_SYSTEM: 'System',
     ADDRESS_TITLE: 'Household Address',
     FAMILY_TITLE: 'Family Members',
     STREET_NAME: 'Street Name',

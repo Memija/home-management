@@ -217,6 +217,7 @@ export class ExcelService {
 
   /**
    * Read Excel file and return data as array of objects
+   * Reads all sheets and combines their data
    */
   private async readExcelFile(file: File): Promise<Record<string, unknown>[]> {
     const XLSX = await this.getXLSX();
@@ -229,13 +230,16 @@ export class ExcelService {
           const data = event.target?.result;
           const workbook = XLSX.read(data, { type: 'binary' });
 
-          // Get first sheet
-          const sheetName = workbook.SheetNames[0];
-          const worksheet = workbook.Sheets[sheetName];
+          // Combine data from all sheets
+          const allData: Record<string, unknown>[] = [];
 
-          // Convert to JSON
-          const jsonData = XLSX.utils.sheet_to_json(worksheet, { defval: '' }) as Record<string, unknown>[];
-          resolve(jsonData);
+          for (const sheetName of workbook.SheetNames) {
+            const worksheet = workbook.Sheets[sheetName];
+            const sheetData = XLSX.utils.sheet_to_json(worksheet, { defval: '' }) as Record<string, unknown>[];
+            allData.push(...sheetData);
+          }
+
+          resolve(allData);
         } catch (error) {
           reject(new Error('Failed to parse Excel file'));
         }

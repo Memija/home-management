@@ -1,5 +1,5 @@
 import { Injectable, signal, inject, computed } from '@angular/core';
-import { ConsumptionRecord, mergeRecords } from '../models/records.model';
+import { ConsumptionRecord, mergeRecords, filterZeroPlaceholders, isWaterRecordAllZero } from '../models/records.model';
 import { STORAGE_SERVICE } from './storage.service';
 import { FileStorageService } from './file-storage.service';
 import { ExcelService } from './excel.service';
@@ -267,7 +267,15 @@ export class ConsumptionDataService {
         const result = this.importValidationService.validateWaterJsonImport(data as unknown[]);
         if (result.errors.length > 0) throw new Error(result.errors.join('\n'));
 
-        await this.processImport(result.validRecords);
+        // Filter out zero-value placeholders on the freshest date
+        const { filtered, skippedCount } = filterZeroPlaceholders(result.validRecords, isWaterRecordAllZero);
+        const warnings: string[] = [];
+        if (skippedCount > 0) {
+          const key = skippedCount === 1 ? 'HOME.IMPORT_PLACEHOLDER_SKIPPED_SINGULAR' : 'HOME.IMPORT_PLACEHOLDER_SKIPPED_PLURAL';
+          warnings.push(this.languageService.translate(key).replace('{count}', skippedCount.toString()));
+        }
+
+        await this.processImport(filtered, warnings);
       } catch (error) {
         this.handleImportError(error, 'WATER.JSON_IMPORT_ERROR_TITLE', 'WATER.JSON_IMPORT_ERROR', true);
       }
@@ -290,7 +298,16 @@ export class ConsumptionDataService {
         }
 
         const { records, missingColumns } = await this.excelService.importWaterFromExcel(file);
-        await this.processImport(records, missingColumns);
+
+        // Filter out zero-value placeholders on the freshest date
+        const { filtered, skippedCount } = filterZeroPlaceholders(records, isWaterRecordAllZero);
+        const warnings = [...missingColumns];
+        if (skippedCount > 0) {
+          const key = skippedCount === 1 ? 'HOME.IMPORT_PLACEHOLDER_SKIPPED_SINGULAR' : 'HOME.IMPORT_PLACEHOLDER_SKIPPED_PLURAL';
+          warnings.push(this.languageService.translate(key).replace('{count}', skippedCount.toString()));
+        }
+
+        await this.processImport(filtered, warnings);
       } catch (error) {
         this.handleImportError(error, 'WATER.EXCEL_IMPORT_ERROR_TITLE', 'WATER.EXCEL_IMPORT_ERROR', false);
       } finally {

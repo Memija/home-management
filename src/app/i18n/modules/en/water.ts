@@ -142,6 +142,8 @@ export const water = {
     },
     IMPORT_WARNING_TITLE: 'Column Mismatch',
     IMPORT_WARNING_MESSAGE: 'Data imported successfully, but some columns configured in Settings were not found in your Excel file. Values for missing columns were set to 0.',
-    MISSING_COLUMNS: 'Columns not found in file'
+    MISSING_COLUMNS: 'Columns not found in file',
+    IMPORT_PLACEHOLDER_SKIPPED_SINGULAR: '1 potential placeholder record with all-zero values on the most recent date was skipped.',
+    IMPORT_PLACEHOLDER_SKIPPED_PLURAL: '{count} potential placeholder records with all-zero values on the most recent date were skipped.'
   }
 };

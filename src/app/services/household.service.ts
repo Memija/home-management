@@ -1,5 +1,6 @@
 import { Injectable, signal, effect, inject, untracked } from '@angular/core';
 import { STORAGE_SERVICE, StorageService } from './storage.service';
+import { NotificationService } from './notification.service';
 
 export interface Address {
   streetName: string;
@@ -23,6 +24,7 @@ export interface HouseholdMember {
 })
 export class HouseholdService {
   private storage = inject(STORAGE_SERVICE);
+  private notificationService = inject(NotificationService);
   private isInitialized = false;
 
   readonly members = signal<HouseholdMember[]>([]);
@@ -51,6 +53,8 @@ export class HouseholdService {
       if (this.isInitialized) {
         untracked(() => this.storage.save('household_members', currentMembers));
       }
+      // Update notification service
+      this.notificationService.setHouseholdMembers(currentMembers);
     });
 
     effect(() => {
@@ -58,6 +62,8 @@ export class HouseholdService {
       if (this.isInitialized && currentAddress) {
         untracked(() => this.storage.save('household_address', currentAddress));
       }
+      // Update notification service
+      this.notificationService.setAddress(currentAddress);
     });
   }
 

@@ -2,6 +2,7 @@ import { Injectable, inject, computed, signal } from '@angular/core';
 import { STORAGE_SERVICE } from './storage.service';
 import { ConsumptionRecord } from '../models/records.model';
 import { DemoService } from './demo.service';
+import { Address, HouseholdMember } from './household.service';
 
 export interface Notification {
   id: string;
@@ -25,6 +26,8 @@ export class NotificationService {
   // Data signals (will be set by consuming components or loaded)
   private waterRecords = signal<ConsumptionRecord[]>([]);
   private heatingRecords = signal<{ date: Date }[]>([]);
+  private address = signal<Address | null>(null);
+  private familyMembers = signal<HouseholdMember[]>([]);
   private dismissedNotifications = signal<string[]>([]);
   private isDataLoaded = signal(false);
 
@@ -48,6 +51,17 @@ export class NotificationService {
       this.heatingRecords.set(heatingRecords);
     }
 
+    // Load address and family data
+    const address = await this.storage.load<Address>('household_address');
+    if (address) {
+      this.address.set(address);
+    }
+
+    const familyMembers = await this.storage.load<HouseholdMember[]>('household_members');
+    if (familyMembers) {
+      this.familyMembers.set(familyMembers);
+    }
+
     this.isDataLoaded.set(true);
   }
 
@@ -60,6 +74,20 @@ export class NotificationService {
 
   setHeatingRecords(records: { date: Date }[]): void {
     this.heatingRecords.set(records);
+  }
+
+  /**
+   * Update address from external source
+   */
+  setAddress(address: Address | null): void {
+    this.address.set(address);
+  }
+
+  /**
+   * Update family members from external source
+   */
+  setHouseholdMembers(members: HouseholdMember[]): void {
+    this.familyMembers.set(members);
   }
 
   /**
@@ -126,6 +154,40 @@ export class NotificationService {
         dismissible: true,
         route: '/water',
         fragment: 'input-section'
+      };
+      if (!dismissed.includes(notif.id)) {
+        notifications.push(notif);
+      }
+    }
+
+    // Check for missing address
+    if (!this.address()) {
+      const notif: Notification = {
+        id: 'address-missing',
+        type: 'initial',
+        titleKey: 'NOTIFICATIONS.ADDRESS_MISSING_TITLE',
+        messageKey: 'NOTIFICATIONS.ADDRESS_MISSING_MESSAGE',
+        priority: 'medium',
+        dismissible: true,
+        route: '/settings',
+        fragment: 'address-section'
+      };
+      if (!dismissed.includes(notif.id)) {
+        notifications.push(notif);
+      }
+    }
+
+    // Check for missing family members
+    if (this.familyMembers().length === 0) {
+      const notif: Notification = {
+        id: 'family-missing',
+        type: 'initial',
+        titleKey: 'NOTIFICATIONS.FAMILY_MISSING_TITLE',
+        messageKey: 'NOTIFICATIONS.FAMILY_MISSING_MESSAGE',
+        priority: 'medium',
+        dismissible: true,
+        route: '/settings',
+        fragment: 'family-section'
       };
       if (!dismissed.includes(notif.id)) {
         notifications.push(notif);

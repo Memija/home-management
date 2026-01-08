@@ -103,7 +103,7 @@ export class LanguageService {
     // Replace parameters in the translation if provided
     if (params) {
       Object.keys(params).forEach(param => {
-        translation = translation.replace(`{${param}}`, String(params[param]));
+        translation = translation.replace(`{{${param}}}`, String(params[param]));
       });
     }
 

@@ -61,19 +61,19 @@ export class WaterComponent {
   protected readonly chartHelpSteps = CHART_HELP_STEPS;
   protected readonly recordsHelpSteps = RECORDS_LIST_HELP_STEPS;
 
-  protected consumptionGroups = signal<ConsumptionGroup[]>([
+  protected consumptionGroups = computed<ConsumptionGroup[]>(() => [
     {
       title: 'WATER.KITCHEN',
       fields: [
-        { key: 'kitchenWarm', label: 'WATER.WARM', value: null },
-        { key: 'kitchenCold', label: 'WATER.COLD', value: null }
+        { key: 'kitchenWarm', label: 'WATER.WARM', value: this.formService.kitchenWarm() },
+        { key: 'kitchenCold', label: 'WATER.COLD', value: this.formService.kitchenCold() }
       ]
     },
     {
       title: 'WATER.BATHROOM',
       fields: [
-        { key: 'bathroomWarm', label: 'WATER.WARM', value: null },
-        { key: 'bathroomCold', label: 'WATER.COLD', value: null }
+        { key: 'bathroomWarm', label: 'WATER.WARM', value: this.formService.bathroomWarm() },
+        { key: 'bathroomCold', label: 'WATER.COLD', value: this.formService.bathroomCold() }
       ]
     }
   ]);
@@ -308,7 +308,11 @@ export class WaterComponent {
   }
 
   protected onConsumptionSave(data: ConsumptionData) {
-    // Handled via saveRecord bound to (save) event
+    const newRecord = this.formService.createRecordFromState();
+    if (newRecord) {
+      this.dataService.saveRecord(newRecord);
+      this.formService.cancelEdit();
+    }
   }
 
   protected cancelEdit() {

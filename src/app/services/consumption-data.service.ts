@@ -182,6 +182,8 @@ export class ConsumptionDataService {
     if (record) {
       this.records.update(records => records.filter(r => new Date(r.date).getTime() !== new Date(record.date).getTime()));
       void this.storage.save('water_consumption_records', this.records());
+      // Update notification service
+      this.notificationService.setWaterRecords(this.records());
     }
     this.showDeleteModal.set(false);
     this.recordToDelete.set(null);
@@ -193,6 +195,8 @@ export class ConsumptionDataService {
       records.filter(r => !recordsToDeleteSet.has(new Date(r.date).getTime()))
     );
     void this.storage.save('water_consumption_records', this.records());
+    // Update notification service
+    this.notificationService.setWaterRecords(this.records());
     this.showDeleteAllModal.set(false);
     this.recordsToDelete.set([]);
   }

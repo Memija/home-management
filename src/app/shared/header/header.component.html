@@ -39,7 +39,7 @@
               <div class="notification-item-actions">
                 @if (notification.route) {
                 <button type="button" class="action-link" (click)="navigateToNotification(notification)"
-                  title="{{ 'NOTIFICATIONS.GO_TO_TRACKER' | translate }}">
+                  title="{{ (notification.route === '/settings' ? 'NOTIFICATIONS.GO_TO_SETTINGS' : 'NOTIFICATIONS.GO_TO_TRACKER') | translate }}">
                   <lucide-icon [img]="ArrowRightIcon" size="16"></lucide-icon>
                 </button>
                 }

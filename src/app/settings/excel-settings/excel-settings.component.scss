@@ -52,8 +52,8 @@
     align-items: center;
     gap: .75rem;
     cursor: pointer;
-    user-select: none;
     -webkit-user-select: none;
+    user-select: none;
 
     .toggle-input {
       width: 20px;

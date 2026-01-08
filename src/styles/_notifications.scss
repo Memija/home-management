@@ -124,11 +124,10 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 40px;
-  height: 40px;
+  height: 30px;
   padding: 0;
   background: transparent;
-  border: 1px solid $border-color;
+  border: 0px;
   border-radius: 8px;
   color: $text-secondary;
   cursor: pointer;
@@ -138,7 +137,6 @@
   &:hover,
   &.has-notifications {
     color: $primary;
-    border-color: $primary;
   }
 }
 
@@ -146,8 +144,7 @@
   position: absolute;
   top: -4px;
   right: -4px;
-  min-width: 18px;
-  height: 18px;
+  height: 14px;
   padding: 0 5px;
   background: $danger;
   color: white;
@@ -165,13 +162,24 @@
   right: 0;
   margin-top: 8px;
   width: 340px;
-  max-width: 90vw;
-  background: white;
-  border: 1px solid $border-color;
+  max-width: calc(100vw - 2rem);
+  background: var(--card-bg);
+  border: 1px solid var(--border-color);
   border-radius: 12px;
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+  box-shadow: var(--shadow-lg);
   z-index: 1100;
   overflow: hidden;
+  transition: background 0.3s ease;
+
+  @media (max-width: 480px) {
+    position: fixed;
+    top: auto;
+    right: 1rem;
+    left: 1rem;
+    width: auto;
+    max-width: none;
+    margin-top: 0.5rem;
+  }
 }
 
 .notification-panel-header {
@@ -179,12 +187,12 @@
   justify-content: space-between;
   align-items: center;
   padding: 0.75rem 1rem;
-  background: $light;
-  border-bottom: 1px solid $border-color;
+  background: var(--bg-secondary);
+  border-bottom: 1px solid var(--border-color);
 
   span {
     font-weight: 600;
-    color: $text-color;
+    color: var(--text-primary);
   }
 
   .close-btn {
@@ -196,13 +204,13 @@
     padding: 0;
     background: transparent;
     border: none;
-    color: $text-secondary;
+    color: var(--text-secondary);
     cursor: pointer;
     border-radius: 4px;
 
     &:hover {
-      background: $border-color;
-      color: $text-color;
+      background: var(--border-color);
+      color: var(--text-primary);
     }
   }
 }
@@ -215,7 +223,7 @@
 .no-notifications {
   padding: 2rem 1rem;
   text-align: center;
-  color: $text-secondary;
+  color: var(--text-secondary);
   font-size: 0.9rem;
 }
 
@@ -224,15 +232,11 @@
   justify-content: space-between;
   align-items: flex-start;
   padding: 0.75rem 1rem;
-  border-bottom: 1px solid $border-light;
+  border-bottom: 1px solid var(--border-light);
   gap: 0.5rem;
 
   &:last-child {
     border-bottom: none;
-  }
-
-  &.high-priority {
-    background: #fffbeb;
   }
 }
 
@@ -243,14 +247,14 @@
   strong {
     display: block;
     font-size: 0.85rem;
-    color: $text-color;
+    color: var(--text-primary);
     margin-bottom: 0.25rem;
   }
 
   p {
     margin: 0;
     font-size: 0.8rem;
-    color: $text-secondary;
+    color: var(--text-secondary);
     line-height: 1.4;
   }
 }
@@ -285,12 +289,12 @@
 
   .dismiss-btn {
     background: transparent;
-    border: 1px solid $border-color;
-    color: $text-secondary;
+    border: 1px solid var(--border-color);
+    color: var(--text-secondary);
 
     &:hover {
-      border-color: $text-secondary;
-      color: $text-color;
+      border-color: var(--text-secondary);
+      color: var(--text-primary);
     }
   }
 }

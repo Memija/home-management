@@ -47,7 +47,12 @@ export const common = {
     HEATING_INITIAL_MESSAGE: 'Add your first meter reading to start tracking your heating consumption.',
     WATER_OVERDUE_TITLE: 'Time to Add a Meter Reading',
     WATER_OVERDUE_MESSAGE: 'It has been {{days}} days since your last water reading. Add a new entry to keep your data up to date.',
+    ADDRESS_MISSING_TITLE: 'Add Your Address',
+    ADDRESS_MISSING_MESSAGE: 'Set up your household address in settings for a complete profile.',
+    FAMILY_MISSING_TITLE: 'Add Family Members',
+    FAMILY_MISSING_MESSAGE: 'Add household members to track per-person consumption.',
     GO_TO_TRACKER: 'Go to Tracker',
+    GO_TO_SETTINGS: 'Go to Settings',
     DISMISS: 'Dismiss'
   }
 };

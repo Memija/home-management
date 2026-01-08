@@ -47,7 +47,12 @@ export const common = {
     HEATING_INITIAL_MESSAGE: 'Fügen Sie Ihren ersten Zählerstand hinzu, um Ihren Heizungsverbrauch zu verfolgen.',
     WATER_OVERDUE_TITLE: 'Zeit für einen Zählerstand',
     WATER_OVERDUE_MESSAGE: 'Es sind {{days}} Tage seit Ihrer letzten Wasserablesung vergangen. Fügen Sie einen neuen Eintrag hinzu.',
+    ADDRESS_MISSING_TITLE: 'Adresse hinzufügen',
+    ADDRESS_MISSING_MESSAGE: 'Richten Sie Ihre Haushaltsadresse in den Einstellungen ein.',
+    FAMILY_MISSING_TITLE: 'Familienmitglieder hinzufügen',
+    FAMILY_MISSING_MESSAGE: 'Fügen Sie Haushaltsmitglieder hinzu, um den Pro-Kopf-Verbrauch zu verfolgen.',
     GO_TO_TRACKER: 'Zum Tracker',
+    GO_TO_SETTINGS: 'Zu Einstellungen',
     DISMISS: 'Schließen'
   }
 };

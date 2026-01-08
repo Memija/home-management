@@ -49,6 +49,7 @@
     "@angular/cli": "^21.0.1",
     "@angular/compiler-cli": "^21.0.0",
     "@types/express": "^5.0.1",
+    "@types/jasmine": "^5.1.13",
     "@types/node": "^20.17.19",
     "jasmine-core": "^5.12.1",
     "jsdom": "^27.1.0",

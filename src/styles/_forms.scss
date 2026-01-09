@@ -352,3 +352,173 @@ select.error {
   border-radius: 8px;
   border: 2px solid $primary;
 }
+
+// Calendar Popup (Date Picker)
+.calendar-popup {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  margin-top: 0.5rem;
+  background: var(--card-bg);
+  border-radius: 8px;
+  box-shadow: var(--shadow-lg);
+  border: 1px solid var(--border-color);
+  z-index: 1000;
+  width: 280px;
+  padding: 1rem;
+  animation: fadeIn 0.1s ease-out;
+
+  .calendar-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+
+    .month-year {
+      font-weight: 600;
+      color: var(--text-primary);
+    }
+
+    .nav-btn {
+      background: none;
+      border: none;
+      padding: 0.25rem;
+      cursor: pointer;
+      color: var(--text-secondary);
+      border-radius: 4px;
+
+      &:hover {
+        background: var(--bg-secondary);
+        color: var(--text-primary);
+      }
+    }
+  }
+
+  .calendar-grid {
+    .weekdays {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      margin-bottom: 0.5rem;
+
+      .weekday {
+        text-align: center;
+        font-size: 0.8rem;
+        color: var(--text-secondary);
+        font-weight: 500;
+      }
+    }
+
+    .days {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      gap: 2px;
+    }
+
+    .day-cell {
+      aspect-ratio: 1;
+      background: none;
+      border: none;
+      cursor: pointer;
+      font-size: 0.9rem;
+      color: var(--text-primary);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0;
+
+      &:hover:not(:disabled):not(.empty) {
+        background: var(--bg-tertiary);
+      }
+
+      &.selected {
+        background: $primary;
+        color: white;
+      }
+
+      &.today:not(.selected) {
+        border: 1px solid $primary;
+        color: $primary;
+      }
+
+      &.sunday {
+        color: $danger;
+        font-weight: 500;
+      }
+
+      &.disabled {
+        color: var(--text-muted);
+        cursor: not-allowed;
+      }
+
+      &.empty {
+        cursor: default;
+      }
+    }
+  }
+
+  .calendar-footer {
+    margin-top: 1rem;
+    padding-top: 0.75rem;
+    border-top: 1px solid var(--border-light);
+    display: flex;
+    justify-content: space-between;
+
+    .btn-text {
+      background: none;
+      border: none;
+      padding: 0.25rem 0.5rem;
+      cursor: pointer;
+      font-size: 0.9rem;
+      color: $primary;
+      font-weight: 500;
+
+      &:hover {
+        text-decoration: underline;
+      }
+
+      &.danger {
+        color: $danger;
+      }
+    }
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-5px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+// Toggle Container (shared for excel settings, etc.)
+.toggle-container .toggle-label {
+  display: flex;
+  align-items: center;
+  gap: .75rem;
+  cursor: pointer;
+  -webkit-user-select: none;
+  user-select: none;
+
+  .toggle-input {
+    width: 20px;
+    height: 20px;
+    cursor: pointer;
+
+    &:disabled {
+      cursor: not-allowed;
+      opacity: .5;
+    }
+  }
+
+  .toggle-text {
+    font-size: 1rem;
+    font-weight: 500;
+    color: var(--text-primary);
+  }
+}

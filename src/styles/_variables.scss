@@ -37,6 +37,9 @@
   --success-bg: #d4edda;
   --warning-bg: #fff3cd;
   --danger-bg: #f8d7da;
+
+  // Component-specific
+  --primary-light-bg: #e7f3ff;
 }
 
 [data-theme="dark"] {
@@ -74,6 +77,9 @@
   --success-bg: #1a4731;
   --warning-bg: #4a3728;
   --danger-bg: #4a2828;
+
+  // Component-specific (darker variants)
+  --primary-light-bg: #1e3a5f;
 }
 
 // ============================================

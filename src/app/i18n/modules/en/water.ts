@@ -15,7 +15,7 @@ export const water = {
     JSON_IMPORT_ERROR: 'Failed to import JSON data. Please check the details below and follow the instructions to fix the issue.',
     IMPORT_FILTER_WARNING_TITLE: 'Data Outside Current Filter',
     IMPORT_FILTER_WARNING_MESSAGE: "Some records in this file are outside your current filter range. They will be imported but won't be visible until you clear or adjust the filter.",
-    IMPORT_FILTER_WARNING_COUNT: '{count} record(s) outside filter',
+    IMPORT_FILTER_WARNING_COUNT: '{{count}} record(s) outside filter',
     IMPORT_CONTINUE: 'Import Anyway',
     IMPORT_CANCEL: 'Cancel',
     KITCHEN: 'Kitchen',
@@ -84,9 +84,9 @@ export const water = {
     PARTIAL_INPUT_ERROR: 'Please enter both Warm and Cold water values for at least one room.',
     INCOMPLETE_ROOM_ERROR: 'Please complete both Warm and Cold water entries for all started rooms.',
     LOAD_MORE_RECORDS: 'Load More Records',
-    SHOWING_RECORDS: 'Showing {current} of {total} records',
+    SHOWING_RECORDS: 'Showing {{current}} of {{total}} records',
     PAGINATION_SIZE: 'Records per page',
-    PAGE_OF: 'Page {current} of {total}',
+    PAGE_OF: 'Page {{current}} of {{total}}',
     PREVIOUS_PAGE: 'Previous',
     NEXT_PAGE: 'Next',
     FILTER_YEAR: 'Year',
@@ -102,7 +102,7 @@ export const water = {
     DELETE_BUTTON: 'Delete',
     DELETE_ALL_CONFIRM_TITLE: 'Delete All Records',
     DELETE_ALL_CONFIRM_MESSAGE_SINGULAR: 'Are you sure you want to delete this filtered record? This action cannot be undone.',
-    DELETE_ALL_CONFIRM_MESSAGE_PLURAL: 'Are you sure you want to delete all {count} filtered records? This action cannot be undone.',
+    DELETE_ALL_CONFIRM_MESSAGE_PLURAL: 'Are you sure you want to delete all {{count}} filtered records? This action cannot be undone.',
     DELETE_ALL_BUTTON: 'Delete All',
     IMPORT_CONFIRM_TITLE: 'Confirm Import',
     IMPORT_CONFIRM_MESSAGE: 'Importing data will merge with your existing records. Are you sure you want to continue?',
@@ -112,7 +112,7 @@ export const water = {
     IMPORT_ERROR_INSTRUCTION_1: 'Make sure you are importing the correct file for this section',
     IMPORT_ERROR_INSTRUCTION_2: 'Verify the file was exported from this application',
     IMPORT_ERROR_INSTRUCTION_3: 'Try exporting a fresh backup and importing again',
-    IMPORT_ERROR_CHECK_FIELD: 'Check the value of the field "{field}" in your file',
+    IMPORT_ERROR_CHECK_FIELD: 'Check the value of the field "{{field}}" in your file',
     EXPORT_BUTTON: 'Export Data',
     SORT: {
       DATE_DESC: 'Date (Newest First)',
@@ -144,6 +144,6 @@ export const water = {
     IMPORT_WARNING_MESSAGE: 'Data imported successfully, but some columns configured in Settings were not found in your Excel file. Values for missing columns were set to 0.',
     MISSING_COLUMNS: 'Columns not found in file',
     IMPORT_PLACEHOLDER_SKIPPED_SINGULAR: '1 potential placeholder record with all-zero values on the most recent date was skipped.',
-    IMPORT_PLACEHOLDER_SKIPPED_PLURAL: '{count} potential placeholder records with all-zero values on the most recent date were skipped.'
+    IMPORT_PLACEHOLDER_SKIPPED_PLURAL: '{{count}} potential placeholder records with all-zero values on the most recent date were skipped.'
   }
 };

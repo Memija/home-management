@@ -5,6 +5,28 @@
       <h1 class="app-title">{{ 'FOOTER.APP_NAME' | translate }}</h1>
     </div>
     <div class="header-actions">
+      <!-- Theme Toggle -->
+      <button type="button" class="theme-toggle" (click)="cycleTheme()" [title]="getThemeTitle()"
+        [class.is-dark]="themeService.resolvedTheme() === 'dark'"
+        [class.is-system]="themeService.currentTheme() === 'system'">
+        <span class="theme-icon-wrapper">
+          @if (themeService.currentTheme() === 'system') {
+          <lucide-icon [img]="MonitorIcon" size="20" class="theme-icon monitor-icon"></lucide-icon>
+          <span class="system-indicator" [class.dark]="themeService.resolvedTheme() === 'dark'">
+            @if (themeService.resolvedTheme() === 'dark') {
+            <lucide-icon [img]="MoonIcon" size="10"></lucide-icon>
+            } @else {
+            <lucide-icon [img]="SunIcon" size="10"></lucide-icon>
+            }
+          </span>
+          } @else if (themeService.resolvedTheme() === 'dark') {
+          <lucide-icon [img]="MoonIcon" size="20" class="theme-icon moon-icon"></lucide-icon>
+          } @else {
+          <lucide-icon [img]="SunIcon" size="20" class="theme-icon sun-icon"></lucide-icon>
+          }
+        </span>
+      </button>
+
       <!-- Notification Bell -->
       <div class="notification-wrapper">
         <button type="button" class="notification-bell" (click)="toggleNotificationPanel()"

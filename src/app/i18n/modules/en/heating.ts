@@ -19,6 +19,6 @@ export const heating = {
     BATHROOM: 'Bathroom',
     RECORD_CONSUMPTION: 'Record Heating Consumption',
     IMPORT_PLACEHOLDER_SKIPPED_SINGULAR: '1 potential placeholder record with all-zero values on the most recent date was skipped.',
-    IMPORT_PLACEHOLDER_SKIPPED_PLURAL: '{count} potential placeholder records with all-zero values on the most recent date were skipped.'
+    IMPORT_PLACEHOLDER_SKIPPED_PLURAL: '{{count}} potential placeholder records with all-zero values on the most recent date were skipped.'
   }
 };

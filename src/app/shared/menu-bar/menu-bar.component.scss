@@ -68,7 +68,7 @@
 
     &.active {
       color: $primary;
-      background: $primary-light-bg;
+      background: var(--primary-light-bg);
     }
 
     .emoji-icon {

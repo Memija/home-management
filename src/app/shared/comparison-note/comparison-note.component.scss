@@ -1,9 +1,11 @@
+@use 'variables' as *;
+
 .comparison-note {
   padding: 0.75rem 1rem;
   background: var(--info-bg);
   border-radius: 8px;
   border-left: 4px solid #17a2b8;
-  transition: background 0.3s ease;
+  transition: background 0.3s;
 
   &.disabled {
     background: var(--bg-secondary);
@@ -97,10 +99,14 @@
       cursor: not-allowed;
       color: var(--text-muted);
     }
+
+    option {
+      background: var(--card-bg);
+      color: var(--text-primary);
+    }
   }
 }
 
-// Unified info icon styling
 .info-icon {
   color: #17a2b8;
   cursor: help;
@@ -120,8 +126,8 @@
     bottom: 100%;
     left: 50%;
     transform: translateX(-50%);
-    background: #333;
-    color: #fff;
+    background: var(--card-bg);
+    color: var(--text-primary);
     padding: 0.5rem 0.75rem;
     border-radius: 4px;
     font-size: 0.75rem;
@@ -131,10 +137,10 @@
     z-index: 100;
     margin-bottom: 0.25rem;
     line-height: 1.4;
-    text-transform: none;
     font-style: normal;
     font-weight: normal;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    box-shadow: var(--shadow);
+    border: 1px solid var(--border-color);
   }
 
   &:hover .info-tooltip {
@@ -142,60 +148,6 @@
   }
 }
 
-// Country fact styling - similar to water facts
-.country-fact {
-  margin-top: 1rem;
-  background: var(--card-bg);
-  border-radius: 12px;
-  padding: 1rem 1.25rem;
-  display: flex;
-  align-items: flex-start;
-  gap: 0.75rem;
-  box-shadow: var(--shadow-sm);
-  transition: background 0.3s ease;
-
-  .fact-icon {
-    color: #0ea5e9;
-    flex-shrink: 0;
-    margin-top: 2px;
-  }
-
-  .fact-content {
-    flex: 1;
-
-    .fact-label {
-      font-size: 0.9rem;
-      font-weight: 700;
-      color: #0ea5e9;
-      margin-bottom: 0.25rem;
-    }
-
-    .fact-text {
-      font-size: 0.9rem;
-      color: var(--text-secondary);
-      line-height: 1.4;
-      margin: 0;
-    }
-  }
-
-  .refresh-btn {
-    background: transparent;
-    border: none;
-    cursor: pointer;
-    padding: 0.25rem;
-    color: #0ea5e9;
-    opacity: 0.6;
-    transition: all 0.2s;
-    font-size: 1.1rem;
-
-    &:hover {
-      opacity: 1;
-      transform: rotate(180deg);
-    }
-  }
-}
-
-// Mobile responsive styles
 @media (max-width: 768px) {
   .comparison-content {
     flex-direction: column;
@@ -225,21 +177,6 @@
       min-width: unset;
       width: 100%;
       flex: 1;
-    }
-  }
-
-  .country-fact {
-    padding: 0.875rem 1rem;
-    gap: 0.625rem;
-
-    .fact-content {
-      .fact-label {
-        font-size: 0.85rem;
-      }
-
-      .fact-text {
-        font-size: 0.85rem;
-      }
     }
   }
 }

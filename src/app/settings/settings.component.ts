@@ -5,7 +5,6 @@ import { TranslatePipe } from '../pipes/translate.pipe';
 import { AddressComponent } from './address/address.component';
 import { FamilyComponent } from './family/family.component';
 import { ExcelSettingsComponent } from './excel-settings/excel-settings.component';
-import { ThemeSettingsComponent } from './theme-settings/theme-settings.component';
 
 interface ComponentWithUnsavedChanges {
   hasUnsavedChanges(): boolean;
@@ -16,7 +15,7 @@ interface ComponentWithUnsavedChanges {
 @Component({
   selector: 'app-settings',
   standalone: true,
-  imports: [TranslatePipe, CommonModule, AddressComponent, FamilyComponent, ExcelSettingsComponent, ThemeSettingsComponent],
+  imports: [TranslatePipe, CommonModule, AddressComponent, FamilyComponent, ExcelSettingsComponent],
   templateUrl: './settings.component.html',
   styleUrl: './settings.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush

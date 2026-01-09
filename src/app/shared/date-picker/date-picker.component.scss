@@ -11,174 +11,32 @@
   align-items: center;
   gap: 0.5rem;
   padding: 0.5rem 0.75rem;
-  border: 1px solid $gray-400;
+  border: 1px solid var(--border-color);
   border-radius: 4px;
-  background: white;
+  background: var(--input-bg);
   cursor: pointer;
   transition: all 0.2s;
 
   &:hover {
-    border-color: $gray-500;
+    border-color: var(--text-muted);
   }
 
   &.disabled {
-    background: $border-light;
+    background: var(--bg-secondary);
     cursor: not-allowed;
     opacity: 0.7;
   }
 
   .calendar-icon {
-    color: $secondary;
+    color: var(--text-secondary);
   }
 
   .date-display {
     font-size: 1rem;
-    color: $text-color;
+    color: var(--text-primary);
 
     &.placeholder {
-      color: $secondary;
+      color: var(--text-secondary);
     }
-  }
-}
-
-.calendar-popup {
-  position: absolute;
-  top: 100%;
-  left: 0;
-  margin-top: 0.5rem;
-  background: white;
-  border-radius: 8px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-  border: 1px solid $border-light;
-  z-index: 1000;
-  width: 280px;
-  padding: 1rem;
-  animation: fadeIn 0.1s ease-out;
-
-  .calendar-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 1rem;
-
-    .month-year {
-      font-weight: 600;
-      color: $text-color;
-    }
-
-    .nav-btn {
-      background: none;
-      border: none;
-      padding: 0.25rem;
-      cursor: pointer;
-      color: $secondary;
-      border-radius: 4px;
-
-      &:hover {
-        background: #f8f9fa;
-        color: $text-color;
-      }
-    }
-  }
-
-  .calendar-grid {
-    .weekdays {
-      display: grid;
-      grid-template-columns: repeat(7, 1fr);
-      margin-bottom: 0.5rem;
-
-      .weekday {
-        text-align: center;
-        font-size: 0.8rem;
-        color: $secondary;
-        font-weight: 500;
-      }
-    }
-
-    .days {
-      display: grid;
-      grid-template-columns: repeat(7, 1fr);
-      gap: 2px;
-    }
-
-    .day-cell {
-      aspect-ratio: 1;
-      background: none;
-      border: none;
-      cursor: pointer;
-      font-size: 0.9rem;
-      color: $text-color;
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      padding: 0;
-
-      &:hover:not(:disabled):not(.empty) {
-        background: $border-light;
-      }
-
-      &.selected {
-        background: $primary;
-        color: white;
-      }
-
-      &.today:not(.selected) {
-        border: 1px solid $primary;
-        color: $primary;
-      }
-
-      &.sunday {
-        color: $danger;
-        font-weight: 500;
-      }
-
-      &.disabled {
-        color: $gray-500;
-        cursor: not-allowed;
-      }
-
-      &.empty {
-        cursor: default;
-      }
-    }
-  }
-
-  .calendar-footer {
-    margin-top: 1rem;
-    padding-top: 0.75rem;
-    border-top: 1px solid $border-light;
-    display: flex;
-    justify-content: space-between;
-
-    .btn-text {
-      background: none;
-      border: none;
-      padding: 0.25rem 0.5rem;
-      cursor: pointer;
-      font-size: 0.9rem;
-      color: $primary;
-      font-weight: 500;
-
-      &:hover {
-        text-decoration: underline;
-      }
-
-      &.danger {
-        color: $danger;
-      }
-    }
-  }
-}
-
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-    transform: translateY(-5px);
-  }
-
-  to {
-    opacity: 1;
-    transform: translateY(0);
   }
 }

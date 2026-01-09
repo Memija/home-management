@@ -15,7 +15,7 @@ export const water = {
     JSON_IMPORT_ERROR: 'JSON-Daten konnten nicht importiert werden. Bitte überprüfen Sie die Details unten und befolgen Sie die Anweisungen zur Behebung des Problems.',
     IMPORT_FILTER_WARNING_TITLE: 'Daten außerhalb des aktuellen Filters',
     IMPORT_FILTER_WARNING_MESSAGE: 'Einige Einträge in dieser Datei liegen außerhalb Ihres aktuellen Filterbereichs. Sie werden importiert, sind aber erst sichtbar, wenn Sie den Filter löschen oder anpassen.',
-    IMPORT_FILTER_WARNING_COUNT: '{count} Eintrag/Einträge außerhalb des Filters',
+    IMPORT_FILTER_WARNING_COUNT: '{{count}} Eintrag/Einträge außerhalb des Filters',
     IMPORT_CONTINUE: 'Trotzdem importieren',
     IMPORT_CANCEL: 'Abbrechen',
     KITCHEN: 'Küche',
@@ -84,9 +84,9 @@ export const water = {
     PARTIAL_INPUT_ERROR: 'Bitte geben Sie sowohl Warm- als auch Kaltwasserwerte für mindestens einen Raum ein.',
     INCOMPLETE_ROOM_ERROR: 'Bitte vervollständigen Sie die Warm- und Kaltwasserwerte für alle begonnenen Räume.',
     LOAD_MORE_RECORDS: 'Weitere Datensätze laden',
-    SHOWING_RECORDS: '{current} von {total} Datensätzen angezeigt',
+    SHOWING_RECORDS: '{{current}} von {{total}} Datensätzen angezeigt',
     PAGINATION_SIZE: 'Datensätze pro Seite',
-    PAGE_OF: 'Seite {current} von {total}',
+    PAGE_OF: 'Seite {{current}} von {{total}}',
     PREVIOUS_PAGE: 'Zurück',
     NEXT_PAGE: 'Weiter',
     FILTER_YEAR: 'Jahr',
@@ -102,7 +102,7 @@ export const water = {
     DELETE_BUTTON: 'Löschen',
     DELETE_ALL_CONFIRM_TITLE: 'Alle Einträge löschen',
     DELETE_ALL_CONFIRM_MESSAGE_SINGULAR: 'Sind Sie sicher, dass Sie diesen gefilterten Eintrag löschen möchten? Diese Aktion kann nicht rückgängig gemacht werden.',
-    DELETE_ALL_CONFIRM_MESSAGE_PLURAL: 'Sind Sie sicher, dass Sie alle {count} gefilterten Einträge löschen möchten? Diese Aktion kann nicht rückgängig gemacht werden.',
+    DELETE_ALL_CONFIRM_MESSAGE_PLURAL: 'Sind Sie sicher, dass Sie alle {{count}} gefilterten Einträge löschen möchten? Diese Aktion kann nicht rückgängig gemacht werden.',
     DELETE_ALL_BUTTON: 'Alle löschen',
     IMPORT_CONFIRM_TITLE: 'Import bestätigen',
     IMPORT_CONFIRM_MESSAGE: 'Der Import wird mit Ihren bestehenden Einträgen zusammengeführt. Möchten Sie fortfahren?',
@@ -112,7 +112,7 @@ export const water = {
     IMPORT_ERROR_INSTRUCTION_1: 'Stellen Sie sicher, dass Sie die richtige Datei für diesen Bereich importieren',
     IMPORT_ERROR_INSTRUCTION_2: 'Überprüfen Sie, ob die Datei aus dieser Anwendung exportiert wurde',
     IMPORT_ERROR_INSTRUCTION_3: 'Versuchen Sie, ein neues Backup zu exportieren und erneut zu importieren',
-    IMPORT_ERROR_CHECK_FIELD: 'Überprüfen Sie den Wert des Feldes "{field}" in Ihrer Datei',
+    IMPORT_ERROR_CHECK_FIELD: 'Überprüfen Sie den Wert des Feldes "{{field}}" in Ihrer Datei',
     EXPORT_BUTTON: 'Daten exportieren',
     SORT: {
       DATE_DESC: 'Datum (Neueste zuerst)',
@@ -144,6 +144,6 @@ export const water = {
     IMPORT_WARNING_MESSAGE: 'Daten erfolgreich importiert, aber einige in den Einstellungen konfigurierte Spalten wurden in Ihrer Excel-Datei nicht gefunden. Werte für fehlende Spalten wurden auf 0 gesetzt.',
     MISSING_COLUMNS: 'Spalten nicht in Datei gefunden',
     IMPORT_PLACEHOLDER_SKIPPED_SINGULAR: '1 potenzieller Platzhalter-Datensatz mit Nullwerten am aktuellsten Datum wurde übersprungen.',
-    IMPORT_PLACEHOLDER_SKIPPED_PLURAL: '{count} potenzielle Platzhalter-Datensätze mit Nullwerten am aktuellsten Datum wurden übersprungen.'
+    IMPORT_PLACEHOLDER_SKIPPED_PLURAL: '{{count}} potenzielle Platzhalter-Datensätze mit Nullwerten am aktuellsten Datum wurden übersprungen.'
   }
 };

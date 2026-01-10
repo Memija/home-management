@@ -83,7 +83,10 @@ export class ExcelSettingsService {
         heatingMapping: { ...this.getDefaultHeatingMapping(), ...settings.heatingMapping }
       });
     }
-    this.isInitialized = true;
+    // Delay initialization flag to ensure initial signal updates don't trigger effects
+    setTimeout(() => {
+      this.isInitialized = true;
+    }, 0);
   }
 
   updateSettings(settings: ExcelSettings) {

@@ -86,20 +86,26 @@ export class ExcelImportService {
     } else {
       const h = typedData.heatingMapping!;
       this.validateField(h.date, 'SETTINGS.EXCEL_COLUMN_DATE_NAME', 'Heating', errors, fieldKeys, hintKeys);
-      this.validateField(h.livingRoom, 'SETTINGS.EXCEL_COLUMN_LIVING_ROOM_NAME', 'Heating', errors, fieldKeys, hintKeys);
-      this.validateField(h.bedroom, 'SETTINGS.EXCEL_COLUMN_BEDROOM_NAME', 'Heating', errors, fieldKeys, hintKeys);
-      this.validateField(h.kitchen, 'SETTINGS.EXCEL_COLUMN_KITCHEN_NAME', 'Heating', errors, fieldKeys, hintKeys);
-      this.validateField(h.bathroom, 'SETTINGS.EXCEL_COLUMN_BATHROOM_NAME', 'Heating', errors, fieldKeys, hintKeys);
 
-      // Duplicate Check
-      const heatingColumns = [h.date, h.livingRoom, h.bedroom, h.kitchen, h.bathroom]
-        .filter(col => typeof col === 'string')
-        .map(c => c.trim());
-      const duplicates = heatingColumns.filter((col, index) => heatingColumns.indexOf(col) !== index);
-      if (duplicates.length > 0) {
-        const uniqueDupes = [...new Set(duplicates)];
-        errors.push(this.languageService.translate('EXCEL.VALIDATION_DUPLICATES') + ` (Heating): "${uniqueDupes.join('", "')}"`);
-        hintKeys.push('EXCEL.VALIDATION_DUPLICATES_HINT');
+      // Validate rooms object
+      if (h.rooms && typeof h.rooms === 'object') {
+        const roomValues = Object.values(h.rooms);
+        roomValues.forEach((value, index) => {
+          if (typeof value === 'string') {
+            this.validateField(value, `Room ${index + 1}`, 'Heating', errors, fieldKeys, hintKeys);
+          }
+        });
+
+        // Duplicate Check for room column names
+        const heatingColumns = [h.date, ...roomValues]
+          .filter(col => typeof col === 'string')
+          .map(c => c.trim());
+        const duplicates = heatingColumns.filter((col, index) => heatingColumns.indexOf(col) !== index);
+        if (duplicates.length > 0) {
+          const uniqueDupes = [...new Set(duplicates)];
+          errors.push(this.languageService.translate('EXCEL.VALIDATION_DUPLICATES') + ` (Heating): "${uniqueDupes.join('", "')}"`);
+          hintKeys.push('EXCEL.VALIDATION_DUPLICATES_HINT');
+        }
       }
     }
 

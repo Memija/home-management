@@ -109,6 +109,7 @@ export const settings = {
     EXCEL_COLUMN_BEDROOM_NAME: 'Schlafzimmer Spaltenname',
     EXCEL_COLUMN_KITCHEN_NAME: 'Küche Spaltenname',
     EXCEL_COLUMN_BATHROOM_NAME: 'Badezimmer Spaltenname',
+    EXCEL_COLUMN_FOR_ROOM: 'Spalte für {{name}}',
     EXCEL_SAVE_SETTINGS: 'Excel-Einstellungen speichern',
     EXCEL_RESET_DEFAULTS: 'Auf Standardwerte zurücksetzen',
     EXCEL_SETTINGS_SAVED: 'Excel-Spalteneinstellungen gespeichert!',

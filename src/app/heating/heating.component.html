@@ -39,7 +39,7 @@
     </div>
   </div>
 
-  <app-consumption-chart [data]="records()" [currentView]="chartView()" [onViewChange]="onChartViewChange"
+  <app-consumption-chart [data]="chartRecords()" [currentView]="chartView()" [onViewChange]="onChartViewChange"
     [chartType]="'heating'" [displayMode]="displayMode()" [onDisplayModeChange]="onDisplayModeChange">
   </app-consumption-chart>
 
@@ -71,18 +71,11 @@
           <span class="total">{{ 'HOME.TOTAL' | translate }}: {{ calculateTotal(record) }} kWh</span>
         </div>
         <div class="record-details">
+          @for (room of roomsService.rooms(); track room.id) {
           <div class="location">
-            <strong>{{ 'HEATING.LIVING_ROOM' | translate }}:</strong> {{ record.livingRoom }} kWh
+            <strong>{{ room.name }}:</strong> {{ getRoomValue(record, room.id) }} kWh
           </div>
-          <div class="location">
-            <strong>{{ 'HEATING.BEDROOM' | translate }}:</strong> {{ record.bedroom }} kWh
-          </div>
-          <div class="location">
-            <strong>{{ 'HEATING.KITCHEN' | translate }}:</strong> {{ record.kitchen }} kWh
-          </div>
-          <div class="location">
-            <strong>{{ 'HEATING.BATHROOM' | translate }}:</strong> {{ record.bathroom }} kWh
-          </div>
+          }
         </div>
       </li>
       }
@@ -121,40 +114,16 @@
     }
   </div>
 
-  <div class="input-section" id="input-section">
-    <h2>{{ 'HEATING.RECORD_CONSUMPTION' | translate }}</h2>
-    <div class="date-label">{{ 'HOME.READINGS_FOR' | translate }} {{ nextSunday() | date:'fullDate' }}</div>
-
-    <div class="readings-grid">
-      <div class="reading-group">
-        <h3>{{ 'HEATING.LIVING_AREAS' | translate }}</h3>
-        <div class="input-pair">
-          <label for="living-room">{{ 'HEATING.LIVING_ROOM' | translate }} (kWh)</label>
-          <input type="number" id="living-room" [ngModel]="livingRoom()" (ngModelChange)="livingRoom.set($event)"
-            placeholder="0">
-        </div>
-        <div class="input-pair">
-          <label for="bedroom">{{ 'HEATING.BEDROOM' | translate }} (kWh)</label>
-          <input type="number" id="bedroom" [ngModel]="bedroom()" (ngModelChange)="bedroom.set($event)" placeholder="0">
-        </div>
-      </div>
-
-      <div class="reading-group">
-        <h3>{{ 'HEATING.SERVICE_AREAS' | translate }}</h3>
-        <div class="input-pair">
-          <label for="kitchen">{{ 'HEATING.KITCHEN' | translate }} (kWh)</label>
-          <input type="number" id="kitchen" [ngModel]="kitchen()" (ngModelChange)="kitchen.set($event)" placeholder="0">
-        </div>
-        <div class="input-pair">
-          <label for="bathroom">{{ 'HEATING.BATHROOM' | translate }} (kWh)</label>
-          <input type="number" id="bathroom" [ngModel]="bathroom()" (ngModelChange)="bathroom.set($event)"
-            placeholder="0">
-        </div>
-      </div>
-    </div>
-
-    <button type="button" (click)="saveRecord()" [disabled]="!allFieldsFilled()">{{ 'HOME.SAVE' | translate
-      }}</button>
+  <div class="input-section-header">
+    <app-consumption-input [groups]="consumptionGroups()" [selectedDate]="selectedDate()" [maxDate]="maxDate"
+      [editingMode]="!!editingRecord()" [dateExists]="dateExists()" [titleKey]="'HEATING.RECORD_CONSUMPTION'"
+      [allowPartialGroups]="true" (dateChange)="selectedDate.set($event)" (fieldChange)="onFieldChange($event)"
+      (save)="onConsumptionSave($event)" (cancel)="cancelEdit()">
+    </app-consumption-input>
+    <button type="button" class="settings-btn" (click)="openRoomsModal()"
+      title="{{ 'HEATING.ROOMS_SETTINGS_TITLE' | translate }}">
+      <lucide-icon [img]="SettingsIcon" size="20"></lucide-icon>
+    </button>
   </div>
 </div>
 
@@ -162,3 +131,7 @@
   [messageKey]="'HOME.IMPORT_CONFIRM_MESSAGE'" [cancelKey]="'HOME.CANCEL'" [confirmKey]="'HOME.IMPORT_BUTTON'"
   [icon]="UploadIcon" (confirm)="confirmImport()" (cancel)="cancelImport()">
 </app-confirmation-modal>
+
+<app-heating-rooms-modal [show]="showRoomsModal()" [rooms]="roomsService.rooms()" [roomsWithDataArray]="roomsWithData()"
+  (save)="onRoomsSave($event)" (cancel)="onRoomsCancel()">
+</app-heating-rooms-modal>

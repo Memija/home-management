@@ -1,4 +1,4 @@
-import { Component, inject, computed, signal, effect, ChangeDetectionStrategy, HostListener } from '@angular/core';
+import { Component, inject, computed, signal, effect, ChangeDetectionStrategy, ChangeDetectorRef, HostListener } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ExcelSettingsService } from '../../services/excel-settings.service';
@@ -14,6 +14,7 @@ import { ErrorModalComponent } from '../../shared/error-modal/error-modal.compon
 import { ExcelValidationService } from '../../services/excel-validation.service';
 import { ExcelImportService, ImportError } from '../../services/excel-import.service';
 import { DeleteConfirmationModalComponent } from '../../shared/delete-confirmation-modal/delete-confirmation-modal.component';
+import { HeatingRoomsService } from '../../services/heating-rooms.service';
 
 @Component({
   selector: 'app-excel-settings',
@@ -26,10 +27,12 @@ import { DeleteConfirmationModalComponent } from '../../shared/delete-confirmati
 export class ExcelSettingsComponent {
   private localStorageService = inject(LocalStorageService);
   private fileStorage = inject(FileStorageService);
+  private cdr = inject(ChangeDetectorRef);
   protected validationService = inject(ExcelValidationService);
   private importService = inject(ExcelImportService);
   protected excelSettingsService = inject(ExcelSettingsService);
   protected languageService = inject(LanguageService);
+  protected heatingRoomsService = inject(HeatingRoomsService);
   protected readonly FileSpreadsheetIcon = FileSpreadsheet;
   protected readonly RotateCcwIcon = RotateCcw;
   protected readonly ChevronDownIcon = ChevronDown;
@@ -75,10 +78,8 @@ export class ExcelSettingsComponent {
   protected waterBathroomWarmCol = signal('');
   protected waterBathroomColdCol = signal('');
   protected heatingDateCol = signal('');
-  protected heatingLivingRoomCol = signal('');
-  protected heatingBedroomCol = signal('');
-  protected heatingKitchenCol = signal('');
-  protected heatingBathroomCol = signal('');
+  // Dynamic room column mappings by room ID
+  protected heatingRoomCols = signal<Record<string, string>>({});
 
   // Computed column arrays for validation
   protected waterColumns = computed(() => [
@@ -86,10 +87,33 @@ export class ExcelSettingsComponent {
     this.waterBathroomWarmCol(), this.waterBathroomColdCol()
   ]);
 
-  protected heatingColumns = computed(() => [
-    this.heatingDateCol(), this.heatingLivingRoomCol(), this.heatingBedroomCol(),
-    this.heatingKitchenCol(), this.heatingBathroomCol()
-  ]);
+  protected heatingColumns = computed(() => {
+    const cols = [this.heatingDateCol()];
+    const rooms = this.heatingRoomsService.rooms();
+    const roomCols = this.heatingRoomCols();
+
+    // Add all configured room columns
+    for (const room of rooms) {
+      cols.push(roomCols[room.id] || '');
+    }
+
+    return cols;
+  });
+
+  // Helper for template to check configured rooms count
+  protected heatingRoomCount = computed(() => this.heatingRoomsService.rooms().length);
+  // Expose rooms signal for reactive updates
+  protected rooms = this.heatingRoomsService.rooms;
+
+  // Helper to update a single room column
+  protected updateRoomCol(roomId: string, value: string): void {
+    this.heatingRoomCols.update(cols => ({ ...cols, [roomId]: value }));
+  }
+
+  // Helper to get a room column value
+  protected getRoomCol(roomId: string): string {
+    return this.heatingRoomCols()[roomId] || '';
+  }
 
   // Validation: check if form is valid
   protected isFormValid = computed(() => {
@@ -107,10 +131,20 @@ export class ExcelSettingsComponent {
       this.waterBathroomWarmCol.set(settings.waterMapping.bathroomWarm);
       this.waterBathroomColdCol.set(settings.waterMapping.bathroomCold);
       this.heatingDateCol.set(settings.heatingMapping.date);
-      this.heatingLivingRoomCol.set(settings.heatingMapping.livingRoom);
-      this.heatingBedroomCol.set(settings.heatingMapping.bedroom);
-      this.heatingKitchenCol.set(settings.heatingMapping.kitchen);
-      this.heatingBathroomCol.set(settings.heatingMapping.bathroom);
+
+      // Dynamic Room Loading (ID-based)
+      const rooms = this.heatingRoomsService.rooms();
+      const newRoomCols: Record<string, string> = {};
+
+      for (const room of rooms) {
+        // Try to load from rooms object, fall back to empty string
+        newRoomCols[room.id] = settings.heatingMapping.rooms?.[room.id] ?? '';
+      }
+
+      this.heatingRoomCols.set(newRoomCols);
+
+      // Trigger change detection for OnPush strategy
+      this.cdr.markForCheck();
     });
 
     // Load collapsed state from localStorage
@@ -143,11 +177,21 @@ export class ExcelSettingsComponent {
       this.waterBathroomWarmCol().trim() !== saved.waterMapping.bathroomWarm ||
       this.waterBathroomColdCol().trim() !== saved.waterMapping.bathroomCold ||
       this.heatingDateCol().trim() !== saved.heatingMapping.date ||
-      this.heatingLivingRoomCol().trim() !== saved.heatingMapping.livingRoom ||
-      this.heatingBedroomCol().trim() !== saved.heatingMapping.bedroom ||
-      this.heatingKitchenCol().trim() !== saved.heatingMapping.kitchen ||
-      this.heatingBathroomCol().trim() !== saved.heatingMapping.bathroom;
+      this.hasHeatingRoomChanges(saved);
   });
+
+  // Check if any heating room columns have changed
+  private hasHeatingRoomChanges(saved: { heatingMapping: { rooms?: Record<string, string> } }): boolean {
+    const currentRoomCols = this.heatingRoomCols();
+    const savedRooms = saved.heatingMapping.rooms || {};
+
+    for (const roomId of Object.keys(currentRoomCols)) {
+      if ((currentRoomCols[roomId] || '').trim() !== (savedRooms[roomId] || '')) {
+        return true;
+      }
+    }
+    return false;
+  }
 
   @HostListener('window:beforeunload', ['$event'])
   onBeforeUnload(event: BeforeUnloadEvent) {
@@ -208,10 +252,13 @@ export class ExcelSettingsComponent {
     this.waterBathroomWarmCol.set(settings.waterMapping.bathroomWarm);
     this.waterBathroomColdCol.set(settings.waterMapping.bathroomCold);
     this.heatingDateCol.set(settings.heatingMapping.date);
-    this.heatingLivingRoomCol.set(settings.heatingMapping.livingRoom);
-    this.heatingBedroomCol.set(settings.heatingMapping.bedroom);
-    this.heatingKitchenCol.set(settings.heatingMapping.kitchen);
-    this.heatingBathroomCol.set(settings.heatingMapping.bathroom);
+
+    // Reset room columns from saved settings
+    const newRoomCols: Record<string, string> = {};
+    for (const room of this.heatingRoomsService.rooms()) {
+      newRoomCols[room.id] = settings.heatingMapping.rooms?.[room.id] ?? '';
+    }
+    this.heatingRoomCols.set(newRoomCols);
 
     this.showModal.set(false);
     this.showSaveSuccess.set(false);
@@ -249,6 +296,15 @@ export class ExcelSettingsComponent {
       return;
     }
 
+    // Collect all room column mappings
+    const heatingMappingRooms: Record<string, string> = {};
+    const rooms = this.heatingRoomsService.rooms();
+    const roomCols = this.heatingRoomCols();
+
+    for (const room of rooms) {
+      heatingMappingRooms[room.id] = (roomCols[room.id] || '').trim();
+    }
+
     this.excelSettingsService.updateSettings({
       enabled: this.enabled(),
       waterMapping: {
@@ -260,15 +316,13 @@ export class ExcelSettingsComponent {
       },
       heatingMapping: {
         date: this.heatingDateCol().trim(),
-        livingRoom: this.heatingLivingRoomCol().trim(),
-        bedroom: this.heatingBedroomCol().trim(),
-        kitchen: this.heatingKitchenCol().trim(),
-        bathroom: this.heatingBathroomCol().trim()
+        rooms: heatingMappingRooms
       }
     });
 
     this.validationError.set('');
     this.showSaveSuccess.set(true);
+    setTimeout(() => this.showSaveSuccess.set(false), 3000);
 
     // Close modal and hide success message after 2 seconds
     setTimeout(() => {

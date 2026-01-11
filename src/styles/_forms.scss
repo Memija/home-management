@@ -302,6 +302,12 @@ select.error {
       border-color: $primary;
     }
   }
+
+  @media (max-width: 880px) {
+    button .btn-text {
+      display: none;
+    }
+  }
 }
 
 // Avatar Selection Grid

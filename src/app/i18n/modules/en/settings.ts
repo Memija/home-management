@@ -114,6 +114,7 @@ export const settings = {
     EXCEL_COLUMN_BEDROOM_NAME: 'Bedroom Column Name',
     EXCEL_COLUMN_KITCHEN_NAME: 'Kitchen Column Name',
     EXCEL_COLUMN_BATHROOM_NAME: 'Bathroom Column Name',
+    EXCEL_COLUMN_FOR_ROOM: 'Column for {{name}}',
     EXCEL_SAVE_SETTINGS: 'Save Excel Settings',
     EXCEL_RESET_DEFAULTS: 'Reset to Defaults',
     EXCEL_SETTINGS_SAVED: 'Excel column settings saved!',

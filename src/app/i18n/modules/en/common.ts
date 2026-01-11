@@ -5,6 +5,13 @@ export const common = {
     SETTINGS: 'Settings',
     BACK: 'Back to Home'
   },
+  ACTIONS: {
+    CLOSE: 'Close',
+    CANCEL: 'Cancel',
+    SAVE: 'Save',
+    DELETE: 'Delete',
+    EDIT: 'Edit'
+  },
   MENU: {
     HOME: 'Home',
     WATER: 'Water',

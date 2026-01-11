@@ -78,7 +78,37 @@ $heating-primary-light: #fff3e0;
   border-color: $heating-primary;
 }
 
-// Input section colors
+// Input section header with settings button
+.input-section-header {
+  position: relative;
+
+  .settings-btn {
+    position: absolute;
+    top: 1.25rem;
+    right: 1.25rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    border: 1px solid var(--border-color);
+    border-radius: 6px;
+    background: var(--card-bg);
+    color: var(--text-secondary);
+    cursor: pointer;
+    transition: all 0.2s;
+    z-index: 1;
+
+    &:hover {
+      background: $heating-primary-light;
+      border-color: $heating-primary;
+      color: $heating-primary;
+    }
+  }
+}
+
+// Input section - heating theme color overrides only
+// Base styling is in shared consumption-input component
 .input-section {
   .reading-group h3 {
     color: $heating-primary;
@@ -88,7 +118,7 @@ $heating-primary-light: #fff3e0;
     border-color: $heating-primary;
   }
 
-  button {
+  button:not(.help-btn) {
     background: $heating-primary;
 
     &:hover:not(:disabled) {

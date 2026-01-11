@@ -1,6 +1,6 @@
 import { Injectable, signal, effect, inject, untracked } from '@angular/core';
 import { STORAGE_SERVICE, StorageService } from './storage.service';
-import { LanguageService } from './language.service';
+import { HeatingRoomsService } from './heating-rooms.service';
 
 export interface WaterColumnMapping {
   date: string;
@@ -10,12 +10,13 @@ export interface WaterColumnMapping {
   bathroomCold: string;
 }
 
+/**
+ * Dynamic heating column mapping - supports dynamic rooms for export/import
+ */
 export interface HeatingColumnMapping {
   date: string;
-  livingRoom: string;
-  bedroom: string;
-  kitchen: string;
-  bathroom: string;
+  /** Map of room ID to column name for dynamic export/import */
+  rooms: Record<string, string>;
 }
 
 export interface ExcelSettings {
@@ -29,7 +30,7 @@ export interface ExcelSettings {
 })
 export class ExcelSettingsService {
   private storage = inject(STORAGE_SERVICE);
-  private languageService = inject(LanguageService);
+  private heatingRoomsService = inject(HeatingRoomsService);
   private isInitialized = false;
 
   readonly settings = signal<ExcelSettings>(this.getDefaultSettings());
@@ -55,28 +56,32 @@ export class ExcelSettingsService {
 
   private getDefaultWaterMapping(): WaterColumnMapping {
     return {
-      date: this.languageService.translate('EXCEL.DEFAULT_DATE'),
-      kitchenWarm: this.languageService.translate('EXCEL.DEFAULT_KITCHEN_WARM'),
-      kitchenCold: this.languageService.translate('EXCEL.DEFAULT_KITCHEN_COLD'),
-      bathroomWarm: this.languageService.translate('EXCEL.DEFAULT_BATHROOM_WARM'),
-      bathroomCold: this.languageService.translate('EXCEL.DEFAULT_BATHROOM_COLD')
+      date: 'Date',
+      kitchenWarm: 'Kitchen Warm Water',
+      kitchenCold: 'Kitchen Cold Water',
+      bathroomWarm: 'Bathroom Warm Water',
+      bathroomCold: 'Bathroom Cold Water'
     };
   }
 
   private getDefaultHeatingMapping(): HeatingColumnMapping {
+    const configuredRooms = this.heatingRoomsService.rooms();
+    const rooms: Record<string, string> = {};
+
+    // Use configured room names as default column names
+    configuredRooms.forEach(room => {
+      rooms[room.id] = room.name;
+    });
+
     return {
-      date: this.languageService.translate('EXCEL.DEFAULT_DATE'),
-      livingRoom: this.languageService.translate('EXCEL.DEFAULT_LIVING_ROOM'),
-      bedroom: this.languageService.translate('EXCEL.DEFAULT_BEDROOM'),
-      kitchen: this.languageService.translate('EXCEL.DEFAULT_KITCHEN'),
-      bathroom: this.languageService.translate('EXCEL.DEFAULT_BATHROOM')
+      date: 'Date',
+      rooms
     };
   }
 
   private async loadSettings() {
     const settings = await this.storage.load<ExcelSettings>('excel_settings');
     if (settings) {
-      // Use stored settings
       this.settings.set({
         enabled: settings.enabled ?? false,
         waterMapping: { ...this.getDefaultWaterMapping(), ...settings.waterMapping },
@@ -99,7 +104,19 @@ export class ExcelSettingsService {
   }
 
   getHeatingMapping(): HeatingColumnMapping {
-    return this.settings().heatingMapping;
+    const stored = this.settings().heatingMapping;
+    const currentRooms = this.heatingRoomsService.rooms();
+    const rooms: Record<string, string> = {};
+
+    // Build mapping using stored names or falling back to room display names
+    currentRooms.forEach(room => {
+      rooms[room.id] = stored.rooms?.[room.id] || room.name;
+    });
+
+    return {
+      date: stored.date || 'Date',
+      rooms
+    };
   }
 
   isEnabled(): boolean {

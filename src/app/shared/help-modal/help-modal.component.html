@@ -4,7 +4,7 @@
     <div class="modal-header">
       <lucide-icon [img]="HelpIcon" size="28" class="help-icon"></lucide-icon>
       <h3>{{ titleKey() | translate }}</h3>
-      <button type="button" class="close-btn" (click)="onClose()" title="Close">
+      <button type="button" class="close-btn" (click)="onClose()" title="{{ 'ACTIONS.CLOSE' | translate }}">
         <lucide-icon [img]="CloseIcon" size="20"></lucide-icon>
       </button>
     </div>

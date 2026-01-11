@@ -19,6 +19,32 @@ export const heating = {
     BATHROOM: 'Badezimmer',
     RECORD_CONSUMPTION: 'Heizungsverbrauch erfassen',
     IMPORT_PLACEHOLDER_SKIPPED_SINGULAR: '1 potenzieller Platzhalter-Datensatz mit Nullwerten am aktuellsten Datum wurde übersprungen.',
-    IMPORT_PLACEHOLDER_SKIPPED_PLURAL: '{{count}} potenzielle Platzhalter-Datensätze mit Nullwerten am aktuellsten Datum wurden übersprungen.'
+    IMPORT_PLACEHOLDER_SKIPPED_PLURAL: '{{count}} potenzielle Platzhalter-Datensätze mit Nullwerten am aktuellsten Datum wurden übersprungen.',
+    ROOMS_SETTINGS_TITLE: 'Raumeinstellungen',
+    ROOMS_SETTINGS_DESCRIPTION: 'Konfigurieren Sie, welche Räume für den Heizungsverbrauch erfasst werden sollen.',
+    ROOM_NAME_PLACEHOLDER: 'Raumname eingeben',
+    ADD_ROOM: 'Raum hinzufügen',
+    REMOVE_ROOM: 'Raum entfernen',
+    // Predefined room names
+    ROOM_LIVING_ROOM: 'Wohnzimmer',
+    ROOM_BEDROOM: 'Schlafzimmer',
+    ROOM_KIDS_ROOM: 'Kinderzimmer',
+    ROOM_KITCHEN: 'Küche',
+    ROOM_BATHROOM: 'Badezimmer',
+    ROOM_OFFICE: 'Büro',
+    ROOM_GUEST_ROOM: 'Gästezimmer',
+    ROOM_DINING_ROOM: 'Esszimmer',
+    ROOM_HALLWAY: 'Flur',
+    ROOM_ATTIC: 'Dachboden',
+    MAX_ROOMS_REACHED: 'Maximum von {{max}} Räumen erreicht',
+    ERROR_ROOM_NAME_REQUIRED: 'Raumname ist erforderlich',
+    ERROR_ROOM_NAME_TOO_LONG: 'Raumname darf 125 Zeichen nicht überschreiten',
+    ERROR_ROOM_NAME_INVALID_CHARS: 'Raumname muss mindestens einen Buchstaben oder eine Zahl enthalten',
+    ERROR_MIN_ONE_ROOM: 'Mindestens ein Raum ist erforderlich',
+    ROOM_LOCKED_TOOLTIP: 'Dieser Raum hat gespeicherte Daten und ist gesperrt',
+    ROOM_UNLOCKED_TOOLTIP: 'Klicken zum Sperren dieses Raums',
+    UNLOCK_WARNING_TITLE: 'Raum entsperren?',
+    UNLOCK_WARNING_MESSAGE: 'Dieser Raum hat Heizdaten zugeordnet. Das Ändern oder Löschen kann zu Anzeigeproblemen führen.',
+    UNLOCK_BUTTON: 'Entsperren'
   }
 };

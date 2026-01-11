@@ -1,9 +1,9 @@
 import { Injectable, inject } from '@angular/core';
 import { ExcelSettingsService, WaterColumnMapping, HeatingColumnMapping } from './excel-settings.service';
-import { WaterRecord, HeatingRecord } from '../models/records.model';
+import { WaterRecord, DynamicHeatingRecord } from '../models/records.model';
 
 // Re-export for consumers
-export type { WaterRecord, HeatingRecord } from '../models/records.model';
+export type { WaterRecord, DynamicHeatingRecord } from '../models/records.model';
 
 @Injectable({
   providedIn: 'root'
@@ -42,18 +42,25 @@ export class ExcelService {
 
   /**
    * Export heating consumption records to Excel
+   * Uses dynamic room columns based on room configuration
    */
-  async exportHeatingToExcel(records: HeatingRecord[], filename: string = 'heating-consumption.xlsx'): Promise<void> {
+  async exportHeatingToExcel(records: DynamicHeatingRecord[], filename: string = 'heating-consumption.xlsx'): Promise<void> {
     const mapping = this.excelSettings.getHeatingMapping();
+    const roomIds = Object.keys(mapping.rooms);
 
     // Transform records to match column mapping
-    const data: Record<string, string | number>[] = records.map(record => ({
-      [mapping.date]: this.formatDate(record.date),
-      [mapping.livingRoom]: record.livingRoom,
-      [mapping.bedroom]: record.bedroom,
-      [mapping.kitchen]: record.kitchen,
-      [mapping.bathroom]: record.bathroom
-    }));
+    const data: Record<string, string | number>[] = records.map(record => {
+      const row: Record<string, string | number> = {
+        [mapping.date]: this.formatDate(record.date)
+      };
+
+      // Add room columns - map room IDs to their configured column names
+      roomIds.forEach(roomId => {
+        row[mapping.rooms[roomId]] = record.rooms[roomId] ?? 0;
+      });
+
+      return row;
+    });
 
     await this.createAndDownloadExcel(data, filename);
   }
@@ -132,8 +139,9 @@ export class ExcelService {
 
   /**
    * Import heating consumption records from Excel
+   * Uses dynamic room columns based on room configuration
    */
-  async importHeatingFromExcel(file: File): Promise<{ records: HeatingRecord[], missingColumns: string[] }> {
+  async importHeatingFromExcel(file: File): Promise<{ records: DynamicHeatingRecord[], missingColumns: string[] }> {
     const mapping = this.excelSettings.getHeatingMapping();
     const data = await this.readExcelFile(file);
 
@@ -147,11 +155,12 @@ export class ExcelService {
       throw new Error(`Missing required Date column: ${mapping.date}. Please check your Excel file.`);
     }
 
-    // Check for other partial columns
-    const otherColumns = [mapping.livingRoom, mapping.bedroom, mapping.kitchen, mapping.bathroom];
-    const missingColumns = otherColumns.filter(col => !(col in firstRow));
+    // Check for room columns - use dynamic mapping
+    const roomIds = Object.keys(mapping.rooms);
+    const roomColumnNames = roomIds.map(id => mapping.rooms[id]);
+    const missingColumns = roomColumnNames.filter(col => !(col in firstRow));
 
-    const records: HeatingRecord[] = [];
+    const records: DynamicHeatingRecord[] = [];
     const validationErrors: string[] = [];
     const seenDates = new Map<string, number>(); // date string -> first row number
 
@@ -174,12 +183,14 @@ export class ExcelService {
       }
       seenDates.set(dateKey, rowNumber);
 
-      // Collect number validation errors for this row
+      // Collect number validation errors for this row - parse dynamic room columns
       const rowErrors: string[] = [];
-      const livingRoom = this.validateNumberCollectError(row[mapping.livingRoom], rowNumber, mapping.livingRoom, rowErrors);
-      const bedroom = this.validateNumberCollectError(row[mapping.bedroom], rowNumber, mapping.bedroom, rowErrors);
-      const kitchen = this.validateNumberCollectError(row[mapping.kitchen], rowNumber, mapping.kitchen, rowErrors);
-      const bathroom = this.validateNumberCollectError(row[mapping.bathroom], rowNumber, mapping.bathroom, rowErrors);
+      const roomValues: Record<string, number> = {};
+
+      roomIds.forEach(roomId => {
+        const columnName = mapping.rooms[roomId];
+        roomValues[roomId] = this.validateNumberCollectError(row[columnName], rowNumber, columnName, rowErrors);
+      });
 
       if (rowErrors.length > 0) {
         validationErrors.push(...rowErrors);
@@ -188,10 +199,7 @@ export class ExcelService {
 
       records.push({
         date,
-        livingRoom,
-        bedroom,
-        kitchen,
-        bathroom
+        rooms: roomValues
       });
     }
 

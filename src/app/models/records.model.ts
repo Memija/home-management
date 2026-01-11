@@ -21,7 +21,8 @@ export interface ConsumptionRecord {
 export type WaterRecord = ConsumptionRecord;
 
 /**
- * Heating consumption record with readings by room
+ * Heating consumption record with readings by room (legacy fixed fields)
+ * @deprecated Use DynamicHeatingRecord for new implementations
  */
 export interface HeatingRecord {
   date: Date;
@@ -29,6 +30,14 @@ export interface HeatingRecord {
   bedroom: number;
   kitchen: number;
   bathroom: number;
+}
+
+/**
+ * Heating consumption record with dynamic rooms
+ */
+export interface DynamicHeatingRecord {
+  date: Date;
+  rooms: Record<string, number>;  // key: room ID, value: kWh
 }
 
 /**
@@ -77,6 +86,13 @@ export function calculateHeatingTotal(record: HeatingRecord): number {
 }
 
 /**
+ * Calculate total heating consumption for dynamic room records
+ */
+export function calculateDynamicHeatingTotal(record: DynamicHeatingRecord): number {
+  return Object.values(record.rooms).reduce((sum, val) => sum + (val || 0), 0);
+}
+
+/**
  * Get normalized date key (YYYY-MM-DD) for deduplication.
  * Strips time component to ensure same dates with different times are treated as duplicates.
  */
@@ -99,6 +115,70 @@ export function isWaterRecordAllZero(record: ConsumptionRecord): boolean {
 export function isHeatingRecordAllZero(record: HeatingRecord): boolean {
   return record.livingRoom === 0 && record.bedroom === 0 &&
     record.kitchen === 0 && record.bathroom === 0;
+}
+
+/**
+ * Check if a dynamic heating record has all consumption values set to zero
+ */
+export function isDynamicHeatingRecordAllZero(record: DynamicHeatingRecord): boolean {
+  return Object.values(record.rooms).every(val => val === 0 || val === undefined);
+}
+
+/**
+ * Convert legacy HeatingRecord to DynamicHeatingRecord
+ * Also handles records that are already in dynamic format
+ */
+export function toDynamicHeatingRecord(record: HeatingRecord | DynamicHeatingRecord): DynamicHeatingRecord {
+  // If already has rooms property, it's already dynamic
+  if ('rooms' in record && record.rooms && typeof record.rooms === 'object') {
+    return record as DynamicHeatingRecord;
+  }
+
+  // Convert legacy format
+  const legacy = record as HeatingRecord;
+  return {
+    date: legacy.date,
+    rooms: {
+      room_1: legacy.livingRoom || 0,
+      room_2: legacy.bedroom || 0,
+      room_3: legacy.kitchen || 0,
+      room_4: legacy.bathroom || 0
+    }
+  };
+}
+
+/**
+ * Convert DynamicHeatingRecord to legacy HeatingRecord
+ * Also handles records that are already in legacy format
+ * Maps first 4 room IDs to fixed fields
+ */
+export function toHeatingRecord(record: DynamicHeatingRecord | HeatingRecord): HeatingRecord {
+  // If already has direct room properties (legacy format), return as-is
+  if ('livingRoom' in record) {
+    return record as HeatingRecord;
+  }
+
+  // Convert dynamic format to legacy
+  const dynamic = record as DynamicHeatingRecord;
+  if (!dynamic.rooms || typeof dynamic.rooms !== 'object') {
+    // Fallback for invalid records
+    return {
+      date: dynamic.date,
+      livingRoom: 0,
+      bedroom: 0,
+      kitchen: 0,
+      bathroom: 0
+    };
+  }
+
+  const roomIds = Object.keys(dynamic.rooms);
+  return {
+    date: dynamic.date,
+    livingRoom: dynamic.rooms[roomIds[0]] || 0,
+    bedroom: dynamic.rooms[roomIds[1]] || 0,
+    kitchen: dynamic.rooms[roomIds[2]] || 0,
+    bathroom: dynamic.rooms[roomIds[3]] || 0
+  };
 }
 
 /**

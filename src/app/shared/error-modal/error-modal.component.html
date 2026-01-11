@@ -8,7 +8,8 @@
       <lucide-icon [img]="AlertCircleIcon" size="32" class="error-icon"></lucide-icon>
       }
       <h3>{{ title() | translate }}</h3>
-      <button type="button" class="close-btn" (click)="cancel.emit()" title="Close" aria-label="Close">
+      <button type="button" class="close-btn" (click)="cancel.emit()" title="{{ 'ACTIONS.CLOSE' | translate }}"
+        aria-label="{{ 'ACTIONS.CLOSE' | translate }}">
         <lucide-icon [img]="XIcon" size="20"></lucide-icon>
       </button>
     </div>

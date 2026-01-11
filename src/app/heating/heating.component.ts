@@ -8,18 +8,22 @@ import { FileStorageService } from '../services/file-storage.service';
 import { LanguageService } from '../services/language.service';
 import { ExcelService } from '../services/excel.service';
 import { ExcelSettingsService } from '../services/excel-settings.service';
-import { LucideAngularModule, ArrowLeft, ChevronDown, ChevronLeft, ChevronRight, Download, Upload, FileSpreadsheet } from 'lucide-angular';
+import { HeatingFormService } from '../services/heating-form.service';
+import { HeatingRoomsService, HeatingRoomConfig } from '../services/heating-rooms.service';
+import { LucideAngularModule, ArrowLeft, ChevronDown, ChevronLeft, ChevronRight, Download, Upload, FileSpreadsheet, Settings } from 'lucide-angular';
 import { ConsumptionChartComponent, type ChartView, type DisplayMode } from '../shared/consumption-chart/consumption-chart.component';
+import { ConsumptionInputComponent, type ConsumptionData, type ConsumptionGroup } from '../shared/consumption-input/consumption-input.component';
 import { ErrorModalComponent } from '../shared/error-modal/error-modal.component';
 import { ConfirmationModalComponent } from '../shared/confirmation-modal/confirmation-modal.component';
+import { HeatingRoomsModalComponent } from '../shared/heating-rooms-modal/heating-rooms-modal.component';
 import { ImportValidationService } from '../services/import-validation.service';
-import { HeatingRecord, calculateHeatingTotal, filterZeroPlaceholders, isHeatingRecordAllZero } from '../models/records.model';
+import { DynamicHeatingRecord, HeatingRecord, calculateDynamicHeatingTotal, filterZeroPlaceholders, isDynamicHeatingRecordAllZero, isHeatingRecordAllZero, toHeatingRecord, toDynamicHeatingRecord } from '../models/records.model';
 import { NotificationService } from '../services/notification.service';
 
 @Component({
   selector: 'app-heating',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterLink, TranslatePipe, LucideAngularModule, ConsumptionChartComponent, ErrorModalComponent, ConfirmationModalComponent],
+  imports: [CommonModule, FormsModule, RouterLink, TranslatePipe, LucideAngularModule, ConsumptionChartComponent, ConsumptionInputComponent, ErrorModalComponent, ConfirmationModalComponent, HeatingRoomsModalComponent],
   templateUrl: './heating.component.html',
   styleUrl: './heating.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush
@@ -32,6 +36,8 @@ export class HeatingComponent {
   protected excelSettings = inject(ExcelSettingsService);
   private importValidationService = inject(ImportValidationService);
   private notificationService = inject(NotificationService);
+  protected formService = inject(HeatingFormService);
+  protected roomsService = inject(HeatingRoomsService);
 
   protected readonly ArrowLeftIcon = ArrowLeft;
   protected readonly ChevronDownIcon = ChevronDown;
@@ -40,6 +46,7 @@ export class HeatingComponent {
   protected readonly DownloadIcon = Download;
   protected readonly UploadIcon = Upload;
   protected readonly FileSpreadsheetIcon = FileSpreadsheet;
+  protected readonly SettingsIcon = Settings;
 
   protected isExporting = signal(false);
   protected isImporting = signal(false);
@@ -50,29 +57,57 @@ export class HeatingComponent {
   protected errorInstructions = signal<string[]>([]);
   protected errorType = signal<'error' | 'warning'>('error');
 
-  protected records = signal<HeatingRecord[]>([]);
+  protected records = signal<DynamicHeatingRecord[]>([]);
   protected showImportConfirmModal = signal(false);
   protected pendingImportFile = signal<File | null>(null);
-  protected nextSunday = signal<Date>(this.calculateNextSunday());
   protected chartView = signal<ChartView>('total');
   protected displayMode = signal<DisplayMode>('total');
+  protected showRoomsModal = signal(false);
 
-  protected livingRoom = signal<number | null>(null);
-  protected bedroom = signal<number | null>(null);
-  protected kitchen = signal<number | null>(null);
-  protected bathroom = signal<number | null>(null);
+  // Compute which rooms have data (non-zero values in records)
+  protected roomsWithData = computed(() => {
+    const roomIds = new Set<string>();
+    this.records().forEach(record => {
+      Object.entries(record.rooms).forEach(([roomId, value]) => {
+        if (value && value > 0) {
+          roomIds.add(roomId);
+        }
+      });
+    });
+    return Array.from(roomIds);
+  });
 
-  // Pagination
+  // Convert dynamic records to legacy format for chart component
+  protected chartRecords = computed(() => this.records().map(toHeatingRecord));
+
+  // Pagination - simplified sort options for dynamic rooms
   protected currentPage = signal<number>(1);
   protected paginationSize = signal<number>(5);
-  protected sortOption = signal<'date-desc' | 'date-asc' | 'total-desc' | 'total-asc' | 'livingRoom-desc' | 'bedroom-desc' | 'kitchen-desc' | 'bathroom-desc'>('date-desc');
+  protected sortOption = signal<'date-desc' | 'date-asc' | 'total-desc' | 'total-asc'>('date-desc');
 
-  protected allFieldsFilled = computed(() =>
-    this.livingRoom() !== null &&
-    this.bedroom() !== null &&
-    this.kitchen() !== null &&
-    this.bathroom() !== null
-  );
+  // Form State Delegation
+  protected selectedDate = this.formService.selectedDate;
+  protected editingRecord = this.formService.editingRecord;
+  protected dateExists = computed(() => this.formService.isDateDuplicate(this.records()));
+  protected maxDate = new Date().toISOString().split('T')[0];
+
+  // Consumption Groups for shared input component - supports ALL configured rooms
+  protected consumptionGroups = computed<ConsumptionGroup[]>(() => {
+    const rooms = this.roomsService.rooms();
+    return [{
+      title: 'HEATING.ROOMS_SETTINGS_TITLE',
+      fields: rooms.map(room => ({
+        key: room.id,
+        label: room.name,
+        value: this.formService.getRoomValue(room.id)
+      }))
+    }];
+  });
+
+  // Helper to get room value from a record for template display
+  protected getRoomValue(record: DynamicHeatingRecord, roomId: string): number {
+    return record.rooms[roomId] || 0;
+  }
 
   protected displayedRecords = computed(() => {
     const records = [...this.records()];
@@ -86,17 +121,9 @@ export class HeatingComponent {
         case 'date-asc':
           return a.date.getTime() - b.date.getTime();
         case 'total-desc':
-          return this.calculateTotal(b) - this.calculateTotal(a);
+          return calculateDynamicHeatingTotal(b) - calculateDynamicHeatingTotal(a);
         case 'total-asc':
-          return this.calculateTotal(a) - this.calculateTotal(b);
-        case 'livingRoom-desc':
-          return b.livingRoom - a.livingRoom;
-        case 'bedroom-desc':
-          return b.bedroom - a.bedroom;
-        case 'kitchen-desc':
-          return b.kitchen - a.kitchen;
-        case 'bathroom-desc':
-          return b.bathroom - a.bathroom;
+          return calculateDynamicHeatingTotal(a) - calculateDynamicHeatingTotal(b);
         default:
           return 0;
       }
@@ -139,9 +166,14 @@ export class HeatingComponent {
   }
 
   private async loadData() {
-    const records = await this.storage.load<HeatingRecord[]>('heating_consumption_records');
+    // Load records which may be in legacy or dynamic format
+    const records = await this.storage.load<(DynamicHeatingRecord | HeatingRecord)[]>('heating_consumption_records');
     if (records) {
-      const parsedRecords = records.map(r => ({ ...r, date: new Date(r.date) }));
+      // Convert all records to dynamic format and ensure dates are Date objects
+      const parsedRecords = records.map(r => {
+        const converted = toDynamicHeatingRecord(r);
+        return { ...converted, date: new Date(converted.date) };
+      });
       this.records.set(parsedRecords);
     }
   }
@@ -205,7 +237,9 @@ export class HeatingComponent {
         // Filter out zero-value placeholders on the freshest date
         const { filtered, skippedCount } = filterZeroPlaceholders(result.validRecords, isHeatingRecordAllZero);
 
-        await this.storage.importRecords('heating_consumption_records', filtered);
+        // Convert to dynamic format and import
+        const dynamicRecords = filtered.map(toDynamicHeatingRecord);
+        await this.storage.importRecords('heating_consumption_records', dynamicRecords);
         await this.loadData();
         // Update notification service
         this.notificationService.setHeatingRecords(this.records());
@@ -259,12 +293,12 @@ export class HeatingComponent {
         const { records, missingColumns } = await this.excelService.importHeatingFromExcel(file);
 
         // Filter out zero-value placeholders on the freshest date
-        const { filtered, skippedCount } = filterZeroPlaceholders(records, isHeatingRecordAllZero);
+        const { filtered, skippedCount } = filterZeroPlaceholders(records, isDynamicHeatingRecordAllZero);
 
         // Merge with existing records, avoiding duplicates by date
         this.records.update(existing => {
           const merged = [...existing, ...filtered];
-          const uniqueMap = new Map<number, HeatingRecord>();
+          const uniqueMap = new Map<number, DynamicHeatingRecord>();
           merged.forEach(r => uniqueMap.set(r.date.getTime(), r));
           return Array.from(uniqueMap.values())
             .sort((a, b) => a.date.getTime() - b.date.getTime());
@@ -316,18 +350,8 @@ export class HeatingComponent {
     this.showErrorModal.set(false);
   }
 
-  private calculateNextSunday(): Date {
-    const today = new Date();
-    const dayOfWeek = today.getDay();
-    const daysUntilSunday = dayOfWeek === 0 ? 7 : 7 - dayOfWeek;
-    const nextSunday = new Date(today);
-    nextSunday.setDate(today.getDate() + daysUntilSunday);
-    nextSunday.setHours(0, 0, 0, 0);
-    return nextSunday;
-  }
-
-  protected calculateTotal(record: HeatingRecord): number {
-    return calculateHeatingTotal(record);
+  protected calculateTotal(record: DynamicHeatingRecord): number {
+    return calculateDynamicHeatingTotal(record);
   }
 
   protected nextPage() {
@@ -351,32 +375,48 @@ export class HeatingComponent {
     this.sortOption.set(option as typeof this.sortOption extends () => infer T ? T : never);
   }
 
-  protected saveRecord() {
-    if (this.allFieldsFilled()) {
-      this.records.update((records: HeatingRecord[]) => [
-        ...records,
-        {
-          date: this.nextSunday(),
-          livingRoom: this.livingRoom()!,
-          bedroom: this.bedroom()!,
-          kitchen: this.kitchen()!,
-          bathroom: this.bathroom()!
-        }
-      ]);
+  // Form Event Handlers
+  protected onFieldChange(event: { key: string; value: number | null }) {
+    this.formService.updateField(event.key, event.value);
+  }
+
+  protected onConsumptionSave(data: ConsumptionData) {
+    const newRecord = this.formService.createRecordFromState();
+    if (newRecord) {
+      // Check if editing existing record
+      if (this.editingRecord()) {
+        // Update existing record
+        this.records.update(records =>
+          records.map(r =>
+            r.date.getTime() === this.editingRecord()!.date.getTime() ? newRecord : r
+          )
+        );
+      } else {
+        // Add new record
+        this.records.update(records => [...records, newRecord]);
+      }
 
       void this.storage.save('heating_consumption_records', this.records());
-      // Update notification service
       this.notificationService.setHeatingRecords(this.records());
-
-      const currentSunday = this.nextSunday();
-      const nextDate = new Date(currentSunday);
-      nextDate.setDate(currentSunday.getDate() + 7);
-      this.nextSunday.set(nextDate);
-
-      this.livingRoom.set(null);
-      this.bedroom.set(null);
-      this.kitchen.set(null);
-      this.bathroom.set(null);
+      this.formService.cancelEdit();
     }
+  }
+
+  protected cancelEdit() {
+    this.formService.cancelEdit();
+  }
+
+  // Room Settings Modal Handlers
+  protected openRoomsModal() {
+    this.showRoomsModal.set(true);
+  }
+
+  protected onRoomsSave(rooms: HeatingRoomConfig[]) {
+    this.roomsService.setRooms(rooms);
+    this.showRoomsModal.set(false);
+  }
+
+  protected onRoomsCancel() {
+    this.showRoomsModal.set(false);
   }
 }

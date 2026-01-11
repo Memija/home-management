@@ -5,6 +5,13 @@ export const common = {
     SETTINGS: 'Einstellungen',
     BACK: 'Zurück zur Startseite'
   },
+  ACTIONS: {
+    CLOSE: 'Schließen',
+    CANCEL: 'Abbrechen',
+    SAVE: 'Speichern',
+    DELETE: 'Löschen',
+    EDIT: 'Bearbeiten'
+  },
   MENU: {
     HOME: 'Startseite',
     WATER: 'Wasser',

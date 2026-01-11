@@ -65,10 +65,9 @@
         <h4>{{ 'SETTINGS.EXCEL_HEATING_MAPPING_TITLE' | translate }}</h4>
         <div class="preview-items">
           <span class="preview-item">{{ heatingDateCol() }}</span>
-          <span class="preview-item">{{ heatingLivingRoomCol() }}</span>
-          <span class="preview-item">{{ heatingBedroomCol() }}</span>
-          <span class="preview-item">{{ heatingKitchenCol() }}</span>
-          <span class="preview-item">{{ heatingBathroomCol() }}</span>
+          @for (room of rooms(); track room.id) {
+          <span class="preview-item">{{ getRoomCol(room.id) || room.name }}</span>
+          }
         </div>
       </div>
     </div>
@@ -91,8 +90,9 @@
       <lucide-icon [img]="ImportIcon" size="16"></lucide-icon>
       <span class="btn-text">{{ 'SETTINGS.IMPORT_EXCEL_SETTINGS' | translate }}</span>
     </button>
-    <input #fileInput type="file" (change)="importSettings($event)" accept=".json" class="hidden-input"
-      aria-label="Import Excel Settings">
+    <label for="excel-settings-file-import" class="sr-only">Import Excel Settings</label>
+    <input #fileInput id="excel-settings-file-import" type="file" (change)="importSettings($event)" accept=".json"
+      class="hidden-input" aria-label="Import Excel Settings" title="Import Excel Settings">
   </div>
   }
 
@@ -102,7 +102,8 @@
     <div class="modal-content modal-lg" (click)="$event.stopPropagation()">
       <div class="modal-header">
         <h3>{{ 'SETTINGS.EDIT_EXCEL_SETTINGS' | translate }}</h3>
-        <button class="close-btn" (click)="closeModal()">×</button>
+        <button class="close-btn" (click)="closeModal()" [title]="'ACTIONS.CLOSE' | translate"
+          [attr.aria-label]="'ACTIONS.CLOSE' | translate">×</button>
       </div>
 
       <!-- Success Message - Sticky at top -->
@@ -125,7 +126,7 @@
             <div class="form-group">
               <label for="water-date">{{ 'SETTINGS.EXCEL_COLUMN_DATE_NAME' | translate }}</label>
               <input id="water-date" type="text" [(ngModel)]="waterDateCol" class="form-control"
-                [placeholder]="'EXCEL.DEFAULT_DATE' | translate"
+                [placeholder]="'EXCEL.DEFAULT_DATE' | translate" [title]="'SETTINGS.EXCEL_COLUMN_DATE_NAME' | translate"
                 [class.error]="(waterDateCol() && validationService.getValidationError(waterDateCol())) || isDuplicateWater(waterDateCol())">
               @if (waterDateCol() && validationService.getValidationError(waterDateCol())) {
               <div class="warning-message">
@@ -250,88 +251,30 @@
               }
             </div>
 
+            @for (room of rooms(); track room.id) {
             <div class="form-group">
-              <label for="heating-living-room">{{ 'SETTINGS.EXCEL_COLUMN_LIVING_ROOM_NAME' | translate
-                }}</label>
-              <input id="heating-living-room" type="text" [(ngModel)]="heatingLivingRoomCol" class="form-control"
-                [placeholder]="'EXCEL.DEFAULT_LIVING_ROOM' | translate"
-                [class.error]="(heatingLivingRoomCol() && validationService.getValidationError(heatingLivingRoomCol())) || isDuplicateHeating(heatingLivingRoomCol())">
-              @if (heatingLivingRoomCol() && validationService.getValidationError(heatingLivingRoomCol())) {
+              <label [for]="'heating-room-' + room.id">{{ 'SETTINGS.EXCEL_COLUMN_FOR_ROOM' | translate: { name:
+                room.name } }}</label>
+              <input title="{{ 'SETTINGS.EXCEL_COLUMN_FOR_ROOM' | translate: { name: room.name } }}"
+                [id]="'heating-room-' + room.id" type="text" [value]="getRoomCol(room.id)"
+                (input)="updateRoomCol(room.id, $any($event.target).value)" class="form-control"
+                [placeholder]="room.name"
+                [class.error]="(getRoomCol(room.id) && validationService.getValidationError(getRoomCol(room.id))) || isDuplicateHeating(getRoomCol(room.id))">
+              @if (getRoomCol(room.id) && validationService.getValidationError(getRoomCol(room.id))) {
               <div class="warning-message">
                 <lucide-icon [img]="TriangleAlertIcon" size="16" class="warning-icon"></lucide-icon>
-                <span>{{ validationService.getValidationError(heatingLivingRoomCol()) }}</span>
+                <span>{{ validationService.getValidationError(getRoomCol(room.id)) }}</span>
               </div>
               }
-              @if (!validationService.getValidationError(heatingLivingRoomCol()) &&
-              isDuplicateHeating(heatingLivingRoomCol())) {
+              @if (!validationService.getValidationError(getRoomCol(room.id)) &&
+              isDuplicateHeating(getRoomCol(room.id))) {
               <div class="warning-message">
                 <lucide-icon [img]="TriangleAlertIcon" size="16" class="warning-icon"></lucide-icon>
                 <span>{{ 'EXCEL.VALIDATION_DUPLICATES' | translate }}</span>
               </div>
               }
             </div>
-
-            <div class="form-group">
-              <label for="heating-bedroom">{{ 'SETTINGS.EXCEL_COLUMN_BEDROOM_NAME' | translate }}</label>
-              <input id="heating-bedroom" type="text" [(ngModel)]="heatingBedroomCol" class="form-control"
-                [placeholder]="'EXCEL.DEFAULT_BEDROOM' | translate"
-                [class.error]="(heatingBedroomCol() && validationService.getValidationError(heatingBedroomCol())) || isDuplicateHeating(heatingBedroomCol())">
-              @if (heatingBedroomCol() && validationService.getValidationError(heatingBedroomCol())) {
-              <div class="warning-message">
-                <lucide-icon [img]="TriangleAlertIcon" size="16" class="warning-icon"></lucide-icon>
-                <span>{{ validationService.getValidationError(heatingBedroomCol()) }}</span>
-              </div>
-              }
-              @if (!validationService.getValidationError(heatingBedroomCol()) &&
-              isDuplicateHeating(heatingBedroomCol()))
-              {
-              <div class="warning-message">
-                <lucide-icon [img]="TriangleAlertIcon" size="16" class="warning-icon"></lucide-icon>
-                <span>{{ 'EXCEL.VALIDATION_DUPLICATES' | translate }}</span>
-              </div>
-              }
-            </div>
-
-            <div class="form-group">
-              <label for="heating-kitchen">{{ 'SETTINGS.EXCEL_COLUMN_KITCHEN_NAME' | translate }}</label>
-              <input id="heating-kitchen" type="text" [(ngModel)]="heatingKitchenCol" class="form-control"
-                [placeholder]="'EXCEL.DEFAULT_KITCHEN' | translate"
-                [class.error]="(heatingKitchenCol() && validationService.getValidationError(heatingKitchenCol())) || isDuplicateHeating(heatingKitchenCol())">
-              @if (heatingKitchenCol() && validationService.getValidationError(heatingKitchenCol())) {
-              <div class="warning-message">
-                <lucide-icon [img]="TriangleAlertIcon" size="16" class="warning-icon"></lucide-icon>
-                <span>{{ validationService.getValidationError(heatingKitchenCol()) }}</span>
-              </div>
-              }
-              @if (!validationService.getValidationError(heatingKitchenCol()) &&
-              isDuplicateHeating(heatingKitchenCol()))
-              {
-              <div class="warning-message">
-                <lucide-icon [img]="TriangleAlertIcon" size="16" class="warning-icon"></lucide-icon>
-                <span>{{ 'EXCEL.VALIDATION_DUPLICATES' | translate }}</span>
-              </div>
-              }
-            </div>
-
-            <div class="form-group">
-              <label for="heating-bathroom">{{ 'SETTINGS.EXCEL_COLUMN_BATHROOM_NAME' | translate }}</label>
-              <input id="heating-bathroom" type="text" [(ngModel)]="heatingBathroomCol" class="form-control"
-                [placeholder]="'EXCEL.DEFAULT_BATHROOM' | translate"
-                [class.error]="(heatingBathroomCol() && validationService.getValidationError(heatingBathroomCol())) || isDuplicateHeating(heatingBathroomCol())">
-              @if (heatingBathroomCol() && validationService.getValidationError(heatingBathroomCol())) {
-              <div class="warning-message">
-                <lucide-icon [img]="TriangleAlertIcon" size="16" class="warning-icon"></lucide-icon>
-                <span>{{ validationService.getValidationError(heatingBathroomCol()) }}</span>
-              </div>
-              }
-              @if (!validationService.getValidationError(heatingBathroomCol()) &&
-              isDuplicateHeating(heatingBathroomCol())) {
-              <div class="warning-message">
-                <lucide-icon [img]="TriangleAlertIcon" size="16" class="warning-icon"></lucide-icon>
-                <span>{{ 'EXCEL.VALIDATION_DUPLICATES' | translate }}</span>
-              </div>
-              }
-            </div>
+            }
           </div>
         </div>
 

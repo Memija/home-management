@@ -19,6 +19,32 @@ export const heating = {
     BATHROOM: 'Bathroom',
     RECORD_CONSUMPTION: 'Record Heating Consumption',
     IMPORT_PLACEHOLDER_SKIPPED_SINGULAR: '1 potential placeholder record with all-zero values on the most recent date was skipped.',
-    IMPORT_PLACEHOLDER_SKIPPED_PLURAL: '{{count}} potential placeholder records with all-zero values on the most recent date were skipped.'
+    IMPORT_PLACEHOLDER_SKIPPED_PLURAL: '{{count}} potential placeholder records with all-zero values on the most recent date were skipped.',
+    ROOMS_SETTINGS_TITLE: 'Room Settings',
+    ROOMS_SETTINGS_DESCRIPTION: 'Configure which rooms to track for heating consumption.',
+    ROOM_NAME_PLACEHOLDER: 'Enter room name',
+    ADD_ROOM: 'Add Room',
+    REMOVE_ROOM: 'Remove Room',
+    // Predefined room names
+    ROOM_LIVING_ROOM: 'Living Room',
+    ROOM_BEDROOM: 'Bedroom',
+    ROOM_KIDS_ROOM: 'Kids Room',
+    ROOM_KITCHEN: 'Kitchen',
+    ROOM_BATHROOM: 'Bathroom',
+    ROOM_OFFICE: 'Office',
+    ROOM_GUEST_ROOM: 'Guest Room',
+    ROOM_DINING_ROOM: 'Dining Room',
+    ROOM_HALLWAY: 'Hallway',
+    ROOM_ATTIC: 'Attic',
+    MAX_ROOMS_REACHED: 'Maximum {{max}} rooms reached',
+    ERROR_ROOM_NAME_REQUIRED: 'Room name is required',
+    ERROR_ROOM_NAME_TOO_LONG: 'Room name cannot exceed 125 characters',
+    ERROR_ROOM_NAME_INVALID_CHARS: 'Room name must contain at least one letter or number',
+    ERROR_MIN_ONE_ROOM: 'At least one room is required',
+    ROOM_LOCKED_TOOLTIP: 'This room has recorded data and is locked',
+    ROOM_UNLOCKED_TOOLTIP: 'Click to lock this room',
+    UNLOCK_WARNING_TITLE: 'Unlock Room?',
+    UNLOCK_WARNING_MESSAGE: 'This room has heating data associated with it. Modifying or deleting it may cause data display issues.',
+    UNLOCK_BUTTON: 'Unlock'
   }
 };

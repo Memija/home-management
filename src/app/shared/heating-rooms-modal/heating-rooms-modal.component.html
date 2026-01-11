@@ -1,0 +1,86 @@
+@if (show()) {
+<div class="modal-overlay" (click)="onCancel()">
+  <div class="modal-content" (click)="$event.stopPropagation()">
+    <div class="modal-header">
+      <lucide-icon [img]="SettingsIcon" size="24" class="settings-icon"></lucide-icon>
+      <h3>{{ 'HEATING.ROOMS_SETTINGS_TITLE' | translate }}</h3>
+      <button class="close-btn" (click)="onCancel()" title="{{ 'ACTIONS.CLOSE' | translate }}">&times;</button>
+    </div>
+
+    <div class="modal-body">
+      <p class="modal-description">{{ 'HEATING.ROOMS_SETTINGS_DESCRIPTION' | translate }}</p>
+
+      @if (editingRooms().length === 0) {
+      <div class="warning-message error-message">
+        <lucide-icon [img]="TriangleAlertIcon" size="20" class="warning-icon"></lucide-icon>
+        <div>{{ 'HEATING.ERROR_MIN_ONE_ROOM' | translate }}</div>
+      </div>
+      }
+
+      <div class="rooms-list">
+        @for (room of editingRooms(); track trackByRoom($index, room)) {
+        <div class="room-item-container">
+          <div class="room-item" [class.locked]="isLocked(room.id)">
+            <input type="text" [id]="'room-name-' + room.id" [name]="'room-name-' + room.id" [value]="room.name"
+              (input)="updateRoomName(room.id, $any($event.target).value)"
+              placeholder="{{ 'HEATING.ROOM_NAME_PLACEHOLDER' | translate }}" class="room-name-input"
+              [class.error]="!!getRoomError(room.name)" [disabled]="isLocked(room.id)">
+
+            <button type="button" class="remove-btn" (click)="removeRoom(room.id)"
+              [disabled]="!canRemoveRoom() || isLocked(room.id)" title="{{ 'HEATING.REMOVE_ROOM' | translate }}">
+              <lucide-icon [img]="DeleteIcon" size="16"></lucide-icon>
+            </button>
+
+            @if (hasData(room.id)) {
+            <button type="button" class="lock-btn"
+              (click)="isLocked(room.id) ? requestUnlock(room.id) : lockRoom(room.id)" title="Lock" aria-label="Lock"
+              [title]="isLocked(room.id) ? ('HEATING.ROOM_LOCKED_TOOLTIP' | translate) : ('HEATING.ROOM_UNLOCKED_TOOLTIP' | translate)"
+              [attr.aria-label]="isLocked(room.id) ? ('HEATING.ROOM_LOCKED_TOOLTIP' | translate) : ('HEATING.ROOM_UNLOCKED_TOOLTIP' | translate)">
+              <lucide-icon [img]="isLocked(room.id) ? LockIcon : LockOpenIcon" size="16"></lucide-icon>
+            </button>
+            }
+          </div>
+          @if(getRoomError(room.name); as errorKey) {
+          <div class="warning-message error-message">
+            <lucide-icon [img]="TriangleAlertIcon" size="20" class="warning-icon"></lucide-icon>
+            <div>{{ errorKey | translate }}</div>
+          </div>
+          }
+        </div>
+        }
+      </div>
+
+      <button type="button" class="add-room-btn" (click)="addRoom()" [disabled]="!canAddRoom()"
+        [title]="!canAddRoom() ? maxRoomsMessage() : ('HEATING.ADD_ROOM' | translate)">
+        <lucide-icon [img]="PlusIcon" size="18"></lucide-icon>
+        {{ 'HEATING.ADD_ROOM' | translate }}
+      </button>
+    </div>
+
+    <div class="modal-footer">
+      <button class="btn-secondary" (click)="onCancel()">{{ 'HOME.CANCEL' | translate }}</button>
+      <button class="btn-primary" (click)="onSave()" [disabled]="hasErrors()">{{ 'HOME.SAVE' | translate
+        }}</button>
+    </div>
+  </div>
+</div>
+}
+
+<!-- Unlock Warning Modal -->
+@if (pendingUnlockRoomId()) {
+<div class="modal-overlay unlock-warning-overlay" (click)="cancelUnlock()">
+  <div class="modal-content unlock-warning-modal" (click)="$event.stopPropagation()">
+    <div class="modal-header">
+      <lucide-icon [img]="TriangleAlertIcon" size="24" class="warning-icon"></lucide-icon>
+      <h3>{{ 'HEATING.UNLOCK_WARNING_TITLE' | translate }}</h3>
+    </div>
+    <div class="modal-body">
+      <p>{{ 'HEATING.UNLOCK_WARNING_MESSAGE' | translate }}</p>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-secondary" (click)="cancelUnlock()">{{ 'HOME.CANCEL' | translate }}</button>
+      <button class="btn-primary" (click)="confirmUnlock()">{{ 'HEATING.UNLOCK_BUTTON' | translate }}</button>
+    </div>
+  </div>
+</div>
+}

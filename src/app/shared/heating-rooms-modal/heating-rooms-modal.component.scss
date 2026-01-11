@@ -1,0 +1,180 @@
+@use 'sass:color';
+@use 'variables' as *;
+
+$heating-primary: #f57c00;
+
+.modal-overlay {
+  z-index: 1000;
+  -webkit-backdrop-filter: blur(2px);
+  backdrop-filter: blur(2px);
+  background: rgba(0, 0, 0, 0.5);
+}
+
+.modal-content {
+  max-height: 80vh;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+}
+
+.modal-header {
+  gap: 0.75rem;
+  padding: 1.25rem 1.5rem;
+
+  .settings-icon {
+    color: $heating-primary;
+  }
+
+  h3 {
+    flex: 1;
+    font-size: 1.25rem;
+  }
+
+  .close-btn {
+    background: none;
+    border: none;
+    font-size: 1.5rem;
+    cursor: pointer;
+    color: var(--text-secondary);
+    padding: 0.25rem;
+    line-height: 1;
+    border-radius: 4px;
+    transition: all 0.2s;
+    position: static;
+
+    &:hover {
+      background: var(--border-light);
+      color: var(--text-primary);
+    }
+  }
+}
+
+.modal-body {
+  flex: 1;
+  text-align: left;
+
+  .modal-description {
+    margin: 0 0 1.5rem;
+    font-size: 0.95rem;
+  }
+}
+
+.rooms-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  margin-bottom: 1rem;
+}
+
+.room-item {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.room-name-input {
+  flex: 1;
+  padding: 0.75rem 1rem;
+  border: 1px solid var(--border-color);
+  border-radius: 6px;
+  font-size: 1rem;
+  background: var(--input-bg);
+  color: var(--text-primary);
+  transition: border-color 0.2s;
+
+  &:focus {
+    outline: none;
+    border-color: $heating-primary;
+  }
+
+  &::placeholder {
+    color: var(--text-secondary);
+    opacity: 0.7;
+  }
+}
+
+.add-room-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  width: 100%;
+  padding: 0.75rem 1rem;
+  border: 2px dashed var(--border-color);
+  border-radius: 6px;
+  background: transparent;
+  color: var(--text-secondary);
+  font-size: 0.95rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+
+  &:hover:not(:disabled) {
+    border-color: $heating-primary;
+    color: $heating-primary;
+    background: rgba($heating-primary, 0.05);
+  }
+
+  &:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+  }
+}
+
+.modal-footer {
+  justify-content: flex-end;
+  padding: 1rem 1.5rem;
+}
+
+
+
+.lock-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border: none;
+  border-radius: 4px;
+  background: transparent;
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: all 0.2s;
+  flex-shrink: 0;
+
+  &:hover {
+    background: var(--border-light);
+    color: $heating-primary;
+  }
+}
+
+.room-item.locked {
+  .room-name-input {
+    background: var(--bg-secondary);
+    opacity: 0.7;
+    cursor: not-allowed;
+  }
+
+  .lock-btn {
+    color: $heating-primary;
+  }
+}
+
+.remove-btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.unlock-warning-overlay {
+  z-index: 1100;
+}
+
+.unlock-warning-modal {
+  max-width: 400px;
+
+  .modal-body p {
+    margin: 0;
+    line-height: 1.5;
+  }
+}

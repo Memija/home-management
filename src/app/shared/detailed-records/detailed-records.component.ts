@@ -1,7 +1,7 @@
 import { Component, signal, computed, input, output, effect, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { DatePipe } from '@angular/common';
-import { LucideAngularModule, Edit, Trash2, Calendar, Info, ChevronDown, ChevronUp, ChevronLeft, ChevronRight, CalendarDays, ArrowUpDown, HelpCircle, RotateCcw } from 'lucide-angular';
+import { LucideAngularModule, Pencil, Trash2, Calendar, Info, ChevronDown, ChevronUp, ChevronLeft, ChevronRight, CalendarDays, ArrowUpDown, HelpCircle, RotateCcw } from 'lucide-angular';
 import { TranslatePipe } from '../../pipes/translate.pipe';
 import { DatePickerComponent } from '../date-picker/date-picker.component';
 import { HelpModalComponent, HelpStep } from '../help-modal/help-modal.component';
@@ -27,7 +27,7 @@ export class DetailedRecordsComponent {
   private localStorageService = inject(LocalStorageService);
 
   // Icons
-  protected readonly EditIcon = Edit;
+  protected readonly EditIcon = Pencil;
   protected readonly TrashIcon = Trash2;
   protected readonly CalendarIcon = Calendar;
   protected readonly InfoIcon = Info;
@@ -184,19 +184,17 @@ export class DetailedRecordsComponent {
   });
 
   protected pageOfText = computed(() => {
-    const key = 'HOME.PAGE_OF';
-    const template = this.languageService.translate(key);
-    return template
-      .replace('{current}', this.currentPage().toString())
-      .replace('{total}', this.totalPages().toString());
+    return this.languageService.translate('HOME.PAGE_OF', {
+      current: this.currentPage(),
+      total: this.totalPages()
+    });
   });
 
   protected showingRecordsText = computed(() => {
-    const key = 'HOME.SHOWING_RECORDS';
-    const template = this.languageService.translate(key);
-    return template
-      .replace('{current}', this.displayedRecords().length.toString())
-      .replace('{total}', this.filteredRecords().length.toString());
+    return this.languageService.translate('HOME.SHOWING_RECORDS', {
+      current: this.displayedRecords().length,
+      total: this.filteredRecords().length
+    });
   });
 
 

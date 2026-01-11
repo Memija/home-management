@@ -50,6 +50,9 @@ export class ConsumptionInputComponent {
   cancelKey = input<string>('HOME.CANCEL');
   helpTitleKey = input<string>('HOME.RECORD_HELP_TITLE');
   helpSteps = input<HelpStep[]>([]);
+  // When true, individual fields can be saved independently (heating mode)
+  // When false, all fields in a group must be complete (water mode)
+  allowPartialGroups = input<boolean>(false);
 
   // State
   protected errorMessage = signal<string | null>(null);
@@ -67,8 +70,14 @@ export class ConsumptionInputComponent {
     const grps = this.groups();
     const isGroupComplete = (group: ConsumptionGroup) => group.fields.every(f => f.value !== null);
     const isGroupEmpty = (group: ConsumptionGroup) => group.fields.every(f => f.value === null);
+    const hasAnyValue = (group: ConsumptionGroup) => group.fields.some(f => f.value !== null);
 
-    // Each group must be either complete or empty
+    // In partial groups mode (heating), just need at least one field with a value
+    if (this.allowPartialGroups()) {
+      return grps.some(hasAnyValue);
+    }
+
+    // Standard mode (water): each group must be either complete or empty
     const allGroupsValid = grps.every(group => isGroupComplete(group) || isGroupEmpty(group));
     // At least one group must be complete
     const atLeastOneComplete = grps.some(isGroupComplete);
@@ -124,20 +133,31 @@ export class ConsumptionInputComponent {
     const isGroupComplete = (group: ConsumptionGroup) => group.fields.every(f => f.value !== null);
     const isGroupEmpty = (group: ConsumptionGroup) => group.fields.every(f => f.value === null);
     const isGroupPartial = (group: ConsumptionGroup) => !isGroupComplete(group) && !isGroupEmpty(group);
+    const hasAnyValue = (group: ConsumptionGroup) => group.fields.some(f => f.value !== null);
 
     const hasPartialGroups = grps.some(isGroupPartial);
     const hasCompleteGroups = grps.some(isGroupComplete);
+    const hasAnyValues = grps.some(hasAnyValue);
 
-    if (hasPartialGroups) {
-      // User started a room but didn't complete it
-      this.errorMessage.set('HOME.INCOMPLETE_ROOM_ERROR');
-      return;
-    }
+    // In partial groups mode (heating), allow saving if at least one field has a value
+    if (this.allowPartialGroups()) {
+      if (!hasAnyValues) {
+        this.errorMessage.set('HOME.PARTIAL_INPUT_ERROR');
+        return;
+      }
+    } else {
+      // Standard mode (water): require complete groups
+      if (hasPartialGroups) {
+        // User started a room but didn't complete it
+        this.errorMessage.set('HOME.INCOMPLETE_ROOM_ERROR');
+        return;
+      }
 
-    if (!hasCompleteGroups) {
-      // No room has any data
-      this.errorMessage.set('HOME.PARTIAL_INPUT_ERROR');
-      return;
+      if (!hasCompleteGroups) {
+        // No room has any data
+        this.errorMessage.set('HOME.PARTIAL_INPUT_ERROR');
+        return;
+      }
     }
 
     const fields: Record<string, number> = {};

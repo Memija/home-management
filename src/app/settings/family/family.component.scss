@@ -120,6 +120,13 @@
             background: $alert-danger-bg;
             color: $alert-danger-text;
           }
+
+          // Hide badge text on mobile, show only icons
+          @media (max-width: 880px) {
+            .badge-text {
+              display: none;
+            }
+          }
         }
       }
     }

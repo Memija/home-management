@@ -32,12 +32,12 @@
         <button type="button" [class.active]="editType() === 'adult'" (click)="editType.set('adult')"
           title="{{ 'SETTINGS.TYPES.ADULT' | translate }}">
           <lucide-icon [img]="AdultIcon" size="16"></lucide-icon>
-          {{ 'SETTINGS.TYPES.ADULT' | translate }}
+          <span class="toggle-text">{{ 'SETTINGS.TYPES.ADULT' | translate }}</span>
         </button>
         <button type="button" [class.active]="editType() === 'kid'" (click)="editType.set('kid')"
           title="{{ 'SETTINGS.TYPES.KID' | translate }}">
           <lucide-icon [img]="KidIcon" size="16"></lucide-icon>
-          {{ 'SETTINGS.TYPES.KID' | translate }}
+          <span class="toggle-text">{{ 'SETTINGS.TYPES.KID' | translate }}</span>
         </button>
       </div>
     </div>
@@ -47,12 +47,12 @@
         <button type="button" [class.active]="editGender() === 'male'" (click)="editGender.set('male')"
           title="{{ 'SETTINGS.GENDERS.MALE' | translate }}">
           <lucide-icon [img]="MaleIcon" size="16"></lucide-icon>
-          {{ 'SETTINGS.GENDERS.MALE' | translate }}
+          <span class="toggle-text">{{ 'SETTINGS.GENDERS.MALE' | translate }}</span>
         </button>
         <button type="button" [class.active]="editGender() === 'female'" (click)="editGender.set('female')"
           title="{{ 'SETTINGS.GENDERS.FEMALE' | translate }}">
           <lucide-icon [img]="FemaleIcon" size="16"></lucide-icon>
-          {{ 'SETTINGS.GENDERS.FEMALE' | translate }}
+          <span class="toggle-text">{{ 'SETTINGS.GENDERS.FEMALE' | translate }}</span>
         </button>
       </div>
     </div>

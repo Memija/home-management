@@ -9,9 +9,10 @@
   },
   "heatingMapping": {
     "date": "Date",
-    "livingRoom": "Living Room",
-    "bedroom": "Bedroom",
-    "kitchen": "Kitchen",
-    "bathroom": "Bathroom"
+    "rooms": {
+      "room_2": "Kids room",
+      "room_1": "Bedroom",
+      "room_3": "Livingroom"
+    }
   }
 }

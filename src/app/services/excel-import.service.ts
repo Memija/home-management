@@ -2,6 +2,7 @@ import { Injectable, inject } from '@angular/core';
 import { LanguageService } from './language.service';
 import { ExcelValidationService } from './excel-validation.service';
 import { ExcelSettings, WaterColumnMapping, HeatingColumnMapping } from './excel-settings.service';
+import { HeatingRoomsService } from './heating-rooms.service';
 
 export interface ImportError {
   message: string;
@@ -17,6 +18,7 @@ export interface ImportError {
 export class ExcelImportService {
   private languageService = inject(LanguageService);
   private validationService = inject(ExcelValidationService);
+  private heatingRoomsService = inject(HeatingRoomsService);
 
   /**
    * Validate imported settings data structure and content
@@ -87,16 +89,54 @@ export class ExcelImportService {
       const h = typedData.heatingMapping!;
       this.validateField(h.date, 'SETTINGS.EXCEL_COLUMN_DATE_NAME', 'Heating', errors, fieldKeys, hintKeys);
 
-      // Validate rooms object
-      if (h.rooms && typeof h.rooms === 'object') {
-        const roomValues = Object.values(h.rooms);
-        roomValues.forEach((value, index) => {
+      // Require the 'rooms' object format (reject legacy fixed-field format)
+      if (!h.rooms || typeof h.rooms !== 'object') {
+        errors.push(this.languageService.translate('SETTINGS.IMPORT_EXCEL_MISSING_ROOMS'));
+        hintKeys.push('SETTINGS.IMPORT_EXCEL_MISSING_ROOMS_HINT');
+      } else {
+        const roomEntries = Object.entries(h.rooms);
+
+        // Check that rooms object is not empty
+        if (roomEntries.length === 0) {
+          errors.push(this.languageService.translate('SETTINGS.IMPORT_EXCEL_EMPTY_ROOMS'));
+          hintKeys.push('SETTINGS.IMPORT_EXCEL_EMPTY_ROOMS_HINT');
+        }
+
+        // Validate that imported room IDs match currently configured rooms
+        const configuredRooms = this.heatingRoomsService.rooms();
+        const configuredRoomIds = configuredRooms.map(r => r.id);
+        const importedRoomIds = roomEntries.map(([id]) => id);
+
+        // Check for extra rooms in import (rooms that don't exist in config)
+        const extraRoomIds = importedRoomIds.filter(id => !configuredRoomIds.includes(id));
+        if (extraRoomIds.length > 0) {
+          errors.push(this.languageService.translate('SETTINGS.IMPORT_EXCEL_UNKNOWN_ROOMS').replace('{rooms}', extraRoomIds.join(', ')));
+          hintKeys.push('SETTINGS.IMPORT_EXCEL_UNKNOWN_ROOMS_HINT');
+        }
+
+        // Check for missing rooms in import (configured rooms not in import)
+        const missingRoomIds = configuredRoomIds.filter(id => !importedRoomIds.includes(id));
+        if (missingRoomIds.length > 0) {
+          const missingRoomNames = missingRoomIds.map(id => {
+            const room = configuredRooms.find(r => r.id === id);
+            return room ? room.name : id;
+          });
+          errors.push(this.languageService.translate('SETTINGS.IMPORT_EXCEL_MISSING_ROOM_MAPPINGS').replace('{rooms}', missingRoomNames.join(', ')));
+          hintKeys.push('SETTINGS.IMPORT_EXCEL_MISSING_ROOM_MAPPINGS_HINT');
+        }
+
+        // Validate each room entry
+        roomEntries.forEach(([roomId, value], index) => {
           if (typeof value === 'string') {
-            this.validateField(value, `Room ${index + 1}`, 'Heating', errors, fieldKeys, hintKeys);
+            this.validateField(value, `Room "${roomId}"`, 'Heating', errors, fieldKeys, hintKeys);
+          } else {
+            errors.push(`Heating - Room "${roomId}": ${this.languageService.translate('EXCEL.VALIDATION_MUST_BE_STRING')}`);
+            hintKeys.push('EXCEL.VALIDATION_REQUIRED_HINT');
           }
         });
 
         // Duplicate Check for room column names
+        const roomValues = roomEntries.map(([, v]) => v).filter(v => typeof v === 'string') as string[];
         const heatingColumns = [h.date, ...roomValues]
           .filter(col => typeof col === 'string')
           .map(c => c.trim());
@@ -106,6 +146,35 @@ export class ExcelImportService {
           errors.push(this.languageService.translate('EXCEL.VALIDATION_DUPLICATES') + ` (Heating): "${uniqueDupes.join('", "')}"`);
           hintKeys.push('EXCEL.VALIDATION_DUPLICATES_HINT');
         }
+      }
+
+      // Warn about unexpected/legacy fields in heatingMapping
+      const allowedHeatingFields = ['date', 'rooms'];
+      const unexpectedFields = Object.keys(h).filter(key => !allowedHeatingFields.includes(key));
+      if (unexpectedFields.length > 0) {
+        errors.push(this.languageService.translate('SETTINGS.IMPORT_EXCEL_UNEXPECTED_FIELDS').replace('{fields}', unexpectedFields.join(', ')));
+        hintKeys.push('SETTINGS.IMPORT_EXCEL_UNEXPECTED_FIELDS_HINT');
+      }
+    }
+
+    // 4. Cross-Section Duplicate Check
+    if (hasWaterMapping && hasHeatingMapping) {
+      const w = typedData.waterMapping!;
+      const h = typedData.heatingMapping!;
+
+      const waterColumns = [w.date, w.kitchenWarm, w.kitchenCold, w.bathroomWarm, w.bathroomCold]
+        .filter(col => typeof col === 'string')
+        .map(c => c.trim().toLowerCase());
+
+      const heatingColumnsArr = [h.date, ...(h.rooms ? Object.values(h.rooms) : [])]
+        .filter(col => typeof col === 'string')
+        .map(c => c.trim().toLowerCase());
+
+      const crossDuplicates = waterColumns.filter(col => col && heatingColumnsArr.includes(col));
+      if (crossDuplicates.length > 0) {
+        const uniqueCrossDupes = [...new Set(crossDuplicates)];
+        errors.push(this.languageService.translate('SETTINGS.IMPORT_EXCEL_CROSS_SECTION_DUPLICATES').replace('{columns}', `"${uniqueCrossDupes.join('", "')}"`));
+        hintKeys.push('SETTINGS.IMPORT_EXCEL_CROSS_SECTION_DUPLICATES_HINT');
       }
     }
 

@@ -31,13 +31,13 @@
               @if (member.type && member.type !== 'other') {
               <span class="badge" [class.kid]="member.type === 'kid'">
                 <lucide-icon [img]="member.type === 'kid' ? KidIcon : AdultIcon" size="14"></lucide-icon>
-                {{ 'SETTINGS.TYPES.' + (member.type | uppercase) | translate }}
+                <span class="badge-text">{{ 'SETTINGS.TYPES.' + (member.type | uppercase) | translate }}</span>
               </span>
               }
               @if (member.gender && member.gender !== 'other') {
               <span class="badge gender" [class.female]="member.gender === 'female'">
                 <lucide-icon [img]="member.gender === 'female' ? FemaleIcon : MaleIcon" size="14"></lucide-icon>
-                {{ 'SETTINGS.GENDERS.' + (member.gender | uppercase) | translate }}
+                <span class="badge-text">{{ 'SETTINGS.GENDERS.' + (member.gender | uppercase) | translate }}</span>
               </span>
               }
             </div>
@@ -94,13 +94,13 @@
               @if (member.type && member.type !== 'other') {
               <span class="badge" [class.kid]="member.type === 'kid'">
                 <lucide-icon [img]="member.type === 'kid' ? KidIcon : AdultIcon" size="14"></lucide-icon>
-                {{ 'SETTINGS.TYPES.' + (member.type | uppercase) | translate }}
+                <span class="badge-text">{{ 'SETTINGS.TYPES.' + (member.type | uppercase) | translate }}</span>
               </span>
               }
               @if (member.gender && member.gender !== 'other') {
               <span class="badge gender" [class.female]="member.gender === 'female'">
                 <lucide-icon [img]="member.gender === 'female' ? FemaleIcon : MaleIcon" size="14"></lucide-icon>
-                {{ 'SETTINGS.GENDERS.' + (member.gender | uppercase) | translate }}
+                <span class="badge-text">{{ 'SETTINGS.GENDERS.' + (member.gender | uppercase) | translate }}</span>
               </span>
               }
             </div>

@@ -78,7 +78,10 @@ export class HouseholdService {
       this.address.set(address);
     }
 
-    this.isInitialized = true;
+    // Delay initialization flag to ensure initial signal updates don't trigger effects
+    setTimeout(() => {
+      this.isInitialized = true;
+    }, 0);
   }
 
   addMember(name: string, surname: string, type: 'adult' | 'kid', gender: 'male' | 'female', avatar?: string) {

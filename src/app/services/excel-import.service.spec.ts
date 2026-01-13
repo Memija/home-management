@@ -2,6 +2,7 @@ import { TestBed } from '@angular/core/testing';
 import { ExcelImportService, ImportError } from './excel-import.service';
 import { LanguageService } from './language.service';
 import { ExcelValidationService } from './excel-validation.service';
+import { HeatingRoomsService } from './heating-rooms.service';
 import { describe, it, expect, beforeEach, vi, afterEach } from 'vitest';
 
 describe('ExcelImportService', () => {
@@ -16,8 +17,8 @@ describe('ExcelImportService', () => {
 
     mockValidationService = {
       getValidationError: vi.fn().mockImplementation((val) => {
-          if (!val) return 'Error';
-          return '';
+        if (!val) return 'Error';
+        return '';
       }),
     };
 
@@ -26,6 +27,17 @@ describe('ExcelImportService', () => {
         ExcelImportService,
         { provide: LanguageService, useValue: mockLanguageService },
         { provide: ExcelValidationService, useValue: mockValidationService },
+        {
+          provide: HeatingRoomsService,
+          useValue: {
+            rooms: vi.fn().mockReturnValue([
+              { id: 'livingRoom', name: 'Living Room' },
+              { id: 'bedroom', name: 'Bedroom' },
+              { id: 'kitchen', name: 'Kitchen' },
+              { id: 'bathroom', name: 'Bathroom' }
+            ])
+          }
+        }
       ],
     });
 
@@ -63,18 +75,20 @@ describe('ExcelImportService', () => {
       const validData = {
         enabled: true,
         waterMapping: {
-          date: 'Date',
+          date: 'Water Date',
           kitchenWarm: 'KW',
           kitchenCold: 'KC',
           bathroomWarm: 'BW',
           bathroomCold: 'BC'
         },
         heatingMapping: {
-          date: 'Date',
-          livingRoom: 'L',
-          bedroom: 'B',
-          kitchen: 'K',
-          bathroom: 'BA'
+          date: 'Heating Date',
+          rooms: {
+            livingRoom: 'L',
+            bedroom: 'B',
+            kitchen: 'K',
+            bathroom: 'BA'
+          }
         }
       };
 
@@ -88,10 +102,12 @@ describe('ExcelImportService', () => {
         // Missing waterMapping
         heatingMapping: {
           date: 'Date',
-          livingRoom: 'L',
-          bedroom: 'B',
-          kitchen: 'K',
-          bathroom: 'BA'
+          rooms: {
+            livingRoom: 'L',
+            bedroom: 'B',
+            kitchen: 'K',
+            bathroom: 'BA'
+          }
         }
       };
 
@@ -115,11 +131,13 @@ describe('ExcelImportService', () => {
           bathroomCold: 'BC'
         },
         heatingMapping: {
-           date: 'Date',
-           livingRoom: 'L',
-           bedroom: 'B',
-           kitchen: 'K',
-           bathroom: 'BA'
+          date: 'Date',
+          rooms: {
+            livingRoom: 'L',
+            bedroom: 'B',
+            kitchen: 'K',
+            bathroom: 'BA'
+          }
         }
       };
 
@@ -143,50 +161,52 @@ describe('ExcelImportService', () => {
           bathroomCold: 'BC'
         },
         heatingMapping: {
-           date: 'Date',
-           livingRoom: 'L',
-           bedroom: 'B',
-           kitchen: 'K',
-           bathroom: 'BA'
+          date: 'Date',
+          rooms: {
+            livingRoom: 'L',
+            bedroom: 'B',
+            kitchen: 'K',
+            bathroom: 'BA'
+          }
         }
       };
 
       try {
-          service.validateImportedSettings(duplicateData);
-          expect(true).toBe(false);
+        service.validateImportedSettings(duplicateData);
+        expect(true).toBe(false);
       } catch (e: any) {
-          expect(e.details).toContain('EXCEL.VALIDATION_DUPLICATES');
-          expect(e.details).toContain('Duplicate');
+        expect(e.details).toContain('EXCEL.VALIDATION_DUPLICATES');
+        expect(e.details).toContain('Duplicate');
       }
     });
   });
 
   describe('mapImportError', () => {
-      it('should map invalid_file_type', () => {
-          const result = service.mapImportError({ message: 'invalid_file_type' });
-          expect(result.message).toBe('SETTINGS.IMPORT_EXCEL_SETTINGS_INVALID_FILE_TYPE');
-      });
+    it('should map invalid_file_type', () => {
+      const result = service.mapImportError({ message: 'invalid_file_type' });
+      expect(result.message).toBe('SETTINGS.IMPORT_EXCEL_SETTINGS_INVALID_FILE_TYPE');
+    });
 
-      it('should map parse error', () => {
-          const result = service.mapImportError({ message: 'Failed to parse JSON file' });
-          expect(result.message).toBe('SETTINGS.IMPORT_EXCEL_SETTINGS_INVALID_FORMAT');
-      });
+    it('should map parse error', () => {
+      const result = service.mapImportError({ message: 'Failed to parse JSON file' });
+      expect(result.message).toBe('SETTINGS.IMPORT_EXCEL_SETTINGS_INVALID_FORMAT');
+    });
 
-      it('should map generic validation error with details', () => {
-          const error: ImportError = {
-              message: 'Validation Failed',
-              details: 'Details...',
-              hintKeys: ['HINT1']
-          };
-          const result = service.mapImportError(error);
-          expect(result.message).toBe('Validation Failed');
-          expect(result.details).toBe('Details...');
-          expect(result.instructions).toEqual(['HINT1']);
-      });
+    it('should map generic validation error with details', () => {
+      const error: ImportError = {
+        message: 'Validation Failed',
+        details: 'Details...',
+        hintKeys: ['HINT1']
+      };
+      const result = service.mapImportError(error);
+      expect(result.message).toBe('Validation Failed');
+      expect(result.details).toBe('Details...');
+      expect(result.instructions).toEqual(['HINT1']);
+    });
 
-      it('should map generic error without hints', () => {
-          const result = service.mapImportError({ message: 'Unknown' });
-          expect(result.instructions[0]).toBe('HOME.IMPORT_ERROR_INSTRUCTION_1');
-      });
+    it('should map generic error without hints', () => {
+      const result = service.mapImportError({ message: 'Unknown' });
+      expect(result.instructions[0]).toBe('HOME.IMPORT_ERROR_INSTRUCTION_1');
+    });
   });
 });

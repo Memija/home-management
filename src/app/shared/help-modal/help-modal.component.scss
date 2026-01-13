@@ -10,7 +10,7 @@
 
 .modal-header {
   .help-icon {
-    color: $info;
+    color: var(--theme-primary, $info);
   }
 }
 
@@ -66,7 +66,7 @@
     transition: background-color 0.2s ease;
 
     &.active {
-      background-color: $info;
+      background-color: var(--theme-primary, $info);
     }
   }
 }
@@ -87,5 +87,16 @@
     display: flex;
     align-items: center;
     gap: 0.5rem;
+  }
+
+  // Override primary button to use theme variable if present
+  .btn-primary {
+    background: var(--theme-primary, $primary);
+    border-color: var(--theme-primary, $primary);
+
+    &:hover {
+      background: var(--theme-primary-dark, $primary-dark);
+      border-color: var(--theme-primary-dark, $primary-dark);
+    }
   }
 }

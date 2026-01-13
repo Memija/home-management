@@ -8,13 +8,14 @@ import { LanguageService } from './language.service';
 export interface HeatingRoomConfig {
   id: string;      // Unique identifier (e.g., 'room_1')
   name: string;    // Display name (e.g., 'Living Room')
+  type?: string;   // Room type key for icon matching (e.g., 'HEATING.ROOM_LIVING_ROOM')
 }
 
 const STORAGE_KEY = 'heating_room_configs';
 const MAX_ROOMS = 10;
 
 // Predefined room name translation keys
-const PREDEFINED_ROOM_KEYS = [
+export const PREDEFINED_ROOM_KEYS = [
   'HEATING.ROOM_LIVING_ROOM', 'HEATING.ROOM_BEDROOM', 'HEATING.ROOM_KIDS_ROOM', 'HEATING.ROOM_KITCHEN',
   'HEATING.ROOM_BATHROOM', 'HEATING.ROOM_OFFICE', 'HEATING.ROOM_GUEST_ROOM', 'HEATING.ROOM_DINING_ROOM',
   'HEATING.ROOM_HALLWAY', 'HEATING.ROOM_ATTIC'
@@ -58,7 +59,8 @@ export class HeatingRoomsService {
   private getDefaultRoom(): HeatingRoomConfig {
     return {
       id: 'room_1',
-      name: this.languageService.translate('HEATING.ROOM_LIVING_ROOM')
+      name: this.languageService.translate('HEATING.ROOM_LIVING_ROOM'),
+      type: 'HEATING.ROOM_LIVING_ROOM'
     };
   }
 
@@ -97,13 +99,17 @@ export class HeatingRoomsService {
 
     // Get next predefined name from translation, or fallback to Room N
     const roomIndex = this._rooms().length;
-    const roomName = roomIndex < PREDEFINED_ROOM_KEYS.length
+    const isPredefined = roomIndex < PREDEFINED_ROOM_KEYS.length;
+    const roomName = isPredefined
       ? this.languageService.translate(PREDEFINED_ROOM_KEYS[roomIndex])
       : `Room ${roomIndex + 1}`;
 
+    const type = isPredefined ? PREDEFINED_ROOM_KEYS[roomIndex] : undefined;
+
     this._rooms.update(rooms => [...rooms, {
       id: newId,
-      name: roomName
+      name: roomName,
+      type
     }]);
     this.saveRooms();
   }

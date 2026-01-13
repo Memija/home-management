@@ -125,12 +125,12 @@ describe('LocalStorageService', () => {
     });
 
     it('should handle errors during delete', async () => {
-        const error = new Error('Delete failed');
-        mockLocalStorage.removeItem.mockImplementation(() => { throw error; });
-        const consoleSpy = vi.spyOn(console, 'error');
+      const error = new Error('Delete failed');
+      mockLocalStorage.removeItem.mockImplementation(() => { throw error; });
+      const consoleSpy = vi.spyOn(console, 'error');
 
-        await service.delete('testKey');
-        expect(consoleSpy).toHaveBeenCalledWith(`Error deleting from localStorage with key testKey:`, error);
+      await service.delete('testKey');
+      expect(consoleSpy).toHaveBeenCalledWith(`Error deleting from localStorage with key testKey:`, error);
     });
   });
 
@@ -163,45 +163,45 @@ describe('LocalStorageService', () => {
   });
 
   describe('importAll', () => {
-      it('should save all imported items', async () => {
-          const data = { key1: 'value1', key2: 'value2' };
-          await service.importAll(data);
-          expect(mockLocalStorage.setItem).toHaveBeenCalledWith('hm_key1', JSON.stringify('value1'));
-          expect(mockLocalStorage.setItem).toHaveBeenCalledWith('hm_key2', JSON.stringify('value2'));
-      });
+    it('should save all imported items', async () => {
+      const data = { key1: 'value1', key2: 'value2' };
+      await service.importAll(data);
+      expect(mockLocalStorage.setItem).toHaveBeenCalledWith('hm_key1', JSON.stringify('value1'));
+      expect(mockLocalStorage.setItem).toHaveBeenCalledWith('hm_key2', JSON.stringify('value2'));
+    });
   });
 
   describe('exportRecords', () => {
-      it('should export specific records', async () => {
-          const records = [{id: 1}, {id: 2}];
-          mockLocalStorage.getItem.mockReturnValue(JSON.stringify(records));
+    it('should export specific records', async () => {
+      const records = [{ id: 1 }, { id: 2 }];
+      mockLocalStorage.getItem.mockReturnValue(JSON.stringify(records));
 
-          const result = await service.exportRecords('records');
-          expect(result).toEqual(records);
-      });
+      const result = await service.exportRecords('records');
+      expect(result).toEqual(records);
+    });
 
-      it('should return empty array if no records found', async () => {
-          mockLocalStorage.getItem.mockReturnValue(null);
-          const result = await service.exportRecords('records');
-          expect(result).toEqual([]);
-      });
+    it('should return empty array if no records found', async () => {
+      mockLocalStorage.getItem.mockReturnValue(null);
+      const result = await service.exportRecords('records');
+      expect(result).toEqual([]);
+    });
   });
 
   describe('Preferences (Sync)', () => {
-      it('should get preference', () => {
-          mockLocalStorage.getItem.mockReturnValue('value');
-          expect(service.getPreference('pref')).toBe('value');
-          expect(mockLocalStorage.getItem).toHaveBeenCalledWith('hm_pref');
-      });
+    it('should get preference', () => {
+      mockLocalStorage.getItem.mockReturnValue('value');
+      expect(service.getPreference('pref')).toBe('value');
+      expect(mockLocalStorage.getItem).toHaveBeenCalledWith('hm_pref');
+    });
 
-      it('should set preference', () => {
-          service.setPreference('pref', 'value');
-          expect(mockLocalStorage.setItem).toHaveBeenCalledWith('hm_pref', 'value');
-      });
+    it('should set preference', () => {
+      service.setPreference('pref', 'value');
+      expect(mockLocalStorage.setItem).toHaveBeenCalledWith('hm_pref', 'value');
+    });
 
-      it('should remove preference', () => {
-          service.removePreference('pref');
-          expect(mockLocalStorage.removeItem).toHaveBeenCalledWith('hm_pref');
-      });
+    it('should remove preference', () => {
+      service.removePreference('pref');
+      expect(mockLocalStorage.removeItem).toHaveBeenCalledWith('hm_pref');
+    });
   });
 });

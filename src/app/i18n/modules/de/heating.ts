@@ -45,6 +45,18 @@ export const heating = {
     ROOM_UNLOCKED_TOOLTIP: 'Klicken zum Sperren dieses Raums',
     UNLOCK_WARNING_TITLE: 'Raum entsperren?',
     UNLOCK_WARNING_MESSAGE: 'Dieser Raum hat Heizdaten zugeordnet. Das Ändern oder Löschen kann zu Anzeigeproblemen führen.',
-    UNLOCK_BUTTON: 'Entsperren'
+    UNLOCK_BUTTON: 'Entsperren',
+    // Help Modal
+    RECORD_HELP_TITLE: 'Heizungsverbrauch erfassen - Anleitung',
+    RECORD_HELP_STEP_1_TITLE: 'Räume konfigurieren',
+    RECORD_HELP_STEP_1_DESC: 'Klicken Sie auf das Zahnrad-Symbol (⚙️), um die zu überwachenden Räume hinzuzufügen oder zu ändern. Sie können bis zu 10 Räume mit benutzerdefinierten Namen hinzufügen.',
+    RECORD_HELP_STEP_2_TITLE: 'Datum auswählen',
+    RECORD_HELP_STEP_2_DESC: 'Wählen Sie das Datum für Ihre Ablesung. Die Datumsauswahl verhindert zukünftige Daten, um genaue Aufzeichnungen zu gewährleisten.',
+    RECORD_HELP_STEP_3_TITLE: 'Raumwerte eingeben',
+    RECORD_HELP_STEP_3_DESC: 'Geben Sie den Wert für jeden Raum ein. Sie müssen nicht alle Räume ausfüllen - Teileinträge sind erlaubt!',
+    RECORD_HELP_STEP_4_TITLE: 'Eintrag speichern',
+    RECORD_HELP_STEP_4_DESC: 'Klicken Sie auf "Speichern", um Ihre Heizungsverbrauchsdaten zu speichern. Der Eintrag erscheint im Verlaufsbereich oben.',
+    RECORD_HELP_STEP_5_TITLE: 'Gesperrte Räume',
+    RECORD_HELP_STEP_5_DESC: 'Räume werden gesperrt, wenn ihnen Daten zugeordnet sind, um versehentliche Änderungen zu verhindern. Sie können in den Einstellungen (⚙️) entsperrt werden, es wird jedoch empfohlen, sie gesperrt zu lassen, um die Datenintegrität zu wahren.'
   }
 };

@@ -46,7 +46,7 @@ describe('NotificationService', () => {
   });
 
   it('should not show notifications until data is loaded', () => {
-      // Not loaded test
+    // Not loaded test
   });
 
   it('should show initial notifications when no data exists', async () => {
@@ -70,77 +70,77 @@ describe('NotificationService', () => {
   });
 
   it('should update notifications when data is set', async () => {
-      await new Promise(resolve => setTimeout(resolve, 0));
+    await new Promise(resolve => setTimeout(resolve, 0));
 
-      // Initially has water-initial
-      expect(service.notifications().some(n => n.id === 'water-initial')).toBe(true);
+    // Initially has water-initial
+    expect(service.notifications().some(n => n.id === 'water-initial')).toBe(true);
 
-      // Set water records
-      service.setWaterRecords([{ date: new Date(), kitchenWarm: 0, kitchenCold: 0, bathroomWarm: 0, bathroomCold: 0 }]);
+    // Set water records
+    service.setWaterRecords([{ date: new Date(), kitchenWarm: 0, kitchenCold: 0, bathroomWarm: 0, bathroomCold: 0 }]);
 
-      // Check again
-      expect(service.notifications().some(n => n.id === 'water-initial')).toBe(false);
+    // Check again
+    expect(service.notifications().some(n => n.id === 'water-initial')).toBe(false);
   });
 
   it('should detect water overdue', async () => {
-      await new Promise(resolve => setTimeout(resolve, 0));
+    await new Promise(resolve => setTimeout(resolve, 0));
 
-      const now = new Date();
-      const tenDaysAgo = new Date(now.getTime() - 10 * 24 * 60 * 60 * 1000);
-      const twentyDaysAgo = new Date(now.getTime() - 20 * 24 * 60 * 60 * 1000);
+    const now = new Date();
+    const tenDaysAgo = new Date(now.getTime() - 10 * 24 * 60 * 60 * 1000);
+    const twentyDaysAgo = new Date(now.getTime() - 20 * 24 * 60 * 60 * 1000);
 
-      // Average frequency is 10 days. Threshold is max(15, 7) = 15.
-      // Last entry 10 days ago -> Not overdue.
+    // Average frequency is 10 days. Threshold is max(15, 7) = 15.
+    // Last entry 10 days ago -> Not overdue.
 
-      // Let's make it overdue.
-      // Freq 2 days. Threshold 3 days (min 7 is higher). Threshold 7 days.
-      // Last entry 8 days ago.
+    // Let's make it overdue.
+    // Freq 2 days. Threshold 3 days (min 7 is higher). Threshold 7 days.
+    // Last entry 8 days ago.
 
-      const records: ConsumptionRecord[] = [
-          { date: new Date(now.getTime() - 10 * 24 * 60 * 60 * 1000), kitchenWarm: 0, kitchenCold: 0, bathroomWarm: 0, bathroomCold: 0 },
-          { date: new Date(now.getTime() - 12 * 24 * 60 * 60 * 1000), kitchenWarm: 0, kitchenCold: 0, bathroomWarm: 0, bathroomCold: 0 }
-      ];
-      // Avg gap: 2 days. Threshold: max(3, 7) = 7 days.
-      // Days since last (10 days ago) = 10.
-      // 10 > 7 -> Overdue.
+    const records: ConsumptionRecord[] = [
+      { date: new Date(now.getTime() - 10 * 24 * 60 * 60 * 1000), kitchenWarm: 0, kitchenCold: 0, bathroomWarm: 0, bathroomCold: 0 },
+      { date: new Date(now.getTime() - 12 * 24 * 60 * 60 * 1000), kitchenWarm: 0, kitchenCold: 0, bathroomWarm: 0, bathroomCold: 0 }
+    ];
+    // Avg gap: 2 days. Threshold: max(3, 7) = 7 days.
+    // Days since last (10 days ago) = 10.
+    // 10 > 7 -> Overdue.
 
-      service.setWaterRecords(records);
+    service.setWaterRecords(records);
 
-      const notifications = service.notifications();
-      expect(notifications.some(n => n.id === 'water-overdue')).toBe(true);
-      expect(notifications.find(n => n.id === 'water-overdue')?.messageParams?.['days']).toBe(10);
+    const notifications = service.notifications();
+    expect(notifications.some(n => n.id === 'water-overdue')).toBe(true);
+    expect(notifications.find(n => n.id === 'water-overdue')?.messageParams?.['days']).toBe(10);
   });
 
   it('should dismiss notification', async () => {
-      await new Promise(resolve => setTimeout(resolve, 0));
+    await new Promise(resolve => setTimeout(resolve, 0));
 
-      const id = 'water-initial';
-      service.dismissNotification(id);
+    const id = 'water-initial';
+    service.dismissNotification(id);
 
-      const notifications = service.notifications();
-      expect(notifications.some(n => n.id === id)).toBe(false);
-      expect(mockStorageService.save).toHaveBeenCalledWith('dismissed_notifications', [id]);
+    const notifications = service.notifications();
+    expect(notifications.some(n => n.id === id)).toBe(false);
+    expect(mockStorageService.save).toHaveBeenCalledWith('dismissed_notifications', [id]);
   });
 
   it('should clear dismissed notification (undismiss)', async () => {
-      await new Promise(resolve => setTimeout(resolve, 0));
-      const id = 'water-initial';
+    await new Promise(resolve => setTimeout(resolve, 0));
+    const id = 'water-initial';
 
-      // Dismiss first
-      service.dismissNotification(id);
-      expect(service.notifications().some(n => n.id === id)).toBe(false);
+    // Dismiss first
+    service.dismissNotification(id);
+    expect(service.notifications().some(n => n.id === id)).toBe(false);
 
-      // Clear dismissal
-      service.clearDismissed(id);
-      expect(service.notifications().some(n => n.id === id)).toBe(true);
-      expect(mockStorageService.save).toHaveBeenCalledWith('dismissed_notifications', []);
+    // Clear dismissal
+    service.clearDismissed(id);
+    expect(service.notifications().some(n => n.id === id)).toBe(true);
+    expect(mockStorageService.save).toHaveBeenCalledWith('dismissed_notifications', []);
   });
 
   it('should reset water overdue when records added', async () => {
-     // This test logic is slightly different: we just call resetWaterOverdue
-     service.dismissNotification('water-overdue');
-     service.resetWaterOverdue();
+    // This test logic is slightly different: we just call resetWaterOverdue
+    service.dismissNotification('water-overdue');
+    service.resetWaterOverdue();
 
-     expect(mockStorageService.save).toHaveBeenLastCalledWith('dismissed_notifications', []);
+    expect(mockStorageService.save).toHaveBeenLastCalledWith('dismissed_notifications', []);
   });
 });

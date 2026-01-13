@@ -101,24 +101,24 @@ $heating-primary: #f57c00;
   gap: 0.5rem;
   width: 100%;
   padding: 0.75rem 1rem;
-  border: 2px dashed var(--border-color);
+  border: 2px dashed $heating-primary; // Orange by default
   border-radius: 6px;
   background: transparent;
-  color: var(--text-secondary);
+  color: $heating-primary; // Orange by default
   font-size: 0.95rem;
   font-weight: 500;
   cursor: pointer;
   transition: all 0.2s;
 
   &:hover:not(:disabled) {
-    border-color: $heating-primary;
-    color: $heating-primary;
     background: rgba($heating-primary, 0.05);
   }
 
   &:disabled {
     opacity: 0.4;
     cursor: not-allowed;
+    border-color: var(--border-color);
+    color: var(--text-secondary);
   }
 }
 
@@ -176,5 +176,22 @@ $heating-primary: #f57c00;
   .modal-body p {
     margin: 0;
     line-height: 1.5;
+  }
+}
+
+// Override primary button for this modal (Save button)
+.modal-footer .btn-primary {
+  background: $heating-primary;
+  border-color: $heating-primary;
+
+  &:hover:not(:disabled) {
+    background: #ef6c00; // Matches $heating-primary-dark from heating.component.scss
+    border-color: #ef6c00;
+  }
+
+  &:disabled {
+    background: var(--bg-tertiary);
+    border-color: var(--border-color);
+    color: var(--text-muted);
   }
 }

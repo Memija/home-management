@@ -22,8 +22,8 @@ describe('LanguageService', () => {
     });
 
     Object.defineProperty(window, 'navigator', {
-        value: { language: 'en-US' },
-        writable: true
+      value: { language: 'en-US' },
+      writable: true
     });
 
     // Mock document
@@ -59,8 +59,8 @@ describe('LanguageService', () => {
   it('should detect browser language', () => {
     mockLocalStorage.getItem.mockReturnValue(null);
     Object.defineProperty(window, 'navigator', {
-        value: { language: 'de-DE' },
-        writable: true
+      value: { language: 'de-DE' },
+      writable: true
     });
     service = TestBed.inject(LanguageService);
     expect(service.currentLang()).toBe('de');
@@ -80,22 +80,22 @@ describe('LanguageService', () => {
   });
 
   it('should create meta tag if not exists', async () => {
-      service = TestBed.inject(LanguageService);
-      vi.spyOn(service as any, 'loadLanguage').mockResolvedValue(undefined);
-      document.head.innerHTML = ''; // Clear head
-      await service.setLanguage('de');
-      const meta = document.querySelector('meta[http-equiv="Content-Language"]');
-      expect(meta).toBeTruthy();
-      expect(meta?.getAttribute('content')).toBe('de-DE');
+    service = TestBed.inject(LanguageService);
+    vi.spyOn(service as any, 'loadLanguage').mockResolvedValue(undefined);
+    document.head.innerHTML = ''; // Clear head
+    await service.setLanguage('de');
+    const meta = document.querySelector('meta[http-equiv="Content-Language"]');
+    expect(meta).toBeTruthy();
+    expect(meta?.getAttribute('content')).toBe('de-DE');
   });
 
   it('should update existing meta tag', async () => {
-      service = TestBed.inject(LanguageService);
-      vi.spyOn(service as any, 'loadLanguage').mockResolvedValue(undefined);
-      document.head.innerHTML = '<meta http-equiv="Content-Language" content="en-US">';
-      await service.setLanguage('de');
-      const meta = document.querySelector('meta[http-equiv="Content-Language"]');
-      expect(meta?.getAttribute('content')).toBe('de-DE');
+    service = TestBed.inject(LanguageService);
+    vi.spyOn(service as any, 'loadLanguage').mockResolvedValue(undefined);
+    document.head.innerHTML = '<meta http-equiv="Content-Language" content="en-US">';
+    await service.setLanguage('de');
+    const meta = document.querySelector('meta[http-equiv="Content-Language"]');
+    expect(meta?.getAttribute('content')).toBe('de-DE');
   });
 
   it('should not reload if language is already current', async () => {
@@ -110,32 +110,32 @@ describe('LanguageService', () => {
 
     // Manually inject translations
     (service as any).translations['en'] = {
-        TEST: { KEY: 'Test Value' }
+      TEST: { KEY: 'Test Value' }
     };
 
     expect(service.translate('TEST.KEY')).toBe('Test Value');
   });
 
   it('should translate with params', () => {
-      service = TestBed.inject(LanguageService);
-      (service as any).translations['en'] = {
-        TEST: { PARAM: 'Value: {{value}}' }
-      };
+    service = TestBed.inject(LanguageService);
+    (service as any).translations['en'] = {
+      TEST: { PARAM: 'Value: {{value}}' }
+    };
 
-      expect(service.translate('TEST.PARAM', { value: 123 })).toBe('Value: 123');
+    expect(service.translate('TEST.PARAM', { value: 123 })).toBe('Value: 123');
   });
 
   it('should return key if translation missing', () => {
-      service = TestBed.inject(LanguageService);
-      expect(service.translate('MISSING.KEY')).toBe('MISSING.KEY');
+    service = TestBed.inject(LanguageService);
+    expect(service.translate('MISSING.KEY')).toBe('MISSING.KEY');
   });
 
   it('should translate for specific language', () => {
-      service = TestBed.inject(LanguageService);
-      (service as any).translations['en'] = { KEY: 'Value EN' };
-      (service as any).translations['de'] = { KEY: 'Value DE' };
+    service = TestBed.inject(LanguageService);
+    (service as any).translations['en'] = { KEY: 'Value EN' };
+    (service as any).translations['de'] = { KEY: 'Value DE' };
 
-      expect(service.translateForLanguage('KEY', 'en')).toBe('Value EN');
-      expect(service.translateForLanguage('KEY', 'de')).toBe('Value DE');
+    expect(service.translateForLanguage('KEY', 'en')).toBe('Value EN');
+    expect(service.translateForLanguage('KEY', 'de')).toBe('Value DE');
   });
 });

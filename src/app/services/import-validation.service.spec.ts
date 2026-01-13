@@ -108,17 +108,17 @@ describe('ImportValidationService', () => {
     });
 
     it('should error on missing date field', () => {
-        const data = [
-            { kitchenWarm: 10 }
-        ];
-        const result = service.validateWaterJsonImport(data);
-        expect(result.errors[0]).toContain("Missing 'date' field");
+      const data = [
+        { kitchenWarm: 10 }
+      ];
+      const result = service.validateWaterJsonImport(data);
+      expect(result.errors[0]).toContain("Missing 'date' field");
     });
 
     it('should error on invalid record format', () => {
-        const data = [null];
-        const result = service.validateWaterJsonImport(data);
-        expect(result.errors[0]).toContain("Invalid record format");
+      const data = [null];
+      const result = service.validateWaterJsonImport(data);
+      expect(result.errors[0]).toContain("Invalid record format");
     });
   });
 
@@ -176,11 +176,11 @@ describe('ImportValidationService', () => {
 
   describe('getExcelErrorInstructions', () => {
     it('should return instructions for excel errors', () => {
-        expect(service.getExcelErrorInstructions('Invalid date')).toContain('ERROR.EXCEL_DATE_FIX_1');
-        expect(service.getExcelErrorInstructions('Missing required column')).toContain('ERROR.EXCEL_COLUMN_FIX_1');
+      expect(service.getExcelErrorInstructions('Invalid date')).toContain('ERROR.EXCEL_DATE_FIX_1');
+      expect(service.getExcelErrorInstructions('Missing required column')).toContain('ERROR.EXCEL_COLUMN_FIX_1');
     });
     it('should return generic instructions if error unknown', () => {
-        expect(service.getExcelErrorInstructions('Unknown error')).toContain('ERROR.EXCEL_GENERIC_FIX_1');
+      expect(service.getExcelErrorInstructions('Unknown error')).toContain('ERROR.EXCEL_GENERIC_FIX_1');
     });
   });
 });

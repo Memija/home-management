@@ -2,7 +2,7 @@ import { Component, input, output, signal, computed, inject } from '@angular/cor
 import { FormsModule } from '@angular/forms';
 import { LanguageService } from '../../services/language.service';
 import { TranslatePipe } from '../../pipes/translate.pipe';
-import { LucideAngularModule, TriangleAlert, HelpCircle } from 'lucide-angular';
+import { LucideAngularModule, TriangleAlert, HelpCircle, Home, type LucideIconData } from 'lucide-angular';
 import { DatePickerComponent } from '../date-picker/date-picker.component';
 import { HelpModalComponent, HelpStep } from '../help-modal/help-modal.component';
 
@@ -10,6 +10,7 @@ export interface ConsumptionField {
   key: string;
   label: string;
   value: number | null;
+  icon?: LucideIconData;
 }
 
 export interface ConsumptionGroup {
@@ -34,6 +35,7 @@ export class ConsumptionInputComponent {
 
   protected readonly TriangleAlertIcon = TriangleAlert;
   protected readonly HelpIcon = HelpCircle;
+  protected readonly HomeIcon = Home;
 
   // Inputs
   groups = input.required<ConsumptionGroup[]>();
@@ -53,6 +55,8 @@ export class ConsumptionInputComponent {
   // When true, individual fields can be saved independently (heating mode)
   // When false, all fields in a group must be complete (water mode)
   allowPartialGroups = input<boolean>(false);
+  // Layout mode: 'grouped' = show group containers (water), 'flat' = room cards in grid (heating)
+  layoutMode = input<'grouped' | 'flat'>('grouped');
 
   // State
   protected errorMessage = signal<string | null>(null);

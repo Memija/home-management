@@ -38,9 +38,9 @@ describe('ConsumptionPreferencesService', () => {
 
   it('should load preferences from storage', () => {
     mockLocalStorageService.getPreference.mockImplementation((key: string) => {
-        if (key === 'water_chart_view') return 'by-room';
-        if (key === 'water_display_mode') return 'total';
-        return null;
+      if (key === 'water_chart_view') return 'by-room';
+      if (key === 'water_display_mode') return 'total';
+      return null;
     });
     service = injectService();
 
@@ -49,15 +49,15 @@ describe('ConsumptionPreferencesService', () => {
   });
 
   it('should fallback to default if storage has invalid value', () => {
-      mockLocalStorageService.getPreference.mockImplementation((key: string) => {
-          if (key === 'water_chart_view') return 'invalid';
-          if (key === 'water_display_mode') return 'invalid';
-          return null;
-      });
-      service = injectService();
+    mockLocalStorageService.getPreference.mockImplementation((key: string) => {
+      if (key === 'water_chart_view') return 'invalid';
+      if (key === 'water_display_mode') return 'invalid';
+      return null;
+    });
+    service = injectService();
 
-      expect(service.chartView()).toBe('total');
-      expect(service.displayMode()).toBe('incremental');
+    expect(service.chartView()).toBe('total');
+    expect(service.displayMode()).toBe('incremental');
   });
 
   it('should set chart view and save to storage', () => {

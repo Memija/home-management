@@ -10,7 +10,7 @@ import { ExcelService } from '../services/excel.service';
 import { ExcelSettingsService } from '../services/excel-settings.service';
 import { HeatingFormService } from '../services/heating-form.service';
 import { HeatingRoomsService, HeatingRoomConfig } from '../services/heating-rooms.service';
-import { LucideAngularModule, ArrowLeft, ChevronDown, ChevronLeft, ChevronRight, Download, Upload, FileSpreadsheet, Settings } from 'lucide-angular';
+import { LucideAngularModule, ArrowLeft, ChevronDown, ChevronLeft, ChevronRight, Download, Upload, FileSpreadsheet, Settings, CheckCircle, Armchair, Bed, Bath, CookingPot, Baby, Briefcase, DoorOpen, UtensilsCrossed, Home } from 'lucide-angular';
 import { ConsumptionChartComponent, type ChartView, type DisplayMode } from '../shared/consumption-chart/consumption-chart.component';
 import { ConsumptionInputComponent, type ConsumptionData, type ConsumptionGroup } from '../shared/consumption-input/consumption-input.component';
 import { ErrorModalComponent } from '../shared/error-modal/error-modal.component';
@@ -19,6 +19,20 @@ import { HeatingRoomsModalComponent } from '../shared/heating-rooms-modal/heatin
 import { ImportValidationService } from '../services/import-validation.service';
 import { DynamicHeatingRecord, HeatingRecord, calculateDynamicHeatingTotal, filterZeroPlaceholders, isDynamicHeatingRecordAllZero, isHeatingRecordAllZero, toHeatingRecord, toDynamicHeatingRecord } from '../models/records.model';
 import { NotificationService } from '../services/notification.service';
+import { HEATING_RECORD_HELP_STEPS } from './heating.constants';
+
+const ROOM_TYPE_ICONS: Record<string, any> = {
+  'HEATING.ROOM_LIVING_ROOM': Armchair,
+  'HEATING.ROOM_BEDROOM': Bed,
+  'HEATING.ROOM_KIDS_ROOM': Baby,
+  'HEATING.ROOM_KITCHEN': CookingPot,
+  'HEATING.ROOM_BATHROOM': Bath,
+  'HEATING.ROOM_OFFICE': Briefcase,
+  'HEATING.ROOM_GUEST_ROOM': DoorOpen,
+  'HEATING.ROOM_DINING_ROOM': UtensilsCrossed,
+  'HEATING.ROOM_HALLWAY': DoorOpen,
+  'HEATING.ROOM_ATTIC': Home
+};
 
 @Component({
   selector: 'app-heating',
@@ -47,11 +61,44 @@ export class HeatingComponent {
   protected readonly UploadIcon = Upload;
   protected readonly FileSpreadsheetIcon = FileSpreadsheet;
   protected readonly SettingsIcon = Settings;
+  protected readonly CheckCircleIcon = CheckCircle;
+
+  // Help Steps for recording form
+  protected readonly helpSteps = HEATING_RECORD_HELP_STEPS;
 
   protected isExporting = signal(false);
   protected isImporting = signal(false);
+  protected showSuccessModal = signal(false);
   protected showErrorModal = signal(false);
   protected errorTitle = signal('ERROR.TITLE');
+
+  protected closeSuccessModal() {
+    this.showSuccessModal.set(false);
+  }
+
+  protected onConsumptionSave(data: ConsumptionData) {
+    const newRecord = this.formService.createRecordFromState();
+    if (newRecord) {
+      // Check if editing existing record
+      if (this.editingRecord()) {
+        // Update existing record
+        this.records.update(records =>
+          records.map(r =>
+            r.date.getTime() === this.editingRecord()!.date.getTime() ? newRecord : r
+          )
+        );
+      } else {
+        // Add new record
+        this.records.update(records => [...records, newRecord]);
+      }
+
+      this.cancelEdit();
+      this.showSuccessModal.set(true);
+
+      // Update notification service
+      this.notificationService.setHeatingRecords(this.records());
+    }
+  }
   protected errorMessage = signal('');
   protected errorDetails = signal('');
   protected errorInstructions = signal<string[]>([]);
@@ -99,10 +146,35 @@ export class HeatingComponent {
       fields: rooms.map(room => ({
         key: room.id,
         label: room.name,
-        value: this.formService.getRoomValue(room.id)
+        value: this.formService.getRoomValue(room.id),
+        icon: this.getRoomIcon(room)
       }))
     }];
   });
+
+  protected getRoomIcon(room: HeatingRoomConfig): any {
+    // 1. Try to use explicit room type
+    if (room.type && ROOM_TYPE_ICONS[room.type]) {
+      return ROOM_TYPE_ICONS[room.type];
+    }
+
+    // 2. Fallback: heuristic guessing for legacy data or custom names without type
+    return this.guessLegacyIcon(room.name);
+  }
+
+  private guessLegacyIcon(name: string): any {
+    const lower = name.toLowerCase();
+    if (lower.includes('living') || lower.includes('wohn')) return Armchair;
+    if (lower.includes('bed') || lower.includes('schlaf')) return Bed;
+    if (lower.includes('bath') || lower.includes('bad')) return Bath;
+    if (lower.includes('kitchen') || lower.includes('küche') || lower.includes('kuche')) return CookingPot;
+    if (lower.includes('kid') || lower.includes('child') || lower.includes('kinder')) return Baby;
+    if (lower.includes('office') || lower.includes('büro') || lower.includes('buero')) return Briefcase;
+    if (lower.includes('guest') || lower.includes('gast') || lower.includes('gäste')) return DoorOpen;
+    if (lower.includes('dining') || lower.includes('ess')) return UtensilsCrossed;
+    if (lower.includes('hall') || lower.includes('flur') || lower.includes('entrance')) return DoorOpen;
+    return Home;
+  }
 
   // Helper to get room value from a record for template display
   protected getRoomValue(record: DynamicHeatingRecord, roomId: string): number {
@@ -380,27 +452,7 @@ export class HeatingComponent {
     this.formService.updateField(event.key, event.value);
   }
 
-  protected onConsumptionSave(data: ConsumptionData) {
-    const newRecord = this.formService.createRecordFromState();
-    if (newRecord) {
-      // Check if editing existing record
-      if (this.editingRecord()) {
-        // Update existing record
-        this.records.update(records =>
-          records.map(r =>
-            r.date.getTime() === this.editingRecord()!.date.getTime() ? newRecord : r
-          )
-        );
-      } else {
-        // Add new record
-        this.records.update(records => [...records, newRecord]);
-      }
 
-      void this.storage.save('heating_consumption_records', this.records());
-      this.notificationService.setHeatingRecords(this.records());
-      this.formService.cancelEdit();
-    }
-  }
 
   protected cancelEdit() {
     this.formService.cancelEdit();

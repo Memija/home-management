@@ -1,11 +1,14 @@
 <div class="input-section" id="input-section">
   <div class="section-header">
     <h2>{{ editingMode() ? (editTitleKey() | translate) : (titleKey() | translate) }}</h2>
-    @if (helpSteps().length > 0) {
-    <button type="button" class="help-btn" (click)="showHelp()" title="{{ helpTitleKey() | translate }}">
-      <lucide-icon [img]="HelpIcon" size="20"></lucide-icon>
-    </button>
-    }
+    <div class="header-actions">
+      <ng-content select="[header-actions]"></ng-content>
+      @if (helpSteps().length > 0) {
+      <button type="button" class="help-btn" (click)="showHelp()" title="{{ helpTitleKey() | translate }}">
+        <lucide-icon [img]="HelpIcon" size="20"></lucide-icon>
+      </button>
+      }
+    </div>
   </div>
 
   <div class="date-selection">
@@ -23,7 +26,9 @@
     }
   </div>
 
-  <div class="readings-grid">
+  <!-- Grouped Layout (Water style - groups with titles) -->
+  @if (layoutMode() === 'grouped') {
+  <div class="readings-grid grouped">
     @for (group of groups(); track group.title) {
     <div class="reading-group">
       <h3>{{ group.title | translate }}</h3>
@@ -38,6 +43,26 @@
     </div>
     }
   </div>
+  }
+
+  <!-- Flat Layout (Heating style - room cards in grid with icons) -->
+  @if (layoutMode() === 'flat') {
+  <div class="readings-grid flat">
+    @for (group of groups(); track group.title) {
+    @for (field of group.fields; track field.key) {
+    <div class="input-pair room-field">
+      <label [for]="field.key">
+        <lucide-icon [img]="field.icon || HomeIcon" size="16" class="room-icon"></lucide-icon>
+        {{ field.label | translate }}
+      </label>
+      <input type="number" [id]="field.key" [name]="field.key" [ngModel]="field.value"
+        (ngModelChange)="onFieldChange(field.key, $event)" (keydown)="onKeyDown($event)" (input)="onInput($event)"
+        placeholder="0" min="0">
+    </div>
+    }
+    }
+  </div>
+  }
 
   @if (errorMessage()) {
   <div class="warning-message error-message">

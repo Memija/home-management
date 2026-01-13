@@ -45,6 +45,18 @@ export const heating = {
     ROOM_UNLOCKED_TOOLTIP: 'Click to lock this room',
     UNLOCK_WARNING_TITLE: 'Unlock Room?',
     UNLOCK_WARNING_MESSAGE: 'This room has heating data associated with it. Modifying or deleting it may cause data display issues.',
-    UNLOCK_BUTTON: 'Unlock'
+    UNLOCK_BUTTON: 'Unlock',
+    // Help Modal
+    RECORD_HELP_TITLE: 'How to Record Heating Consumption',
+    RECORD_HELP_STEP_1_TITLE: 'Configure Your Rooms',
+    RECORD_HELP_STEP_1_DESC: 'Click the settings icon (⚙️) to add or modify the rooms you want to track. You can add up to 10 rooms with custom names.',
+    RECORD_HELP_STEP_2_TITLE: 'Select the Date',
+    RECORD_HELP_STEP_2_DESC: 'Choose the date for your reading. The date picker restricts future dates to keep your records accurate.',
+    RECORD_HELP_STEP_3_TITLE: 'Enter Room Readings',
+    RECORD_HELP_STEP_3_DESC: 'Enter the reading for each room. You don\'t need to fill all rooms - partial entries are allowed!',
+    RECORD_HELP_STEP_4_TITLE: 'Save Your Record',
+    RECORD_HELP_STEP_4_DESC: 'Click "Save" to store your heating consumption data. The record will appear in the history section above.',
+    RECORD_HELP_STEP_5_TITLE: 'Locked Rooms',
+    RECORD_HELP_STEP_5_DESC: 'Rooms are locked when they have data associated with them to prevent accidental changes. You can unlock them in settings (⚙️) if needed, but it is advised to keep them locked to maintain data integrity.'
   }
 };

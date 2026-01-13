@@ -92,13 +92,25 @@ describe('ExcelService', () => {
         {
           date: new Date('2023-01-01'),
           rooms: {
-            livingRoom: 10,
-            bedroom: 20,
-            kitchen: 30,
-            bathroom: 40
+            room_1: 10,
+            room_2: 20,
+            room_3: 30,
+            room_4: 40
           }
         }
       ];
+
+      // Mock the mapping to match the room keys used in records
+      mockExcelSettingsService.getHeatingMapping.mockReturnValue({
+        date: 'Date',
+        rooms: {
+          room_1: 'Living Room',
+          room_2: 'Bedroom',
+          room_3: 'Kitchen',
+          room_4: 'Bathroom'
+        }
+      });
+
       mockXLSX.utils.json_to_sheet.mockReturnValue('sheet');
       mockXLSX.utils.book_new.mockReturnValue('book');
 
@@ -227,6 +239,13 @@ describe('ExcelService', () => {
         { 'Date': '2023-01-01', 'Living Room': 10 }
       ];
 
+      mockExcelSettingsService.getHeatingMapping.mockReturnValue({
+        date: 'Date',
+        rooms: {
+          room_1: 'Living Room'
+        }
+      });
+
       mockXLSX.read.mockReturnValue({ SheetNames: ['Sheet1'], Sheets: { 'Sheet1': {} } });
       mockXLSX.utils.sheet_to_json.mockReturnValue(sheetData);
 
@@ -237,7 +256,7 @@ describe('ExcelService', () => {
       cleanup();
 
       expect(result.records.length).toBe(1);
-      expect(result.records[0].rooms['livingRoom']).toBe(10);
+      expect(result.records[0].rooms['room_1']).toBe(10);
     });
   });
 

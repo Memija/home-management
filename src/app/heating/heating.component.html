@@ -1,123 +1,126 @@
 <div class="page-container">
   <div class="app-header">
     <div class="header-left">
-      <button type="button" routerLink="/" class="back-btn" title="{{ 'DASHBOARD.BACK_TO_DASHBOARD' | translate }}">
-        <lucide-icon [img]="ArrowLeftIcon" size="16"></lucide-icon>
-        {{ 'DASHBOARD.BACK_TO_DASHBOARD' | translate }}
-      </button>
       <h1>{{ 'HEATING.TITLE' | translate }}</h1>
     </div>
-    <div class="header-actions">
-      <button type="button" (click)="exportData()" class="action-btn export-btn" [disabled]="isExporting()"
-        title="{{ 'HEATING.EXPORT' | translate }}">
-        <lucide-icon [img]="DownloadIcon" size="16"></lucide-icon>
-        {{ isExporting() ? 'Exporting...' : ('HEATING.EXPORT' | translate) }}
-      </button>
-      <label for="import-file" class="action-btn import-btn" [class.disabled]="isImporting()"
-        title="{{ 'HEATING.IMPORT' | translate }}">
-        <lucide-icon [img]="UploadIcon" size="16"></lucide-icon>
-        {{ isImporting() ? 'Importing...' : ('HEATING.IMPORT' | translate) }}
-        <input type="file" id="import-file" accept=".json" (change)="importData($event)" class="hidden-input"
-          [disabled]="isImporting()">
-      </label>
+  </div>
 
-      <!-- Excel Export/Import (conditional) -->
-      @if (excelSettings.isEnabled()) {
-      <button type="button" (click)="exportToExcel()" class="action-btn export-btn excel-btn" [disabled]="isExporting()"
-        title="{{ 'HEATING.EXPORT_EXCEL' | translate }}">
-        <lucide-icon [img]="FileSpreadsheetIcon" size="16"></lucide-icon>
-        {{ isExporting() ? 'Exporting...' : ('HEATING.EXPORT_EXCEL' | translate) }}
+  <!-- Country Energy Facts - Incremental Mode -->
+  @if (displayMode() === 'incremental') {
+  <div class="comparison-note">
+    <div class="comparison-content">
+      <p>{{ 'HEATING.ENERGY_FACTS_FOR' | translate:{ country: selectedCountryName() } }}</p>
+      <div class="country-selector">
+        <label for="heating-comparison-country">
+          <span class="info-tooltip-container">
+            <lucide-icon [img]="InfoIcon" size="14" class="info-icon"></lucide-icon>
+            <span class="info-tooltip">{{ 'HEATING.SELECT_COUNTRY_INFO' | translate }}</span>
+          </span>
+          {{ 'CHART.COMPARE_WITH' | translate }}:
+        </label>
+        <div class="select-with-flag">
+          <select id="heating-comparison-country" [value]="selectedCountryCode()"
+            (change)="onCountryChange($any($event.target).value)">
+            @for (country of availableCountries; track country.code) {
+            <option [value]="country.code" [selected]="country.code === selectedCountryCode()">
+              {{ country.nameKey | translate }}
+            </option>
+            }
+          </select>
+        </div>
+      </div>
+    </div>
+
+    <!-- Country Fun Fact -->
+    @if (heatingFact()) {
+    <div class="country-fact">
+      <lucide-icon [img]="LightbulbIcon" size="20" class="fact-icon"></lucide-icon>
+      <div class="fact-content">
+        <div class="fact-label">{{ heatingFact()!.title }}</div>
+        <p class="fact-text">{{ heatingFact()!.message }}</p>
+      </div>
+      <button type="button" class="refresh-btn" (click)="refreshFact()" title="{{ 'CHART.NEW_FACT' | translate }}">
+        ↻
       </button>
-      <label for="import-excel-file" class="action-btn import-btn excel-btn" [class.disabled]="isImporting()"
-        title="{{ 'HEATING.IMPORT_EXCEL' | translate }}">
-        <lucide-icon [img]="FileSpreadsheetIcon" size="16"></lucide-icon>
-        {{ isImporting() ? 'Importing...' : ('HEATING.IMPORT_EXCEL' | translate) }}
-        <input type="file" id="import-excel-file" accept=".xlsx,.xls" (change)="importFromExcel($event)"
-          class="hidden-input" [disabled]="isImporting()">
-      </label>
-      }
+    </div>
+    }
+  </div>
+  }
+
+  <!-- Historical Facts - Total Mode -->
+  @if (displayMode() === 'total' && heatingFact()) {
+  <div class="notification-card notification-card--info">
+    <div class="notification-content">
+      <lucide-icon [img]="LightbulbIcon" size="20" class="notification-icon"></lucide-icon>
+      <div class="notification-text">
+        <strong>{{ heatingFact()!.title }}</strong>
+        <p>{{ heatingFact()!.message }}</p>
+      </div>
     </div>
   </div>
+  }
 
   <app-consumption-chart [data]="chartRecords()" [currentView]="chartView()" [onViewChange]="onChartViewChange"
     [chartType]="'heating'" [displayMode]="displayMode()" [onDisplayModeChange]="onDisplayModeChange">
   </app-consumption-chart>
 
+  <app-detailed-records [records]="records()" [calculateTotalFn]="calculateTotal"
+    [valuesNoteKey]="'HEATING.ALL_VALUES_IN_UNIT'" [sortOptions]="heatingSortOptions"
+    (editRecord)="onEditRecord($event)" (deleteRecord)="onDeleteRecord($event)"
+    (deleteAllRecords)="onDeleteAllRecords($event)">
+    <!-- Import/Export buttons projected into detailed-records -->
+    <div slot="action-buttons" class="action-buttons-group">
+      <button type="button" (click)="exportData()" class="export-btn json-btn"
+        [disabled]="isExporting() || records().length === 0"
+        title="{{ (records().length === 0 ? 'HEATING.EXPORT_DISABLED_TOOLTIP' : 'HEATING.EXPORT') | translate }}">
+        <lucide-icon [img]="DownloadIcon" size="16"></lucide-icon>
+        <span class="btn-text">{{ isExporting() ? 'Exporting...' : ('HEATING.EXPORT' | translate) }}</span>
+      </button>
+      <label for="import-file-heating" class="import-btn json-btn" [class.disabled]="isImporting()"
+        title="{{ 'HEATING.IMPORT' | translate }}">
+        <lucide-icon [img]="UploadIcon" size="16"></lucide-icon>
+        <span class="btn-text">{{ isImporting() ? 'Importing...' : ('HEATING.IMPORT' | translate) }}</span>
+        <input type="file" id="import-file-heating" accept=".json" (change)="importData($event)" class="hidden-input"
+          [disabled]="isImporting()">
+      </label>
 
-  <div class="history-section">
-    <div class="section-header">
-      <h2>{{ 'HOME.DETAILED_RECORDS' | translate }}</h2>
-      <div class="filters-container">
-        <select [ngModel]="sortOption()" (ngModelChange)="setSortOption($event)" title="Sort records">
-          <option value="date-desc">↓ {{ 'HOME.SORT.DATE_DESC' | translate }}</option>
-          <option value="date-asc">↑ {{ 'HOME.SORT.DATE_ASC' | translate }}</option>
-          <option value="total-desc">↓ {{ 'HOME.SORT.TOTAL_DESC' | translate }}</option>
-          <option value="total-asc">↑ {{ 'HOME.SORT.TOTAL_ASC' | translate }}</option>
-          <option value="livingRoom-desc">↓ {{ 'HOME.SORT.LIVING_ROOM_DESC' | translate }}</option>
-          <option value="bedroom-desc">↓ {{ 'HOME.SORT.BEDROOM_DESC' | translate }}</option>
-          <option value="kitchen-desc">↓ {{ 'HOME.SORT.KITCHEN_DESC' | translate }}</option>
-          <option value="bathroom-desc">↓ {{ 'HOME.SORT.BATHROOM_DESC' | translate }}</option>
-        </select>
-      </div>
-    </div>
-    @if (records().length === 0) {
-    <p>{{ 'HOME.NO_RECORDS' | translate }}</p>
-    } @else {
-    <ul>
-      @for (record of displayedRecords(); track record.date) {
-      <li>
-        <div class="record-header">
-          <span class="date">{{ record.date | date:'fullDate' }}</span>
-          <span class="total">{{ 'HOME.TOTAL' | translate }}: {{ calculateTotal(record) }} kWh</span>
-        </div>
-        <div class="record-details">
-          @for (room of roomsService.rooms(); track room.id) {
-          <div class="location">
-            <strong>{{ room.name }}:</strong> {{ getRoomValue(record, room.id) }} kWh
-          </div>
-          }
-        </div>
-      </li>
+      <!-- Excel Export/Import (conditional) -->
+      @if (excelSettings.isEnabled()) {
+      <button type="button" (click)="exportToExcel()" class="export-btn excel-btn"
+        [disabled]="isExporting() || records().length === 0"
+        title="{{ (records().length === 0 ? 'HEATING.EXPORT_DISABLED_TOOLTIP' : 'HEATING.EXPORT_EXCEL') | translate }}">
+        <lucide-icon [img]="FileSpreadsheetIcon" size="16"></lucide-icon>
+        <span class="btn-text">{{ isExporting() ? 'Exporting...' : ('HEATING.EXPORT_EXCEL' | translate) }}</span>
+      </button>
+      <label for="import-excel-file-heating" class="import-btn excel-btn" [class.disabled]="isImporting()"
+        title="{{ 'HEATING.IMPORT_EXCEL' | translate }}">
+        <lucide-icon [img]="FileSpreadsheetIcon" size="16"></lucide-icon>
+        <span class="btn-text">{{ isImporting() ? 'Importing...' : ('HEATING.IMPORT_EXCEL' | translate) }}</span>
+        <input type="file" id="import-excel-file-heating" accept=".xlsx,.xls" (change)="importFromExcel($event)"
+          class="hidden-input" [disabled]="isImporting()">
+      </label>
       }
-    </ul>
-    @if (records().length > 0) {
-    <div class="pagination-container">
-      <div class="pagination-info">
-        <div class="filter-box pagination-size-selector">
-          <label for="pagination-size-heating">{{ 'HOME.PAGINATION_SIZE' | translate }}:</label>
-          <select id="pagination-size-heating" [ngModel]="paginationSize()"
-            (ngModelChange)="onPaginationSizeChange(+$event)">
-            <option [value]="5">5</option>
-            <option [value]="10">10</option>
-            <option [value]="20">20</option>
-            <option [value]="50">50</option>
-          </select>
-        </div>
-        <p class="records-info">{{ showingRecordsText() }}</p>
-        <p class="page-info">{{ pageOfText() }}</p>
-      </div>
-      <div class="pagination-controls">
-        <button type="button" class="pagination-btn" (click)="prevPage()" [disabled]="currentPage() === 1">
-          <lucide-icon [img]="ChevronLeftIcon" size="16"></lucide-icon>
-          {{ 'HOME.PREVIOUS_PAGE' | translate }}
-        </button>
-        <button type="button" class="pagination-btn" (click)="nextPage()" [disabled]="currentPage() >= totalPages()">
-          {{ 'HOME.NEXT_PAGE' | translate }}
-          <lucide-icon [img]="ChevronRightIcon" size="16"></lucide-icon>
-        </button>
-      </div>
     </div>
-    }
-    <app-error-modal [show]="showErrorModal()" [title]="errorTitle()" [message]="errorMessage()"
-      [details]="errorDetails()" [instructions]="errorInstructions()" (cancel)="closeErrorModal()" [type]="errorType()">
-    </app-error-modal>
-    }
-  </div>
+    <!-- Heating-specific record details template -->
+    <ng-template #recordDetails let-record>
+      @for (room of roomsService.rooms(); track room.id) {
+      <div class="room-value">
+        <strong>{{ room.name }}:</strong>
+        <span>{{ record.rooms[room.id] || 0 }} kWh</span>
+      </div>
+      }
+    </ng-template>
+  </app-detailed-records>
+
+  <app-error-modal [show]="showErrorModal()" [title]="errorTitle()" [message]="errorMessage()"
+    [details]="errorDetails()" [instructions]="errorInstructions()" (cancel)="closeErrorModal()" [type]="errorType()">
+  </app-error-modal>
 
   <app-consumption-input [groups]="consumptionGroups()" [selectedDate]="selectedDate()" [maxDate]="maxDate"
     [editingMode]="!!editingRecord()" [dateExists]="dateExists()" [titleKey]="'HEATING.RECORD_CONSUMPTION'"
     [allowPartialGroups]="true" [layoutMode]="'flat'" [helpSteps]="helpSteps"
-    [helpTitleKey]="'HEATING.RECORD_HELP_TITLE'" (dateChange)="selectedDate.set($event)"
+    [helpTitleKey]="'HEATING.RECORD_HELP_TITLE'" [noValuesErrorKey]="'HEATING.NO_VALUES_ERROR'"
+    [incompleteRoomErrorKey]="'HEATING.INCOMPLETE_ROOM_ERROR'" (dateChange)="selectedDate.set($event)"
     (fieldChange)="onFieldChange($event)" (save)="onConsumptionSave($event)" (cancel)="cancelEdit()">
     <button header-actions type="button" class="settings-btn" (click)="openRoomsModal()"
       title="{{ 'HEATING.ROOMS_SETTINGS_TITLE' | translate }}">

@@ -1,7 +1,4 @@
 export const waterFacts = {
-    // Title for the info notification
-    DID_YOU_KNOW: 'Did you know?',
-
     // General facts - {value} will be replaced with calculated number
     FACTS: [
         'Your total consumption could fill {value} bathtubs! 🛁',

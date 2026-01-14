@@ -118,7 +118,7 @@ export class WaterFactsService {
     }
 
     return {
-      title: translations.WATER_FACTS.DID_YOU_KNOW,
+      title: translations.FACTS?.DID_YOU_KNOW || 'Did you know?',
       message
     };
   }

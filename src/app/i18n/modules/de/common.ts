@@ -61,5 +61,8 @@ export const common = {
     GO_TO_TRACKER: 'Zum Tracker',
     GO_TO_SETTINGS: 'Zu Einstellungen',
     DISMISS: 'Schließen'
+  },
+  FACTS: {
+    DID_YOU_KNOW: 'Wussten Sie schon?'
   }
 };

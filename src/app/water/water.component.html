@@ -49,7 +49,7 @@
 
   <app-detailed-records [records]="records()" [defaultSortOption]="'date-desc'" [showSearchDate]="true"
     [showYearMonth]="true" [showEditDelete]="true" [recordType]="'water'" [helpSteps]="recordsHelpSteps"
-    (editRecord)="editRecord($event)" (deleteRecord)="deleteRecord($event)"
+    [calculateTotalFn]="calculateTotal" (editRecord)="editRecord($event)" (deleteRecord)="deleteRecord($event)"
     (deleteAllRecords)="deleteAllRecords($event)" (filteredRecordsChange)="onFilteredRecordsChange($event)"
     (filterStateChange)="onFilterStateChange($event)">
     <!-- Import/Export buttons projected into detailed-records -->

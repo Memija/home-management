@@ -1,6 +1,6 @@
-import { Component, signal, computed, input, output, effect, inject } from '@angular/core';
+import { Component, signal, computed, input, output, effect, inject, ContentChild, TemplateRef } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { DatePipe } from '@angular/common';
+import { DatePipe, NgTemplateOutlet } from '@angular/common';
 import { LucideAngularModule, Pencil, Trash2, Calendar, Info, ChevronDown, ChevronUp, ChevronLeft, ChevronRight, CalendarDays, ArrowUpDown, HelpCircle, RotateCcw } from 'lucide-angular';
 import { TranslatePipe } from '../../pipes/translate.pipe';
 import { DatePickerComponent } from '../date-picker/date-picker.component';
@@ -13,12 +13,25 @@ import { ConsumptionRecord, calculateWaterTotal, calculateKitchenTotal, calculat
 // Re-export for consumers
 export type { ConsumptionRecord } from '../../models/records.model';
 
-export type SortOption = 'date-desc' | 'date-asc' | 'total-desc' | 'total-asc' | 'kitchen-desc' | 'kitchen-asc' | 'bathroom-desc' | 'bathroom-asc';
+// Generic record interface - any record with a date
+export interface GenericRecord {
+  date: Date;
+  [key: string]: any;
+}
+
+// Sort option interface for configurable sorting
+export interface SortOptionConfig {
+  value: string;
+  labelKey: string;
+  direction: '↑' | '↓';
+}
+
+export type SortOption = string; // Now generic string instead of union
 
 @Component({
   selector: 'app-detailed-records',
   standalone: true,
-  imports: [FormsModule, DatePipe, LucideAngularModule, TranslatePipe, DatePickerComponent, HelpModalComponent],
+  imports: [FormsModule, DatePipe, NgTemplateOutlet, LucideAngularModule, TranslatePipe, DatePickerComponent, HelpModalComponent],
   templateUrl: './detailed-records.component.html',
   styleUrl: './detailed-records.component.scss'
 })
@@ -40,8 +53,8 @@ export class DetailedRecordsComponent {
   protected readonly ResetIcon = RotateCcw;
   protected readonly ChevronUpIcon = ChevronUp;
 
-  // Inputs
-  records = input.required<ConsumptionRecord[]>();
+  // Inputs - generic to support any record type with date
+  records = input.required<GenericRecord[]>();
   defaultSortOption = input<SortOption>('date-desc');
   showSearchDate = input<boolean>(true);
   showYearMonth = input<boolean>(true);
@@ -50,11 +63,32 @@ export class DetailedRecordsComponent {
   helpTitleKey = input<string>('HOME.RECORDS_HELP_TITLE');
   helpSteps = input<HelpStep[]>([]);
 
-  // Outputs
-  editRecord = output<ConsumptionRecord>();
-  deleteRecord = output<ConsumptionRecord>();
-  deleteAllRecords = output<ConsumptionRecord[]>();
-  filteredRecordsChange = output<ConsumptionRecord[]>();
+  // Configurable sort options - parent provides these
+  sortOptions = input<SortOptionConfig[]>([
+    { value: 'date-desc', labelKey: 'HOME.SORT.DATE_DESC', direction: '↓' },
+    { value: 'date-asc', labelKey: 'HOME.SORT.DATE_ASC', direction: '↑' },
+    { value: 'total-desc', labelKey: 'HOME.SORT.TOTAL_DESC', direction: '↓' },
+    { value: 'total-asc', labelKey: 'HOME.SORT.TOTAL_ASC', direction: '↑' },
+    { value: 'kitchen-desc', labelKey: 'HOME.SORT.KITCHEN_DESC', direction: '↓' },
+    { value: 'kitchen-asc', labelKey: 'HOME.SORT.KITCHEN_ASC', direction: '↑' },
+    { value: 'bathroom-desc', labelKey: 'HOME.SORT.BATHROOM_DESC', direction: '↓' },
+    { value: 'bathroom-asc', labelKey: 'HOME.SORT.BATHROOM_ASC', direction: '↑' }
+  ]);
+
+  // Callback for calculating total - parent provides record-specific logic
+  calculateTotalFn = input<(record: GenericRecord) => number>(() => 0);
+
+  // Configurable note about values (e.g., "All values in liters" vs "All values in kWh")
+  valuesNoteKey = input<string>('HOME.ALL_VALUES_IN_LITERS');
+
+  // Content projection for record details template
+  @ContentChild('recordDetails') recordDetailsTemplate!: TemplateRef<{ $implicit: GenericRecord }>;
+
+  // Outputs - generic
+  editRecord = output<GenericRecord>();
+  deleteRecord = output<GenericRecord>();
+  deleteAllRecords = output<GenericRecord[]>();
+  filteredRecordsChange = output<GenericRecord[]>();
   filterStateChange = output<{ year: number | null; month: number | null; startDate: string | null; endDate: string | null }>();
 
   // State
@@ -150,29 +184,36 @@ export class DetailedRecordsComponent {
   protected displayedRecords = computed(() => {
     const records = [...this.filteredRecords()];
     const sortOption = this.sortOption();
+    const calculateTotal = this.calculateTotalFn();
 
-    // Sort records
+    // Sort records using generic approach
     records.sort((a, b) => {
-      switch (sortOption) {
-        case 'date-desc':
-          return new Date(b.date).getTime() - new Date(a.date).getTime();
-        case 'date-asc':
-          return new Date(a.date).getTime() - new Date(b.date).getTime();
-        case 'total-desc':
-          return this.calculateTotal(b) - this.calculateTotal(a);
-        case 'total-asc':
-          return this.calculateTotal(a) - this.calculateTotal(b);
-        case 'kitchen-desc':
-          return this.calculateKitchenTotal(b) - this.calculateKitchenTotal(a);
-        case 'kitchen-asc':
-          return this.calculateKitchenTotal(a) - this.calculateKitchenTotal(b);
-        case 'bathroom-desc':
-          return this.calculateBathroomTotal(b) - this.calculateBathroomTotal(a);
-        case 'bathroom-asc':
-          return this.calculateBathroomTotal(a) - this.calculateBathroomTotal(b);
-        default:
-          return 0;
+      if (sortOption === 'date-desc') {
+        return new Date(b.date).getTime() - new Date(a.date).getTime();
       }
+      if (sortOption === 'date-asc') {
+        return new Date(a.date).getTime() - new Date(b.date).getTime();
+      }
+      if (sortOption === 'total-desc') {
+        return calculateTotal(b) - calculateTotal(a);
+      }
+      if (sortOption === 'total-asc') {
+        return calculateTotal(a) - calculateTotal(b);
+      }
+      // For water-specific sorts, fall back to legacy functions if record has required properties
+      if (sortOption === 'kitchen-desc' && 'kitchenWarm' in a) {
+        return calculateKitchenTotal(b as ConsumptionRecord) - calculateKitchenTotal(a as ConsumptionRecord);
+      }
+      if (sortOption === 'kitchen-asc' && 'kitchenWarm' in a) {
+        return calculateKitchenTotal(a as ConsumptionRecord) - calculateKitchenTotal(b as ConsumptionRecord);
+      }
+      if (sortOption === 'bathroom-desc' && 'bathroomWarm' in a) {
+        return calculateBathroomTotal(b as ConsumptionRecord) - calculateBathroomTotal(a as ConsumptionRecord);
+      }
+      if (sortOption === 'bathroom-asc' && 'bathroomWarm' in a) {
+        return calculateBathroomTotal(a as ConsumptionRecord) - calculateBathroomTotal(b as ConsumptionRecord);
+      }
+      return 0;
     });
 
     // Limit records based on current page and pagination size
@@ -320,11 +361,11 @@ export class DetailedRecordsComponent {
   }
 
   // Event emitters
-  protected onEditRecord(record: ConsumptionRecord) {
+  protected onEditRecord(record: GenericRecord) {
     this.editRecord.emit(record);
   }
 
-  protected onDeleteRecord(record: ConsumptionRecord) {
+  protected onDeleteRecord(record: GenericRecord) {
     this.deleteRecord.emit(record);
   }
 

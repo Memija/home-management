@@ -31,24 +31,6 @@
       align-items: center;
       gap: 0.5rem;
     }
-
-    .help-btn {
-      background: transparent;
-      border: none;
-      color: var(--text-secondary);
-      cursor: pointer;
-      padding: 0.25rem;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      border-radius: 50%;
-      transition: color 0.2s, background-color 0.2s;
-
-      &:hover {
-        color: $primary;
-        background-color: rgba($primary, 0.1);
-      }
-    }
   }
 
   .date-selection {

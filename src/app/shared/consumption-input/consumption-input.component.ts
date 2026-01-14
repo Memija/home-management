@@ -57,6 +57,9 @@ export class ConsumptionInputComponent {
   allowPartialGroups = input<boolean>(false);
   // Layout mode: 'grouped' = show group containers (water), 'flat' = room cards in grid (heating)
   layoutMode = input<'grouped' | 'flat'>('grouped');
+  // Configurable error message keys for validation
+  noValuesErrorKey = input<string>('HOME.PARTIAL_INPUT_ERROR');
+  incompleteRoomErrorKey = input<string>('HOME.INCOMPLETE_ROOM_ERROR');
 
   // State
   protected errorMessage = signal<string | null>(null);
@@ -146,20 +149,20 @@ export class ConsumptionInputComponent {
     // In partial groups mode (heating), allow saving if at least one field has a value
     if (this.allowPartialGroups()) {
       if (!hasAnyValues) {
-        this.errorMessage.set('HOME.PARTIAL_INPUT_ERROR');
+        this.errorMessage.set(this.noValuesErrorKey());
         return;
       }
     } else {
       // Standard mode (water): require complete groups
       if (hasPartialGroups) {
         // User started a room but didn't complete it
-        this.errorMessage.set('HOME.INCOMPLETE_ROOM_ERROR');
+        this.errorMessage.set(this.incompleteRoomErrorKey());
         return;
       }
 
       if (!hasCompleteGroups) {
         // No room has any data
-        this.errorMessage.set('HOME.PARTIAL_INPUT_ERROR');
+        this.errorMessage.set(this.noValuesErrorKey());
         return;
       }
     }

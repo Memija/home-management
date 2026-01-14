@@ -1,7 +1,6 @@
 import { Component, signal, computed, inject, ChangeDetectionStrategy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { RouterLink } from '@angular/router';
 import { TranslatePipe } from '../pipes/translate.pipe';
 import { STORAGE_SERVICE } from '../services/storage.service';
 import { FileStorageService } from '../services/file-storage.service';
@@ -10,15 +9,18 @@ import { ExcelService } from '../services/excel.service';
 import { ExcelSettingsService } from '../services/excel-settings.service';
 import { HeatingFormService } from '../services/heating-form.service';
 import { HeatingRoomsService, HeatingRoomConfig } from '../services/heating-rooms.service';
-import { LucideAngularModule, ArrowLeft, ChevronDown, ChevronLeft, ChevronRight, Download, Upload, FileSpreadsheet, Settings, CheckCircle, Armchair, Bed, Bath, CookingPot, Baby, Briefcase, DoorOpen, UtensilsCrossed, Home } from 'lucide-angular';
+import { LucideAngularModule, ArrowLeft, ChevronDown, ChevronLeft, ChevronRight, Download, Upload, FileSpreadsheet, Settings, CheckCircle, Armchair, Bed, Bath, CookingPot, Baby, Briefcase, DoorOpen, UtensilsCrossed, Home, Lightbulb, Info } from 'lucide-angular';
 import { ConsumptionChartComponent, type ChartView, type DisplayMode } from '../shared/consumption-chart/consumption-chart.component';
 import { ConsumptionInputComponent, type ConsumptionData, type ConsumptionGroup } from '../shared/consumption-input/consumption-input.component';
 import { ErrorModalComponent } from '../shared/error-modal/error-modal.component';
 import { ConfirmationModalComponent } from '../shared/confirmation-modal/confirmation-modal.component';
 import { HeatingRoomsModalComponent } from '../shared/heating-rooms-modal/heating-rooms-modal.component';
+import { DetailedRecordsComponent, SortOptionConfig } from '../shared/detailed-records/detailed-records.component';
 import { ImportValidationService } from '../services/import-validation.service';
 import { DynamicHeatingRecord, HeatingRecord, calculateDynamicHeatingTotal, filterZeroPlaceholders, isDynamicHeatingRecordAllZero, isHeatingRecordAllZero, toHeatingRecord, toDynamicHeatingRecord } from '../models/records.model';
 import { NotificationService } from '../services/notification.service';
+import { HeatingFactsService } from '../services/heating-facts.service';
+import { HouseholdService } from '../services/household.service';
 import { HEATING_RECORD_HELP_STEPS } from './heating.constants';
 
 const ROOM_TYPE_ICONS: Record<string, any> = {
@@ -37,7 +39,7 @@ const ROOM_TYPE_ICONS: Record<string, any> = {
 @Component({
   selector: 'app-heating',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterLink, TranslatePipe, LucideAngularModule, ConsumptionChartComponent, ConsumptionInputComponent, ErrorModalComponent, ConfirmationModalComponent, HeatingRoomsModalComponent],
+  imports: [CommonModule, FormsModule, TranslatePipe, LucideAngularModule, ConsumptionChartComponent, ConsumptionInputComponent, ErrorModalComponent, ConfirmationModalComponent, HeatingRoomsModalComponent, DetailedRecordsComponent],
   templateUrl: './heating.component.html',
   styleUrl: './heating.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush
@@ -52,6 +54,8 @@ export class HeatingComponent {
   private notificationService = inject(NotificationService);
   protected formService = inject(HeatingFormService);
   protected roomsService = inject(HeatingRoomsService);
+  private heatingFactsService = inject(HeatingFactsService);
+  private householdService = inject(HouseholdService);
 
   protected readonly ArrowLeftIcon = ArrowLeft;
   protected readonly ChevronDownIcon = ChevronDown;
@@ -62,9 +66,78 @@ export class HeatingComponent {
   protected readonly FileSpreadsheetIcon = FileSpreadsheet;
   protected readonly SettingsIcon = Settings;
   protected readonly CheckCircleIcon = CheckCircle;
+  protected readonly LightbulbIcon = Lightbulb;
+  protected readonly InfoIcon = Info;
+
+  // Available countries for heating facts - from service
+  protected readonly availableCountries = this.heatingFactsService.getAvailableCountries();
+
+  // Selected country for facts
+  protected selectedCountryCode = signal('DE');
+
+  // Get selected country name
+  protected selectedCountryName = computed(() => {
+    const code = this.selectedCountryCode();
+    const country = this.availableCountries.find(c => c.code === code);
+    return country ? this.languageService.translate(country.nameKey) : code;
+  });
+
+  protected onCountryChange(code: string): void {
+    this.selectedCountryCode.set(code);
+    this.refreshFact();
+  }
 
   // Help Steps for recording form
   protected readonly helpSteps = HEATING_RECORD_HELP_STEPS;
+
+  // Sort options for detailed records component
+  protected readonly heatingSortOptions: SortOptionConfig[] = [
+    { value: 'date-desc', labelKey: 'HOME.SORT.DATE_DESC', direction: '↓' },
+    { value: 'date-asc', labelKey: 'HOME.SORT.DATE_ASC', direction: '↑' },
+    { value: 'total-desc', labelKey: 'HOME.SORT.TOTAL_DESC', direction: '↓' },
+    { value: 'total-asc', labelKey: 'HOME.SORT.TOTAL_ASC', direction: '↑' }
+  ];
+
+  // Calculate total callback for detailed records - arrow function to maintain 'this' context
+  protected readonly calculateTotal = (record: any): number => {
+    return calculateDynamicHeatingTotal(record as DynamicHeatingRecord);
+  };
+
+  // Random seed for heating facts - changes when chart view changes
+  private factRandomSeed = signal(Math.random());
+
+  // Heating fun fact - changes based on display mode
+  protected heatingFact = computed(() => {
+    const records = this.chartRecords();
+    const mode = this.displayMode();
+    const seed = this.factRandomSeed();
+
+    // For incremental/country mode, use selected country from dropdown
+    // For total mode, the country doesn't matter (historical facts)
+    const countryCode = mode === 'total' ? 'GENERAL' : this.selectedCountryCode();
+
+    if (records.length === 0) {
+      return null;
+    }
+
+    // Calculate random index from seed
+    const factIndex = Math.floor(seed * 15);
+
+    // Total mode = historical facts, Incremental = country facts
+    const factMode = mode === 'total' ? 'historical' : 'country';
+
+    return this.heatingFactsService.getFactByIndex(
+      0, // kWh not needed currently
+      factIndex,
+      factMode,
+      countryCode
+    );
+  });
+
+  // Refresh the displayed fact
+  protected refreshFact(): void {
+    this.factRandomSeed.set(Math.random());
+  }
 
   protected isExporting = signal(false);
   protected isImporting = signal(false);
@@ -164,15 +237,29 @@ export class HeatingComponent {
 
   private guessLegacyIcon(name: string): any {
     const lower = name.toLowerCase();
-    if (lower.includes('living') || lower.includes('wohn')) return Armchair;
-    if (lower.includes('bed') || lower.includes('schlaf')) return Bed;
-    if (lower.includes('bath') || lower.includes('bad')) return Bath;
-    if (lower.includes('kitchen') || lower.includes('küche') || lower.includes('kuche')) return CookingPot;
-    if (lower.includes('kid') || lower.includes('child') || lower.includes('kinder')) return Baby;
-    if (lower.includes('office') || lower.includes('büro') || lower.includes('buero')) return Briefcase;
-    if (lower.includes('guest') || lower.includes('gast') || lower.includes('gäste')) return DoorOpen;
-    if (lower.includes('dining') || lower.includes('ess')) return UtensilsCrossed;
-    if (lower.includes('hall') || lower.includes('flur') || lower.includes('entrance')) return DoorOpen;
+
+    // Pattern mapping: translation key -> icon
+    const patternMapping: Array<{ patternKey: string; icon: any }> = [
+      { patternKey: 'HEATING.ROOM_PATTERNS_LIVING', icon: Armchair },
+      { patternKey: 'HEATING.ROOM_PATTERNS_BEDROOM', icon: Bed },
+      { patternKey: 'HEATING.ROOM_PATTERNS_BATHROOM', icon: Bath },
+      { patternKey: 'HEATING.ROOM_PATTERNS_KITCHEN', icon: CookingPot },
+      { patternKey: 'HEATING.ROOM_PATTERNS_KIDS', icon: Baby },
+      { patternKey: 'HEATING.ROOM_PATTERNS_OFFICE', icon: Briefcase },
+      { patternKey: 'HEATING.ROOM_PATTERNS_GUEST', icon: DoorOpen },
+      { patternKey: 'HEATING.ROOM_PATTERNS_DINING', icon: UtensilsCrossed },
+      { patternKey: 'HEATING.ROOM_PATTERNS_HALLWAY', icon: DoorOpen }
+    ];
+
+    for (const { patternKey, icon } of patternMapping) {
+      const patternsString = this.languageService.translate(patternKey);
+      // Split comma-separated patterns and check if any match
+      const patterns = patternsString.split(',').map(p => p.trim().toLowerCase());
+      if (patterns.some(pattern => pattern && lower.includes(pattern))) {
+        return icon;
+      }
+    }
+
     return Home;
   }
 
@@ -422,9 +509,7 @@ export class HeatingComponent {
     this.showErrorModal.set(false);
   }
 
-  protected calculateTotal(record: DynamicHeatingRecord): number {
-    return calculateDynamicHeatingTotal(record);
-  }
+
 
   protected nextPage() {
     if (this.currentPage() < this.totalPages()) {
@@ -470,5 +555,26 @@ export class HeatingComponent {
 
   protected onRoomsCancel() {
     this.showRoomsModal.set(false);
+  }
+
+  // Record event handlers from DetailedRecordsComponent
+  protected onEditRecord(record: any) {
+    this.formService.startEdit(record as DynamicHeatingRecord);
+    // Scroll to the form section
+    const formSection = document.querySelector('app-consumption-input');
+    formSection?.scrollIntoView({ behavior: 'smooth' });
+  }
+
+  protected onDeleteRecord(record: any) {
+    this.records.update(records => records.filter(r => r.date.getTime() !== record.date.getTime()));
+    this.storage.save('heating_consumption_records', this.records());
+    this.notificationService.setHeatingRecords(this.records());
+  }
+
+  protected onDeleteAllRecords(recordsToDelete: any[]) {
+    const datesToDelete = new Set(recordsToDelete.map((r: any) => r.date.getTime()));
+    this.records.update(records => records.filter(r => !datesToDelete.has(r.date.getTime())));
+    this.storage.save('heating_consumption_records', this.records());
+    this.notificationService.setHeatingRecords(this.records());
   }
 }

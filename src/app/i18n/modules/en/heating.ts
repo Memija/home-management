@@ -6,6 +6,9 @@ export const heating = {
     IMPORT: 'Import Data',
     EXPORT_EXCEL: 'Export to Excel',
     IMPORT_EXCEL: 'Import from Excel',
+    EXPORT_DISABLED_TOOLTIP: 'No records to export',
+    ENERGY_FACTS_FOR: 'Energy facts for {{country}}',
+    SELECT_COUNTRY_INFO: 'Select a country to see energy and heating facts specific to that region',
     EXCEL_IMPORT_SUCCESS: 'Excel data imported successfully!',
     EXCEL_IMPORT_ERROR_TITLE: 'Excel Import Failed',
     EXCEL_IMPORT_ERROR: 'Failed to import Excel data. Please check the details below and follow the instructions to fix the issue.',
@@ -57,6 +60,19 @@ export const heating = {
     RECORD_HELP_STEP_4_TITLE: 'Save Your Record',
     RECORD_HELP_STEP_4_DESC: 'Click "Save" to store your heating consumption data. The record will appear in the history section above.',
     RECORD_HELP_STEP_5_TITLE: 'Locked Rooms',
-    RECORD_HELP_STEP_5_DESC: 'Rooms are locked when they have data associated with them to prevent accidental changes. You can unlock them in settings (⚙️) if needed, but it is advised to keep them locked to maintain data integrity.'
+    RECORD_HELP_STEP_5_DESC: 'Rooms are locked when they have data associated with them to prevent accidental changes. You can unlock them in settings (⚙️) if needed, but it is advised to keep them locked to maintain data integrity.',
+    ALL_VALUES_IN_UNIT: 'All values are in kWh',
+    NO_VALUES_ERROR: 'Please enter a value for at least one room.',
+    INCOMPLETE_ROOM_ERROR: 'Please complete all started rooms.',
+    // Room name patterns for icon matching (comma-separated keywords)
+    ROOM_PATTERNS_LIVING: 'living,lounge',
+    ROOM_PATTERNS_BEDROOM: 'bed,sleep',
+    ROOM_PATTERNS_BATHROOM: 'bath,shower,toilet,wc',
+    ROOM_PATTERNS_KITCHEN: 'kitchen,cook',
+    ROOM_PATTERNS_KIDS: 'kid,child,nursery,playroom',
+    ROOM_PATTERNS_OFFICE: 'office,study,work,desk',
+    ROOM_PATTERNS_GUEST: 'guest,spare',
+    ROOM_PATTERNS_DINING: 'dining,eat',
+    ROOM_PATTERNS_HALLWAY: 'hall,entrance,corridor,foyer'
   }
 };

@@ -67,14 +67,9 @@
           <lucide-icon [img]="ArrowUpDownIcon" size="16"></lucide-icon>
           <select id="sort-records" name="sort-records" [ngModel]="sortOption()" (ngModelChange)="setSortOption($event)"
             aria-label="Sort records">
-            <option value="date-desc">↓ {{ 'HOME.SORT.DATE_DESC' | translate }}</option>
-            <option value="date-asc">↑ {{ 'HOME.SORT.DATE_ASC' | translate }}</option>
-            <option value="total-desc">↓ {{ 'HOME.SORT.TOTAL_DESC' | translate }}</option>
-            <option value="total-asc">↑ {{ 'HOME.SORT.TOTAL_ASC' | translate }}</option>
-            <option value="kitchen-desc">↓ {{ 'HOME.SORT.KITCHEN_DESC' | translate }}</option>
-            <option value="kitchen-asc">↑ {{ 'HOME.SORT.KITCHEN_ASC' | translate }}</option>
-            <option value="bathroom-desc">↓ {{ 'HOME.SORT.BATHROOM_DESC' | translate }}</option>
-            <option value="bathroom-asc">↑ {{ 'HOME.SORT.BATHROOM_ASC' | translate }}</option>
+            @for (option of sortOptions(); track option.value) {
+            <option [value]="option.value">{{ option.direction }} {{ option.labelKey | translate }}</option>
+            }
           </select>
         </div>
       </div>
@@ -101,7 +96,7 @@
   <div class="liters-note-container">
     <p class="liters-note">
       <lucide-icon [img]="InfoIcon" size="14"></lucide-icon>
-      {{ 'HOME.ALL_VALUES_IN_LITERS' | translate }}
+      {{ valuesNoteKey() | translate }}
     </p>
     <button type="button" class="collapse-toggle" (click)="isCollapsed.set(!isCollapsed())"
       title="{{ (isCollapsed() ? 'HOME.EXPAND' : 'HOME.COLLAPSE') | translate }}">
@@ -114,7 +109,7 @@
         <div class="record-header">
           <span class="date">{{ record.date | date:'fullDate':undefined:currentLang() }}</span>
           <div class="record-actions">
-            <span class="total">{{ 'HOME.TOTAL' | translate }}: {{ calculateTotal(record) }}</span>
+            <span class="total">{{ 'HOME.TOTAL' | translate }}: {{ calculateTotalFn()(record) }}</span>
             @if (showEditDelete()) {
             <button type="button" class="edit-btn" (click)="onEditRecord(record)"
               title="{{ 'HOME.EDIT_TOOLTIP' | translate }}">
@@ -128,25 +123,29 @@
           </div>
         </div>
         <div class="record-details">
+          @if (recordDetailsTemplate) {
+          <ng-container *ngTemplateOutlet="recordDetailsTemplate; context: { $implicit: record }"></ng-container>
+          } @else {
           <div class="consumption-row">
             <strong>{{ 'HOME.KITCHEN' | translate }}:</strong>
-            <span class="warm-water">{{ 'HOME.WARM_WATER' | translate }}: {{ record.kitchenWarm }}</span>
-            <span class="cold-water">{{ 'HOME.COLD_WATER' | translate }}: {{ record.kitchenCold }}</span>
+            <span class="warm-water">{{ 'HOME.WARM_WATER' | translate }}: {{ record['kitchenWarm'] }}</span>
+            <span class="cold-water">{{ 'HOME.COLD_WATER' | translate }}: {{ record['kitchenCold'] }}</span>
           </div>
           <div class="consumption-row">
             <strong>{{ 'HOME.BATHROOM' | translate }}:</strong>
-            <span class="warm-water">{{ 'HOME.WARM_WATER' | translate }}: {{ record.bathroomWarm }}</span>
-            <span class="cold-water">{{ 'HOME.COLD_WATER' | translate }}: {{ record.bathroomCold }}</span>
+            <span class="warm-water">{{ 'HOME.WARM_WATER' | translate }}: {{ record['bathroomWarm'] }}</span>
+            <span class="cold-water">{{ 'HOME.COLD_WATER' | translate }}: {{ record['bathroomCold'] }}</span>
           </div>
           <div class="consumption-row combined-totals">
             <span></span>
-            <span class="warm-water">{{ 'HOME.WARM_WATER' | translate }}: {{ record.kitchenWarm +
-              record.bathroomWarm
+            <span class="warm-water">{{ 'HOME.WARM_WATER' | translate }}: {{ record['kitchenWarm'] +
+              record['bathroomWarm']
               }}</span>
-            <span class="cold-water">{{ 'HOME.COLD_WATER' | translate }}: {{ record.kitchenCold +
-              record.bathroomCold
+            <span class="cold-water">{{ 'HOME.COLD_WATER' | translate }}: {{ record['kitchenCold'] +
+              record['bathroomCold']
               }}</span>
           </div>
+          }
         </div>
       </li>
       }

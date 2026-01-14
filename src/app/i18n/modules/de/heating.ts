@@ -6,6 +6,9 @@ export const heating = {
     IMPORT: 'Daten importieren',
     EXPORT_EXCEL: 'In Excel exportieren',
     IMPORT_EXCEL: 'Aus Excel importieren',
+    EXPORT_DISABLED_TOOLTIP: 'Keine Datensätze zum Exportieren',
+    ENERGY_FACTS_FOR: 'Energiefakten für {{country}}',
+    SELECT_COUNTRY_INFO: 'Wählen Sie ein Land aus, um energie- und heizungsspezifische Fakten für diese Region zu sehen',
     EXCEL_IMPORT_SUCCESS: 'Excel-Daten erfolgreich importiert!',
     EXCEL_IMPORT_ERROR_TITLE: 'Excel-Import fehlgeschlagen',
     EXCEL_IMPORT_ERROR: 'Excel-Daten konnten nicht importiert werden. Bitte überprüfen Sie die Details unten und befolgen Sie die Anweisungen zur Behebung des Problems.',
@@ -57,6 +60,19 @@ export const heating = {
     RECORD_HELP_STEP_4_TITLE: 'Eintrag speichern',
     RECORD_HELP_STEP_4_DESC: 'Klicken Sie auf "Speichern", um Ihre Heizungsverbrauchsdaten zu speichern. Der Eintrag erscheint im Verlaufsbereich oben.',
     RECORD_HELP_STEP_5_TITLE: 'Gesperrte Räume',
-    RECORD_HELP_STEP_5_DESC: 'Räume werden gesperrt, wenn ihnen Daten zugeordnet sind, um versehentliche Änderungen zu verhindern. Sie können in den Einstellungen (⚙️) entsperrt werden, es wird jedoch empfohlen, sie gesperrt zu lassen, um die Datenintegrität zu wahren.'
+    RECORD_HELP_STEP_5_DESC: 'Räume werden gesperrt, wenn ihnen Daten zugeordnet sind, um versehentliche Änderungen zu verhindern. Sie können in den Einstellungen (⚙️) entsperrt werden, es wird jedoch empfohlen, sie gesperrt zu lassen, um die Datenintegrität zu wahren.',
+    ALL_VALUES_IN_UNIT: 'Alle Werte sind in kWh',
+    NO_VALUES_ERROR: 'Bitte geben Sie einen Wert für mindestens einen Raum ein.',
+    INCOMPLETE_ROOM_ERROR: 'Bitte vervollständigen Sie alle begonnenen Räume.',
+    // Room name patterns for icon matching (comma-separated keywords)
+    ROOM_PATTERNS_LIVING: 'wohn,wohnzimmer',
+    ROOM_PATTERNS_BEDROOM: 'schlaf,schlafzimmer,bett',
+    ROOM_PATTERNS_BATHROOM: 'bad,badezimmer,dusche,toilette,wc',
+    ROOM_PATTERNS_KITCHEN: 'küche,kuche,kueche,koch',
+    ROOM_PATTERNS_KIDS: 'kind,kinder,kinderzimmer,spielzimmer',
+    ROOM_PATTERNS_OFFICE: 'büro,buero,arbeit,arbeitszimmer',
+    ROOM_PATTERNS_GUEST: 'gast,gäste,gaeste,gästezimmer',
+    ROOM_PATTERNS_DINING: 'ess,esszimmer,speise',
+    ROOM_PATTERNS_HALLWAY: 'flur,eingang,diele,korridor'
   }
 };

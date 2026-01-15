@@ -7,44 +7,9 @@
 
   <!-- Country Energy Facts - Incremental Mode -->
   @if (displayMode() === 'incremental') {
-  <div class="comparison-note">
-    <div class="comparison-content">
-      <p>{{ 'HEATING.ENERGY_FACTS_FOR' | translate:{ country: selectedCountryName() } }}</p>
-      <div class="country-selector">
-        <label for="heating-comparison-country">
-          <span class="info-tooltip-container">
-            <lucide-icon [img]="InfoIcon" size="14" class="info-icon"></lucide-icon>
-            <span class="info-tooltip">{{ 'HEATING.SELECT_COUNTRY_INFO' | translate }}</span>
-          </span>
-          {{ 'CHART.COMPARE_WITH' | translate }}:
-        </label>
-        <div class="select-with-flag">
-          <select id="heating-comparison-country" [value]="selectedCountryCode()"
-            (change)="onCountryChange($any($event.target).value)">
-            @for (country of availableCountries; track country.code) {
-            <option [value]="country.code" [selected]="country.code === selectedCountryCode()">
-              {{ country.nameKey | translate }}
-            </option>
-            }
-          </select>
-        </div>
-      </div>
-    </div>
-
-    <!-- Country Fun Fact -->
-    @if (heatingFact()) {
-    <div class="country-fact">
-      <lucide-icon [img]="LightbulbIcon" size="20" class="fact-icon"></lucide-icon>
-      <div class="fact-content">
-        <div class="fact-label">{{ heatingFact()!.title }}</div>
-        <p class="fact-text">{{ heatingFact()!.message }}</p>
-      </div>
-      <button type="button" class="refresh-btn" (click)="refreshFact()" title="{{ 'CHART.NEW_FACT' | translate }}">
-        ↻
-      </button>
-    </div>
-    }
-  </div>
+  <app-comparison-note [type]="'heating'" [records]="chartRecords()" [chartView]="chartView()"
+    [heatingCountries]="availableCountries" (countryCodeChange)="onCountryChange($event)">
+  </app-comparison-note>
   }
 
   <!-- Historical Facts - Total Mode -->

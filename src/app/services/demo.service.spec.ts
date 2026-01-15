@@ -4,10 +4,21 @@ import { LocalStorageService } from './local-storage.service';
 import { PLATFORM_ID } from '@angular/core';
 import { describe, it, expect, beforeEach, vi, afterEach } from 'vitest';
 
+// Typed mock interface for better type safety
+interface MockLocalStorageService {
+  exportAll: ReturnType<typeof vi.fn>;
+  save: ReturnType<typeof vi.fn>;
+  delete: ReturnType<typeof vi.fn>;
+  importAll: ReturnType<typeof vi.fn>;
+  getPreference: ReturnType<typeof vi.fn>;
+  setPreference: ReturnType<typeof vi.fn>;
+  removePreference: ReturnType<typeof vi.fn>;
+}
+
 describe('DemoService', () => {
   let service: DemoService;
-  let mockLocalStorageService: any;
-  let originalFetch: any;
+  let mockLocalStorageService: MockLocalStorageService;
+  let originalFetch: typeof window.fetch;
   let originalLocation: any;
   let mockPlatformId: Object;
 
@@ -50,6 +61,9 @@ describe('DemoService', () => {
       ]
     });
     service = TestBed.inject(DemoService);
+
+    // Ensure isDemoMode starts false to prevent test pollution
+    (service.isDemoMode as any).set(false);
   });
 
   afterEach(() => {
@@ -82,20 +96,20 @@ describe('DemoService', () => {
     });
 
     it('should NOT check demo mode if not browser', () => {
-        TestBed.resetTestingModule();
-        TestBed.configureTestingModule({
-          providers: [
-            DemoService,
-            { provide: LocalStorageService, useValue: mockLocalStorageService },
-            { provide: PLATFORM_ID, useValue: 'server' }
-          ]
-        });
-        const newService = TestBed.inject(DemoService);
-
-        expect(newService.isDemoMode()).toBe(false);
-        // Can't easily check if localStorage was NOT accessed because it's global,
-        // but the code branch shouldn't run.
+      TestBed.resetTestingModule();
+      TestBed.configureTestingModule({
+        providers: [
+          DemoService,
+          { provide: LocalStorageService, useValue: mockLocalStorageService },
+          { provide: PLATFORM_ID, useValue: 'server' }
+        ]
       });
+      const newService = TestBed.inject(DemoService);
+
+      expect(newService.isDemoMode()).toBe(false);
+      // Can't easily check if localStorage was NOT accessed because it's global,
+      // but the code branch shouldn't run.
+    });
   });
 
   describe('activateDemo', () => {
@@ -116,65 +130,179 @@ describe('DemoService', () => {
     });
 
     it('should not activate if already in demo mode', async () => {
-        // Set demo mode true
-        (service.isDemoMode as any).set(true);
+      (service.isDemoMode as any).set(true);
 
-        await service.activateDemo();
+      await service.activateDemo();
 
-        expect(mockLocalStorageService.exportAll).not.toHaveBeenCalled();
+      expect(mockLocalStorageService.exportAll).not.toHaveBeenCalled();
     });
 
     it('should handle errors and restore backup', async () => {
-        // Ensure not in demo mode
-        (service.isDemoMode as any).set(false);
+      mockLocalStorageService.exportAll.mockResolvedValue({ 'backup': true });
+      vi.mocked(window.fetch).mockResolvedValue({
+        ok: true,
+        json: () => Promise.resolve(['data'])
+      } as any);
+      mockLocalStorageService.save.mockRejectedValue(new Error('Storage full'));
 
-        // Ensure exportAll returns data
-        mockLocalStorageService.exportAll.mockResolvedValue({ 'backup': true });
+      await service.activateDemo();
 
-        // Ensure fetch works
-        vi.mocked(window.fetch).mockResolvedValue({
-            ok: true,
-            json: () => Promise.resolve(['data'])
-        } as any);
+      expect(mockLocalStorageService.exportAll).toHaveBeenCalled();
+      expect(mockLocalStorageService.save).toHaveBeenCalled();
+      expect(mockLocalStorageService.importAll).toHaveBeenCalledWith({ 'backup': true });
+    });
 
-        // Make storage.save fail
-        mockLocalStorageService.save.mockRejectedValue(new Error('Storage full'));
+    it('should set isLoading to true during activation and false after', async () => {
+      let loadingDuringExecution = false;
+      mockLocalStorageService.exportAll.mockImplementation(async () => {
+        loadingDuringExecution = service.isLoading();
+        return {};
+      });
 
-        await service.activateDemo();
+      await service.activateDemo();
 
-        expect(mockLocalStorageService.exportAll).toHaveBeenCalled();
-        expect(mockLocalStorageService.save).toHaveBeenCalled();
-        expect(mockLocalStorageService.importAll).toHaveBeenCalledWith({ 'backup': true });
+      expect(loadingDuringExecution).toBe(true);
+      expect(service.isLoading()).toBe(false);
+    });
+
+    it('should not activate if not in browser', async () => {
+      TestBed.resetTestingModule();
+      TestBed.configureTestingModule({
+        providers: [
+          DemoService,
+          { provide: LocalStorageService, useValue: mockLocalStorageService },
+          { provide: PLATFORM_ID, useValue: 'server' }
+        ]
+      });
+      const serverService = TestBed.inject(DemoService);
+
+      await serverService.activateDemo();
+
+      expect(mockLocalStorageService.exportAll).not.toHaveBeenCalled();
+    });
+
+    it('should handle fetch failure gracefully and still activate with empty data', async () => {
+      mockLocalStorageService.exportAll.mockResolvedValue({ 'backup': true });
+      // fetchJson catches errors and returns null, so activation still proceeds
+      vi.mocked(window.fetch).mockResolvedValue({
+        ok: false,
+        status: 404,
+        json: () => Promise.reject(new Error('Not found'))
+      } as any);
+
+      await service.activateDemo();
+
+      // Demo should still activate with empty/null data
+      expect(service.isDemoMode()).toBe(true);
+      expect(localStorage.setItem).toHaveBeenCalledWith('hm_demo_mode_is_active', 'true');
+      expect(service.isLoading()).toBe(false);
     });
   });
 
   describe('deactivateDemo', () => {
-      beforeEach(() => {
-          (service.isDemoMode as any).set(true);
+    beforeEach(() => {
+      (service.isDemoMode as any).set(true);
+    });
+
+    it('should clear demo data, restore user data, and reload', async () => {
+      vi.mocked(localStorage.getItem).mockImplementation((key) => {
+        if (key === 'hm_user_backup') return JSON.stringify({ storage: { k: 'v' }, preferences: { p: 'v' } });
+        return null;
       });
 
-      it('should clear demo data, restore user data, and reload', async () => {
-          vi.mocked(localStorage.getItem).mockImplementation((key) => {
-              if (key === 'hm_user_backup') return JSON.stringify({ storage: { k: 'v' }, preferences: { p: 'v' } });
-              return null;
-          });
+      await service.deactivateDemo();
 
-          await service.deactivateDemo();
+      expect(mockLocalStorageService.delete).toHaveBeenCalled();
+      expect(mockLocalStorageService.removePreference).toHaveBeenCalled();
+      expect(mockLocalStorageService.importAll).toHaveBeenCalledWith({ k: 'v' });
+      expect(mockLocalStorageService.setPreference).toHaveBeenCalledWith('p', 'v');
+      expect(localStorage.removeItem).toHaveBeenCalledWith('hm_user_backup');
+      expect(localStorage.removeItem).toHaveBeenCalledWith('hm_demo_mode_is_active');
+      expect(window.location.reload).toHaveBeenCalled();
+      expect(service.isDemoMode()).toBe(false);
+    });
 
-          expect(mockLocalStorageService.delete).toHaveBeenCalled();
-          expect(mockLocalStorageService.removePreference).toHaveBeenCalled();
-          expect(mockLocalStorageService.importAll).toHaveBeenCalledWith({ k: 'v' });
-          expect(mockLocalStorageService.setPreference).toHaveBeenCalledWith('p', 'v');
-          expect(localStorage.removeItem).toHaveBeenCalledWith('hm_user_backup');
-          expect(localStorage.removeItem).toHaveBeenCalledWith('hm_demo_mode_is_active');
-          expect(window.location.reload).toHaveBeenCalled();
-          expect(service.isDemoMode()).toBe(false);
+    it('should not deactivate if not in demo mode', async () => {
+      (service.isDemoMode as any).set(false);
+      await service.deactivateDemo();
+      expect(mockLocalStorageService.delete).not.toHaveBeenCalled();
+    });
+
+    it('should set isLoading during deactivation and reset after', async () => {
+      let loadingDuringExecution = false;
+      mockLocalStorageService.delete.mockImplementation(async () => {
+        loadingDuringExecution = service.isLoading();
+      });
+      vi.mocked(localStorage.getItem).mockReturnValue(null);
+
+      await service.deactivateDemo();
+
+      expect(loadingDuringExecution).toBe(true);
+      expect(service.isLoading()).toBe(false);
+    });
+
+    it('should not deactivate if not in browser', async () => {
+      TestBed.resetTestingModule();
+      TestBed.configureTestingModule({
+        providers: [
+          DemoService,
+          { provide: LocalStorageService, useValue: mockLocalStorageService },
+          { provide: PLATFORM_ID, useValue: 'server' }
+        ]
+      });
+      const serverService = TestBed.inject(DemoService);
+      (serverService.isDemoMode as any).set(true);
+
+      await serverService.deactivateDemo();
+
+      expect(mockLocalStorageService.delete).not.toHaveBeenCalled();
+    });
+
+    it('should handle corrupted backup JSON gracefully', async () => {
+      vi.mocked(localStorage.getItem).mockImplementation((key) => {
+        if (key === 'hm_user_backup') return 'invalid json{{{';
+        return null;
       });
 
-      it('should not deactivate if not in demo mode', async () => {
-          (service.isDemoMode as any).set(false);
-          await service.deactivateDemo();
-          expect(mockLocalStorageService.delete).not.toHaveBeenCalled();
+      await service.deactivateDemo();
+
+      // Should not throw, should still cleanup
+      expect(localStorage.removeItem).toHaveBeenCalledWith('hm_user_backup');
+      expect(localStorage.removeItem).toHaveBeenCalledWith('hm_demo_mode_is_active');
+      expect(window.location.reload).toHaveBeenCalled();
+    });
+
+    it('should work when backup has no preferences', async () => {
+      vi.mocked(localStorage.getItem).mockImplementation((key) => {
+        if (key === 'hm_user_backup') return JSON.stringify({ storage: { k: 'v' } });
+        return null;
       });
+
+      await service.deactivateDemo();
+
+      expect(mockLocalStorageService.importAll).toHaveBeenCalledWith({ k: 'v' });
+      expect(mockLocalStorageService.setPreference).not.toHaveBeenCalled();
+    });
+
+    it('should delete all storage keys', async () => {
+      vi.mocked(localStorage.getItem).mockReturnValue(null);
+
+      await service.deactivateDemo();
+
+      expect(mockLocalStorageService.delete).toHaveBeenCalledWith('water_records');
+      expect(mockLocalStorageService.delete).toHaveBeenCalledWith('heating_records');
+      expect(mockLocalStorageService.delete).toHaveBeenCalledWith('household_members');
+      expect(mockLocalStorageService.delete).toHaveBeenCalledWith('household_address');
+      expect(mockLocalStorageService.delete).toHaveBeenCalledWith('excel_settings');
+    });
+
+    it('should remove all preference keys', async () => {
+      vi.mocked(localStorage.getItem).mockReturnValue(null);
+
+      await service.deactivateDemo();
+
+      expect(mockLocalStorageService.removePreference).toHaveBeenCalledWith('water_confirmed_meter_changes');
+      expect(mockLocalStorageService.removePreference).toHaveBeenCalledWith('water_dismissed_meter_changes');
+    });
   });
 });

@@ -7,7 +7,15 @@ import { HouseholdService } from '../../services/household.service';
 import { WaterAveragesService } from '../../services/water-averages.service';
 import { LanguageService } from '../../services/language.service';
 import { CountryFactsService } from '../../services/country-facts.service';
+import { HeatingFactsService } from '../../services/heating-facts.service';
 import { TranslatePipe } from '../../pipes/translate.pipe';
+
+export type ComparisonNoteType = 'water' | 'heating';
+
+export interface HeatingCountry {
+    code: string;
+    nameKey: string;
+}
 
 @Component({
     selector: 'app-comparison-note',
@@ -21,10 +29,13 @@ export class ComparisonNoteComponent {
     private waterAveragesService = inject(WaterAveragesService);
     private languageService = inject(LanguageService);
     private countryFactsService = inject(CountryFactsService);
+    private heatingFactsService = inject(HeatingFactsService);
 
     // Inputs
-    records = input.required<ConsumptionRecord[]>();
-    chartView = input<string>('total'); // Add chart view input with default
+    type = input<ComparisonNoteType>('water'); // 'water' or 'heating'
+    records = input.required<{ date: Date }[]>(); // Generic records with date
+    chartView = input<string>('total');
+    heatingCountries = input<HeatingCountry[]>([]); // Heating countries list
 
     // Outputs
     countryCodeChange = output<string>();
@@ -40,14 +51,36 @@ export class ComparisonNoteComponent {
 
     protected countryName = computed(() => this.householdService.address()?.country || '');
 
-    protected availableCountries = computed(() => {
+    // Water countries - sorted A-Z
+    protected waterCountries = computed(() => {
         const countries = this.waterAveragesService.getAvailableCountries();
-        // Sort alphabetically by translated name
         return countries.sort((a, b) => {
             const nameA = this.languageService.translate(a.translationKey);
             const nameB = this.languageService.translate(b.translationKey);
             return nameA.localeCompare(nameB);
         });
+    });
+
+    // Heating countries - sorted A-Z
+    protected sortedHeatingCountries = computed(() => {
+        const countries = [...this.heatingCountries()];
+        return countries.sort((a, b) => {
+            const nameA = this.languageService.translate(a.nameKey);
+            const nameB = this.languageService.translate(b.nameKey);
+            return nameA.localeCompare(nameB);
+        });
+    });
+
+    // Combined available countries based on type
+    protected availableCountries = computed(() => {
+        if (this.type() === 'heating') {
+            return this.sortedHeatingCountries().map(c => ({
+                translationKey: c.nameKey,
+                code: c.code,
+                average: 0 // Not used for heating
+            }));
+        }
+        return this.waterCountries();
     });
 
     protected effectiveComparisonCountryCode = computed(() => {
@@ -72,15 +105,35 @@ export class ComparisonNoteComponent {
         return country?.average || 150;
     });
 
-    // Country fact - changes when country, chart view, or seed changes
-    protected countryFact = computed(() => {
+    // Water fact - for water comparison mode
+    protected waterFact = computed(() => {
         const code = this.effectiveComparisonCountryCode();
         const seed = this.factSeed();
-        const view = this.chartView(); // Include chart view in calculation
-        // Create a hash from seed and view to get consistent but varied index
+        const view = this.chartView();
         const viewHash = view.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0);
         const index = (seed % 100) + this.records().length + viewHash;
         return this.countryFactsService.getFactByIndex(code, index);
+    });
+
+    // Heating fact - for heating comparison mode
+    protected heatingFact = computed(() => {
+        const code = this.effectiveComparisonCountryCode();
+        const seed = this.factSeed();
+        const index = Math.floor((seed % 100) + this.records().length);
+        return this.heatingFactsService.getFactByIndex(0, index, 'country', code);
+    });
+
+    // Combined fact based on type
+    protected countryFact = computed(() => {
+        if (this.type() === 'heating') {
+            return this.heatingFact()?.message || null;
+        }
+        return this.waterFact();
+    });
+
+    // Heating fact title
+    protected heatingFactTitle = computed(() => {
+        return this.heatingFact()?.title || '';
     });
 
     constructor() {

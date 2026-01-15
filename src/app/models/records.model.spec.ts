@@ -235,7 +235,7 @@ describe('Records Model Utils', () => {
     });
 
     it('should not filter non-zero records on max date', () => {
-       const records = [
+      const records = [
         { date: new Date('2023-01-01'), val: 10 },
         { date: new Date('2023-01-02'), val: 5 }
       ];
@@ -248,9 +248,9 @@ describe('Records Model Utils', () => {
     });
 
     it('should handle empty records in filterZeroPlaceholders', () => {
-        const { filtered, skippedCount } = filterZeroPlaceholders([], () => true);
-        expect(filtered.length).toBe(0);
-        expect(skippedCount).toBe(0);
+      const { filtered, skippedCount } = filterZeroPlaceholders([], () => true);
+      expect(filtered.length).toBe(0);
+      expect(skippedCount).toBe(0);
     });
 
     it('should merge records correctly', () => {
@@ -264,23 +264,23 @@ describe('Records Model Utils', () => {
     });
 
     it('should overwrite existing records with same date', () => {
-       const existing = [{ date: new Date('2023-01-01'), val: 1 }];
-       const incoming = [{ date: new Date('2023-01-01'), val: 2 }];
+      const existing = [{ date: new Date('2023-01-01'), val: 1 }];
+      const incoming = [{ date: new Date('2023-01-01'), val: 2 }];
 
-       const result = mergeRecords(existing, incoming);
-       expect(result.length).toBe(1);
-       expect((result[0] as any).val).toBe(2);
+      const result = mergeRecords(existing, incoming);
+      expect(result.length).toBe(1);
+      expect((result[0] as any).val).toBe(2);
     });
 
     it('should sort merged records by date', () => {
-        const existing = [{ date: new Date('2023-01-03'), val: 3 }];
-        const incoming = [{ date: new Date('2023-01-01'), val: 1 }, { date: new Date('2023-01-02'), val: 2 }];
+      const existing = [{ date: new Date('2023-01-03'), val: 3 }];
+      const incoming = [{ date: new Date('2023-01-01'), val: 1 }, { date: new Date('2023-01-02'), val: 2 }];
 
-        const result = mergeRecords(existing, incoming);
-        expect(result.length).toBe(3);
-        expect((result[0] as any).val).toBe(1);
-        expect((result[1] as any).val).toBe(2);
-        expect((result[2] as any).val).toBe(3);
+      const result = mergeRecords(existing, incoming);
+      expect(result.length).toBe(3);
+      expect((result[0] as any).val).toBe(1);
+      expect((result[1] as any).val).toBe(2);
+      expect((result[2] as any).val).toBe(3);
     });
   });
 });

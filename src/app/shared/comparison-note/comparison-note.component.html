@@ -1,8 +1,12 @@
 <div class="comparison-note" [class.disabled]="!hasSufficientDataForComparison()">
     <div class="comparison-content">
         @if (hasSufficientDataForComparison()) {
+        @if (type() === 'water') {
         <p>{{ 'CHART.COMPARISON_NOTE_COUNTRY' | translate:{ country: effectiveComparisonCountryName(), average:
             countryAverage(), size: familySize() } }}</p>
+        } @else {
+        <p>{{ 'HEATING.ENERGY_FACTS_FOR' | translate:{ country: effectiveComparisonCountryName() } }}</p>
+        }
         } @else {
         <p class="disabled-message">
             <lucide-icon [img]="InfoIcon" size="16" class="info-icon"></lucide-icon>
@@ -31,7 +35,11 @@
                     @for (country of availableCountries(); track country.code) {
                     <option [value]="country.code"
                         [selected]="country.code.toLowerCase() === effectiveComparisonCountryCode().toLowerCase()">
+                        @if (type() === 'water') {
                         {{ country.translationKey | translate }} ({{ country.average }} L)
+                        } @else {
+                        {{ country.translationKey | translate }}
+                        }
                     </option>
                     }
                 </select>
@@ -44,7 +52,11 @@
     <div class="country-fact">
         <lucide-icon [img]="LightbulbIcon" size="20" class="fact-icon"></lucide-icon>
         <div class="fact-content">
+            @if (type() === 'heating') {
+            <div class="fact-label">{{ heatingFactTitle() }}</div>
+            } @else {
             <div class="fact-label">{{ 'CHART.DID_YOU_KNOW' | translate }}</div>
+            }
             <p class="fact-text">{{ countryFact() }}</p>
         </div>
         <button type="button" class="refresh-btn" (click)="refreshFact()" title="{{ 'CHART.NEW_FACT' | translate }}">

@@ -16,6 +16,7 @@ import { ErrorModalComponent } from '../shared/error-modal/error-modal.component
 import { ConfirmationModalComponent } from '../shared/confirmation-modal/confirmation-modal.component';
 import { HeatingRoomsModalComponent } from '../shared/heating-rooms-modal/heating-rooms-modal.component';
 import { DetailedRecordsComponent, SortOptionConfig } from '../shared/detailed-records/detailed-records.component';
+import { ComparisonNoteComponent } from '../shared/comparison-note/comparison-note.component';
 import { ImportValidationService } from '../services/import-validation.service';
 import { DynamicHeatingRecord, HeatingRecord, calculateDynamicHeatingTotal, filterZeroPlaceholders, isDynamicHeatingRecordAllZero, isHeatingRecordAllZero, toHeatingRecord, toDynamicHeatingRecord } from '../models/records.model';
 import { NotificationService } from '../services/notification.service';
@@ -39,7 +40,7 @@ const ROOM_TYPE_ICONS: Record<string, any> = {
 @Component({
   selector: 'app-heating',
   standalone: true,
-  imports: [CommonModule, FormsModule, TranslatePipe, LucideAngularModule, ConsumptionChartComponent, ConsumptionInputComponent, ErrorModalComponent, ConfirmationModalComponent, HeatingRoomsModalComponent, DetailedRecordsComponent],
+  imports: [CommonModule, FormsModule, TranslatePipe, LucideAngularModule, ConsumptionChartComponent, ConsumptionInputComponent, ErrorModalComponent, ConfirmationModalComponent, HeatingRoomsModalComponent, DetailedRecordsComponent, ComparisonNoteComponent],
   templateUrl: './heating.component.html',
   styleUrl: './heating.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush

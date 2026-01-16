@@ -36,24 +36,26 @@ describe('LanguageSwitcherComponent', () => {
     expect(component).toBeTruthy();
   });
 
-  it('should have a container with class "language-switcher"', () => {
-    const container = fixture.debugElement.query(By.css('.language-switcher'));
-    expect(container).toBeTruthy();
-    expect(container.name).toBe('div');
-  });
+  describe('HTML Structure', () => {
+    it('should have a container with class "language-switcher"', () => {
+      const container = fixture.debugElement.query(By.css('.language-switcher'));
+      expect(container).toBeTruthy();
+      expect(container.name).toBe('div');
+    });
 
-  it('should display EN and DE buttons within the container', () => {
-    const container = fixture.debugElement.query(By.css('.language-switcher'));
-    const buttons = container.queryAll(By.css('button'));
+    it('should display EN and DE buttons within the container', () => {
+      const container = fixture.debugElement.query(By.css('.language-switcher'));
+      const buttons = container.queryAll(By.css('button'));
 
-    // Check strict structure
-    expect(container.children.length).toBe(2);
-    expect(container.children[0].name).toBe('button');
-    expect(container.children[1].name).toBe('button');
+      // Check strict structure
+      expect(container.children.length).toBe(2);
+      expect(container.children[0].name).toBe('button');
+      expect(container.children[1].name).toBe('button');
 
-    expect(buttons.length).toBe(2);
-    expect(buttons[0].nativeElement.textContent.trim()).toBe('EN');
-    expect(buttons[1].nativeElement.textContent.trim()).toBe('DE');
+      expect(buttons.length).toBe(2);
+      expect(buttons[0].nativeElement.textContent.trim()).toBe('EN');
+      expect(buttons[1].nativeElement.textContent.trim()).toBe('DE');
+    });
   });
 
   describe('CSS Styling & Classes', () => {
@@ -91,28 +93,30 @@ describe('LanguageSwitcherComponent', () => {
     });
   });
 
-  it('should call setLanguage with "en" when EN button is clicked', () => {
-    const buttons = fixture.debugElement.queryAll(By.css('button'));
-    buttons[0].triggerEventHandler('click', null);
+  describe('User Interaction', () => {
+    it('should call setLanguage with "en" when EN button is clicked', () => {
+      const buttons = fixture.debugElement.queryAll(By.css('button'));
+      buttons[0].triggerEventHandler('click', null);
 
-    expect(languageServiceMock.setLanguage).toHaveBeenCalledWith('en');
-  });
+      expect(languageServiceMock.setLanguage).toHaveBeenCalledWith('en');
+    });
 
-  it('should call setLanguage with "de" when DE button is clicked', () => {
-    const buttons = fixture.debugElement.queryAll(By.css('button'));
-    buttons[1].triggerEventHandler('click', null);
+    it('should call setLanguage with "de" when DE button is clicked', () => {
+      const buttons = fixture.debugElement.queryAll(By.css('button'));
+      buttons[1].triggerEventHandler('click', null);
 
-    expect(languageServiceMock.setLanguage).toHaveBeenCalledWith('de');
-  });
+      expect(languageServiceMock.setLanguage).toHaveBeenCalledWith('de');
+    });
 
-  // Edge case: ensure button calls service even if it's already active (the service handles the "no-op" logic usually, but the UI should still pass the command)
-  it('should still call setLanguage("en") even if already "en"', () => {
-    currentLangSignal.set('en');
-    fixture.detectChanges();
+    // Edge case: ensure button calls service even if it's already active (the service handles the "no-op" logic usually, but the UI should still pass the command)
+    it('should still call setLanguage("en") even if already "en"', () => {
+      currentLangSignal.set('en');
+      fixture.detectChanges();
 
-    const buttons = fixture.debugElement.queryAll(By.css('button'));
-    buttons[0].triggerEventHandler('click', null);
+      const buttons = fixture.debugElement.queryAll(By.css('button'));
+      buttons[0].triggerEventHandler('click', null);
 
-    expect(languageServiceMock.setLanguage).toHaveBeenCalledWith('en');
+      expect(languageServiceMock.setLanguage).toHaveBeenCalledWith('en');
+    });
   });
 });

@@ -56,22 +56,39 @@ describe('LanguageSwitcherComponent', () => {
     expect(buttons[1].nativeElement.textContent.trim()).toBe('DE');
   });
 
-  it('should highlight EN button when current language is en', () => {
-    currentLangSignal.set('en');
-    fixture.detectChanges();
+  describe('CSS Styling & Classes', () => {
+    it('should apply "active" class to EN button when current language is en', () => {
+      currentLangSignal.set('en');
+      fixture.detectChanges();
 
-    const buttons = fixture.debugElement.queryAll(By.css('button'));
-    expect(buttons[0].nativeElement.classList.contains('active')).toBe(true);
-    expect(buttons[1].nativeElement.classList.contains('active')).toBe(false);
-  });
+      const buttons = fixture.debugElement.queryAll(By.css('button'));
+      expect(buttons[0].nativeElement.classList.contains('active')).toBe(true);
+      expect(buttons[1].nativeElement.classList.contains('active')).toBe(false);
+    });
 
-  it('should highlight DE button when current language is de', () => {
-    currentLangSignal.set('de');
-    fixture.detectChanges();
+    it('should apply "active" class to DE button when current language is de', () => {
+      currentLangSignal.set('de');
+      fixture.detectChanges();
 
-    const buttons = fixture.debugElement.queryAll(By.css('button'));
-    expect(buttons[0].nativeElement.classList.contains('active')).toBe(false);
-    expect(buttons[1].nativeElement.classList.contains('active')).toBe(true);
+      const buttons = fixture.debugElement.queryAll(By.css('button'));
+      expect(buttons[0].nativeElement.classList.contains('active')).toBe(false);
+      expect(buttons[1].nativeElement.classList.contains('active')).toBe(true);
+    });
+
+    it('should ensure "active" class is mutually exclusive', () => {
+      // Test transition from EN to DE
+      currentLangSignal.set('en');
+      fixture.detectChanges();
+      let buttons = fixture.debugElement.queryAll(By.css('button'));
+      expect(buttons[0].classes['active']).toBe(true);
+      expect(buttons[1].classes['active']).toBeFalsy();
+
+      currentLangSignal.set('de');
+      fixture.detectChanges();
+      buttons = fixture.debugElement.queryAll(By.css('button'));
+      expect(buttons[0].classes['active']).toBeFalsy();
+      expect(buttons[1].classes['active']).toBe(true);
+    });
   });
 
   it('should call setLanguage with "en" when EN button is clicked', () => {

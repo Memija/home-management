@@ -36,8 +36,21 @@ describe('LanguageSwitcherComponent', () => {
     expect(component).toBeTruthy();
   });
 
-  it('should display EN and DE buttons', () => {
-    const buttons = fixture.debugElement.queryAll(By.css('button'));
+  it('should have a container with class "language-switcher"', () => {
+    const container = fixture.debugElement.query(By.css('.language-switcher'));
+    expect(container).toBeTruthy();
+    expect(container.name).toBe('div');
+  });
+
+  it('should display EN and DE buttons within the container', () => {
+    const container = fixture.debugElement.query(By.css('.language-switcher'));
+    const buttons = container.queryAll(By.css('button'));
+
+    // Check strict structure
+    expect(container.children.length).toBe(2);
+    expect(container.children[0].name).toBe('button');
+    expect(container.children[1].name).toBe('button');
+
     expect(buttons.length).toBe(2);
     expect(buttons[0].nativeElement.textContent.trim()).toBe('EN');
     expect(buttons[1].nativeElement.textContent.trim()).toBe('DE');

@@ -21,6 +21,11 @@ export const errors = {
     JSON_NUMBER_FIX_1: 'Stellen Sie sicher, dass alle Verbrauchswerte Zahlen sind',
     JSON_NUMBER_FIX_2: 'Entfernen Sie Text oder Sonderzeichen aus numerischen Feldern',
     JSON_DUPLICATE_FIX_1: 'Entfernen Sie doppelte Datumseinträge aus Ihrer JSON-Datei',
-    JSON_DUPLICATE_FIX_2: 'Jedes Datum sollte nur einmal in der Datei vorkommen'
+    JSON_DUPLICATE_FIX_2: 'Jedes Datum sollte nur einmal in der Datei vorkommen',
+    IMPORT_MISSING_ROOMS_OBJECT: 'Datensatz ({{date}}): Fehlendes oder ungültiges \'rooms\'-Objekt',
+    IMPORT_INVALID_ROOM_VALUE: 'Datensatz ({{date}}): Ungültige Zahl \'{{value}}\' für Raum \'{{room}}\'',
+    IMPORT_INVALID_ROOM_TYPE: 'Datensatz ({{date}}): Ungültiger Werttyp für Raum \'{{room}}\'',
+    IMPORT_MISSING_ROOM_DATA: 'Datensatz ({{date}}): Fehlende Daten für Raum \'{{room}}\'',
+    IMPORT_UNKNOWN_ROOM: 'Datensatz ({{date}}): Unbekannter Raum \'{{room}}\''
   }
 };

@@ -105,11 +105,11 @@
   <div class="modal-content" (click)="$event.stopPropagation()">
     <div class="modal-header">
       <lucide-icon [img]="CheckCircleIcon" size="32" class="success-icon"></lucide-icon>
-      <h3>{{ 'HOME.SUCCESS_TITLE' | translate }}</h3>
+      <h3>{{ successTitle() | translate }}</h3>
       <button class="close-btn" (click)="closeSuccessModal()">×</button>
     </div>
     <div class="modal-body">
-      <p>{{ 'HOME.RECORD_SAVED' | translate }}</p>
+      <p>{{ successMessage() | translate }}</p>
     </div>
     <div class="modal-footer">
       <button class="btn-primary" (click)="closeSuccessModal()">OK</button>

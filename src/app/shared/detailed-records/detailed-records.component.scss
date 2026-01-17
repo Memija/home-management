@@ -76,6 +76,7 @@
       border-radius: 4px;
       color: var(--text-secondary);
       transition: all 0.2s;
+      margin-left: auto;
 
       &:hover {
         background: var(--bg-secondary);
@@ -116,11 +117,11 @@
   }
 
   .pagination-container .pagination-controls .pagination-btn {
-    background: $primary;
+    background: var(--theme-primary, $primary);
     box-shadow: 0 2px 4px rgba(0, 123, 255, 0.2);
 
     &:hover:not(:disabled) {
-      background: $primary-dark;
+      background: var(--theme-primary-dark, $primary-dark);
       box-shadow: 0 4px 12px rgba(0, 123, 255, 0.35);
     }
   }

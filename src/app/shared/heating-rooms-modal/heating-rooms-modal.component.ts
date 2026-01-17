@@ -1,9 +1,9 @@
 import { Component, input, output, signal, computed, inject, effect } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { LucideAngularModule, X, Plus, Trash2, Settings, TriangleAlert, Lock, LockOpen } from 'lucide-angular';
+import { LucideAngularModule, X, Plus, Trash2, Settings, TriangleAlert, Lock, LockOpen, Download, Upload } from 'lucide-angular';
 import { TranslatePipe } from '../../pipes/translate.pipe';
-import { HeatingRoomConfig } from '../../services/heating-rooms.service';
+import { HeatingRoomConfig, HeatingRoomsService } from '../../services/heating-rooms.service';
 import { LanguageService } from '../../services/language.service';
 
 @Component({
@@ -15,6 +15,7 @@ import { LanguageService } from '../../services/language.service';
 })
 export class HeatingRoomsModalComponent {
   private languageService = inject(LanguageService);
+  private roomsService = inject(HeatingRoomsService);
 
   protected readonly XIcon = X;
   protected readonly PlusIcon = Plus;
@@ -23,6 +24,8 @@ export class HeatingRoomsModalComponent {
   protected readonly TriangleAlertIcon = TriangleAlert;
   protected readonly LockIcon = Lock;
   protected readonly LockOpenIcon = LockOpen;
+  protected readonly DownloadIcon = Download;
+  protected readonly UploadIcon = Upload;
 
   // Inputs
   show = input.required<boolean>();
@@ -46,6 +49,9 @@ export class HeatingRoomsModalComponent {
   // Lock state: tracks which rooms with data have been unlocked for editing
   protected unlockedRooms = signal<Set<string>>(new Set());
   protected pendingUnlockRoomId = signal<string | null>(null);
+
+  // Discard warning
+  protected showDiscardWarning = signal(false);
 
   // Computed
   protected canAddRoom = computed(() => this.editingRooms().length < this.maxRooms());
@@ -196,6 +202,41 @@ export class HeatingRoomsModalComponent {
   }
 
   protected onCancel(): void {
+    if (this.hasChanges()) {
+      this.showDiscardWarning.set(true);
+    } else {
+      this.cancel.emit();
+    }
+  }
+
+  protected confirmDiscard(): void {
+    this.showDiscardWarning.set(false);
     this.cancel.emit();
+  }
+
+  protected cancelDiscard(): void {
+    this.showDiscardWarning.set(false);
+  }
+
+  // Export configuration
+  protected exportConfiguration(): void {
+    this.roomsService.exportRooms();
+  }
+
+  // Import configuration
+  protected async importConfiguration(event: Event): Promise<void> {
+    const input = event.target as HTMLInputElement;
+    const file = input.files?.[0];
+    if (!file) return;
+
+    const result = await this.roomsService.importRooms(file);
+    if (result.success) {
+      // Refresh local state with imported data
+      this.editingRooms.set([...this.roomsService.rooms().map(r => ({ ...r }))]);
+      this.hasChanges.set(true);
+    } else {
+      alert(result.error); // Simple error display for now
+    }
+    input.value = ''; // Reset for re-import
   }
 }

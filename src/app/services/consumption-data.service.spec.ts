@@ -102,7 +102,7 @@ describe('ConsumptionDataService', () => {
 
   describe('Filter Logic', () => {
     it('should filter records by date range', async () => {
-        await new Promise(resolve => setTimeout(resolve, 0)); // ensure initial load finishes
+      await new Promise(resolve => setTimeout(resolve, 0)); // ensure initial load finishes
       service.updateFilterState({
         year: null,
         month: null,
@@ -116,7 +116,7 @@ describe('ConsumptionDataService', () => {
     });
 
     it('should filter records by year', async () => {
-        await new Promise(resolve => setTimeout(resolve, 0));
+      await new Promise(resolve => setTimeout(resolve, 0));
       service.updateFilterState({
         year: 2023,
         month: null,
@@ -142,7 +142,7 @@ describe('ConsumptionDataService', () => {
 
   describe('CRUD Operations', () => {
     it('should save a new record', async () => {
-        await new Promise(resolve => setTimeout(resolve, 0));
+      await new Promise(resolve => setTimeout(resolve, 0));
       const newRecord: ConsumptionRecord = {
         date: new Date('2023-01-15'),
         kitchenWarm: 15,
@@ -160,7 +160,7 @@ describe('ConsumptionDataService', () => {
     });
 
     it('should update an existing record', async () => {
-        await new Promise(resolve => setTimeout(resolve, 0));
+      await new Promise(resolve => setTimeout(resolve, 0));
       const updatedRecord: ConsumptionRecord = {
         ...mockRecords[0],
         kitchenWarm: 99,
@@ -174,7 +174,7 @@ describe('ConsumptionDataService', () => {
     });
 
     it('should confirm delete record', async () => {
-        await new Promise(resolve => setTimeout(resolve, 0));
+      await new Promise(resolve => setTimeout(resolve, 0));
       service.recordToDelete.set(mockRecords[0]);
       service.showDeleteModal.set(true);
 
@@ -187,7 +187,7 @@ describe('ConsumptionDataService', () => {
     });
 
     it('should confirm delete all records', async () => {
-        await new Promise(resolve => setTimeout(resolve, 0));
+      await new Promise(resolve => setTimeout(resolve, 0));
       service.recordsToDelete.set([mockRecords[0]]);
       service.showDeleteAllModal.set(true);
 
@@ -232,16 +232,61 @@ describe('ConsumptionDataService', () => {
       expect(service.showSuccessModal()).toBe(true);
     });
 
-     it('should handle Excel import', async () => {
-        const file = new File([''], 'test.xlsx');
-        const event = { target: { files: [file], value: '' } } as unknown as Event;
+    it('should handle Excel import', async () => {
+      const file = new File([''], 'test.xlsx');
+      const event = { target: { files: [file], value: '' } } as unknown as Event;
 
-        const importedRecords = [{ ...mockRecords[0] }];
-        excelServiceMock.importWaterFromExcel.mockResolvedValue({ records: importedRecords, missingColumns: [] });
+      const importedRecords = [{ ...mockRecords[0] }];
+      excelServiceMock.importWaterFromExcel.mockResolvedValue({ records: importedRecords, missingColumns: [] });
 
-        await service.importFromExcel(event);
+      await service.importFromExcel(event);
 
-        expect(storageServiceMock.save).toHaveBeenCalled();
-     });
+      expect(storageServiceMock.save).toHaveBeenCalled();
+    });
+  });
+
+  describe('Success Messages', () => {
+    it('should set record saved message on saveRecord', async () => {
+      await new Promise(resolve => setTimeout(resolve, 0));
+      const newRecord: ConsumptionRecord = {
+        date: new Date('2023-01-15'),
+        kitchenWarm: 15,
+        kitchenCold: 7,
+        bathroomWarm: 5,
+        bathroomCold: 4,
+      };
+
+      await service.saveRecord(newRecord);
+
+      expect(service.successTitle()).toBe('HOME.SUCCESS_TITLE');
+      expect(service.successMessage()).toBe('HOME.RECORD_SAVED');
+    });
+
+    it('should set import message on JSON import', async () => {
+      const file = new File([''], 'test.json', { type: 'application/json' });
+      service.pendingImportFile.set(file);
+
+      const importedData = [{ ...mockRecords[0] }];
+      fileStorageServiceMock.importFromFile.mockResolvedValue(importedData);
+      importValidationServiceMock.validateWaterJsonImport.mockReturnValue({ validRecords: importedData, errors: [] });
+
+      await service.confirmImport();
+
+      expect(service.successTitle()).toBe('IMPORT.SUCCESS_TITLE');
+      expect(service.successMessage()).toBe('IMPORT.JSON_SUCCESS');
+    });
+
+    it('should set Excel import message on Excel import', async () => {
+      const file = new File([''], 'test.xlsx');
+      const event = { target: { files: [file], value: '' } } as unknown as Event;
+
+      const importedRecords = [{ ...mockRecords[0] }];
+      excelServiceMock.importWaterFromExcel.mockResolvedValue({ records: importedRecords, missingColumns: [] });
+
+      await service.importFromExcel(event);
+
+      expect(service.successTitle()).toBe('IMPORT.SUCCESS_TITLE');
+      expect(service.successMessage()).toBe('IMPORT.EXCEL_SUCCESS');
+    });
   });
 });

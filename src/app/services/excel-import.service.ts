@@ -110,7 +110,7 @@ export class ExcelImportService {
         // Check for extra rooms in import (rooms that don't exist in config)
         const extraRoomIds = importedRoomIds.filter(id => !configuredRoomIds.includes(id));
         if (extraRoomIds.length > 0) {
-          errors.push(this.languageService.translate('SETTINGS.IMPORT_EXCEL_UNKNOWN_ROOMS').replace('{rooms}', extraRoomIds.join(', ')));
+          errors.push(this.languageService.translate('SETTINGS.IMPORT_EXCEL_UNKNOWN_ROOMS').replace('{{rooms}}', extraRoomIds.join(', ')));
           hintKeys.push('SETTINGS.IMPORT_EXCEL_UNKNOWN_ROOMS_HINT');
         }
 
@@ -121,7 +121,7 @@ export class ExcelImportService {
             const room = configuredRooms.find(r => r.id === id);
             return room ? room.name : id;
           });
-          errors.push(this.languageService.translate('SETTINGS.IMPORT_EXCEL_MISSING_ROOM_MAPPINGS').replace('{rooms}', missingRoomNames.join(', ')));
+          errors.push(this.languageService.translate('SETTINGS.IMPORT_EXCEL_MISSING_ROOM_MAPPINGS').replace('{{rooms}}', missingRoomNames.join(', ')));
           hintKeys.push('SETTINGS.IMPORT_EXCEL_MISSING_ROOM_MAPPINGS_HINT');
         }
 
@@ -152,7 +152,7 @@ export class ExcelImportService {
       const allowedHeatingFields = ['date', 'rooms'];
       const unexpectedFields = Object.keys(h).filter(key => !allowedHeatingFields.includes(key));
       if (unexpectedFields.length > 0) {
-        errors.push(this.languageService.translate('SETTINGS.IMPORT_EXCEL_UNEXPECTED_FIELDS').replace('{fields}', unexpectedFields.join(', ')));
+        errors.push(this.languageService.translate('SETTINGS.IMPORT_EXCEL_UNEXPECTED_FIELDS').replace('{{fields}}', unexpectedFields.join(', ')));
         hintKeys.push('SETTINGS.IMPORT_EXCEL_UNEXPECTED_FIELDS_HINT');
       }
     }
@@ -173,7 +173,7 @@ export class ExcelImportService {
       const crossDuplicates = waterColumns.filter(col => col && heatingColumnsArr.includes(col));
       if (crossDuplicates.length > 0) {
         const uniqueCrossDupes = [...new Set(crossDuplicates)];
-        errors.push(this.languageService.translate('SETTINGS.IMPORT_EXCEL_CROSS_SECTION_DUPLICATES').replace('{columns}', `"${uniqueCrossDupes.join('", "')}"`));
+        errors.push(this.languageService.translate('SETTINGS.IMPORT_EXCEL_CROSS_SECTION_DUPLICATES').replace('{{columns}}', `"${uniqueCrossDupes.join('", "')}"`));
         hintKeys.push('SETTINGS.IMPORT_EXCEL_CROSS_SECTION_DUPLICATES_HINT');
       }
     }

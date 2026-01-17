@@ -182,8 +182,9 @@ export function toHeatingRecord(record: DynamicHeatingRecord | HeatingRecord): H
 }
 
 /**
- * Filter out zero-value placeholder records on the freshest (most recent) date.
- * Users often create placeholder entries for future dates with all-zero values.
+ * Filter out records that have all-zero or empty values.
+ * This prevents importing placeholder entries that have just a date but no actual data.
+ * Originally only filtered records on the freshest date, now filters ALL empty records.
  *
  * @param records The records to filter
  * @param isAllZero Function to check if a record has all-zero values
@@ -197,17 +198,9 @@ export function filterZeroPlaceholders<T extends { date: Date }>(
     return { filtered: [], skippedCount: 0 };
   }
 
-  // Find the maximum (freshest) date
-  const maxTime = records.reduce((max, r) => {
-    const time = new Date(r.date).getTime();
-    return time > max ? time : max;
-  }, 0);
-  const maxDateKey = getDateKey(new Date(maxTime));
-
   let skippedCount = 0;
   const filtered = records.filter(r => {
-    const recordDateKey = getDateKey(new Date(r.date));
-    if (recordDateKey === maxDateKey && isAllZero(r)) {
+    if (isAllZero(r)) {
       skippedCount++;
       return false;
     }

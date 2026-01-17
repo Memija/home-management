@@ -1,5 +1,6 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { ConsumptionRecord, HeatingRecord } from '../models/records.model';
+import { LanguageService } from './language.service';
 
 export interface ValidationResult<T> {
     validRecords: T[];
@@ -10,6 +11,7 @@ export interface ValidationResult<T> {
     providedIn: 'root'
 })
 export class ImportValidationService {
+    private languageService = inject(LanguageService);
 
     /**
      * Validates JSON import data for water consumption records
@@ -51,13 +53,12 @@ export class ImportValidationService {
     }
 
     /**
-     * Validates JSON import data for heating consumption records
+     * Validates JSON import data for heating consumption records (Dynamic format)
      */
-    validateHeatingJsonImport(data: unknown[]): ValidationResult<HeatingRecord> {
+    validateHeatingJsonImport(data: unknown[], expectedRoomIds?: string[]): ValidationResult<HeatingRecord> {
         const validationErrors: string[] = [];
-        const validRecords: HeatingRecord[] = [];
+        const validRecords: any[] = [];
         const seenDates = new Map<string, number>();
-        const numericFields = ['livingRoom', 'bedroom', 'kitchen', 'bathroom'];
 
         for (let index = 0; index < data.length; index++) {
             const record = data[index] as Record<string, unknown>;
@@ -70,23 +71,70 @@ export class ImportValidationService {
                 continue;
             }
 
-            // Validate numeric fields
-            const numericResult = this.validateNumericFields(record, rowNumber, numericFields);
-            if (numericResult.errors.length > 0) {
-                validationErrors.push(...numericResult.errors);
+            // Format date for error messages
+            const dateStr = this.formatLocalDate(dateResult.date!);
+
+            // Validate 'rooms' object
+            if (!record['rooms'] || typeof record['rooms'] !== 'object') {
+                validationErrors.push(this.languageService.translate('ERROR.IMPORT_MISSING_ROOMS_OBJECT', { date: dateStr }));
                 continue;
             }
 
+            const rooms = record['rooms'] as Record<string, unknown>;
+            const validRooms: Record<string, number> = {};
+            let hasRoomsError = false;
+
+            // Strict validation against expected room IDs
+            if (expectedRoomIds && expectedRoomIds.length > 0) {
+                const recordRoomKeys = Object.keys(rooms);
+
+                // Check for missing rooms
+                for (const expectedId of expectedRoomIds) {
+                    if (!recordRoomKeys.includes(expectedId)) {
+                        validationErrors.push(this.languageService.translate('ERROR.IMPORT_MISSING_ROOM_DATA', { date: dateStr, room: expectedId }));
+                        hasRoomsError = true;
+                    }
+                }
+
+                // Check for unknown rooms
+                for (const key of recordRoomKeys) {
+                    if (!expectedRoomIds.includes(key)) {
+                        validationErrors.push(this.languageService.translate('ERROR.IMPORT_UNKNOWN_ROOM', { date: dateStr, room: key }));
+                        hasRoomsError = true;
+                    }
+                }
+            }
+
+            if (hasRoomsError) continue;
+
+            for (const [roomId, value] of Object.entries(rooms)) {
+                if (typeof value === 'number' && !isNaN(value)) {
+                    validRooms[roomId] = value;
+                } else if (typeof value === 'string') {
+                    const num = Number(value);
+                    if (isNaN(num)) {
+                        validationErrors.push(this.languageService.translate('ERROR.IMPORT_INVALID_ROOM_VALUE', { date: dateStr, value: value, room: roomId }));
+                        hasRoomsError = true;
+                    } else {
+                        validRooms[roomId] = num;
+                    }
+                } else if (value === null || value === undefined) {
+                    validRooms[roomId] = 0;
+                } else {
+                    validationErrors.push(this.languageService.translate('ERROR.IMPORT_INVALID_ROOM_TYPE', { date: dateStr, room: roomId }));
+                    hasRoomsError = true;
+                }
+            }
+
+            if (hasRoomsError) continue;
+
             validRecords.push({
                 date: dateResult.date!,
-                livingRoom: numericResult.values['livingRoom'],
-                bedroom: numericResult.values['bedroom'],
-                kitchen: numericResult.values['kitchen'],
-                bathroom: numericResult.values['bathroom']
+                rooms: validRooms
             });
         }
 
-        return { validRecords, errors: validationErrors };
+        return { validRecords: validRecords as HeatingRecord[], errors: validationErrors };
     }
 
     /**

@@ -219,22 +219,24 @@ describe('Records Model Utils', () => {
   });
 
   describe('Filtering and Merging', () => {
-    it('should filter zero placeholders correctly', () => {
+    it('should filter all zero records regardless of date', () => {
       const records = [
         { date: new Date('2023-01-01'), val: 10 },
-        { date: new Date('2023-01-02'), val: 0 }, // Recent zero
-        { date: new Date('2023-01-02'), val: 0 }  // Recent zero
+        { date: new Date('2023-01-02'), val: 0 }, // Zero - filtered
+        { date: new Date('2023-01-03'), val: 5 },
+        { date: new Date('2023-01-04'), val: 0 }  // Zero - filtered
       ];
       const isAllZero = (r: any) => r.val === 0;
 
       const { filtered, skippedCount } = filterZeroPlaceholders(records, isAllZero);
 
-      expect(filtered.length).toBe(1);
+      expect(filtered.length).toBe(2);
       expect(filtered[0].val).toBe(10);
+      expect(filtered[1].val).toBe(5);
       expect(skippedCount).toBe(2);
     });
 
-    it('should not filter non-zero records on max date', () => {
+    it('should not filter non-zero records', () => {
       const records = [
         { date: new Date('2023-01-01'), val: 10 },
         { date: new Date('2023-01-02'), val: 5 }

@@ -8,7 +8,6 @@ export const water = {
     EXPORT_EXCEL: 'In Excel exportieren',
     EXPORT_PDF: 'Als PDF exportieren',
     IMPORT_EXCEL: 'Aus Excel importieren',
-    EXCEL_IMPORT_SUCCESS: 'Excel-Daten erfolgreich importiert!',
     EXCEL_IMPORT_ERROR_TITLE: 'Excel-Import fehlgeschlagen',
     EXCEL_IMPORT_ERROR: 'Excel-Daten konnten nicht importiert werden. Bitte überprüfen Sie die Details unten und befolgen Sie die Anweisungen zur Behebung des Problems.',
     JSON_IMPORT_ERROR_TITLE: 'JSON-Import fehlgeschlagen',
@@ -143,7 +142,7 @@ export const water = {
     IMPORT_WARNING_TITLE: 'Spalten stimmen nicht überein',
     IMPORT_WARNING_MESSAGE: 'Daten erfolgreich importiert, aber einige in den Einstellungen konfigurierte Spalten wurden in Ihrer Excel-Datei nicht gefunden. Werte für fehlende Spalten wurden auf 0 gesetzt.',
     MISSING_COLUMNS: 'Spalten nicht in Datei gefunden',
-    IMPORT_PLACEHOLDER_SKIPPED_SINGULAR: '1 potenzieller Platzhalter-Datensatz mit Nullwerten am aktuellsten Datum wurde übersprungen.',
-    IMPORT_PLACEHOLDER_SKIPPED_PLURAL: '{{count}} potenzielle Platzhalter-Datensätze mit Nullwerten am aktuellsten Datum wurden übersprungen.'
+    IMPORT_PLACEHOLDER_SKIPPED_SINGULAR: '1 leerer Datensatz ohne Werte wurde übersprungen.',
+    IMPORT_PLACEHOLDER_SKIPPED_PLURAL: '{{count}} leere Datensätze ohne Werte wurden übersprungen.'
   }
 };

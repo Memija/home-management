@@ -6,10 +6,10 @@ export const heating = {
     IMPORT: 'Daten importieren',
     EXPORT_EXCEL: 'In Excel exportieren',
     IMPORT_EXCEL: 'Aus Excel importieren',
+    EXPORT_PDF: 'Als PDF exportieren',
     EXPORT_DISABLED_TOOLTIP: 'Keine Datensätze zum Exportieren',
     ENERGY_FACTS_FOR: 'Energiefakten für {{country}}',
     SELECT_COUNTRY_INFO: 'Wählen Sie ein Land aus, um energie- und heizungsspezifische Fakten für diese Region zu sehen',
-    EXCEL_IMPORT_SUCCESS: 'Excel-Daten erfolgreich importiert!',
     EXCEL_IMPORT_ERROR_TITLE: 'Excel-Import fehlgeschlagen',
     EXCEL_IMPORT_ERROR: 'Excel-Daten konnten nicht importiert werden. Bitte überprüfen Sie die Details unten und befolgen Sie die Anweisungen zur Behebung des Problems.',
     JSON_IMPORT_ERROR_TITLE: 'JSON-Import fehlgeschlagen',
@@ -20,9 +20,11 @@ export const heating = {
     BEDROOM: 'Schlafzimmer',
     KITCHEN: 'Küche',
     BATHROOM: 'Badezimmer',
+    SUCCESS_TITLE: 'Erfolg',
+    RECORD_SAVED: 'Heizungsverbrauch erfolgreich gespeichert!',
     RECORD_CONSUMPTION: 'Heizungsverbrauch erfassen',
-    IMPORT_PLACEHOLDER_SKIPPED_SINGULAR: '1 potenzieller Platzhalter-Datensatz mit Nullwerten am aktuellsten Datum wurde übersprungen.',
-    IMPORT_PLACEHOLDER_SKIPPED_PLURAL: '{{count}} potenzielle Platzhalter-Datensätze mit Nullwerten am aktuellsten Datum wurden übersprungen.',
+    IMPORT_PLACEHOLDER_SKIPPED_SINGULAR: '1 leerer Datensatz ohne Werte wurde übersprungen.',
+    IMPORT_PLACEHOLDER_SKIPPED_PLURAL: '{{count}} leere Datensätze ohne Werte wurden übersprungen.',
     ROOMS_SETTINGS_TITLE: 'Raumeinstellungen',
     ROOMS_SETTINGS_DESCRIPTION: 'Konfigurieren Sie, welche Räume für den Heizungsverbrauch erfasst werden sollen.',
     ROOM_NAME_PLACEHOLDER: 'Raumname eingeben',
@@ -49,6 +51,9 @@ export const heating = {
     UNLOCK_WARNING_TITLE: 'Raum entsperren?',
     UNLOCK_WARNING_MESSAGE: 'Dieser Raum hat Heizdaten zugeordnet. Das Ändern oder Löschen kann zu Anzeigeproblemen führen.',
     UNLOCK_BUTTON: 'Entsperren',
+    DISCARD_WARNING_TITLE: 'Änderungen verwerfen?',
+    DISCARD_WARNING_MESSAGE: 'Sie haben nicht gespeicherte Änderungen. Möchten Sie diese wirklich verwerfen?',
+    DISCARD_BUTTON: 'Verwerfen',
     // Help Modal
     RECORD_HELP_TITLE: 'Heizungsverbrauch erfassen - Anleitung',
     RECORD_HELP_STEP_1_TITLE: 'Räume konfigurieren',
@@ -73,6 +78,8 @@ export const heating = {
     ROOM_PATTERNS_OFFICE: 'büro,buero,arbeit,arbeitszimmer',
     ROOM_PATTERNS_GUEST: 'gast,gäste,gaeste,gästezimmer',
     ROOM_PATTERNS_DINING: 'ess,esszimmer,speise',
-    ROOM_PATTERNS_HALLWAY: 'flur,eingang,diele,korridor'
+    ROOM_PATTERNS_HALLWAY: 'flur,eingang,diele,korridor',
+    EXPORT_ROOMS: 'Exportieren',
+    IMPORT_ROOMS: 'Importieren'
   }
 };

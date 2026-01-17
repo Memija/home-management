@@ -6,10 +6,10 @@ export const heating = {
     IMPORT: 'Import Data',
     EXPORT_EXCEL: 'Export to Excel',
     IMPORT_EXCEL: 'Import from Excel',
+    EXPORT_PDF: 'Export to PDF',
     EXPORT_DISABLED_TOOLTIP: 'No records to export',
     ENERGY_FACTS_FOR: 'Energy facts for {{country}}',
     SELECT_COUNTRY_INFO: 'Select a country to see energy and heating facts specific to that region',
-    EXCEL_IMPORT_SUCCESS: 'Excel data imported successfully!',
     EXCEL_IMPORT_ERROR_TITLE: 'Excel Import Failed',
     EXCEL_IMPORT_ERROR: 'Failed to import Excel data. Please check the details below and follow the instructions to fix the issue.',
     JSON_IMPORT_ERROR_TITLE: 'JSON Import Failed',
@@ -20,9 +20,11 @@ export const heating = {
     BEDROOM: 'Bedroom',
     KITCHEN: 'Kitchen',
     BATHROOM: 'Bathroom',
+    SUCCESS_TITLE: 'Success',
+    RECORD_SAVED: 'Heating consumption record saved successfully!',
     RECORD_CONSUMPTION: 'Record Heating Consumption',
-    IMPORT_PLACEHOLDER_SKIPPED_SINGULAR: '1 potential placeholder record with all-zero values on the most recent date was skipped.',
-    IMPORT_PLACEHOLDER_SKIPPED_PLURAL: '{{count}} potential placeholder records with all-zero values on the most recent date were skipped.',
+    IMPORT_PLACEHOLDER_SKIPPED_SINGULAR: '1 empty record with no values was skipped.',
+    IMPORT_PLACEHOLDER_SKIPPED_PLURAL: '{{count}} empty records with no values were skipped.',
     ROOMS_SETTINGS_TITLE: 'Room Settings',
     ROOMS_SETTINGS_DESCRIPTION: 'Configure which rooms to track for heating consumption.',
     ROOM_NAME_PLACEHOLDER: 'Enter room name',
@@ -49,6 +51,9 @@ export const heating = {
     UNLOCK_WARNING_TITLE: 'Unlock Room?',
     UNLOCK_WARNING_MESSAGE: 'This room has heating data associated with it. Modifying or deleting it may cause data display issues.',
     UNLOCK_BUTTON: 'Unlock',
+    DISCARD_WARNING_TITLE: 'Discard Changes?',
+    DISCARD_WARNING_MESSAGE: 'You have unsaved changes. Are you sure you want to discard them?',
+    DISCARD_BUTTON: 'Discard',
     // Help Modal
     RECORD_HELP_TITLE: 'How to Record Heating Consumption',
     RECORD_HELP_STEP_1_TITLE: 'Configure Your Rooms',
@@ -73,6 +78,8 @@ export const heating = {
     ROOM_PATTERNS_OFFICE: 'office,study,work,desk',
     ROOM_PATTERNS_GUEST: 'guest,spare',
     ROOM_PATTERNS_DINING: 'dining,eat',
-    ROOM_PATTERNS_HALLWAY: 'hall,entrance,corridor,foyer'
+    ROOM_PATTERNS_HALLWAY: 'hall,entrance,corridor,foyer',
+    EXPORT_ROOMS: 'Export',
+    IMPORT_ROOMS: 'Import'
   }
 };

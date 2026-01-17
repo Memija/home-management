@@ -29,7 +29,7 @@ export class ConfirmationModalComponent {
     let message = this.languageService.translate(this.messageKey);
     // Replace placeholders with params
     Object.keys(this.messageParams).forEach(key => {
-      message = message.replace(`{${key}}`, this.messageParams[key]);
+      message = message.replace(`{{${key}}}`, this.messageParams[key]);
     });
     return message;
   });

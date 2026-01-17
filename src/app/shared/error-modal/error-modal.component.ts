@@ -1,6 +1,6 @@
 import { Component, input, output, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { LucideAngularModule, AlertCircle, AlertTriangle, X } from 'lucide-angular';
+import { LucideAngularModule, AlertCircle, AlertTriangle, CheckCircle, X } from 'lucide-angular';
 import { TranslatePipe } from '../../pipes/translate.pipe';
 
 export interface ErrorInstruction {
@@ -21,7 +21,7 @@ export class ErrorModalComponent {
   message = input.required<string>();
   details = input<string>('');
   instructions = input<(string | ErrorInstruction)[]>([]); // Allow string or object
-  type = input<'error' | 'warning'>('error');
+  type = input<'error' | 'warning' | 'success'>('error');
 
   // Split details into lines for better display
   protected detailLines = computed(() => {
@@ -33,6 +33,7 @@ export class ErrorModalComponent {
 
   protected readonly AlertCircleIcon = AlertCircle;
   protected readonly AlertTriangleIcon = AlertTriangle;
+  protected readonly CheckCircleIcon = CheckCircle;
   protected readonly XIcon = X;
 
   protected isString(val: unknown): val is string {

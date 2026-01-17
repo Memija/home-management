@@ -1,4 +1,4 @@
-import { Component, signal, computed, input, output, effect, inject, ContentChild, TemplateRef } from '@angular/core';
+import { Component, signal, computed, input, output, effect, inject, ContentChild, TemplateRef, untracked } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { DatePipe, NgTemplateOutlet } from '@angular/common';
 import { LucideAngularModule, Pencil, Trash2, Calendar, Info, ChevronDown, ChevronUp, ChevronLeft, ChevronRight, CalendarDays, ArrowUpDown, HelpCircle, RotateCcw } from 'lucide-angular';
@@ -100,15 +100,21 @@ export class DetailedRecordsComponent {
   protected paginationSize = signal<number>(5);
   protected sortOption = signal<SortOption>('date-desc');
   protected showHelpModal = signal(false);
-  protected isCollapsed = signal(this.getInitialCollapsedState());
+  protected isCollapsed = signal(true); // Will be initialized in constructor
 
   constructor() {
     // Initialize sort option from input
     this.sortOption.set(this.defaultSortOption());
 
-    // Save collapsed state whenever it changes
+    // Reactively load collapsed state when recordType changes
     effect(() => {
-      this.localStorageService.setPreference('detailed_records_are_collapsed', String(this.isCollapsed()));
+      const type = this.recordType();
+      untracked(() => {
+        const key = `detailed_records_for_${type}_are_collapsed`;
+        const stored = this.localStorageService.getPreference(key);
+        // If stored is null, default to true (collapsed)
+        this.isCollapsed.set(stored !== null ? stored === 'true' : true);
+      });
     });
 
     // Emit filtered records and filter state whenever they change
@@ -127,10 +133,7 @@ export class DetailedRecordsComponent {
     });
   }
 
-  private getInitialCollapsedState(): boolean {
-    const stored = this.localStorageService.getPreference('detailed_records_are_collapsed');
-    return stored !== null ? stored === 'true' : true; // Default to collapsed (true)
-  }
+  // Removed getInitialCollapsedState as it's now handled by the effect
 
   // Computed properties
   protected currentLang = computed(() => this.languageService.currentLang());
@@ -379,6 +382,12 @@ export class DetailedRecordsComponent {
 
   protected closeHelp() {
     this.showHelpModal.set(false);
+  }
+
+  protected toggleCollapse() {
+    this.isCollapsed.update(v => !v);
+    const key = `detailed_records_for_${this.recordType()}_are_collapsed`;
+    this.localStorageService.setPreference(key, String(this.isCollapsed()));
   }
 
   protected resetFilters() {

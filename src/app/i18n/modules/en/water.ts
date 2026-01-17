@@ -8,7 +8,6 @@ export const water = {
     EXPORT_EXCEL: 'Export to Excel',
     EXPORT_PDF: 'Export to PDF',
     IMPORT_EXCEL: 'Import from Excel',
-    EXCEL_IMPORT_SUCCESS: 'Excel data imported successfully!',
     EXCEL_IMPORT_ERROR_TITLE: 'Excel Import Failed',
     EXCEL_IMPORT_ERROR: 'Failed to import Excel data. Please check the details below and follow the instructions to fix the issue.',
     JSON_IMPORT_ERROR_TITLE: 'JSON Import Failed',
@@ -143,7 +142,7 @@ export const water = {
     IMPORT_WARNING_TITLE: 'Column Mismatch',
     IMPORT_WARNING_MESSAGE: 'Data imported successfully, but some columns configured in Settings were not found in your Excel file. Values for missing columns were set to 0.',
     MISSING_COLUMNS: 'Columns not found in file',
-    IMPORT_PLACEHOLDER_SKIPPED_SINGULAR: '1 potential placeholder record with all-zero values on the most recent date was skipped.',
-    IMPORT_PLACEHOLDER_SKIPPED_PLURAL: '{{count}} potential placeholder records with all-zero values on the most recent date were skipped.'
+    IMPORT_PLACEHOLDER_SKIPPED_SINGULAR: '1 empty record with no values was skipped.',
+    IMPORT_PLACEHOLDER_SKIPPED_PLURAL: '{{count}} empty records with no values were skipped.'
   }
 };

@@ -122,13 +122,6 @@ $heating-primary: #f57c00;
   }
 }
 
-.modal-footer {
-  justify-content: flex-end;
-  padding: 1rem 1.5rem;
-}
-
-
-
 .lock-btn {
   display: flex;
   align-items: center;
@@ -193,5 +186,27 @@ $heating-primary: #f57c00;
     background: var(--bg-tertiary);
     border-color: var(--border-color);
     color: var(--text-muted);
+  }
+}
+
+// Export/Import buttons
+.config-actions {
+  display: flex;
+  gap: 0.5rem;
+  margin-top: 1rem;
+}
+
+.hidden-input {
+  display: none;
+}
+
+// Discard button - red for destructive action
+.discard-btn {
+  background: #dc2626;
+  border-color: #dc2626;
+
+  &:hover:not(:disabled) {
+    background: #b91c1c;
+    border-color: #b91c1c;
   }
 }

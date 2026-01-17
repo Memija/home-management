@@ -29,10 +29,9 @@
     [chartType]="'heating'" [displayMode]="displayMode()" [onDisplayModeChange]="onDisplayModeChange">
   </app-consumption-chart>
 
-  <app-detailed-records [records]="records()" [calculateTotalFn]="calculateTotal"
-    [valuesNoteKey]="'HEATING.ALL_VALUES_IN_UNIT'" [sortOptions]="heatingSortOptions"
-    (editRecord)="onEditRecord($event)" (deleteRecord)="onDeleteRecord($event)"
-    (deleteAllRecords)="onDeleteAllRecords($event)">
+  <app-detailed-records [records]="records()" [calculateTotalFn]="calculateTotal" [valuesNoteKey]="''"
+    [recordType]="'heating'" [sortOptions]="heatingSortOptions" (editRecord)="onEditRecord($event)"
+    (deleteRecord)="onDeleteRecord($event)" (deleteAllRecords)="onDeleteAllRecords($event)">
     <!-- Import/Export buttons projected into detailed-records -->
     <div slot="action-buttons" class="action-buttons-group">
       <button type="button" (click)="exportData()" class="export-btn json-btn"
@@ -64,16 +63,24 @@
         <input type="file" id="import-excel-file-heating" accept=".xlsx,.xls" (change)="importFromExcel($event)"
           class="hidden-input" [disabled]="isImporting()">
       </label>
+      <button type="button" (click)="exportToPdf()" class="export-btn pdf-btn"
+        [disabled]="isExporting() || records().length === 0"
+        title="{{ (records().length === 0 ? 'HEATING.EXPORT_DISABLED_TOOLTIP' : 'HEATING.EXPORT_PDF') | translate }}">
+        <lucide-icon [img]="FileTextIcon" size="16"></lucide-icon>
+        <span class="btn-text">{{ isExporting() ? 'Exporting...' : ('HEATING.EXPORT_PDF' | translate) }}</span>
+      </button>
       }
     </div>
     <!-- Heating-specific record details template -->
     <ng-template #recordDetails let-record>
-      @for (room of roomsService.rooms(); track room.id) {
-      <div class="room-value">
-        <strong>{{ room.name }}:</strong>
-        <span>{{ record.rooms[room.id] || 0 }} kWh</span>
+      <div class="room-values-container">
+        @for (room of roomsService.rooms(); track room.id) {
+        <div class="room-value">
+          <span class="room-name">{{ room.name }}</span>
+          <span class="room-reading">{{ record.rooms[room.id] || 0 }}</span>
+        </div>
+        }
       </div>
-      }
     </ng-template>
   </app-detailed-records>
 
@@ -107,11 +114,11 @@
   <div class="modal-content" (click)="$event.stopPropagation()">
     <div class="modal-header">
       <lucide-icon [img]="CheckCircleIcon" size="32" class="success-icon"></lucide-icon>
-      <h3>{{ 'HOME.SUCCESS_TITLE' | translate }}</h3>
+      <h3>{{ successTitle() | translate }}</h3>
       <button class="close-btn" (click)="closeSuccessModal()">×</button>
     </div>
     <div class="modal-body">
-      <p>{{ 'HOME.RECORD_SAVED' | translate }}</p>
+      <p>{{ successMessage() | translate }}</p>
     </div>
     <div class="modal-footer">
       <button class="btn-primary" (click)="closeSuccessModal()">OK</button>
@@ -119,3 +126,13 @@
   </div>
 </div>
 }
+
+<app-delete-confirmation-modal [show]="showDeleteModal()" [titleKey]="'HOME.DELETE_CONFIRM_TITLE'"
+  [messageKey]="'HOME.DELETE_CONFIRM_MESSAGE'" [cancelKey]="'HOME.CANCEL'" [deleteKey]="'HOME.DELETE_BUTTON'"
+  [icon]="TrashIcon" (confirm)="confirmDelete()" (cancel)="cancelDelete()">
+</app-delete-confirmation-modal>
+
+<app-delete-confirmation-modal [show]="showDeleteAllModal()" [titleKey]="'HOME.DELETE_ALL_CONFIRM_TITLE'"
+  [messageKey]="deleteAllMessageKey()" [messageParams]="deleteAllMessageParams()" [cancelKey]="'HOME.CANCEL'"
+  [deleteKey]="'HOME.DELETE_ALL_BUTTON'" [icon]="TrashIcon" (confirm)="confirmDeleteAll()" (cancel)="cancelDeleteAll()">
+</app-delete-confirmation-modal>

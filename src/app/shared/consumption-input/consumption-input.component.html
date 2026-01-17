@@ -75,7 +75,7 @@
     @if (editingMode()) {
     <button type="button" class="cancel-btn" (click)="onCancel()">{{ cancelKey() | translate }}</button>
     }
-    <button type="button" (click)="onSave()">
+    <button type="button" class="save-btn" (click)="onSave()">
       {{ editingMode() ? (updateKey() | translate) : (saveKey() | translate) }}
     </button>
   </div>

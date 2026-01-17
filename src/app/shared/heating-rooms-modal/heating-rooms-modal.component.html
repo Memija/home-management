@@ -55,6 +55,19 @@
         <lucide-icon [img]="PlusIcon" size="18"></lucide-icon>
         {{ 'HEATING.ADD_ROOM' | translate }}
       </button>
+
+      <div class="config-actions">
+        <button type="button" class="export-btn" (click)="exportConfiguration()"
+          [disabled]="editingRooms().length === 0" title="{{ 'HEATING.EXPORT_ROOMS' | translate }}">
+          <lucide-icon [img]="DownloadIcon" size="16"></lucide-icon>
+          <span class="btn-text">{{ 'HEATING.EXPORT_ROOMS' | translate }}</span>
+        </button>
+        <label class="import-btn" title="{{ 'HEATING.IMPORT_ROOMS' | translate }}">
+          <lucide-icon [img]="UploadIcon" size="16"></lucide-icon>
+          <span class="btn-text">{{ 'HEATING.IMPORT_ROOMS' | translate }}</span>
+          <input type="file" accept=".json" (change)="importConfiguration($event)" class="hidden-input">
+        </label>
+      </div>
     </div>
 
     <div class="modal-footer">
@@ -80,6 +93,26 @@
     <div class="modal-footer">
       <button class="btn-secondary" (click)="cancelUnlock()">{{ 'HOME.CANCEL' | translate }}</button>
       <button class="btn-primary" (click)="confirmUnlock()">{{ 'HEATING.UNLOCK_BUTTON' | translate }}</button>
+    </div>
+  </div>
+</div>
+}
+
+<!-- Discard Changes Warning Modal -->
+@if (showDiscardWarning()) {
+<div class="modal-overlay unlock-warning-overlay" (click)="cancelDiscard()">
+  <div class="modal-content unlock-warning-modal" (click)="$event.stopPropagation()">
+    <div class="modal-header">
+      <lucide-icon [img]="TriangleAlertIcon" size="24" class="warning-icon"></lucide-icon>
+      <h3>{{ 'HEATING.DISCARD_WARNING_TITLE' | translate }}</h3>
+    </div>
+    <div class="modal-body">
+      <p>{{ 'HEATING.DISCARD_WARNING_MESSAGE' | translate }}</p>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-secondary" (click)="cancelDiscard()">{{ 'HOME.CANCEL' | translate }}</button>
+      <button class="btn-primary discard-btn" (click)="confirmDiscard()">{{ 'HEATING.DISCARD_BUTTON' | translate
+        }}</button>
     </div>
   </div>
 </div>

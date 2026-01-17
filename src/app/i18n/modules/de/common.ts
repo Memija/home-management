@@ -64,5 +64,10 @@ export const common = {
   },
   FACTS: {
     DID_YOU_KNOW: 'Wussten Sie schon?'
+  },
+  IMPORT: {
+    SUCCESS_TITLE: 'Import erfolgreich',
+    JSON_SUCCESS: 'JSON-Daten erfolgreich importiert!',
+    EXCEL_SUCCESS: 'Excel-Daten erfolgreich importiert!'
   }
 };

@@ -141,10 +141,19 @@ export class ConsumptionInputComponent {
     const isGroupEmpty = (group: ConsumptionGroup) => group.fields.every(f => f.value === null);
     const isGroupPartial = (group: ConsumptionGroup) => !isGroupComplete(group) && !isGroupEmpty(group);
     const hasAnyValue = (group: ConsumptionGroup) => group.fields.some(f => f.value !== null);
+    // Check if at least one field has a non-zero, non-null value
+    const hasNonZeroValue = (group: ConsumptionGroup) => group.fields.some(f => f.value !== null && f.value > 0);
 
     const hasPartialGroups = grps.some(isGroupPartial);
     const hasCompleteGroups = grps.some(isGroupComplete);
     const hasAnyValues = grps.some(hasAnyValue);
+    const hasAnyNonZeroValues = grps.some(hasNonZeroValue);
+
+    // Prevent saving records where all values are zero or empty
+    if (!hasAnyNonZeroValues) {
+      this.errorMessage.set(this.noValuesErrorKey());
+      return;
+    }
 
     // In partial groups mode (heating), allow saving if at least one field has a value
     if (this.allowPartialGroups()) {

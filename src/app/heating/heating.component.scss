@@ -136,6 +136,50 @@ $heating-primary-light: #fff3e0;
 
 // Override help button hover in consumption-input component
 ::ng-deep app-consumption-input .header-actions .help-btn:hover {
-
   color: $heating-primary !important;
+}
+
+// Room values container in detailed records
+.room-values-container {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  width: 100%;
+  padding-top: 0.25rem;
+}
+
+// Room value styling in detailed records
+.room-value {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.15rem 0;
+
+  .room-name {
+    font-weight: 500;
+    color: var(--text-primary);
+    font-size: 0.9rem;
+  }
+
+  .room-reading {
+    font-weight: 600;
+    color: $heating-primary;
+    background: $heating-primary-light;
+    padding: 0.2rem 0.5rem;
+    border-radius: 4px;
+    font-size: 0.9rem;
+  }
+}
+
+// Action buttons styling (same as water component)
+.action-buttons-group {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+
+  button,
+  label {
+    flex-shrink: 0;
+  }
 }

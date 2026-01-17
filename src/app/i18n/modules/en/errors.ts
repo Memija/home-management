@@ -21,6 +21,11 @@ export const errors = {
     JSON_NUMBER_FIX_1: 'Ensure all consumption values are numbers',
     JSON_NUMBER_FIX_2: 'Remove any text or special characters from numeric fields',
     JSON_DUPLICATE_FIX_1: 'Remove duplicate date entries from your JSON file',
-    JSON_DUPLICATE_FIX_2: 'Each date should only appear once in the file'
+    JSON_DUPLICATE_FIX_2: 'Each date should only appear once in the file',
+    IMPORT_MISSING_ROOMS_OBJECT: 'Record ({{date}}): Missing or invalid \'rooms\' object',
+    IMPORT_INVALID_ROOM_VALUE: 'Record ({{date}}): Invalid number \'{{value}}\' for room \'{{room}}\'',
+    IMPORT_INVALID_ROOM_TYPE: 'Record ({{date}}): Invalid value type for room \'{{room}}\'',
+    IMPORT_MISSING_ROOM_DATA: 'Record ({{date}}): Missing data for room \'{{room}}\'',
+    IMPORT_UNKNOWN_ROOM: 'Record ({{date}}): Unknown room \'{{room}}\''
   }
 };

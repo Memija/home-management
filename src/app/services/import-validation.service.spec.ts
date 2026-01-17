@@ -123,32 +123,93 @@ describe('ImportValidationService', () => {
   });
 
   describe('validateHeatingJsonImport', () => {
-    it('should validate correct heating records', () => {
+    it('should validate dynamic heating records with rooms object', () => {
       const data = [
         {
           date: '2023-01-01',
-          livingRoom: 10,
-          bedroom: 20,
-          kitchen: 30,
-          bathroom: 40
+          rooms: {
+            room_1: 10,
+            room_2: 20
+          }
         }
       ];
       const result = service.validateHeatingJsonImport(data);
       expect(result.validRecords.length).toBe(1);
       expect(result.errors.length).toBe(0);
-      expect(result.validRecords[0].livingRoom).toBe(10);
+      expect((result.validRecords[0] as any).rooms['room_1']).toBe(10);
     });
-    // Similar tests as water for invalid inputs, as it shares underlying logic
-    it('should error on invalid numeric fields', () => {
+
+    it('should validate against expected room IDs', () => {
       const data = [
         {
           date: '2023-01-01',
-          livingRoom: 'invalid'
+          rooms: {
+            room_1: 10,
+            room_2: 20
+          }
+        }
+      ];
+      const expectedRoomIds = ['room_1', 'room_2'];
+      const result = service.validateHeatingJsonImport(data, expectedRoomIds);
+      expect(result.validRecords.length).toBe(1);
+      expect(result.errors.length).toBe(0);
+    });
+
+    it('should error on unknown room IDs', () => {
+      const data = [
+        {
+          date: '2023-01-01',
+          rooms: {
+            room_1: 10,
+            unknown_room: 20
+          }
+        }
+      ];
+      const expectedRoomIds = ['room_1', 'room_2'];
+      const result = service.validateHeatingJsonImport(data, expectedRoomIds);
+      expect(result.validRecords.length).toBe(0);
+      expect(result.errors.length).toBeGreaterThan(0);
+    });
+
+    it('should error on missing expected room data', () => {
+      const data = [
+        {
+          date: '2023-01-01',
+          rooms: {
+            room_1: 10
+            // Missing room_2
+          }
+        }
+      ];
+      const expectedRoomIds = ['room_1', 'room_2'];
+      const result = service.validateHeatingJsonImport(data, expectedRoomIds);
+      expect(result.validRecords.length).toBe(0);
+      expect(result.errors[0]).toContain('ERROR.IMPORT_MISSING_ROOM_DATA');
+    });
+
+    it('should error on missing rooms object', () => {
+      const data = [
+        {
+          date: '2023-01-01'
         }
       ];
       const result = service.validateHeatingJsonImport(data);
       expect(result.validRecords.length).toBe(0);
-      expect(result.errors[0]).toContain('Invalid number value');
+      expect(result.errors[0]).toContain('ERROR.IMPORT_MISSING_ROOMS_OBJECT');
+    });
+
+    it('should error on invalid room value', () => {
+      const data = [
+        {
+          date: '2023-01-01',
+          rooms: {
+            room_1: 'invalid'
+          }
+        }
+      ];
+      const result = service.validateHeatingJsonImport(data);
+      expect(result.validRecords.length).toBe(0);
+      expect(result.errors[0]).toContain('ERROR.IMPORT_INVALID_ROOM_VALUE');
     });
   });
 

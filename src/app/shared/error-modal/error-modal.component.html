@@ -1,9 +1,12 @@
 @if (show()) {
 <div class="modal-overlay" (click)="cancel.emit()">
-  <div class="modal-content error-modal" [class.warning]="type() === 'warning'" (click)="$event.stopPropagation()">
+  <div class="modal-content error-modal" [class.warning]="type() === 'warning'" [class.success]="type() === 'success'"
+    (click)="$event.stopPropagation()">
     <div class="modal-header error-header">
       @if (type() === 'warning') {
       <lucide-icon [img]="AlertTriangleIcon" size="32" class="error-icon warning"></lucide-icon>
+      } @else if (type() === 'success') {
+      <lucide-icon [img]="CheckCircleIcon" size="32" class="error-icon success"></lucide-icon>
       } @else {
       <lucide-icon [img]="AlertCircleIcon" size="32" class="error-icon"></lucide-icon>
       }

@@ -22,6 +22,10 @@
   &.warning {
     border-top-color: $warning;
   }
+
+  &.success {
+    border-top-color: $success;
+  }
 }
 
 // Override modal-header for error layout
@@ -43,6 +47,10 @@
 
     &.warning {
       color: $warning;
+    }
+
+    &.success {
+      color: $success;
     }
   }
 }

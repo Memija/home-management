@@ -209,4 +209,108 @@ describe('ExcelImportService', () => {
       expect(result.instructions[0]).toBe('HOME.IMPORT_ERROR_INSTRUCTION_1');
     });
   });
+
+  describe('Dynamic Room Configuration', () => {
+    it('should validate settings with dynamic room IDs', () => {
+      const validData = {
+        enabled: true,
+        waterMapping: {
+          date: 'Date',
+          kitchenWarm: 'KW',
+          kitchenCold: 'KC',
+          bathroomWarm: 'BW',
+          bathroomCold: 'BC'
+        },
+        heatingMapping: {
+          date: 'Heating Date',
+          rooms: {
+            livingRoom: 'Living Room Column',
+            bedroom: 'Bedroom Column',
+            kitchen: 'Kitchen Column',
+            bathroom: 'Bathroom Column'
+          }
+        }
+      };
+
+      const result = service.validateImportedSettings(validData);
+      expect(result.heatingMapping.rooms).toEqual(validData.heatingMapping.rooms);
+    });
+
+    it('should validate settings with matching room IDs', () => {
+      // Room IDs must match ALL rooms from the mocked HeatingRoomsService
+      const validData = {
+        enabled: true,
+        waterMapping: {
+          date: 'Date',
+          kitchenWarm: 'KW',
+          kitchenCold: 'KC',
+          bathroomWarm: 'BW',
+          bathroomCold: 'BC'
+        },
+        heatingMapping: {
+          date: 'Heating Date',
+          rooms: {
+            livingRoom: 'Living Room Column',
+            bedroom: 'Bedroom Column',
+            kitchen: 'Kitchen Column',
+            bathroom: 'Bathroom Column'
+          }
+        }
+      };
+
+      const result = service.validateImportedSettings(validData);
+      expect(Object.keys(result.heatingMapping.rooms).length).toBe(4);
+    });
+
+    it('should throw on empty rooms object', () => {
+      const invalidData = {
+        enabled: true,
+        waterMapping: {
+          date: 'Date',
+          kitchenWarm: 'KW',
+          kitchenCold: 'KC',
+          bathroomWarm: 'BW',
+          bathroomCold: 'BC'
+        },
+        heatingMapping: {
+          date: 'Heating Date',
+          rooms: {}
+        }
+      };
+
+      try {
+        service.validateImportedSettings(invalidData);
+        expect(true).toBe(false);
+      } catch (e: any) {
+        expect(e.message).toBe('SETTINGS.VALIDATION_FAILED');
+      }
+    });
+
+    it('should throw if rooms has invalid column values', () => {
+      const invalidData = {
+        enabled: true,
+        waterMapping: {
+          date: 'Date',
+          kitchenWarm: 'KW',
+          kitchenCold: 'KC',
+          bathroomWarm: 'BW',
+          bathroomCold: 'BC'
+        },
+        heatingMapping: {
+          date: 'Heating Date',
+          rooms: {
+            livingRoom: '', // Empty value
+            bedroom: 'Bedroom'
+          }
+        }
+      };
+
+      try {
+        service.validateImportedSettings(invalidData);
+        expect(true).toBe(false);
+      } catch (e: any) {
+        expect(e.message).toBe('SETTINGS.VALIDATION_FAILED');
+      }
+    });
+  });
 });

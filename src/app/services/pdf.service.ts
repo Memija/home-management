@@ -164,4 +164,129 @@ export class PdfService {
     // Save the PDF
     doc.save(filename);
   }
+
+  /**
+   * Export heating consumption records to PDF
+   */
+  async exportHeatingToPdf(
+    records: Array<{ date: Date; rooms: Record<string, number> }>,
+    roomNames: string[],
+    filename: string = 'heating-consumption.pdf'
+  ): Promise<void> {
+    // Dynamically import jsPDF and autoTable
+    const { jsPDF } = await import('jspdf');
+    const autoTable = (await import('jspdf-autotable')).default;
+
+    // Create PDF in landscape for better table fit
+    const doc = new jsPDF('landscape');
+
+    // Try to load and add logo
+    try {
+      const logoBase64 = await this.loadImageAsBase64('/assets/logo.png');
+      doc.addImage(logoBase64, 'PNG', 14, 8, 15, 15);
+    } catch (error) {
+      console.warn('Could not load logo for PDF:', error);
+    }
+
+    // Application name
+    const appName = this.languageService.translate('FOOTER.APP_NAME');
+    doc.setFontSize(12);
+    doc.setFont('helvetica', 'bold');
+    doc.setTextColor(245, 124, 0); // Orange color matching heating theme
+    doc.text(appName, 32, 16);
+
+    // Report title
+    const title = this.languageService.translate('HEATING.TITLE');
+    doc.setFontSize(16);
+    doc.setFont('helvetica', 'normal');
+    doc.setTextColor(0);
+    doc.text(title, 14, 32);
+
+    // Generation date
+    doc.setFontSize(10);
+    doc.setTextColor(100);
+    const generatedText = `${this.languageService.currentLang() === 'de' ? 'Erstellt am' : 'Generated on'}: ${new Date().toLocaleDateString()}`;
+    doc.text(generatedText, 14, 40);
+
+    // Reset text color
+    doc.setTextColor(0);
+
+    // Sort records by date
+    const sortedRecords = [...records].sort((a, b) =>
+      new Date(a.date).getTime() - new Date(b.date).getTime()
+    );
+
+    // Table headers - Date, dynamic rooms, Total
+    const headers = [
+      this.languageService.translate('HOME.SELECT_DATE') || 'Date',
+      ...roomNames,
+      this.languageService.translate('HOME.TOTAL')
+    ];
+
+    // Calculate total for a record
+    const calculateTotal = (record: { rooms: Record<string, number> }) =>
+      Object.values(record.rooms).reduce((sum, val) => sum + (val || 0), 0);
+
+    // Table data
+    const data = sortedRecords.map(record => {
+      const total = calculateTotal(record);
+      const roomValues = roomNames.map((_, index) => {
+        const roomId = Object.keys(record.rooms)[index];
+        return (record.rooms[roomId] || 0).toFixed(2);
+      });
+
+      return [
+        this.formatDate(record.date),
+        ...roomValues,
+        total.toFixed(2)
+      ];
+    });
+
+    // Dynamic column widths based on number of rooms
+    const dateWidth = 30;
+    const totalWidth = 30;
+    const remainingWidth = 260 - dateWidth - totalWidth; // Landscape page width approximately
+    const roomWidth = Math.min(30, remainingWidth / roomNames.length);
+
+    const columnStyles: { [key: string]: { cellWidth?: number; halign?: 'right' | 'left' | 'center'; fontStyle?: 'normal' | 'bold' | 'italic' | 'bolditalic' } } = {
+      '0': { cellWidth: dateWidth }
+    };
+    roomNames.forEach((_, i) => {
+      columnStyles[String(i + 1)] = { cellWidth: roomWidth, halign: 'right' };
+    });
+    columnStyles[String(roomNames.length + 1)] = { cellWidth: totalWidth, halign: 'right', fontStyle: 'bold' };
+
+    // Add table using autoTable function
+    autoTable(doc, {
+      head: [headers],
+      body: data,
+      startY: 48,
+      theme: 'striped',
+      headStyles: {
+        fillColor: [245, 124, 0], // Orange color matching heating theme
+        textColor: 255,
+        fontStyle: 'bold'
+      },
+      styles: {
+        fontSize: 9,
+        cellPadding: 3
+      },
+      columnStyles,
+      didDrawPage: (pageData) => {
+        // Footer with page numbers
+        const pageCount = doc.getNumberOfPages();
+        doc.setFontSize(8);
+        doc.setTextColor(150);
+        doc.text(
+          `${pageData.pageNumber} / ${pageCount}`,
+          doc.internal.pageSize.width / 2,
+          doc.internal.pageSize.height - 10,
+          { align: 'center' }
+        );
+      }
+    });
+
+    // Save the PDF
+    doc.save(filename);
+  }
 }

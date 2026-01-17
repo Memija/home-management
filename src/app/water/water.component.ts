@@ -84,6 +84,8 @@ export class WaterComponent {
   protected isExporting = this.dataService.isExporting;
   protected isImporting = this.dataService.isImporting;
   protected showSuccessModal = this.dataService.showSuccessModal;
+  protected successTitle = this.dataService.successTitle;
+  protected successMessage = this.dataService.successMessage;
   protected showDeleteModal = this.dataService.showDeleteModal;
   protected showDeleteAllModal = this.dataService.showDeleteAllModal;
   protected recordToDelete = this.dataService.recordToDelete;

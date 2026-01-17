@@ -11,7 +11,7 @@ export interface HeatingRoomConfig {
   type?: string;   // Room type key for icon matching (e.g., 'HEATING.ROOM_LIVING_ROOM')
 }
 
-const STORAGE_KEY = 'heating_room_configs';
+const STORAGE_KEY = 'heating_room_configuration';
 const MAX_ROOMS = 10;
 
 // Predefined room name translation keys
@@ -65,7 +65,20 @@ export class HeatingRoomsService {
   }
 
   private loadRooms(): HeatingRoomConfig[] {
-    const stored = this.localStorage.getPreference(STORAGE_KEY);
+    // Try new key first
+    let stored = this.localStorage.getPreference(STORAGE_KEY);
+
+    // Migration: if new key is empty, try old key
+    if (!stored) {
+      const oldKey = 'heating_room_configs';
+      const oldData = this.localStorage.getPreference(oldKey);
+      if (oldData) {
+        // Migrate to new key
+        this.localStorage.setPreference(STORAGE_KEY, oldData);
+        stored = oldData;
+      }
+    }
+
     if (stored) {
       try {
         const parsed = JSON.parse(stored);
@@ -155,5 +168,56 @@ export class HeatingRoomsService {
   setRooms(rooms: HeatingRoomConfig[]): void {
     this._rooms.set(rooms);
     this.saveRooms();
+  }
+
+  /**
+   * Export room configuration to JSON file
+   */
+  exportRooms(): void {
+    const rooms = this._rooms();
+    const dataStr = JSON.stringify(rooms, null, 2);
+    const blob = new Blob([dataStr], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'heating-settings.json';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  }
+
+  /**
+   * Import room configuration from JSON file
+   * Returns true if successful, false if validation failed
+   */
+  async importRooms(file: File): Promise<{ success: boolean; error?: string }> {
+    try {
+      const text = await file.text();
+      const data = JSON.parse(text);
+
+      // Validate structure
+      if (!Array.isArray(data)) {
+        return { success: false, error: 'Invalid format: expected an array of rooms' };
+      }
+
+      // Validate each room
+      for (let i = 0; i < data.length; i++) {
+        const room = data[i];
+        if (!room.id || typeof room.id !== 'string') {
+          return { success: false, error: `Room ${i + 1}: Missing or invalid 'id'` };
+        }
+        if (!room.name || typeof room.name !== 'string') {
+          return { success: false, error: `Room ${i + 1}: Missing or invalid 'name'` };
+        }
+      }
+
+      // Apply the imported rooms
+      this._rooms.set(data as HeatingRoomConfig[]);
+      this.saveRooms();
+      return { success: true };
+    } catch (e) {
+      return { success: false, error: e instanceof Error ? e.message : 'Failed to parse file' };
+    }
   }
 }

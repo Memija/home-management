@@ -9,13 +9,14 @@ import { ExcelService } from '../services/excel.service';
 import { ExcelSettingsService } from '../services/excel-settings.service';
 import { HeatingFormService } from '../services/heating-form.service';
 import { HeatingRoomsService, HeatingRoomConfig } from '../services/heating-rooms.service';
-import { LucideAngularModule, ArrowLeft, ChevronDown, ChevronLeft, ChevronRight, Download, Upload, FileSpreadsheet, Settings, CheckCircle, Armchair, Bed, Bath, CookingPot, Baby, Briefcase, DoorOpen, UtensilsCrossed, Home, Lightbulb, Info } from 'lucide-angular';
+import { LucideAngularModule, ArrowLeft, ChevronDown, ChevronLeft, ChevronRight, Download, Upload, FileSpreadsheet, Settings, CheckCircle, Armchair, Bed, Bath, CookingPot, Baby, Briefcase, DoorOpen, UtensilsCrossed, Home, Lightbulb, Info, Trash2, FileText } from 'lucide-angular';
 import { ConsumptionChartComponent, type ChartView, type DisplayMode } from '../shared/consumption-chart/consumption-chart.component';
 import { ConsumptionInputComponent, type ConsumptionData, type ConsumptionGroup } from '../shared/consumption-input/consumption-input.component';
 import { ErrorModalComponent } from '../shared/error-modal/error-modal.component';
 import { ConfirmationModalComponent } from '../shared/confirmation-modal/confirmation-modal.component';
 import { HeatingRoomsModalComponent } from '../shared/heating-rooms-modal/heating-rooms-modal.component';
 import { DetailedRecordsComponent, SortOptionConfig } from '../shared/detailed-records/detailed-records.component';
+import { DeleteConfirmationModalComponent } from '../shared/delete-confirmation-modal/delete-confirmation-modal.component';
 import { ComparisonNoteComponent } from '../shared/comparison-note/comparison-note.component';
 import { ImportValidationService } from '../services/import-validation.service';
 import { DynamicHeatingRecord, HeatingRecord, calculateDynamicHeatingTotal, filterZeroPlaceholders, isDynamicHeatingRecordAllZero, isHeatingRecordAllZero, toHeatingRecord, toDynamicHeatingRecord } from '../models/records.model';
@@ -23,6 +24,7 @@ import { NotificationService } from '../services/notification.service';
 import { HeatingFactsService } from '../services/heating-facts.service';
 import { HouseholdService } from '../services/household.service';
 import { HEATING_RECORD_HELP_STEPS } from './heating.constants';
+import { PdfService } from '../services/pdf.service';
 
 const ROOM_TYPE_ICONS: Record<string, any> = {
   'HEATING.ROOM_LIVING_ROOM': Armchair,
@@ -40,7 +42,7 @@ const ROOM_TYPE_ICONS: Record<string, any> = {
 @Component({
   selector: 'app-heating',
   standalone: true,
-  imports: [CommonModule, FormsModule, TranslatePipe, LucideAngularModule, ConsumptionChartComponent, ConsumptionInputComponent, ErrorModalComponent, ConfirmationModalComponent, HeatingRoomsModalComponent, DetailedRecordsComponent, ComparisonNoteComponent],
+  imports: [CommonModule, FormsModule, TranslatePipe, LucideAngularModule, ConsumptionChartComponent, ConsumptionInputComponent, ErrorModalComponent, ConfirmationModalComponent, HeatingRoomsModalComponent, DetailedRecordsComponent, ComparisonNoteComponent, DeleteConfirmationModalComponent],
   templateUrl: './heating.component.html',
   styleUrl: './heating.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush
@@ -69,6 +71,10 @@ export class HeatingComponent {
   protected readonly CheckCircleIcon = CheckCircle;
   protected readonly LightbulbIcon = Lightbulb;
   protected readonly InfoIcon = Info;
+  protected readonly TrashIcon = Trash2;
+  protected readonly FileTextIcon = FileText;
+
+  private pdfService = inject(PdfService);
 
   // Available countries for heating facts - from service
   protected readonly availableCountries = this.heatingFactsService.getAvailableCountries();
@@ -143,6 +149,8 @@ export class HeatingComponent {
   protected isExporting = signal(false);
   protected isImporting = signal(false);
   protected showSuccessModal = signal(false);
+  protected successTitle = signal('HEATING.SUCCESS_TITLE');
+  protected successMessage = signal('HEATING.RECORD_SAVED');
   protected showErrorModal = signal(false);
   protected errorTitle = signal('ERROR.TITLE');
 
@@ -167,6 +175,8 @@ export class HeatingComponent {
       }
 
       this.cancelEdit();
+      this.successTitle.set('HEATING.SUCCESS_TITLE');
+      this.successMessage.set('HEATING.RECORD_SAVED');
       this.showSuccessModal.set(true);
 
       // Update notification service
@@ -176,7 +186,7 @@ export class HeatingComponent {
   protected errorMessage = signal('');
   protected errorDetails = signal('');
   protected errorInstructions = signal<string[]>([]);
-  protected errorType = signal<'error' | 'warning'>('error');
+  protected errorType = signal<'error' | 'warning' | 'success'>('error');
 
   protected records = signal<DynamicHeatingRecord[]>([]);
   protected showImportConfirmModal = signal(false);
@@ -184,6 +194,12 @@ export class HeatingComponent {
   protected chartView = signal<ChartView>('total');
   protected displayMode = signal<DisplayMode>('total');
   protected showRoomsModal = signal(false);
+
+  // Delete confirmation modal state
+  protected showDeleteModal = signal(false);
+  protected recordToDelete = signal<DynamicHeatingRecord | null>(null);
+  protected showDeleteAllModal = signal(false);
+  protected recordsToDeleteAll = signal<DynamicHeatingRecord[]>([]);
 
   // Compute which rooms have data (non-zero values in records)
   protected roomsWithData = computed(() => {
@@ -301,16 +317,16 @@ export class HeatingComponent {
     const key = 'HOME.PAGE_OF';
     const template = this.languageService.translate(key);
     return template
-      .replace('{current}', this.currentPage().toString())
-      .replace('{total}', this.totalPages().toString());
+      .replace('{{current}}', this.currentPage().toString())
+      .replace('{{total}}', this.totalPages().toString());
   });
 
   protected showingRecordsText = computed(() => {
     const key = 'HOME.SHOWING_RECORDS';
     const template = this.languageService.translate(key);
     return template
-      .replace('{current}', this.displayedRecords().length.toString())
-      .replace('{total}', this.records().length.toString());
+      .replace('{{current}}', this.displayedRecords().length.toString())
+      .replace('{{total}}', this.records().length.toString());
   });
 
   protected onChartViewChange = (view: ChartView): void => {
@@ -342,8 +358,7 @@ export class HeatingComponent {
     this.isExporting.set(true);
     try {
       const records = await this.storage.exportRecords('heating_consumption_records');
-      const dateStr = new Date().toISOString().split('T')[0];
-      this.fileStorage.exportToFile(records, `heating-records-${dateStr}.json`);
+      this.fileStorage.exportToFile(records, 'heating-consumption.json');
     } finally {
       this.isExporting.set(false);
     }
@@ -352,14 +367,29 @@ export class HeatingComponent {
   async exportToExcel() {
     this.isExporting.set(true);
     try {
-      const dateStr = new Date().toISOString().split('T')[0];
       this.excelService.exportHeatingToExcel(
         this.records(),
-        `heating-consumption-${dateStr}.xlsx`
+        'heating-consumption.xlsx'
       );
     } catch (error) {
       console.error('Excel export error:', error);
       alert(this.languageService.translate('HEATING.EXCEL_IMPORT_ERROR'));
+    } finally {
+      this.isExporting.set(false);
+    }
+  }
+
+  async exportToPdf() {
+    this.isExporting.set(true);
+    try {
+      const roomNames = this.roomsService.rooms().map(r => r.name);
+      await this.pdfService.exportHeatingToPdf(
+        this.records(),
+        roomNames,
+        'heating-consumption.pdf'
+      );
+    } catch (error) {
+      console.error('PDF export error:', error);
     } finally {
       this.isExporting.set(false);
     }
@@ -389,30 +419,40 @@ export class HeatingComponent {
         }
 
         // Validate records
-        const result = this.importValidationService.validateHeatingJsonImport(data as unknown[]);
+        // Validate records with strict room ID check
+        const expectedRoomIds = this.roomsService.rooms().map(r => r.id);
+        const result = this.importValidationService.validateHeatingJsonImport(data as unknown[], expectedRoomIds);
         if (result.errors.length > 0) {
           throw new Error(result.errors.join('\n'));
         }
 
-        // Filter out zero-value placeholders on the freshest date
-        const { filtered, skippedCount } = filterZeroPlaceholders(result.validRecords, isHeatingRecordAllZero);
+        // Filter out zero-value placeholders
+        // Cast result.validRecords to DynamicHeatingRecord[] because we updated the validator
+        // to return dynamic records (even though interface says HeatingRecord for now)
+        const validDynamicRecords = result.validRecords as unknown as DynamicHeatingRecord[];
 
-        // Convert to dynamic format and import
-        const dynamicRecords = filtered.map(toDynamicHeatingRecord);
-        await this.storage.importRecords('heating_consumption_records', dynamicRecords);
+        const { filtered, skippedCount } = filterZeroPlaceholders(validDynamicRecords, isDynamicHeatingRecordAllZero);
+
+        // Import records (they are already dynamic)
+        await this.storage.importRecords('heating_consumption_records', filtered);
         await this.loadData();
         // Update notification service
         this.notificationService.setHeatingRecords(this.records());
 
-        // Show warning if placeholders were skipped
+        // Show warning if placeholders were skipped, otherwise show success
         if (skippedCount > 0) {
           const key = skippedCount === 1 ? 'HEATING.IMPORT_PLACEHOLDER_SKIPPED_SINGULAR' : 'HEATING.IMPORT_PLACEHOLDER_SKIPPED_PLURAL';
           this.errorType.set('warning');
           this.errorTitle.set(this.languageService.translate('HOME.IMPORT_WARNING_TITLE'));
-          this.errorMessage.set(this.languageService.translate(key).replace('{count}', skippedCount.toString()));
+          this.errorMessage.set(this.languageService.translate(key).replace('{{count}}', skippedCount.toString()));
           this.errorDetails.set('');
           this.errorInstructions.set([]);
           this.showErrorModal.set(true);
+        } else {
+          // Show success message
+          this.successTitle.set('IMPORT.SUCCESS_TITLE');
+          this.successMessage.set('IMPORT.JSON_SUCCESS');
+          this.showSuccessModal.set(true);
         }
       } catch (error) {
         console.error('Error importing data:', error);
@@ -476,7 +516,7 @@ export class HeatingComponent {
         }
         if (skippedCount > 0) {
           const key = skippedCount === 1 ? 'HEATING.IMPORT_PLACEHOLDER_SKIPPED_SINGULAR' : 'HEATING.IMPORT_PLACEHOLDER_SKIPPED_PLURAL';
-          warnings.push(this.languageService.translate(key).replace('{count}', skippedCount.toString()));
+          warnings.push(this.languageService.translate(key).replace('{{count}}', skippedCount.toString()));
         }
 
         if (warnings.length > 0) {
@@ -486,6 +526,11 @@ export class HeatingComponent {
           this.errorInstructions.set([]);
           this.errorType.set('warning');
           this.showErrorModal.set(true);
+        } else {
+          // Show success message
+          this.successTitle.set('IMPORT.SUCCESS_TITLE');
+          this.successMessage.set('IMPORT.EXCEL_SUCCESS');
+          this.showSuccessModal.set(true);
         }
       } catch (error) {
         console.error('Excel import error:', error);
@@ -567,15 +612,54 @@ export class HeatingComponent {
   }
 
   protected onDeleteRecord(record: any) {
-    this.records.update(records => records.filter(r => r.date.getTime() !== record.date.getTime()));
-    this.storage.save('heating_consumption_records', this.records());
-    this.notificationService.setHeatingRecords(this.records());
+    this.recordToDelete.set(record as DynamicHeatingRecord);
+    this.showDeleteModal.set(true);
+  }
+
+  protected confirmDelete() {
+    const record = this.recordToDelete();
+    if (record) {
+      this.records.update(records => records.filter(r => r.date.getTime() !== record.date.getTime()));
+      this.storage.save('heating_consumption_records', this.records());
+      this.notificationService.setHeatingRecords(this.records());
+    }
+    this.showDeleteModal.set(false);
+    this.recordToDelete.set(null);
+  }
+
+  protected cancelDelete() {
+    this.showDeleteModal.set(false);
+    this.recordToDelete.set(null);
   }
 
   protected onDeleteAllRecords(recordsToDelete: any[]) {
+    this.recordsToDeleteAll.set(recordsToDelete as DynamicHeatingRecord[]);
+    this.showDeleteAllModal.set(true);
+  }
+
+  protected confirmDeleteAll() {
+    const recordsToDelete = this.recordsToDeleteAll();
     const datesToDelete = new Set(recordsToDelete.map((r: any) => r.date.getTime()));
     this.records.update(records => records.filter(r => !datesToDelete.has(r.date.getTime())));
     this.storage.save('heating_consumption_records', this.records());
     this.notificationService.setHeatingRecords(this.records());
+    this.showDeleteAllModal.set(false);
+    this.recordsToDeleteAll.set([]);
   }
+
+  protected cancelDeleteAll() {
+    this.showDeleteAllModal.set(false);
+    this.recordsToDeleteAll.set([]);
+  }
+
+  // Computed property for delete all message key (singular/plural)
+  protected deleteAllMessageKey = computed(() => {
+    const count = this.recordsToDeleteAll().length;
+    return count === 1 ? 'HOME.DELETE_ALL_CONFIRM_MESSAGE_SINGULAR' : 'HOME.DELETE_ALL_CONFIRM_MESSAGE_PLURAL';
+  });
+
+  // Computed property for delete all message params
+  protected deleteAllMessageParams = computed(() => ({
+    count: this.recordsToDeleteAll().length.toString()
+  }));
 }

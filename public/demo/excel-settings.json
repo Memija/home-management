@@ -8,11 +8,11 @@
     "bathroomCold": "Bathroom cold water value"
   },
   "heatingMapping": {
-    "date": "Date",
+    "date": "Date of measurement",
     "rooms": {
-      "room_2": "Kids room",
-      "room_1": "Bedroom",
-      "room_3": "Livingroom"
+      "room_2": "Kids room value",
+      "room_1": "Bedroom value",
+      "room_3": "Livingroom value"
     }
   }
 }

@@ -84,9 +84,12 @@ export class ConsumptionDataService {
   // Unified Import State
   readonly pendingImportRecords = signal<ConsumptionRecord[]>([]);
   readonly pendingImportWarnings = signal<string[]>([]);
+  readonly pendingImportSuccessKey = signal<string>('');
 
   // UI Signals
   readonly showSuccessModal = signal(false);
+  readonly successTitle = signal('HOME.SUCCESS_TITLE');
+  readonly successMessage = signal('HOME.RECORD_SAVED');
   readonly showErrorModal = signal(false);
   readonly errorTitle = signal('ERROR.TITLE');
   readonly errorMessage = signal('');
@@ -173,7 +176,11 @@ export class ConsumptionDataService {
 
     await this.storage.save('water_consumption_records', this.records());
     // Update notification service with new records
+    // Update notification service with new records
     this.notificationService.setWaterRecords(this.records());
+
+    this.successTitle.set('HOME.SUCCESS_TITLE');
+    this.successMessage.set('HOME.RECORD_SAVED');
     this.showSuccessModal.set(true);
   }
 
@@ -205,8 +212,7 @@ export class ConsumptionDataService {
   async exportData() {
     try {
       this.isExporting.set(true);
-      const suffix = this.getFilterSuffix();
-      const filename = `water-consumption${suffix}.json`;
+      const filename = 'water-consumption.json';
       await this.fileStorage.exportToFile(this.filteredRecords(), filename);
     } catch (error) {
       console.error('Error exporting data:', error);
@@ -218,8 +224,7 @@ export class ConsumptionDataService {
   async exportToExcel() {
     try {
       this.isExporting.set(true);
-      const suffix = this.getFilterSuffix();
-      const filename = `water-consumption${suffix}.xlsx`;
+      const filename = 'water-consumption.xlsx';
 
       // Removed address usage or fixed usage
       // ExcelService doesn't use address in exportWaterToExcel signature view
@@ -235,8 +240,7 @@ export class ConsumptionDataService {
   async exportToPdf() {
     try {
       this.isExporting.set(true);
-      const suffix = this.getFilterSuffix();
-      const filename = `water-consumption${suffix}.pdf`;
+      const filename = 'water-consumption.pdf';
       await this.pdfService.exportWaterToPdf(this.filteredRecords(), filename);
     } catch (error) {
       console.error('Error exporting to PDF:', error);
@@ -275,11 +279,11 @@ export class ConsumptionDataService {
         const { filtered, skippedCount } = filterZeroPlaceholders(result.validRecords, isWaterRecordAllZero);
         const warnings: string[] = [];
         if (skippedCount > 0) {
-          const key = skippedCount === 1 ? 'HOME.IMPORT_PLACEHOLDER_SKIPPED_SINGULAR' : 'HOME.IMPORT_PLACEHOLDER_SKIPPED_PLURAL';
-          warnings.push(this.languageService.translate(key).replace('{count}', skippedCount.toString()));
+          const key = skippedCount === 1 ? 'WATER.IMPORT_PLACEHOLDER_SKIPPED_SINGULAR' : 'WATER.IMPORT_PLACEHOLDER_SKIPPED_PLURAL';
+          warnings.push(this.languageService.translate(key).replace('{{count}}', skippedCount.toString()));
         }
 
-        await this.processImport(filtered, warnings);
+        await this.processImport(filtered, warnings, 'IMPORT.JSON_SUCCESS');
       } catch (error) {
         this.handleImportError(error, 'WATER.JSON_IMPORT_ERROR_TITLE', 'WATER.JSON_IMPORT_ERROR', true);
       }
@@ -307,11 +311,11 @@ export class ConsumptionDataService {
         const { filtered, skippedCount } = filterZeroPlaceholders(records, isWaterRecordAllZero);
         const warnings = [...missingColumns];
         if (skippedCount > 0) {
-          const key = skippedCount === 1 ? 'HOME.IMPORT_PLACEHOLDER_SKIPPED_SINGULAR' : 'HOME.IMPORT_PLACEHOLDER_SKIPPED_PLURAL';
-          warnings.push(this.languageService.translate(key).replace('{count}', skippedCount.toString()));
+          const key = skippedCount === 1 ? 'WATER.IMPORT_PLACEHOLDER_SKIPPED_SINGULAR' : 'WATER.IMPORT_PLACEHOLDER_SKIPPED_PLURAL';
+          warnings.push(this.languageService.translate(key).replace('{{count}}', skippedCount.toString()));
         }
 
-        await this.processImport(filtered, warnings);
+        await this.processImport(filtered, warnings, 'IMPORT.EXCEL_SUCCESS');
       } catch (error) {
         this.handleImportError(error, 'WATER.EXCEL_IMPORT_ERROR_TITLE', 'WATER.EXCEL_IMPORT_ERROR', false);
       } finally {
@@ -322,22 +326,23 @@ export class ConsumptionDataService {
   }
 
   // Unified Processing
-  async processImport(records: ConsumptionRecord[], warnings: string[] = []) {
+  async processImport(records: ConsumptionRecord[], warnings: string[] = [], successKey: string) {
     if (this.isFilterActive()) {
       const recordsOutsideFilter = this.countRecordsOutsideFilter(records);
       if (recordsOutsideFilter > 0) {
         this.pendingImportRecords.set(records);
         this.pendingImportWarnings.set(warnings);
+        this.pendingImportSuccessKey.set(successKey);
         this.showFilterWarningModal.set(true);
         this.showImportConfirmModal.set(false);
         this.pendingImportFile.set(null);
         return;
       }
     }
-    await this.finishImport(records, warnings);
+    await this.finishImport(records, warnings, successKey);
   }
 
-  async finishImport(records: ConsumptionRecord[], warnings: string[]) {
+  async finishImport(records: ConsumptionRecord[], warnings: string[], successKey: string) {
     try {
       this.records.update(existing => mergeRecords(existing, records));
       await this.storage.save('water_consumption_records', this.records());
@@ -352,6 +357,8 @@ export class ConsumptionDataService {
         this.errorType.set('warning');
         this.showErrorModal.set(true);
       } else {
+        this.successTitle.set('IMPORT.SUCCESS_TITLE');
+        this.successMessage.set(successKey);
         this.showSuccessModal.set(true);
       }
     } catch (error) {
@@ -361,17 +368,19 @@ export class ConsumptionDataService {
       this.showFilterWarningModal.set(false);
       this.pendingImportRecords.set([]);
       this.pendingImportWarnings.set([]);
+      this.pendingImportSuccessKey.set('');
     }
   }
 
   confirmFilterWarningImport() {
-    this.finishImport(this.pendingImportRecords(), this.pendingImportWarnings());
+    this.finishImport(this.pendingImportRecords(), this.pendingImportWarnings(), this.pendingImportSuccessKey());
   }
 
   cancelFilterWarningImport() {
     this.showFilterWarningModal.set(false);
     this.pendingImportRecords.set([]);
     this.pendingImportWarnings.set([]);
+    this.pendingImportSuccessKey.set('');
   }
 
   cancelImport() {

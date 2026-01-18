@@ -23,7 +23,7 @@ import { DynamicHeatingRecord, HeatingRecord, calculateDynamicHeatingTotal, filt
 import { NotificationService } from '../services/notification.service';
 import { HeatingFactsService } from '../services/heating-facts.service';
 import { HouseholdService } from '../services/household.service';
-import { HEATING_RECORD_HELP_STEPS } from './heating.constants';
+import { HEATING_RECORD_HELP_STEPS, RECORDS_LIST_HELP_STEPS } from './heating.constants';
 import { PdfService } from '../services/pdf.service';
 
 const ROOM_TYPE_ICONS: Record<string, any> = {
@@ -96,6 +96,7 @@ export class HeatingComponent {
 
   // Help Steps for recording form
   protected readonly helpSteps = HEATING_RECORD_HELP_STEPS;
+  protected readonly recordsHelpSteps = RECORDS_LIST_HELP_STEPS;
 
   // Sort options for detailed records component
   protected readonly heatingSortOptions: SortOptionConfig[] = [

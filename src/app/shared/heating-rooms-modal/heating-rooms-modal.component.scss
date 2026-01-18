@@ -1,63 +1,31 @@
-@use 'sass:color';
 @use 'variables' as *;
-
 $heating-primary: #f57c00;
 
-.modal-overlay {
-  z-index: 1000;
-  -webkit-backdrop-filter: blur(2px);
-  backdrop-filter: blur(2px);
-  background: rgba(0, 0, 0, 0.5);
-}
-
-.modal-content {
-  max-height: 80vh;
-  overflow: hidden;
-  display: flex;
-  flex-direction: column;
-  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
-}
-
 .modal-header {
-  gap: 0.75rem;
-  padding: 1.25rem 1.5rem;
-
   .settings-icon {
     color: $heating-primary;
   }
 
-  h3 {
-    flex: 1;
-    font-size: 1.25rem;
-  }
-
-  .close-btn {
-    background: none;
-    border: none;
-    font-size: 1.5rem;
-    cursor: pointer;
-    color: var(--text-secondary);
-    padding: 0.25rem;
-    line-height: 1;
-    border-radius: 4px;
-    transition: all 0.2s;
-    position: static;
+  .help-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    color: $heating-primary;
+    padding: 0;
 
     &:hover {
-      background: var(--border-light);
-      color: var(--text-primary);
+      background: rgba($heating-primary, 0.1);
+      transform: scale(1.1);
     }
   }
 }
 
-.modal-body {
-  flex: 1;
-  text-align: left;
-
-  .modal-description {
-    margin: 0 0 1.5rem;
-    font-size: 0.95rem;
-  }
+.modal-description {
+  margin: 0 0 1.5rem;
+  font-size: 0.95rem;
 }
 
 .rooms-list {
@@ -65,16 +33,19 @@ $heating-primary: #f57c00;
   flex-direction: column;
   gap: 0.75rem;
   margin-bottom: 1rem;
+  margin-top: 1rem;
 }
 
 .room-item {
   display: flex;
   align-items: center;
   gap: 0.75rem;
+  min-width: 0;
 }
 
 .room-name-input {
   flex: 1;
+  min-width: 0;
   padding: 0.75rem 1rem;
   border: 1px solid var(--border-color);
   border-radius: 6px;
@@ -82,6 +53,9 @@ $heating-primary: #f57c00;
   background: var(--input-bg);
   color: var(--text-primary);
   transition: border-color 0.2s;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  overflow: hidden;
 
   &:focus {
     outline: none;
@@ -101,10 +75,10 @@ $heating-primary: #f57c00;
   gap: 0.5rem;
   width: 100%;
   padding: 0.75rem 1rem;
-  border: 2px dashed $heating-primary; // Orange by default
+  border: 2px dashed $heating-primary;
   border-radius: 6px;
   background: transparent;
-  color: $heating-primary; // Orange by default
+  color: $heating-primary;
   font-size: 0.95rem;
   font-weight: 500;
   cursor: pointer;
@@ -128,11 +102,9 @@ $heating-primary: #f57c00;
   justify-content: center;
   width: 32px;
   height: 32px;
-  border: none;
+  min-width: 32px;
   border-radius: 4px;
-  background: transparent;
   color: var(--text-secondary);
-  cursor: pointer;
   transition: all 0.2s;
   flex-shrink: 0;
 
@@ -151,12 +123,18 @@ $heating-primary: #f57c00;
 
   .lock-btn {
     color: $heating-primary;
+    border: none;
   }
 }
 
-.remove-btn:disabled {
-  opacity: 0.4;
-  cursor: not-allowed;
+.remove-btn {
+  flex-shrink: 0;
+  min-width: 32px;
+
+  &:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+  }
 }
 
 .unlock-warning-overlay {
@@ -172,13 +150,12 @@ $heating-primary: #f57c00;
   }
 }
 
-// Override primary button for this modal (Save button)
 .modal-footer .btn-primary {
   background: $heating-primary;
   border-color: $heating-primary;
 
   &:hover:not(:disabled) {
-    background: #ef6c00; // Matches $heating-primary-dark from heating.component.scss
+    background: #ef6c00;
     border-color: #ef6c00;
   }
 

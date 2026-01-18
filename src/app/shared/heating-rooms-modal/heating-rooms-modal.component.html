@@ -4,6 +4,9 @@
     <div class="modal-header">
       <lucide-icon [img]="SettingsIcon" size="24" class="settings-icon"></lucide-icon>
       <h3>{{ 'HEATING.ROOMS_SETTINGS_TITLE' | translate }}</h3>
+      <button type="button" class="help-btn" (click)="showHelp()" title="{{ 'HEATING.HELP.TITLE' | translate }}">
+        <lucide-icon [img]="HelpIcon" size="20"></lucide-icon>
+      </button>
       <button class="close-btn" (click)="onCancel()" title="{{ 'ACTIONS.CLOSE' | translate }}">&times;</button>
     </div>
 
@@ -117,3 +120,7 @@
   </div>
 </div>
 }
+
+<!-- Help Modal -->
+<app-help-modal [show]="showHelpModal()" [titleKey]="'HEATING.HELP.TITLE'" [steps]="helpSteps" (close)="closeHelp()">
+</app-help-modal>

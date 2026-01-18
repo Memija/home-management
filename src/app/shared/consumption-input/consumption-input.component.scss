@@ -158,14 +158,4 @@
       }
     }
   }
-
-  // Save button theme overrides (base styles come from global .save-btn)
-  .save-btn {
-    width: 100%;
-    background: var(--theme-primary, $primary);
-
-    &:hover:not(:disabled) {
-      background: var(--theme-primary-dark, $primary-dark);
-    }
-  }
 }

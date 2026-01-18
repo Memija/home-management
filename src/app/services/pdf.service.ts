@@ -146,20 +146,22 @@ export class PdfService {
         4: { cellWidth: 30, halign: 'right' },
         5: { cellWidth: 30, halign: 'right', fontStyle: 'bold' },
         6: { cellWidth: 30, halign: 'right' }
-      },
-      didDrawPage: (pageData) => {
-        // Footer with page numbers
-        const pageCount = doc.getNumberOfPages();
-        doc.setFontSize(8);
-        doc.setTextColor(150);
-        doc.text(
-          `${pageData.pageNumber} / ${pageCount}`,
-          doc.internal.pageSize.width / 2,
-          doc.internal.pageSize.height - 10,
-          { align: 'center' }
-        );
       }
     });
+
+    // Add page numbers after table is complete - this ensures correct total page count
+    const pageCount = doc.getNumberOfPages();
+    for (let i = 1; i <= pageCount; i++) {
+      doc.setPage(i);
+      doc.setFontSize(8);
+      doc.setTextColor(150);
+      doc.text(
+        `${i} / ${pageCount}`,
+        doc.internal.pageSize.width / 2,
+        doc.internal.pageSize.height - 10,
+        { align: 'center' }
+      );
+    }
 
     // Save the PDF
     doc.save(filename);
@@ -242,19 +244,16 @@ export class PdfService {
       ];
     });
 
-    // Dynamic column widths based on number of rooms
-    const dateWidth = 30;
-    const totalWidth = 30;
-    const remainingWidth = 260 - dateWidth - totalWidth; // Landscape page width approximately
-    const roomWidth = Math.min(30, remainingWidth / roomNames.length);
-
-    const columnStyles: { [key: string]: { cellWidth?: number; halign?: 'right' | 'left' | 'center'; fontStyle?: 'normal' | 'bold' | 'italic' | 'bolditalic' } } = {
-      '0': { cellWidth: dateWidth }
+    // Dynamic column styles - use auto width to fit page properly
+    const columnStyles: { [key: string]: { cellWidth?: 'auto' | number; halign?: 'right' | 'left' | 'center'; fontStyle?: 'normal' | 'bold' | 'italic' | 'bolditalic' } } = {
+      '0': { cellWidth: 'auto' } // Date column
     };
+    // Room columns with right alignment
     roomNames.forEach((_, i) => {
-      columnStyles[String(i + 1)] = { cellWidth: roomWidth, halign: 'right' };
+      columnStyles[String(i + 1)] = { cellWidth: 'auto', halign: 'right' };
     });
-    columnStyles[String(roomNames.length + 1)] = { cellWidth: totalWidth, halign: 'right', fontStyle: 'bold' };
+    // Total column with bold styling
+    columnStyles[String(roomNames.length + 1)] = { cellWidth: 'auto', halign: 'right', fontStyle: 'bold' };
 
     // Add table using autoTable function
     autoTable(doc, {
@@ -271,20 +270,22 @@ export class PdfService {
         fontSize: 9,
         cellPadding: 3
       },
-      columnStyles,
-      didDrawPage: (pageData) => {
-        // Footer with page numbers
-        const pageCount = doc.getNumberOfPages();
-        doc.setFontSize(8);
-        doc.setTextColor(150);
-        doc.text(
-          `${pageData.pageNumber} / ${pageCount}`,
-          doc.internal.pageSize.width / 2,
-          doc.internal.pageSize.height - 10,
-          { align: 'center' }
-        );
-      }
+      columnStyles
     });
+
+    // Add page numbers after table is complete - this ensures correct total page count
+    const pageCount = doc.getNumberOfPages();
+    for (let i = 1; i <= pageCount; i++) {
+      doc.setPage(i);
+      doc.setFontSize(8);
+      doc.setTextColor(150);
+      doc.text(
+        `${i} / ${pageCount}`,
+        doc.internal.pageSize.width / 2,
+        doc.internal.pageSize.height - 10,
+        { align: 'center' }
+      );
+    }
 
     // Save the PDF
     doc.save(filename);

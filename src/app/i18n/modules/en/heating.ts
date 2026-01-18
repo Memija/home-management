@@ -80,6 +80,25 @@ export const heating = {
     ROOM_PATTERNS_DINING: 'dining,eat',
     ROOM_PATTERNS_HALLWAY: 'hall,entrance,corridor,foyer',
     EXPORT_ROOMS: 'Export',
-    IMPORT_ROOMS: 'Import'
+    IMPORT_ROOMS: 'Import',
+    // Help Modal for Records List
+    RECORDS_HELP_STEP_1_TITLE: 'Filtering Records',
+    RECORDS_HELP_STEP_1_DESC: 'Use the date range, year, or month filters to narrow down your heating records. Click "Reset Filters" to clear all active filters and view all records.',
+    RECORDS_HELP_STEP_2_TITLE: 'Sorting & Pagination',
+    RECORDS_HELP_STEP_2_DESC: 'Sort records by date or total consumption using the dropdown. Control how many records to display per page (5, 10, 20, or 50) and navigate using Previous/Next buttons.',
+    RECORDS_HELP_STEP_3_TITLE: 'Editing & Deleting',
+    RECORDS_HELP_STEP_3_DESC: 'Click the edit icon (✏️) to modify a record or the trash icon (🗑️) to delete it. You can also delete all visible filtered records at once.',
+    RECORDS_HELP_STEP_4_TITLE: 'Export & Import',
+    RECORDS_HELP_STEP_4_DESC: 'Export your data as JSON, Excel, or PDF files. Import previously exported JSON or Excel files to restore your heating consumption records. Only non-zero records are imported.',
+    // Help Modal for Room Settings
+    HELP: {
+      TITLE: 'Room Settings Help',
+      ROOM_MANAGEMENT_TITLE: 'Managing Rooms',
+      ROOM_MANAGEMENT_DESC: 'Add, edit, or remove rooms to customize which areas you want to track. You can have up to 10 rooms. Each room name must be unique and contain at least one letter or number.',
+      LOCKED_ROOMS_TITLE: 'Locked Rooms (🔒)',
+      LOCKED_ROOMS_DESC: 'Rooms with existing heating data are automatically locked to prevent accidental changes that could affect your records. You can unlock them if needed, but it is advised to keep them locked to maintain data integrity.',
+      IMPORT_EXPORT_TITLE: 'Import & Export Configuration',
+      IMPORT_EXPORT_DESC: 'Save your room configuration as JSON to back it up or transfer to another device. Import a previously saved configuration to quickly restore your room setup.'
+    }
   }
 };

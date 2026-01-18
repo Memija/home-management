@@ -6,7 +6,7 @@
   },
   "newProjectRoot": "projects",
   "projects": {
-    "water-consumption": {
+    "home-management": {
       "projectType": "application",
       "schematics": {
         "@schematics/angular:component": {
@@ -81,10 +81,10 @@
           "builder": "@angular/build:dev-server",
           "configurations": {
             "production": {
-              "buildTarget": "water-consumption:build:production"
+              "buildTarget": "home-management:build:production"
             },
             "development": {
-              "buildTarget": "water-consumption:build:development"
+              "buildTarget": "home-management:build:development"
             }
           },
           "defaultConfiguration": "development"

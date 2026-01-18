@@ -57,6 +57,7 @@ describe('PdfService', () => {
       setTextColor: vi.fn(),
       text: vi.fn(),
       save: vi.fn(),
+      setPage: vi.fn(),
       getNumberOfPages: vi.fn().mockReturnValue(1),
       internal: {
         pageSize: { width: 297, height: 210 }

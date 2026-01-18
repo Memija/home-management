@@ -1,15 +1,16 @@
 import { Component, input, output, signal, computed, inject, effect } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { LucideAngularModule, X, Plus, Trash2, Settings, TriangleAlert, Lock, LockOpen, Download, Upload } from 'lucide-angular';
+import { LucideAngularModule, X, Plus, Trash2, Settings, TriangleAlert, Lock, LockOpen, Download, Upload, HelpCircle } from 'lucide-angular';
 import { TranslatePipe } from '../../pipes/translate.pipe';
+import { HelpModalComponent, HelpStep } from '../help-modal/help-modal.component';
 import { HeatingRoomConfig, HeatingRoomsService } from '../../services/heating-rooms.service';
 import { LanguageService } from '../../services/language.service';
 
 @Component({
   selector: 'app-heating-rooms-modal',
   standalone: true,
-  imports: [CommonModule, FormsModule, LucideAngularModule, TranslatePipe],
+  imports: [CommonModule, FormsModule, LucideAngularModule, TranslatePipe, HelpModalComponent],
   templateUrl: './heating-rooms-modal.component.html',
   styleUrl: './heating-rooms-modal.component.scss'
 })
@@ -26,6 +27,7 @@ export class HeatingRoomsModalComponent {
   protected readonly LockOpenIcon = LockOpen;
   protected readonly DownloadIcon = Download;
   protected readonly UploadIcon = Upload;
+  protected readonly HelpIcon = HelpCircle;
 
   // Inputs
   show = input.required<boolean>();
@@ -52,6 +54,23 @@ export class HeatingRoomsModalComponent {
 
   // Discard warning
   protected showDiscardWarning = signal(false);
+
+  // Help modal
+  protected showHelpModal = signal(false);
+  protected readonly helpSteps: HelpStep[] = [
+    {
+      titleKey: 'HEATING.HELP.ROOM_MANAGEMENT_TITLE',
+      descriptionKey: 'HEATING.HELP.ROOM_MANAGEMENT_DESC'
+    },
+    {
+      titleKey: 'HEATING.HELP.LOCKED_ROOMS_TITLE',
+      descriptionKey: 'HEATING.HELP.LOCKED_ROOMS_DESC'
+    },
+    {
+      titleKey: 'HEATING.HELP.IMPORT_EXPORT_TITLE',
+      descriptionKey: 'HEATING.HELP.IMPORT_EXPORT_DESC'
+    }
+  ];
 
   // Computed
   protected canAddRoom = computed(() => this.editingRooms().length < this.maxRooms());
@@ -238,5 +257,14 @@ export class HeatingRoomsModalComponent {
       alert(result.error); // Simple error display for now
     }
     input.value = ''; // Reset for re-import
+  }
+
+  // Help modal
+  protected showHelp(): void {
+    this.showHelpModal.set(true);
+  }
+
+  protected closeHelp(): void {
+    this.showHelpModal.set(false);
   }
 }

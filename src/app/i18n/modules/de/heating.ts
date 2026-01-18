@@ -80,6 +80,25 @@ export const heating = {
     ROOM_PATTERNS_DINING: 'ess,esszimmer,speise',
     ROOM_PATTERNS_HALLWAY: 'flur,eingang,diele,korridor',
     EXPORT_ROOMS: 'Exportieren',
-    IMPORT_ROOMS: 'Importieren'
+    IMPORT_ROOMS: 'Importieren',
+    // Help Modal for Records List
+    RECORDS_HELP_STEP_1_TITLE: 'Datensätze filtern',
+    RECORDS_HELP_STEP_1_DESC: 'Verwenden Sie die Datumsbereichs-, Jahres- oder Monatsfilter, um Ihre Heizungsaufzeichnungen einzugrenzen. Klicken Sie auf "Filter zurücksetzen", um alle aktiven Filter zu löschen und alle Datensätze anzuzeigen.',
+    RECORDS_HELP_STEP_2_TITLE: 'Sortierung & Seitennummerierung',
+    RECORDS_HELP_STEP_2_DESC: 'Sortieren Sie Datensätze nach Datum oder Gesamtverbrauch über das Dropdown-Menü. Steuern Sie, wie viele Datensätze pro Seite angezeigt werden (5, 10, 20 oder 50) und navigieren Sie mit den Schaltflächen Zurück/Weiter.',
+    RECORDS_HELP_STEP_3_TITLE: 'Bearbeiten & Löschen',
+    RECORDS_HELP_STEP_3_DESC: 'Klicken Sie auf das Bearbeitungssymbol (✏️), um einen Datensatz zu ändern, oder auf das Papierkorbsymbol (🗑️), um ihn zu löschen. Sie können auch alle sichtbaren gefilterten Datensätze auf einmal löschen.',
+    RECORDS_HELP_STEP_4_TITLE: 'Exportieren & Importieren',
+    RECORDS_HELP_STEP_4_DESC: 'Exportieren Sie Ihre Daten als JSON-, Excel- oder PDF-Dateien. Importieren Sie zuvor exportierte JSON- oder Excel-Dateien, um Ihre Heizungsverbrauchsdaten wiederherzustellen. Es werden nur Datensätze mit Werten ungleich Null importiert.',
+    // Help Modal for Room Settings
+    HELP: {
+      TITLE: 'Raumeinstellungen Hilfe',
+      ROOM_MANAGEMENT_TITLE: 'Räume verwalten',
+      ROOM_MANAGEMENT_DESC: 'Fügen Sie Räume hinzu, bearbeiten oder entfernen Sie sie, um anzupassen, welche Bereiche Sie verfolgen möchten. Sie können bis zu 10 Räume haben. Jeder Raumname muss eindeutig sein und mindestens einen Buchstaben oder eine Zahl enthalten.',
+      LOCKED_ROOMS_TITLE: 'Gesperrte Räume (🔒)',
+      LOCKED_ROOMS_DESC: 'Räume mit vorhandenen Heizdaten werden automatisch gesperrt, um versehentliche Änderungen zu verhindern, die Ihre Aufzeichnungen beeinträchtigen könnten. Sie können sie bei Bedarf entsperren, es wird jedoch empfohlen, sie gesperrt zu lassen, um die Datenintegrität zu wahren.',
+      IMPORT_EXPORT_TITLE: 'Konfiguration importieren & exportieren',
+      IMPORT_EXPORT_DESC: 'Speichern Sie Ihre Raumkonfiguration als JSON, um sie zu sichern oder auf ein anderes Gerät zu übertragen. Importieren Sie eine zuvor gespeicherte Konfiguration, um Ihre Raumeinrichtung schnell wiederherzustellen.'
+    }
   }
 };

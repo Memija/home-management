@@ -4,6 +4,8 @@ import { LocalStorageService } from './local-storage.service';
 
 interface DemoData {
   waterRecords: unknown[];
+  heatingRecords: unknown[];
+  heatingSettings: unknown[];
   family: unknown[];
   address: unknown;
   excelSettings: unknown;
@@ -30,7 +32,8 @@ export class DemoService {
   // Storage keys used by the app (data stored via storage.save)
   private readonly storageKeys = [
     'water_records',
-    'heating_records',
+    'heating_consumption_records',
+    'heating_room_config',
     'household_members',
     'household_address',
     'excel_settings'
@@ -74,6 +77,12 @@ export class DemoService {
       // Save demo data to storage
       if (demoData.waterRecords) {
         await this.storage.save('water_records', demoData.waterRecords);
+      }
+      if (demoData.heatingRecords) {
+        await this.storage.save('heating_consumption_records', demoData.heatingRecords);
+      }
+      if (demoData.heatingSettings) {
+        await this.storage.save('heating_room_config', demoData.heatingSettings);
       }
       if (demoData.family) {
         await this.storage.save('household_members', demoData.family);
@@ -192,8 +201,10 @@ export class DemoService {
       localStorage.setItem('hm_user_backup', JSON.stringify(fullBackup));
     }
 
-    const [waterRecords, family, address, excelSettings] = await Promise.all([
+    const [waterRecords, heatingRecords, heatingSettings, family, address, excelSettings] = await Promise.all([
       this.fetchJson(`${baseUrl}/water-consumption.json`),
+      this.fetchJson(`${baseUrl}/heating-consumption.json`),
+      this.fetchJson(`${baseUrl}/heating-settings.json`),
       this.fetchJson(`${baseUrl}/family.json`),
       this.fetchJson(`${baseUrl}/address.json`),
       this.fetchJson(`${baseUrl}/excel-settings.json`)
@@ -201,6 +212,8 @@ export class DemoService {
 
     return {
       waterRecords: (waterRecords as unknown[] | null) ?? [],
+      heatingRecords: (heatingRecords as unknown[] | null) ?? [],
+      heatingSettings: (heatingSettings as unknown[] | null) ?? [],
       family: (family as unknown[] | null) ?? [],
       address: address ?? null,
       excelSettings: excelSettings ?? null

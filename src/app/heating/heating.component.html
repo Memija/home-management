@@ -30,8 +30,9 @@
   </app-consumption-chart>
 
   <app-detailed-records [records]="records()" [calculateTotalFn]="calculateTotal" [valuesNoteKey]="''"
-    [recordType]="'heating'" [sortOptions]="heatingSortOptions" (editRecord)="onEditRecord($event)"
-    (deleteRecord)="onDeleteRecord($event)" (deleteAllRecords)="onDeleteAllRecords($event)">
+    [recordType]="'heating'" [sortOptions]="heatingSortOptions" [helpSteps]="recordsHelpSteps"
+    (editRecord)="onEditRecord($event)" (deleteRecord)="onDeleteRecord($event)"
+    (deleteAllRecords)="onDeleteAllRecords($event)">
     <!-- Import/Export buttons projected into detailed-records -->
     <div slot="action-buttons" class="action-buttons-group">
       <button type="button" (click)="exportData()" class="export-btn json-btn"

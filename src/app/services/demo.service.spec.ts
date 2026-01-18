@@ -197,6 +197,43 @@ describe('DemoService', () => {
       expect(localStorage.setItem).toHaveBeenCalledWith('hm_demo_mode_is_active', 'true');
       expect(service.isLoading()).toBe(false);
     });
+
+    it('should load and save heating demo data correctly', async () => {
+      const mockWaterRecords = [{ date: '2023-01-01', kitchenWarm: 10 }];
+      const mockHeatingRecords = [{ date: '2023-01-01', rooms: { room_1: 100 } }];
+      const mockHeatingSettings = [{ id: 'room_1', name: 'Living Room' }];
+      const mockFamily = [{ id: '1', type: 'adult' }];
+      const mockAddress = { city: 'Berlin', country: 'Germany' };
+      const mockExcelSettings = { enabled: true };
+
+      // Mock fetch to return different data based on URL
+      vi.mocked(window.fetch).mockImplementation((url: any) => {
+        if (url.includes('water-consumption.json')) {
+          return Promise.resolve({ ok: true, json: () => Promise.resolve(mockWaterRecords) } as any);
+        } else if (url.includes('heating-consumption.json')) {
+          return Promise.resolve({ ok: true, json: () => Promise.resolve(mockHeatingRecords) } as any);
+        } else if (url.includes('heating-settings.json')) {
+          return Promise.resolve({ ok: true, json: () => Promise.resolve(mockHeatingSettings) } as any);
+        } else if (url.includes('family.json')) {
+          return Promise.resolve({ ok: true, json: () => Promise.resolve(mockFamily) } as any);
+        } else if (url.includes('address.json')) {
+          return Promise.resolve({ ok: true, json: () => Promise.resolve(mockAddress) } as any);
+        } else if (url.includes('excel-settings.json')) {
+          return Promise.resolve({ ok: true, json: () => Promise.resolve(mockExcelSettings) } as any);
+        }
+        return Promise.resolve({ ok: false } as any);
+      });
+
+      await service.activateDemo();
+
+      // Verify heating data was saved to correct storage keys
+      expect(mockLocalStorageService.save).toHaveBeenCalledWith('water_records', mockWaterRecords);
+      expect(mockLocalStorageService.save).toHaveBeenCalledWith('heating_consumption_records', mockHeatingRecords);
+      expect(mockLocalStorageService.save).toHaveBeenCalledWith('heating_room_config', mockHeatingSettings);
+      expect(mockLocalStorageService.save).toHaveBeenCalledWith('household_members', mockFamily);
+      expect(mockLocalStorageService.save).toHaveBeenCalledWith('household_address', mockAddress);
+      expect(mockLocalStorageService.save).toHaveBeenCalledWith('excel_settings', mockExcelSettings);
+    });
   });
 
   describe('deactivateDemo', () => {
@@ -290,7 +327,8 @@ describe('DemoService', () => {
       await service.deactivateDemo();
 
       expect(mockLocalStorageService.delete).toHaveBeenCalledWith('water_records');
-      expect(mockLocalStorageService.delete).toHaveBeenCalledWith('heating_records');
+      expect(mockLocalStorageService.delete).toHaveBeenCalledWith('heating_consumption_records');
+      expect(mockLocalStorageService.delete).toHaveBeenCalledWith('heating_room_config');
       expect(mockLocalStorageService.delete).toHaveBeenCalledWith('household_members');
       expect(mockLocalStorageService.delete).toHaveBeenCalledWith('household_address');
       expect(mockLocalStorageService.delete).toHaveBeenCalledWith('excel_settings');

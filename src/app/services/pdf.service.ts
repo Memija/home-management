@@ -139,13 +139,13 @@ export class PdfService {
         cellPadding: 3
       },
       columnStyles: {
-        0: { cellWidth: 30 }, // Date
-        1: { cellWidth: 30, halign: 'right' },
-        2: { cellWidth: 30, halign: 'right' },
-        3: { cellWidth: 30, halign: 'right' },
-        4: { cellWidth: 30, halign: 'right' },
-        5: { cellWidth: 30, halign: 'right', fontStyle: 'bold' },
-        6: { cellWidth: 30, halign: 'right' }
+        0: { cellWidth: 'auto' }, // Date
+        1: { cellWidth: 'auto', halign: 'right' },
+        2: { cellWidth: 'auto', halign: 'right' },
+        3: { cellWidth: 'auto', halign: 'right' },
+        4: { cellWidth: 'auto', halign: 'right' },
+        5: { cellWidth: 'auto', halign: 'right', fontStyle: 'bold' },
+        6: { cellWidth: 'auto', halign: 'right' }
       }
     });
 

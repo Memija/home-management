@@ -82,33 +82,47 @@ describe('NotificationService', () => {
     expect(service.notifications().some(n => n.id === 'water-initial')).toBe(false);
   });
 
-  it('should detect water overdue', async () => {
+  it('should detect water due (at average interval)', async () => {
     await new Promise(resolve => setTimeout(resolve, 0));
 
     const now = new Date();
-    const tenDaysAgo = new Date(now.getTime() - 10 * 24 * 60 * 60 * 1000);
-    const twentyDaysAgo = new Date(now.getTime() - 20 * 24 * 60 * 60 * 1000);
-
-    // Average frequency is 10 days. Threshold is max(15, 7) = 15.
-    // Last entry 10 days ago -> Not overdue.
-
-    // Let's make it overdue.
-    // Freq 2 days. Threshold 3 days (min 7 is higher). Threshold 7 days.
-    // Last entry 8 days ago.
-
+    // Create records with 7-day average interval
+    // Last entry was 7 days ago (at average, should show "due")
     const records: ConsumptionRecord[] = [
-      { date: new Date(now.getTime() - 10 * 24 * 60 * 60 * 1000), kitchenWarm: 0, kitchenCold: 0, bathroomWarm: 0, bathroomCold: 0 },
-      { date: new Date(now.getTime() - 12 * 24 * 60 * 60 * 1000), kitchenWarm: 0, kitchenCold: 0, bathroomWarm: 0, bathroomCold: 0 }
+      { date: new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000), kitchenWarm: 0, kitchenCold: 0, bathroomWarm: 0, bathroomCold: 0 },
+      { date: new Date(now.getTime() - 14 * 24 * 60 * 60 * 1000), kitchenWarm: 0, kitchenCold: 0, bathroomWarm: 0, bathroomCold: 0 }
     ];
-    // Avg gap: 2 days. Threshold: max(3, 7) = 7 days.
-    // Days since last (10 days ago) = 10.
-    // 10 > 7 -> Overdue.
+    // Avg gap: 7 days. Due threshold: max(7, 7) = 7 days.
+    // Days since last (7 days ago) = 7.
+    // 7 >= 7 -> Due but not overdue.
+
+    service.setWaterRecords(records);
+
+    const notifications = service.notifications();
+    expect(notifications.some(n => n.id === 'water-due')).toBe(true);
+    expect(notifications.some(n => n.id === 'water-overdue')).toBe(false);
+  });
+
+  it('should detect water overdue (significantly late)', async () => {
+    await new Promise(resolve => setTimeout(resolve, 0));
+
+    const now = new Date();
+    // Create records with 2-day average interval
+    // Overdue threshold: max(2 * 1.5, 10) = 10 days
+    // Last entry was 11 days ago -> Overdue
+    const records: ConsumptionRecord[] = [
+      { date: new Date(now.getTime() - 11 * 24 * 60 * 60 * 1000), kitchenWarm: 0, kitchenCold: 0, bathroomWarm: 0, bathroomCold: 0 },
+      { date: new Date(now.getTime() - 13 * 24 * 60 * 60 * 1000), kitchenWarm: 0, kitchenCold: 0, bathroomWarm: 0, bathroomCold: 0 }
+    ];
+    // Avg gap: 2 days. Overdue threshold: max(3, 10) = 10 days.
+    // Days since last (11 days ago) = 11.
+    // 11 > 10 -> Overdue.
 
     service.setWaterRecords(records);
 
     const notifications = service.notifications();
     expect(notifications.some(n => n.id === 'water-overdue')).toBe(true);
-    expect(notifications.find(n => n.id === 'water-overdue')?.messageParams?.['days']).toBe(10);
+    expect(notifications.find(n => n.id === 'water-overdue')?.messageParams?.['days']).toBe(11);
   });
 
   it('should dismiss notification', async () => {

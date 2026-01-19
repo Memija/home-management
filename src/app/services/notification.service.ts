@@ -141,18 +141,75 @@ export class NotificationService {
       }
     }
 
-    // Check if water reading is overdue based on average frequency
-    const waterOverdue = this.checkWaterOverdue();
-    if (waterOverdue.isOverdue) {
+    // Check if water reading is due or overdue based on average frequency
+    const waterStatus = this.checkWaterReadingStatus();
+
+    // Show "due" notification when it's time for a reading
+    if (waterStatus.isDue && !waterStatus.isOverdue) {
+      const notif: Notification = {
+        id: 'water-due',
+        type: 'reminder',
+        titleKey: 'NOTIFICATIONS.WATER_DUE_TITLE',
+        messageKey: 'NOTIFICATIONS.WATER_DUE_MESSAGE',
+        priority: 'low',
+        dismissible: true,
+        route: '/water',
+        fragment: 'input-section'
+      };
+      if (!dismissed.includes(notif.id)) {
+        notifications.push(notif);
+      }
+    }
+
+    // Show "overdue" notification when significantly late
+    if (waterStatus.isOverdue) {
       const notif: Notification = {
         id: 'water-overdue',
         type: 'reminder',
         titleKey: 'NOTIFICATIONS.WATER_OVERDUE_TITLE',
         messageKey: 'NOTIFICATIONS.WATER_OVERDUE_MESSAGE',
-        messageParams: { days: waterOverdue.daysSinceLast },
+        messageParams: { days: waterStatus.daysSinceLast },
         priority: 'medium',
         dismissible: true,
         route: '/water',
+        fragment: 'input-section'
+      };
+      if (!dismissed.includes(notif.id)) {
+        notifications.push(notif);
+      }
+    }
+
+    // Check if heating reading is due or overdue based on average frequency
+    const heatingStatus = this.checkHeatingReadingStatus();
+
+    // Show "due" notification when it's time for a heating reading
+    if (heatingStatus.isDue && !heatingStatus.isOverdue) {
+      const notif: Notification = {
+        id: 'heating-due',
+        type: 'reminder',
+        titleKey: 'NOTIFICATIONS.HEATING_DUE_TITLE',
+        messageKey: 'NOTIFICATIONS.HEATING_DUE_MESSAGE',
+        priority: 'low',
+        dismissible: true,
+        route: '/heating',
+        fragment: 'input-section'
+      };
+      if (!dismissed.includes(notif.id)) {
+        notifications.push(notif);
+      }
+    }
+
+    // Show "overdue" notification for heating when significantly late
+    if (heatingStatus.isOverdue) {
+      const notif: Notification = {
+        id: 'heating-overdue',
+        type: 'reminder',
+        titleKey: 'NOTIFICATIONS.HEATING_OVERDUE_TITLE',
+        messageKey: 'NOTIFICATIONS.HEATING_OVERDUE_MESSAGE',
+        messageParams: { days: heatingStatus.daysSinceLast },
+        priority: 'medium',
+        dismissible: true,
+        route: '/heating',
         fragment: 'input-section'
       };
       if (!dismissed.includes(notif.id)) {
@@ -198,14 +255,16 @@ export class NotificationService {
   });
 
   /**
-   * Calculate if water reading is overdue based on average entry frequency
+   * Calculate if water reading is due or overdue based on average entry frequency
+   * @returns isDue - true when it's time for a reading (at or past average interval)
+   * @returns isOverdue - true when significantly late (1.5x average interval)
    */
-  private checkWaterOverdue(): { isOverdue: boolean; daysSinceLast: number } {
+  private checkWaterReadingStatus(): { isDue: boolean; isOverdue: boolean; daysSinceLast: number } {
     const records = this.waterRecords();
 
     // Need at least 2 records to calculate average frequency
     if (records.length < 2) {
-      return { isOverdue: false, daysSinceLast: 0 };
+      return { isDue: false, isOverdue: false, daysSinceLast: 0 };
     }
 
     // Sort by date
@@ -227,11 +286,60 @@ export class NotificationService {
       (Date.now() - new Date(lastEntry.date).getTime()) / (1000 * 60 * 60 * 24)
     );
 
-    // Consider overdue if more than 1.5x the average (with minimum of 7 days)
-    const threshold = Math.max(averageDays * 1.5, 7);
-    const isOverdue = daysSinceLast > threshold;
+    // Due when at or past average interval (with minimum of 7 days)
+    // Use Math.floor to avoid floating-point precision issues (7.004 -> 7)
+    const dueThreshold = Math.floor(Math.max(averageDays, 7));
+    const isDue = daysSinceLast >= dueThreshold;
 
-    return { isOverdue, daysSinceLast };
+    // Overdue when 1.5x past the average (significantly late)
+    const overdueThreshold = Math.floor(Math.max(averageDays * 1.5, 10));
+    const isOverdue = daysSinceLast > overdueThreshold;
+
+    return { isDue, isOverdue, daysSinceLast };
+  }
+
+  /**
+   * Calculate if heating reading is due or overdue based on average entry frequency
+   * @returns isDue - true when it's time for a reading (at or past average interval)
+   * @returns isOverdue - true when significantly late (1.5x average interval)
+   */
+  private checkHeatingReadingStatus(): { isDue: boolean; isOverdue: boolean; daysSinceLast: number } {
+    const records = this.heatingRecords();
+
+    // Need at least 2 records to calculate average frequency
+    if (records.length < 2) {
+      return { isDue: false, isOverdue: false, daysSinceLast: 0 };
+    }
+
+    // Sort by date
+    const sorted = [...records].sort(
+      (a, b) => new Date(a.date).getTime() - new Date(b.date).getTime()
+    );
+
+    // Calculate average days between entries
+    let totalDays = 0;
+    for (let i = 1; i < sorted.length; i++) {
+      const diff = new Date(sorted[i].date).getTime() - new Date(sorted[i - 1].date).getTime();
+      totalDays += diff / (1000 * 60 * 60 * 24);
+    }
+    const averageDays = totalDays / (sorted.length - 1);
+
+    // Calculate days since last entry
+    const lastEntry = sorted[sorted.length - 1];
+    const daysSinceLast = Math.floor(
+      (Date.now() - new Date(lastEntry.date).getTime()) / (1000 * 60 * 60 * 24)
+    );
+
+    // Due when at or past average interval (with minimum of 7 days)
+    // Use Math.floor to avoid floating-point precision issues
+    const dueThreshold = Math.floor(Math.max(averageDays, 7));
+    const isDue = daysSinceLast >= dueThreshold;
+
+    // Overdue when 1.5x past the average (significantly late)
+    const overdueThreshold = Math.floor(Math.max(averageDays * 1.5, 10));
+    const isOverdue = daysSinceLast > overdueThreshold;
+
+    return { isDue, isOverdue, daysSinceLast };
   }
 
   /**
@@ -257,9 +365,10 @@ export class NotificationService {
   }
 
   /**
-   * Reset water overdue notification (call when user adds a new water record)
+   * Reset water notifications (call when user adds a new water record)
    */
   resetWaterOverdue(): void {
+    this.clearDismissed('water-due');
     this.clearDismissed('water-overdue');
   }
 

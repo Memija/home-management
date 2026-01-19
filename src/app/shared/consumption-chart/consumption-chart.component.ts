@@ -5,17 +5,19 @@ import { TranslatePipe } from '../../pipes/translate.pipe';
 import { LanguageService } from '../../services/language.service';
 import { ChartDataService, ChartView, DisplayMode } from '../../services/chart-data.service';
 import { LocalStorageService } from '../../services/local-storage.service';
-import { LucideAngularModule, BarChart3, DoorOpen, Droplet, Grid3x3, TrendingUp, Activity, Info, HelpCircle } from 'lucide-angular';
+import { LucideAngularModule, BarChart3, DoorOpen, Droplet, Grid3x3, TrendingUp, Activity, Info, HelpCircle, ZoomIn } from 'lucide-angular';
 import { HelpModalComponent, HelpStep } from '../help-modal/help-modal.component';
+import 'hammerjs';
+import zoomPlugin from 'chartjs-plugin-zoom';
 
-Chart.register(...registerables);
+Chart.register(...registerables, zoomPlugin);
 
-import { ConsumptionRecord, HeatingRecord } from '../../models/records.model';
+import { ConsumptionRecord, HeatingRecord, DynamicHeatingRecord } from '../../models/records.model';
 
 // Re-export types for consumers
 export type { ChartView, DisplayMode } from '../../services/chart-data.service';
 
-export type ChartDataPoint = ConsumptionRecord | HeatingRecord;
+export type ChartDataPoint = ConsumptionRecord | HeatingRecord | DynamicHeatingRecord;
 
 export interface ChartConfig {
   view: ChartView;
@@ -42,6 +44,9 @@ export class ConsumptionChartComponent {
   country = input<any>('');
   helpTitleKey = input<string>('HOME.CHART_HELP_TITLE');
   helpSteps = input<HelpStep[]>([]);
+  roomNames = input<string[]>([]);  // For heating chart: actual room names
+  roomIds = input<string[]>([]);    // For heating chart: actual room IDs
+  roomColors = input<Array<{ border: string; bg: string }>>([]);  // For heating chart: room-specific colors
 
   private languageService = inject(LanguageService);
   private chartDataService = inject(ChartDataService);
@@ -55,6 +60,7 @@ export class ConsumptionChartComponent {
   protected readonly ActivityIcon = Activity;
   protected readonly InfoIcon = Info;
   protected readonly HelpIcon = HelpCircle;
+  protected readonly ZoomInIcon = ZoomIn;
 
   // Trendline visibility toggle (only for water charts)
   protected showTrendline = signal<boolean>(this.getStoredTrendlineVisibility());
@@ -138,10 +144,14 @@ export class ConsumptionChartComponent {
       });
     } else {
       return this.chartDataService.getHeatingChartData({
-        records: processedData as HeatingRecord[],
+        records: processedData as unknown as DynamicHeatingRecord[],
         labels,
         view,
-        mode
+        mode,
+        roomNames: this.roomNames(),
+        roomIds: this.roomIds(),
+        roomColors: this.roomColors(),
+        showTrendline: this.showTrendline()
       });
     }
   });
@@ -242,6 +252,17 @@ export class ConsumptionChartComponent {
           callbacks: {
             label: (context) => `${context.dataset.label}: ${context.parsed.y} L`
           }
+        },
+        zoom: {
+          pan: {
+            enabled: true,
+            mode: 'x',
+          },
+          zoom: {
+            wheel: { enabled: true },
+            pinch: { enabled: true },
+            mode: 'x',
+          }
         }
       },
       scales: {
@@ -299,5 +320,9 @@ export class ConsumptionChartComponent {
 
   protected closeHelp() {
     this.showHelpModal.set(false);
+  }
+
+  protected resetZoom(): void {
+    this.chart?.chart?.resetZoom();
   }
 }

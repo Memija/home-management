@@ -55,6 +55,8 @@ export const chart = {
     METER_CHANGE_DETECTED: 'Wasserzählerwechsel erkannt',
     METER_CHANGE_MESSAGE: 'Am {{date}} wurde ein Rückgang der Verbrauchswerte festgestellt. Dies passiert typischerweise bei einem Wasserzählerwechsel. Soll das Diagramm angepasst werden?',
     CONFIRM_METER_CHANGE: 'Ja, Diagramm anpassen',
-    DISMISS_METER_CHANGE: 'Nein, beibehalten'
+    DISMISS_METER_CHANGE: 'Nein, beibehalten',
+    RESET_ZOOM: 'Zoom zurücksetzen',
+    ZOOM_HINT: 'Scrollen zum Zoomen, Ziehen zum Schwenken'
   }
 };

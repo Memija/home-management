@@ -2,7 +2,7 @@ import { Injectable, inject } from '@angular/core';
 import { ChartConfiguration } from 'chart.js';
 import { LanguageService } from './language.service';
 import { ChartCalculationService } from './chart-calculation.service';
-import { ConsumptionRecord, HeatingRecord, CombinedData, ComparisonData } from '../models/records.model';
+import { ConsumptionRecord, HeatingRecord, DynamicHeatingRecord, CombinedData, ComparisonData } from '../models/records.model';
 import { WaterChartService, ChartDataParams } from './water-chart.service';
 
 export type { ChartView, DisplayMode, ChartDataParams } from './water-chart.service';
@@ -18,7 +18,7 @@ export class ChartDataService {
   /**
    * Calculate incremental (delta) data between consecutive readings
    */
-  calculateIncrementalData(recs: (ConsumptionRecord | HeatingRecord)[]): CombinedData[] {
+  calculateIncrementalData(recs: (ConsumptionRecord | HeatingRecord | DynamicHeatingRecord)[]): CombinedData[] {
     return this.calculationService.calculateIncrementalData(recs);
   }
 
@@ -39,63 +39,126 @@ export class ChartDataService {
   /**
    * Generate chart data for heating consumption
    */
-  getHeatingChartData(params: ChartDataParams<HeatingRecord>): ChartConfiguration['data'] {
-    const { records: heatingRecs, labels, view, mode } = params;
+  /**
+   * Generate chart data for heating consumption
+   */
+  getHeatingChartData(params: ChartDataParams<DynamicHeatingRecord>): ChartConfiguration['data'] {
+    const { records: heatingRecs, labels, view, mode, roomNames, roomColors: customRoomColors, showTrendline } = params;
     const chartLabels = mode === 'incremental' ? labels.slice(1) : labels;
 
+    // Default room colors for chart datasets (fallback if no custom colors provided)
+    const defaultColors = [
+      { border: '#e91e63', bg: 'rgba(233, 30, 99, 0.1)' },
+      { border: '#9c27b0', bg: 'rgba(156, 39, 176, 0.1)' },
+      { border: '#28a745', bg: 'rgba(40, 167, 69, 0.1)' },
+      { border: '#ffa726', bg: 'rgba(255, 167, 38, 0.1)' },
+      { border: '#00bcd4', bg: 'rgba(0, 188, 212, 0.1)' },
+      { border: '#795548', bg: 'rgba(121, 85, 72, 0.1)' },
+      { border: '#607d8b', bg: 'rgba(96, 125, 139, 0.1)' },
+      { border: '#ff5722', bg: 'rgba(255, 87, 34, 0.1)' },
+      { border: '#3f51b5', bg: 'rgba(63, 81, 181, 0.1)' },
+      { border: '#009688', bg: 'rgba(0, 150, 136, 0.1)' }
+    ];
+
+    // Determine number of rooms from roomNames
+    const roomCount = roomNames?.length || 0;
+
+    // Trendline only makes sense for incremental mode
+    const effectiveShowTrendline = mode === 'incremental' && (showTrendline ?? false);
 
     switch (view) {
       case 'total':
+        // Calculate total by summing all room values in the dynamic 'rooms' object
+        // Note: We need to iterate over all room keys present in the record
+        const totalData = heatingRecs.map(r => {
+          let sum = 0;
+          if (r.rooms) {
+            Object.values(r.rooms).forEach(val => sum += ((val as number) || 0));
+          }
+          return sum;
+        });
+
+        const totalDatasets: ChartConfiguration['data']['datasets'] = [{
+          label: mode === 'incremental'
+            ? this.languageService.translate('CHART.INCREMENTAL_CONSUMPTION')
+            : this.languageService.translate('CHART.TOTAL_WEEKLY_CONSUMPTION'),
+          data: totalData,
+          borderColor: '#ff6f00',
+          backgroundColor: 'rgba(255, 111, 0, 0.1)',
+          fill: true,
+          tension: 0.4
+        }];
+
+        // Add trendline if enabled
+        if (effectiveShowTrendline && heatingRecs.length > 1) {
+          const trendData = this.calculationService.generateTrendlineData(totalData);
+          totalDatasets.push({
+            data: trendData,
+            label: this.languageService.translate('CHART.TRENDLINE'),
+            type: 'line',
+            borderColor: '#28a745',
+            borderWidth: 2,
+            pointRadius: 0,
+            fill: false
+          });
+        }
+
         return {
           labels: chartLabels,
-          datasets: [{
-            label: mode === 'incremental'
-              ? this.languageService.translate('CHART.INCREMENTAL_CONSUMPTION')
-              : this.languageService.translate('CHART.TOTAL_WEEKLY_CONSUMPTION'),
-            data: heatingRecs.map(r => r.livingRoom + r.bedroom + r.kitchen + r.bathroom),
-            borderColor: '#ff6f00',
-            backgroundColor: 'rgba(255, 111, 0, 0.1)',
-            fill: true,
-            tension: 0.4
-          }]
+          datasets: totalDatasets
         };
       case 'by-room':
+        // Build datasets dynamically based on configured rooms
+        const datasets: ChartConfiguration['data']['datasets'] = [];
+
+        const roomIds = params.roomIds || [];
+
+        for (let i = 0; i < roomCount; i++) {
+          const roomName = roomNames?.[i] || `Room ${i + 1}`;
+          const roomId = roomIds[i];
+
+          // Use custom colors if provided, otherwise use defaults
+          const colors = customRoomColors?.[i] ?? defaultColors[i % defaultColors.length];
+
+          const roomData = heatingRecs.map(r => {
+            if (roomId && r.rooms) return r.rooms[roomId] || 0;
+            // Fallback: value at index i from rooms object values
+            if (r.rooms) {
+              const values = Object.values(r.rooms);
+              return values[i] || 0;
+            }
+            return 0;
+          });
+
+          const hasData = roomData.some(v => v > 0);
+
+          datasets.push({
+            label: roomName,
+            data: roomData,
+            borderColor: colors.border,
+            backgroundColor: colors.bg,
+            fill: true,
+            tension: 0.4
+          });
+
+          // Add trendline for each room if enabled and has data
+          if (effectiveShowTrendline && hasData && heatingRecs.length >= 2) {
+            const trendData = this.calculationService.generateTrendlineData(roomData);
+            datasets.push({
+              data: trendData,
+              label: `${roomName} ${this.languageService.translate('CHART.TRENDLINE')}`,
+              type: 'line',
+              borderColor: colors.border,
+              borderWidth: 2,
+              borderDash: [3, 3],
+              pointRadius: 0,
+              fill: false
+            });
+          }
+        }
         return {
           labels: chartLabels,
-          datasets: [
-            {
-              label: this.languageService.translate('CHART.LIVING_ROOM'),
-              data: heatingRecs.map(r => r.livingRoom),
-              borderColor: '#e91e63',
-              backgroundColor: 'rgba(233, 30, 99, 0.1)',
-              fill: true,
-              tension: 0.4
-            },
-            {
-              label: this.languageService.translate('CHART.BEDROOM'),
-              data: heatingRecs.map(r => r.bedroom),
-              borderColor: '#9c27b0',
-              backgroundColor: 'rgba(156, 39, 176, 0.1)',
-              fill: true,
-              tension: 0.4
-            },
-            {
-              label: this.languageService.translate('CHART.KITCHEN'),
-              data: heatingRecs.map(r => r.kitchen),
-              borderColor: '#28a745',
-              backgroundColor: 'rgba(40, 167, 69, 0.1)',
-              fill: true,
-              tension: 0.4
-            },
-            {
-              label: this.languageService.translate('CHART.BATHROOM'),
-              data: heatingRecs.map(r => r.bathroom),
-              borderColor: '#ffa726',
-              backgroundColor: 'rgba(255, 167, 38, 0.1)',
-              fill: true,
-              tension: 0.4
-            }
-          ]
+          datasets: this.filterEmptyDatasets(datasets)
         };
       case 'by-type':
       case 'detailed':

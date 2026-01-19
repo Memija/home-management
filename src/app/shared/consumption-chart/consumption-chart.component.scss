@@ -208,6 +208,34 @@
   width: 100%;
 }
 
+.reset-zoom-btn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  border: 1px solid var(--border-color);
+  background: var(--card-bg);
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s;
+  font-size: 0.875rem;
+  color: var(--text-secondary);
+
+  &:hover {
+    background: var(--bg-secondary);
+    border-color: #007bff;
+    color: #007bff;
+  }
+}
+
+.zoom-hint {
+  margin: 8px 0 0;
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+  text-align: center;
+  opacity: 0.7;
+}
+
 @media (max-width: 768px) {
   .chart-header {
     flex-direction: column;

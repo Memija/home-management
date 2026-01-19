@@ -1,6 +1,6 @@
 import { Injectable, inject } from '@angular/core';
 import { WaterAveragesService } from './water-averages.service';
-import { ConsumptionRecord, HeatingRecord, CombinedData, ComparisonData } from '../models/records.model';
+import { ConsumptionRecord, HeatingRecord, DynamicHeatingRecord, CombinedData, ComparisonData } from '../models/records.model';
 
 @Injectable({
   providedIn: 'root'
@@ -11,7 +11,7 @@ export class ChartCalculationService {
   /**
    * Calculate incremental (delta) data between consecutive readings
    */
-  calculateIncrementalData(recs: (ConsumptionRecord | HeatingRecord)[]): CombinedData[] {
+  calculateIncrementalData(recs: (ConsumptionRecord | HeatingRecord | DynamicHeatingRecord)[]): CombinedData[] {
     if (recs.length <= 1) return [];
 
     const incrementalData: CombinedData[] = [];
@@ -22,19 +22,36 @@ export class ChartCalculationService {
       // Initialize with date
       const incremental: CombinedData = { date: current.date };
 
-      // We need to type cast to access keys dynamically, but safely
-      // CombinedRecord is a union type, so we treat it as an object with possible number keys
-      const currentObj = current as unknown as Record<string, unknown>;
-      const previousObj = previous as unknown as Record<string, unknown>;
+      // Check for nested 'rooms' object (DynamicHeatingRecord)
+      if ('rooms' in current && 'rooms' in previous) {
+        // Handle dynamic heating record
+        const currRooms = (current as DynamicHeatingRecord).rooms;
+        const prevRooms = (previous as DynamicHeatingRecord).rooms;
+        const incRooms: Record<string, number> = {};
 
-      Object.keys(current).forEach(key => {
-        const currVal = currentObj[key];
-        const prevVal = previousObj[key];
+        // Calculate delta for each room
+        Object.keys(currRooms).forEach(roomId => {
+          const currVal = currRooms[roomId] || 0;
+          const prevVal = prevRooms[roomId] || 0;
+          incRooms[roomId] = Math.max(0, currVal - prevVal);
+        });
 
-        if (key !== 'date' && typeof currVal === 'number' && typeof prevVal === 'number') {
-          incremental[key] = Math.max(0, currVal - prevVal);
-        }
-      });
+        // Add rooms to incremental data (type assertion needed as CombinedData doesn't explicitly have rooms yet, but will work at runtime)
+        (incremental as any).rooms = incRooms;
+      } else {
+        // Handle flat records (ConsumptionRecord or legacy HeatingRecord)
+        const currentObj = current as unknown as Record<string, unknown>;
+        const previousObj = previous as unknown as Record<string, unknown>;
+
+        Object.keys(current).forEach(key => {
+          const currVal = currentObj[key];
+          const prevVal = previousObj[key];
+
+          if (key !== 'date' && typeof currVal === 'number' && typeof prevVal === 'number') {
+            incremental[key] = Math.max(0, currVal - prevVal);
+          }
+        });
+      }
 
       incrementalData.push(incremental);
     }

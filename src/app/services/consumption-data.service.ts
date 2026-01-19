@@ -112,6 +112,8 @@ export class ConsumptionDataService {
     // using load<T> instead of getRecords
     const data = await this.storage.load<ConsumptionRecord[]>('water_consumption_records');
     this.records.set(data || []);
+    // Sync with notification service for due/overdue reminders
+    this.notificationService.setWaterRecords(this.records());
   }
 
   // --- Filter Helpers ---

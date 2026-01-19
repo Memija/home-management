@@ -20,7 +20,7 @@
           {{ 'CHART.DISPLAY_MODE_INCREMENTAL' | translate }}
         </button>
       </div>
-      @if (chartType === 'water' && displayMode() === 'incremental') {
+      @if ((chartType === 'water' || chartType === 'heating') && displayMode() === 'incremental') {
       <label class="trendline-toggle" for="show-trendline" [class.disabled]="!hasSufficientDataForTrendline()">
         <input id="show-trendline" type="checkbox" [checked]="showTrendline()" (change)="toggleTrendline()"
           [disabled]="!hasSufficientDataForTrendline()">
@@ -74,12 +74,17 @@
         </button>
         }
       </div>
+      <button type="button" class="reset-zoom-btn" (click)="resetZoom()" title="{{ 'CHART.RESET_ZOOM' | translate }}">
+        <lucide-icon [img]="ZoomInIcon" size="16"></lucide-icon>
+        {{ 'CHART.RESET_ZOOM' | translate }}
+      </button>
     </div>
   </div>
   <div class="chart-container">
     <canvas baseChart [data]="chartData()" [options]="chartOptions()" type="line">
     </canvas>
   </div>
+  <p class="zoom-hint">{{ 'CHART.ZOOM_HINT' | translate }}</p>
 </div>
 }
 

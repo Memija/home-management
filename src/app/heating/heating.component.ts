@@ -39,6 +39,23 @@ const ROOM_TYPE_ICONS: Record<string, any> = {
   'HEATING.ROOM_ATTIC': Home
 };
 
+// Chart colors by room type - semantically meaningful colors
+const ROOM_TYPE_COLORS: Record<string, { border: string; bg: string }> = {
+  'HEATING.ROOM_LIVING_ROOM': { border: '#e91e63', bg: 'rgba(233, 30, 99, 0.1)' },    // Pink - warm, cozy
+  'HEATING.ROOM_BEDROOM': { border: '#9c27b0', bg: 'rgba(156, 39, 176, 0.1)' },       // Purple - calm, restful
+  'HEATING.ROOM_KIDS_ROOM': { border: '#ff9800', bg: 'rgba(255, 152, 0, 0.1)' },      // Orange - playful, energetic
+  'HEATING.ROOM_KITCHEN': { border: '#28a745', bg: 'rgba(40, 167, 69, 0.1)' },        // Green - fresh, natural
+  'HEATING.ROOM_BATHROOM': { border: '#00bcd4', bg: 'rgba(0, 188, 212, 0.1)' },       // Cyan - water, clean
+  'HEATING.ROOM_OFFICE': { border: '#3f51b5', bg: 'rgba(63, 81, 181, 0.1)' },         // Indigo - professional, focused
+  'HEATING.ROOM_GUEST_ROOM': { border: '#795548', bg: 'rgba(121, 85, 72, 0.1)' },     // Brown - welcoming, warm
+  'HEATING.ROOM_DINING_ROOM': { border: '#ff5722', bg: 'rgba(255, 87, 34, 0.1)' },    // Deep orange - appetite, social
+  'HEATING.ROOM_HALLWAY': { border: '#607d8b', bg: 'rgba(96, 125, 139, 0.1)' },       // Blue-gray - neutral, transitional
+  'HEATING.ROOM_ATTIC': { border: '#9e9e9e', bg: 'rgba(158, 158, 158, 0.1)' }         // Gray - storage, secondary
+};
+
+// Default color for unknown room types
+const DEFAULT_ROOM_COLOR = { border: '#ffa726', bg: 'rgba(255, 167, 38, 0.1)' };
+
 @Component({
   selector: 'app-heating',
   standalone: true,
@@ -175,6 +192,9 @@ export class HeatingComponent {
         this.records.update(records => [...records, newRecord]);
       }
 
+      // Persist to storage
+      this.storage.save('heating_consumption_records', this.records());
+
       this.cancelEdit();
       this.successTitle.set('HEATING.SUCCESS_TITLE');
       this.successMessage.set('HEATING.RECORD_SAVED');
@@ -215,8 +235,17 @@ export class HeatingComponent {
     return Array.from(roomIds);
   });
 
-  // Convert dynamic records to legacy format for chart component
-  protected chartRecords = computed(() => this.records().map(toHeatingRecord));
+  // Pass dynamic records directly to chart component
+  protected chartRecords = computed(() => this.records());
+
+  // Extract room names for chart labels
+  protected chartRoomNames = computed(() => this.roomsService.rooms().map(r => r.name));
+
+  // Extract room IDs for chart data mapping
+  protected chartRoomIds = computed(() => this.roomsService.rooms().map(r => r.id));
+
+  // Extract room colors for chart - uses room type or name-based heuristics
+  protected chartRoomColors = computed(() => this.roomsService.rooms().map(r => this.getRoomColor(r)));
 
   // Pagination - simplified sort options for dynamic rooms
   protected currentPage = signal<number>(1);
@@ -279,6 +308,44 @@ export class HeatingComponent {
     }
 
     return Home;
+  }
+
+  protected getRoomColor(room: HeatingRoomConfig): { border: string; bg: string } {
+    // 1. Try to use explicit room type
+    if (room.type && ROOM_TYPE_COLORS[room.type]) {
+      return ROOM_TYPE_COLORS[room.type];
+    }
+
+    // 2. Fallback: heuristic guessing for legacy data or custom names without type
+    return this.guessLegacyColor(room.name);
+  }
+
+  private guessLegacyColor(name: string): { border: string; bg: string } {
+    const lower = name.toLowerCase();
+
+    // Pattern mapping: translation key -> room type key for color lookup
+    const patternMapping: Array<{ patternKey: string; roomType: string }> = [
+      { patternKey: 'HEATING.ROOM_PATTERNS_LIVING', roomType: 'HEATING.ROOM_LIVING_ROOM' },
+      { patternKey: 'HEATING.ROOM_PATTERNS_BEDROOM', roomType: 'HEATING.ROOM_BEDROOM' },
+      { patternKey: 'HEATING.ROOM_PATTERNS_BATHROOM', roomType: 'HEATING.ROOM_BATHROOM' },
+      { patternKey: 'HEATING.ROOM_PATTERNS_KITCHEN', roomType: 'HEATING.ROOM_KITCHEN' },
+      { patternKey: 'HEATING.ROOM_PATTERNS_KIDS', roomType: 'HEATING.ROOM_KIDS_ROOM' },
+      { patternKey: 'HEATING.ROOM_PATTERNS_OFFICE', roomType: 'HEATING.ROOM_OFFICE' },
+      { patternKey: 'HEATING.ROOM_PATTERNS_GUEST', roomType: 'HEATING.ROOM_GUEST_ROOM' },
+      { patternKey: 'HEATING.ROOM_PATTERNS_DINING', roomType: 'HEATING.ROOM_DINING_ROOM' },
+      { patternKey: 'HEATING.ROOM_PATTERNS_HALLWAY', roomType: 'HEATING.ROOM_HALLWAY' }
+    ];
+
+    for (const { patternKey, roomType } of patternMapping) {
+      const patternsString = this.languageService.translate(patternKey);
+      // Split comma-separated patterns and check if any match
+      const patterns = patternsString.split(',').map(p => p.trim().toLowerCase());
+      if (patterns.some(pattern => pattern && lower.includes(pattern))) {
+        return ROOM_TYPE_COLORS[roomType] ?? DEFAULT_ROOM_COLOR;
+      }
+    }
+
+    return DEFAULT_ROOM_COLOR;
   }
 
   // Helper to get room value from a record for template display
@@ -352,6 +419,8 @@ export class HeatingComponent {
         return { ...converted, date: new Date(converted.date) };
       });
       this.records.set(parsedRecords);
+      // Sync with notification service for due/overdue reminders
+      this.notificationService.setHeatingRecords(this.records());
     }
   }
 

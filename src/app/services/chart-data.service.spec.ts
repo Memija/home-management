@@ -4,7 +4,7 @@ import { LanguageService } from './language.service';
 import { ChartCalculationService } from './chart-calculation.service';
 import { WaterChartService, ChartDataParams } from './water-chart.service';
 import { vi, describe, it, expect, beforeEach } from 'vitest';
-import { ConsumptionRecord, HeatingRecord } from '../models/records.model';
+import { ConsumptionRecord, HeatingRecord, DynamicHeatingRecord } from '../models/records.model';
 
 describe('ChartDataService', () => {
   let service: ChartDataService;
@@ -72,30 +72,38 @@ describe('ChartDataService', () => {
   });
 
   describe('getHeatingChartData', () => {
-    const mockHeatingRecords: HeatingRecord[] = [
+    const mockHeatingRecords: DynamicHeatingRecord[] = [
       {
         date: new Date('2023-01-01'),
-        livingRoom: 10,
-        bedroom: 5,
-        kitchen: 3,
-        bathroom: 2,
+        rooms: {
+          'room1': 10,
+          'room2': 5,
+          'room3': 3,
+          'room4': 2
+        }
       },
       {
         date: new Date('2023-01-08'),
-        livingRoom: 12,
-        bedroom: 6,
-        kitchen: 4,
-        bathroom: 3,
+        rooms: {
+          'room1': 12,
+          'room2': 6,
+          'room3': 4,
+          'room4': 3
+        }
       },
     ];
     const labels = ['Week 1', 'Week 2'];
+    const roomNames = ['Living Room', 'Bedroom', 'Kitchen', 'Bathroom'];
+    const roomIds = ['room1', 'room2', 'room3', 'room4'];
 
     it('should return total view data', () => {
-      const params: ChartDataParams<HeatingRecord> = {
+      const params: ChartDataParams<DynamicHeatingRecord> = {
         records: mockHeatingRecords,
         labels: labels,
         view: 'total',
         mode: 'total',
+        roomNames,
+        roomIds
       };
 
       const result = service.getHeatingChartData(params);
@@ -107,11 +115,13 @@ describe('ChartDataService', () => {
     });
 
     it('should return incremental total view data', () => {
-      const params: ChartDataParams<HeatingRecord> = {
+      const params: ChartDataParams<DynamicHeatingRecord> = {
         records: mockHeatingRecords,
         labels: labels,
         view: 'total',
         mode: 'incremental',
+        roomNames,
+        roomIds
       };
 
       const result = service.getHeatingChartData(params);
@@ -121,51 +131,57 @@ describe('ChartDataService', () => {
     });
 
     it('should return by-room view data', () => {
-      const params: ChartDataParams<HeatingRecord> = {
+      const params: ChartDataParams<DynamicHeatingRecord> = {
         records: mockHeatingRecords,
         labels: labels,
         view: 'by-room',
         mode: 'total',
+        roomNames,
+        roomIds
       };
 
       const result = service.getHeatingChartData(params);
 
       expect(result.labels).toEqual(labels);
       expect(result.datasets.length).toBe(4);
-      expect(result.datasets[0].label).toBe('CHART.LIVING_ROOM');
+      expect(result.datasets[0].label).toBe('Living Room');
       expect(result.datasets[0].data).toEqual([10, 12]);
-      expect(result.datasets[1].label).toBe('CHART.BEDROOM');
+      expect(result.datasets[1].label).toBe('Bedroom');
       expect(result.datasets[1].data).toEqual([5, 6]);
-      expect(result.datasets[2].label).toBe('CHART.KITCHEN');
+      expect(result.datasets[2].label).toBe('Kitchen');
       expect(result.datasets[2].data).toEqual([3, 4]);
-      expect(result.datasets[3].label).toBe('CHART.BATHROOM');
+      expect(result.datasets[3].label).toBe('Bathroom');
       expect(result.datasets[3].data).toEqual([2, 3]);
     });
 
     it('should return by-room view data for detailed view', () => {
-      const params: ChartDataParams<HeatingRecord> = {
+      const params: ChartDataParams<DynamicHeatingRecord> = {
         records: mockHeatingRecords,
         labels: labels,
         view: 'detailed',
         mode: 'total',
+        roomNames,
+        roomIds
       };
 
       const result = service.getHeatingChartData(params);
       expect(result.datasets.length).toBe(4);
-      expect(result.datasets[0].label).toBe('CHART.LIVING_ROOM');
+      expect(result.datasets[0].label).toBe('Living Room');
     });
 
     it('should return by-room view data for by-type view', () => {
-      const params: ChartDataParams<HeatingRecord> = {
+      const params: ChartDataParams<DynamicHeatingRecord> = {
         records: mockHeatingRecords,
         labels: labels,
         view: 'by-type',
         mode: 'total',
+        roomNames,
+        roomIds
       };
 
       const result = service.getHeatingChartData(params);
       expect(result.datasets.length).toBe(4);
-      expect(result.datasets[0].label).toBe('CHART.LIVING_ROOM');
+      expect(result.datasets[0].label).toBe('Living Room');
     });
   });
 });

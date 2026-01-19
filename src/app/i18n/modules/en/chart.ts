@@ -55,6 +55,8 @@ export const chart = {
     METER_CHANGE_DETECTED: 'Water Meter Change Detected',
     METER_CHANGE_MESSAGE: 'A drop in consumption readings was detected on {{date}}. This typically happens when a water meter is replaced. Would you like the chart to be adjusted?',
     CONFIRM_METER_CHANGE: 'Yes, adjust chart',
-    DISMISS_METER_CHANGE: 'No, keep as is'
+    DISMISS_METER_CHANGE: 'No, keep as is',
+    RESET_ZOOM: 'Reset Zoom',
+    ZOOM_HINT: 'Scroll to zoom, drag to pan'
   }
 };

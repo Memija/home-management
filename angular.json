@@ -50,7 +50,8 @@
               "fflate",
               "rgbcolor",
               "raf",
-              "core-js"
+              "core-js",
+              "hammerjs"
             ]
           },
           "configurations": {

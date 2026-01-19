@@ -16,6 +16,9 @@ export interface ChartDataParams<T = ConsumptionRecord> {
   showAverageComparison?: boolean;
   country?: string;
   familySize?: number;
+  roomNames?: string[];  // For heating chart: actual room names
+  roomIds?: string[];    // For heating chart: actual room IDs to map data
+  roomColors?: Array<{ border: string; bg: string }>;  // For heating chart: room-specific colors
 }
 
 @Injectable({

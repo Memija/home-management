@@ -4,6 +4,7 @@ import { LanguageService } from './language.service';
 import { ChartCalculationService } from './chart-calculation.service';
 import { ConsumptionRecord, HeatingRecord, DynamicHeatingRecord, CombinedData, ComparisonData } from '../models/records.model';
 import { WaterChartService, ChartDataParams } from './water-chart.service';
+import { HeatingAveragesService } from './heating-averages.service';
 
 export type { ChartView, DisplayMode, ChartDataParams } from './water-chart.service';
 
@@ -14,6 +15,7 @@ export class ChartDataService {
   private languageService = inject(LanguageService);
   private calculationService = inject(ChartCalculationService);
   private waterChartService = inject(WaterChartService);
+  private heatingAveragesService = inject(HeatingAveragesService);
 
   /**
    * Calculate incremental (delta) data between consecutive readings
@@ -43,8 +45,12 @@ export class ChartDataService {
    * Generate chart data for heating consumption
    */
   getHeatingChartData(params: ChartDataParams<DynamicHeatingRecord>): ChartConfiguration['data'] {
-    const { records: heatingRecs, labels, view, mode, roomNames, roomColors: customRoomColors, showTrendline } = params;
+    const { records: heatingRecs, labels, view, mode, roomNames, roomColors: customRoomColors, showTrendline, showAverageComparison, country } = params;
     const chartLabels = mode === 'incremental' ? labels.slice(1) : labels;
+
+    // Calculate average comparison if enabled (incremental mode only - matches water behavior)
+    const showComparison = mode === 'incremental' && (showAverageComparison ?? false);
+    const countryAverage = showComparison ? this.heatingAveragesService.getAverageKwhPerYear(country ?? 'DE') : 0;
 
     // Default room colors for chart datasets (fallback if no custom colors provided)
     const defaultColors = [
@@ -63,8 +69,8 @@ export class ChartDataService {
     // Determine number of rooms from roomNames
     const roomCount = roomNames?.length || 0;
 
-    // Trendline only makes sense for incremental mode
-    const effectiveShowTrendline = mode === 'incremental' && (showTrendline ?? false);
+    // Trendline enabled for heating in any mode (since values reset yearly)
+    const effectiveShowTrendline = showTrendline ?? false;
 
     switch (view) {
       case 'total':
@@ -92,12 +98,48 @@ export class ChartDataService {
         // Add trendline if enabled
         if (effectiveShowTrendline && heatingRecs.length > 1) {
           const trendData = this.calculationService.generateTrendlineData(totalData);
+
+          // Calculate slope to determine trend direction
+          // Use first and last points of trendline to calculate overall slope
+          const firstVal = trendData[0] as number;
+          const lastVal = trendData[trendData.length - 1] as number;
+          const slope = lastVal - firstVal;
+
+          // Determine color based on slope direction
+          // Red = increasing (bad, consumption going up)
+          // Green = decreasing (good, consumption going down)
+          // Black = flat (no significant change)
+          let trendColor = '#000000'; // Black for flat
+          if (slope > 1) {
+            trendColor = '#dc3545'; // Red for increasing
+          } else if (slope < -1) {
+            trendColor = '#28a745'; // Green for decreasing
+          }
+
           totalDatasets.push({
             data: trendData,
             label: this.languageService.translate('CHART.TRENDLINE'),
             type: 'line',
-            borderColor: '#28a745',
+            borderColor: trendColor,
             borderWidth: 2,
+            pointRadius: 0,
+            fill: false
+          });
+        }
+
+        // Add country average comparison line if enabled
+        if (showComparison && heatingRecs.length > 1) {
+          // Annual average divided by approximate number of readings per year
+          // Assuming monthly readings: divide by 12
+          const monthlyAverage = countryAverage / 12;
+          const averageData = chartLabels.map(() => monthlyAverage);
+          totalDatasets.push({
+            data: averageData,
+            label: this.languageService.translate('CHART.COUNTRY_AVERAGE'),
+            type: 'line',
+            borderColor: '#dc3545',
+            borderWidth: 2,
+            borderDash: [5, 5],
             pointRadius: 0,
             fill: false
           });
@@ -156,6 +198,24 @@ export class ChartDataService {
             });
           }
         }
+
+        // Add country average comparison line if enabled (same as total view)
+        // Divide by number of rooms for per-room comparison
+        if (showComparison && heatingRecs.length > 1 && roomCount > 0) {
+          const monthlyAverage = (countryAverage / 12) / roomCount;
+          const averageData = chartLabels.map(() => monthlyAverage);
+          datasets.push({
+            data: averageData,
+            label: this.languageService.translate('CHART.COUNTRY_AVERAGE'),
+            type: 'line',
+            borderColor: '#dc3545',
+            borderWidth: 2,
+            borderDash: [5, 5],
+            pointRadius: 0,
+            fill: false
+          });
+        }
+
         return {
           labels: chartLabels,
           datasets: this.filterEmptyDatasets(datasets)

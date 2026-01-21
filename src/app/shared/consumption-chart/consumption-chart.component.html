@@ -20,7 +20,7 @@
           {{ 'CHART.DISPLAY_MODE_INCREMENTAL' | translate }}
         </button>
       </div>
-      @if ((chartType === 'water' || chartType === 'heating') && displayMode() === 'incremental') {
+      @if ((chartType === 'water' && displayMode() === 'incremental') || chartType === 'heating') {
       <label class="trendline-toggle" for="show-trendline" [class.disabled]="!hasSufficientDataForTrendline()">
         <input id="show-trendline" type="checkbox" [checked]="showTrendline()" (change)="toggleTrendline()"
           [disabled]="!hasSufficientDataForTrendline()">
@@ -49,6 +49,24 @@
         } @else if (!hasSufficientDataForComparison()) {
         <span class="info-tooltip-container">
           <lucide-icon [img]="InfoIcon" size="14" class="info-icon"></lucide-icon>
+          <span class="info-tooltip">{{ 'CHART.AVERAGE_REQUIRES_DATA' | translate }}</span>
+        </span>
+        }
+      </label>
+      }
+      @if (chartType === 'heating' && displayMode() === 'incremental') {
+      <label class="trendline-toggle" for="show-heating-average" [class.disabled]="!hasSufficientDataForComparison()">
+        <input id="show-heating-average" type="checkbox" [checked]="showAverageComparison()"
+          (change)="toggleAverageComparison()" [disabled]="!hasSufficientDataForComparison()">
+        <lucide-icon [img]="BarChart3Icon" size="16"></lucide-icon>
+        {{ 'CHART.SHOW_AVERAGE' | translate }}
+        <span class="info-tooltip-container">
+          <lucide-icon [img]="InfoIcon" size="14" class="info-icon"></lucide-icon>
+          <span class="info-tooltip info-tooltip-wide">{{ 'CHART.HEATING_AVERAGE_INFO' | translate }}</span>
+        </span>
+        @if (!hasSufficientDataForComparison()) {
+        <span class="info-tooltip-container">
+          <lucide-icon [img]="InfoIcon" size="14" class="info-icon warning"></lucide-icon>
           <span class="info-tooltip">{{ 'CHART.AVERAGE_REQUIRES_DATA' | translate }}</span>
         </span>
         }

@@ -1,4 +1,4 @@
-import { Component, Input, ViewChild, computed, effect, inject, input, signal } from '@angular/core';
+import { Component, Input, ViewChild, computed, effect, inject, input, signal, OnInit } from '@angular/core';
 import { BaseChartDirective } from 'ng2-charts';
 import { Chart, ChartConfiguration, registerables, ChartEvent, LegendItem, LegendElement } from 'chart.js';
 import { TranslatePipe } from '../../pipes/translate.pipe';
@@ -9,20 +9,16 @@ import { LucideAngularModule, BarChart3, DoorOpen, Droplet, Grid3x3, TrendingUp,
 import { HelpModalComponent, HelpStep } from '../help-modal/help-modal.component';
 import 'hammerjs';
 import zoomPlugin from 'chartjs-plugin-zoom';
-
-Chart.register(...registerables, zoomPlugin);
-
-import { ConsumptionRecord, HeatingRecord, DynamicHeatingRecord } from '../../models/records.model';
+import { ConsumptionRecord, DynamicHeatingRecord } from '../../models/records.model';
+import { registerChartPlugins } from './chart-plugins';
+import { ChartDataPoint, ChartConfig } from './consumption-chart.models';
 
 // Re-export types for consumers
 export type { ChartView, DisplayMode } from '../../services/chart-data.service';
+export type { ChartDataPoint, ChartConfig } from './consumption-chart.models';
 
-export type ChartDataPoint = ConsumptionRecord | HeatingRecord | DynamicHeatingRecord;
-
-export interface ChartConfig {
-  view: ChartView;
-  onViewChange: (view: ChartView) => void;
-}
+Chart.register(...registerables, zoomPlugin);
+registerChartPlugins();
 
 @Component({
   selector: 'app-consumption-chart',
@@ -31,7 +27,7 @@ export interface ChartConfig {
   templateUrl: './consumption-chart.component.html',
   styleUrl: './consumption-chart.component.scss'
 })
-export class ConsumptionChartComponent {
+export class ConsumptionChartComponent implements OnInit {
   @ViewChild(BaseChartDirective) chart?: BaseChartDirective;
 
   data = input.required<ChartDataPoint[]>();
@@ -62,11 +58,11 @@ export class ConsumptionChartComponent {
   protected readonly HelpIcon = HelpCircle;
   protected readonly ZoomInIcon = ZoomIn;
 
-  // Trendline visibility toggle (only for water charts)
-  protected showTrendline = signal<boolean>(this.getStoredTrendlineVisibility());
+  // Trendline visibility toggle - initialized in ngOnInit after chartType is set
+  protected showTrendline = signal<boolean>(true);
 
-  // Average comparison visibility toggle (only for water charts)
-  protected showAverageComparison = signal<boolean>(this.getStoredAverageComparisonVisibility());
+  // Average comparison visibility toggle - initialized in ngOnInit after chartType is set
+  protected showAverageComparison = signal<boolean>(true);
 
   // Help modal state
   protected showHelpModal = signal(false);
@@ -85,22 +81,37 @@ export class ConsumptionChartComponent {
 
   protected currentLang = computed(() => this.languageService.currentLang());
 
-  // Helper to generate smart labels - includes year when data spans multiple years
+  // Helper to generate smart labels - adapts format based on data density and language
   private generateSmartLabels(recs: ChartDataPoint[]): string[] {
     if (recs.length === 0) return [];
 
     const dates = recs.map(r => new Date(r.date));
     const years = new Set(dates.map(d => d.getFullYear()));
     const spansMultipleYears = years.size > 1;
+    const dataPointCount = recs.length;
 
+    // Use language-aware locale
+    const lang = this.languageService.currentLang();
+    const locale = lang === 'de' ? 'de-DE' : 'en-US';
+
+    // Determine label format based on data density
+    // Many data points (>20): show just month (Chart.js will auto-skip duplicates)
+    // Medium/Few data points (<=20): show month and day
     return dates.map(date => {
-      if (spansMultipleYears) {
-        // Include abbreviated year for multi-year data: "Feb 3 '17"
-        const year = date.getFullYear().toString().slice(-2);
-        return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) + ` '${year}`;
+      const year = date.getFullYear().toString().slice(-2);
+
+      if (dataPointCount > 20) {
+        // High density: show just month name
+        if (spansMultipleYears) {
+          return date.toLocaleDateString(locale, { month: 'short' }) + ` '${year}`;
+        }
+        return date.toLocaleDateString(locale, { month: 'short' });
       } else {
-        // Just month and day for single-year data
-        return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+        // Low/medium density: show month and day
+        if (spansMultipleYears) {
+          return date.toLocaleDateString(locale, { month: 'short', day: 'numeric' }) + ` '${year}`;
+        }
+        return date.toLocaleDateString(locale, { month: 'short', day: 'numeric' });
       }
     });
   }
@@ -151,7 +162,9 @@ export class ConsumptionChartComponent {
         roomNames: this.roomNames(),
         roomIds: this.roomIds(),
         roomColors: this.roomColors(),
-        showTrendline: this.showTrendline()
+        showTrendline: this.showTrendline(),
+        showAverageComparison: this.showAverageComparison(),
+        country: this.country() ?? 'DE'
       });
     }
   });
@@ -161,6 +174,12 @@ export class ConsumptionChartComponent {
       this.chartData();
       this.chart?.update();
     });
+  }
+
+  ngOnInit(): void {
+    // Initialize toggle states after chartType input is available
+    this.showTrendline.set(this.getStoredTrendlineVisibility());
+    this.showAverageComparison.set(this.getStoredAverageComparisonVisibility());
   }
 
   protected chartOptions = computed<ChartConfiguration['options']>(() => {
@@ -250,7 +269,10 @@ export class ConsumptionChartComponent {
         },
         tooltip: {
           callbacks: {
-            label: (context) => `${context.dataset.label}: ${context.parsed.y} L`
+            label: (context) => {
+              const unit = this.chartType === 'heating' ? 'kWh' : 'L';
+              return `${context.dataset.label}: ${context.parsed.y} ${unit}`;
+            }
           }
         },
         zoom: {
@@ -263,10 +285,26 @@ export class ConsumptionChartComponent {
             pinch: { enabled: true },
             mode: 'x',
           }
+        },
+        summerSun: {
+          enabled: this.chartType === 'heating',
+          records: this.chartType === 'heating' ? this.data() : []
+        },
+        newYearMarker: {
+          enabled: this.chartType === 'heating',
+          records: this.chartType === 'heating' ? this.data() : []
         }
       },
       scales: {
-        y: { beginAtZero: true, title: { display: true, text: this.languageService.translate('CHART.AXIS_LITERS') } },
+        y: {
+          beginAtZero: true,
+          title: {
+            display: true,
+            text: this.chartType === 'heating'
+              ? this.languageService.translate('CHART.AXIS_KWH')
+              : this.languageService.translate('CHART.AXIS_LITERS')
+          }
+        },
         x: {
           title: { display: true, text: this.languageService.translate('CHART.AXIS_DATE') },
           ticks: {
@@ -292,12 +330,14 @@ export class ConsumptionChartComponent {
   }
 
   private getStoredTrendlineVisibility(): boolean {
-    const stored = this.localStorageService.getPreference('water_chart_trendline_visible');
+    const key = `${this.chartType}_chart_trendline_visible`;
+    const stored = this.localStorageService.getPreference(key);
     return stored === null ? true : stored === 'true';
   }
 
   private saveTrendlineVisibility(visible: boolean): void {
-    this.localStorageService.setPreference('water_chart_trendline_visible', visible.toString());
+    const key = `${this.chartType}_chart_trendline_visible`;
+    this.localStorageService.setPreference(key, visible.toString());
   }
 
   protected toggleAverageComparison(): void {
@@ -306,12 +346,18 @@ export class ConsumptionChartComponent {
   }
 
   private getStoredAverageComparisonVisibility(): boolean {
-    const stored = this.localStorageService.getPreference('water_chart_average_visible');
-    return stored === null ? true : stored === 'true';
+    const key = this.chartType === 'heating' ? 'heating_chart_average_visible' : 'water_chart_average_visible';
+    const stored = this.localStorageService.getPreference(key);
+    // Default: true for water, false for heating
+    if (stored === null) {
+      return this.chartType !== 'heating';
+    }
+    return stored === 'true';
   }
 
   private saveAverageComparisonVisibility(visible: boolean): void {
-    this.localStorageService.setPreference('water_chart_average_visible', visible.toString());
+    const key = this.chartType === 'heating' ? 'heating_chart_average_visible' : 'water_chart_average_visible';
+    this.localStorageService.setPreference(key, visible.toString());
   }
 
   protected showHelp() {

@@ -121,49 +121,27 @@
     }
   }
 
+  // Override info-tooltip-container positioning for this component
   .info-tooltip-container {
-    position: relative;
-    display: inline-flex;
-    align-items: center;
     margin-left: auto;
 
-    .info-icon {
-      color: #6c757d;
-      cursor: help;
-    }
-
+    // Position tooltip to the right to prevent overflow on mobile
     .info-tooltip {
-      visibility: hidden;
-      opacity: 0;
-      position: absolute;
-      bottom: 100%;
-      left: 50%;
-      transform: translateX(-50%);
-      background: #333;
-      color: white;
-      padding: 8px 12px;
-      border-radius: 6px;
-      font-size: 0.75rem;
-      white-space: nowrap;
-      z-index: 1000;
-      margin-bottom: 8px;
-      transition: opacity 0.2s, visibility 0.2s;
+      left: auto;
+      right: 0;
+      transform: none;
+      max-width: 280px;
 
       &::after {
-        content: '';
-        position: absolute;
-        top: 100%;
-        left: 50%;
-        transform: translateX(-50%);
-        border: 6px solid transparent;
-        border-top-color: #333;
+        left: auto;
+        right: 8px;
+        transform: none;
       }
     }
+  }
 
-    &:hover .info-tooltip {
-      visibility: visible;
-      opacity: 1;
-    }
+  .info-icon.warning {
+    color: #ffc107;
   }
 }
 

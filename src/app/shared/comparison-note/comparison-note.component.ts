@@ -8,6 +8,7 @@ import { WaterAveragesService } from '../../services/water-averages.service';
 import { LanguageService } from '../../services/language.service';
 import { CountryFactsService } from '../../services/country-facts.service';
 import { HeatingFactsService } from '../../services/heating-facts.service';
+import { HeatingAveragesService } from '../../services/heating-averages.service';
 import { TranslatePipe } from '../../pipes/translate.pipe';
 
 export type ComparisonNoteType = 'water' | 'heating';
@@ -30,6 +31,7 @@ export class ComparisonNoteComponent {
     private languageService = inject(LanguageService);
     private countryFactsService = inject(CountryFactsService);
     private heatingFactsService = inject(HeatingFactsService);
+    private heatingAveragesService = inject(HeatingAveragesService);
 
     // Inputs
     type = input<ComparisonNoteType>('water'); // 'water' or 'heating'
@@ -77,7 +79,7 @@ export class ComparisonNoteComponent {
             return this.sortedHeatingCountries().map(c => ({
                 translationKey: c.nameKey,
                 code: c.code,
-                average: 0 // Not used for heating
+                average: this.heatingAveragesService.getAverageKwhPerYear(c.code)
             }));
         }
         return this.waterCountries();
@@ -100,6 +102,11 @@ export class ComparisonNoteComponent {
 
     protected countryAverage = computed(() => {
         const code = this.effectiveComparisonCountryCode();
+
+        if (this.type() === 'heating') {
+            return this.heatingAveragesService.getAverageKwhPerYear(code);
+        }
+
         const countries = this.availableCountries();
         const country = countries.find(c => c.code.toLowerCase() === code.toLowerCase());
         return country?.average || 150;

@@ -5,6 +5,28 @@
     </div>
   </div>
 
+  <!-- New Room Spike Notification -->
+  @if (unconfirmedSpike()) {
+  <div class="notification-card notification-card--warning">
+    <div class="notification-content">
+      <lucide-icon [img]="AlertTriangleIcon" size="20" class="notification-icon"></lucide-icon>
+      <div class="notification-text">
+        <strong>{{ 'HEATING.NEW_ROOM_DETECTED_TITLE' | translate }}</strong>
+        <p>{{ 'HEATING.NEW_ROOM_DETECTED_MESSAGE' | translate:{ room: unconfirmedSpikeRoomName(), date:
+          formattedSpikeDate() } }}</p>
+      </div>
+    </div>
+    <div class="notification-actions">
+      <button type="button" class="btn-confirm" (click)="confirmSpike(unconfirmedSpike()!)">
+        {{ 'HEATING.CONFIRM_NEW_ROOM' | translate }}
+      </button>
+      <button type="button" class="btn-dismiss" (click)="dismissSpike(unconfirmedSpike()!)">
+        {{ 'HEATING.DISMISS_NEW_ROOM' | translate }}
+      </button>
+    </div>
+  </div>
+  }
+
   <!-- Country Energy Facts - Incremental Mode -->
   @if (displayMode() === 'incremental') {
   <app-comparison-note [type]="'heating'" [records]="chartRecords()" [chartView]="chartView()"
@@ -27,7 +49,8 @@
 
   <app-consumption-chart [data]="chartRecords()" [currentView]="chartView()" [onViewChange]="onChartViewChange"
     [chartType]="'heating'" [displayMode]="displayMode()" [onDisplayModeChange]="onDisplayModeChange"
-    [roomNames]="chartRoomNames()" [roomIds]="chartRoomIds()" [roomColors]="chartRoomColors()">
+    [roomNames]="chartRoomNames()" [roomIds]="chartRoomIds()" [roomColors]="chartRoomColors()"
+    [country]="selectedCountryCode()">
   </app-consumption-chart>
 
   <app-detailed-records [records]="records()" [calculateTotalFn]="calculateTotal" [valuesNoteKey]="''"

@@ -9,7 +9,8 @@ import { ExcelService } from '../services/excel.service';
 import { ExcelSettingsService } from '../services/excel-settings.service';
 import { HeatingFormService } from '../services/heating-form.service';
 import { HeatingRoomsService, HeatingRoomConfig } from '../services/heating-rooms.service';
-import { LucideAngularModule, ArrowLeft, ChevronDown, ChevronLeft, ChevronRight, Download, Upload, FileSpreadsheet, Settings, CheckCircle, Armchair, Bed, Bath, CookingPot, Baby, Briefcase, DoorOpen, UtensilsCrossed, Home, Lightbulb, Info, Trash2, FileText } from 'lucide-angular';
+import { LucideAngularModule, ArrowLeft, ChevronDown, ChevronLeft, ChevronRight, Download, Upload, FileSpreadsheet, Settings, CheckCircle, Armchair, Bed, Bath, CookingPot, Baby, Briefcase, DoorOpen, UtensilsCrossed, Home, Lightbulb, Info, Trash2, FileText, AlertTriangle } from 'lucide-angular';
+
 import { ConsumptionChartComponent, type ChartView, type DisplayMode } from '../shared/consumption-chart/consumption-chart.component';
 import { ConsumptionInputComponent, type ConsumptionData, type ConsumptionGroup } from '../shared/consumption-input/consumption-input.component';
 import { ErrorModalComponent } from '../shared/error-modal/error-modal.component';
@@ -25,6 +26,9 @@ import { HeatingFactsService } from '../services/heating-facts.service';
 import { HouseholdService } from '../services/household.service';
 import { HEATING_RECORD_HELP_STEPS, RECORDS_LIST_HELP_STEPS } from './heating.constants';
 import { PdfService } from '../services/pdf.service';
+import { ConsumptionPreferencesService } from '../services/consumption-preferences.service';
+import { ChartCalculationService } from '../services/chart-calculation.service';
+import { LocalStorageService } from '../services/local-storage.service';
 
 const ROOM_TYPE_ICONS: Record<string, any> = {
   'HEATING.ROOM_LIVING_ROOM': Armchair,
@@ -76,6 +80,9 @@ export class HeatingComponent {
   protected roomsService = inject(HeatingRoomsService);
   private heatingFactsService = inject(HeatingFactsService);
   private householdService = inject(HouseholdService);
+  private preferencesService = inject(ConsumptionPreferencesService);
+  private chartCalculationService = inject(ChartCalculationService);
+  private localStorageService = inject(LocalStorageService);
 
   protected readonly ArrowLeftIcon = ArrowLeft;
   protected readonly ChevronDownIcon = ChevronDown;
@@ -90,6 +97,7 @@ export class HeatingComponent {
   protected readonly InfoIcon = Info;
   protected readonly TrashIcon = Trash2;
   protected readonly FileTextIcon = FileText;
+  protected readonly AlertTriangleIcon = AlertTriangle;
 
   private pdfService = inject(PdfService);
 
@@ -212,8 +220,8 @@ export class HeatingComponent {
   protected records = signal<DynamicHeatingRecord[]>([]);
   protected showImportConfirmModal = signal(false);
   protected pendingImportFile = signal<File | null>(null);
-  protected chartView = signal<ChartView>('total');
-  protected displayMode = signal<DisplayMode>('total');
+  protected chartView = this.preferencesService.heatingChartView;
+  protected displayMode = this.preferencesService.heatingDisplayMode;
   protected showRoomsModal = signal(false);
 
   // Delete confirmation modal state
@@ -235,8 +243,71 @@ export class HeatingComponent {
     return Array.from(roomIds);
   });
 
-  // Pass dynamic records directly to chart component
-  protected chartRecords = computed(() => this.records());
+  // New Room Spikes Detection
+  private confirmedSpikes = signal<{ date: string, roomId: string }[]>(this.getStoredSpikes('confirmed'));
+  private dismissedSpikes = signal<{ date: string, roomId: string }[]>(this.getStoredSpikes('dismissed'));
+
+  protected detectedSpikes = computed(() => this.chartCalculationService.detectNewRoomSpikes(this.records()));
+
+  protected unconfirmedSpike = computed(() => {
+    const detected = this.detectedSpikes();
+    const confirmed = this.confirmedSpikes();
+    const dismissed = this.dismissedSpikes();
+
+    return detected.find(s =>
+      !confirmed.some(c => c.date === s.date && c.roomId === s.roomId) &&
+      !dismissed.some(d => d.date === s.date && d.roomId === s.roomId)
+    );
+  });
+
+  protected unconfirmedSpikeRoomName = computed(() => {
+    const spike = this.unconfirmedSpike();
+    if (!spike) return '';
+    const room = this.roomsService.rooms().find(r => r.id === spike.roomId);
+    return room ? room.name : spike.roomId;
+  });
+
+  protected formattedSpikeDate = computed(() => {
+    const spike = this.unconfirmedSpike();
+    if (!spike) return '';
+
+    const date = new Date(spike.date);
+    const lang = this.languageService.currentLang();
+    const locale = lang === 'de' ? 'de-DE' : 'en-US';
+
+    return date.toLocaleDateString(locale, {
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric'
+    });
+  });
+
+  protected adjustedRecords = computed(() => {
+    return this.chartCalculationService.adjustForNewRooms(this.records(), this.confirmedSpikes());
+  });
+
+  // Pass adjusted records to chart component
+  protected chartRecords = computed(() => this.adjustedRecords());
+
+  private getStoredSpikes(type: 'confirmed' | 'dismissed'): { date: string, roomId: string }[] {
+    const key = `heating_${type}_spikes`;
+    const stored = this.localStorageService.getPreference(key);
+    try { return stored ? JSON.parse(stored) : []; } catch { return []; }
+  }
+
+  private saveSpikes(type: 'confirmed' | 'dismissed', spikes: { date: string, roomId: string }[]) {
+    this.localStorageService.setPreference(`heating_${type}_spikes`, JSON.stringify(spikes));
+  }
+
+  protected confirmSpike(spike: { date: string, roomId: string }) {
+    this.confirmedSpikes.update(s => [...s, { date: spike.date, roomId: spike.roomId }]);
+    this.saveSpikes('confirmed', this.confirmedSpikes());
+  }
+
+  protected dismissSpike(spike: { date: string, roomId: string }) {
+    this.dismissedSpikes.update(s => [...s, { date: spike.date, roomId: spike.roomId }]);
+    this.saveSpikes('dismissed', this.dismissedSpikes());
+  }
 
   // Extract room names for chart labels
   protected chartRoomNames = computed(() => this.roomsService.rooms().map(r => r.name));
@@ -398,11 +469,13 @@ export class HeatingComponent {
   });
 
   protected onChartViewChange = (view: ChartView): void => {
-    this.chartView.set(view);
+    this.preferencesService.setChartView(view, 'heating');
+    this.refreshFact(); // Trigger new random fact
   };
 
   protected onDisplayModeChange = (mode: DisplayMode): void => {
-    this.displayMode.set(mode);
+    this.preferencesService.setDisplayMode(mode, 'heating');
+    this.refreshFact(); // Trigger new random fact
   };
 
   constructor() {

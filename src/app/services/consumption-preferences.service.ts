@@ -2,38 +2,58 @@ import { Injectable, inject, signal } from '@angular/core';
 import { LocalStorageService } from './local-storage.service';
 import { ChartView, DisplayMode } from '../shared/consumption-chart/consumption-chart.component';
 
+export type ChartType = 'water' | 'heating' | 'home';
+
 @Injectable({
     providedIn: 'root'
 })
 export class ConsumptionPreferencesService {
     private localStorageService = inject(LocalStorageService);
 
-    readonly chartView = signal<ChartView>(this.getStoredChartView());
-    readonly displayMode = signal<DisplayMode>(this.getStoredDisplayMode());
+    // Water-specific signals (for backwards compatibility)
+    readonly chartView = signal<ChartView>(this.getStoredChartView('water'));
+    readonly displayMode = signal<DisplayMode>(this.getStoredDisplayMode('water'));
 
-    setChartView(view: ChartView) {
-        this.chartView.set(view);
-        this.localStorageService.setPreference('water_chart_view', view);
+    // Heating-specific signals
+    readonly heatingChartView = signal<ChartView>(this.getStoredChartView('heating'));
+    readonly heatingDisplayMode = signal<DisplayMode>(this.getStoredDisplayMode('heating'));
+
+    setChartView(view: ChartView, chartType: ChartType = 'water') {
+        const key = `${chartType}_chart_view`;
+        this.localStorageService.setPreference(key, view);
+        if (chartType === 'water') {
+            this.chartView.set(view);
+        } else if (chartType === 'heating') {
+            this.heatingChartView.set(view);
+        }
     }
 
-    setDisplayMode(mode: DisplayMode) {
-        this.displayMode.set(mode);
-        this.localStorageService.setPreference('water_display_mode', mode);
+    setDisplayMode(mode: DisplayMode, chartType: ChartType = 'water') {
+        const key = `${chartType}_display_mode`;
+        this.localStorageService.setPreference(key, mode);
+        if (chartType === 'water') {
+            this.displayMode.set(mode);
+        } else if (chartType === 'heating') {
+            this.heatingDisplayMode.set(mode);
+        }
     }
 
-    private getStoredChartView(): ChartView {
-        const stored = this.localStorageService.getPreference('water_chart_view');
+    getStoredChartView(chartType: ChartType = 'water'): ChartView {
+        const key = `${chartType}_chart_view`;
+        const stored = this.localStorageService.getPreference(key);
         if (stored === 'total' || stored === 'by-room' || stored === 'by-type' || stored === 'detailed') {
             return stored;
         }
         return 'total';
     }
 
-    private getStoredDisplayMode(): DisplayMode {
-        const stored = this.localStorageService.getPreference('water_display_mode');
+    getStoredDisplayMode(chartType: ChartType = 'water'): DisplayMode {
+        const key = `${chartType}_display_mode`;
+        const stored = this.localStorageService.getPreference(key);
         if (stored === 'total' || stored === 'incremental') {
             return stored;
         }
-        return 'incremental';
+        // Default: incremental for water, total for heating
+        return chartType === 'heating' ? 'total' : 'incremental';
     }
 }

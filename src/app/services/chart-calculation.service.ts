@@ -30,10 +30,17 @@ export class ChartCalculationService {
         const incRooms: Record<string, number> = {};
 
         // Calculate delta for each room
+        // When currVal < prevVal, it indicates a meter reset (e.g., new year)
+        // In that case, use currVal as the consumption since the reset
         Object.keys(currRooms).forEach(roomId => {
           const currVal = currRooms[roomId] || 0;
           const prevVal = prevRooms[roomId] || 0;
-          incRooms[roomId] = Math.max(0, currVal - prevVal);
+          if (currVal < prevVal) {
+            // Meter reset detected - current value IS the consumption since reset
+            incRooms[roomId] = currVal;
+          } else {
+            incRooms[roomId] = currVal - prevVal;
+          }
         });
 
         // Add rooms to incremental data (type assertion needed as CombinedData doesn't explicitly have rooms yet, but will work at runtime)
@@ -89,10 +96,11 @@ export class ChartCalculationService {
 
   /**
    * Generate trendline data points from regression
+   * Values are clamped to minimum of 0 (consumption cannot be negative)
    */
   generateTrendlineData(dataPoints: number[]): number[] {
     const { slope, intercept } = this.calculateLinearRegression(dataPoints);
-    return dataPoints.map((_, index) => Math.round(slope * index + intercept));
+    return dataPoints.map((_, index) => Math.max(0, Math.round(slope * index + intercept)));
   }
 
   /**
@@ -206,6 +214,108 @@ export class ChartCalculationService {
         kitchenCold: record.kitchenCold + offsets['kitchenCold'],
         bathroomWarm: record.bathroomWarm + offsets['bathroomWarm'],
         bathroomCold: record.bathroomCold + offsets['bathroomCold']
+      });
+    }
+
+    return adjustedRecords;
+  }
+
+  /**
+   * Detect potential "new room" spikes (jump from 0 to high value)
+   * This happens when a room is added mid-season
+   * Returns array of { date, roomId, value, averageDelta }
+   */
+  detectNewRoomSpikes(records: DynamicHeatingRecord[]): { date: string, roomId: string, value: number, averageDelta: number }[] {
+    if (records.length < 2) return [];
+
+    const spikes: { date: string, roomId: string, value: number, averageDelta: number }[] = [];
+
+    for (let i = 1; i < records.length; i++) {
+      const prevRecord = records[i - 1];
+      const currRecord = records[i];
+
+      // Calculate average delta of existing rooms
+      let otherDeltasSum = 0;
+      let otherDeltasCount = 0;
+
+      Object.keys(currRecord.rooms).forEach(rId => {
+        const pVal = prevRecord.rooms[rId] || 0;
+        const cVal = currRecord.rooms[rId] || 0;
+        // Consider "existing" if previous value was > 0
+        if (pVal > 0) {
+          otherDeltasSum += Math.max(0, cVal - pVal);
+          otherDeltasCount++;
+        }
+      });
+
+      const avgOtherDelta = otherDeltasCount > 0 ? otherDeltasSum / otherDeltasCount : 0;
+
+      // Check for spikes
+      Object.keys(currRecord.rooms).forEach(rId => {
+        const pVal = prevRecord.rooms[rId] || 0;
+        const cVal = currRecord.rooms[rId] || 0;
+        const delta = cVal - pVal;
+
+        // Condition:
+        // 1. Previous value was 0 (or non-existent)
+        // 2. Current value > 0
+        // 3. Delta is significantly higher than average of other rooms (e.g., > 10x heuristic) AND absolute value > 50
+        //    OR if no other rooms to compare, just check absolute value (e.g. > 100)
+        if (pVal === 0 && cVal > 0) {
+          // User said "way off the average". Using 5x average as heuristic.
+          const isWayOffAverage = otherDeltasCount > 0 ? delta > (avgOtherDelta * 5) : delta > 100;
+
+          if (isWayOffAverage && delta > 50) {
+            spikes.push({
+              date: new Date(currRecord.date).toISOString().split('T')[0],
+              roomId: rId,
+              value: cVal,
+              averageDelta: avgOtherDelta
+            });
+          }
+        }
+      });
+    }
+    return spikes;
+  }
+
+  /**
+   * Adjust records for new room spikes by applying offsets
+   * This smooths the chart by treating the spike value as the baseline (start)
+   */
+  adjustForNewRooms(records: DynamicHeatingRecord[], ignoredSpikes: { date: string, roomId: string }[]): DynamicHeatingRecord[] {
+    if (records.length < 2 || ignoredSpikes.length === 0) return records;
+
+    const adjustedRecords: DynamicHeatingRecord[] = [];
+    const roomOffsets: Record<string, number> = {};
+
+    for (let i = 0; i < records.length; i++) {
+      const record = records[i];
+      const recordDate = new Date(record.date).toISOString().split('T')[0];
+      const newRooms: Record<string, number> = {};
+
+      Object.keys(record.rooms).forEach(roomId => {
+        const rawVal = record.rooms[roomId] || 0;
+
+        // Update offset if this is a spike date for this room
+        if (i > 0) {
+          const isSpike = ignoredSpikes.some(s => s.date === recordDate && s.roomId === roomId);
+          if (isSpike) {
+            const spikeVal = rawVal;
+            // Add to existing offset (cumulative)
+            const currentOffset = roomOffsets[roomId] || 0;
+            roomOffsets[roomId] = currentOffset + spikeVal;
+          }
+        }
+
+        // Apply offset
+        const offset = roomOffsets[roomId] || 0;
+        newRooms[roomId] = Math.max(0, rawVal - offset);
+      });
+
+      adjustedRecords.push({
+        ...record,
+        rooms: newRooms
       });
     }
 

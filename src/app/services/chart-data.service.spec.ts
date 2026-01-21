@@ -3,14 +3,16 @@ import { ChartDataService } from './chart-data.service';
 import { LanguageService } from './language.service';
 import { ChartCalculationService } from './chart-calculation.service';
 import { WaterChartService, ChartDataParams } from './water-chart.service';
+import { HeatingAveragesService } from './heating-averages.service';
 import { vi, describe, it, expect, beforeEach } from 'vitest';
-import { ConsumptionRecord, HeatingRecord, DynamicHeatingRecord } from '../models/records.model';
+import { ConsumptionRecord, DynamicHeatingRecord } from '../models/records.model';
 
 describe('ChartDataService', () => {
   let service: ChartDataService;
   let languageServiceMock: any;
   let calculationServiceMock: any;
   let waterChartServiceMock: any;
+  let heatingAveragesServiceMock: any;
 
   beforeEach(() => {
     languageServiceMock = {
@@ -20,10 +22,24 @@ describe('ChartDataService', () => {
     calculationServiceMock = {
       calculateIncrementalData: vi.fn(),
       generateComparisonData: vi.fn(),
+      generateTrendlineData: vi.fn((data: number[]) => {
+        // Simple mock: return same data for trendline
+        return data.map((_, i) => data[0] + (i * ((data[data.length - 1] - data[0]) / (data.length - 1 || 1))));
+      }),
     };
 
     waterChartServiceMock = {
       getWaterChartData: vi.fn(),
+    };
+
+    heatingAveragesServiceMock = {
+      getAverageKwhPerYear: vi.fn((country: string) => {
+        // Return different values based on country for testing
+        if (country === 'DE') return 13500;
+        if (country === 'FI') return 18000;
+        if (country === 'ET') return 400;
+        return 10000; // Default
+      }),
     };
 
     TestBed.configureTestingModule({
@@ -32,6 +48,7 @@ describe('ChartDataService', () => {
         { provide: LanguageService, useValue: languageServiceMock },
         { provide: ChartCalculationService, useValue: calculationServiceMock },
         { provide: WaterChartService, useValue: waterChartServiceMock },
+        { provide: HeatingAveragesService, useValue: heatingAveragesServiceMock },
       ],
     });
 
@@ -183,5 +200,152 @@ describe('ChartDataService', () => {
       expect(result.datasets.length).toBe(4);
       expect(result.datasets[0].label).toBe('Living Room');
     });
+
+    // New tests for trendlines
+    describe('trendline support', () => {
+      it('should add trendline dataset when showTrendline is true', () => {
+        const params: ChartDataParams<DynamicHeatingRecord> = {
+          records: mockHeatingRecords,
+          labels: labels,
+          view: 'total',
+          mode: 'total',
+          roomNames,
+          roomIds,
+          showTrendline: true
+        };
+
+        const result = service.getHeatingChartData(params);
+
+        expect(result.datasets.length).toBe(2); // Data + trendline
+        expect(result.datasets[1].label).toBe('CHART.TRENDLINE');
+        expect(calculationServiceMock.generateTrendlineData).toHaveBeenCalled();
+      });
+
+      it('should not add trendline when showTrendline is false', () => {
+        const params: ChartDataParams<DynamicHeatingRecord> = {
+          records: mockHeatingRecords,
+          labels: labels,
+          view: 'total',
+          mode: 'total',
+          roomNames,
+          roomIds,
+          showTrendline: false
+        };
+
+        const result = service.getHeatingChartData(params);
+
+        expect(result.datasets.length).toBe(1);
+      });
+
+      it('should add trendlines per room in by-room view', () => {
+        const params: ChartDataParams<DynamicHeatingRecord> = {
+          records: mockHeatingRecords,
+          labels: labels,
+          view: 'by-room',
+          mode: 'total',
+          roomNames,
+          roomIds,
+          showTrendline: true
+        };
+
+        const result = service.getHeatingChartData(params);
+
+        // 4 rooms + 4 trendlines = 8 datasets
+        expect(result.datasets.length).toBe(8);
+        expect(result.datasets[1].label).toContain('CHART.TRENDLINE');
+      });
+    });
+
+    // New tests for country average comparison
+    describe('country average comparison', () => {
+      it('should add country average line when showAverageComparison is true in incremental mode', () => {
+        const params: ChartDataParams<DynamicHeatingRecord> = {
+          records: mockHeatingRecords,
+          labels: labels,
+          view: 'total',
+          mode: 'incremental',
+          roomNames,
+          roomIds,
+          showAverageComparison: true,
+          country: 'DE'
+        };
+
+        const result = service.getHeatingChartData(params);
+
+        // Find the country average dataset
+        const avgDataset = result.datasets.find(d => d.label === 'CHART.COUNTRY_AVERAGE');
+        expect(avgDataset).toBeDefined();
+        expect(heatingAveragesServiceMock.getAverageKwhPerYear).toHaveBeenCalledWith('DE');
+      });
+
+      it('should not add country average in total mode', () => {
+        const params: ChartDataParams<DynamicHeatingRecord> = {
+          records: mockHeatingRecords,
+          labels: labels,
+          view: 'total',
+          mode: 'total',
+          roomNames,
+          roomIds,
+          showAverageComparison: true,
+          country: 'DE'
+        };
+
+        const result = service.getHeatingChartData(params);
+
+        const avgDataset = result.datasets.find(d => d.label === 'CHART.COUNTRY_AVERAGE');
+        expect(avgDataset).toBeUndefined();
+      });
+
+      it('should use correct country average for different countries', () => {
+        const paramsDE: ChartDataParams<DynamicHeatingRecord> = {
+          records: mockHeatingRecords,
+          labels: labels,
+          view: 'by-room',
+          mode: 'incremental',
+          roomNames,
+          roomIds,
+          showAverageComparison: true,
+          country: 'FI'
+        };
+
+        service.getHeatingChartData(paramsDE);
+
+        expect(heatingAveragesServiceMock.getAverageKwhPerYear).toHaveBeenCalledWith('FI');
+      });
+    });
+
+    // Test for empty datasets filtering
+    describe('filterEmptyDatasets', () => {
+      it('should filter out rooms with no data', () => {
+        const recordsWithEmptyRoom: DynamicHeatingRecord[] = [
+          {
+            date: new Date('2023-01-01'),
+            rooms: { 'room1': 10, 'room2': 0, 'room3': 5, 'room4': 0 }
+          },
+          {
+            date: new Date('2023-01-08'),
+            rooms: { 'room1': 12, 'room2': 0, 'room3': 6, 'room4': 0 }
+          },
+        ];
+
+        const params: ChartDataParams<DynamicHeatingRecord> = {
+          records: recordsWithEmptyRoom,
+          labels: labels,
+          view: 'by-room',
+          mode: 'total',
+          roomNames,
+          roomIds,
+          showTrendline: false
+        };
+
+        const result = service.getHeatingChartData(params);
+
+        // Should only have 2 datasets (room1 and room3 have data)
+        expect(result.datasets.length).toBe(2);
+        expect(result.datasets[0].label).toBe('Living Room');
+        expect(result.datasets[1].label).toBe('Kitchen');
+      });
+    });
   });
 });
+

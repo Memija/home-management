@@ -5,7 +5,8 @@
         <p>{{ 'CHART.COMPARISON_NOTE_COUNTRY' | translate:{ country: effectiveComparisonCountryName(), average:
             countryAverage(), size: familySize() } }}</p>
         } @else {
-        <p>{{ 'HEATING.ENERGY_FACTS_FOR' | translate:{ country: effectiveComparisonCountryName() } }}</p>
+        <p>{{ 'CHART.COMPARISON_NOTE_COUNTRY_HEATING' | translate:{ country: effectiveComparisonCountryName(), average:
+            countryAverage() } }}</p>
         }
         } @else {
         <p class="disabled-message">
@@ -38,7 +39,7 @@
                         @if (type() === 'water') {
                         {{ country.translationKey | translate }} ({{ country.average }} L)
                         } @else {
-                        {{ country.translationKey | translate }}
+                        {{ country.translationKey | translate }} ({{ country.average }} kWh/a)
                         }
                     </option>
                     }

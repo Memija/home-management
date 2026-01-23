@@ -2,7 +2,7 @@ import { Injectable, inject } from '@angular/core';
 import { ChartConfiguration } from 'chart.js';
 import { LanguageService } from './language.service';
 import { ChartCalculationService } from './chart-calculation.service';
-import { ConsumptionRecord, HeatingRecord, DynamicHeatingRecord, CombinedData, ComparisonData } from '../models/records.model';
+import { ConsumptionRecord, DynamicHeatingRecord, CombinedData, ComparisonData } from '../models/records.model';
 import { WaterChartService, ChartDataParams } from './water-chart.service';
 import { HeatingAveragesService } from './heating-averages.service';
 
@@ -20,14 +20,14 @@ export class ChartDataService {
   /**
    * Calculate incremental (delta) data between consecutive readings
    */
-  calculateIncrementalData(recs: (ConsumptionRecord | HeatingRecord | DynamicHeatingRecord)[]): CombinedData[] {
+  calculateIncrementalData(recs: (ConsumptionRecord | DynamicHeatingRecord)[]): CombinedData[] {
     return this.calculationService.calculateIncrementalData(recs);
   }
 
   /**
    * Generate comparison data based on country averages
    */
-  generateComparisonData(processedData: (ConsumptionRecord | HeatingRecord)[], familySize: number, country: string): ComparisonData[] {
+  generateComparisonData(processedData: ConsumptionRecord[], familySize: number, country: string): ComparisonData[] {
     return this.calculationService.generateComparisonData(processedData, familySize, country);
   }
 

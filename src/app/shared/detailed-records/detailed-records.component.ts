@@ -14,6 +14,8 @@ import { ConsumptionRecord, calculateWaterTotal, calculateKitchenTotal, calculat
 export type { ConsumptionRecord } from '../../models/records.model';
 
 // Generic record interface - any record with a date
+// Index signature allows bracket notation access for water-specific fallback in template
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export interface GenericRecord {
   date: Date;
   [key: string]: any;
@@ -205,16 +207,16 @@ export class DetailedRecordsComponent {
       }
       // For water-specific sorts, fall back to legacy functions if record has required properties
       if (sortOption === 'kitchen-desc' && 'kitchenWarm' in a) {
-        return calculateKitchenTotal(b as ConsumptionRecord) - calculateKitchenTotal(a as ConsumptionRecord);
+        return calculateKitchenTotal(b as unknown as ConsumptionRecord) - calculateKitchenTotal(a as unknown as ConsumptionRecord);
       }
       if (sortOption === 'kitchen-asc' && 'kitchenWarm' in a) {
-        return calculateKitchenTotal(a as ConsumptionRecord) - calculateKitchenTotal(b as ConsumptionRecord);
+        return calculateKitchenTotal(a as unknown as ConsumptionRecord) - calculateKitchenTotal(b as unknown as ConsumptionRecord);
       }
       if (sortOption === 'bathroom-desc' && 'bathroomWarm' in a) {
-        return calculateBathroomTotal(b as ConsumptionRecord) - calculateBathroomTotal(a as ConsumptionRecord);
+        return calculateBathroomTotal(b as unknown as ConsumptionRecord) - calculateBathroomTotal(a as unknown as ConsumptionRecord);
       }
       if (sortOption === 'bathroom-asc' && 'bathroomWarm' in a) {
-        return calculateBathroomTotal(a as ConsumptionRecord) - calculateBathroomTotal(b as ConsumptionRecord);
+        return calculateBathroomTotal(a as unknown as ConsumptionRecord) - calculateBathroomTotal(b as unknown as ConsumptionRecord);
       }
       return 0;
     });

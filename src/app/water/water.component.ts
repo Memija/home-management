@@ -249,7 +249,7 @@ export class WaterComponent {
     this.dataService.updateFilterState(state);
   }
 
-  protected onFilteredRecordsChange(records: any[]) {
+  protected onFilteredRecordsChange(records: unknown[]) {
     // Optional
   }
 
@@ -279,8 +279,8 @@ export class WaterComponent {
     this.dataService.recordsToDelete.set([]);
   }
 
-  protected deleteAllRecords(records: any[]) {
-    this.dataService.recordsToDelete.set(records);
+  protected deleteAllRecords(records: unknown[]) {
+    this.dataService.recordsToDelete.set(records as ConsumptionRecord[]);
     this.dataService.showDeleteAllModal.set(true);
   }
 
@@ -289,12 +289,12 @@ export class WaterComponent {
 
 
   // Edit/Delete Interactions
-  protected editRecord(record: any) {
+  protected editRecord(record: unknown) {
     this.formService.startEdit(record as ConsumptionRecord);
     document.querySelector('.input-section')?.scrollIntoView({ behavior: 'smooth' });
   }
 
-  protected deleteRecord(record: any) {
+  protected deleteRecord(record: unknown) {
     this.dataService.recordToDelete.set(record as ConsumptionRecord);
     this.dataService.showDeleteModal.set(true);
   }
@@ -326,7 +326,7 @@ export class WaterComponent {
   }
 
   // Calc Helpers
-  protected calculateTotal = (record: any): number => calculateWaterTotal(record as ConsumptionRecord);
+  protected calculateTotal = (record: unknown): number => calculateWaterTotal(record as ConsumptionRecord);
   protected calculateKitchenTotal = calculateKitchenTotal;
   protected calculateBathroomTotal = calculateBathroomTotal;
 

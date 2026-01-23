@@ -1,6 +1,6 @@
 import { Injectable, inject } from '@angular/core';
 import { WaterAveragesService } from './water-averages.service';
-import { ConsumptionRecord, HeatingRecord, DynamicHeatingRecord, CombinedData, ComparisonData } from '../models/records.model';
+import { ConsumptionRecord, DynamicHeatingRecord, CombinedData, ComparisonData } from '../models/records.model';
 
 @Injectable({
   providedIn: 'root'
@@ -11,7 +11,7 @@ export class ChartCalculationService {
   /**
    * Calculate incremental (delta) data between consecutive readings
    */
-  calculateIncrementalData(recs: (ConsumptionRecord | HeatingRecord | DynamicHeatingRecord)[]): CombinedData[] {
+  calculateIncrementalData(recs: (ConsumptionRecord | DynamicHeatingRecord)[]): CombinedData[] {
     if (recs.length <= 1) return [];
 
     const incrementalData: CombinedData[] = [];
@@ -106,7 +106,7 @@ export class ChartCalculationService {
   /**
    * Generate comparison data based on country averages
    */
-  generateComparisonData(processedData: (ConsumptionRecord | HeatingRecord)[], familySize: number, country: string): ComparisonData[] {
+  generateComparisonData(processedData: ConsumptionRecord[], familySize: number, country: string): ComparisonData[] {
     if (processedData.length === 0 || familySize === 0) return [];
 
     const countryData = this.waterAveragesService.getCountryData(country);

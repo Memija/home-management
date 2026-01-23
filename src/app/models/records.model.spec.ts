@@ -3,18 +3,13 @@ import {
   calculateWaterTotal,
   calculateKitchenTotal,
   calculateBathroomTotal,
-  calculateHeatingTotal,
   calculateDynamicHeatingTotal,
   getDateKey,
   isWaterRecordAllZero,
-  isHeatingRecordAllZero,
   isDynamicHeatingRecordAllZero,
-  toDynamicHeatingRecord,
-  toHeatingRecord,
   filterZeroPlaceholders,
   mergeRecords,
   ConsumptionRecord,
-  HeatingRecord,
   DynamicHeatingRecord
 } from './records.model';
 
@@ -27,14 +22,6 @@ describe('Records Model Utils', () => {
       kitchenCold: 20,
       bathroomWarm: 30,
       bathroomCold: 40
-    };
-
-    const heatingRecord: HeatingRecord = {
-      date: new Date('2023-01-01'),
-      livingRoom: 10,
-      bedroom: 20,
-      kitchen: 30,
-      bathroom: 40
     };
 
     const dynamicHeatingRecord: DynamicHeatingRecord = {
@@ -55,10 +42,6 @@ describe('Records Model Utils', () => {
 
     it('should calculate bathroom total correctly', () => {
       expect(calculateBathroomTotal(waterRecord)).toBe(70);
-    });
-
-    it('should calculate heating total correctly', () => {
-      expect(calculateHeatingTotal(heatingRecord)).toBe(100);
     });
 
     it('should calculate dynamic heating total correctly', () => {
@@ -113,28 +96,6 @@ describe('Records Model Utils', () => {
       expect(isWaterRecordAllZero(record)).toBe(false);
     });
 
-    it('should identify all-zero heating record', () => {
-      const record: HeatingRecord = {
-        date: new Date(),
-        livingRoom: 0,
-        bedroom: 0,
-        kitchen: 0,
-        bathroom: 0
-      };
-      expect(isHeatingRecordAllZero(record)).toBe(true);
-    });
-
-    it('should identify non-zero heating record', () => {
-      const record: HeatingRecord = {
-        date: new Date(),
-        livingRoom: 1,
-        bedroom: 0,
-        kitchen: 0,
-        bathroom: 0
-      };
-      expect(isHeatingRecordAllZero(record)).toBe(false);
-    });
-
     it('should identify all-zero dynamic heating record', () => {
       const record: DynamicHeatingRecord = {
         date: new Date(),
@@ -152,71 +113,7 @@ describe('Records Model Utils', () => {
     });
   });
 
-  describe('Conversion Functions', () => {
-    it('should return dynamic record as-is in toDynamicHeatingRecord', () => {
-      const dynamic: DynamicHeatingRecord = {
-        date: new Date('2023-01-01'),
-        rooms: { 'room1': 10 }
-      };
-      expect(toDynamicHeatingRecord(dynamic)).toBe(dynamic);
-    });
 
-    it('should convert legacy to dynamic record', () => {
-      const legacy: HeatingRecord = {
-        date: new Date('2023-01-01'),
-        livingRoom: 10,
-        bedroom: 20,
-        kitchen: 30,
-        bathroom: 40
-      };
-      const result = toDynamicHeatingRecord(legacy);
-      expect(result.date).toBe(legacy.date);
-      expect(result.rooms).toEqual({
-        room_1: 10,
-        room_2: 20,
-        room_3: 30,
-        room_4: 40
-      });
-    });
-
-    it('should return legacy record as-is in toHeatingRecord', () => {
-      const legacy: HeatingRecord = {
-        date: new Date('2023-01-01'),
-        livingRoom: 10,
-        bedroom: 20,
-        kitchen: 30,
-        bathroom: 40
-      };
-      expect(toHeatingRecord(legacy)).toBe(legacy);
-    });
-
-    it('should convert dynamic to legacy record', () => {
-      const dynamic: DynamicHeatingRecord = {
-        date: new Date('2023-01-01'),
-        rooms: {
-          'room1': 10,
-          'room2': 20,
-          'room3': 30,
-          'room4': 40
-        }
-      };
-      const result = toHeatingRecord(dynamic);
-      expect(result.date).toBe(dynamic.date);
-      expect(result.livingRoom).toBe(10);
-      expect(result.bedroom).toBe(20);
-      expect(result.kitchen).toBe(30);
-      expect(result.bathroom).toBe(40);
-    });
-
-    it('should handle invalid dynamic record in toHeatingRecord', () => {
-      const invalid = { date: new Date('2023-01-01') } as unknown as DynamicHeatingRecord;
-      const result = toHeatingRecord(invalid);
-      expect(result.livingRoom).toBe(0);
-      expect(result.bedroom).toBe(0);
-      expect(result.kitchen).toBe(0);
-      expect(result.bathroom).toBe(0);
-    });
-  });
 
   describe('Filtering and Merging', () => {
     it('should filter all zero records regardless of date', () => {

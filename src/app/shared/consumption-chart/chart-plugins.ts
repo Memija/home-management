@@ -7,19 +7,19 @@ import { DynamicHeatingRecord, calculateDynamicHeatingTotal } from '../../models
  */
 export const summerSunPlugin = {
     id: 'summerSun',
-    beforeDatasetsDraw(chart: Chart, args: any, options: any) {
+    beforeDatasetsDraw(chart: Chart, _args: object, options: { enabled?: boolean; records?: (DynamicHeatingRecord | { date: Date })[] }) {
         if (!options?.enabled || !options?.records) return;
 
         const ctx = chart.ctx;
         const xScale = chart.scales['x'];
         const chartArea = chart.chartArea;
-        const records = options.records as (DynamicHeatingRecord | any)[];
+        const records = options.records;
 
         if (!xScale || !chartArea || records.length < 2) return;
 
         // Calculate total for a record
-        const getTotal = (record: any): number => {
-            if (record.rooms && typeof record.rooms === 'object') {
+        const getTotal = (record: DynamicHeatingRecord | { date: Date }): number => {
+            if ('rooms' in record && typeof record.rooms === 'object') {
                 return calculateDynamicHeatingTotal(record as DynamicHeatingRecord);
             }
             return 0;
@@ -99,7 +99,7 @@ export const summerSunPlugin = {
  */
 export const newYearMarkerPlugin = {
     id: 'newYearMarker',
-    beforeDatasetsDraw(chart: Chart, args: any, options: any) {
+    beforeDatasetsDraw(chart: Chart, _args: object, options: { enabled?: boolean; records?: { date: Date }[] }) {
         if (!options?.enabled || !options?.records) return;
 
         const ctx = chart.ctx;

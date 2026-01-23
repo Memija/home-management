@@ -135,8 +135,8 @@ $heating-primary-light: #fff3e0;
 }
 
 // Override help button hover in consumption-input component
-::ng-deep app-consumption-input .header-actions .help-btn:hover {
-  color: $heating-primary !important;
+:host ::ng-deep app-consumption-input .header-actions .help-btn:hover {
+  color: $heating-primary;
 }
 
 // Room values container in detailed records

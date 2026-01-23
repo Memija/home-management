@@ -2,7 +2,7 @@ import { Injectable, inject } from '@angular/core';
 import { ChartConfiguration } from 'chart.js';
 import { LanguageService } from './language.service';
 import { ChartCalculationService } from './chart-calculation.service';
-import { ConsumptionRecord, HeatingRecord, ComparisonData } from '../models/records.model';
+import { ConsumptionRecord, ComparisonData } from '../models/records.model';
 
 export type ChartView = 'total' | 'by-room' | 'by-type' | 'detailed';
 export type DisplayMode = 'total' | 'incremental';

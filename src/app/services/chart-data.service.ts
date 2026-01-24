@@ -20,8 +20,8 @@ export class ChartDataService {
   /**
    * Calculate incremental (delta) data between consecutive readings
    */
-  calculateIncrementalData(recs: (ConsumptionRecord | DynamicHeatingRecord)[]): CombinedData[] {
-    return this.calculationService.calculateIncrementalData(recs);
+  calculateIncrementalData(recs: (ConsumptionRecord | DynamicHeatingRecord)[], ignoredSpikes?: { date: string, roomId: string }[]): CombinedData[] {
+    return this.calculationService.calculateIncrementalData(recs, ignoredSpikes);
   }
 
   /**

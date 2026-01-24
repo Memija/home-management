@@ -136,8 +136,8 @@ export class HeatingComponent {
   protected recordsToDeleteAll = signal<DynamicHeatingRecord[]>([]);
 
   // Spike detection
-  private confirmedSpikes = signal<{ date: string, roomId: string }[]>(this.getStoredSpikes('confirmed'));
-  private dismissedSpikes = signal<{ date: string, roomId: string }[]>(this.getStoredSpikes('dismissed'));
+  protected confirmedSpikes = signal<{ date: string, roomId: string }[]>(this.getStoredSpikes('confirmed'));
+  protected dismissedSpikes = signal<{ date: string, roomId: string }[]>(this.getStoredSpikes('dismissed'));
 
   protected detectedSpikes = computed(() => this.chartCalculationService.detectNewRoomSpikes(this.records()));
 
@@ -171,7 +171,11 @@ export class HeatingComponent {
     return this.chartCalculationService.adjustForNewRooms(this.records(), this.confirmedSpikes());
   });
 
-  protected chartRecords = computed(() => this.adjustedRecords());
+  protected chartRecords = computed(() => {
+    // For Incremental Mode: Use RAW records so we detect meter resets correctly. Spikes are handled by passing confirmedSpikes to the chart.
+    // For Total Mode: Use ADJUSTED records so the cumulative curve is smoothed (offsets applied).
+    return this.displayMode() === 'incremental' ? this.records() : this.adjustedRecords();
+  });
 
   private getStoredSpikes(type: 'confirmed' | 'dismissed'): { date: string, roomId: string }[] {
     const key = `heating_${type}_spikes`;

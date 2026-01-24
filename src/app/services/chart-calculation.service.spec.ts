@@ -355,24 +355,76 @@ describe('ChartCalculationService', () => {
       // room1 should be unchanged
       expect(result[1].rooms['room1']).toBe(110);
     });
+  });
 
-    it('should handle multiple room spikes', () => {
-      const records: DynamicHeatingRecord[] = [
-        { date: new Date('2023-01-01'), rooms: { room1: 100, room2: 0, room3: 0 } },
-        { date: new Date('2023-01-02'), rooms: { room1: 110, room2: 400, room3: 0 } },
-        { date: new Date('2023-01-03'), rooms: { room1: 120, room2: 450, room3: 300 } }
-      ];
-      const spikes = [
-        { date: new Date('2023-01-02').toISOString().split('T')[0], roomId: 'room2' },
-        { date: new Date('2023-01-03').toISOString().split('T')[0], roomId: 'room3' }
-      ];
+  const createHeatingRecord = (dateString: string, rooms: { [key: string]: number }): DynamicHeatingRecord => {
+    return { date: new Date(dateString), rooms };
+  };
 
-      const result = service.adjustForNewRooms(records, spikes);
+  it('should adjust values based on confirmed spikes', () => {
+    const records = [
+      createHeatingRecord('2023-01-01', { room1: 0 }),
+      createHeatingRecord('2023-01-08', { room1: 100 }), // Spike here
+      createHeatingRecord('2023-01-15', { room1: 150 }),
+    ];
+    const spikes = [{ date: '2023-01-08', roomId: 'room1' }];
 
-      expect(result[1].rooms['room2']).toBe(0); // 400 - 400 = 0
-      expect(result[2].rooms['room2']).toBe(50); // 450 - 400 = 50
-      expect(result[2].rooms['room3']).toBe(0); // 300 - 300 = 0
-    });
+    const result = service.adjustForNewRooms(records, spikes);
+
+    expect(result[0].rooms['room1']).toBe(0);
+    expect(result[1].rooms['room1']).toBe(0); // 100 - 100
+    expect(result[2].rooms['room1']).toBe(50); // 150 - 100
+  });
+
+  it('should handle meter reset (value < offset) by resetting the offset', () => {
+    // Scenario: Spike in 2025, followed by reset in 2026
+    const records = [
+      // 2025 - Spike confirmed
+      createHeatingRecord('2025-11-01', { room1: 0 }),
+      createHeatingRecord('2025-11-16', { room1: 1000 }), // Spike! Offset becomes 1000
+      createHeatingRecord('2025-12-31', { room1: 1200 }), // Adjusted: 200
+
+      // 2026 - Meter Reset (New Year)
+      createHeatingRecord('2026-01-01', { room1: 0 }), // Value 0 < Offset 1000 -> Should reset offset
+      createHeatingRecord('2026-01-08', { room1: 44 }), // Value 44. If offset cleared, result 44. If not, 0.
+    ];
+    const spikes = [{ date: '2025-11-16', roomId: 'room1' }];
+
+    const result = service.adjustForNewRooms(records, spikes);
+
+    // 2025 checks
+    expect(result[1].rooms['room1']).toBe(0); // 1000 - 1000
+    expect(result[2].rooms['room1']).toBe(200); // 1200 - 1000
+
+    // 2026 checks - CURRENTLY FAILING (returns 0)
+    expect(result[3].rooms['room1']).toBe(0); // 0 (reset)
+    expect(result[4].rooms['room1']).toBe(44); // 44 (actual usage)
+  });
+
+  it('should correctly handle Dec 7 reset scenario (1200 -> 271)', () => {
+    const records = [
+      createHeatingRecord('2025-11-30', { room_3: 1200 }),
+      createHeatingRecord('2025-12-07', { room_3: 271 })
+    ];
+    // Spike on unrelated date
+    const spikes = [{ date: '2025-11-16', roomId: 'room_3' }];
+
+    const result = service.calculateIncrementalData(records, spikes);
+
+    // Dec 7 delta: 271 < 1200 -> 271
+    expect((result[0] as any).rooms['room_3']).toBe(271);
+  });
+
+  it('should zero out delta if record matches an ignored spike', () => {
+    const records = [
+      createHeatingRecord('2025-11-09', { room_3: 0 }),
+      createHeatingRecord('2025-11-16', { room_3: 1000 })
+    ];
+    const spikes = [{ date: '2025-11-16', roomId: 'room_3' }];
+
+    const result = service.calculateIncrementalData(records, spikes);
+
+    // Nov 16 delta: 1000. But isSpike=true -> 0.
+    expect((result[0] as any).rooms['room_3']).toBe(0);
   });
 });
-

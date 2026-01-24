@@ -63,7 +63,7 @@ describe('ChartDataService', () => {
     it('should call calculationService.calculateIncrementalData', () => {
       const records: ConsumptionRecord[] = [];
       service.calculateIncrementalData(records);
-      expect(calculationServiceMock.calculateIncrementalData).toHaveBeenCalledWith(records);
+      expect(calculationServiceMock.calculateIncrementalData).toHaveBeenCalledWith(records, undefined);
     });
   });
 

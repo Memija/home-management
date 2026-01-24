@@ -11,13 +11,14 @@ export class ChartCalculationService {
   /**
    * Calculate incremental (delta) data between consecutive readings
    */
-  calculateIncrementalData(recs: (ConsumptionRecord | DynamicHeatingRecord)[]): CombinedData[] {
+  calculateIncrementalData(recs: (ConsumptionRecord | DynamicHeatingRecord)[], ignoredSpikes?: { date: string, roomId: string }[]): CombinedData[] {
     if (recs.length <= 1) return [];
 
     const incrementalData: CombinedData[] = [];
     for (let i = 1; i < recs.length; i++) {
       const current = recs[i];
       const previous = recs[i - 1];
+      const currentDateStr = new Date(current.date).toISOString().split('T')[0];
 
       // Initialize with date
       const incremental: CombinedData = { date: current.date };
@@ -33,6 +34,14 @@ export class ChartCalculationService {
         // When currVal < prevVal, it indicates a meter reset (e.g., new year)
         // In that case, use currVal as the consumption since the reset
         Object.keys(currRooms).forEach(roomId => {
+          // Check if this specific record/room is a confirmed spike
+          const isSpike = ignoredSpikes?.some(s => s.date === currentDateStr && s.roomId === roomId);
+
+          if (isSpike) {
+            incRooms[roomId] = 0; // Ignore spike consumption (treat as 0 usage initialization)
+            return;
+          }
+
           const currVal = currRooms[roomId] || 0;
           const prevVal = prevRooms[roomId] || 0;
           if (currVal < prevVal) {
@@ -309,7 +318,15 @@ export class ChartCalculationService {
         }
 
         // Apply offset
-        const offset = roomOffsets[roomId] || 0;
+        let offset = roomOffsets[roomId] || 0;
+
+        // If the raw value is LESS than the offset, it implies a reset occurred (e.g. New Year or meter replacement)
+        // treating the previous cumulative offset as invalid.
+        if (rawVal < offset) {
+          offset = 0;
+          roomOffsets[roomId] = 0;
+        }
+
         newRooms[roomId] = Math.max(0, rawVal - offset);
       });
 

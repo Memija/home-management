@@ -53,6 +53,7 @@
     "@types/express": "^5.0.1",
     "@types/jasmine": "^5.1.13",
     "@types/node": "^20.17.19",
+    "baseline-browser-mapping": "^2.9.17",
     "jasmine-core": "^5.12.1",
     "jsdom": "^27.1.0",
     "karma": "^6.4.4",

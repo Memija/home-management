@@ -43,6 +43,7 @@ export class ConsumptionChartComponent implements OnInit {
   roomNames = input<string[]>([]);  // For heating chart: actual room names
   roomIds = input<string[]>([]);    // For heating chart: actual room IDs
   roomColors = input<Array<{ border: string; bg: string }>>([]);  // For heating chart: room-specific colors
+  ignoredSpikes = input<{ date: string, roomId: string }[]>([]); // For heating chart: confirmed spikes to ignore in incremental mode
 
   private languageService = inject(LanguageService);
   private chartDataService = inject(ChartDataService);
@@ -129,7 +130,7 @@ export class ConsumptionChartComponent implements OnInit {
     this.showAverageComparison();
 
     // Process data based on display mode
-    const processedData = mode === 'incremental' ? this.chartDataService.calculateIncrementalData(recs) : recs;
+    const processedData = mode === 'incremental' ? this.chartDataService.calculateIncrementalData(recs, this.ignoredSpikes()) : recs;
 
     if (this.chartType === 'water') {
       return this.chartDataService.getWaterChartData({
@@ -269,6 +270,18 @@ export class ConsumptionChartComponent implements OnInit {
         },
         tooltip: {
           callbacks: {
+            // Show full date in tooltip title
+            title: (tooltipItems) => {
+              if (tooltipItems.length > 0) {
+                const item = tooltipItems[0];
+                const rawDateStr = this.data()[item.dataIndex].date;
+                const date = new Date(rawDateStr);
+                const lang = this.languageService.currentLang();
+                const locale = lang === 'de' ? 'de-DE' : 'en-US';
+                return date.toLocaleDateString(locale, { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+              }
+              return '';
+            },
             label: (context) => {
               const unit = this.chartType === 'heating' ? 'kWh' : 'L';
               return `${context.dataset.label}: ${context.parsed.y} ${unit}`;

@@ -50,7 +50,7 @@
   <app-consumption-chart [data]="chartRecords()" [currentView]="chartView()" [onViewChange]="onChartViewChange"
     [chartType]="'heating'" [displayMode]="displayMode()" [onDisplayModeChange]="onDisplayModeChange"
     [roomNames]="chartRoomNames()" [roomIds]="chartRoomIds()" [roomColors]="chartRoomColors()"
-    [country]="selectedCountryCode()">
+    [country]="selectedCountryCode()" [ignoredSpikes]="confirmedSpikes()">
   </app-consumption-chart>
 
   <app-detailed-records [records]="records()" [calculateTotalFn]="calculateTotal" [valuesNoteKey]="''"

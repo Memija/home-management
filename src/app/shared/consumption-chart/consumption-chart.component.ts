@@ -9,7 +9,7 @@ import { LucideAngularModule, BarChart3, DoorOpen, Droplet, Grid3x3, TrendingUp,
 import { HelpModalComponent, HelpStep } from '../help-modal/help-modal.component';
 import 'hammerjs';
 import zoomPlugin from 'chartjs-plugin-zoom';
-import { ConsumptionRecord, DynamicHeatingRecord } from '../../models/records.model';
+import { ConsumptionRecord, DynamicHeatingRecord, ElectricityRecord } from '../../models/records.model';
 import { registerChartPlugins } from './chart-plugins';
 import { ChartDataPoint, ChartConfig } from './consumption-chart.models';
 
@@ -33,7 +33,7 @@ export class ConsumptionChartComponent implements OnInit {
   data = input.required<ChartDataPoint[]>();
   currentView = input.required<ChartView>();
   @Input({ required: true }) onViewChange!: (view: ChartView) => void;
-  @Input({ required: true }) chartType!: 'water' | 'home' | 'heating';
+  @Input({ required: true }) chartType!: 'water' | 'home' | 'heating' | 'electricity';
   displayMode = input<DisplayMode>('total');
   @Input({ required: true }) onDisplayModeChange!: (mode: DisplayMode) => void;
   familySize = input<any>(0);
@@ -142,6 +142,16 @@ export class ConsumptionChartComponent implements OnInit {
         showAverageComparison: this.showAverageComparison(),
         country: this.country() ?? '',
         familySize: this.familySize() ?? 0
+      });
+    } else if (this.chartType === 'electricity') {
+      return this.chartDataService.getElectricityChartData({
+        records: processedData as unknown as ElectricityRecord[],
+        labels,
+        view,
+        mode,
+        showTrendline: this.showTrendline(),
+        showAverageComparison: this.showAverageComparison(),
+        country: this.country() ?? 'DE'
       });
     } else if (this.chartType === 'home') {
       return this.chartDataService.getWaterChartData({
@@ -283,7 +293,7 @@ export class ConsumptionChartComponent implements OnInit {
               return '';
             },
             label: (context) => {
-              const unit = this.chartType === 'heating' ? 'kWh' : 'L';
+              const unit = (this.chartType === 'heating' || this.chartType === 'electricity') ? 'kWh' : 'L';
               return `${context.dataset.label}: ${context.parsed.y} ${unit}`;
             }
           }
@@ -304,8 +314,8 @@ export class ConsumptionChartComponent implements OnInit {
           records: this.chartType === 'heating' ? this.data() : []
         },
         newYearMarker: {
-          enabled: this.chartType === 'heating',
-          records: this.chartType === 'heating' ? this.data() : []
+          enabled: true, // Enable for all types effectively
+          records: this.data()
         }
       },
       scales: {
@@ -313,7 +323,7 @@ export class ConsumptionChartComponent implements OnInit {
           beginAtZero: true,
           title: {
             display: true,
-            text: this.chartType === 'heating'
+            text: (this.chartType === 'heating' || this.chartType === 'electricity')
               ? this.languageService.translate('CHART.AXIS_KWH')
               : this.languageService.translate('CHART.AXIS_LITERS')
           }
@@ -359,17 +369,17 @@ export class ConsumptionChartComponent implements OnInit {
   }
 
   private getStoredAverageComparisonVisibility(): boolean {
-    const key = this.chartType === 'heating' ? 'heating_chart_average_visible' : 'water_chart_average_visible';
+    const key = `${this.chartType}_chart_average_visible`;
     const stored = this.localStorageService.getPreference(key);
-    // Default: true for water, false for heating
+    // Default: true for water, false for others
     if (stored === null) {
-      return this.chartType !== 'heating';
+      return this.chartType === 'water';
     }
     return stored === 'true';
   }
 
   private saveAverageComparisonVisibility(visible: boolean): void {
-    const key = this.chartType === 'heating' ? 'heating_chart_average_visible' : 'water_chart_average_visible';
+    const key = `${this.chartType}_chart_average_visible`;
     this.localStorageService.setPreference(key, visible.toString());
   }
 

@@ -1,0 +1,52 @@
+$electricity-primary: #ffc107;
+$electricity-primary-dark: #e0a800; // Darken 10-12% for hover
+
+// Apply theme variables for shared components (like consumption-input)
+:host {
+  --theme-primary: #{$electricity-primary};
+  --theme-primary-dark: #{$electricity-primary-dark};
+}
+
+.detailed-value {
+  color: $electricity-primary !important;
+}
+
+.chart-section .chart-header .chart-filters button {
+  &:hover {
+    border-color: $electricity-primary;
+    color: $electricity-primary-dark;
+  }
+
+  &.active {
+    background: $electricity-primary;
+    border-color: $electricity-primary;
+    color: black;
+  }
+}
+
+.action-buttons-group {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+
+  button,
+  label {
+    flex-shrink: 0;
+  }
+}
+
+// Override Save button in consumption-input to ensure black text (contrast)
+:host ::ng-deep app-consumption-input .save-btn {
+  color: black;
+}
+
+// Override Pagination buttons in detailed-records
+:host ::ng-deep app-detailed-records .pagination-btn {
+  background: $electricity-primary;
+  color: black;
+
+  &:hover:not(:disabled) {
+    background: $electricity-primary-dark;
+  }
+}

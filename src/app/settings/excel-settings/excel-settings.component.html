@@ -70,6 +70,14 @@
           }
         </div>
       </div>
+
+      <div class="preview-section">
+        <h4>{{ 'SETTINGS.EXCEL_ELECTRICITY_MAPPING_TITLE' | translate }}</h4>
+        <div class="preview-items">
+          <span class="preview-item">{{ electricityDateCol() }}</span>
+          <span class="preview-item">{{ electricityValueCol() }}</span>
+        </div>
+      </div>
     </div>
     }
   </div>
@@ -275,6 +283,52 @@
               }
             </div>
             }
+          </div>
+        </div>
+
+        <!-- Electricity Consumption Mapping -->
+        <div class="mapping-group">
+          <h4>{{ 'SETTINGS.EXCEL_ELECTRICITY_MAPPING_TITLE' | translate }}</h4>
+          <div class="form-grid">
+            <div class="form-group">
+              <label for="electricity-date">{{ 'SETTINGS.EXCEL_COLUMN_DATE_NAME' | translate }}</label>
+              <input id="electricity-date" type="text" [(ngModel)]="electricityDateCol" class="form-control"
+                [placeholder]="'EXCEL.DEFAULT_DATE' | translate"
+                [class.error]="(electricityDateCol() && validationService.getValidationError(electricityDateCol())) || isDuplicateElectricity(electricityDateCol())">
+              @if (electricityDateCol() && validationService.getValidationError(electricityDateCol())) {
+              <div class="warning-message">
+                <lucide-icon [img]="TriangleAlertIcon" size="16" class="warning-icon"></lucide-icon>
+                <span>{{ validationService.getValidationError(electricityDateCol()) }}</span>
+              </div>
+              }
+              @if (!validationService.getValidationError(electricityDateCol()) &&
+              isDuplicateElectricity(electricityDateCol())) {
+              <div class="warning-message">
+                <lucide-icon [img]="TriangleAlertIcon" size="16" class="warning-icon"></lucide-icon>
+                <span>{{ 'EXCEL.VALIDATION_DUPLICATES' | translate }}</span>
+              </div>
+              }
+            </div>
+
+            <div class="form-group">
+              <label for="electricity-value">{{ 'SETTINGS.EXCEL_COLUMN_ELECTRICITY_VALUE_NAME' | translate }}</label>
+              <input id="electricity-value" type="text" [(ngModel)]="electricityValueCol" class="form-control"
+                [placeholder]="'EXCEL.DEFAULT_ELECTRICITY_VALUE' | translate"
+                [class.error]="(electricityValueCol() && validationService.getValidationError(electricityValueCol())) || isDuplicateElectricity(electricityValueCol())">
+              @if (electricityValueCol() && validationService.getValidationError(electricityValueCol())) {
+              <div class="warning-message">
+                <lucide-icon [img]="TriangleAlertIcon" size="16" class="warning-icon"></lucide-icon>
+                <span>{{ validationService.getValidationError(electricityValueCol()) }}</span>
+              </div>
+              }
+              @if (!validationService.getValidationError(electricityValueCol()) &&
+              isDuplicateElectricity(electricityValueCol())) {
+              <div class="warning-message">
+                <lucide-icon [img]="TriangleAlertIcon" size="16" class="warning-icon"></lucide-icon>
+                <span>{{ 'EXCEL.VALIDATION_DUPLICATES' | translate }}</span>
+              </div>
+              }
+            </div>
           </div>
         </div>
 

@@ -1,7 +1,7 @@
 import { Injectable, inject } from '@angular/core';
 import { LanguageService } from './language.service';
 import { ExcelValidationService } from './excel-validation.service';
-import { ExcelSettings, WaterColumnMapping, HeatingColumnMapping } from './excel-settings.service';
+import { ExcelSettings, WaterColumnMapping, HeatingColumnMapping, ElectricityColumnMapping } from './excel-settings.service';
 import { HeatingRoomsService } from './heating-rooms.service';
 
 export interface ImportError {
@@ -39,6 +39,7 @@ export class ExcelImportService {
       enabled?: boolean;
       waterMapping?: Partial<WaterColumnMapping>;
       heatingMapping?: Partial<HeatingColumnMapping>;
+      electricityMapping?: Partial<ElectricityColumnMapping>;
     }
 
     const typedData = data as RawSettings;
@@ -178,6 +179,36 @@ export class ExcelImportService {
       }
     }
 
+    // 4. Electricity Mapping Validation (Optional for backward compatibility, but required for return type)
+    const hasElectricityMapping = 'electricityMapping' in typedData && typedData.electricityMapping && typeof typedData.electricityMapping === 'object';
+    let electricityMapping: ElectricityColumnMapping;
+
+    if (hasElectricityMapping) {
+      const e = typedData.electricityMapping!;
+      this.validateField(e.date, 'SETTINGS.EXCEL_COLUMN_DATE_NAME', 'Electricity', errors, fieldKeys, hintKeys);
+      this.validateField(e.value, 'SETTINGS.EXCEL_COLUMN_ELECTRICITY_VALUE_NAME', 'Electricity', errors, fieldKeys, hintKeys);
+
+      electricityMapping = e as ElectricityColumnMapping;
+
+      // Duplicate Check
+      const electricityColumns = [e.date, e.value]
+        .filter(col => typeof col === 'string')
+        .map(c => c.trim());
+
+      const duplicates = electricityColumns.filter((col, index) => electricityColumns.indexOf(col) !== index);
+      if (duplicates.length > 0) {
+        const uniqueDupes = [...new Set(duplicates)];
+        errors.push(this.languageService.translate('EXCEL.VALIDATION_DUPLICATES') + ` (Electricity): "${uniqueDupes.join('", "')}"`);
+        hintKeys.push('EXCEL.VALIDATION_DUPLICATES_HINT');
+      }
+    } else {
+      // Default fallback if missing (e.g. importing old settings)
+      electricityMapping = {
+        date: 'Date',
+        value: 'Electricity Consumption (kWh)'
+      };
+    }
+
     if (errors.length > 0) {
       throw {
         message: this.languageService.translate('SETTINGS.VALIDATION_FAILED'),
@@ -191,7 +222,8 @@ export class ExcelImportService {
     return {
       enabled: typedData.enabled ?? false,
       waterMapping: typedData.waterMapping as WaterColumnMapping,
-      heatingMapping: typedData.heatingMapping as HeatingColumnMapping
+      heatingMapping: typedData.heatingMapping as HeatingColumnMapping,
+      electricityMapping
     };
   }
 

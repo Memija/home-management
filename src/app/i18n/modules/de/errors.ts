@@ -26,6 +26,17 @@ export const errors = {
     IMPORT_INVALID_ROOM_VALUE: 'Datensatz ({{date}}): Ungültige Zahl \'{{value}}\' für Raum \'{{room}}\'',
     IMPORT_INVALID_ROOM_TYPE: 'Datensatz ({{date}}): Ungültiger Werttyp für Raum \'{{room}}\'',
     IMPORT_MISSING_ROOM_DATA: 'Datensatz ({{date}}): Fehlende Daten für Raum \'{{room}}\'',
-    IMPORT_UNKNOWN_ROOM: 'Datensatz ({{date}}): Unbekannter Raum \'{{room}}\''
+    IMPORT_UNKNOWN_ROOM: 'Datensatz ({{date}}): Unbekannter Raum \'{{room}}\'',
+    IMPORT_INVALID_RECORD_FORMAT: 'Datensatz {{row}}: Ungültiges Datensatzformat',
+    IMPORT_MISSING_DATE_FIELD: 'Datensatz {{row}}: Fehlendes Feld \'date\'',
+    IMPORT_INVALID_DATE_VALUE: 'Datensatz {{row}}: Ungültiger Datumswert \'{{value}}\'',
+    IMPORT_INVALID_DATE_TYPE: 'Datensatz {{row}}: Ungültiger Datumstyp',
+    IMPORT_DUPLICATE_DATE: 'Datensatz {{row}}: Doppeltes Datum \'{{date}}\' (erstes Vorkommen in Datensatz {{firstRow}})',
+    IMPORT_INVALID_NUMBER_VALUE: 'Datensatz {{row}}: Ungültiger Zahlenwert \'{{value}}\' für Feld \'{{field}}\'',
+    IMPORT_INVALID_FIELD_TYPE: 'Datensatz {{row}}: Ungültiger Typ für Feld \'{{field}}\'',
+    IMPORT_INVALID_DATA_FORMAT: 'Ungültiges Datenformat: Array von Datensätzen erwartet',
+    IMPORT_EMPTY_FILE: 'Die Datei ist leer oder enthält keine Datensätze.',
+    IMPORT_INVALID_EXCEL_FILE_TYPE: 'Ungültiger Dateityp. Erwartet wurde eine Excel-Datei (.xlsx, .xls, .csv), erhalten wurde {{extension}}',
+    IMPORT_EXCEL_MISSING_DATE_COLUMN: 'Fehlende erforderliche Datumsspalte: {{column}}. Bitte überprüfen Sie Ihre Excel-Datei.'
   }
 };

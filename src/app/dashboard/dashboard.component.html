@@ -20,6 +20,14 @@
       <h2>{{ 'DASHBOARD.HEATING_TRACKER' | translate }}</h2>
       <p>{{ 'DASHBOARD.HEATING_DESC' | translate }}</p>
     </button>
+
+    <button type="button" routerLink="/electricity" class="tracker-card electricity-card">
+      <div class="icon-wrapper">
+        <lucide-icon [img]="ZapIcon" [size]="64"></lucide-icon>
+      </div>
+      <h2>{{ 'DASHBOARD.ELECTRICITY_TRACKER' | translate }}</h2>
+      <p>{{ 'DASHBOARD.ELECTRICITY_DESC' | translate }}</p>
+    </button>
   </div>
 
   <!-- Try Demo Section (always visible) -->

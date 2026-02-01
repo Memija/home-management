@@ -26,6 +26,17 @@ export const errors = {
     IMPORT_INVALID_ROOM_VALUE: 'Record ({{date}}): Invalid number \'{{value}}\' for room \'{{room}}\'',
     IMPORT_INVALID_ROOM_TYPE: 'Record ({{date}}): Invalid value type for room \'{{room}}\'',
     IMPORT_MISSING_ROOM_DATA: 'Record ({{date}}): Missing data for room \'{{room}}\'',
-    IMPORT_UNKNOWN_ROOM: 'Record ({{date}}): Unknown room \'{{room}}\''
+    IMPORT_UNKNOWN_ROOM: 'Record ({{date}}): Unknown room \'{{room}}\'',
+    IMPORT_INVALID_RECORD_FORMAT: 'Record {{row}}: Invalid record format',
+    IMPORT_MISSING_DATE_FIELD: 'Record {{row}}: Missing \'date\' field',
+    IMPORT_INVALID_DATE_VALUE: 'Record {{row}}: Invalid date value \'{{value}}\'',
+    IMPORT_INVALID_DATE_TYPE: 'Record {{row}}: Invalid date type',
+    IMPORT_DUPLICATE_DATE: 'Record {{row}}: Duplicate date \'{{date}}\' (first occurrence in record {{firstRow}})',
+    IMPORT_INVALID_NUMBER_VALUE: 'Record {{row}}: Invalid number value \'{{value}}\' for field \'{{field}}\'',
+    IMPORT_INVALID_FIELD_TYPE: 'Record {{row}}: Invalid type for field \'{{field}}\'',
+    IMPORT_INVALID_DATA_FORMAT: 'Invalid data format: expected an array of records',
+    IMPORT_EMPTY_FILE: 'The file is empty or has no data records.',
+    IMPORT_INVALID_EXCEL_FILE_TYPE: 'Invalid file type. Expected Excel file (.xlsx, .xls, .csv), got {{extension}}',
+    IMPORT_EXCEL_MISSING_DATE_COLUMN: 'Missing required Date column: {{column}}. Please check your Excel file.'
   }
 };

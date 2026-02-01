@@ -1,0 +1,67 @@
+@if (show()) {
+<div class="modal-overlay" (click)="close.emit()">
+  <div class="modal-content" (click)="$event.stopPropagation()">
+    <div class="modal-header modal-header-premium">
+      <lucide-icon [img]="ClipboardIcon" size="24" class="header-icon"></lucide-icon>
+      <h3>{{ 'SMART_IMPORT.TITLE' | translate }}</h3>
+      <button class="close-btn" (click)="close.emit()" title="Close" aria-label="Close modal">
+        <lucide-icon [img]="XIcon" size="20"></lucide-icon>
+      </button>
+    </div>
+
+    <div class="modal-body">
+      @if (step() === 'input') {
+      <p class="instruction">{{ 'SMART_IMPORT.INSTRUCTION' | translate }}</p>
+      <textarea id="smart-import-paste-area" [(ngModel)]="rawText"
+        placeholder="{{ 'SMART_IMPORT.PLACEHOLDER' | translate }}" rows="10" class="paste-area">
+        </textarea>
+      } @else {
+      <div class="results-summary">
+        <div class="stat">
+          <span class="label">{{ 'SMART_IMPORT.FOUND' | translate }}</span>
+          <span class="value">{{ parsedRecords().length }}</span>
+        </div>
+      </div>
+
+      <div class="records-preview">
+        <table>
+          <thead>
+            <tr>
+              <th>{{ 'SMART_IMPORT.DATE' | translate }}</th>
+              <th>{{ 'SMART_IMPORT.VALUE' | translate }}</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (record of parsedRecords(); track record.originalLine) {
+            <tr>
+              <td>{{ record.date | date:'shortDate' }}</td>
+              <td>{{ record.value }}</td>
+            </tr>
+            }
+            @if (parsedRecords().length === 0) {
+            <tr>
+              <td colspan="2" class="no-data">{{ 'SMART_IMPORT.NO_DATA_FOUND' | translate }}</td>
+            </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+      }
+    </div>
+
+    <div class="modal-footer">
+      @if (step() === 'input') {
+      <button class="btn-secondary" (click)="close.emit()">{{ 'HOME.CANCEL' | translate }}</button>
+      <button class="btn-primary" [disabled]="!rawText().trim()" (click)="analyzeText()">
+        {{ 'SMART_IMPORT.ANALYZE' | translate }} <lucide-icon [img]="ArrowRightIcon" size="16"></lucide-icon>
+      </button>
+      } @else {
+      <button class="btn-secondary" (click)="step.set('input')">{{ 'SMART_IMPORT.BACK' | translate }}</button>
+      <button class="btn-primary" [disabled]="parsedRecords().length === 0" (click)="confirmImport()">
+        {{ 'SMART_IMPORT.IMPORT_BUTTON' | translate }}
+      </button>
+      }
+    </div>
+  </div>
+</div>
+}

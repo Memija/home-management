@@ -12,7 +12,15 @@ describe('ExcelImportService', () => {
 
   beforeEach(() => {
     mockLanguageService = {
-      translate: vi.fn((key: string) => key),
+      translate: vi.fn((key: string) => {
+        const placeholders: Record<string, string> = {
+          'SETTINGS.IMPORT_EXCEL_UNKNOWN_ROOMS': 'SETTINGS.IMPORT_EXCEL_UNKNOWN_ROOMS {{rooms}}',
+          'SETTINGS.IMPORT_EXCEL_MISSING_ROOM_MAPPINGS': 'SETTINGS.IMPORT_EXCEL_MISSING_ROOM_MAPPINGS {{rooms}}',
+          'SETTINGS.IMPORT_EXCEL_UNEXPECTED_FIELDS': 'SETTINGS.IMPORT_EXCEL_UNEXPECTED_FIELDS {{fields}}',
+          'SETTINGS.IMPORT_EXCEL_CROSS_SECTION_DUPLICATES': 'SETTINGS.IMPORT_EXCEL_CROSS_SECTION_DUPLICATES {{columns}}'
+        };
+        return placeholders[key] || key;
+      }),
     };
 
     mockValidationService = {
@@ -93,7 +101,16 @@ describe('ExcelImportService', () => {
       };
 
       const result = service.validateImportedSettings(validData);
-      expect(result).toEqual(validData);
+
+      const expected = {
+        ...validData,
+        electricityMapping: {
+          date: 'Date',
+          value: 'Electricity Consumption (kWh)'
+        }
+      };
+
+      expect(result).toEqual(expected);
     });
 
     it('should throw on validation errors (missing fields)', () => {
@@ -177,6 +194,161 @@ describe('ExcelImportService', () => {
       } catch (e: any) {
         expect(e.details).toContain('EXCEL.VALIDATION_DUPLICATES');
         expect(e.details).toContain('Duplicate');
+      }
+    });
+  });
+
+  describe('Electricity Mapping', () => {
+    it('should validate valid electricity mapping', () => {
+      const validData = {
+        enabled: true,
+        waterMapping: {
+          date: 'Water Date',
+          kitchenWarm: 'KW',
+          kitchenCold: 'KC',
+          bathroomWarm: 'BW',
+          bathroomCold: 'BC'
+        },
+        heatingMapping: {
+          date: 'Heating Date',
+          rooms: {
+            livingRoom: 'L',
+            bedroom: 'B',
+            kitchen: 'K',
+            bathroom: 'BA'
+          }
+        },
+        electricityMapping: {
+          date: 'Elec Date',
+          value: 'Elec Value'
+        }
+      };
+
+      const result = service.validateImportedSettings(validData);
+      expect(result.electricityMapping).toEqual(validData.electricityMapping);
+    });
+
+    it('should throw if electricity mapping is missing required fields', () => {
+      const invalidData = {
+        enabled: true,
+        waterMapping: {
+          date: 'Water Date',
+          kitchenWarm: 'KW',
+          kitchenCold: 'KC',
+          bathroomWarm: 'BW',
+          bathroomCold: 'BC'
+        },
+        electricityMapping: {
+          date: 'Elec Date'
+          // Missing value
+        }
+      };
+
+      try {
+        service.validateImportedSettings(invalidData);
+        expect(true).toBe(false);
+      } catch (e: any) {
+        expect(e.message).toBe('SETTINGS.VALIDATION_FAILED');
+        expect(e.details).toContain('SETTINGS.EXCEL_COLUMN_ELECTRICITY_VALUE_NAME');
+      }
+    });
+
+    it('should detect duplicates in electricity mapping', () => {
+      const duplicateData = {
+        enabled: true,
+        electricityMapping: {
+          date: 'Same Column',
+          value: 'Same Column'
+        }
+      };
+
+      try {
+        service.validateImportedSettings(duplicateData);
+        expect(true).toBe(false);
+      } catch (e: any) {
+        expect(e.message).toBe('SETTINGS.VALIDATION_FAILED');
+        expect(e.details).toContain('EXCEL.VALIDATION_DUPLICATES');
+        expect(e.details).toContain('Same Column');
+      }
+    });
+  });
+
+  describe('Cross-Section Duplicates', () => {
+    it('should detect duplicates between Water and Heating mappings', () => {
+      const crossDuplicateData = {
+        enabled: true,
+        waterMapping: {
+          date: 'Shared Date',
+          kitchenWarm: 'KW',
+          kitchenCold: 'KC',
+          bathroomWarm: 'BW',
+          bathroomCold: 'BC'
+        },
+        heatingMapping: {
+          date: 'Shared Date', // Duplicate with Water
+          rooms: {
+            livingRoom: 'L',
+            bedroom: 'B',
+            kitchen: 'K',
+            bathroom: 'BA'
+          }
+        }
+      };
+
+      try {
+        service.validateImportedSettings(crossDuplicateData);
+        expect(true).toBe(false);
+      } catch (e: any) {
+        expect(e.message).toBe('SETTINGS.VALIDATION_FAILED');
+        expect(e.details).toContain('SETTINGS.IMPORT_EXCEL_CROSS_SECTION_DUPLICATES');
+        expect(e.details).toContain('shared date');
+      }
+    });
+
+    it('should NOT throw if no duplicates between sections', () => {
+      const validData = {
+        enabled: true,
+        waterMapping: {
+          date: 'Water Date',
+          kitchenWarm: 'KW',
+          kitchenCold: 'KC',
+          bathroomWarm: 'BW',
+          bathroomCold: 'BC'
+        },
+        heatingMapping: {
+          date: 'Heating Date',
+          rooms: {
+            livingRoom: 'L',
+            bedroom: 'B',
+            kitchen: 'K',
+            bathroom: 'BA'
+          }
+        }
+      };
+
+      const result = service.validateImportedSettings(validData);
+      expect(result).toBeTruthy();
+    });
+  });
+
+  describe('Enabled Flag', () => {
+    it('should add error if enabled is not boolean', () => {
+      const invalidData = {
+        enabled: 'true', // string instead of boolean
+        waterMapping: {
+          date: 'Water Date',
+          kitchenWarm: 'KW',
+          kitchenCold: 'KC',
+          bathroomWarm: 'BW',
+          bathroomCold: 'BC'
+        }
+      };
+
+      try {
+        service.validateImportedSettings(invalidData);
+        expect(true).toBe(false);
+      } catch (e: any) {
+        expect(e.details).toContain('SETTINGS.IMPORT_EXCEL_INVALID_ENABLED');
       }
     });
   });
@@ -310,6 +482,79 @@ describe('ExcelImportService', () => {
         expect(true).toBe(false);
       } catch (e: any) {
         expect(e.message).toBe('SETTINGS.VALIDATION_FAILED');
+      }
+    });
+    it('should detect unknown rooms (extra room IDs)', () => {
+      const invalidData = {
+        enabled: true,
+        heatingMapping: {
+          date: 'Heating Date',
+          rooms: {
+            livingRoom: 'L',
+            bedroom: 'B',
+            kitchen: 'K',
+            bathroom: 'BA',
+            extraRoom: 'E' // Unknown room ID
+          }
+        }
+      };
+
+      try {
+        service.validateImportedSettings(invalidData);
+        expect(true).toBe(false);
+      } catch (e: any) {
+        expect(e.message).toBe('SETTINGS.VALIDATION_FAILED');
+        expect(e.details).toContain('SETTINGS.IMPORT_EXCEL_UNKNOWN_ROOMS');
+        expect(e.details).toContain('extraRoom');
+      }
+    });
+
+    it('should detect missing rooms (configured room IDs not in import)', () => {
+      const invalidData = {
+        enabled: true,
+        heatingMapping: {
+          date: 'Heating Date',
+          rooms: {
+            livingRoom: 'L',
+            bedroom: 'B',
+            // Missing kitchen and bathroom
+          }
+        }
+      };
+
+      try {
+        service.validateImportedSettings(invalidData);
+        expect(true).toBe(false);
+      } catch (e: any) {
+        expect(e.message).toBe('SETTINGS.VALIDATION_FAILED');
+        expect(e.details).toContain('SETTINGS.IMPORT_EXCEL_MISSING_ROOM_MAPPINGS');
+        expect(e.details).toContain('Kitchen');
+        expect(e.details).toContain('Bathroom');
+      }
+    });
+
+    it('should detect unexpected fields in heating mapping', () => {
+      const invalidData = {
+        enabled: true,
+        heatingMapping: {
+          date: 'Heating Date',
+          rooms: {
+            livingRoom: 'L',
+            bedroom: 'B',
+            kitchen: 'K',
+            bathroom: 'BA'
+          },
+          unexpectedField: 'Value' // Disallowed field
+        }
+      };
+
+      try {
+        service.validateImportedSettings(invalidData);
+        expect(true).toBe(false);
+      } catch (e: any) {
+        expect(e.message).toBe('SETTINGS.VALIDATION_FAILED');
+        expect(e.details).toContain('SETTINGS.IMPORT_EXCEL_UNEXPECTED_FIELDS');
+        expect(e.details).toContain('unexpectedField');
       }
     });
   });

@@ -138,18 +138,55 @@ export class ImportValidationService {
   }
 
   /**
+   * Validates JSON import data for electricity consumption records
+   */
+  validateElectricityJsonImport(data: unknown[]): ValidationResult<import('../models/records.model').ElectricityRecord> {
+    const validationErrors: string[] = [];
+    const validRecords: import('../models/records.model').ElectricityRecord[] = [];
+    const seenDates = new Map<string, number>();
+    const numericFields = ['value'];
+
+    for (let index = 0; index < data.length; index++) {
+      const record = data[index] as Record<string, unknown>;
+      const rowNumber = index + 1;
+
+      // Validate record structure and date
+      const dateResult = this.validateRecordAndDate(record, rowNumber, seenDates);
+      if (!dateResult.valid) {
+        validationErrors.push(...dateResult.errors);
+        continue;
+      }
+
+      // Validate numeric fields
+      const numericResult = this.validateNumericFields(record, rowNumber, numericFields);
+      if (numericResult.errors.length > 0) {
+        validationErrors.push(...numericResult.errors);
+        continue;
+      }
+
+      validRecords.push({
+        date: dateResult.date!,
+        value: numericResult.values['value']
+      });
+    }
+
+    return { validRecords, errors: validationErrors };
+  }
+
+
+  /**
    * Gets error instructions for JSON import errors
    */
   getJsonErrorInstructions(errorMessage: string): string[] {
     const instructions: string[] = [];
 
-    if (errorMessage.includes('Invalid date')) {
+    if (errorMessage.includes('INVALID_DATE') || errorMessage.includes('MISSING_DATE') || errorMessage.includes('INVALID_RECORD')) {
       instructions.push('ERROR.JSON_DATE_FIX_1', 'ERROR.JSON_DATE_FIX_2');
     }
-    if (errorMessage.includes('Invalid number value')) {
+    if (errorMessage.includes('INVALID_NUMBER') || errorMessage.includes('INVALID_FIELD_TYPE')) {
       instructions.push('ERROR.JSON_NUMBER_FIX_1', 'ERROR.JSON_NUMBER_FIX_2');
     }
-    if (errorMessage.includes('Duplicate date')) {
+    if (errorMessage.includes('DUPLICATE_DATE')) {
       instructions.push('ERROR.JSON_DUPLICATE_FIX_1', 'ERROR.JSON_DUPLICATE_FIX_2');
     }
 
@@ -170,16 +207,16 @@ export class ImportValidationService {
   getExcelErrorInstructions(errorMessage: string): string[] {
     const instructions: string[] = [];
 
-    if (errorMessage.includes('Invalid date')) {
+    if (errorMessage.includes('INVALID_DATE') || errorMessage.includes('MISSING_DATE')) {
       instructions.push('ERROR.EXCEL_DATE_FIX_1', 'ERROR.EXCEL_DATE_FIX_2', 'ERROR.EXCEL_DATE_FIX_3');
     }
-    if (errorMessage.includes('Invalid number value')) {
+    if (errorMessage.includes('INVALID_NUMBER') || errorMessage.includes('INVALID_FIELD_TYPE')) {
       instructions.push('ERROR.EXCEL_NUMBER_FIX_1', 'ERROR.EXCEL_NUMBER_FIX_2');
     }
-    if (errorMessage.includes('Duplicate date')) {
+    if (errorMessage.includes('DUPLICATE_DATE')) {
       instructions.push('ERROR.EXCEL_DUPLICATE_FIX_1', 'ERROR.EXCEL_DUPLICATE_FIX_2');
     }
-    if (errorMessage.includes('Missing required') && errorMessage.includes('column')) {
+    if (errorMessage.includes('MISSING_REQUIRED') || errorMessage.includes('COLUMN_FIX')) {
       instructions.push('ERROR.EXCEL_COLUMN_FIX_1', 'ERROR.EXCEL_COLUMN_FIX_2');
     }
 
@@ -195,10 +232,10 @@ export class ImportValidationService {
    */
   validateDataArray(data: unknown): string | null {
     if (!Array.isArray(data)) {
-      return 'Invalid data format: expected an array of records';
+      return this.languageService.translate('ERROR.IMPORT_INVALID_DATA_FORMAT');
     }
     if (data.length === 0) {
-      return 'The file is empty or has no data records.';
+      return this.languageService.translate('ERROR.IMPORT_EMPTY_FILE');
     }
     return null;
   }
@@ -214,7 +251,7 @@ export class ImportValidationService {
 
     // Check record is an object
     if (!record || typeof record !== 'object') {
-      errors.push(`Record ${rowNumber}: Invalid record format`);
+      errors.push(this.languageService.translate('ERROR.IMPORT_INVALID_RECORD_FORMAT', { row: rowNumber }));
       return { valid: false, errors };
     }
 
@@ -222,7 +259,7 @@ export class ImportValidationService {
 
     // Check required date field exists
     if (!('date' in rec)) {
-      errors.push(`Record ${rowNumber}: Missing 'date' field`);
+      errors.push(this.languageService.translate('ERROR.IMPORT_MISSING_DATE_FIELD', { row: rowNumber }));
       return { valid: false, errors };
     }
 
@@ -233,20 +270,20 @@ export class ImportValidationService {
     if (typeof dateValue === 'string') {
       parsedDate = new Date(dateValue);
       if (isNaN(parsedDate.getTime())) {
-        errors.push(`Record ${rowNumber}: Invalid date value '${dateValue}'`);
+        errors.push(this.languageService.translate('ERROR.IMPORT_INVALID_DATE_VALUE', { row: rowNumber, value: dateValue }));
         return { valid: false, errors };
       }
     } else if (dateValue instanceof Date) {
       parsedDate = dateValue;
     } else {
-      errors.push(`Record ${rowNumber}: Invalid date type`);
+      errors.push(this.languageService.translate('ERROR.IMPORT_INVALID_DATE_TYPE', { row: rowNumber }));
       return { valid: false, errors };
     }
 
     // Check for duplicate dates (use local date to match display)
     const dateKey = this.formatLocalDate(parsedDate);
     if (seenDates.has(dateKey)) {
-      errors.push(`Record ${rowNumber}: Duplicate date '${dateKey}' (first occurrence in record ${seenDates.get(dateKey)})`);
+      errors.push(this.languageService.translate('ERROR.IMPORT_DUPLICATE_DATE', { row: rowNumber, date: dateKey, firstRow: seenDates.get(dateKey) || 0 }));
       return { valid: false, errors };
     }
     seenDates.set(dateKey, rowNumber);
@@ -271,12 +308,12 @@ export class ImportValidationService {
       } else if (typeof value === 'string') {
         const num = Number(value);
         if (isNaN(num)) {
-          errors.push(`Record ${rowNumber}: Invalid number value '${value}' for field '${field}'`);
+          errors.push(this.languageService.translate('ERROR.IMPORT_INVALID_NUMBER_VALUE', { row: rowNumber, value: value, field: field }));
         } else {
           values[field] = num;
         }
       } else {
-        errors.push(`Record ${rowNumber}: Invalid type for field '${field}'`);
+        errors.push(this.languageService.translate('ERROR.IMPORT_INVALID_FIELD_TYPE', { row: rowNumber, field: field }));
       }
     }
 

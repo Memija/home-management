@@ -1,29 +1,27 @@
 import { Injectable, signal, inject, computed } from '@angular/core';
-import { ConsumptionRecord, mergeRecords, filterZeroPlaceholders, isWaterRecordAllZero } from '../models/records.model';
+import { ElectricityRecord, mergeRecords, filterZeroPlaceholders, isElectricityRecordAllZero } from '../models/records.model';
 import { STORAGE_SERVICE } from './storage.service';
 import { FileStorageService } from './file-storage.service';
 import { ExcelService } from './excel.service';
 import { PdfService } from './pdf.service';
 import { ImportValidationService } from './import-validation.service';
 import { LanguageService } from './language.service';
-import { HouseholdService } from './household.service';
 import { NotificationService } from './notification.service';
 
 @Injectable({
   providedIn: 'root'
 })
-export class ConsumptionDataService {
+export class ElectricityDataService {
   private storage = inject(STORAGE_SERVICE);
   private fileStorage = inject(FileStorageService);
   private excelService = inject(ExcelService);
   private pdfService = inject(PdfService);
   private importValidationService = inject(ImportValidationService);
   private languageService = inject(LanguageService);
-  private householdService = inject(HouseholdService);
   private notificationService = inject(NotificationService);
 
-  // Main    // State
-  readonly records = signal<ConsumptionRecord[]>([]);
+  // State
+  readonly records = signal<ElectricityRecord[]>([]);
 
   // Filter State
   readonly filterState = signal<{
@@ -82,16 +80,16 @@ export class ConsumptionDataService {
   readonly showFilterWarningModal = signal(false);
 
   // Unified Import State
-  readonly pendingImportRecords = signal<ConsumptionRecord[]>([]);
+  readonly pendingImportRecords = signal<ElectricityRecord[]>([]);
   readonly pendingImportWarnings = signal<string[]>([]);
   readonly pendingImportSuccessKey = signal<string>('');
 
   // UI Signals
   readonly showSuccessModal = signal(false);
-  readonly successTitle = signal('HOME.SUCCESS_TITLE');
-  readonly successMessage = signal('HOME.RECORD_SAVED');
+  readonly successTitle = signal('ELECTRICITY.SUCCESS_TITLE');
+  readonly successMessage = signal('ELECTRICITY.RECORD_SAVED');
   readonly showErrorModal = signal(false);
-  readonly errorTitle = signal('ERROR.TITLE');
+  readonly errorTitle = signal('ELECTRICITY.ERROR_TITLE');
   readonly errorMessage = signal('');
   readonly errorDetails = signal('');
   readonly errorInstructions = signal<string[]>([]);
@@ -99,8 +97,8 @@ export class ConsumptionDataService {
 
   readonly showDeleteModal = signal(false);
   readonly showDeleteAllModal = signal(false);
-  readonly recordToDelete = signal<ConsumptionRecord | null>(null);
-  readonly recordsToDelete = signal<ConsumptionRecord[]>([]);
+  readonly recordToDelete = signal<ElectricityRecord | null>(null);
+  readonly recordsToDelete = signal<ElectricityRecord[]>([]);
 
   readonly maxDate = new Date().toISOString().split('T')[0];
 
@@ -109,11 +107,9 @@ export class ConsumptionDataService {
   }
 
   async loadData() {
-    // using load<T> instead of getRecords
-    const data = await this.storage.load<ConsumptionRecord[]>('water_consumption_records');
+    const data = await this.storage.load<ElectricityRecord[]>('electricity_consumption_records');
     this.records.set(data || []);
-    // Sync with notification service for due/overdue reminders
-    this.notificationService.setWaterRecords(this.records());
+    this.notificationService.setElectricityRecords(this.records());
   }
 
   // --- Filter Helpers ---
@@ -121,19 +117,7 @@ export class ConsumptionDataService {
     this.filterState.set(newState);
   }
 
-  private getFilterSuffix(): string {
-    const { year, month, startDate, endDate } = this.filterState();
-    let suffix = '';
-
-    if (year) suffix += `_${year}`;
-    if (month !== null) suffix += `_${month + 1}`;
-    if (startDate) suffix += `_from_${startDate}`;
-    if (endDate) suffix += `_to_${endDate}`;
-
-    return suffix;
-  }
-
-  private countRecordsOutsideFilter(records: ConsumptionRecord[]): number {
+  private countRecordsOutsideFilter(records: ElectricityRecord[]): number {
     const { year, month, startDate, endDate } = this.filterState();
     let count = 0;
 
@@ -161,7 +145,7 @@ export class ConsumptionDataService {
   }
 
   // --- CRUD Operations ---
-  async saveRecord(newRecord: ConsumptionRecord) {
+  async saveRecord(newRecord: ElectricityRecord) {
     const existingRecordIndex = this.records().findIndex(r =>
       new Date(r.date).toISOString().split('T')[0] === new Date(newRecord.date).toISOString().split('T')[0]
     );
@@ -176,13 +160,14 @@ export class ConsumptionDataService {
       return updated.sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
     });
 
-    await this.storage.save('water_consumption_records', this.records());
-    // Update notification service with new records
-    // Update notification service with new records
-    this.notificationService.setWaterRecords(this.records());
+    await this.storage.save('electricity_consumption_records', this.records());
 
-    this.successTitle.set('HOME.SUCCESS_TITLE');
-    this.successMessage.set('HOME.RECORD_SAVED');
+    // Update notification service with new records
+    this.notificationService.setElectricityRecords(this.records());
+    this.notificationService.resetElectricityOverdue();
+
+    this.successTitle.set('ELECTRICITY.SUCCESS_TITLE');
+    this.successMessage.set('ELECTRICITY.RECORD_SAVED');
     this.showSuccessModal.set(true);
   }
 
@@ -190,9 +175,7 @@ export class ConsumptionDataService {
     const record = this.recordToDelete();
     if (record) {
       this.records.update(records => records.filter(r => new Date(r.date).getTime() !== new Date(record.date).getTime()));
-      void this.storage.save('water_consumption_records', this.records());
-      // Update notification service
-      this.notificationService.setWaterRecords(this.records());
+      void this.storage.save('electricity_consumption_records', this.records());
     }
     this.showDeleteModal.set(false);
     this.recordToDelete.set(null);
@@ -203,9 +186,7 @@ export class ConsumptionDataService {
     this.records.update(records =>
       records.filter(r => !recordsToDeleteSet.has(new Date(r.date).getTime()))
     );
-    void this.storage.save('water_consumption_records', this.records());
-    // Update notification service
-    this.notificationService.setWaterRecords(this.records());
+    void this.storage.save('electricity_consumption_records', this.records());
     this.showDeleteAllModal.set(false);
     this.recordsToDelete.set([]);
   }
@@ -214,7 +195,7 @@ export class ConsumptionDataService {
   async exportData() {
     try {
       this.isExporting.set(true);
-      const filename = 'water-consumption.json';
+      const filename = 'electricity-consumption.json';
       await this.fileStorage.exportToFile(this.filteredRecords(), filename);
     } catch (error) {
       console.error('Error exporting data:', error);
@@ -226,12 +207,8 @@ export class ConsumptionDataService {
   async exportToExcel() {
     try {
       this.isExporting.set(true);
-      const filename = 'water-consumption.xlsx';
-
-      // Removed address usage or fixed usage
-      // ExcelService doesn't use address in exportWaterToExcel signature view
-      // So I just pass records and filename
-      await this.excelService.exportWaterToExcel(this.filteredRecords(), filename);
+      const filename = 'electricity-consumption.xlsx';
+      await this.excelService.exportElectricityToExcel(this.filteredRecords(), filename);
     } catch (error) {
       console.error('Error exporting to Excel:', error);
     } finally {
@@ -242,8 +219,9 @@ export class ConsumptionDataService {
   async exportToPdf() {
     try {
       this.isExporting.set(true);
-      const filename = 'water-consumption.pdf';
-      await this.pdfService.exportWaterToPdf(this.filteredRecords(), filename);
+      const filename = 'electricity-consumption.pdf';
+      // Similar to Excel, PdfService needs update
+      await this.pdfService.exportElectricityToPdf(this.filteredRecords(), filename);
     } catch (error) {
       console.error('Error exporting to PDF:', error);
     } finally {
@@ -274,20 +252,21 @@ export class ConsumptionDataService {
         const arrayError = this.importValidationService.validateDataArray(data);
         if (arrayError) throw new Error(arrayError);
 
-        const result = this.importValidationService.validateWaterJsonImport(data as unknown[]);
+        // Need validateElectricityJsonImport in ImportValidationService
+        const result = this.importValidationService.validateElectricityJsonImport(data as unknown[]);
         if (result.errors.length > 0) throw new Error(result.errors.join('\n'));
 
-        // Filter out zero-value placeholders on the freshest date
-        const { filtered, skippedCount } = filterZeroPlaceholders(result.validRecords, isWaterRecordAllZero);
+        const { filtered, skippedCount } = filterZeroPlaceholders(result.validRecords, isElectricityRecordAllZero);
         const warnings: string[] = [];
         if (skippedCount > 0) {
-          const key = skippedCount === 1 ? 'WATER.IMPORT_PLACEHOLDER_SKIPPED_SINGULAR' : 'WATER.IMPORT_PLACEHOLDER_SKIPPED_PLURAL';
+          // Need translation keys
+          const key = skippedCount === 1 ? 'ELECTRICITY.IMPORT_PLACEHOLDER_SKIPPED_SINGULAR' : 'ELECTRICITY.IMPORT_PLACEHOLDER_SKIPPED_PLURAL';
           warnings.push(this.languageService.translate(key).replace('{{count}}', skippedCount.toString()));
         }
 
         await this.processImport(filtered, warnings, 'IMPORT.JSON_SUCCESS');
       } catch (error) {
-        this.handleImportError(error, 'WATER.JSON_IMPORT_ERROR_TITLE', 'WATER.JSON_IMPORT_ERROR', true);
+        this.handleImportError(error, 'ELECTRICITY.JSON_IMPORT_ERROR_TITLE', 'ELECTRICITY.JSON_IMPORT_ERROR', true);
       }
     }
     this.showImportConfirmModal.set(false);
@@ -308,19 +287,19 @@ export class ConsumptionDataService {
           throw new Error(message);
         }
 
-        const { records, missingColumns } = await this.excelService.importWaterFromExcel(file);
+        // Need importElectricityFromExcel in ExcelService
+        const { records, missingColumns } = await this.excelService.importElectricityFromExcel(file);
 
-        // Filter out zero-value placeholders on the freshest date
-        const { filtered, skippedCount } = filterZeroPlaceholders(records, isWaterRecordAllZero);
+        const { filtered, skippedCount } = filterZeroPlaceholders(records, isElectricityRecordAllZero);
         const warnings = [...missingColumns];
         if (skippedCount > 0) {
-          const key = skippedCount === 1 ? 'WATER.IMPORT_PLACEHOLDER_SKIPPED_SINGULAR' : 'WATER.IMPORT_PLACEHOLDER_SKIPPED_PLURAL';
+          const key = skippedCount === 1 ? 'ELECTRICITY.IMPORT_PLACEHOLDER_SKIPPED_SINGULAR' : 'ELECTRICITY.IMPORT_PLACEHOLDER_SKIPPED_PLURAL';
           warnings.push(this.languageService.translate(key).replace('{{count}}', skippedCount.toString()));
         }
 
         await this.processImport(filtered, warnings, 'IMPORT.EXCEL_SUCCESS');
       } catch (error) {
-        this.handleImportError(error, 'WATER.EXCEL_IMPORT_ERROR_TITLE', 'WATER.EXCEL_IMPORT_ERROR', false);
+        this.handleImportError(error, 'ELECTRICITY.EXCEL_IMPORT_ERROR_TITLE', 'ELECTRICITY.EXCEL_IMPORT_ERROR', false);
       } finally {
         this.isImporting.set(false);
         input.value = '';
@@ -329,7 +308,7 @@ export class ConsumptionDataService {
   }
 
   // Unified Processing
-  async processImport(records: ConsumptionRecord[], warnings: string[] = [], successKey: string) {
+  async processImport(records: ElectricityRecord[], warnings: string[] = [], successKey: string) {
     if (this.isFilterActive()) {
       const recordsOutsideFilter = this.countRecordsOutsideFilter(records);
       if (recordsOutsideFilter > 0) {
@@ -345,12 +324,14 @@ export class ConsumptionDataService {
     await this.finishImport(records, warnings, successKey);
   }
 
-  async finishImport(records: ConsumptionRecord[], warnings: string[], successKey: string) {
+  async finishImport(records: ElectricityRecord[], warnings: string[], successKey: string) {
     try {
       this.records.update(existing => mergeRecords(existing, records));
-      await this.storage.save('water_consumption_records', this.records());
-      // Update notification service
-      this.notificationService.setWaterRecords(this.records());
+      await this.storage.save('electricity_consumption_records', this.records());
+
+      // Update notification service with new records
+      this.notificationService.setElectricityRecords(this.records());
+      this.notificationService.resetElectricityOverdue();
 
       if (warnings.length > 0) {
         this.errorTitle.set(this.languageService.translate('HOME.IMPORT_WARNING_TITLE'));
@@ -365,7 +346,7 @@ export class ConsumptionDataService {
         this.showSuccessModal.set(true);
       }
     } catch (error) {
-      this.handleImportError(error, 'WATER.JSON_IMPORT_ERROR_TITLE', 'WATER.JSON_IMPORT_ERROR', true);
+      this.handleImportError(error, 'ELECTRICITY.JSON_IMPORT_ERROR_TITLE', 'ELECTRICITY.JSON_IMPORT_ERROR', true);
     } finally {
       this.isImporting.set(false);
       this.showFilterWarningModal.set(false);

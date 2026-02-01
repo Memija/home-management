@@ -3,13 +3,16 @@ import {
   calculateWaterTotal,
   calculateKitchenTotal,
   calculateBathroomTotal,
+  calculateElectricityTotal,
   calculateDynamicHeatingTotal,
   getDateKey,
   isWaterRecordAllZero,
+  isElectricityRecordAllZero,
   isDynamicHeatingRecordAllZero,
   filterZeroPlaceholders,
   mergeRecords,
   ConsumptionRecord,
+  ElectricityRecord,
   DynamicHeatingRecord
 } from './records.model';
 
@@ -32,6 +35,11 @@ describe('Records Model Utils', () => {
       }
     };
 
+    const electricityRecord: ElectricityRecord = {
+      date: new Date('2023-01-01'),
+      value: 150
+    };
+
     it('should calculate water total correctly', () => {
       expect(calculateWaterTotal(waterRecord)).toBe(100);
     });
@@ -51,6 +59,15 @@ describe('Records Model Utils', () => {
     it('should handle dynamic heating total with undefined values', () => {
       const record = { ...dynamicHeatingRecord, rooms: { 'room1': 10, 'room2': undefined } } as unknown as DynamicHeatingRecord;
       expect(calculateDynamicHeatingTotal(record)).toBe(10);
+    });
+
+    it('should calculate electricity total correctly', () => {
+      expect(calculateElectricityTotal(electricityRecord)).toBe(150);
+    });
+
+    it('should return zero for electricity record with zero value', () => {
+      const record: ElectricityRecord = { date: new Date(), value: 0 };
+      expect(calculateElectricityTotal(record)).toBe(0);
     });
   });
 
@@ -110,6 +127,22 @@ describe('Records Model Utils', () => {
         rooms: { 'room1': 0, 'room2': 1 }
       };
       expect(isDynamicHeatingRecordAllZero(record)).toBe(false);
+    });
+
+    it('should identify all-zero electricity record', () => {
+      const record: ElectricityRecord = {
+        date: new Date(),
+        value: 0
+      };
+      expect(isElectricityRecordAllZero(record)).toBe(true);
+    });
+
+    it('should identify non-zero electricity record', () => {
+      const record: ElectricityRecord = {
+        date: new Date(),
+        value: 100
+      };
+      expect(isElectricityRecordAllZero(record)).toBe(false);
     });
   });
 

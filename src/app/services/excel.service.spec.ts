@@ -1,6 +1,7 @@
 import { TestBed } from '@angular/core/testing';
 import { ExcelService } from './excel.service';
 import { ExcelSettingsService } from './excel-settings.service';
+import { LanguageService } from './language.service';
 import { describe, it, expect, beforeEach, vi, afterEach } from 'vitest';
 
 describe('ExcelService', () => {
@@ -26,6 +27,10 @@ describe('ExcelService', () => {
           bathroom: 'Bathroom',
         }
       }),
+      getElectricityMapping: vi.fn().mockReturnValue({
+        date: 'Date',
+        value: 'Electricity Consumption (kWh)'
+      }),
     };
 
     mockXLSX = {
@@ -43,6 +48,12 @@ describe('ExcelService', () => {
       providers: [
         ExcelService,
         { provide: ExcelSettingsService, useValue: mockExcelSettingsService },
+        {
+          provide: LanguageService,
+          useValue: {
+            translate: (key: string) => key
+          }
+        }
       ],
     });
 
@@ -126,6 +137,29 @@ describe('ExcelService', () => {
     });
   });
 
+  describe('exportElectricityToExcel', () => {
+    it('should create and download excel file with rounded values', async () => {
+      const records = [
+        { date: new Date('2023-01-01'), value: 10.123 },
+        { date: new Date('2023-01-02'), value: 20.567 },
+        { date: new Date('2023-01-03'), value: 30 },
+      ];
+
+      mockXLSX.utils.json_to_sheet.mockReturnValue('sheet');
+      mockXLSX.utils.book_new.mockReturnValue('book');
+
+      await service.exportElectricityToExcel(records, 'test.xlsx');
+
+      expect(mockXLSX.utils.json_to_sheet).toHaveBeenCalledWith([
+        { 'Date': '2023-01-01', 'Electricity Consumption (kWh)': 10 },
+        { 'Date': '2023-01-02', 'Electricity Consumption (kWh)': 21 },
+        { 'Date': '2023-01-03', 'Electricity Consumption (kWh)': 30 },
+      ]);
+      expect(mockXLSX.utils.book_append_sheet).toHaveBeenCalledWith('book', 'sheet', 'Data');
+      expect(mockXLSX.writeFile).toHaveBeenCalledWith('book', 'test.xlsx');
+    });
+  });
+
   describe('importWaterFromExcel', () => {
     // Helper to mock FileReader behavior
     const mockFileReader = (data: any) => {
@@ -168,7 +202,7 @@ describe('ExcelService', () => {
       const cleanup = mockFileReader('');
       const file = new File([''], 'test.xlsx');
 
-      await expect(service.importWaterFromExcel(file)).rejects.toThrow('The Excel file is empty');
+      await expect(service.importWaterFromExcel(file)).rejects.toThrow('ERROR.IMPORT_EMPTY_FILE');
       cleanup();
     });
 
@@ -181,7 +215,7 @@ describe('ExcelService', () => {
       const cleanup = mockFileReader('');
       const file = new File([''], 'test.xlsx');
 
-      await expect(service.importWaterFromExcel(file)).rejects.toThrow('Missing required Date column');
+      await expect(service.importWaterFromExcel(file)).rejects.toThrow('ERROR.IMPORT_EXCEL_MISSING_DATE_COLUMN');
       cleanup();
     });
 
@@ -195,7 +229,7 @@ describe('ExcelService', () => {
       const cleanup = mockFileReader('');
       const file = new File([''], 'test.xlsx');
 
-      await expect(service.importWaterFromExcel(file)).rejects.toThrow('Invalid date value');
+      await expect(service.importWaterFromExcel(file)).rejects.toThrow('ERROR.IMPORT_INVALID_DATE_VALUE');
       // It might also have number error but logic skips row if date invalid?
       // Code: "if (!date) { ... continue; }"
       // So only invalid date error.
@@ -213,8 +247,44 @@ describe('ExcelService', () => {
       const cleanup = mockFileReader('');
       const file = new File([''], 'test.xlsx');
 
-      await expect(service.importWaterFromExcel(file)).rejects.toThrow('Duplicate date');
+      await expect(service.importWaterFromExcel(file)).rejects.toThrow('ERROR.IMPORT_DUPLICATE_DATE');
+      await expect(service.importWaterFromExcel(file)).rejects.toThrow('ERROR.IMPORT_DUPLICATE_DATE');
       cleanup();
+    });
+
+    it('should return missing columns', async () => {
+      const sheetData = [
+        { 'Date': '2023-01-01', 'Kitchen Warm': 10 }
+      ];
+      mockXLSX.read.mockReturnValue({ SheetNames: ['Sheet1'], Sheets: { 'Sheet1': {} } });
+      mockXLSX.utils.sheet_to_json.mockReturnValue(sheetData);
+
+      const cleanup = mockFileReader('');
+      const file = new File([''], 'test.xlsx');
+
+      const result = await service.importWaterFromExcel(file);
+      cleanup();
+
+      // Kitchen Cold, Bathroom Warm, Bathroom Cold are missing
+      expect(result.missingColumns).toContain('Kitchen Cold');
+      expect(result.missingColumns).toContain('Bathroom Warm');
+      expect(result.missingColumns).toContain('Bathroom Cold');
+    });
+
+    it('should default empty values to 0', async () => {
+      const sheetData = [
+        { 'Date': '2023-01-01', 'Kitchen Warm': 10, 'Kitchen Cold': '' }
+      ];
+      mockXLSX.read.mockReturnValue({ SheetNames: ['Sheet1'], Sheets: { 'Sheet1': {} } });
+      mockXLSX.utils.sheet_to_json.mockReturnValue(sheetData);
+
+      const cleanup = mockFileReader('');
+      const file = new File([''], 'test.xlsx');
+
+      const result = await service.importWaterFromExcel(file);
+      cleanup();
+
+      expect(result.records[0].kitchenCold).toBe(0);
     });
   });
 
@@ -258,6 +328,136 @@ describe('ExcelService', () => {
       expect(result.records.length).toBe(1);
       expect(result.records[0].rooms['room_1']).toBe(10);
     });
+
+    it('should return missing columns', async () => {
+      const mockFileReader = (data: any) => {
+        const originalFileReader = window.FileReader;
+        window.FileReader = class {
+          readAsBinaryString() {
+            setTimeout(() => {
+              if (this.onload) this.onload({ target: { result: data } } as any);
+            }, 0);
+          }
+          onload: any;
+          onerror: any;
+        } as any;
+        return () => { window.FileReader = originalFileReader; };
+      };
+
+      const sheetData = [
+        { 'Date': '2023-01-01' }
+      ];
+
+      mockExcelSettingsService.getHeatingMapping.mockReturnValue({
+        date: 'Date',
+        rooms: {
+          room_1: 'Living Room'
+        }
+      });
+
+      mockXLSX.read.mockReturnValue({ SheetNames: ['Sheet1'], Sheets: { 'Sheet1': {} } });
+      mockXLSX.utils.sheet_to_json.mockReturnValue(sheetData);
+
+      const cleanup = mockFileReader('');
+      const file = new File([''], 'test.xlsx');
+
+      const result = await service.importHeatingFromExcel(file);
+      cleanup();
+
+      expect(result.missingColumns).toContain('Living Room');
+    });
+  });
+
+  describe('importElectricityFromExcel', () => {
+    // Helper to mock FileReader behavior (reused)
+    const mockFileReader = (data: any) => {
+      const originalFileReader = window.FileReader;
+      window.FileReader = class {
+        readAsBinaryString() {
+          setTimeout(() => {
+            if (this.onload) this.onload({ target: { result: data } } as any);
+          }, 0);
+        }
+        onload: any;
+        onerror: any;
+      } as any;
+      return () => { window.FileReader = originalFileReader; };
+    };
+
+    it('should import valid records', async () => {
+      const sheetData = [
+        { 'Date': '2023-01-01', 'Electricity Consumption (kWh)': 100 }
+      ];
+
+      mockXLSX.read.mockReturnValue({ SheetNames: ['Sheet1'], Sheets: { 'Sheet1': {} } });
+      mockXLSX.utils.sheet_to_json.mockReturnValue(sheetData);
+
+      const cleanup = mockFileReader('dummy');
+      const file = new File([''], 'test.xlsx');
+
+      const result = await service.importElectricityFromExcel(file);
+      cleanup();
+
+      expect(result.records.length).toBe(1);
+      expect(result.records[0].value).toBe(100);
+    });
+
+    it('should throw if file empty', async () => {
+      mockXLSX.read.mockReturnValue({ SheetNames: ['Sheet1'], Sheets: { 'Sheet1': {} } });
+      mockXLSX.utils.sheet_to_json.mockReturnValue([]);
+
+      const cleanup = mockFileReader('');
+      const file = new File([''], 'test.xlsx');
+
+      await expect(service.importElectricityFromExcel(file)).rejects.toThrow('ERROR.IMPORT_EMPTY_FILE');
+      cleanup();
+    });
+
+    it('should throw if missing date column', async () => {
+      mockXLSX.read.mockReturnValue({ SheetNames: ['Sheet1'], Sheets: { 'Sheet1': {} } });
+      mockXLSX.utils.sheet_to_json.mockReturnValue([
+        { 'Wrong Date': '...' }
+      ]);
+
+      const cleanup = mockFileReader('');
+      const file = new File([''], 'test.xlsx');
+
+      await expect(service.importElectricityFromExcel(file)).rejects.toThrow('ERROR.IMPORT_EXCEL_MISSING_DATE_COLUMN');
+      cleanup();
+    });
+
+    it('should return missing value column', async () => {
+      const sheetData = [
+        { 'Date': '2023-01-01' }
+      ];
+
+      mockXLSX.read.mockReturnValue({ SheetNames: ['Sheet1'], Sheets: { 'Sheet1': {} } });
+      mockXLSX.utils.sheet_to_json.mockReturnValue(sheetData);
+
+      const cleanup = mockFileReader('');
+      const file = new File([''], 'test.xlsx');
+
+      const result = await service.importElectricityFromExcel(file);
+      cleanup();
+
+      expect(result.missingColumns).toContain('Electricity Consumption (kWh)');
+    });
+
+    it('should aggregate validation errors', async () => {
+      const sheetData = [
+        { 'Date': 'invalid', 'Electricity Consumption (kWh)': '100' },
+        { 'Date': '2023-01-01', 'Electricity Consumption (kWh)': 'NaN' },
+        { 'Date': '2023-01-01', 'Electricity Consumption (kWh)': '200' } // Duplicate date
+      ];
+      mockXLSX.read.mockReturnValue({ SheetNames: ['Sheet1'], Sheets: { 'Sheet1': {} } });
+      mockXLSX.utils.sheet_to_json.mockReturnValue(sheetData);
+
+      const cleanup = mockFileReader('');
+      const file = new File([''], 'test.xlsx');
+
+      await expect(service.importElectricityFromExcel(file)).rejects.toThrowError(/ERROR.IMPORT_INVALID_DATE_VALUE|ERROR.IMPORT_INVALID_NUMBER_VALUE|ERROR.IMPORT_DUPLICATE_DATE/);
+      cleanup();
+    });
   });
 
   describe('parseDate', () => {
@@ -285,6 +485,20 @@ describe('ExcelService', () => {
 
       const d = parseDate(2);
       expect(d?.toISOString()).toContain('1900-01-01');
+    });
+
+    it('should parse European date string with slash', () => {
+      const d = parseDate('31/12/2023');
+      expect(d?.getFullYear()).toBe(2023);
+      expect(d?.getMonth()).toBe(11);
+      expect(d?.getDate()).toBe(31);
+    });
+
+    it('should return null for logically invalid date', () => {
+      // Month 13 is invalid
+      expect(parseDate('01.13.2023')).toBeNull();
+      // Day 32 is invalid
+      expect(parseDate('32.01.2023')).toBeNull();
     });
 
     it('should return null for invalid date', () => {

@@ -1,7 +1,7 @@
 import { Component, inject } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { TranslatePipe } from '../pipes/translate.pipe';
-import { LucideAngularModule, Droplets, Flame, Play, X } from 'lucide-angular';
+import { LucideAngularModule, Droplets, Flame, Play, X, Zap } from 'lucide-angular';
 import { DemoService } from '../services/demo.service';
 
 @Component({
@@ -18,6 +18,7 @@ export class DashboardComponent {
   protected readonly FlameIcon = Flame;
   protected readonly PlayIcon = Play;
   protected readonly XIcon = X;
+  protected readonly ZapIcon = Zap;
 
   protected activateDemo(): void {
     this.demoService.activateDemo();

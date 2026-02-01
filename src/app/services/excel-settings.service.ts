@@ -19,11 +19,18 @@ export interface HeatingColumnMapping {
   rooms: Record<string, string>;
 }
 
+export interface ElectricityColumnMapping {
+  date: string;
+  value: string;
+}
+
 export interface ExcelSettings {
   enabled: boolean;
   waterMapping: WaterColumnMapping;
   heatingMapping: HeatingColumnMapping;
+  electricityMapping: ElectricityColumnMapping;
 }
+
 
 @Injectable({
   providedIn: 'root'
@@ -50,7 +57,8 @@ export class ExcelSettingsService {
     return {
       enabled: false,
       waterMapping: this.getDefaultWaterMapping(),
-      heatingMapping: this.getDefaultHeatingMapping()
+      heatingMapping: this.getDefaultHeatingMapping(),
+      electricityMapping: this.getDefaultElectricityMapping()
     };
   }
 
@@ -63,6 +71,14 @@ export class ExcelSettingsService {
       bathroomCold: 'Bathroom Cold Water'
     };
   }
+
+  private getDefaultElectricityMapping(): ElectricityColumnMapping {
+    return {
+      date: 'Date',
+      value: 'Electricity Consumption (kWh)'
+    };
+  }
+
 
   private getDefaultHeatingMapping(): HeatingColumnMapping {
     const configuredRooms = this.heatingRoomsService.rooms();
@@ -85,7 +101,8 @@ export class ExcelSettingsService {
       this.settings.set({
         enabled: settings.enabled ?? false,
         waterMapping: { ...this.getDefaultWaterMapping(), ...settings.waterMapping },
-        heatingMapping: { ...this.getDefaultHeatingMapping(), ...settings.heatingMapping }
+        heatingMapping: { ...this.getDefaultHeatingMapping(), ...settings.heatingMapping },
+        electricityMapping: { ...this.getDefaultElectricityMapping(), ...settings.electricityMapping }
       });
     }
     // Delay initialization flag to ensure initial signal updates don't trigger effects
@@ -104,6 +121,10 @@ export class ExcelSettingsService {
 
   getWaterMapping(): WaterColumnMapping {
     return this.settings().waterMapping;
+  }
+
+  getElectricityMapping(): ElectricityColumnMapping {
+    return this.settings().electricityMapping;
   }
 
   getHeatingMapping(): HeatingColumnMapping {

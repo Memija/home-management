@@ -72,6 +72,47 @@ Before committing new code, ask:
 4. Can I extract common functionality into a shared location?
 5. Am I introducing technical debt by duplicating this?
 
+## Component File Structure
+
+**CRITICAL RULE:** Components MUST use separate files for template and styles. No inline templates or styles are allowed.
+
+### Required Structure
+
+```text
+component-name/
+├── component-name.component.ts      # Logic only
+├── component-name.component.html    # Template
+└── component-name.component.scss    # Styles
+```
+
+### ❌ NEVER DO THIS
+
+```typescript
+@Component({
+  template: `...`,  // ❌ Inline template - FORBIDDEN
+  styles: [`...`]   // ❌ Inline styles - FORBIDDEN
+})
+```
+
+### ✅ ALWAYS DO THIS
+
+```typescript
+@Component({
+  templateUrl: './component-name.component.html',
+  styleUrl: './component-name.component.scss'
+})
+```
+
+### Why This Matters
+
+- **Separation of concerns** - Logic, markup, and styling are distinct responsibilities
+- **Better tooling** - IDEs provide better syntax highlighting and linting for separate files
+- **Easier reviews** - Changes to HTML/SCSS are clearly visible in diffs
+- **Maintainability** - Large inline templates become unreadable quickly
+- **Consistency** - All components follow the same structure
+
+---
+
 ## Implementation Guidelines
 
 ### When Creating Shared Components

@@ -1,15 +1,17 @@
 import { Injectable, inject } from '@angular/core';
 import { ExcelSettingsService, WaterColumnMapping, HeatingColumnMapping } from './excel-settings.service';
-import { WaterRecord, DynamicHeatingRecord } from '../models/records.model';
+import { LanguageService } from './language.service';
+import { WaterRecord, DynamicHeatingRecord, ElectricityRecord } from '../models/records.model';
 
 // Re-export for consumers
-export type { WaterRecord, DynamicHeatingRecord } from '../models/records.model';
+export type { WaterRecord, DynamicHeatingRecord, ElectricityRecord } from '../models/records.model';
 
 @Injectable({
   providedIn: 'root'
 })
 export class ExcelService {
   private excelSettings = inject(ExcelSettingsService);
+  private languageService = inject(LanguageService);
   private xlsxModule: typeof import('xlsx') | null = null;
 
   /**
@@ -73,13 +75,13 @@ export class ExcelService {
     const data = await this.readExcelFile(file);
 
     if (data.length === 0) {
-      throw new Error('The Excel file is empty or has no data rows.');
+      throw new Error(this.languageService.translate('ERROR.IMPORT_EMPTY_FILE'));
     }
 
     // Check that Date column exists in the first row
     const firstRow = data[0];
     if (!(mapping.date in firstRow)) {
-      throw new Error(`Missing required Date column: ${mapping.date}. Please check your Excel file.`);
+      throw new Error(this.languageService.translate('ERROR.IMPORT_EXCEL_MISSING_DATE_COLUMN').replace('{{column}}', mapping.date));
     }
 
     // Check for other partial columns
@@ -97,14 +99,23 @@ export class ExcelService {
       const date = this.parseDate(dateValue);
 
       if (!date) {
-        validationErrors.push(`Row ${rowNumber}: Invalid date value '${dateValue}'`);
+        validationErrors.push(
+          this.languageService.translate('ERROR.IMPORT_INVALID_DATE_VALUE')
+            .replace('{{row}}', rowNumber.toString())
+            .replace('{{value}}', String(dateValue))
+        );
         continue; // Skip this row but continue checking others
       }
 
       // Check for duplicate dates (use local date to match display)
       const dateKey = this.formatDate(date);
       if (seenDates.has(dateKey)) {
-        validationErrors.push(`Row ${rowNumber}: Duplicate date '${dateKey}' (first occurrence in row ${seenDates.get(dateKey)})`);
+        validationErrors.push(
+          this.languageService.translate('ERROR.IMPORT_DUPLICATE_DATE')
+            .replace('{{row}}', rowNumber.toString())
+            .replace('{{date}}', dateKey)
+            .replace('{{firstRow}}', seenDates.get(dateKey)!.toString())
+        );
         continue; // Skip duplicate
       }
       seenDates.set(dateKey, rowNumber);
@@ -146,13 +157,13 @@ export class ExcelService {
     const data = await this.readExcelFile(file);
 
     if (data.length === 0) {
-      throw new Error('The Excel file is empty or has no data rows.');
+      throw new Error(this.languageService.translate('ERROR.IMPORT_EMPTY_FILE'));
     }
 
     // Check that Date column exists in the first row
     const firstRow = data[0];
     if (!(mapping.date in firstRow)) {
-      throw new Error(`Missing required Date column: ${mapping.date}. Please check your Excel file.`);
+      throw new Error(this.languageService.translate('ERROR.IMPORT_EXCEL_MISSING_DATE_COLUMN').replace('{{column}}', mapping.date));
     }
 
     // Check for room columns - use dynamic mapping
@@ -171,14 +182,23 @@ export class ExcelService {
       const date = this.parseDate(dateValue);
 
       if (!date) {
-        validationErrors.push(`Row ${rowNumber}: Invalid date value '${dateValue}'`);
+        validationErrors.push(
+          this.languageService.translate('ERROR.IMPORT_INVALID_DATE_VALUE')
+            .replace('{{row}}', rowNumber.toString())
+            .replace('{{value}}', String(dateValue))
+        );
         continue; // Skip this row but continue checking others
       }
 
       // Check for duplicate dates (use local date to match display)
       const dateKey = this.formatDate(date);
       if (seenDates.has(dateKey)) {
-        validationErrors.push(`Row ${rowNumber}: Duplicate date '${dateKey}' (first occurrence in row ${seenDates.get(dateKey)})`);
+        validationErrors.push(
+          this.languageService.translate('ERROR.IMPORT_DUPLICATE_DATE')
+            .replace('{{row}}', rowNumber.toString())
+            .replace('{{date}}', dateKey)
+            .replace('{{firstRow}}', seenDates.get(dateKey)!.toString())
+        );
         continue; // Skip duplicate
       }
       seenDates.set(dateKey, rowNumber);
@@ -334,10 +354,100 @@ export class ExcelService {
 
     // strict check
     if (isNaN(num)) {
-      errors.push(`Row ${rowIndex}: Invalid number value '${value}' in column '${columnName}'`);
+      errors.push(
+        this.languageService.translate('ERROR.IMPORT_INVALID_NUMBER_VALUE')
+          .replace('{{row}}', rowIndex.toString())
+          .replace('{{value}}', String(value))
+          .replace('{{field}}', columnName)
+      );
       return 0; // Return 0 as fallback, row will be skipped anyway
     }
 
     return num;
+  }
+
+  /**
+   * Export electricity consumption records to Excel
+   */
+  async exportElectricityToExcel(records: ElectricityRecord[], filename: string = 'electricity-consumption.xlsx'): Promise<void> {
+    const mapping = this.excelSettings.getElectricityMapping();
+
+    // Transform records to match column mapping
+    const data: Record<string, string | number>[] = records.map(record => ({
+      [mapping.date]: this.formatDate(record.date),
+      [mapping.value]: Math.round(record.value)
+    }));
+
+    await this.createAndDownloadExcel(data, filename);
+  }
+
+  /**
+   * Import electricity consumption records from Excel
+   */
+  async importElectricityFromExcel(file: File): Promise<{ records: ElectricityRecord[], missingColumns: string[] }> {
+    const mapping = this.excelSettings.getElectricityMapping();
+    const data = await this.readExcelFile(file);
+
+    if (data.length === 0) {
+      throw new Error(this.languageService.translate('ERROR.IMPORT_EMPTY_FILE'));
+    }
+
+    // Check that Date column exists in the first row
+    const firstRow = data[0];
+    if (!(mapping.date in firstRow)) {
+      throw new Error(this.languageService.translate('ERROR.IMPORT_EXCEL_MISSING_DATE_COLUMN').replace('{{column}}', mapping.date));
+    }
+
+    // Check for value column
+    const missingColumns = [];
+    if (!(mapping.value in firstRow)) missingColumns.push(mapping.value);
+
+    const records: ElectricityRecord[] = [];
+    const validationErrors: string[] = [];
+    const seenDates = new Map<string, number>();
+
+    for (let index = 0; index < data.length; index++) {
+      const row = data[index];
+      const rowNumber = index + 2;
+      const dateValue = row[mapping.date];
+      const date = this.parseDate(dateValue);
+
+      if (!date) {
+        validationErrors.push(
+          this.languageService.translate('ERROR.IMPORT_INVALID_DATE_VALUE')
+            .replace('{{row}}', rowNumber.toString())
+            .replace('{{value}}', String(dateValue))
+        );
+        continue;
+      }
+
+      const dateKey = this.formatDate(date);
+      if (seenDates.has(dateKey)) {
+        validationErrors.push(
+          this.languageService.translate('ERROR.IMPORT_DUPLICATE_DATE')
+            .replace('{{row}}', rowNumber.toString())
+            .replace('{{date}}', dateKey)
+            .replace('{{firstRow}}', seenDates.get(dateKey)!.toString())
+        );
+        continue;
+      }
+      seenDates.set(dateKey, rowNumber);
+
+      const rowErrors: string[] = [];
+      const value = this.validateNumberCollectError(row[mapping.value], rowNumber, mapping.value, rowErrors);
+
+      if (rowErrors.length > 0) {
+        validationErrors.push(...rowErrors);
+        continue;
+      }
+
+      records.push({ date, value });
+    }
+
+    if (validationErrors.length > 0) {
+      throw new Error(validationErrors.join('\n'));
+    }
+
+    return { records, missingColumns };
   }
 }

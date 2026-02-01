@@ -3,7 +3,7 @@ import { NotificationService } from './notification.service';
 import { STORAGE_SERVICE } from './storage.service';
 import { DemoService } from './demo.service';
 import { describe, it, expect, beforeEach, vi, afterEach } from 'vitest';
-import { ConsumptionRecord } from '../models/records.model';
+import { ConsumptionRecord, ElectricityRecord } from '../models/records.model';
 
 describe('NotificationService', () => {
   let service: NotificationService;
@@ -86,15 +86,15 @@ describe('NotificationService', () => {
     await new Promise(resolve => setTimeout(resolve, 0));
 
     const now = new Date();
-    // Create records with 7-day average interval
-    // Last entry was 7 days ago (at average, should show "due")
+    // Create records with 3-day average interval (less than previous 7-day min)
+    // Last entry was 3 days ago (at average, should show "due")
     const records: ConsumptionRecord[] = [
-      { date: new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000), kitchenWarm: 0, kitchenCold: 0, bathroomWarm: 0, bathroomCold: 0 },
-      { date: new Date(now.getTime() - 14 * 24 * 60 * 60 * 1000), kitchenWarm: 0, kitchenCold: 0, bathroomWarm: 0, bathroomCold: 0 }
+      { date: new Date(now.getTime() - 3 * 24 * 60 * 60 * 1000), kitchenWarm: 0, kitchenCold: 0, bathroomWarm: 0, bathroomCold: 0 },
+      { date: new Date(now.getTime() - 6 * 24 * 60 * 60 * 1000), kitchenWarm: 0, kitchenCold: 0, bathroomWarm: 0, bathroomCold: 0 }
     ];
-    // Avg gap: 7 days. Due threshold: max(7, 7) = 7 days.
-    // Days since last (7 days ago) = 7.
-    // 7 >= 7 -> Due but not overdue.
+    // Avg gap: 3 days. Due threshold: floor(3) = 3 days.
+    // Days since last (3 days ago) = 3.
+    // 3 >= 3 -> Due.
 
     service.setWaterRecords(records);
 
@@ -154,6 +154,87 @@ describe('NotificationService', () => {
     // This test logic is slightly different: we just call resetWaterOverdue
     service.dismissNotification('water-overdue');
     service.resetWaterOverdue();
+
+    expect(mockStorageService.save).toHaveBeenLastCalledWith('dismissed_notifications', []);
+  });
+
+  // Heating Tests
+  it('should detect heating due (at average interval)', async () => {
+    await new Promise(resolve => setTimeout(resolve, 0));
+
+    const now = new Date();
+    // Create records with 3-day average interval
+    const records = [
+      { date: new Date(now.getTime() - 3 * 24 * 60 * 60 * 1000) },
+      { date: new Date(now.getTime() - 6 * 24 * 60 * 60 * 1000) }
+    ];
+    // Avg gap: 3 days. Due threshold: 3. Days since last: 3.
+
+    service.setHeatingRecords(records);
+
+    const notifications = service.notifications();
+    expect(notifications.some(n => n.id === 'heating-due')).toBe(true);
+  });
+
+  it('should detect heating overdue (significantly late)', async () => {
+    await new Promise(resolve => setTimeout(resolve, 0));
+
+    const now = new Date();
+    // Create records with 2-day average interval
+    const records = [
+      { date: new Date(now.getTime() - 11 * 24 * 60 * 60 * 1000) },
+      { date: new Date(now.getTime() - 13 * 24 * 60 * 60 * 1000) }
+    ];
+    // Avg gap: 2 days. Overdue threshold: max(3, 10) = 10 days.
+    // Days since last: 11. 11 > 10 -> Overdue.
+
+    service.setHeatingRecords(records);
+
+    const notifications = service.notifications();
+    expect(notifications.some(n => n.id === 'heating-overdue')).toBe(true);
+    expect(notifications.find(n => n.id === 'heating-overdue')?.messageParams?.['days']).toBe(11);
+  });
+
+  // Electricity Tests
+  it('should detect electricity due (at average interval)', async () => {
+    await new Promise(resolve => setTimeout(resolve, 0));
+
+    const now = new Date();
+    // Create records with 3-day average interval
+    // ElectricityRecord has more fields but we only need date for this test
+    const records: ElectricityRecord[] = [
+      { date: new Date(now.getTime() - 3 * 24 * 60 * 60 * 1000), value: 100 } as any,
+      { date: new Date(now.getTime() - 6 * 24 * 60 * 60 * 1000), value: 90 } as any
+    ];
+    // Avg gap: 3 days. Due threshold: 3. Days since last: 3.
+
+    service.setElectricityRecords(records);
+
+    const notifications = service.notifications();
+    expect(notifications.some(n => n.id === 'electricity-due')).toBe(true);
+  });
+
+  it('should detect electricity overdue (significantly late)', async () => {
+    await new Promise(resolve => setTimeout(resolve, 0));
+
+    const now = new Date();
+    // Create records with 2-day average interval
+    const records: ElectricityRecord[] = [
+      { date: new Date(now.getTime() - 11 * 24 * 60 * 60 * 1000), value: 100 } as any,
+      { date: new Date(now.getTime() - 13 * 24 * 60 * 60 * 1000), value: 90 } as any
+    ];
+    // Avg gap: 2 days. Overdue threshold: max(3, 10) = 10 days.
+    // Days since last: 11. 11 > 10 -> Overdue.
+
+    service.setElectricityRecords(records);
+
+    const notifications = service.notifications();
+    expect(notifications.some(n => n.id === 'electricity-overdue')).toBe(true);
+  });
+
+  it('should reset electricity overdue when records added', async () => {
+    service.dismissNotification('electricity-overdue');
+    service.resetElectricityOverdue();
 
     expect(mockStorageService.save).toHaveBeenLastCalledWith('dismissed_notifications', []);
   });

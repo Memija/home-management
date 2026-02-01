@@ -69,6 +69,22 @@ export function calculateBathroomTotal(record: ConsumptionRecord): number {
   return record.bathroomWarm + record.bathroomCold;
 }
 
+/**
+ * Electricity consumption record (single value per date)
+ */
+export interface ElectricityRecord {
+  date: Date;
+  value: number; // kWh
+}
+
+/**
+ * Calculate total electricity (just returns the value, for consistency with other types)
+ */
+export function calculateElectricityTotal(record: ElectricityRecord): number {
+  return record.value;
+}
+
+
 
 
 /**
@@ -94,6 +110,14 @@ export function isWaterRecordAllZero(record: ConsumptionRecord): boolean {
   return record.kitchenWarm === 0 && record.kitchenCold === 0 &&
     record.bathroomWarm === 0 && record.bathroomCold === 0;
 }
+
+/**
+ * Check if an electricity record has zero value
+ */
+export function isElectricityRecordAllZero(record: ElectricityRecord): boolean {
+  return record.value === 0;
+}
+
 
 
 

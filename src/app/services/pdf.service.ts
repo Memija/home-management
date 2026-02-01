@@ -1,5 +1,5 @@
 import { Injectable, inject } from '@angular/core';
-import { ConsumptionRecord, calculateWaterTotal } from '../models/records.model';
+import { ConsumptionRecord, calculateWaterTotal, ElectricityRecord, calculateElectricityTotal } from '../models/records.model';
 import { LanguageService } from './language.service';
 
 /**
@@ -288,6 +288,106 @@ export class PdfService {
     }
 
     // Save the PDF
+    doc.save(filename);
+  }
+
+  /**
+   * Export electricity consumption records to PDF
+   */
+  async exportElectricityToPdf(records: ElectricityRecord[], filename: string = 'electricity-consumption.pdf'): Promise<void> {
+    const { jsPDF } = await import('jspdf');
+    const autoTable = (await import('jspdf-autotable')).default;
+
+    const doc = new jsPDF('landscape');
+
+    try {
+      const logoBase64 = await this.loadImageAsBase64('/assets/logo.png');
+      doc.addImage(logoBase64, 'PNG', 14, 8, 15, 15);
+    } catch (error) {
+      console.warn('Could not load logo for PDF:', error);
+    }
+
+    const appName = this.languageService.translate('FOOTER.APP_NAME');
+    doc.setFontSize(12);
+    doc.setFont('helvetica', 'bold');
+    doc.setTextColor(255, 193, 7); // Amber color for electricity
+    doc.text(appName, 32, 16);
+
+    const title = this.languageService.translate('ELECTRICITY.TITLE');
+    doc.setFontSize(16);
+    doc.setFont('helvetica', 'normal');
+    doc.setTextColor(0);
+    doc.text(title, 14, 32);
+
+    doc.setFontSize(10);
+    doc.setTextColor(100);
+    const generatedText = `${this.languageService.currentLang() === 'de' ? 'Erstellt am' : 'Generated on'}: ${new Date().toLocaleDateString()}`;
+    doc.text(generatedText, 14, 40);
+
+    doc.setTextColor(0);
+
+    const sortedRecords = [...records].sort((a, b) =>
+      new Date(a.date).getTime() - new Date(b.date).getTime()
+    );
+
+    const differenceLabel = this.languageService.currentLang() === 'de' ? 'Differenz' : 'Difference';
+    const headers = [
+      this.languageService.translate('HOME.SELECT_DATE') || 'Date',
+      this.languageService.translate('ELECTRICITY.VALUE') || 'Value (kWh)',
+      differenceLabel
+    ];
+
+    const data = sortedRecords.map((record, index) => {
+      const total = calculateElectricityTotal(record);
+      let difference = '-';
+
+      if (index > 0) {
+        const prevTotal = calculateElectricityTotal(sortedRecords[index - 1]);
+        const diff = total - prevTotal;
+        difference = (diff >= 0 ? '+' : '') + diff.toFixed(2);
+      }
+
+      return [
+        this.formatDate(record.date),
+        total.toFixed(2),
+        difference
+      ];
+    });
+
+    autoTable(doc, {
+      head: [headers],
+      body: data,
+      startY: 48,
+      theme: 'striped',
+      headStyles: {
+        fillColor: [255, 193, 7], // Amber
+        textColor: 0, // Black text on amber
+        fontStyle: 'bold'
+      },
+      styles: {
+        fontSize: 9,
+        cellPadding: 3
+      },
+      columnStyles: {
+        0: { cellWidth: 'auto' },
+        1: { cellWidth: 'auto', halign: 'right', fontStyle: 'bold' },
+        2: { cellWidth: 'auto', halign: 'right' }
+      }
+    });
+
+    const pageCount = doc.getNumberOfPages();
+    for (let i = 1; i <= pageCount; i++) {
+      doc.setPage(i);
+      doc.setFontSize(8);
+      doc.setTextColor(150);
+      doc.text(
+        `${i} / ${pageCount}`,
+        doc.internal.pageSize.width / 2,
+        doc.internal.pageSize.height - 10,
+        { align: 'center' }
+      );
+    }
+
     doc.save(filename);
   }
 }

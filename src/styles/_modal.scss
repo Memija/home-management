@@ -47,6 +47,18 @@
   }
 }
 
+@keyframes modalSlideIn {
+  from {
+    transform: translateY(30px) scale(0.95);
+    opacity: 0;
+  }
+
+  to {
+    transform: translateY(0) scale(1);
+    opacity: 1;
+  }
+}
+
 @keyframes slideDown {
   from {
     transform: translateY(-10px);
@@ -66,7 +78,9 @@
   left: 0;
   right: 0;
   bottom: 0;
-  background: var(--overlay-bg);
+  background: rgba(0, 0, 0, 0.6);
+  -webkit-backdrop-filter: blur(8px);
+  backdrop-filter: blur(8px);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -77,13 +91,16 @@
 // Modal content container
 .modal-content {
   background: var(--modal-bg);
-  border-radius: 12px;
+  border-radius: 16px;
   max-width: 500px;
   width: 90%;
   max-height: 90vh;
   overflow-y: auto;
-  animation: slideIn 0.3s ease-out;
+  animation: modalSlideIn 0.3s cubic-bezier(0.16, 1, 0.3, 1);
   position: relative;
+  box-shadow:
+    0 25px 50px -12px rgba(0, 0, 0, 0.25),
+    0 0 0 1px rgba(255, 255, 255, 0.1);
 
   &.modal-lg {
     max-width: 800px;
@@ -94,13 +111,21 @@
   }
 
   .modal-header {
-    padding: 1.5rem;
+    padding: 1.25rem 1.5rem;
     border-bottom: 1px solid var(--border-light);
     display: flex;
     align-items: center;
     justify-content: center;
     gap: 0.75rem;
     position: relative;
+
+    // Premium gradient header variant
+    &.modal-header-premium {
+      background: linear-gradient(135deg,
+          rgba(var(--theme-primary-rgb, 59, 130, 246), 0.08) 0%,
+          transparent 100%);
+      justify-content: flex-start;
+    }
 
     .success-icon {
       color: $success;
@@ -112,10 +137,22 @@
       animation: scaleIn 0.4s ease-out;
     }
 
+    // Premium header icon styling
+    .header-icon {
+      color: var(--theme-primary, $primary);
+      background: linear-gradient(135deg,
+          rgba(var(--theme-primary-rgb, 59, 130, 246), 0.15) 0%,
+          rgba(var(--theme-primary-rgb, 59, 130, 246), 0.05) 100%);
+      padding: 0.5rem;
+      border-radius: 10px;
+    }
+
     h3 {
       margin: 0;
-      font-size: 1.5rem;
+      font-size: 1.25rem;
+      font-weight: 600;
       color: var(--text-primary);
+      letter-spacing: -0.01em;
     }
 
     .close-btn {

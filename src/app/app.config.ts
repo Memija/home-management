@@ -23,6 +23,10 @@ const routes: Routes = [
     loadComponent: () => import('./heating/heating.component').then(m => m.HeatingComponent)
   },
   {
+    path: 'electricity',
+    loadComponent: () => import('./electricity/electricity.component').then(m => m.ElectricityComponent)
+  },
+  {
     path: 'settings',
     loadComponent: () => import('./settings/settings.component').then(m => m.SettingsComponent),
     canDeactivate: [canDeactivateSettings]

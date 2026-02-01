@@ -5,6 +5,25 @@ import { describe, it, expect, beforeEach, vi, afterEach } from 'vitest';
 describe('FileStorageService', () => {
   let service: FileStorageService;
 
+  // Helper to mock FileReader behavior for readAsText
+  const mockFileReader = (data: string, shouldError = false) => {
+    const originalFileReader = window.FileReader;
+    window.FileReader = class {
+      readAsText() {
+        setTimeout(() => {
+          if (shouldError) {
+            if (this.onerror) this.onerror({} as any);
+          } else {
+            if (this.onload) this.onload({ target: { result: data } } as any);
+          }
+        }, 0);
+      }
+      onload: any;
+      onerror: any;
+    } as any;
+    return () => { window.FileReader = originalFileReader; };
+  };
+
   beforeEach(() => {
     TestBed.configureTestingModule({
       providers: [FileStorageService]
@@ -52,32 +71,25 @@ describe('FileStorageService', () => {
 
   describe('importFromFile', () => {
     it('should parse valid JSON file', async () => {
+      const cleanup = mockFileReader(JSON.stringify({ test: 'data' }));
       const file = new File([JSON.stringify({ test: 'data' })], 'test.json', { type: 'application/json' });
       const result = await service.importFromFile(file);
       expect(result).toEqual({ test: 'data' });
+      cleanup();
     });
 
     it('should reject invalid JSON file', async () => {
+      const cleanup = mockFileReader('invalid-json');
       const file = new File(['invalid-json'], 'test.json', { type: 'application/json' });
       await expect(service.importFromFile(file)).rejects.toThrow('Failed to parse JSON file');
+      cleanup();
     });
 
     it('should handle read error', async () => {
+      const cleanup = mockFileReader('', true);
       const file = new File([''], 'test.json');
-      // Mock FileReader to error
-      const originalFileReader = window.FileReader;
-      window.FileReader = class {
-        readAsText() {
-          setTimeout(() => {
-            if (this.onerror) this.onerror({} as any);
-          }, 0);
-        }
-        onload: any;
-        onerror: any;
-      } as any;
-
       await expect(service.importFromFile(file)).rejects.toThrow('Failed to read file');
-      window.FileReader = originalFileReader;
+      cleanup();
     });
   });
 
@@ -94,6 +106,7 @@ describe('FileStorageService', () => {
 
   describe('importData', () => {
     it('should resolve with data for valid JSON', async () => {
+      const cleanup = mockFileReader(JSON.stringify({ test: 'data' }));
       const file = new File([JSON.stringify({ test: 'data' })], 'test.json', { type: 'application/json' });
 
       const createElementSpy = vi.spyOn(document, 'createElement');
@@ -113,6 +126,7 @@ describe('FileStorageService', () => {
 
       const result = await promise;
       expect(result).toEqual({ data: { test: 'data' } });
+      cleanup();
     });
 
     it('should resolve with invalid_file_type for non-json file', async () => {

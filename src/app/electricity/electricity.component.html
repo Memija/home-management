@@ -1,0 +1,157 @@
+<div class="page-container">
+  <div class="app-header">
+    <div class="header-left">
+      <h1>{{ 'ELECTRICITY.TITLE' | translate }}</h1>
+    </div>
+  </div>
+
+  @if (records().length > 0 && familySize() > 0 && displayMode() === 'incremental') {
+  <app-comparison-note [records]="records()" [chartView]="chartView()"
+    (countryCodeChange)="handleCountryCodeChange($event)"></app-comparison-note>
+  }
+
+  @if (displayMode() === 'total' && unconfirmedMeterChanges().length > 0) {
+  <div class="notification-card notification-card--warning">
+    <div class="notification-content">
+      <lucide-icon [img]="AlertTriangleIcon" size="20" class="notification-icon"></lucide-icon>
+      <div class="notification-text">
+        <strong>{{ 'CHART.METER_CHANGE_DETECTED' | translate }}</strong>
+        <p>{{ 'CHART.METER_CHANGE_MESSAGE' | translate:{ date: formattedMeterChangeDate() } }}</p>
+      </div>
+    </div>
+    <div class="notification-actions">
+      <button type="button" class="btn-confirm" (click)="confirmMeterChange(unconfirmedMeterChanges()[0])">
+        {{ 'CHART.CONFIRM_METER_CHANGE' | translate }}
+      </button>
+      <button type="button" class="btn-dismiss" (click)="dismissMeterChange(unconfirmedMeterChanges()[0])">
+        {{ 'CHART.DISMISS_METER_CHANGE' | translate }}
+      </button>
+    </div>
+  </div>
+  } @else if (electricityFact()) {
+  <div class="notification-card notification-card--info">
+    <div class="notification-content">
+      <lucide-icon [img]="LightbulbIcon" size="20" class="notification-icon"></lucide-icon>
+      <div class="notification-text">
+        <strong>{{ electricityFact()!.title }}</strong>
+        <p>{{ electricityFact()!.message }}</p>
+      </div>
+    </div>
+  </div>
+  }
+
+  <app-consumption-chart [data]="adjustedRecords()" [currentView]="chartView()" [onViewChange]="onChartViewChange"
+    [chartType]="'electricity'" [displayMode]="displayMode()" [onDisplayModeChange]="onDisplayModeChange"
+    [familySize]="familySize()" [country]="effectiveComparisonCountryCode()" [helpSteps]="chartHelpSteps">
+  </app-consumption-chart>
+
+  <app-detailed-records [records]="records()" [defaultSortOption]="'date-desc'" [sortOptions]="sortOptions()"
+    [showSearchDate]="true" [showYearMonth]="true" [showEditDelete]="true" [recordType]="'electricity'"
+    [helpSteps]="recordsHelpSteps" [calculateTotalFn]="calculateTotal" [valuesNoteKey]="'ELECTRICITY.ALL_VALUES_IN_KWH'"
+    [totalLabelKey]="'ELECTRICITY.VALUE'" [hasDetails]="false" (editRecord)="editRecord($event)"
+    (deleteRecord)="deleteRecord($event)" (deleteAllRecords)="deleteAllRecords($event)"
+    (filterStateChange)="onFilterStateChange($event)">
+
+    <!-- Custom Record Details Template (Unused when hasDetails=false) -->
+    <ng-template #recordDetails let-record></ng-template>
+
+    <!-- Import/Export buttons projected into detailed-records -->
+    <div slot="action-buttons" class="action-buttons-group">
+      <button type="button" (click)="openSmartImport()" class="export-btn"
+        title="{{ 'SMART_IMPORT.TITLE' | translate }}">
+        <lucide-icon [img]="ClipboardIcon" size="16"></lucide-icon>
+        <span class="btn-text">{{ 'SMART_IMPORT.TITLE' | translate }}</span>
+      </button>
+
+      <button type="button" (click)="exportData()" class="export-btn json-btn"
+        [disabled]="isExporting() || filteredRecords().length === 0"
+        title="{{ (filteredRecords().length === 0 ? 'WATER.EXPORT_DISABLED_TOOLTIP' : 'WATER.EXPORT') | translate }}">
+        <lucide-icon [img]="DownloadIcon" size="16"></lucide-icon>
+        <span class="btn-text">{{ isExporting() ? 'Exporting...' : ('WATER.EXPORT' | translate) }}</span>
+      </button>
+      <label for="import-file" class="import-btn json-btn" [class.disabled]="isImporting()"
+        title="{{ 'WATER.IMPORT' | translate }}">
+        <lucide-icon [img]="UploadIcon" size="16"></lucide-icon>
+        <span class="btn-text">{{ isImporting() ? 'Importing...' : ('WATER.IMPORT' | translate) }}</span>
+        <input type="file" id="import-file" accept=".json" (change)="importData($event)" class="hidden-input"
+          [disabled]="isImporting()">
+      </label>
+
+      <!-- Excel Export/Import (conditional) -->
+      @if (excelSettings.isEnabled()) {
+      <button type="button" (click)="exportToExcel()" class="export-btn excel-btn"
+        [disabled]="isExporting() || filteredRecords().length === 0"
+        title="{{ (filteredRecords().length === 0 ? 'WATER.EXPORT_DISABLED_TOOLTIP' : 'WATER.EXPORT_EXCEL') | translate }}">
+        <lucide-icon [img]="FileOutputIcon" size="16"></lucide-icon>
+        <span class="btn-text">{{ isExporting() ? 'Exporting...' : ('WATER.EXPORT_EXCEL' | translate) }}</span>
+      </button>
+      <label for="import-excel-file" class="import-btn excel-btn" [class.disabled]="isImporting()"
+        title="{{ 'WATER.IMPORT_EXCEL' | translate }}">
+        <lucide-icon [img]="FileInputIcon" size="16"></lucide-icon>
+        <span class="btn-text">{{ isImporting() ? 'Importing...' : ('WATER.IMPORT_EXCEL' | translate) }}</span>
+        <input type="file" id="import-excel-file" accept=".xlsx,.xls" (change)="importFromExcel($event)"
+          class="hidden-input" [disabled]="isImporting()">
+      </label>
+      <button type="button" (click)="exportToPdf()" class="export-btn pdf-btn"
+        [disabled]="isExporting() || filteredRecords().length === 0"
+        title="{{ (filteredRecords().length === 0 ? 'WATER.EXPORT_DISABLED_TOOLTIP' : 'WATER.EXPORT_PDF') | translate }}">
+        <lucide-icon [img]="FileTextIcon" size="16"></lucide-icon>
+        <span class="btn-text">{{ isExporting() ? 'Exporting...' : ('WATER.EXPORT_PDF' | translate) }}</span>
+      </button>
+      }
+    </div>
+  </app-detailed-records>
+
+  <app-consumption-input [groups]="consumptionGroups()" [selectedDate]="selectedDate()" [maxDate]="maxDate"
+    [editingMode]="!!editingRecord()" [dateExists]="dateExists()" [helpSteps]="helpSteps"
+    [helpTitleKey]="'ELECTRICITY.RECORD_HELP_TITLE'" [noValuesErrorKey]="'ELECTRICITY.PARTIAL_INPUT_ERROR'"
+    [incompleteRoomErrorKey]="'ELECTRICITY.INCOMPLETE_INPUT_ERROR'" (dateChange)="onDateChange($event)"
+    (fieldChange)="onFieldChange($event)" (save)="onConsumptionSave($event)" (cancel)="cancelEdit()">
+  </app-consumption-input>
+</div>
+
+@if (showSuccessModal()) {
+<div class="modal-overlay" (click)="closeSuccessModal()">
+  <div class="modal-content" (click)="$event.stopPropagation()">
+    <div class="modal-header">
+      <lucide-icon [img]="CheckCircleIcon" size="32" class="success-icon"></lucide-icon>
+      <h3>{{ successTitle() | translate }}</h3>
+      <button class="close-btn" (click)="closeSuccessModal()">×</button>
+    </div>
+    <div class="modal-body">
+      <p>{{ successMessage() | translate }}</p>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-primary" (click)="closeSuccessModal()">OK</button>
+    </div>
+  </div>
+</div>
+}
+
+<app-delete-confirmation-modal [show]="showDeleteModal()" [titleKey]="'ELECTRICITY.DELETE_CONFIRM_TITLE'"
+  [messageKey]="'ELECTRICITY.DELETE_CONFIRM_MESSAGE'" [cancelKey]="'HOME.CANCEL'" [deleteKey]="'HOME.DELETE_BUTTON'"
+  [icon]="TrashIcon" (confirm)="confirmDelete()" (cancel)="cancelDelete()">
+</app-delete-confirmation-modal>
+
+<app-delete-confirmation-modal [show]="showDeleteAllModal()" [titleKey]="'ELECTRICITY.DELETE_ALL_CONFIRM_TITLE'"
+  [messageKey]="deleteAllMessageKey()" [messageParams]="deleteAllMessageParams()" [cancelKey]="'HOME.CANCEL'"
+  [deleteKey]="'HOME.DELETE_ALL_BUTTON'" [icon]="TrashIcon" (confirm)="confirmDeleteAll()" (cancel)="cancelDeleteAll()">
+</app-delete-confirmation-modal>
+
+<app-confirmation-modal [show]="showImportConfirmModal()" [titleKey]="'HOME.IMPORT_CONFIRM_TITLE'"
+  [messageKey]="'HOME.IMPORT_CONFIRM_MESSAGE'" [cancelKey]="'HOME.CANCEL'" [confirmKey]="'HOME.IMPORT_BUTTON'"
+  [icon]="UploadIcon" (confirm)="confirmImport()" (cancel)="cancelImport()">
+</app-confirmation-modal>
+
+<app-confirmation-modal [show]="showFilterWarningModal()" [titleKey]="'WATER.IMPORT_FILTER_WARNING_TITLE'"
+  [messageKey]="'WATER.IMPORT_FILTER_WARNING_MESSAGE'" [cancelKey]="'WATER.IMPORT_CANCEL'"
+  [confirmKey]="'WATER.IMPORT_CONTINUE'" [icon]="AlertTriangleIcon" (confirm)="confirmFilterWarningImport()"
+  (cancel)="cancelFilterWarningImport()">
+</app-confirmation-modal>
+
+<app-error-modal [show]="showErrorModal()" [title]="errorTitle()" [message]="errorMessage()" [details]="errorDetails()"
+  [instructions]="errorInstructions()" (cancel)="closeErrorModal()" [type]="errorType()">
+</app-error-modal>
+
+<app-smart-import-modal [show]="showSmartImportModal()" (close)="showSmartImportModal.set(false)"
+  (import)="onSmartImport($event)"></app-smart-import-modal>

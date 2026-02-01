@@ -252,4 +252,224 @@ describe('PdfService', () => {
       expect(head.length).toBeGreaterThanOrEqual(5); // Date + 3 rooms + Total + Diff
     });
   });
+
+  describe('exportElectricityToPdf', () => {
+    it('should generate PDF and save it', async () => {
+      const records = [
+        {
+          date: new Date('2023-01-01'),
+          value: 12500
+        }
+      ];
+
+      await service.exportElectricityToPdf(records, 'electricity-test.pdf');
+
+      expect(mockJsPDFConstructor).toHaveBeenCalledWith('landscape');
+      expect(mockDoc.text).toHaveBeenCalled();
+      expect(mockDoc.save).toHaveBeenCalledWith('electricity-test.pdf');
+      expect(mockAutoTable).toHaveBeenCalled();
+
+      const callArgs = mockAutoTable.mock.calls[0];
+      expect(callArgs[0]).toBe(mockDoc);
+      expect(callArgs[1].body.length).toBe(1);
+    });
+
+    it('should use default filename when not provided', async () => {
+      const records = [
+        {
+          date: new Date('2023-01-01'),
+          value: 12500
+        }
+      ];
+
+      await service.exportElectricityToPdf(records);
+
+      expect(mockDoc.save).toHaveBeenCalledWith('electricity-consumption.pdf');
+    });
+
+    it('should calculate differences correctly', async () => {
+      const records = [
+        {
+          date: new Date('2023-01-01'),
+          value: 12500
+        },
+        {
+          date: new Date('2023-01-02'),
+          value: 12600
+        }
+      ];
+
+      await service.exportElectricityToPdf(records, 'test.pdf');
+
+      const callArgs = mockAutoTable.mock.calls[0];
+      const data = callArgs[1].body;
+
+      expect(data.length).toBe(2);
+      // First row difference should be '-'
+      expect(data[0][2]).toBe('-');
+      // Second row difference should be '+100.00'
+      expect(data[1][2]).toBe('+100.00');
+    });
+
+    it('should handle negative differences correctly', async () => {
+      const records = [
+        {
+          date: new Date('2023-01-01'),
+          value: 12600
+        },
+        {
+          date: new Date('2023-01-02'),
+          value: 12500
+        }
+      ];
+
+      await service.exportElectricityToPdf(records, 'test.pdf');
+
+      const callArgs = mockAutoTable.mock.calls[0];
+      const data = callArgs[1].body;
+
+      // Second row difference should be '-100.00'
+      expect(data[1][2]).toBe('-100.00');
+    });
+
+    it('should handle german date formatting', async () => {
+      mockLanguageService.currentLang.mockReturnValue('de');
+
+      const records = [
+        {
+          date: new Date('2023-12-31'),
+          value: 12500
+        }
+      ];
+
+      await service.exportElectricityToPdf(records, 'test.pdf');
+
+      const textCalls = mockDoc.text.mock.calls;
+      const generatedText = textCalls.find((args: any) => typeof args[0] === 'string' && args[0].startsWith('Erstellt am'));
+      expect(generatedText).toBeDefined();
+    });
+
+    it('should use English formatting for non-German languages', async () => {
+      mockLanguageService.currentLang.mockReturnValue('en');
+
+      const records = [
+        {
+          date: new Date('2023-12-31'),
+          value: 12500
+        }
+      ];
+
+      await service.exportElectricityToPdf(records, 'test.pdf');
+
+      const textCalls = mockDoc.text.mock.calls;
+      const generatedText = textCalls.find((args: any) => typeof args[0] === 'string' && args[0].startsWith('Generated on'));
+      expect(generatedText).toBeDefined();
+    });
+
+    it('should handle empty electricity records', async () => {
+      await service.exportElectricityToPdf([], 'empty.pdf');
+
+      expect(mockDoc.save).toHaveBeenCalledWith('empty.pdf');
+      expect(mockAutoTable).toHaveBeenCalled();
+
+      const callArgs = mockAutoTable.mock.calls[0];
+      expect(callArgs[1].body.length).toBe(0);
+    });
+
+    it('should sort records by date before exporting', async () => {
+      const records = [
+        {
+          date: new Date('2023-01-15'),
+          value: 12600
+        },
+        {
+          date: new Date('2023-01-01'),
+          value: 12500
+        },
+        {
+          date: new Date('2023-01-10'),
+          value: 12550
+        }
+      ];
+
+      await service.exportElectricityToPdf(records, 'test.pdf');
+
+      const callArgs = mockAutoTable.mock.calls[0];
+      const data = callArgs[1].body;
+
+      // First row should be Jan 1 (12500), last should be Jan 15 (12600)
+      expect(data[0][1]).toBe('12500.00');
+      expect(data[1][1]).toBe('12550.00');
+      expect(data[2][1]).toBe('12600.00');
+    });
+
+    it('should have correct table headers', async () => {
+      const records = [
+        {
+          date: new Date('2023-01-01'),
+          value: 12500
+        }
+      ];
+
+      await service.exportElectricityToPdf(records, 'test.pdf');
+
+      const callArgs = mockAutoTable.mock.calls[0];
+      const head = callArgs[1].head[0];
+
+      // Should have Date, Value, Difference columns
+      expect(head.length).toBe(3);
+    });
+
+    it('should apply correct styling to table', async () => {
+      const records = [
+        {
+          date: new Date('2023-01-01'),
+          value: 12500
+        }
+      ];
+
+      await service.exportElectricityToPdf(records, 'test.pdf');
+
+      const callArgs = mockAutoTable.mock.calls[0];
+      const options = callArgs[1];
+
+      // Verify amber theme colors for electricity
+      expect(options.headStyles.fillColor).toEqual([255, 193, 7]);
+      expect(options.headStyles.textColor).toBe(0); // Black text on amber
+      expect(options.theme).toBe('striped');
+    });
+
+    it('should handle image loading error gracefully', async () => {
+      const records = [
+        {
+          date: new Date('2023-01-01'),
+          value: 12500
+        }
+      ];
+
+      // Image mock is set to fail by default
+      await service.exportElectricityToPdf(records, 'test.pdf');
+
+      // Should still complete and save
+      expect(mockDoc.save).toHaveBeenCalledWith('test.pdf');
+    });
+
+    it('should add page numbers to all pages', async () => {
+      mockDoc.getNumberOfPages.mockReturnValue(3);
+
+      const records = [
+        {
+          date: new Date('2023-01-01'),
+          value: 12500
+        }
+      ];
+
+      await service.exportElectricityToPdf(records, 'test.pdf');
+
+      // Should call setPage for each page
+      expect(mockDoc.setPage).toHaveBeenCalledWith(1);
+      expect(mockDoc.setPage).toHaveBeenCalledWith(2);
+      expect(mockDoc.setPage).toHaveBeenCalledWith(3);
+    });
+  });
 });

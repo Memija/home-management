@@ -107,8 +107,8 @@ export class ConsumptionInputComponent {
   }
 
   protected onKeyDown(event: KeyboardEvent) {
-    // Prevent typing minus, plus, and 'e' (scientific notation) in number inputs
-    if (event.key === '-' || event.key === '+' || event.key === 'e' || event.key === 'E') {
+    // Prevent typing minus, plus, 'e', decimal point and comma
+    if (['-', '+', 'e', 'E', '.', ','].includes(event.key)) {
       event.preventDefault();
     }
   }
@@ -116,9 +116,16 @@ export class ConsumptionInputComponent {
   protected onInput(event: Event) {
     // Handle all input methods (typing, pasting, etc.)
     const input = event.target as HTMLInputElement;
+
+    // Remove any non-numeric characters (except keeping empty string)
+    // This catches pastings with disallowed chars
+    if (input.value) {
+      input.value = input.value.replace(/[^0-9]/g, '');
+    }
+
     const value = parseFloat(input.value);
 
-    // If the value is negative, clear it immediately
+    // If the value is negative, clear it immediately (double safety)
     if (value < 0) {
       input.value = '';
     }

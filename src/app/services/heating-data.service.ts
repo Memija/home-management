@@ -216,7 +216,8 @@ export class HeatingDataService {
             const validExtensions = ['.xlsx', '.xls', '.csv'];
             const fileExtension = file.name.toLowerCase().substring(file.name.lastIndexOf('.'));
             if (!validExtensions.includes(fileExtension)) {
-                throw new Error(`Invalid file type. Expected Excel file (.xlsx, .xls, .csv), got ${fileExtension}`);
+                const message = this.languageService.translate('ERROR.IMPORT_INVALID_EXCEL_FILE_TYPE').replace('{{extension}}', fileExtension);
+                throw new Error(message);
             }
 
             const { records, missingColumns } = await this.excelService.importHeatingFromExcel(file);

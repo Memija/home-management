@@ -78,6 +78,8 @@ export class ExcelSettingsComponent {
   protected waterBathroomWarmCol = signal('');
   protected waterBathroomColdCol = signal('');
   protected heatingDateCol = signal('');
+  protected electricityDateCol = signal('');
+  protected electricityValueCol = signal('');
   // Dynamic room column mappings by room ID
   protected heatingRoomCols = signal<Record<string, string>>({});
 
@@ -100,6 +102,10 @@ export class ExcelSettingsComponent {
     return cols;
   });
 
+  protected electricityColumns = computed(() => [
+    this.electricityDateCol(), this.electricityValueCol()
+  ]);
+
   // Helper for template to check configured rooms count
   protected heatingRoomCount = computed(() => this.heatingRoomsService.rooms().length);
   // Expose rooms signal for reactive updates
@@ -117,8 +123,16 @@ export class ExcelSettingsComponent {
 
   // Validation: check if form is valid
   protected isFormValid = computed(() => {
-    return this.validationService.validateMappings(this.waterColumns(), this.heatingColumns()).isValid;
+    return this.validationService.validateMappings(this.waterColumns(), this.heatingColumns()).isValid &&
+      this.validationService.validateMappings(this.electricityColumns(), []).isValid; // Simple check for now, ideally validate all groups
   });
+
+  /**
+   * Check if an electricity column name is duplicated within the electricity section
+   */
+  protected isDuplicateElectricity(value: string): boolean {
+    return this.validationService.isDuplicate(value, this.electricityColumns());
+  }
 
   constructor() {
     // Watch for settings changes and update local state
@@ -131,6 +145,8 @@ export class ExcelSettingsComponent {
       this.waterBathroomWarmCol.set(settings.waterMapping.bathroomWarm);
       this.waterBathroomColdCol.set(settings.waterMapping.bathroomCold);
       this.heatingDateCol.set(settings.heatingMapping.date);
+      this.electricityDateCol.set(settings.electricityMapping.date);
+      this.electricityValueCol.set(settings.electricityMapping.value);
 
       // Dynamic Room Loading (ID-based)
       const rooms = this.heatingRoomsService.rooms();
@@ -176,7 +192,10 @@ export class ExcelSettingsComponent {
       this.waterKitchenColdCol().trim() !== saved.waterMapping.kitchenCold ||
       this.waterBathroomWarmCol().trim() !== saved.waterMapping.bathroomWarm ||
       this.waterBathroomColdCol().trim() !== saved.waterMapping.bathroomCold ||
+      this.waterBathroomColdCol().trim() !== saved.waterMapping.bathroomCold ||
       this.heatingDateCol().trim() !== saved.heatingMapping.date ||
+      this.electricityDateCol().trim() !== saved.electricityMapping.date ||
+      this.electricityValueCol().trim() !== saved.electricityMapping.value ||
       this.hasHeatingRoomChanges(saved);
   });
 
@@ -226,7 +245,8 @@ export class ExcelSettingsComponent {
     this.excelSettingsService.updateSettings({
       enabled: this.enabled(),
       waterMapping: this.excelSettingsService.settings().waterMapping,
-      heatingMapping: this.excelSettingsService.settings().heatingMapping
+      heatingMapping: this.excelSettingsService.settings().heatingMapping,
+      electricityMapping: this.excelSettingsService.settings().electricityMapping
     });
   }
 
@@ -251,7 +271,11 @@ export class ExcelSettingsComponent {
     this.waterKitchenColdCol.set(settings.waterMapping.kitchenCold);
     this.waterBathroomWarmCol.set(settings.waterMapping.bathroomWarm);
     this.waterBathroomColdCol.set(settings.waterMapping.bathroomCold);
+    this.waterBathroomWarmCol.set(settings.waterMapping.bathroomWarm);
+    this.waterBathroomColdCol.set(settings.waterMapping.bathroomCold);
     this.heatingDateCol.set(settings.heatingMapping.date);
+    this.electricityDateCol.set(settings.electricityMapping.date);
+    this.electricityValueCol.set(settings.electricityMapping.value);
 
     // Reset room columns from saved settings
     const newRoomCols: Record<string, string> = {};
@@ -317,6 +341,10 @@ export class ExcelSettingsComponent {
       heatingMapping: {
         date: this.heatingDateCol().trim(),
         rooms: heatingMappingRooms
+      },
+      electricityMapping: {
+        date: this.electricityDateCol().trim(),
+        value: this.electricityValueCol().trim()
       }
     });
 

@@ -1,13 +1,24 @@
 import { TestBed } from '@angular/core/testing';
 import { ImportValidationService } from './import-validation.service';
+import { LanguageService } from './language.service';
 import { describe, it, expect, beforeEach } from 'vitest';
 
 describe('ImportValidationService', () => {
   let service: ImportValidationService;
 
+
+
   beforeEach(() => {
     TestBed.configureTestingModule({
-      providers: [ImportValidationService]
+      providers: [
+        ImportValidationService,
+        {
+          provide: LanguageService,
+          useValue: {
+            translate: (key: string) => key
+          }
+        }
+      ]
     });
     service = TestBed.inject(ImportValidationService);
   });
@@ -22,11 +33,11 @@ describe('ImportValidationService', () => {
     });
 
     it('should error if not array', () => {
-      expect(service.validateDataArray({} as any)).toContain('Invalid data format');
+      expect(service.validateDataArray({} as any)).toContain('ERROR.IMPORT_INVALID_DATA_FORMAT');
     });
 
     it('should error if empty array', () => {
-      expect(service.validateDataArray([])).toContain('The file is empty');
+      expect(service.validateDataArray([])).toContain('ERROR.IMPORT_EMPTY_FILE');
     });
   });
 
@@ -82,7 +93,7 @@ describe('ImportValidationService', () => {
       ];
       const result = service.validateWaterJsonImport(data);
       expect(result.validRecords.length).toBe(0);
-      expect(result.errors[0]).toContain('Invalid date value');
+      expect(result.errors[0]).toContain('ERROR.IMPORT_INVALID_DATE_VALUE');
     });
 
     it('should error on duplicate dates', () => {
@@ -92,7 +103,7 @@ describe('ImportValidationService', () => {
       ];
       const result = service.validateWaterJsonImport(data);
       expect(result.validRecords.length).toBe(1); // First one is accepted
-      expect(result.errors[0]).toContain('Duplicate date');
+      expect(result.errors[0]).toContain('ERROR.IMPORT_DUPLICATE_DATE');
     });
 
     it('should error on invalid numeric fields', () => {
@@ -104,7 +115,7 @@ describe('ImportValidationService', () => {
       ];
       const result = service.validateWaterJsonImport(data);
       expect(result.validRecords.length).toBe(0);
-      expect(result.errors[0]).toContain('Invalid number value');
+      expect(result.errors[0]).toContain('ERROR.IMPORT_INVALID_NUMBER_VALUE');
     });
 
     it('should error on missing date field', () => {
@@ -112,13 +123,13 @@ describe('ImportValidationService', () => {
         { kitchenWarm: 10 }
       ];
       const result = service.validateWaterJsonImport(data);
-      expect(result.errors[0]).toContain("Missing 'date' field");
+      expect(result.errors[0]).toContain("ERROR.IMPORT_MISSING_DATE_FIELD");
     });
 
     it('should error on invalid record format', () => {
       const data = [null];
       const result = service.validateWaterJsonImport(data);
-      expect(result.errors[0]).toContain("Invalid record format");
+      expect(result.errors[0]).toContain("ERROR.IMPORT_INVALID_RECORD_FORMAT");
     });
   });
 
@@ -215,17 +226,17 @@ describe('ImportValidationService', () => {
 
   describe('getJsonErrorInstructions', () => {
     it('should return instructions for date errors', () => {
-      const instructions = service.getJsonErrorInstructions('Invalid date');
+      const instructions = service.getJsonErrorInstructions('ERROR.IMPORT_INVALID_DATE_VALUE');
       expect(instructions).toContain('ERROR.JSON_DATE_FIX_1');
     });
 
     it('should return instructions for number errors', () => {
-      const instructions = service.getJsonErrorInstructions('Invalid number value');
+      const instructions = service.getJsonErrorInstructions('ERROR.IMPORT_INVALID_NUMBER_VALUE');
       expect(instructions).toContain('ERROR.JSON_NUMBER_FIX_1');
     });
 
     it('should return instructions for duplicate errors', () => {
-      const instructions = service.getJsonErrorInstructions('Duplicate date');
+      const instructions = service.getJsonErrorInstructions('ERROR.IMPORT_DUPLICATE_DATE');
       expect(instructions).toContain('ERROR.JSON_DUPLICATE_FIX_1');
     });
 
@@ -237,11 +248,377 @@ describe('ImportValidationService', () => {
 
   describe('getExcelErrorInstructions', () => {
     it('should return instructions for excel errors', () => {
-      expect(service.getExcelErrorInstructions('Invalid date')).toContain('ERROR.EXCEL_DATE_FIX_1');
-      expect(service.getExcelErrorInstructions('Missing required column')).toContain('ERROR.EXCEL_COLUMN_FIX_1');
+      expect(service.getExcelErrorInstructions('ERROR.IMPORT_INVALID_DATE_VALUE')).toContain('ERROR.EXCEL_DATE_FIX_1');
+      expect(service.getExcelErrorInstructions('ERROR.EXCEL_COLUMN_FIX_REQUIRED')).toContain('ERROR.EXCEL_COLUMN_FIX_1');
     });
     it('should return generic instructions if error unknown', () => {
       expect(service.getExcelErrorInstructions('Unknown error')).toContain('ERROR.EXCEL_GENERIC_FIX_1');
+    });
+    it('should return instructions for number errors', () => {
+      const instructions = service.getExcelErrorInstructions('ERROR.IMPORT_INVALID_NUMBER');
+      expect(instructions).toContain('ERROR.EXCEL_NUMBER_FIX_1');
+      expect(instructions).toContain('ERROR.EXCEL_NUMBER_FIX_2');
+    });
+    it('should return instructions for duplicate errors', () => {
+      const instructions = service.getExcelErrorInstructions('ERROR.IMPORT_DUPLICATE_DATE');
+      expect(instructions).toContain('ERROR.EXCEL_DUPLICATE_FIX_1');
+      expect(instructions).toContain('ERROR.EXCEL_DUPLICATE_FIX_2');
+    });
+  });
+
+  describe('validateElectricityJsonImport', () => {
+    it('should validate correct electricity records', () => {
+      const data = [
+        { date: '2023-01-01', value: 12345 },
+        { date: '2023-02-01', value: 12500 }
+      ];
+      const result = service.validateElectricityJsonImport(data);
+      expect(result.validRecords.length).toBe(2);
+      expect(result.errors.length).toBe(0);
+      expect(result.validRecords[0].value).toBe(12345);
+      expect(result.validRecords[1].value).toBe(12500);
+    });
+
+    it('should handle numeric strings', () => {
+      const data = [
+        { date: '2023-01-01', value: '12345' }
+      ];
+      const result = service.validateElectricityJsonImport(data);
+      expect(result.validRecords.length).toBe(1);
+      expect(result.errors.length).toBe(0);
+      expect(result.validRecords[0].value).toBe(12345);
+    });
+
+    it('should handle missing value field by defaulting to 0', () => {
+      const data = [
+        { date: '2023-01-01' }
+      ];
+      const result = service.validateElectricityJsonImport(data);
+      expect(result.validRecords.length).toBe(1);
+      expect(result.errors.length).toBe(0);
+      expect(result.validRecords[0].value).toBe(0);
+    });
+
+    it('should handle null value field by defaulting to 0', () => {
+      const data = [
+        { date: '2023-01-01', value: null }
+      ];
+      const result = service.validateElectricityJsonImport(data);
+      expect(result.validRecords.length).toBe(1);
+      expect(result.validRecords[0].value).toBe(0);
+    });
+
+    it('should handle empty string value by defaulting to 0', () => {
+      const data = [
+        { date: '2023-01-01', value: '' }
+      ];
+      const result = service.validateElectricityJsonImport(data);
+      expect(result.validRecords.length).toBe(1);
+      expect(result.validRecords[0].value).toBe(0);
+    });
+
+    it('should error on invalid date', () => {
+      const data = [
+        { date: 'not-a-date', value: 12345 }
+      ];
+      const result = service.validateElectricityJsonImport(data);
+      expect(result.validRecords.length).toBe(0);
+      expect(result.errors[0]).toContain('ERROR.IMPORT_INVALID_DATE_VALUE');
+    });
+
+    it('should error on missing date field', () => {
+      const data = [
+        { value: 12345 }
+      ];
+      const result = service.validateElectricityJsonImport(data);
+      expect(result.validRecords.length).toBe(0);
+      expect(result.errors[0]).toContain('ERROR.IMPORT_MISSING_DATE_FIELD');
+    });
+
+    it('should error on duplicate dates', () => {
+      const data = [
+        { date: '2023-01-01', value: 12345 },
+        { date: '2023-01-01', value: 12400 }
+      ];
+      const result = service.validateElectricityJsonImport(data);
+      expect(result.validRecords.length).toBe(1);
+      expect(result.errors.length).toBe(1);
+      expect(result.errors[0]).toContain('ERROR.IMPORT_DUPLICATE_DATE');
+    });
+
+    it('should error on invalid value (non-numeric string)', () => {
+      const data = [
+        { date: '2023-01-01', value: 'invalid' }
+      ];
+      const result = service.validateElectricityJsonImport(data);
+      expect(result.validRecords.length).toBe(0);
+      expect(result.errors[0]).toContain('ERROR.IMPORT_INVALID_NUMBER_VALUE');
+    });
+
+    it('should error on invalid value type (object)', () => {
+      const data = [
+        { date: '2023-01-01', value: { nested: 123 } }
+      ];
+      const result = service.validateElectricityJsonImport(data);
+      expect(result.validRecords.length).toBe(0);
+      expect(result.errors[0]).toContain('ERROR.IMPORT_INVALID_FIELD_TYPE');
+    });
+
+    it('should error on invalid record format (null)', () => {
+      const data = [null];
+      const result = service.validateElectricityJsonImport(data);
+      expect(result.validRecords.length).toBe(0);
+      expect(result.errors[0]).toContain('ERROR.IMPORT_INVALID_RECORD_FORMAT');
+    });
+
+    it('should error on invalid date type (number)', () => {
+      const data = [
+        { date: 12345, value: 100 }
+      ];
+      const result = service.validateElectricityJsonImport(data);
+      expect(result.validRecords.length).toBe(0);
+      expect(result.errors[0]).toContain('ERROR.IMPORT_INVALID_DATE_TYPE');
+    });
+
+    it('should handle Date objects', () => {
+      const data = [
+        { date: new Date('2023-01-15'), value: 12345 }
+      ];
+      const result = service.validateElectricityJsonImport(data);
+      expect(result.validRecords.length).toBe(1);
+      expect(result.errors.length).toBe(0);
+      expect(result.validRecords[0].date).toBeInstanceOf(Date);
+    });
+
+    it('should validate multiple records with various formats', () => {
+      const data = [
+        { date: '2023-01-01', value: 12000 },
+        { date: '2023-02-01', value: '12500' },
+        { date: new Date('2023-03-01'), value: 13000 }
+      ];
+      const result = service.validateElectricityJsonImport(data);
+      expect(result.validRecords.length).toBe(3);
+      expect(result.errors.length).toBe(0);
+    });
+  });
+
+  describe('validateHeatingJsonImport - additional edge cases', () => {
+    it('should handle Date objects for date field', () => {
+      const data = [
+        {
+          date: new Date('2023-06-15'),
+          rooms: { room_1: 25 }
+        }
+      ];
+      const result = service.validateHeatingJsonImport(data);
+      expect(result.validRecords.length).toBe(1);
+      expect(result.validRecords[0].date).toBeInstanceOf(Date);
+    });
+
+    it('should handle null room values by defaulting to 0', () => {
+      const data = [
+        {
+          date: '2023-01-01',
+          rooms: { room_1: null }
+        }
+      ];
+      const result = service.validateHeatingJsonImport(data);
+      expect(result.validRecords.length).toBe(1);
+      expect(result.validRecords[0].rooms['room_1']).toBe(0);
+    });
+
+    it('should handle undefined room values by defaulting to 0', () => {
+      const data = [
+        {
+          date: '2023-01-01',
+          rooms: { room_1: undefined }
+        }
+      ];
+      const result = service.validateHeatingJsonImport(data);
+      expect(result.validRecords.length).toBe(1);
+      expect(result.validRecords[0].rooms['room_1']).toBe(0);
+    });
+
+    it('should handle numeric string room values', () => {
+      const data = [
+        {
+          date: '2023-01-01',
+          rooms: { room_1: '15', room_2: '20' }
+        }
+      ];
+      const result = service.validateHeatingJsonImport(data);
+      expect(result.validRecords.length).toBe(1);
+      expect(result.validRecords[0].rooms['room_1']).toBe(15);
+      expect(result.validRecords[0].rooms['room_2']).toBe(20);
+    });
+
+    it('should error on invalid room value type (object)', () => {
+      const data = [
+        {
+          date: '2023-01-01',
+          rooms: { room_1: { nested: 10 } }
+        }
+      ];
+      const result = service.validateHeatingJsonImport(data);
+      expect(result.validRecords.length).toBe(0);
+      expect(result.errors[0]).toContain('ERROR.IMPORT_INVALID_ROOM_TYPE');
+    });
+
+    it('should error on invalid room value type (array)', () => {
+      const data = [
+        {
+          date: '2023-01-01',
+          rooms: { room_1: [10, 20] }
+        }
+      ];
+      const result = service.validateHeatingJsonImport(data);
+      expect(result.validRecords.length).toBe(0);
+      expect(result.errors[0]).toContain('ERROR.IMPORT_INVALID_ROOM_TYPE');
+    });
+
+    it('should error on invalid room value type (boolean)', () => {
+      const data = [
+        {
+          date: '2023-01-01',
+          rooms: { room_1: true }
+        }
+      ];
+      const result = service.validateHeatingJsonImport(data);
+      expect(result.validRecords.length).toBe(0);
+      expect(result.errors[0]).toContain('ERROR.IMPORT_INVALID_ROOM_TYPE');
+    });
+
+    it('should detect both missing and unknown rooms in same record', () => {
+      const data = [
+        {
+          date: '2023-01-01',
+          rooms: { unknown_room: 10 }
+        }
+      ];
+      const expectedRoomIds = ['room_1', 'room_2'];
+      const result = service.validateHeatingJsonImport(data, expectedRoomIds);
+      expect(result.validRecords.length).toBe(0);
+      // Should have errors for missing room_1, missing room_2, and unknown unknown_room
+      expect(result.errors.length).toBe(3);
+    });
+
+    it('should validate empty rooms object when no expected room IDs', () => {
+      const data = [
+        {
+          date: '2023-01-01',
+          rooms: {}
+        }
+      ];
+      const result = service.validateHeatingJsonImport(data);
+      expect(result.validRecords.length).toBe(1);
+      expect(Object.keys(result.validRecords[0].rooms).length).toBe(0);
+    });
+
+    it('should error on duplicate dates in heating records', () => {
+      const data = [
+        { date: '2023-01-01', rooms: { room_1: 10 } },
+        { date: '2023-01-01', rooms: { room_1: 15 } }
+      ];
+      const result = service.validateHeatingJsonImport(data);
+      expect(result.validRecords.length).toBe(1);
+      expect(result.errors[0]).toContain('ERROR.IMPORT_DUPLICATE_DATE');
+    });
+
+    it('should handle rooms value that is not an object', () => {
+      const data = [
+        { date: '2023-01-01', rooms: 'not an object' }
+      ];
+      const result = service.validateHeatingJsonImport(data);
+      expect(result.validRecords.length).toBe(0);
+      expect(result.errors[0]).toContain('ERROR.IMPORT_MISSING_ROOMS_OBJECT');
+    });
+
+    it('should handle rooms value that is an array', () => {
+      const data = [
+        { date: '2023-01-01', rooms: [10, 20] }
+      ];
+      const result = service.validateHeatingJsonImport(data);
+      // Arrays are technically objects, so this tests the typeof check
+      expect(result.validRecords.length).toBe(1);
+    });
+
+    it('should handle NaN number values in rooms', () => {
+      const data = [
+        {
+          date: '2023-01-01',
+          rooms: { room_1: NaN }
+        }
+      ];
+      const result = service.validateHeatingJsonImport(data);
+      // NaN should be caught by isNaN check
+      expect(result.validRecords.length).toBe(0);
+      expect(result.errors[0]).toContain('ERROR.IMPORT_INVALID_ROOM_TYPE');
+    });
+  });
+
+  describe('validateWaterJsonImport - additional edge cases', () => {
+    it('should handle Date objects', () => {
+      const data = [
+        {
+          date: new Date('2023-06-15'),
+          kitchenWarm: 10,
+          kitchenCold: 20,
+          bathroomWarm: 30,
+          bathroomCold: 40
+        }
+      ];
+      const result = service.validateWaterJsonImport(data);
+      expect(result.validRecords.length).toBe(1);
+      expect(result.validRecords[0].date).toBeInstanceOf(Date);
+    });
+
+    it('should handle null values by defaulting to 0', () => {
+      const data = [
+        {
+          date: '2023-01-01',
+          kitchenWarm: null,
+          kitchenCold: null
+        }
+      ];
+      const result = service.validateWaterJsonImport(data);
+      expect(result.validRecords.length).toBe(1);
+      expect(result.validRecords[0].kitchenWarm).toBe(0);
+      expect(result.validRecords[0].kitchenCold).toBe(0);
+    });
+
+    it('should handle empty string values by defaulting to 0', () => {
+      const data = [
+        {
+          date: '2023-01-01',
+          kitchenWarm: '',
+          bathroomCold: ''
+        }
+      ];
+      const result = service.validateWaterJsonImport(data);
+      expect(result.validRecords.length).toBe(1);
+      expect(result.validRecords[0].kitchenWarm).toBe(0);
+      expect(result.validRecords[0].bathroomCold).toBe(0);
+    });
+
+    it('should error on invalid field type (object)', () => {
+      const data = [
+        {
+          date: '2023-01-01',
+          kitchenWarm: { nested: 10 }
+        }
+      ];
+      const result = service.validateWaterJsonImport(data);
+      expect(result.validRecords.length).toBe(0);
+      expect(result.errors[0]).toContain('ERROR.IMPORT_INVALID_FIELD_TYPE');
+    });
+
+    it('should error on invalid date type (number)', () => {
+      const data = [
+        { date: 20230101, kitchenWarm: 10 }
+      ];
+      const result = service.validateWaterJsonImport(data);
+      expect(result.validRecords.length).toBe(0);
+      expect(result.errors[0]).toContain('ERROR.IMPORT_INVALID_DATE_TYPE');
     });
   });
 });

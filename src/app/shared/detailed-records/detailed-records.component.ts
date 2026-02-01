@@ -64,6 +64,9 @@ export class DetailedRecordsComponent {
   recordType = input<string>('water');
   helpTitleKey = input<string>('HOME.RECORDS_HELP_TITLE');
   helpSteps = input<HelpStep[]>([]);
+  showTotal = input<boolean>(true);
+  totalLabelKey = input<string>('HOME.TOTAL');
+  hasDetails = input<boolean>(true);
 
   // Configurable sort options - parent provides these
   sortOptions = input<SortOptionConfig[]>([

@@ -112,6 +112,26 @@
   }
 }
 
+.electricity-card {
+  .icon-wrapper {
+    background: linear-gradient(135deg, #fff8e1, #ffecb3);
+    color: #ffc107;
+  }
+
+  &:hover {
+    border-color: #ffc107;
+
+    .icon-wrapper {
+      background: linear-gradient(135deg, #ffc107, #ffb300);
+      color: white;
+    }
+
+    h2 {
+      color: #ffc107;
+    }
+  }
+}
+
 @media (max-width: 768px) {
   .welcome-section h1 {
     font-size: 2rem;

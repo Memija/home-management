@@ -3,6 +3,9 @@ import { Injectable, signal, inject, ApplicationRef } from '@angular/core';
 
 export type Language = 'en' | 'de';
 
+/** All supported languages - update this when adding a new language */
+export const SUPPORTED_LANGUAGES: readonly Language[] = ['en', 'de'] as const;
+
 /** Storage key for user's preferred language (hm = homemanagement) */
 const LANGUAGE_STORAGE_KEY = 'hm_preferred_language';
 

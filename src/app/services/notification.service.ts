@@ -1,6 +1,6 @@
 import { Injectable, inject, computed, signal } from '@angular/core';
 import { STORAGE_SERVICE } from './storage.service';
-import { ConsumptionRecord } from '../models/records.model';
+import { ConsumptionRecord, ElectricityRecord } from '../models/records.model';
 import { DemoService } from './demo.service';
 import { Address, HouseholdMember } from './household.service';
 
@@ -26,6 +26,7 @@ export class NotificationService {
   // Data signals (will be set by consuming components or loaded)
   private waterRecords = signal<ConsumptionRecord[]>([]);
   private heatingRecords = signal<{ date: Date }[]>([]);
+  private electricityRecords = signal<ElectricityRecord[]>([]);
   private address = signal<Address | null>(null);
   private familyMembers = signal<HouseholdMember[]>([]);
   private dismissedNotifications = signal<string[]>([]);
@@ -51,6 +52,11 @@ export class NotificationService {
       this.heatingRecords.set(heatingRecords);
     }
 
+    const electricityRecords = await this.storage.load<ElectricityRecord[]>('electricity_consumption_records');
+    if (electricityRecords) {
+      this.electricityRecords.set(electricityRecords);
+    }
+
     // Load address and family data
     const address = await this.storage.load<Address>('household_address');
     if (address) {
@@ -74,6 +80,10 @@ export class NotificationService {
 
   setHeatingRecords(records: { date: Date }[]): void {
     this.heatingRecords.set(records);
+  }
+
+  setElectricityRecords(records: ElectricityRecord[]): void {
+    this.electricityRecords.set(records);
   }
 
   /**
@@ -134,6 +144,23 @@ export class NotificationService {
         priority: 'high',
         dismissible: true,
         route: '/heating',
+        fragment: 'input-section'
+      };
+      if (!dismissed.includes(notif.id)) {
+        notifications.push(notif);
+      }
+    }
+
+    // Check for missing initial electricity readings
+    if (this.electricityRecords().length === 0) {
+      const notif: Notification = {
+        id: 'electricity-initial',
+        type: 'initial',
+        titleKey: 'NOTIFICATIONS.ELECTRICITY_INITIAL_TITLE',
+        messageKey: 'NOTIFICATIONS.ELECTRICITY_INITIAL_MESSAGE',
+        priority: 'high',
+        dismissible: true,
+        route: '/electricity',
         fragment: 'input-section'
       };
       if (!dismissed.includes(notif.id)) {
@@ -217,6 +244,44 @@ export class NotificationService {
       }
     }
 
+    // Check if electricity reading is due or overdue based on average frequency
+    const electricityStatus = this.checkElectricityReadingStatus();
+
+    // Show "due" notification when it's time for an electricity reading
+    if (electricityStatus.isDue && !electricityStatus.isOverdue) {
+      const notif: Notification = {
+        id: 'electricity-due',
+        type: 'reminder',
+        titleKey: 'NOTIFICATIONS.ELECTRICITY_DUE_TITLE',
+        messageKey: 'NOTIFICATIONS.ELECTRICITY_DUE_MESSAGE',
+        priority: 'low',
+        dismissible: true,
+        route: '/electricity',
+        fragment: 'input-section'
+      };
+      if (!dismissed.includes(notif.id)) {
+        notifications.push(notif);
+      }
+    }
+
+    // Show "overdue" notification for electricity when significantly late
+    if (electricityStatus.isOverdue) {
+      const notif: Notification = {
+        id: 'electricity-overdue',
+        type: 'reminder',
+        titleKey: 'NOTIFICATIONS.ELECTRICITY_OVERDUE_TITLE',
+        messageKey: 'NOTIFICATIONS.ELECTRICITY_OVERDUE_MESSAGE',
+        messageParams: { days: electricityStatus.daysSinceLast },
+        priority: 'medium',
+        dismissible: true,
+        route: '/electricity',
+        fragment: 'input-section'
+      };
+      if (!dismissed.includes(notif.id)) {
+        notifications.push(notif);
+      }
+    }
+
     // Check for missing address
     if (!this.address()) {
       const notif: Notification = {
@@ -286,9 +351,9 @@ export class NotificationService {
       (Date.now() - new Date(lastEntry.date).getTime()) / (1000 * 60 * 60 * 24)
     );
 
-    // Due when at or past average interval (with minimum of 7 days)
-    // Use Math.floor to avoid floating-point precision issues (7.004 -> 7)
-    const dueThreshold = Math.floor(Math.max(averageDays, 7));
+    // Due when at or past average interval
+    // Use Math.floor to avoid floating-point precision issues
+    const dueThreshold = Math.floor(averageDays);
     const isDue = daysSinceLast >= dueThreshold;
 
     // Overdue when 1.5x past the average (significantly late)
@@ -330,9 +395,53 @@ export class NotificationService {
       (Date.now() - new Date(lastEntry.date).getTime()) / (1000 * 60 * 60 * 24)
     );
 
-    // Due when at or past average interval (with minimum of 7 days)
+    // Due when at or past average interval
     // Use Math.floor to avoid floating-point precision issues
-    const dueThreshold = Math.floor(Math.max(averageDays, 7));
+    const dueThreshold = Math.floor(averageDays);
+    const isDue = daysSinceLast >= dueThreshold;
+
+    // Overdue when 1.5x past the average (significantly late)
+    const overdueThreshold = Math.floor(Math.max(averageDays * 1.5, 10));
+    const isOverdue = daysSinceLast > overdueThreshold;
+
+    return { isDue, isOverdue, daysSinceLast };
+  }
+
+  /**
+   * Calculate if electricity reading is due or overdue based on average entry frequency
+   * @returns isDue - true when it's time for a reading (at or past average interval)
+   * @returns isOverdue - true when significantly late (1.5x average interval)
+   */
+  private checkElectricityReadingStatus(): { isDue: boolean; isOverdue: boolean; daysSinceLast: number } {
+    const records = this.electricityRecords();
+
+    // Need at least 2 records to calculate average frequency
+    if (records.length < 2) {
+      return { isDue: false, isOverdue: false, daysSinceLast: 0 };
+    }
+
+    // Sort by date
+    const sorted = [...records].sort(
+      (a, b) => new Date(a.date).getTime() - new Date(b.date).getTime()
+    );
+
+    // Calculate average days between entries
+    let totalDays = 0;
+    for (let i = 1; i < sorted.length; i++) {
+      const diff = new Date(sorted[i].date).getTime() - new Date(sorted[i - 1].date).getTime();
+      totalDays += diff / (1000 * 60 * 60 * 24);
+    }
+    const averageDays = totalDays / (sorted.length - 1);
+
+    // Calculate days since last entry
+    const lastEntry = sorted[sorted.length - 1];
+    const daysSinceLast = Math.floor(
+      (Date.now() - new Date(lastEntry.date).getTime()) / (1000 * 60 * 60 * 24)
+    );
+
+    // Due when at or past average interval
+    // Use Math.floor to avoid floating-point precision issues
+    const dueThreshold = Math.floor(averageDays);
     const isDue = daysSinceLast >= dueThreshold;
 
     // Overdue when 1.5x past the average (significantly late)
@@ -370,6 +479,14 @@ export class NotificationService {
   resetWaterOverdue(): void {
     this.clearDismissed('water-due');
     this.clearDismissed('water-overdue');
+  }
+
+  /**
+   * Reset electricity notifications (call when user adds a new electricity record)
+   */
+  resetElectricityOverdue(): void {
+    this.clearDismissed('electricity-due');
+    this.clearDismissed('electricity-overdue');
   }
 
   private async loadDismissedNotifications(): Promise<void> {

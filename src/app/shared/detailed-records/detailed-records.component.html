@@ -100,18 +100,22 @@
       {{ valuesNoteKey() | translate }}
     </p>
     }
+    @if (hasDetails()) {
     <button type="button" class="collapse-toggle" (click)="toggleCollapse()"
       title="{{ (isCollapsed() ? 'HOME.EXPAND' : 'HOME.COLLAPSE') | translate }}">
       <lucide-icon [img]="isCollapsed() ? ChevronDownIcon : ChevronUpIcon" size="20"></lucide-icon>
     </button>
+    }
   </div>
   <div class="history-list" [class.collapsed]="isCollapsed()">
     <ul>@for (record of displayedRecords(); track record.date) {
       <li>
-        <div class="record-header">
+        <div class="record-header" [class.no-details]="!hasDetails()">
           <span class="date">{{ record.date | date:'fullDate':undefined:currentLang() }}</span>
           <div class="record-actions">
-            <span class="total">{{ 'HOME.TOTAL' | translate }}: {{ calculateTotalFn()(record) }}</span>
+            @if (showTotal()) {
+            <span class="total">{{ totalLabelKey() | translate }}: {{ calculateTotalFn()(record) }}</span>
+            }
             @if (showEditDelete()) {
             <button type="button" class="edit-btn" (click)="onEditRecord(record)"
               title="{{ 'HOME.EDIT_TOOLTIP' | translate }}">
@@ -124,6 +128,7 @@
             }
           </div>
         </div>
+        @if (hasDetails()) {
         <div class="record-details">
           @if (recordDetailsTemplate) {
           <ng-container *ngTemplateOutlet="recordDetailsTemplate; context: { $implicit: record }"></ng-container>
@@ -149,6 +154,7 @@
           </div>
           }
         </div>
+        }
       </li>
       }
     </ul>

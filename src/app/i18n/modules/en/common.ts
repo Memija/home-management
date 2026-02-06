@@ -78,7 +78,8 @@ export const common = {
     DISMISS: 'Dismiss'
   },
   FACTS: {
-    DID_YOU_KNOW: 'Did you know?'
+    DID_YOU_KNOW: 'Did you know?',
+    ELECTRICITY_FALLBACK: 'Electricity has revolutionized modern life.'
   },
   IMPORT: {
     SUCCESS_TITLE: 'Import Successful',

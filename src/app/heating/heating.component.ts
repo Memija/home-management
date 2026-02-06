@@ -5,7 +5,7 @@ import { TranslatePipe } from '../pipes/translate.pipe';
 import { HeatingFormService } from '../services/heating-form.service';
 import { HeatingRoomsService, HeatingRoomConfig } from '../services/heating-rooms.service';
 import { HeatingDataService } from '../services/heating-data.service';
-import { LucideAngularModule, ArrowLeft, ChevronDown, ChevronLeft, ChevronRight, Download, Upload, FileSpreadsheet, Settings, CheckCircle, Lightbulb, Info, Trash2, FileText, AlertTriangle } from 'lucide-angular';
+import { LucideAngularModule, ArrowLeft, ChevronDown, ChevronLeft, ChevronRight, Download, Upload, FileSpreadsheet, Settings, CheckCircle, Lightbulb, Info, Trash2, FileText, AlertTriangle, RefreshCw } from 'lucide-angular';
 
 import { ConsumptionChartComponent, type ChartView, type DisplayMode } from '../shared/consumption-chart/consumption-chart.component';
 import { ConsumptionInputComponent, type ConsumptionData, type ConsumptionGroup } from '../shared/consumption-input/consumption-input.component';
@@ -17,7 +17,7 @@ import { DeleteConfirmationModalComponent } from '../shared/delete-confirmation-
 import { ComparisonNoteComponent } from '../shared/comparison-note/comparison-note.component';
 import { DynamicHeatingRecord, calculateDynamicHeatingTotal } from '../models/records.model';
 import { HeatingFactsService } from '../services/heating-facts.service';
-import { HEATING_RECORD_HELP_STEPS, RECORDS_LIST_HELP_STEPS } from './heating.constants';
+import { HEATING_RECORD_HELP_STEPS, RECORDS_LIST_HELP_STEPS, CHART_HELP_STEPS } from './heating.constants';
 import { ConsumptionPreferencesService } from '../services/consumption-preferences.service';
 import { ChartCalculationService } from '../services/chart-calculation.service';
 import { LocalStorageService } from '../services/local-storage.service';
@@ -61,6 +61,7 @@ export class HeatingComponent {
   protected readonly TrashIcon = Trash2;
   protected readonly FileTextIcon = FileText;
   protected readonly AlertTriangleIcon = AlertTriangle;
+  protected readonly RefreshCwIcon = RefreshCw;
 
   // State delegation to HeatingDataService
   protected records = this.dataService.records;
@@ -97,6 +98,7 @@ export class HeatingComponent {
 
   // Help steps
   protected readonly helpSteps = HEATING_RECORD_HELP_STEPS;
+  protected readonly chartHelpSteps = CHART_HELP_STEPS;
   protected readonly recordsHelpSteps = RECORDS_LIST_HELP_STEPS;
 
   // Sort options
@@ -198,7 +200,9 @@ export class HeatingComponent {
   }
 
   // Chart room data
-  protected chartRoomNames = computed(() => this.roomsService.rooms().map(r => r.name));
+  protected chartRoomNames = computed(() => this.roomsService.rooms().map(r => {
+    return r.type ? this.languageService.translate(r.type) : r.name;
+  }));
   protected chartRoomIds = computed(() => this.roomsService.rooms().map(r => r.id));
   protected chartRoomColors = computed(() => this.roomsService.rooms().map(r => this.roomUtilsService.getRoomColor(r)));
 

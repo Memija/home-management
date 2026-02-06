@@ -9,11 +9,18 @@ import { LanguageService } from '../../services/language.service';
 import { CountryFactsService } from '../../services/country-facts.service';
 import { HeatingFactsService } from '../../services/heating-facts.service';
 import { HeatingAveragesService } from '../../services/heating-averages.service';
+import { ElectricityCountryFactsService } from '../../services/electricity-country-facts.service';
+import { ElectricityAveragesService } from '../../services/electricity-averages.service';
 import { TranslatePipe } from '../../pipes/translate.pipe';
 
-export type ComparisonNoteType = 'water' | 'heating';
+export type ComparisonNoteType = 'water' | 'heating' | 'electricity';
 
 export interface HeatingCountry {
+    code: string;
+    nameKey: string;
+}
+
+export interface ElectricityCountry {
     code: string;
     nameKey: string;
 }
@@ -32,12 +39,15 @@ export class ComparisonNoteComponent {
     private countryFactsService = inject(CountryFactsService);
     private heatingFactsService = inject(HeatingFactsService);
     private heatingAveragesService = inject(HeatingAveragesService);
+    private electricityFactsService = inject(ElectricityCountryFactsService);
+    private electricityAveragesService = inject(ElectricityAveragesService);
 
     // Inputs
     type = input<ComparisonNoteType>('water'); // 'water' or 'heating'
     records = input.required<{ date: Date }[]>(); // Generic records with date
     chartView = input<string>('total');
     heatingCountries = input<HeatingCountry[]>([]); // Heating countries list
+    electricityCountries = input<ElectricityCountry[]>([]); // Electricity countries list
 
     // Outputs
     countryCodeChange = output<string>();
@@ -73,6 +83,16 @@ export class ComparisonNoteComponent {
         });
     });
 
+    // Electricity countries - sorted A-Z
+    protected sortedElectricityCountries = computed(() => {
+        const countries = [...this.electricityCountries()];
+        return countries.sort((a, b) => {
+            const nameA = this.languageService.translate(a.nameKey);
+            const nameB = this.languageService.translate(b.nameKey);
+            return nameA.localeCompare(nameB);
+        });
+    });
+
     // Combined available countries based on type
     protected availableCountries = computed(() => {
         if (this.type() === 'heating') {
@@ -80,6 +100,13 @@ export class ComparisonNoteComponent {
                 translationKey: c.nameKey,
                 code: c.code,
                 average: this.heatingAveragesService.getAverageKwhPerYear(c.code)
+            }));
+        }
+        if (this.type() === 'electricity') {
+            return this.sortedElectricityCountries().map(c => ({
+                translationKey: c.nameKey,
+                code: c.code,
+                average: this.electricityAveragesService.getAverageKwhPerPersonPerYear(c.code)
             }));
         }
         return this.waterCountries();
@@ -107,6 +134,10 @@ export class ComparisonNoteComponent {
             return this.heatingAveragesService.getAverageKwhPerYear(code);
         }
 
+        if (this.type() === 'electricity') {
+            return this.electricityAveragesService.getAverageKwhPerPersonPerYear(code);
+        }
+
         const countries = this.availableCountries();
         const country = countries.find(c => c.code.toLowerCase() === code.toLowerCase());
         return country?.average || 150;
@@ -130,10 +161,21 @@ export class ComparisonNoteComponent {
         return this.heatingFactsService.getFactByIndex(0, index, 'country', code);
     });
 
+    // Electricity fact
+    protected electricityFact = computed(() => {
+        const code = this.effectiveComparisonCountryCode();
+        const seed = this.factSeed();
+        const index = Math.floor((seed % 100) + this.records().length);
+        return this.electricityFactsService.getFactByIndex(0, index, 'country', code);
+    });
+
     // Combined fact based on type
     protected countryFact = computed(() => {
         if (this.type() === 'heating') {
             return this.heatingFact()?.message || null;
+        }
+        if (this.type() === 'electricity') {
+            return this.electricityFact()?.message || null;
         }
         return this.waterFact();
     });
@@ -141,6 +183,10 @@ export class ComparisonNoteComponent {
     // Heating fact title
     protected heatingFactTitle = computed(() => {
         return this.heatingFact()?.title || '';
+    });
+
+    protected electricityFactTitle = computed(() => {
+        return this.electricityFact()?.title || '';
     });
 
     constructor() {

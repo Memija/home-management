@@ -2,7 +2,7 @@ import { Injectable, inject } from '@angular/core';
 import { ChartConfiguration } from 'chart.js';
 import { LanguageService } from './language.service';
 import { ChartCalculationService } from './chart-calculation.service';
-import { ConsumptionRecord, DynamicHeatingRecord, CombinedData, ComparisonData } from '../models/records.model';
+import { ConsumptionRecord, DynamicHeatingRecord, CombinedData, ComparisonData, ElectricityRecord } from '../models/records.model';
 import { WaterChartService, ChartDataParams } from './water-chart.service';
 import { HeatingAveragesService } from './heating-averages.service';
 
@@ -20,7 +20,7 @@ export class ChartDataService {
   /**
    * Calculate incremental (delta) data between consecutive readings
    */
-  calculateIncrementalData(recs: (ConsumptionRecord | DynamicHeatingRecord)[], ignoredSpikes?: { date: string, roomId: string }[]): CombinedData[] {
+  calculateIncrementalData(recs: (ConsumptionRecord | DynamicHeatingRecord | ElectricityRecord)[], ignoredSpikes?: { date: string, roomId: string }[]): CombinedData[] {
     return this.calculationService.calculateIncrementalData(recs, ignoredSpikes);
   }
 
@@ -35,18 +35,52 @@ export class ChartDataService {
    * Generate chart data for water consumption
    */
   getWaterChartData(params: ChartDataParams): ChartConfiguration['data'] {
+    // Normalize incremental water data to daily averages
+    if (params.mode === 'incremental' && params.records.length > 1) {
+      const incrementalRecs = params.records as unknown as CombinedData[];
+      const originalLikeRecs = (params.originalRecords || params.records) as unknown as ConsumptionRecord[];
+
+      const normalized = this.calculationService.calculateDailyAverage(incrementalRecs, originalLikeRecs, 'water');
+
+      const result = this.waterChartService.getWaterChartData({
+        ...params,
+        records: normalized as unknown as ConsumptionRecord[]
+      });
+
+      // Attach normalized metadata to datasets for tooltip access
+      if (result.datasets) {
+        result.datasets.forEach(ds => {
+          (ds as any).normalizedData = normalized.map(r => (r as any).normalized);
+        });
+      }
+      return result;
+    }
+
     return this.waterChartService.getWaterChartData(params);
   }
 
   /**
    * Generate chart data for heating consumption
    */
-  /**
-   * Generate chart data for heating consumption
-   */
   getHeatingChartData(params: ChartDataParams<DynamicHeatingRecord>): ChartConfiguration['data'] {
-    const { records: heatingRecs, labels, view, mode, roomNames, roomColors: customRoomColors, showTrendline, showAverageComparison, country } = params;
-    const chartLabels = mode === 'incremental' ? labels.slice(1) : labels;
+    let { records: heatingRecs } = params;
+    const { labels, view, mode, roomNames, roomColors: customRoomColors, showTrendline, showAverageComparison, country } = params;
+
+    let normalizedData: any[] | undefined;
+
+    // Normalize incremental heating data if in incremental mode
+    if (mode === 'incremental' && heatingRecs.length > 1) {
+      const incrementalRecs = heatingRecs as unknown as CombinedData[];
+      const originalLikeRecs = (params.originalRecords || heatingRecs) as unknown as DynamicHeatingRecord[];
+
+      const normalized = this.calculationService.calculateDailyAverage(incrementalRecs, originalLikeRecs, 'heating');
+      heatingRecs = normalized as unknown as DynamicHeatingRecord[];
+
+      // Store normalized data to attach later
+      normalizedData = normalized.map(r => (r as any).normalized);
+    }
+
+    const chartLabels = labels; // Use all labels as we now include first data point
 
     // Calculate average comparison if enabled (incremental mode only - matches water behavior)
     const showComparison = mode === 'incremental' && (showAverageComparison ?? false);
@@ -92,7 +126,9 @@ export class ChartDataService {
           borderColor: '#ff6f00',
           backgroundColor: 'rgba(255, 111, 0, 0.1)',
           fill: true,
-          tension: 0.4
+          tension: 0.4,
+          // @ts-expect-error - Custom property for tooltip access
+          normalizedData: mode === 'incremental' ? normalizedData : undefined
         }];
 
         // Add trendline if enabled
@@ -141,7 +177,8 @@ export class ChartDataService {
             borderWidth: 2,
             borderDash: [5, 5],
             pointRadius: 0,
-            fill: false
+            fill: false,
+            tension: 0.4
           });
         }
 
@@ -156,7 +193,7 @@ export class ChartDataService {
         const roomIds = params.roomIds || [];
 
         for (let i = 0; i < roomCount; i++) {
-          const roomName = roomNames?.[i] || `Room ${i + 1}`;
+          const roomName = roomNames?.[i] || `${this.languageService.translate('HEATING.ROOM_LIVING_ROOM').split(' ')[0]} ${i + 1}`;
           const roomId = roomIds[i];
 
           // Use custom colors if provided, otherwise use defaults
@@ -175,12 +212,14 @@ export class ChartDataService {
           const hasData = roomData.some(v => v > 0);
 
           datasets.push({
-            label: roomName,
+            label: mode === 'incremental' ? `${roomName} (${this.languageService.translate('CHART.INCREMENTAL_CONSUMPTION')})` : roomName,
             data: roomData,
             borderColor: colors.border,
             backgroundColor: colors.bg,
             fill: true,
-            tension: 0.4
+            tension: 0.4,
+            // @ts-expect-error - Custom property for tooltip access
+            normalizedData: mode === 'incremental' ? normalizedData : undefined
           });
 
           // Add trendline for each room if enabled and has data
@@ -212,7 +251,8 @@ export class ChartDataService {
             borderWidth: 2,
             borderDash: [5, 5],
             pointRadius: 0,
-            fill: false
+            fill: false,
+            tension: 0.4
           });
         }
 
@@ -236,5 +276,102 @@ export class ChartDataService {
       // Keep dataset if at least one value is non-zero
       return dataset.data.some((value: unknown) => value !== 0 && value !== null && value !== undefined);
     });
+  }
+  /**
+   * Generate chart data for electricity consumption
+   */
+  getElectricityChartData(params: ChartDataParams<ElectricityRecord>): ChartConfiguration['data'] {
+    const { records: electricityRecs, labels, mode, showTrendline, showAverageComparison, country, familySize } = params;
+    // Use all labels
+    const chartLabels = labels;
+
+    // Calculate average comparison if enabled (incremental mode only)
+    const showComparison = mode === 'incremental' && (showAverageComparison ?? false);
+    const comparisonData = showComparison
+      ? this.calculationService.generateElectricityComparisonData(electricityRecs, familySize ?? 0, country ?? 'DE')
+      : [];
+
+    // Process data based on display mode (handled in component via calculateIncrementalData if needed)
+    // But here we need to map records to values
+    // NOTE: For electricity, we normalize incremental data to monthly equivalent to avoid "drops" for short intervals
+    let dataPoints: number[] = [];
+    let normalizedData: any[] | undefined;
+
+    if (mode === 'incremental') {
+      // Normalize incremental data to daily averages using original records for accurate date calculations
+      const originalLikeRecs = (params.originalRecords || electricityRecs) as unknown as ElectricityRecord[];
+
+      const normalized = this.calculationService.calculateDailyAverage(
+        electricityRecs as any as CombinedData[],
+        originalLikeRecs,
+        'electricity'
+      );
+      dataPoints = normalized.map(r => (r as any).value);
+      normalizedData = normalized.map(r => (r as any).normalized);
+
+    } else {
+      dataPoints = electricityRecs.map(r => r.value);
+    }
+
+    const datasets: ChartConfiguration['data']['datasets'] = [{
+      label: mode === 'incremental'
+        ? this.languageService.translate('CHART.INCREMENTAL_CONSUMPTION')
+        : this.languageService.translate('HOME.HISTORY_TITLE'),
+      data: dataPoints,
+      borderColor: '#ffc107', // Electricity yellow
+      backgroundColor: '#ffc107',
+      pointBackgroundColor: '#ffc107',
+      pointBorderColor: '#ffc107',
+      fill: false,
+      tension: 0.4,
+      // @ts-expect-error - Custom property for tooltip access
+      normalizedData: mode === 'incremental' ? normalizedData : undefined
+    }];
+
+    // Add trendline if enabled (incremental mode only)
+    if (showTrendline && mode === 'incremental' && electricityRecs.length > 1) {
+      const trendData = this.calculationService.generateTrendlineData(dataPoints);
+
+      // Calculate slope to determine trend direction
+      const firstVal = trendData[0] as number;
+      const lastVal = trendData[trendData.length - 1] as number;
+      const slope = lastVal - firstVal;
+
+      let trendColor = '#000000';
+      if (slope > 1) {
+        trendColor = '#dc3545'; // Red (increasing)
+      } else if (slope < -1) {
+        trendColor = '#28a745'; // Green (decreasing)
+      }
+
+      datasets.push({
+        data: trendData,
+        label: this.languageService.translate('CHART.TRENDLINE'),
+        type: 'line',
+        borderColor: trendColor,
+        borderWidth: 2,
+        pointRadius: 0,
+        fill: false
+      });
+    }
+
+    if (showComparison && comparisonData.length > 0) {
+      datasets.push({
+        data: comparisonData.map(d => d.value),
+        label: this.languageService.translate('CHART.COUNTRY_AVERAGE'),
+        type: 'line',
+        borderColor: '#dc3545',
+        borderWidth: 2,
+        borderDash: [5, 5],
+        pointRadius: 0,
+        fill: false,
+        tension: 0.4
+      });
+    }
+
+    return {
+      labels: chartLabels,
+      datasets: this.filterEmptyDatasets(datasets)
+    };
   }
 }

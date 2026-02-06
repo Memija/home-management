@@ -29,7 +29,7 @@
       </button>
     </div>
   </div>
-  } @else if (waterFact()) {
+  } @else if (displayMode() === 'total' && waterFact()) {
   <div class="notification-card notification-card--info">
     <div class="notification-content">
       <lucide-icon [img]="LightbulbIcon" size="20" class="notification-icon"></lucide-icon>
@@ -37,6 +37,11 @@
         <strong>{{ waterFact()!.title }}</strong>
         <p>{{ waterFact()!.message }}</p>
       </div>
+    </div>
+    <div class="notification-actions">
+      <button type="button" class="refresh-btn" (click)="refreshFact()" title="{{ 'CHART.NEW_FACT' | translate }}">
+        ↻
+      </button>
     </div>
   </div>
   }
@@ -94,7 +99,7 @@
   </app-detailed-records>
 
   <app-consumption-input [groups]="consumptionGroups()" [selectedDate]="selectedDate()" [maxDate]="maxDate"
-    [editingMode]="!!editingRecord()" [dateExists]="dateExists()" [helpSteps]="helpSteps"
+    [editingMode]="!!editingRecord()" [dateExists]="dateExists" [helpSteps]="helpSteps"
     (dateChange)="selectedDate.set($event)" (fieldChange)="onFieldChange($event)" (save)="onConsumptionSave($event)"
     (cancel)="cancelEdit()">
   </app-consumption-input>

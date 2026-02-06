@@ -6,8 +6,9 @@
   </div>
 
   @if (records().length > 0 && familySize() > 0 && displayMode() === 'incremental') {
-  <app-comparison-note [records]="records()" [chartView]="chartView()"
-    (countryCodeChange)="handleCountryCodeChange($event)"></app-comparison-note>
+  <app-comparison-note [records]="records()" [chartView]="chartView()" type="electricity"
+    [electricityCountries]="availableElectricityCountries" (countryCodeChange)="handleCountryCodeChange($event)">
+  </app-comparison-note>
   }
 
   @if (displayMode() === 'total' && unconfirmedMeterChanges().length > 0) {
@@ -28,7 +29,7 @@
       </button>
     </div>
   </div>
-  } @else if (electricityFact()) {
+  } @else if (displayMode() === 'total' && electricityFact()) {
   <div class="notification-card notification-card--info">
     <div class="notification-content">
       <lucide-icon [img]="LightbulbIcon" size="20" class="notification-icon"></lucide-icon>
@@ -36,6 +37,11 @@
         <strong>{{ electricityFact()!.title }}</strong>
         <p>{{ electricityFact()!.message }}</p>
       </div>
+    </div>
+    <div class="notification-actions">
+      <button type="button" class="refresh-btn" (click)="refreshFact()" title="{{ 'CHART.NEW_FACT' | translate }}">
+        ↻
+      </button>
     </div>
   </div>
   }
@@ -103,7 +109,7 @@
   </app-detailed-records>
 
   <app-consumption-input [groups]="consumptionGroups()" [selectedDate]="selectedDate()" [maxDate]="maxDate"
-    [editingMode]="!!editingRecord()" [dateExists]="dateExists()" [helpSteps]="helpSteps"
+    [editingMode]="!!editingRecord()" [dateExists]="dateExists" [helpSteps]="helpSteps"
     [helpTitleKey]="'ELECTRICITY.RECORD_HELP_TITLE'" [noValuesErrorKey]="'ELECTRICITY.PARTIAL_INPUT_ERROR'"
     [incompleteRoomErrorKey]="'ELECTRICITY.INCOMPLETE_INPUT_ERROR'" (dateChange)="onDateChange($event)"
     (fieldChange)="onFieldChange($event)" (save)="onConsumptionSave($event)" (cancel)="cancelEdit()">

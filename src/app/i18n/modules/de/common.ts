@@ -78,7 +78,8 @@ export const common = {
     DISMISS: 'Schließen'
   },
   FACTS: {
-    DID_YOU_KNOW: 'Wussten Sie schon?'
+    DID_YOU_KNOW: 'Wussten Sie schon?',
+    ELECTRICITY_FALLBACK: 'Elektrizität hat das moderne Leben revolutioniert.'
   },
   IMPORT: {
     SUCCESS_TITLE: 'Import erfolgreich',

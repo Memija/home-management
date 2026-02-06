@@ -1,24 +1,29 @@
 import { TestBed } from '@angular/core/testing';
 import { ChartCalculationService } from './chart-calculation.service';
 import { WaterAveragesService } from './water-averages.service';
-import { ConsumptionRecord, DynamicHeatingRecord } from '../models/records.model';
+import { ElectricityAveragesService } from './electricity-averages.service';
+import { ConsumptionRecord, DynamicHeatingRecord, ElectricityRecord } from '../models/records.model';
 import { vi, describe, it, expect, beforeEach } from 'vitest';
 
 describe('ChartCalculationService', () => {
   let service: ChartCalculationService;
   let waterAveragesServiceSpy: { getCountryData: any };
+  let electricityAveragesServiceSpy: { getCountryData: any };
 
   beforeEach(() => {
-    const spy = { getCountryData: vi.fn() };
+    const waterSpy = { getCountryData: vi.fn() };
+    const electricitySpy = { getCountryData: vi.fn() };
 
     TestBed.configureTestingModule({
       providers: [
         ChartCalculationService,
-        { provide: WaterAveragesService, useValue: spy }
+        { provide: WaterAveragesService, useValue: waterSpy },
+        { provide: ElectricityAveragesService, useValue: electricitySpy }
       ]
     });
     service = TestBed.inject(ChartCalculationService);
     waterAveragesServiceSpy = TestBed.inject(WaterAveragesService) as any;
+    electricityAveragesServiceSpy = TestBed.inject(ElectricityAveragesService) as any;
   });
 
   it('should be created', () => {
@@ -191,7 +196,7 @@ describe('ChartCalculationService', () => {
       });
     });
 
-    it('should use default 7 days period for single record', () => {
+    it('should return daily average values for single record', () => {
       waterAveragesServiceSpy.getCountryData.mockReturnValue({
         averageLitersPerPersonPerDay: 10,
         source: 'test',
@@ -203,10 +208,86 @@ describe('ChartCalculationService', () => {
       ];
 
       const result = service.generateComparisonData(records, 1, 'de');
-      expect(result[0].kitchenWarm).toBe(4);
-      expect(result[0].kitchenCold).toBe(6);
-      expect(result[0].bathroomWarm).toBe(24);
-      expect(result[0].bathroomCold).toBe(36);
+      // Daily values: 10 * 0.15 = 1.5 kitchen, 10 * 0.85 = 8.5 bathroom
+      // Kitchen: warm=0.6≈1, cold=0.9≈1
+      // Bathroom: warm=3.4≈3, cold=5.1≈5
+      expect(result[0].kitchenWarm).toBe(1);
+      expect(result[0].kitchenCold).toBe(1);
+      expect(result[0].bathroomWarm).toBe(3);
+      expect(result[0].bathroomCold).toBe(5);
+    });
+  });
+
+  describe('generateElectricityComparisonData', () => {
+    it('should return empty array if processed data is empty', () => {
+      expect(service.generateElectricityComparisonData([], 4, 'DE')).toEqual([]);
+    });
+
+    it('should return empty array if family size is 0', () => {
+      const records: ElectricityRecord[] = [
+        { date: new Date('2023-01-01'), value: 100 }
+      ];
+      expect(service.generateElectricityComparisonData(records, 0, 'DE')).toEqual([]);
+    });
+
+    it('should calculate daily average comparison correctly', () => {
+      electricityAveragesServiceSpy.getCountryData.mockReturnValue({
+        averageKwhPerPersonPerYear: 3652.5, // ~10 kWh/day per person
+        source: 'test',
+        year: 2023
+      });
+
+      const records: ElectricityRecord[] = [
+        { date: new Date('2023-01-01'), value: 100 },
+        { date: new Date('2023-01-08'), value: 150 }
+      ];
+
+      const result = service.generateElectricityComparisonData(records, 2, 'DE');
+
+      expect(electricityAveragesServiceSpy.getCountryData).toHaveBeenCalledWith('DE');
+      // 3652.5 / 365.25 * 2 = 20 kWh/day for family of 2
+      // Result should have 3 records (2 + 1 padded)
+      expect(result.length).toBe(3);
+      expect(result[0].value).toBe(20);
+      expect(result[1].value).toBe(20);
+      expect(result[2].value).toBe(20);
+    });
+
+    it('should pad with extra point at start', () => {
+      electricityAveragesServiceSpy.getCountryData.mockReturnValue({
+        averageKwhPerPersonPerYear: 365.25,
+        source: 'test',
+        year: 2023
+      });
+
+      const records: ElectricityRecord[] = [
+        { date: new Date('2023-01-01'), value: 100 }
+      ];
+
+      const result = service.generateElectricityComparisonData(records, 1, 'DE');
+
+      // 1 record + 1 padded = 2
+      expect(result.length).toBe(2);
+      expect(result[0].value).toBe(1); // 365.25 / 365.25 * 1 = 1
+    });
+
+    it('should preserve dates from original records', () => {
+      electricityAveragesServiceSpy.getCountryData.mockReturnValue({
+        averageKwhPerPersonPerYear: 365.25,
+        source: 'test',
+        year: 2023
+      });
+
+      const records: ElectricityRecord[] = [
+        { date: new Date('2023-01-01'), value: 100 },
+        { date: new Date('2023-01-08'), value: 150 }
+      ];
+
+      const result = service.generateElectricityComparisonData(records, 1, 'DE');
+
+      // Dates should match original records (with padding)
+      expect(result[1].date).toEqual(new Date('2023-01-01'));
+      expect(result[2].date).toEqual(new Date('2023-01-08'));
     });
   });
 
@@ -426,5 +507,92 @@ describe('ChartCalculationService', () => {
 
     // Nov 16 delta: 1000. But isSpike=true -> 0.
     expect((result[0] as any).rooms['room_3']).toBe(0);
+  });
+
+  describe('calculateDailyAverage (unified)', () => {
+    it('should return empty array for empty input regardless of type', () => {
+      expect(service.calculateDailyAverage([], [], 'electricity')).toEqual([]);
+      expect(service.calculateDailyAverage([], [], 'water')).toEqual([]);
+      expect(service.calculateDailyAverage([], [], 'heating')).toEqual([]);
+    });
+
+    it('should normalize electricity data correctly', () => {
+      const incrementalData: any[] = [
+        { date: new Date('2023-01-31'), value: 300 }
+      ];
+      const originalData: any[] = [
+        { date: new Date('2023-01-01'), value: 1000 },
+        { date: new Date('2023-01-31'), value: 1300 }
+      ];
+
+      const result = service.calculateDailyAverage(incrementalData, originalData, 'electricity');
+
+      expect(result.length).toBe(2);
+      expect(result[1]['value']).toBe(10); // 300 / 30 = 10
+      expect((result[1] as any).normalized.raw).toBe(300);
+    });
+
+    it('should normalize water data correctly', () => {
+      const incrementalData: any[] = [
+        { date: new Date('2023-01-11'), kitchenWarm: 100, kitchenCold: 200, bathroomWarm: 50, bathroomCold: 150 }
+      ];
+      const originalData = [
+        { date: new Date('2023-01-01'), kitchenWarm: 0, kitchenCold: 0, bathroomWarm: 0, bathroomCold: 0 },
+        { date: new Date('2023-01-11'), kitchenWarm: 100, kitchenCold: 200, bathroomWarm: 50, bathroomCold: 150 }
+      ];
+
+      const result = service.calculateDailyAverage(incrementalData, originalData, 'water');
+
+      // 10 days interval
+      expect(result[1].kitchenWarm).toBe(10); // 100 / 10
+      expect(result[1].kitchenCold).toBe(20); // 200 / 10
+      expect((result[1] as any).normalized.kitchenWarm).toBe(100);
+    });
+
+    it('should normalize heating data correctly', () => {
+      const incrementalData: any[] = [
+        { date: new Date('2023-01-08'), rooms: { room1: 70, room2: 140 } }
+      ];
+      const originalData: DynamicHeatingRecord[] = [
+        { date: new Date('2023-01-01'), rooms: { room1: 0, room2: 0 } },
+        { date: new Date('2023-01-08'), rooms: { room1: 70, room2: 140 } }
+      ];
+
+      const result = service.calculateDailyAverage(incrementalData, originalData, 'heating');
+
+      // 7 days interval
+      expect((result[1] as any).rooms.room1).toBe(10); // 70 / 7
+      expect((result[1] as any).rooms.room2).toBe(20); // 140 / 7
+      expect((result[1] as any).normalized.room1).toBe(70);
+    });
+
+    it('should pad first record with first original date for all types', () => {
+      const electricityIncremental: any[] = [{ date: new Date('2023-01-08'), value: 70 }];
+      const electricityOriginal: any[] = [
+        { date: new Date('2023-01-01'), value: 1000 },
+        { date: new Date('2023-01-08'), value: 1070 }
+      ];
+
+      const result = service.calculateDailyAverage(electricityIncremental, electricityOriginal, 'electricity');
+
+      expect(result.length).toBe(2);
+      expect(new Date(result[0].date).toISOString().split('T')[0]).toBe('2023-01-01');
+    });
+
+    it('should treat intervals < 0.5 days as 1 day', () => {
+      const incrementalData: any[] = [
+        { date: new Date('2023-01-01T12:00:00'), value: 24 }
+      ];
+      const originalData: any[] = [
+        { date: new Date('2023-01-01T08:00:00'), value: 100 },
+        { date: new Date('2023-01-01T12:00:00'), value: 124 }
+      ];
+
+      const result = service.calculateDailyAverage(incrementalData, originalData, 'electricity');
+
+      // Short intervals (< 0.5 days) are clamped to 1 day minimum to prevent unrealistic daily averages
+      expect(result[1]['value']).toBe(24); // 24 / 1 = 24
+      expect((result[1] as any).normalized.days).toBe(1);
+    });
   });
 });

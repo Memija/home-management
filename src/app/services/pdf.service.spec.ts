@@ -59,6 +59,9 @@ describe('PdfService', () => {
       save: vi.fn(),
       setPage: vi.fn(),
       getNumberOfPages: vi.fn().mockReturnValue(1),
+      setDrawColor: vi.fn(),
+      setLineWidth: vi.fn(),
+      line: vi.fn(),
       internal: {
         pageSize: { width: 297, height: 210 }
       }
@@ -135,6 +138,35 @@ describe('PdfService', () => {
       expect(data[0][6]).toBe('-');
       // Second row difference should be '+4.00'
       expect(data[1][6]).toBe('+4.00');
+    });
+
+    it('should handle meter resets correctly', async () => {
+      const records = [
+        {
+          date: new Date('2023-01-01'),
+          kitchenWarm: 100, kitchenCold: 100,
+          bathroomWarm: 100, bathroomCold: 100
+        }, // Total 400
+        {
+          date: new Date('2023-01-02'),
+          kitchenWarm: 5, kitchenCold: 105, // kitchenWarm reset (100 -> 5)
+          bathroomWarm: 105, bathroomCold: 105
+        } // Total 320.
+        // Real consumption:
+        // kW: 5 (reset), kC: 5
+        // bW: 5, bC: 5
+        // Total Diff: 20
+      ];
+
+      await service.exportWaterToPdf(records, 'test.pdf');
+
+      const callArgs = mockAutoTable.mock.calls[0];
+      const data = callArgs[1].body;
+
+      expect(data.length).toBe(2);
+      // With old logic: 320 - 400 = -80.
+      // With new logic: 5 + 5 + 5 + 5 = 20.
+      expect(data[1][6]).toBe('+20.00');
     });
 
     it('should handle german date formatting', async () => {
@@ -250,6 +282,64 @@ describe('PdfService', () => {
 
       // Should have Date, room columns, Total, Difference
       expect(head.length).toBeGreaterThanOrEqual(5); // Date + 3 rooms + Total + Diff
+    });
+
+    it('should calculate heating differences with resets correctly', async () => {
+      const records = [
+        {
+          date: new Date('2023-01-01'),
+          rooms: { room_1: 100 }
+        },
+        {
+          date: new Date('2023-01-02'),
+          rooms: { room_1: 5 } // Reset 100 -> 5
+        }
+      ];
+      const roomNames = ['Room 1'];
+
+      await service.exportHeatingToPdf(records, roomNames, 'test.pdf');
+
+      const callArgs = mockAutoTable.mock.calls[0];
+      const data = callArgs[1].body;
+
+      // Difference logic: 5 (reset) = +5.00
+      expect(data[1][3]).toBe('+5.00');
+    });
+
+    it('should configure year separator hook', async () => {
+      const records = [
+        {
+          date: new Date('2022-12-31'),
+          rooms: { room_1: 10 }
+        },
+        {
+          date: new Date('2023-01-01'), // New year
+          rooms: { room_1: 20 }
+        }
+      ];
+      const roomNames = ['Room 1'];
+
+      await service.exportHeatingToPdf(records, roomNames, 'test.pdf');
+
+      const callArgs = mockAutoTable.mock.calls[0];
+      const options = callArgs[1];
+
+      expect(options.willDrawCell).toBeInstanceOf(Function);
+
+      // We can try to manually invoke the hook to ensure it doesn't crash
+      const mockHookData = {
+        section: 'body',
+        row: { index: 1 },
+        column: { index: 0 },
+        doc: mockDoc,
+        cell: { y: 50 },
+        table: {}
+      };
+
+      options.willDrawCell(mockHookData);
+
+      // Should have called doc.line because year changed 2022 -> 2023
+      expect(mockDoc.line).toHaveBeenCalled();
     });
   });
 
@@ -470,6 +560,653 @@ describe('PdfService', () => {
       expect(mockDoc.setPage).toHaveBeenCalledWith(1);
       expect(mockDoc.setPage).toHaveBeenCalledWith(2);
       expect(mockDoc.setPage).toHaveBeenCalledWith(3);
+    });
+
+    it('should handle zero difference correctly', async () => {
+      const records = [
+        {
+          date: new Date('2023-01-01'),
+          value: 12500
+        },
+        {
+          date: new Date('2023-01-02'),
+          value: 12500
+        }
+      ];
+
+      await service.exportElectricityToPdf(records, 'test.pdf');
+
+      const callArgs = mockAutoTable.mock.calls[0];
+      const data = callArgs[1].body;
+
+      // Zero difference should show '+0.00'
+      expect(data[1][2]).toBe('+0.00');
+    });
+
+    it('should handle single record correctly', async () => {
+      const records = [
+        {
+          date: new Date('2023-01-01'),
+          value: 1000
+        }
+      ];
+
+      await service.exportElectricityToPdf(records, 'test.pdf');
+
+      const callArgs = mockAutoTable.mock.calls[0];
+      const data = callArgs[1].body;
+
+      expect(data.length).toBe(1);
+      expect(data[0][1]).toBe('1000.00');
+      expect(data[0][2]).toBe('-'); // No previous record for difference
+    });
+
+    it('should handle very large values correctly', async () => {
+      const records = [
+        {
+          date: new Date('2023-01-01'),
+          value: 99999999.99
+        }
+      ];
+
+      await service.exportElectricityToPdf(records, 'test.pdf');
+
+      const callArgs = mockAutoTable.mock.calls[0];
+      const data = callArgs[1].body;
+
+      expect(data[0][1]).toBe('99999999.99');
+    });
+
+    it('should handle zero value correctly', async () => {
+      const records = [
+        {
+          date: new Date('2023-01-01'),
+          value: 0
+        }
+      ];
+
+      await service.exportElectricityToPdf(records, 'test.pdf');
+
+      const callArgs = mockAutoTable.mock.calls[0];
+      const data = callArgs[1].body;
+
+      expect(data[0][1]).toBe('0.00');
+    });
+  });
+
+  describe('exportWaterToPdf - additional edge cases', () => {
+    it('should use default filename when not provided', async () => {
+      const records = [
+        {
+          date: new Date('2023-01-01'),
+          kitchenWarm: 10, kitchenCold: 20,
+          bathroomWarm: 30, bathroomCold: 40
+        }
+      ];
+
+      await service.exportWaterToPdf(records);
+
+      expect(mockDoc.save).toHaveBeenCalledWith('water-consumption.pdf');
+    });
+
+    it('should handle all zero values', async () => {
+      const records = [
+        {
+          date: new Date('2023-01-01'),
+          kitchenWarm: 0, kitchenCold: 0,
+          bathroomWarm: 0, bathroomCold: 0
+        }
+      ];
+
+      await service.exportWaterToPdf(records, 'test.pdf');
+
+      const callArgs = mockAutoTable.mock.calls[0];
+      const data = callArgs[1].body;
+
+      expect(data[0][5]).toBe('0.00'); // Total should be 0
+    });
+
+    it('should handle zero difference correctly', async () => {
+      const records = [
+        {
+          date: new Date('2023-01-01'),
+          kitchenWarm: 10, kitchenCold: 10,
+          bathroomWarm: 10, bathroomCold: 10
+        },
+        {
+          date: new Date('2023-01-02'),
+          kitchenWarm: 10, kitchenCold: 10,
+          bathroomWarm: 10, bathroomCold: 10
+        }
+      ];
+
+      await service.exportWaterToPdf(records, 'test.pdf');
+
+      const callArgs = mockAutoTable.mock.calls[0];
+      const data = callArgs[1].body;
+
+      // Zero difference should show '+0.00'
+      expect(data[1][6]).toBe('+0.00');
+    });
+
+    it('should handle multiple meter resets in single record', async () => {
+      const records = [
+        {
+          date: new Date('2023-01-01'),
+          kitchenWarm: 100, kitchenCold: 200,
+          bathroomWarm: 300, bathroomCold: 400
+        },
+        {
+          date: new Date('2023-01-02'),
+          kitchenWarm: 5, kitchenCold: 10, // Both kitchen meters reset
+          bathroomWarm: 15, bathroomCold: 20 // Both bathroom meters reset
+        }
+      ];
+
+      await service.exportWaterToPdf(records, 'test.pdf');
+
+      const callArgs = mockAutoTable.mock.calls[0];
+      const data = callArgs[1].body;
+
+      // All meters reset: 5 + 10 + 15 + 20 = 50
+      expect(data[1][6]).toBe('+50.00');
+    });
+
+    it('should sort unsorted records by date before calculating differences', async () => {
+      const records = [
+        {
+          date: new Date('2023-01-15'),
+          kitchenWarm: 15, kitchenCold: 15,
+          bathroomWarm: 15, bathroomCold: 15
+        }, // Total 60
+        {
+          date: new Date('2023-01-01'),
+          kitchenWarm: 10, kitchenCold: 10,
+          bathroomWarm: 10, bathroomCold: 10
+        }, // Total 40
+        {
+          date: new Date('2023-01-10'),
+          kitchenWarm: 12, kitchenCold: 12,
+          bathroomWarm: 12, bathroomCold: 12
+        } // Total 48
+      ];
+
+      await service.exportWaterToPdf(records, 'test.pdf');
+
+      const callArgs = mockAutoTable.mock.calls[0];
+      const data = callArgs[1].body;
+
+      // After sorting: Jan 1 (40), Jan 10 (48), Jan 15 (60)
+      expect(data[0][5]).toBe('40.00');
+      expect(data[1][5]).toBe('48.00');
+      expect(data[2][5]).toBe('60.00');
+
+      // Differences should be calculated correctly after sorting
+      expect(data[0][6]).toBe('-');
+      expect(data[1][6]).toBe('+8.00'); // 48 - 40
+      expect(data[2][6]).toBe('+12.00'); // 60 - 48
+    });
+
+    it('should handle single record correctly', async () => {
+      const records = [
+        {
+          date: new Date('2023-01-01'),
+          kitchenWarm: 10, kitchenCold: 20,
+          bathroomWarm: 30, bathroomCold: 40
+        }
+      ];
+
+      await service.exportWaterToPdf(records, 'test.pdf');
+
+      const callArgs = mockAutoTable.mock.calls[0];
+      const data = callArgs[1].body;
+
+      expect(data.length).toBe(1);
+      expect(data[0][5]).toBe('100.00'); // Total
+      expect(data[0][6]).toBe('-'); // No previous record
+    });
+
+    it('should handle very large meter values correctly', async () => {
+      const records = [
+        {
+          date: new Date('2023-01-01'),
+          kitchenWarm: 9999999, kitchenCold: 9999999,
+          bathroomWarm: 9999999, bathroomCold: 9999999
+        }
+      ];
+
+      await service.exportWaterToPdf(records, 'test.pdf');
+
+      const callArgs = mockAutoTable.mock.calls[0];
+      const data = callArgs[1].body;
+
+      expect(data[0][5]).toBe('39999996.00');
+    });
+
+    it('should add page numbers to all pages', async () => {
+      mockDoc.getNumberOfPages.mockReturnValue(5);
+
+      const records = [
+        {
+          date: new Date('2023-01-01'),
+          kitchenWarm: 10, kitchenCold: 20,
+          bathroomWarm: 30, bathroomCold: 40
+        }
+      ];
+
+      await service.exportWaterToPdf(records, 'test.pdf');
+
+      // Should call setPage for each page
+      expect(mockDoc.setPage).toHaveBeenCalledWith(1);
+      expect(mockDoc.setPage).toHaveBeenCalledWith(5);
+    });
+
+    it('should use German difference label when language is German', async () => {
+      mockLanguageService.currentLang.mockReturnValue('de');
+
+      const records = [
+        {
+          date: new Date('2023-01-01'),
+          kitchenWarm: 10, kitchenCold: 10,
+          bathroomWarm: 10, bathroomCold: 10
+        }
+      ];
+
+      await service.exportWaterToPdf(records, 'test.pdf');
+
+      const callArgs = mockAutoTable.mock.calls[0];
+      const headers = callArgs[1].head[0];
+
+      // Last header should be 'Differenz'
+      expect(headers[headers.length - 1]).toBe('Differenz');
+    });
+
+    it('should use English difference label when language is English', async () => {
+      mockLanguageService.currentLang.mockReturnValue('en');
+
+      const records = [
+        {
+          date: new Date('2023-01-01'),
+          kitchenWarm: 10, kitchenCold: 10,
+          bathroomWarm: 10, bathroomCold: 10
+        }
+      ];
+
+      await service.exportWaterToPdf(records, 'test.pdf');
+
+      const callArgs = mockAutoTable.mock.calls[0];
+      const headers = callArgs[1].head[0];
+
+      // Last header should be 'Difference'
+      expect(headers[headers.length - 1]).toBe('Difference');
+    });
+  });
+
+  describe('exportHeatingToPdf - additional edge cases', () => {
+    it('should use default filename when not provided', async () => {
+      const records = [
+        {
+          date: new Date('2023-01-01'),
+          rooms: { room_1: 10 }
+        }
+      ];
+      const roomNames = ['Room 1'];
+
+      await service.exportHeatingToPdf(records, roomNames);
+
+      expect(mockDoc.save).toHaveBeenCalledWith('heating-consumption.pdf');
+    });
+
+    it('should handle single record correctly', async () => {
+      const records = [
+        {
+          date: new Date('2023-01-01'),
+          rooms: { room_1: 50, room_2: 50 }
+        }
+      ];
+      const roomNames = ['Room 1', 'Room 2'];
+
+      await service.exportHeatingToPdf(records, roomNames, 'test.pdf');
+
+      const callArgs = mockAutoTable.mock.calls[0];
+      const data = callArgs[1].body;
+
+      expect(data.length).toBe(1);
+      expect(data[0][3]).toBe('100.00'); // Total
+      expect(data[0][4]).toBe('-'); // No previous record
+    });
+
+    it('should handle german date formatting', async () => {
+      mockLanguageService.currentLang.mockReturnValue('de');
+
+      const records = [
+        {
+          date: new Date('2023-12-31'),
+          rooms: { room_1: 10 }
+        }
+      ];
+      const roomNames = ['Room 1'];
+
+      await service.exportHeatingToPdf(records, roomNames, 'test.pdf');
+
+      const textCalls = mockDoc.text.mock.calls;
+      const generatedText = textCalls.find((args: any) => typeof args[0] === 'string' && args[0].startsWith('Erstellt am'));
+      expect(generatedText).toBeDefined();
+    });
+
+    it('should handle zero difference correctly', async () => {
+      const records = [
+        {
+          date: new Date('2023-01-01'),
+          rooms: { room_1: 100 }
+        },
+        {
+          date: new Date('2023-01-02'),
+          rooms: { room_1: 100 }
+        }
+      ];
+      const roomNames = ['Room 1'];
+
+      await service.exportHeatingToPdf(records, roomNames, 'test.pdf');
+
+      const callArgs = mockAutoTable.mock.calls[0];
+      const data = callArgs[1].body;
+
+      // Zero difference should show '+0.00'
+      expect(data[1][3]).toBe('+0.00');
+    });
+
+    it('should handle empty rooms object', async () => {
+      const records = [
+        {
+          date: new Date('2023-01-01'),
+          rooms: {}
+        }
+      ];
+      const roomNames: string[] = [];
+
+      await service.exportHeatingToPdf(records, roomNames, 'test.pdf');
+
+      const callArgs = mockAutoTable.mock.calls[0];
+      const data = callArgs[1].body;
+
+      expect(data.length).toBe(1);
+      expect(data[0][1]).toBe('0.00'); // Total of empty rooms is 0
+    });
+
+    it('should handle new room added between records', async () => {
+      const records: Array<{ date: Date; rooms: Record<string, number> }> = [
+        {
+          date: new Date('2023-01-01'),
+          rooms: { room_1: 100 }
+        },
+        {
+          date: new Date('2023-01-02'),
+          rooms: { room_1: 110, room_2: 50 } // room_2 is new
+        }
+      ];
+      const roomNames = ['Room 1', 'Room 2'];
+
+      await service.exportHeatingToPdf(records, roomNames, 'test.pdf');
+
+      const callArgs = mockAutoTable.mock.calls[0];
+      const data = callArgs[1].body;
+
+      // Difference: room_1 (110-100=10) + room_2 (50-0=50) = 60
+      expect(data[1][4]).toBe('+60.00');
+    });
+
+    it('should handle all zero room values', async () => {
+      const records = [
+        {
+          date: new Date('2023-01-01'),
+          rooms: { room_1: 0, room_2: 0, room_3: 0 }
+        }
+      ];
+      const roomNames = ['Room 1', 'Room 2', 'Room 3'];
+
+      await service.exportHeatingToPdf(records, roomNames, 'test.pdf');
+
+      const callArgs = mockAutoTable.mock.calls[0];
+      const data = callArgs[1].body;
+
+      expect(data[0][4]).toBe('0.00'); // Total column
+      expect(data[0][5]).toBe('-'); // Difference column
+    });
+
+    it('should handle multiple resets across different rooms', async () => {
+      const records = [
+        {
+          date: new Date('2023-01-01'),
+          rooms: { room_1: 100, room_2: 200 }
+        },
+        {
+          date: new Date('2023-01-02'),
+          rooms: { room_1: 5, room_2: 10 } // Both reset
+        }
+      ];
+      const roomNames = ['Room 1', 'Room 2'];
+
+      await service.exportHeatingToPdf(records, roomNames, 'test.pdf');
+
+      const callArgs = mockAutoTable.mock.calls[0];
+      const data = callArgs[1].body;
+
+      // Resets: room_1 (5) + room_2 (10) = 15
+      expect(data[1][4]).toBe('+15.00');
+    });
+
+    it('should sort records by date before exporting', async () => {
+      const records = [
+        {
+          date: new Date('2023-01-15'),
+          rooms: { room_1: 150 }
+        },
+        {
+          date: new Date('2023-01-01'),
+          rooms: { room_1: 100 }
+        },
+        {
+          date: new Date('2023-01-10'),
+          rooms: { room_1: 120 }
+        }
+      ];
+      const roomNames = ['Room 1'];
+
+      await service.exportHeatingToPdf(records, roomNames, 'test.pdf');
+
+      const callArgs = mockAutoTable.mock.calls[0];
+      const data = callArgs[1].body;
+
+      // Should be sorted: Jan 1 (100), Jan 10 (120), Jan 15 (150)
+      expect(data[0][2]).toBe('100.00');
+      expect(data[1][2]).toBe('120.00');
+      expect(data[2][2]).toBe('150.00');
+    });
+
+    it('should add page numbers to all pages', async () => {
+      mockDoc.getNumberOfPages.mockReturnValue(4);
+
+      const records = [
+        {
+          date: new Date('2023-01-01'),
+          rooms: { room_1: 10 }
+        }
+      ];
+      const roomNames = ['Room 1'];
+
+      await service.exportHeatingToPdf(records, roomNames, 'test.pdf');
+
+      // Should call setPage for each page
+      expect(mockDoc.setPage).toHaveBeenCalledWith(1);
+      expect(mockDoc.setPage).toHaveBeenCalledWith(4);
+    });
+
+    it('should handle missing room value as zero', async () => {
+      const records = [
+        {
+          date: new Date('2023-01-01'),
+          rooms: { room_1: 100 } // room_2 missing
+        }
+      ];
+      const roomNames = ['Room 1', 'Room 2'];
+
+      await service.exportHeatingToPdf(records, roomNames, 'test.pdf');
+
+      const callArgs = mockAutoTable.mock.calls[0];
+      const data = callArgs[1].body;
+
+      // room_2 should show as 0.00
+      expect(data[0][2]).toBe('0.00');
+      // Total should be 100
+      expect(data[0][3]).toBe('100.00');
+    });
+
+    it('should use German difference label when language is German', async () => {
+      mockLanguageService.currentLang.mockReturnValue('de');
+
+      const records = [
+        {
+          date: new Date('2023-01-01'),
+          rooms: { room_1: 10 }
+        }
+      ];
+      const roomNames = ['Room 1'];
+
+      await service.exportHeatingToPdf(records, roomNames, 'test.pdf');
+
+      const callArgs = mockAutoTable.mock.calls[0];
+      const headers = callArgs[1].head[0];
+
+      // Last header should be 'Differenz'
+      expect(headers[headers.length - 1]).toBe('Differenz');
+    });
+
+    it('should apply correct styling for heating theme', async () => {
+      const records = [
+        {
+          date: new Date('2023-01-01'),
+          rooms: { room_1: 10 }
+        }
+      ];
+      const roomNames = ['Room 1'];
+
+      await service.exportHeatingToPdf(records, roomNames, 'test.pdf');
+
+      const callArgs = mockAutoTable.mock.calls[0];
+      const options = callArgs[1];
+
+      // Verify orange theme colors for heating
+      expect(options.headStyles.fillColor).toEqual([245, 124, 0]);
+      expect(options.headStyles.textColor).toBe(255);
+      expect(options.theme).toBe('striped');
+    });
+
+    it('should not draw year separator line for first row', async () => {
+      const records = [
+        {
+          date: new Date('2023-01-01'),
+          rooms: { room_1: 10 }
+        }
+      ];
+      const roomNames = ['Room 1'];
+
+      // Reset line mock
+      mockDoc.line.mockReset();
+
+      await service.exportHeatingToPdf(records, roomNames, 'test.pdf');
+
+      const callArgs = mockAutoTable.mock.calls[0];
+      const options = callArgs[1];
+
+      // Invoke the hook for first row
+      const mockHookData = {
+        section: 'body',
+        row: { index: 0 },
+        column: { index: 0 },
+        doc: mockDoc,
+        cell: { y: 50 },
+        table: {}
+      };
+
+      options.willDrawCell(mockHookData);
+
+      // Should not draw line for first row
+      expect(mockDoc.line).not.toHaveBeenCalled();
+    });
+
+    it('should not draw year separator line when year is same', async () => {
+      const records = [
+        {
+          date: new Date('2023-01-01'),
+          rooms: { room_1: 10 }
+        },
+        {
+          date: new Date('2023-06-15'),
+          rooms: { room_1: 20 }
+        }
+      ];
+      const roomNames = ['Room 1'];
+
+      // Reset line mock
+      mockDoc.line.mockReset();
+
+      await service.exportHeatingToPdf(records, roomNames, 'test.pdf');
+
+      const callArgs = mockAutoTable.mock.calls[0];
+      const options = callArgs[1];
+
+      // Invoke the hook for second row, same year
+      const mockHookData = {
+        section: 'body',
+        row: { index: 1 },
+        column: { index: 0 },
+        doc: mockDoc,
+        cell: { y: 60 },
+        table: {}
+      };
+
+      options.willDrawCell(mockHookData);
+
+      // Should not draw line since same year
+      expect(mockDoc.line).not.toHaveBeenCalled();
+    });
+
+    it('should not draw line for header section', async () => {
+      const records = [
+        {
+          date: new Date('2022-12-31'),
+          rooms: { room_1: 10 }
+        },
+        {
+          date: new Date('2023-01-01'),
+          rooms: { room_1: 20 }
+        }
+      ];
+      const roomNames = ['Room 1'];
+
+      // Reset line mock
+      mockDoc.line.mockReset();
+
+      await service.exportHeatingToPdf(records, roomNames, 'test.pdf');
+
+      const callArgs = mockAutoTable.mock.calls[0];
+      const options = callArgs[1];
+
+      // Invoke the hook for header section
+      const mockHookData = {
+        section: 'head', // Not 'body'
+        row: { index: 1 },
+        column: { index: 0 },
+        doc: mockDoc,
+        cell: { y: 50 },
+        table: {}
+      };
+
+      options.willDrawCell(mockHookData);
+
+      // Should not draw line for header
+      expect(mockDoc.line).not.toHaveBeenCalled();
     });
   });
 });

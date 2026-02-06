@@ -1,20 +1,23 @@
 import { Injectable, inject } from '@angular/core';
 import { WaterAveragesService } from './water-averages.service';
-import { ConsumptionRecord, DynamicHeatingRecord, CombinedData, ComparisonData } from '../models/records.model';
+import { ElectricityAveragesService } from './electricity-averages.service';
+import { ConsumptionRecord, DynamicHeatingRecord, CombinedData, ComparisonData, ElectricityRecord } from '../models/records.model';
 
 @Injectable({
   providedIn: 'root'
 })
 export class ChartCalculationService {
   private waterAveragesService = inject(WaterAveragesService);
+  private electricityAveragesService = inject(ElectricityAveragesService);
 
   /**
    * Calculate incremental (delta) data between consecutive readings
    */
-  calculateIncrementalData(recs: (ConsumptionRecord | DynamicHeatingRecord)[], ignoredSpikes?: { date: string, roomId: string }[]): CombinedData[] {
+  calculateIncrementalData(recs: (ConsumptionRecord | DynamicHeatingRecord | ElectricityRecord)[], ignoredSpikes?: { date: string, roomId: string }[]): CombinedData[] {
     if (recs.length <= 1) return [];
 
     const incrementalData: CombinedData[] = [];
+    // Start from 1, comparing with i-1. The first record (index 0) is the baseline, so it doesn't get a bar.
     for (let i = 1; i < recs.length; i++) {
       const current = recs[i];
       const previous = recs[i - 1];
@@ -24,15 +27,13 @@ export class ChartCalculationService {
       const incremental: CombinedData = { date: current.date };
 
       // Check for nested 'rooms' object (DynamicHeatingRecord)
-      if ('rooms' in current && 'rooms' in previous) {
+      if ('rooms' in current) {
         // Handle dynamic heating record
         const currRooms = (current as DynamicHeatingRecord).rooms;
-        const prevRooms = (previous as DynamicHeatingRecord).rooms;
+        const prevRooms = (previous as DynamicHeatingRecord)?.rooms || {};
         const incRooms: Record<string, number> = {};
 
         // Calculate delta for each room
-        // When currVal < prevVal, it indicates a meter reset (e.g., new year)
-        // In that case, use currVal as the consumption since the reset
         Object.keys(currRooms).forEach(roomId => {
           // Check if this specific record/room is a confirmed spike
           const isSpike = ignoredSpikes?.some(s => s.date === currentDateStr && s.roomId === roomId);
@@ -44,6 +45,7 @@ export class ChartCalculationService {
 
           const currVal = currRooms[roomId] || 0;
           const prevVal = prevRooms[roomId] || 0;
+
           if (currVal < prevVal) {
             // Meter reset detected - current value IS the consumption since reset
             incRooms[roomId] = currVal;
@@ -52,21 +54,36 @@ export class ChartCalculationService {
           }
         });
 
-        // Add rooms to incremental data (type assertion needed as CombinedData doesn't explicitly have rooms yet, but will work at runtime)
+        // Add rooms to incremental data
         (incremental as any).rooms = incRooms;
       } else {
-        // Handle flat records (ConsumptionRecord or legacy HeatingRecord)
+        // Handle flat records (ConsumptionRecord or ElectricityRecord)
         const currentObj = current as unknown as Record<string, unknown>;
-        const previousObj = previous as unknown as Record<string, unknown>;
+        const previousObj = (previous as unknown as Record<string, unknown>) || {};
 
-        Object.keys(current).forEach(key => {
-          const currVal = currentObj[key];
-          const prevVal = previousObj[key];
+        // Handle ElectricityRecord explicitly or generic logic
+        if ('value' in current) {
+          const currVal = (current as unknown as ElectricityRecord).value;
+          const prevVal = 'value' in (previous as object) ? (previous as unknown as ElectricityRecord).value : 0;
 
-          if (key !== 'date' && typeof currVal === 'number' && typeof prevVal === 'number') {
-            incremental[key] = Math.max(0, currVal - prevVal);
+          if (currVal < prevVal) {
+            // Reset detected
+            incremental['value'] = currVal;
+          } else {
+            incremental['value'] = currVal - prevVal;
           }
-        });
+        } else {
+          // Water consumption logic (generic keys)
+          Object.keys(current).forEach(key => {
+            const currVal = currentObj[key];
+            const prevVal = previousObj[key] ?? 0;
+
+            if (key !== 'date' && typeof currVal === 'number') {
+              const pVal = prevVal as number;
+              incremental[key] = Math.max(0, currVal - pVal);
+            }
+          });
+        }
       }
 
       incrementalData.push(incremental);
@@ -121,22 +138,21 @@ export class ChartCalculationService {
     const countryData = this.waterAveragesService.getCountryData(country);
     const averageLitersPerPersonPerDay = countryData.averageLitersPerPersonPerDay;
 
-    let totalDays = 0;
-    if (processedData.length > 1) {
-      const firstDate = new Date(processedData[0].date).getTime();
-      const lastDate = new Date(processedData[processedData.length - 1].date).getTime();
-      totalDays = Math.round((lastDate - firstDate) / (1000 * 60 * 60 * 24));
-    }
-    const averagePeriod = processedData.length > 1 ? totalDays / (processedData.length - 1) : 7;
+    // We are now working with Daily Averages, so comparison is simple/direct
+    // "processedData" passed here might be the incremental data.
+    // If we want to show comparison line on the Daily Average chart,
+    // the value should just be the daily average (Liters/Person/Day * FamilySize).
+
+    const dailyTotal = averageLitersPerPersonPerDay * familySize;
+
+    // We still maintain the object structure matching ComparisonData
 
     return processedData.map((current) => {
+      // Direct daily average values
       const comparison: ComparisonData = { date: current.date };
-      const totalConsumption = averageLitersPerPersonPerDay * familySize * averagePeriod;
 
-      // Distribute proportionally: Kitchen 15%, Bathroom 85%
-      // Within each: Warm 40%, Cold 60%
-      const kitchenTotal = totalConsumption * 0.15;
-      const bathroomTotal = totalConsumption * 0.85;
+      const kitchenTotal = dailyTotal * 0.15;
+      const bathroomTotal = dailyTotal * 0.85;
 
       comparison.kitchenWarm = Math.round(kitchenTotal * 0.4);
       comparison.kitchenCold = Math.round(kitchenTotal * 0.6);
@@ -339,7 +355,135 @@ export class ChartCalculationService {
     return adjustedRecords;
   }
 
+  /**
+   * Generate comparison data based on country electricity averages
+   */
+  generateElectricityComparisonData(processedData: ElectricityRecord[], familySize: number, country: string): ElectricityRecord[] {
+    if (processedData.length === 0 || familySize === 0) return [];
+
+    const countryData = this.electricityAveragesService.getCountryData(country);
+    const averageKwhPerPersonPerYear = countryData.averageKwhPerPersonPerYear;
+
+    // Daily average comparison
+    // (Avg / 365.25) * FamilySize
+    const dailyTotal = (averageKwhPerPersonPerYear / 365.25) * familySize;
+
+    const comparisonVal = Math.round(dailyTotal);
+
+    const result = processedData.map((current) => {
+      return {
+        date: current.date,
+        value: comparisonVal // Constant daily average
+      };
+    });
+
+    // Pad with one extra point at the start to match the normalized data length (heuristic for first data point)
+    if (result.length > 0) {
+      result.unshift({ ...result[0] });
+    }
+
+    return result;
+  }
+
+  /**
+   * Normalize incremental data to DAILY AVERAGE
+   * Unified function that handles electricity, water, and heating data types
+   * @param incrementalData - The incremental consumption data
+   * @param originalData - Original records for date calculations
+   * @param type - The type of data: 'electricity' | 'water' | 'heating'
+   */
+  calculateDailyAverage(
+    incrementalData: CombinedData[],
+    originalData: (ElectricityRecord | ConsumptionRecord | DynamicHeatingRecord)[],
+    type: 'electricity' | 'water' | 'heating'
+  ): CombinedData[] {
+    if (incrementalData.length === 0) return incrementalData;
+
+    // Deep copy to avoid mutating original - use structuredClone for performance
+    const normalized = structuredClone(incrementalData);
+
+    for (let i = 0; i < normalized.length; i++) {
+      const endRecord = originalData[i + 1];
+      const startRecord = originalData[i];
+
+      if (!endRecord || !startRecord) continue;
+
+      const endDate = new Date(endRecord.date).getTime();
+      const startDate = new Date(startRecord.date).getTime();
+
+      let daysDiff = (endDate - startDate) / (1000 * 3600 * 24);
+      if (daysDiff <= 0.5) daysDiff = 1;
+
+      const record = normalized[i] as any;
+      record.normalized = { days: daysDiff };
+
+      // Apply type-specific normalization
+      switch (type) {
+        case 'electricity':
+          this.normalizeElectricityRecord(record, daysDiff);
+          break;
+        case 'water':
+          this.normalizeWaterRecord(record, daysDiff);
+          break;
+        case 'heating':
+          this.normalizeHeatingRecord(record, daysDiff);
+          break;
+      }
+    }
+
+    // Padding logic: prepend first record with updated date
+    if (normalized.length > 0 && originalData.length > 0) {
+      const paddedRecord = structuredClone(normalized[0]);
+      paddedRecord.date = originalData[0].date;
+      normalized.unshift(paddedRecord);
+    }
+
+    return normalized;
+  }
+
+  /**
+   * Normalize a single electricity record to daily average
+   */
+  private normalizeElectricityRecord(record: any, daysDiff: number): void {
+    const val = record['value'];
+    if (typeof val === 'number') {
+      const dailyAvg = val / daysDiff;
+      record['value'] = Math.round(dailyAvg);
+      record.normalized.raw = val;
+    }
+  }
+
+  /**
+   * Normalize a single water record to daily average
+   */
+  private normalizeWaterRecord(record: any, daysDiff: number): void {
+    const fields = ['kitchenWarm', 'kitchenCold', 'bathroomWarm', 'bathroomCold'];
+    fields.forEach(field => {
+      if (typeof record[field] === 'number') {
+        const rawVal = record[field];
+        record[field] = Math.round(rawVal / daysDiff);
+        record.normalized[field] = rawVal;
+      }
+    });
+  }
+
+  /**
+   * Normalize a single heating record to daily average
+   */
+  private normalizeHeatingRecord(record: any, daysDiff: number): void {
+    if (record.rooms) {
+      Object.keys(record.rooms).forEach(roomId => {
+        const rawVal = record.rooms[roomId];
+        if (typeof rawVal === 'number') {
+          record.rooms[roomId] = Math.round(rawVal / daysDiff);
+          record.normalized[roomId] = rawVal;
+        }
+      });
+    }
+  }
+
   private calculateTotal(record: ConsumptionRecord): number {
     return record.kitchenWarm + record.kitchenCold + record.bathroomWarm + record.bathroomCold;
   }
 }
+

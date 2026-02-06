@@ -100,7 +100,7 @@
       {{ valuesNoteKey() | translate }}
     </p>
     }
-    @if (hasDetails()) {
+    @if (allowCollapse()) {
     <button type="button" class="collapse-toggle" (click)="toggleCollapse()"
       title="{{ (isCollapsed() ? 'HOME.EXPAND' : 'HOME.COLLAPSE') | translate }}">
       <lucide-icon [img]="isCollapsed() ? ChevronDownIcon : ChevronUpIcon" size="20"></lucide-icon>

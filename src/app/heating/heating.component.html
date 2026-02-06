@@ -44,13 +44,18 @@
         <p>{{ heatingFact()!.message }}</p>
       </div>
     </div>
+    <div class="notification-actions">
+      <button type="button" class="refresh-btn" (click)="refreshFact()" title="{{ 'CHART.NEW_FACT' | translate }}">
+        ↻
+      </button>
+    </div>
   </div>
   }
 
   <app-consumption-chart [data]="chartRecords()" [currentView]="chartView()" [onViewChange]="onChartViewChange"
     [chartType]="'heating'" [displayMode]="displayMode()" [onDisplayModeChange]="onDisplayModeChange"
     [roomNames]="chartRoomNames()" [roomIds]="chartRoomIds()" [roomColors]="chartRoomColors()"
-    [country]="selectedCountryCode()" [ignoredSpikes]="confirmedSpikes()">
+    [country]="selectedCountryCode()" [ignoredSpikes]="confirmedSpikes()" [helpSteps]="chartHelpSteps">
   </app-consumption-chart>
 
   <app-detailed-records [records]="records()" [calculateTotalFn]="calculateTotal" [valuesNoteKey]="''"

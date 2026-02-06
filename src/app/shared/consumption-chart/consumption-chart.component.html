@@ -20,7 +20,8 @@
           {{ 'CHART.DISPLAY_MODE_INCREMENTAL' | translate }}
         </button>
       </div>
-      @if ((chartType === 'water' && displayMode() === 'incremental') || chartType === 'heating') {
+      @if (((chartType === 'water' || chartType === 'electricity') && displayMode() === 'incremental') || chartType ===
+      'heating') {
       <label class="trendline-toggle" for="show-trendline" [class.disabled]="!hasSufficientDataForTrendline()">
         <input id="show-trendline" type="checkbox" [checked]="showTrendline()" (change)="toggleTrendline()"
           [disabled]="!hasSufficientDataForTrendline()">
@@ -34,7 +35,7 @@
         }
       </label>
       }
-      @if (chartType === 'water' && displayMode() === 'incremental') {
+      @if ((chartType === 'water' || chartType === 'electricity') && displayMode() === 'incremental') {
       <label class="trendline-toggle" for="show-average-comparison"
         [class.disabled]="familySize() === 0 || !hasSufficientDataForComparison()">
         <input id="show-average-comparison" type="checkbox" [checked]="showAverageComparison()"
@@ -72,6 +73,7 @@
         }
       </label>
       }
+      @if (chartType !== 'electricity') {
       <div class="chart-filters">
         <button type="button" [class.active]="currentView() === 'total'" (click)="setView('total')">
           <lucide-icon [img]="BarChart3Icon" size="16"></lucide-icon>
@@ -92,6 +94,7 @@
         </button>
         }
       </div>
+      }
       <button type="button" class="reset-zoom-btn" (click)="resetZoom()" title="{{ 'CHART.RESET_ZOOM' | translate }}">
         <lucide-icon [img]="ZoomInIcon" size="16"></lucide-icon>
         {{ 'CHART.RESET_ZOOM' | translate }}

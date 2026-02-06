@@ -107,9 +107,40 @@ export class PdfService {
       let difference = '-';
 
       if (index > 0) {
-        const prevTotal = calculateWaterTotal(sortedRecords[index - 1]);
-        const diff = total - prevTotal;
-        difference = (diff >= 0 ? '+' : '') + diff.toFixed(2);
+        const prevRecord = sortedRecords[index - 1];
+
+        // Calculate difference for each meter individually to handle resets
+        let totalDiff = 0;
+
+        // Kitchen Warm
+        if (record.kitchenWarm < prevRecord.kitchenWarm) {
+          totalDiff += record.kitchenWarm; // Reset assumed
+        } else {
+          totalDiff += record.kitchenWarm - prevRecord.kitchenWarm;
+        }
+
+        // Kitchen Cold
+        if (record.kitchenCold < prevRecord.kitchenCold) {
+          totalDiff += record.kitchenCold; // Reset assumed
+        } else {
+          totalDiff += record.kitchenCold - prevRecord.kitchenCold;
+        }
+
+        // Bathroom Warm
+        if (record.bathroomWarm < prevRecord.bathroomWarm) {
+          totalDiff += record.bathroomWarm; // Reset assumed
+        } else {
+          totalDiff += record.bathroomWarm - prevRecord.bathroomWarm;
+        }
+
+        // Bathroom Cold
+        if (record.bathroomCold < prevRecord.bathroomCold) {
+          totalDiff += record.bathroomCold; // Reset assumed
+        } else {
+          totalDiff += record.bathroomCold - prevRecord.bathroomCold;
+        }
+
+        difference = (totalDiff >= 0 ? '+' : '') + totalDiff.toFixed(2);
       }
 
       return [
@@ -218,11 +249,13 @@ export class PdfService {
       new Date(a.date).getTime() - new Date(b.date).getTime()
     );
 
-    // Table headers - Date, dynamic rooms, Total
+    // Table headers - Date, dynamic rooms, Total, Difference
+    const differenceLabel = this.languageService.currentLang() === 'de' ? 'Differenz' : 'Difference';
     const headers = [
       this.languageService.translate('HOME.SELECT_DATE') || 'Date',
       ...roomNames,
-      this.languageService.translate('HOME.TOTAL')
+      this.languageService.translate('HOME.TOTAL'),
+      differenceLabel
     ];
 
     // Calculate total for a record
@@ -230,17 +263,44 @@ export class PdfService {
       Object.values(record.rooms).reduce((sum, val) => sum + (val || 0), 0);
 
     // Table data
-    const data = sortedRecords.map(record => {
+    const data = sortedRecords.map((record, index) => {
       const total = calculateTotal(record);
       const roomValues = roomNames.map((_, index) => {
         const roomId = Object.keys(record.rooms)[index];
         return (record.rooms[roomId] || 0).toFixed(2);
       });
 
+      let difference = '-';
+      if (index > 0) {
+        const prevRecord = sortedRecords[index - 1];
+        let totalDiff = 0;
+
+        // Calculate difference per room to properly handle resets
+        const allRoomIds = new Set([
+          ...Object.keys(record.rooms),
+          ...Object.keys(prevRecord.rooms)
+        ]);
+
+        allRoomIds.forEach(roomId => {
+          const currVal = record.rooms[roomId] || 0;
+          const prevVal = prevRecord.rooms[roomId] || 0;
+
+          if (currVal < prevVal) {
+            // Reset detected
+            totalDiff += currVal;
+          } else {
+            totalDiff += currVal - prevVal;
+          }
+        });
+
+        difference = (totalDiff >= 0 ? '+' : '') + totalDiff.toFixed(2);
+      }
+
       return [
         this.formatDate(record.date),
         ...roomValues,
-        total.toFixed(2)
+        total.toFixed(2),
+        difference
       ];
     });
 
@@ -254,6 +314,8 @@ export class PdfService {
     });
     // Total column with bold styling
     columnStyles[String(roomNames.length + 1)] = { cellWidth: 'auto', halign: 'right', fontStyle: 'bold' };
+    // Difference column
+    columnStyles[String(roomNames.length + 2)] = { cellWidth: 'auto', halign: 'right' };
 
     // Add table using autoTable function
     autoTable(doc, {
@@ -270,7 +332,30 @@ export class PdfService {
         fontSize: 9,
         cellPadding: 3
       },
-      columnStyles
+      columnStyles,
+      // Add horizontal line when year changes
+      willDrawCell: (data: any) => {
+        if (data.section === 'body' && data.row.index > 0 && data.column.index === 0) {
+          const currentRecord = sortedRecords[data.row.index];
+          const prevRecord = sortedRecords[data.row.index - 1];
+
+          const currentYear = new Date(currentRecord.date).getFullYear();
+          const prevYear = new Date(prevRecord.date).getFullYear();
+
+          if (currentYear !== prevYear) {
+            // Draw line above specific row cells
+            // Note: willDrawCell is called for each cell. We can just draw a line at the top of the cell.
+            // But simpler to just draw one line across the page width at the Y position.
+            // We need to be careful not to draw it multiple times (once per cell).
+            // Checking data.column.index === 0 ensures we do it only once per row.
+            const doc = data.doc;
+            doc.setDrawColor(150, 150, 150); // Grey line
+            doc.setLineWidth(0.5);
+            // data.cell.y is the top y-coordinate of the current cell
+            doc.line(14, data.cell.y, doc.internal.pageSize.width - 14, data.cell.y);
+          }
+        }
+      }
     });
 
     // Add page numbers after table is complete - this ensures correct total page count

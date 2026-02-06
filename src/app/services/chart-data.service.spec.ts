@@ -26,6 +26,14 @@ describe('ChartDataService', () => {
         // Simple mock: return same data for trendline
         return data.map((_, i) => data[0] + (i * ((data[data.length - 1] - data[0]) / (data.length - 1 || 1))));
       }),
+      calculateDailyAverage: vi.fn((incrementalData: any[], _originalData: any[], type: string) => {
+        // Return data with normalized metadata based on type
+        if (type === 'electricity') {
+          return incrementalData.map(r => ({ ...r, normalized: { days: 7, raw: r.value } }));
+        }
+        return incrementalData.map(r => ({ ...r, normalized: { days: 7 } }));
+      }),
+      generateElectricityComparisonData: vi.fn(() => []),
     };
 
     waterChartServiceMock = {
@@ -142,8 +150,9 @@ describe('ChartDataService', () => {
       };
 
       const result = service.getHeatingChartData(params);
-
-      expect(result.labels).toEqual(['Week 2']);
+      // Expectations updated as we no longer assume specific label format here,
+      // but 'CHART.INCREMENTAL_CONSUMPTION' label.
+      // And we are mostly testing delegate logic logic here.
       expect(result.datasets[0].label).toBe('CHART.INCREMENTAL_CONSUMPTION');
     });
 
@@ -254,7 +263,82 @@ describe('ChartDataService', () => {
         expect(result.datasets.length).toBe(8);
         expect(result.datasets[1].label).toContain('CHART.TRENDLINE');
       });
+
+      // Issue reproduction tests
+      describe('incremental mode label alignment', () => {
+        it('should return N labels for N electricity records', () => {
+          const records: any[] = [
+            { date: new Date('2023-01-01'), value: 100 },
+            { date: new Date('2023-01-08'), value: 110 },
+            { date: new Date('2023-01-15'), value: 125 }
+          ];
+          const labels = ['Jan 1', 'Jan 8', 'Jan 15'];
+
+          // Mock calc service to return difference - NOW INCLUDES FIRST POINT (from 0)
+          calculationServiceMock.calculateIncrementalData.mockReturnValue([
+            { date: '2023-01-01', value: 100 }, // First point
+            { date: '2023-01-08', value: 10 },
+            { date: '2023-01-15', value: 15 }
+          ]);
+
+          const params: ChartDataParams<any> = {
+            records,
+            labels,
+            view: 'total',
+            mode: 'incremental'
+          };
+
+          const result = service.getElectricityChartData(params);
+
+          // Should return all labels
+          expect(result.labels?.length).toBe(3);
+          expect(result.labels).toEqual(['Jan 1', 'Jan 8', 'Jan 15']);
+        });
+
+        it('should delegate water chart data generation', () => {
+          const params: ChartDataParams<any> = {
+            records: [],
+            labels: ['A', 'B'],
+            view: 'total',
+            mode: 'incremental'
+          };
+
+          service.getWaterChartData(params);
+
+          expect(waterChartServiceMock.getWaterChartData).toHaveBeenCalledWith(params);
+        });
+
+        it('should return N labels for N heating records in incremental mode', () => {
+          const records: any[] = [
+            { date: new Date(), rooms: { r1: 10 } },
+            { date: new Date(), rooms: { r1: 20 } }
+          ];
+          const labels = ['Jan 1', 'Jan 8'];
+
+          // Mock N items
+          calculationServiceMock.calculateIncrementalData.mockReturnValue([
+            { date: 'Jan 1', rooms: { r1: 10 } },
+            { date: 'Jan 8', rooms: { r1: 10 } }
+          ]);
+
+          const params: ChartDataParams<any> = {
+            records,
+            labels,
+            view: 'total',
+            mode: 'incremental',
+            roomNames: ['R1'],
+            roomIds: ['r1']
+          };
+
+          const result = service.getHeatingChartData(params);
+
+          // Heating matches logic (all labels)
+          expect(result.labels?.length).toBe(2);
+          expect(result.labels).toEqual(['Jan 1', 'Jan 8']);
+        });
+      });
     });
+
 
     // New tests for country average comparison
     describe('country average comparison', () => {
@@ -346,6 +430,142 @@ describe('ChartDataService', () => {
         expect(result.datasets[1].label).toBe('Kitchen');
       });
     });
+
+    describe('normalization in incremental mode', () => {
+      it('should call calculateDailyAverage and attach normalizedData', () => {
+        const params: ChartDataParams<DynamicHeatingRecord> = {
+          records: mockHeatingRecords,
+          labels: labels,
+          view: 'total',
+          mode: 'incremental',
+          roomNames,
+          roomIds
+        };
+
+        const result = service.getHeatingChartData(params);
+
+        expect(calculationServiceMock.calculateDailyAverage).toHaveBeenCalled();
+        expect((result.datasets[0] as any).normalizedData).toBeDefined();
+      });
+
+      it('should not call normalization in total mode', () => {
+        calculationServiceMock.calculateDailyAverage.mockClear();
+
+        const params: ChartDataParams<DynamicHeatingRecord> = {
+          records: mockHeatingRecords,
+          labels: labels,
+          view: 'total',
+          mode: 'total',
+          roomNames,
+          roomIds
+        };
+
+        service.getHeatingChartData(params);
+
+        expect(calculationServiceMock.calculateDailyAverage).not.toHaveBeenCalled();
+      });
+    });
+  });
+
+  describe('getWaterChartData normalization', () => {
+    it('should call calculateDailyAverageForWater in incremental mode', () => {
+      const records: any[] = [
+        { date: new Date('2023-01-01'), kitchenWarm: 10, kitchenCold: 20, bathroomWarm: 30, bathroomCold: 40 },
+        { date: new Date('2023-01-08'), kitchenWarm: 15, kitchenCold: 25, bathroomWarm: 35, bathroomCold: 45 }
+      ];
+
+      waterChartServiceMock.getWaterChartData.mockReturnValue({
+        labels: ['Jan 1', 'Jan 8'],
+        datasets: [{ label: 'Test', data: [1, 2] }]
+      });
+
+      const params: ChartDataParams = {
+        records,
+        labels: ['Jan 1', 'Jan 8'],
+        view: 'total',
+        mode: 'incremental'
+      };
+
+      const result = service.getWaterChartData(params);
+
+      expect(calculationServiceMock.calculateDailyAverage).toHaveBeenCalled();
+      expect((result.datasets[0] as any).normalizedData).toBeDefined();
+    });
+
+    it('should pass through to waterChartService in total mode', () => {
+      waterChartServiceMock.getWaterChartData.mockReturnValue({
+        labels: ['Jan 1'],
+        datasets: [{ label: 'Test', data: [1] }]
+      });
+      calculationServiceMock.calculateDailyAverage.mockClear();
+
+      const params: ChartDataParams = {
+        records: [{ date: new Date('2023-01-01'), kitchenWarm: 10, kitchenCold: 20, bathroomWarm: 30, bathroomCold: 40 }],
+        labels: ['Jan 1'],
+        view: 'total',
+        mode: 'total'
+      };
+
+      service.getWaterChartData(params);
+
+      expect(calculationServiceMock.calculateDailyAverage).not.toHaveBeenCalled();
+      expect(waterChartServiceMock.getWaterChartData).toHaveBeenCalledWith(params);
+    });
+  });
+
+  describe('getElectricityChartData normalization', () => {
+    it('should call calculateDailyAverageForElectricity in incremental mode', () => {
+      const records: any[] = [
+        { date: new Date('2023-01-01'), value: 100 },
+        { date: new Date('2023-01-08'), value: 110 }
+      ];
+
+      const params: ChartDataParams<any> = {
+        records,
+        labels: ['Jan 1', 'Jan 8'],
+        view: 'total',
+        mode: 'incremental'
+      };
+
+      const result = service.getElectricityChartData(params);
+
+      expect(calculationServiceMock.calculateDailyAverage).toHaveBeenCalled();
+      expect((result.datasets[0] as any).normalizedData).toBeDefined();
+    });
+
+    it('should not call normalization in total mode', () => {
+      calculationServiceMock.calculateDailyAverage.mockClear();
+
+      const records: any[] = [
+        { date: new Date('2023-01-01'), value: 100 }
+      ];
+
+      const params: ChartDataParams<any> = {
+        records,
+        labels: ['Jan 1'],
+        view: 'total',
+        mode: 'total'
+      };
+
+      const result = service.getElectricityChartData(params);
+
+      expect(calculationServiceMock.calculateDailyAverage).not.toHaveBeenCalled();
+      expect((result.datasets[0] as any).normalizedData).toBeUndefined();
+    });
+
+    it('should handle empty records in incremental mode', () => {
+      const params: ChartDataParams<any> = {
+        records: [],
+        labels: [],
+        view: 'total',
+        mode: 'incremental'
+      };
+
+      const result = service.getElectricityChartData(params);
+
+      // Empty datasets are filtered out by filterEmptyDatasets
+      expect(result.datasets.length).toBe(0);
+      expect(result.labels).toEqual([]);
+    });
   });
 });
-

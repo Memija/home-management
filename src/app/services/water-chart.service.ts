@@ -9,6 +9,7 @@ export type DisplayMode = 'total' | 'incremental';
 
 export interface ChartDataParams<T = ConsumptionRecord> {
   records: T[];
+  originalRecords?: any[]; // Passed when mode is 'incremental' to provide date context
   labels: string[];
   view: ChartView;
   mode: DisplayMode;
@@ -30,7 +31,7 @@ export class WaterChartService {
 
   getWaterChartData(params: ChartDataParams): ChartConfiguration['data'] {
     const { records: recs, labels, view, mode, showTrendline, showAverageComparison, country, familySize } = params;
-    const chartLabels = mode === 'incremental' ? labels.slice(1) : labels;
+    const chartLabels = labels; // Use all labels
     const showComparison = (familySize ?? 0) > 0 && mode === 'incremental' && (showAverageComparison ?? false);
     const comparisonData = showComparison ? this.calculationService.generateComparisonData(recs, familySize ?? 0, country ?? '') : [];
     // Trendline only makes sense for incremental mode (total consumption always goes up)
@@ -38,24 +39,27 @@ export class WaterChartService {
 
     switch (view) {
       case 'total':
-        return this.getWaterTotalView(recs, chartLabels, showComparison, comparisonData, effectiveShowTrendline);
+        return this.getWaterTotalView(recs, chartLabels, showComparison, comparisonData, mode, effectiveShowTrendline);
       case 'by-room':
-        return this.getWaterByRoomView(recs, chartLabels, showComparison, comparisonData, effectiveShowTrendline);
+        return this.getWaterByRoomView(recs, chartLabels, showComparison, comparisonData, mode, effectiveShowTrendline);
       case 'by-type':
-        return this.getWaterByTypeView(recs, chartLabels, showComparison, comparisonData, effectiveShowTrendline);
+        return this.getWaterByTypeView(recs, chartLabels, showComparison, comparisonData, mode, effectiveShowTrendline);
       case 'detailed':
-        return this.getWaterDetailedView(recs, chartLabels, showComparison, comparisonData, effectiveShowTrendline);
+        return this.getWaterDetailedView(recs, chartLabels, showComparison, comparisonData, mode, effectiveShowTrendline);
     }
   }
 
-  private getWaterTotalView(recs: ConsumptionRecord[], labels: string[], showComparison: boolean, comparisonData: ComparisonData[], showTrendline?: boolean): ChartConfiguration['data'] {
+  private getWaterTotalView(recs: ConsumptionRecord[], labels: string[], showComparison: boolean, comparisonData: ComparisonData[], mode: DisplayMode, showTrendline?: boolean): ChartConfiguration['data'] {
     const datasets: ChartConfiguration['data']['datasets'] = [{
       data: recs.map(r => r.kitchenWarm + r.kitchenCold + r.bathroomWarm + r.bathroomCold),
-      label: this.languageService.translate('CHART.TOTAL_WEEKLY_CONSUMPTION'),
+      label: mode === 'incremental'
+        ? this.languageService.translate('CHART.INCREMENTAL_CONSUMPTION')
+        : this.languageService.translate('CHART.TOTAL_WEEKLY_CONSUMPTION'),
       backgroundColor: 'rgba(0, 123, 255, 0.5)',
       borderColor: '#007bff',
       borderWidth: 1,
-      fill: true
+      fill: true,
+      tension: 0.4
     }];
 
     if (showComparison && comparisonData.length > 0) {
@@ -67,7 +71,8 @@ export class WaterChartService {
         borderWidth: 2,
         borderDash: [5, 5],
         pointRadius: 0,
-        fill: false
+        fill: false,
+        tension: 0.4
       });
     }
 
@@ -89,27 +94,31 @@ export class WaterChartService {
     return { labels, datasets: this.filterEmptyDatasets(datasets) };
   }
 
-  private getWaterByRoomView(recs: ConsumptionRecord[], labels: string[], showComparison: boolean, comparisonData: ComparisonData[], showTrendline?: boolean): ChartConfiguration['data'] {
+  private getWaterByRoomView(recs: ConsumptionRecord[], labels: string[], showComparison: boolean, comparisonData: ComparisonData[], mode: DisplayMode, showTrendline?: boolean): ChartConfiguration['data'] {
     // Check if each category has data
     const kitchenData = recs.map(r => r.kitchenWarm + r.kitchenCold);
     const bathroomData = recs.map(r => r.bathroomWarm + r.bathroomCold);
     const hasKitchenData = kitchenData.some(v => v > 0);
     const hasBathroomData = bathroomData.some(v => v > 0);
 
+    const suffix = mode === 'incremental' ? ` (${this.languageService.translate('CHART.INCREMENTAL_CONSUMPTION')})` : '';
+
     const datasets: ChartConfiguration['data']['datasets'] = [
       {
         data: kitchenData,
-        label: this.languageService.translate('CHART.KITCHEN_TOTAL'),
+        label: this.languageService.translate('CHART.KITCHEN_TOTAL') + suffix,
         backgroundColor: 'rgba(23, 162, 184, 0.5)',
         borderColor: '#17a2b8',
-        borderWidth: 1
+        borderWidth: 1,
+        tension: 0.4
       },
       {
         data: bathroomData,
-        label: this.languageService.translate('CHART.BATHROOM_TOTAL'),
+        label: this.languageService.translate('CHART.BATHROOM_TOTAL') + suffix,
         backgroundColor: 'rgba(108, 117, 125, 0.5)',
         borderColor: '#6c757d',
-        borderWidth: 1
+        borderWidth: 1,
+        tension: 0.4
       }
     ];
 
@@ -154,7 +163,8 @@ export class WaterChartService {
           borderWidth: 2,
           borderDash: [5, 5],
           pointRadius: 0,
-          fill: false
+          fill: false,
+          tension: 0.4
         });
       }
       if (hasBathroomData) {
@@ -166,7 +176,8 @@ export class WaterChartService {
           borderWidth: 2,
           borderDash: [5, 5],
           pointRadius: 0,
-          fill: false
+          fill: false,
+          tension: 0.4
         });
       }
     }
@@ -174,27 +185,31 @@ export class WaterChartService {
     return { labels, datasets: this.filterEmptyDatasets(datasets) };
   }
 
-  private getWaterByTypeView(recs: ConsumptionRecord[], labels: string[], showComparison: boolean, comparisonData: ComparisonData[], showTrendline?: boolean): ChartConfiguration['data'] {
+  private getWaterByTypeView(recs: ConsumptionRecord[], labels: string[], showComparison: boolean, comparisonData: ComparisonData[], mode: DisplayMode, showTrendline?: boolean): ChartConfiguration['data'] {
     // Check if each category has data
     const warmData = recs.map(r => r.kitchenWarm + r.bathroomWarm);
     const coldData = recs.map(r => r.kitchenCold + r.bathroomCold);
     const hasWarmData = warmData.some(v => v > 0);
     const hasColdData = coldData.some(v => v > 0);
 
+    const suffix = mode === 'incremental' ? ` (${this.languageService.translate('CHART.INCREMENTAL_CONSUMPTION')})` : '';
+
     const datasets: ChartConfiguration['data']['datasets'] = [
       {
         data: warmData,
-        label: this.languageService.translate('CHART.WARM_WATER_TOTAL'),
+        label: this.languageService.translate('CHART.WARM_WATER_TOTAL') + suffix,
         backgroundColor: 'rgba(255, 193, 7, 0.5)',
         borderColor: '#ffc107',
-        borderWidth: 1
+        borderWidth: 1,
+        tension: 0.4
       },
       {
         data: coldData,
-        label: this.languageService.translate('CHART.COLD_WATER_TOTAL'),
+        label: this.languageService.translate('CHART.COLD_WATER_TOTAL') + suffix,
         backgroundColor: 'rgba(108, 117, 125, 0.5)',
         borderColor: '#6c757d',
-        borderWidth: 1
+        borderWidth: 1,
+        tension: 0.4
       }
     ];
 
@@ -239,7 +254,8 @@ export class WaterChartService {
           borderWidth: 2,
           borderDash: [5, 5],
           pointRadius: 0,
-          fill: false
+          fill: false,
+          tension: 0.4
         });
       }
       if (hasColdData) {
@@ -251,7 +267,8 @@ export class WaterChartService {
           borderWidth: 2,
           borderDash: [5, 5],
           pointRadius: 0,
-          fill: false
+          fill: false,
+          tension: 0.4
         });
       }
     }
@@ -259,7 +276,7 @@ export class WaterChartService {
     return { labels, datasets: this.filterEmptyDatasets(datasets) };
   }
 
-  private getWaterDetailedView(recs: ConsumptionRecord[], labels: string[], showComparison: boolean, comparisonData: ComparisonData[], showTrendline?: boolean): ChartConfiguration['data'] {
+  private getWaterDetailedView(recs: ConsumptionRecord[], labels: string[], showComparison: boolean, comparisonData: ComparisonData[], mode: DisplayMode, showTrendline?: boolean): ChartConfiguration['data'] {
     // Extract data arrays
     const kitchenWarmData = recs.map(r => r.kitchenWarm);
     const kitchenColdData = recs.map(r => r.kitchenCold);
@@ -272,9 +289,11 @@ export class WaterChartService {
     const hasBathroomWarmData = bathroomWarmData.some(v => v > 0);
     const hasBathroomColdData = bathroomColdData.some(v => v > 0);
 
+    const suffix = mode === 'incremental' ? ` (${this.languageService.translate('CHART.INCREMENTAL_CONSUMPTION')})` : '';
+
     const datasets: ChartConfiguration['data']['datasets'] = [
       {
-        label: this.languageService.translate('CHART.KITCHEN_WARM'),
+        label: this.languageService.translate('CHART.KITCHEN_WARM') + suffix,
         data: kitchenWarmData,
         borderColor: '#ff6384',
         backgroundColor: 'rgba(255, 99, 132, 0.1)',
@@ -283,7 +302,7 @@ export class WaterChartService {
         pointRadius: recs.length === 1 ? 8 : 3
       },
       {
-        label: this.languageService.translate('CHART.KITCHEN_COLD'),
+        label: this.languageService.translate('CHART.KITCHEN_COLD') + suffix,
         data: kitchenColdData,
         borderColor: '#36a2eb',
         backgroundColor: 'rgba(54, 162, 235, 0.1)',
@@ -292,16 +311,16 @@ export class WaterChartService {
         pointRadius: recs.length === 1 ? 8 : 3
       },
       {
-        label: this.languageService.translate('CHART.BATHROOM_WARM'),
+        label: this.languageService.translate('CHART.BATHROOM_WARM') + suffix,
         data: bathroomWarmData,
-        borderColor: '#ffcd56',
-        backgroundColor: 'rgba(255, 205, 86, 0.1)',
+        borderColor: '#ff9f40',
+        backgroundColor: 'rgba(255, 159, 64, 0.1)',
         fill: false,
         tension: 0.4,
         pointRadius: recs.length === 1 ? 8 : 3
       },
       {
-        label: this.languageService.translate('CHART.BATHROOM_COLD'),
+        label: this.languageService.translate('CHART.BATHROOM_COLD') + suffix,
         data: bathroomColdData,
         borderColor: '#4bc0c0',
         backgroundColor: 'rgba(75, 192, 192, 0.1)',
@@ -372,7 +391,7 @@ export class WaterChartService {
           borderColor: '#ff6384',
           backgroundColor: 'transparent',
           fill: false,
-          tension: 0,
+          tension: 0.4,
           borderDash: [5, 5],
           pointRadius: 0
         });
@@ -384,7 +403,7 @@ export class WaterChartService {
           borderColor: '#36a2eb',
           backgroundColor: 'transparent',
           fill: false,
-          tension: 0,
+          tension: 0.4,
           borderDash: [5, 5],
           pointRadius: 0
         });
@@ -396,7 +415,7 @@ export class WaterChartService {
           borderColor: '#ffcd56',
           backgroundColor: 'transparent',
           fill: false,
-          tension: 0,
+          tension: 0.4,
           borderDash: [5, 5],
           pointRadius: 0
         });
@@ -408,7 +427,7 @@ export class WaterChartService {
           borderColor: '#4bc0c0',
           backgroundColor: 'transparent',
           fill: false,
-          tension: 0,
+          tension: 0.4,
           borderDash: [5, 5],
           pointRadius: 0
         });

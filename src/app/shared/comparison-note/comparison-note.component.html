@@ -4,9 +4,12 @@
         @if (type() === 'water') {
         <p>{{ 'CHART.COMPARISON_NOTE_COUNTRY' | translate:{ country: effectiveComparisonCountryName(), average:
             countryAverage(), size: familySize() } }}</p>
-        } @else {
+        } @else if (type() === 'heating') {
         <p>{{ 'CHART.COMPARISON_NOTE_COUNTRY_HEATING' | translate:{ country: effectiveComparisonCountryName(), average:
             countryAverage() } }}</p>
+        } @else {
+        <p>{{ 'CHART.COMPARISON_NOTE_COUNTRY_ELECTRICITY' | translate:{ country: effectiveComparisonCountryName(),
+            average: countryAverage(), size: familySize() } }}</p>
         }
         } @else {
         <p class="disabled-message">
@@ -18,7 +21,8 @@
             <label for="comparison-country" [class.disabled]="!hasSufficientDataForComparison()">
                 <span class="info-tooltip-container">
                     <lucide-icon [img]="InfoIcon" size="14" class="info-icon"></lucide-icon>
-                    <span class="info-tooltip">{{ hasSufficientDataForComparison() ? ('CHART.COMPARE_WITH_INFO' |
+                    <span class="info-tooltip">{{ hasSufficientDataForComparison() ? ('CHART.COMPARE_WITH_INFO_' +
+                        type().toUpperCase() |
                         translate) :
                         ('CHART.COMPARISON_REQUIRES_DATA' | translate) }}</span>
                 </span>
@@ -38,6 +42,8 @@
                         [selected]="country.code.toLowerCase() === effectiveComparisonCountryCode().toLowerCase()">
                         @if (type() === 'water') {
                         {{ country.translationKey | translate }} ({{ country.average }} L)
+                        } @else if (type() === 'electricity') {
+                        {{ country.translationKey | translate }} ({{ country.average }} kWh/p/a)
                         } @else {
                         {{ country.translationKey | translate }} ({{ country.average }} kWh/a)
                         }
@@ -55,6 +61,8 @@
         <div class="fact-content">
             @if (type() === 'heating') {
             <div class="fact-label">{{ heatingFactTitle() }}</div>
+            } @else if (type() === 'electricity') {
+            <div class="fact-label">{{ electricityFactTitle() }}</div>
             } @else {
             <div class="fact-label">{{ 'CHART.DID_YOU_KNOW' | translate }}</div>
             }

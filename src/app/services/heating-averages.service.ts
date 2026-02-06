@@ -111,6 +111,9 @@ export class HeatingAveragesService {
     'colombia': { averageKwhPerYear: 800, source: 'DANE estimate', year: 2020 },
     'peru': { averageKwhPerYear: 1000, source: 'INEI estimate', year: 2020 },
     'venezuela': { averageKwhPerYear: 500, source: 'INE estimate', year: 2020 },
+
+    // World average
+    'world': { averageKwhPerYear: 10000, source: 'IEA World Average', year: 2021 }
   };
 
   // Default fallback for unknown countries - temperate climate estimate
@@ -148,6 +151,9 @@ export class HeatingAveragesService {
 
     // Oceania
     'au': 'australia', 'nz': 'new zealand',
+
+    // World
+    'world': 'world'
   };
 
   getCountryData(countryOrCode: string): CountryHeatingData {

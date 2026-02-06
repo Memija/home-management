@@ -2,7 +2,7 @@ import { Injectable, inject, signal } from '@angular/core';
 import { LocalStorageService } from './local-storage.service';
 import { ChartView, DisplayMode } from '../shared/consumption-chart/consumption-chart.component';
 
-export type ChartType = 'water' | 'heating' | 'home';
+export type ChartType = 'water' | 'heating' | 'home' | 'electricity';
 
 @Injectable({
     providedIn: 'root'
@@ -18,6 +18,10 @@ export class ConsumptionPreferencesService {
     readonly heatingChartView = signal<ChartView>(this.getStoredChartView('heating'));
     readonly heatingDisplayMode = signal<DisplayMode>(this.getStoredDisplayMode('heating'));
 
+    // Electricity-specific signals
+    readonly electricityChartView = signal<ChartView>(this.getStoredChartView('electricity'));
+    readonly electricityDisplayMode = signal<DisplayMode>(this.getStoredDisplayMode('electricity'));
+
     setChartView(view: ChartView, chartType: ChartType = 'water') {
         const key = `${chartType}_chart_view`;
         this.localStorageService.setPreference(key, view);
@@ -25,6 +29,8 @@ export class ConsumptionPreferencesService {
             this.chartView.set(view);
         } else if (chartType === 'heating') {
             this.heatingChartView.set(view);
+        } else if (chartType === 'electricity') {
+            this.electricityChartView.set(view);
         }
     }
 
@@ -35,6 +41,8 @@ export class ConsumptionPreferencesService {
             this.displayMode.set(mode);
         } else if (chartType === 'heating') {
             this.heatingDisplayMode.set(mode);
+        } else if (chartType === 'electricity') {
+            this.electricityDisplayMode.set(mode);
         }
     }
 
@@ -53,7 +61,7 @@ export class ConsumptionPreferencesService {
         if (stored === 'total' || stored === 'incremental') {
             return stored;
         }
-        // Default: incremental for water, total for heating
-        return chartType === 'heating' ? 'total' : 'incremental';
+        // Default: incremental for water, total for heating/electricity
+        return chartType === 'heating' || chartType === 'electricity' ? 'total' : 'incremental';
     }
 }

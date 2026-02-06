@@ -67,6 +67,7 @@ export class DetailedRecordsComponent {
   showTotal = input<boolean>(true);
   totalLabelKey = input<string>('HOME.TOTAL');
   hasDetails = input<boolean>(true);
+  allowCollapse = input<boolean>(true);
 
   // Configurable sort options - parent provides these
   sortOptions = input<SortOptionConfig[]>([

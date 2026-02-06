@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 
 import { TranslatePipe } from '../pipes/translate.pipe';
-import { LucideAngularModule, Clipboard as ClipboardIcon, Download, Upload, CircleCheck, Trash2, FileSpreadsheet, FileText, FileInput, FileOutput, Info, AlertTriangle, Lightbulb, Zap } from 'lucide-angular';
+import { LucideAngularModule, Clipboard as ClipboardIcon, Download, Upload, CircleCheck, Trash2, FileSpreadsheet, FileText, FileInput, FileOutput, Info, AlertTriangle, Lightbulb, Zap, RefreshCw } from 'lucide-angular';
 import { ConsumptionInputComponent, type ConsumptionData, type ConsumptionGroup } from '../shared/consumption-input/consumption-input.component';
 import { DeleteConfirmationModalComponent } from '../shared/delete-confirmation-modal/delete-confirmation-modal.component';
 import { ConfirmationModalComponent } from '../shared/confirmation-modal/confirmation-modal.component';
@@ -20,7 +20,8 @@ import { ExcelSettingsService } from '../services/excel-settings.service';
 import { ChartCalculationService } from '../services/chart-calculation.service';
 import { LanguageService } from '../services/language.service';
 import { ElectricityMeterService } from '../services/electricity-meter.service';
-import { ElectricityFactsService } from '../services/electricity-facts.service';
+import { ElectricityCountryFactsService } from '../services/electricity-country-facts.service';
+import { availableElectricityCountries } from '../i18n/modules/en/electricity-country-facts';
 import { CHART_HELP_STEPS, RECORD_HELP_STEPS, RECORDS_LIST_HELP_STEPS } from './electricity.constants';
 
 import { SmartImportModalComponent } from '../shared/smart-import-modal/smart-import-modal.component';
@@ -34,15 +35,101 @@ import { SmartImportModalComponent } from '../shared/smart-import-modal/smart-im
 
 })
 export class ElectricityComponent {
-  protected preferencesService = inject(ConsumptionPreferencesService);
-  protected formService = inject(ElectricityFormService);
-  protected dataService = inject(ElectricityDataService);
+  // Services
   protected excelSettings = inject(ExcelSettingsService);
-  protected meterService = inject(ElectricityMeterService);
   private householdService = inject(HouseholdService);
   private chartCalculationService = inject(ChartCalculationService);
   private languageService = inject(LanguageService);
-  private electricityFactsService = inject(ElectricityFactsService);
+  private electricityFactsService = inject(ElectricityCountryFactsService);
+  private preferencesService = inject(ConsumptionPreferencesService);
+  private formService = inject(ElectricityFormService);
+  private dataService = inject(ElectricityDataService);
+  private meterService = inject(ElectricityMeterService);
+
+  // Signals
+  protected records = this.dataService.records;
+  protected chartView = this.preferencesService.electricityChartView;
+  protected displayMode = this.preferencesService.electricityDisplayMode;
+  protected effectiveComparisonCountryCode = signal('DE');
+  protected factRandomSeed = signal(Math.random());
+
+  protected adjustedRecords = this.records; // Start with records, can be adjustments if needed
+
+  protected showSuccessModal = signal(false);
+  protected showErrorModal = signal(false);
+  protected showDeleteModal = this.dataService.showDeleteModal;
+  protected showDeleteAllModal = this.dataService.showDeleteAllModal;
+  protected successMessage = signal('ELECTRICITY.RECORD_SAVED'); // Default success message key
+  protected successTitle = signal('HOME.SUCCESS');
+
+  protected deleteAllMessageKey = computed(() => 'ELECTRICITY.DELETE_ALL_CONFIRM_MESSAGE');
+  protected deleteAllMessageParams = computed<Record<string, string>>(() => ({ count: this.dataService.recordsToDelete().length.toString() }));
+
+  protected showImportConfirmModal = this.dataService.showImportConfirmModal;
+  protected showFilterWarningModal = this.dataService.showFilterWarningModal;
+
+  protected errorTitle = this.dataService.errorTitle;
+  protected errorMessage = this.dataService.errorMessage;
+  protected errorDetails = this.dataService.errorDetails;
+  protected errorInstructions = this.dataService.errorInstructions;
+  protected errorType = this.dataService.errorType;
+
+  protected isExporting = this.dataService.isExporting;
+  protected isImporting = this.dataService.isImporting;
+  protected filteredRecords = this.dataService.filteredRecords;
+
+  protected familySize = computed(() => this.householdService.members().length);
+
+  protected helpSteps = RECORD_HELP_STEPS;
+  protected chartHelpSteps = CHART_HELP_STEPS;
+  protected recordsHelpSteps = RECORDS_LIST_HELP_STEPS;
+
+  protected selectedDate = this.formService.selectedDate;
+  protected editingRecord = this.formService.editingRecord;
+  protected maxDate = new Date().toISOString().split('T')[0];
+
+  // Helpers
+  protected get hasValidInput(): boolean {
+    return this.formService.hasValidInput();
+  }
+
+  protected get dateExists(): boolean {
+    return this.formService.isDateDuplicate(this.records());
+  }
+
+  protected sortOptions = computed<SortOptionConfig[]>(() => [
+    { value: 'date-desc', labelKey: 'HOME.SORT.DATE_DESC', direction: '↓' },
+    { value: 'date-asc', labelKey: 'HOME.SORT.DATE_ASC', direction: '↑' },
+    { value: 'value-desc', labelKey: 'ELECTRICITY.SORT_VALUE_DESC', direction: '↓' },
+    { value: 'value-asc', labelKey: 'ELECTRICITY.SORT_VALUE_ASC', direction: '↑' }
+  ]);
+
+  protected consumptionGroups = computed<ConsumptionGroup[]>(() => [
+    {
+      title: 'ELECTRICITY.CONSUMPTION',
+      fields: [
+        {
+          key: 'value',
+          label: 'ELECTRICITY.VALUE',
+          icon: Zap,
+          value: this.formService.value()
+        }
+      ]
+    }
+  ]);
+
+  protected unconfirmedMeterChanges = computed(() => {
+    if (this.records().length < 2) return [];
+    const changes = this.meterService.detectMeterChanges(this.records());
+    return this.meterService.filterUnconfirmed(changes);
+  });
+
+  protected formattedMeterChangeDate = computed(() => {
+    const dates = this.unconfirmedMeterChanges();
+    if (dates.length === 0) return '';
+    return new Date(dates[0]).toLocaleDateString(this.languageService.currentLang());
+  });
+
 
   // Icons
   protected readonly DownloadIcon = Download;
@@ -58,151 +145,32 @@ export class ElectricityComponent {
   protected readonly AlertTriangleIcon = AlertTriangle;
   protected readonly LightbulbIcon = Lightbulb;
   protected readonly ZapIcon = Zap;
+  protected readonly RefreshCwIcon = RefreshCw;
 
-  // Constants
-  protected readonly helpSteps = RECORD_HELP_STEPS;
-  protected readonly chartHelpSteps = CHART_HELP_STEPS;
-  protected readonly recordsHelpSteps = RECORDS_LIST_HELP_STEPS;
-
-  protected consumptionGroups = computed<ConsumptionGroup[]>(() => [
-    {
-      title: 'ELECTRICITY.TITLE',
-      fields: [
-        { key: 'value', label: 'ELECTRICITY.VALUE', value: this.formService.value(), icon: Zap }
-      ]
-    }
-  ]);
-
-  // Sort Options
-  protected sortOptions = signal<SortOptionConfig[]>([
-    { value: 'date-desc', labelKey: 'HOME.SORT.DATE_DESC', direction: '↓' },
-    { value: 'date-asc', labelKey: 'HOME.SORT.DATE_ASC', direction: '↑' },
-    { value: 'total-desc', labelKey: 'HOME.SORT.TOTAL_DESC', direction: '↓' },
-    { value: 'total-asc', labelKey: 'HOME.SORT.TOTAL_ASC', direction: '↑' }
-  ]);
-
-  // State Delegation
-  protected records = this.dataService.records;
-  protected filteredRecords = this.dataService.filteredRecords;
-  protected isExporting = this.dataService.isExporting;
-  protected isImporting = this.dataService.isImporting;
-  protected showSuccessModal = this.dataService.showSuccessModal;
-  protected successTitle = this.dataService.successTitle;
-  protected successMessage = this.dataService.successMessage;
-  protected showDeleteModal = this.dataService.showDeleteModal;
-  protected showDeleteAllModal = this.dataService.showDeleteAllModal;
-  protected recordToDelete = this.dataService.recordToDelete;
-  protected recordsToDelete = this.dataService.recordsToDelete;
-  protected showImportConfirmModal = this.dataService.showImportConfirmModal;
-  protected pendingImportFile = this.dataService.pendingImportFile;
-  protected showFilterWarningModal = this.dataService.showFilterWarningModal;
-  protected maxDate = this.dataService.maxDate;
-
-  // Error State Delegation
-  protected showErrorModal = this.dataService.showErrorModal;
-  protected errorTitle = this.dataService.errorTitle;
-  protected errorMessage = this.dataService.errorMessage;
-  protected errorDetails = this.dataService.errorDetails;
-  protected errorInstructions = this.dataService.errorInstructions;
-  protected errorType = this.dataService.errorType;
-
-  // Form Signals Delegation
-  protected selectedDate = this.formService.selectedDate;
-  protected editingRecord = this.formService.editingRecord;
-  protected hasValidInput = this.formService.hasValidInput;
-  protected dateExists = computed(() => this.formService.isDateDuplicate(this.records()));
-
-  // Chart Preferences
-  protected chartView = this.preferencesService.chartView;
-  protected displayMode = this.preferencesService.displayMode;
-
-  // Other Computed
-  protected familySize = computed(() => this.householdService.members().length);
-  protected cityName = computed(() => this.householdService.address()?.city || '');
-  protected countryName = computed(() => this.householdService.address()?.country || '');
-
-  protected deleteAllMessageKey = computed(() => {
-    const count = this.recordsToDelete().length;
-    return count === 1 ? 'ELECTRICITY.DELETE_ALL_CONFIRM_MESSAGE_SINGULAR' : 'ELECTRICITY.DELETE_ALL_CONFIRM_MESSAGE_PLURAL';
-  });
-  protected deleteAllMessageParams = computed(() => ({ count: this.recordsToDelete().length.toString() }));
-
-  // Comparison Signal
-  protected effectiveComparisonCountryCode = signal<string>('DE');
-
-  // Meter Change Detection
-  protected detectedMeterChanges = computed(() => this.meterService.detectMeterChanges(this.records()));
-  protected unconfirmedMeterChanges = computed(() => this.meterService.filterUnconfirmed(this.detectedMeterChanges()));
-
-  protected formattedMeterChangeDate = computed(() => {
-    const unconfirmed = this.unconfirmedMeterChanges();
-    if (unconfirmed.length === 0) return '';
-
-    const dateStr = unconfirmed[0];
-    const date = new Date(dateStr);
-    const lang = this.languageService.currentLang();
-    const locale = lang === 'de' ? 'de-DE' : 'en-US';
-
-    return date.toLocaleDateString(locale, {
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric'
-    });
-  });
-
-  protected adjustedRecords = computed(() => {
-    const records = this.records();
-    const mode = this.displayMode();
-    const confirmed = this.meterService.confirmedMeterChanges();
-
-    if (mode === 'incremental' || confirmed.length === 0) {
-      return records;
-    }
-
-    const sortedChanges = new Set(confirmed.map(d => getDateKey(new Date(d))));
-    const adjusted: ElectricityRecord[] = [];
-    let currentOffset = 0;
-
-    for (let i = 0; i < records.length; i++) {
-      const record = records[i];
-      const recordDateKey = getDateKey(record.date);
-
-      if (i > 0 && sortedChanges.has(recordDateKey)) {
-        // Confirmed meter change: Adjust offset to make the curve continuous
-        // New offset = Previous Adjusted Value - Current Raw Value
-        const prevAdjusted = adjusted[i - 1].value;
-        const currRaw = record.value;
-        currentOffset = prevAdjusted - currRaw;
-      }
-
-      adjusted.push({
-        date: record.date,
-        value: record.value + currentOffset
-      });
-    }
-
-    return adjusted;
-  });
-
-  // Random seed for facts
-  private factRandomSeed = signal(Math.random());
+  protected availableElectricityCountries = availableElectricityCountries;
 
   // Fact
   protected electricityFact = computed(() => {
     const records = this.records();
-    const mode = this.displayMode();
+    const displayMode = this.displayMode();
     const seed = this.factRandomSeed();
 
-    if (mode !== 'total' || records.length === 0) {
+    if (records.length === 0) {
       return null;
     }
 
     const latestRecord = records[records.length - 1];
     const kwh = latestRecord.value;
     const factIndex = Math.floor(seed * 20);
+    const factMode = displayMode === 'total' ? 'historical' : 'country';
+    const countryCode = this.effectiveComparisonCountryCode();
 
-    return this.electricityFactsService.getFactByIndex(kwh, factIndex);
+    return this.electricityFactsService.getFactByIndex(kwh, factIndex, factMode, countryCode);
   });
+
+  protected refreshFact(): void {
+    this.factRandomSeed.set(Math.random());
+  }
 
   // Methods
   protected handleCountryCodeChange(code: string) {
@@ -211,10 +179,10 @@ export class ElectricityComponent {
 
   // UI Handlers
   protected onChartViewChange = (view: ChartView) => {
-    this.preferencesService.setChartView(view);
-    this.factRandomSeed.set(Math.random());
+    this.preferencesService.setChartView(view, 'electricity');
+    this.refreshFact();
   };
-  protected onDisplayModeChange = (mode: DisplayMode) => this.preferencesService.setDisplayMode(mode);
+  protected onDisplayModeChange = (mode: DisplayMode) => this.preferencesService.setDisplayMode(mode, 'electricity');
 
 
   protected onFilteredRecordsChange(records: unknown[]) {

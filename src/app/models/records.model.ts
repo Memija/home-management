@@ -35,7 +35,8 @@ export type CombinedRecord = ConsumptionRecord | DynamicHeatingRecord;
 
 export interface CombinedData extends Partial<ConsumptionRecord> {
   date: Date;
-  [key: string]: number | Date | undefined; // Allow indexing
+  normalized?: { days: number, raw?: number, [key: string]: number | undefined };
+  [key: string]: number | Date | object | undefined; // Allow indexing and nested objects
 }
 
 /**

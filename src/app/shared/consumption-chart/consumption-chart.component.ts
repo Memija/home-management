@@ -135,6 +135,7 @@ export class ConsumptionChartComponent implements OnInit {
     if (this.chartType === 'water') {
       return this.chartDataService.getWaterChartData({
         records: processedData as ConsumptionRecord[],
+        originalRecords: recs as ConsumptionRecord[],
         labels,
         view,
         mode,
@@ -146,16 +147,19 @@ export class ConsumptionChartComponent implements OnInit {
     } else if (this.chartType === 'electricity') {
       return this.chartDataService.getElectricityChartData({
         records: processedData as unknown as ElectricityRecord[],
+        originalRecords: recs as unknown as ElectricityRecord[],
         labels,
         view,
         mode,
         showTrendline: this.showTrendline(),
         showAverageComparison: this.showAverageComparison(),
-        country: this.country() ?? 'DE'
+        country: this.country() ?? 'DE',
+        familySize: this.familySize() ?? 0
       });
     } else if (this.chartType === 'home') {
       return this.chartDataService.getWaterChartData({
         records: processedData as ConsumptionRecord[],
+        originalRecords: recs as ConsumptionRecord[],
         labels,
         view,
         mode,
@@ -167,6 +171,7 @@ export class ConsumptionChartComponent implements OnInit {
     } else {
       return this.chartDataService.getHeatingChartData({
         records: processedData as unknown as DynamicHeatingRecord[],
+        originalRecords: recs as unknown as DynamicHeatingRecord[],
         labels,
         view,
         mode,
@@ -294,7 +299,18 @@ export class ConsumptionChartComponent implements OnInit {
             },
             label: (context) => {
               const unit = (this.chartType === 'heating' || this.chartType === 'electricity') ? 'kWh' : 'L';
-              return `${context.dataset.label}: ${context.parsed.y} ${unit}`;
+              let label = `${context.dataset.label}: ${context.parsed.y} ${unit}`;
+
+              const normalizedData = (context.dataset as any).normalizedData;
+              if (normalizedData && normalizedData[context.dataIndex]) {
+                const normInfo = normalizedData[context.dataIndex];
+                if (normInfo && normInfo.days) {
+                  const days = Number(normInfo.days).toFixed(1);
+                  const estMsg = this.languageService.translate('CHART.ESTIMATED_MONTHLY', { days });
+                  label += ` ${estMsg}`;
+                }
+              }
+              return label;
             }
           }
         },

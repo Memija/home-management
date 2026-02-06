@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 
 import { TranslatePipe } from '../pipes/translate.pipe';
-import { LucideAngularModule, Download, Upload, CircleCheck, Trash2, FileSpreadsheet, FileText, FileInput, FileOutput, Info, AlertTriangle, Lightbulb } from 'lucide-angular';
+import { LucideAngularModule, Download, Upload, CircleCheck, Trash2, FileText, FileInput, FileOutput, AlertTriangle, Lightbulb, RefreshCw, Droplet } from 'lucide-angular';
 import { ConsumptionInputComponent, type ConsumptionData, type ConsumptionGroup } from '../shared/consumption-input/consumption-input.component';
 import { DeleteConfirmationModalComponent } from '../shared/delete-confirmation-modal/delete-confirmation-modal.component';
 import { ConfirmationModalComponent } from '../shared/confirmation-modal/confirmation-modal.component';
@@ -32,181 +32,138 @@ import { CHART_HELP_STEPS, RECORD_HELP_STEPS, RECORDS_LIST_HELP_STEPS } from './
 
 })
 export class WaterComponent {
-  protected preferencesService = inject(ConsumptionPreferencesService);
-  protected formService = inject(ConsumptionFormService);
-  protected dataService = inject(ConsumptionDataService);
+  // Icons
+  protected readonly DownloadIcon = Download;
+  protected readonly UploadIcon = Upload;
+  protected readonly FileOutputIcon = FileOutput;
+  protected readonly FileInputIcon = FileInput;
+  protected readonly FileTextIcon = FileText;
+  protected readonly CheckCircleIcon = CircleCheck;
+  protected readonly TrashIcon = Trash2;
+  protected readonly AlertTriangleIcon = AlertTriangle;
+  protected readonly LightbulbIcon = Lightbulb;
+  protected readonly RefreshCwIcon = RefreshCw;
+
+  // Services
   protected excelSettings = inject(ExcelSettingsService);
   private householdService = inject(HouseholdService);
   private chartCalculationService = inject(ChartCalculationService);
   private localStorageService = inject(LocalStorageService);
   private languageService = inject(LanguageService);
   private waterFactsService = inject(WaterFactsService);
+  private preferencesService = inject(ConsumptionPreferencesService);
+  private formService = inject(ConsumptionFormService);
+  private dataService = inject(ConsumptionDataService);
 
-  // Icons
+  // Signals
+  protected records = this.dataService.records;
+  protected adjustedRecords = computed(() => {
+    const recs = this.records();
+    const changes = this.confirmedMeterChanges();
+    if (changes.length === 0) return recs;
+    return this.chartCalculationService.adjustForMeterChanges(recs, changes);
+  });
 
-  protected readonly DownloadIcon = Download;
-  protected readonly UploadIcon = Upload;
-  protected readonly CheckCircleIcon = CircleCheck;
-  protected readonly TrashIcon = Trash2;
-  protected readonly FileSpreadsheetIcon = FileSpreadsheet;
-  protected readonly FileInputIcon = FileInput;
-  protected readonly FileOutputIcon = FileOutput;
-  protected readonly FileTextIcon = FileText;
-  protected readonly InfoIcon = Info;
-  protected readonly AlertTriangleIcon = AlertTriangle;
-  protected readonly LightbulbIcon = Lightbulb;
+  protected chartView = this.preferencesService.chartView;
+  protected displayMode = this.preferencesService.displayMode;
+  protected effectiveComparisonCountryCode = signal('DE'); // Default
+  protected factRandomSeed = signal(Math.random());
 
-  // Constants
-  protected readonly helpSteps = RECORD_HELP_STEPS;
-  protected readonly chartHelpSteps = CHART_HELP_STEPS;
-  protected readonly recordsHelpSteps = RECORDS_LIST_HELP_STEPS;
-
+  // Template Helpers & Signals
   protected consumptionGroups = computed<ConsumptionGroup[]>(() => [
     {
       title: 'WATER.KITCHEN',
       fields: [
-        { key: 'kitchenWarm', label: 'WATER.WARM', value: this.formService.kitchenWarm() },
-        { key: 'kitchenCold', label: 'WATER.COLD', value: this.formService.kitchenCold() }
+        { key: 'kitchenWarm', label: 'WATER.WARM', icon: Droplet, value: this.formService.kitchenWarm() },
+        { key: 'kitchenCold', label: 'WATER.COLD', icon: Droplet, value: this.formService.kitchenCold() }
       ]
     },
     {
       title: 'WATER.BATHROOM',
       fields: [
-        { key: 'bathroomWarm', label: 'WATER.WARM', value: this.formService.bathroomWarm() },
-        { key: 'bathroomCold', label: 'WATER.COLD', value: this.formService.bathroomCold() }
+        { key: 'bathroomWarm', label: 'WATER.WARM', icon: Droplet, value: this.formService.bathroomWarm() },
+        { key: 'bathroomCold', label: 'WATER.COLD', icon: Droplet, value: this.formService.bathroomCold() }
       ]
     }
   ]);
 
-  // State Delegation
-  protected records = this.dataService.records;
-  protected filteredRecords = this.dataService.filteredRecords;
+  protected selectedDate = this.formService.selectedDate;
+  protected editingRecord = this.formService.editingRecord;
+  protected maxDate = new Date().toISOString().split('T')[0];
+
+  protected helpSteps = RECORD_HELP_STEPS;
+  protected chartHelpSteps = CHART_HELP_STEPS;
+  protected recordsHelpSteps = RECORDS_LIST_HELP_STEPS;
+
   protected isExporting = this.dataService.isExporting;
   protected isImporting = this.dataService.isImporting;
-  protected showSuccessModal = this.dataService.showSuccessModal;
-  protected successTitle = this.dataService.successTitle;
-  protected successMessage = this.dataService.successMessage;
-  protected showDeleteModal = this.dataService.showDeleteModal;
-  protected showDeleteAllModal = this.dataService.showDeleteAllModal;
-  protected recordToDelete = this.dataService.recordToDelete;
-  protected recordsToDelete = this.dataService.recordsToDelete;
-  protected showImportConfirmModal = this.dataService.showImportConfirmModal;
-  protected pendingImportFile = this.dataService.pendingImportFile;
-  protected showFilterWarningModal = this.dataService.showFilterWarningModal;
-  protected maxDate = this.dataService.maxDate;
+  protected filteredRecords = this.dataService.filteredRecords;
 
-  // Error State Delegation
-  protected showErrorModal = this.dataService.showErrorModal;
+  protected showImportConfirmModal = this.dataService.showImportConfirmModal;
+  protected showFilterWarningModal = this.dataService.showFilterWarningModal;
+
+  protected unconfirmedMeterChanges = computed(() => {
+    if (this.records().length < 2) return [];
+    const changes = this.chartCalculationService.detectMeterChanges(this.records());
+    return changes.filter(date =>
+      !this.confirmedMeterChanges().includes(date) &&
+      !this.dismissedMeterChanges().includes(date)
+    );
+  });
+
+  protected formattedMeterChangeDate = computed(() => {
+    const dates = this.unconfirmedMeterChanges();
+    if (dates.length === 0) return '';
+    return new Date(dates[0]).toLocaleDateString(this.languageService.currentLang());
+  });
+
+  protected successTitle = signal('HOME.SUCCESS');
+  protected successMessage = signal('HOME.RECORD_SAVED');
+
+  protected deleteAllMessageKey = computed(() => 'HOME.DELETE_ALL_CONFIRM_MESSAGE');
+  protected deleteAllMessageParams = computed<Record<string, string>>(() => ({ count: this.dataService.recordsToDelete().length.toString() }));
+
   protected errorTitle = this.dataService.errorTitle;
   protected errorMessage = this.dataService.errorMessage;
   protected errorDetails = this.dataService.errorDetails;
   protected errorInstructions = this.dataService.errorInstructions;
   protected errorType = this.dataService.errorType;
 
-  // Form Signals Delegation
-  protected selectedDate = this.formService.selectedDate;
-  protected editingRecord = this.formService.editingRecord;
-  protected hasValidInput = this.formService.hasValidInput;
-  protected dateExists = computed(() => this.formService.isDateDuplicate(this.records()));
+  protected showSuccessModal = this.dataService.showSuccessModal;
+  protected showErrorModal = this.dataService.showErrorModal;
+  protected showDeleteModal = this.dataService.showDeleteModal;
+  protected showDeleteAllModal = this.dataService.showDeleteAllModal;
 
-  // Chart Preferences
-  protected chartView = this.preferencesService.chartView;
-  protected displayMode = this.preferencesService.displayMode;
-
-  // Other Computed
   protected familySize = computed(() => this.householdService.members().length);
-  protected cityName = computed(() => this.householdService.address()?.city || '');
-  protected countryName = computed(() => this.householdService.address()?.country || '');
-
-  protected deleteAllMessageKey = computed(() => {
-    const count = this.recordsToDelete().length;
-    return count === 1 ? 'HOME.DELETE_ALL_CONFIRM_MESSAGE_SINGULAR' : 'HOME.DELETE_ALL_CONFIRM_MESSAGE_PLURAL';
-  });
-  protected deleteAllMessageParams = computed(() => ({ count: this.recordsToDelete().length.toString() }));
-
-  // Comparison Signal
-  protected effectiveComparisonCountryCode = signal<string>('DE');
-
-  // Meter Change Detection
-  private confirmedMeterChanges = signal<string[]>(this.getStoredMeterChanges());
-  private dismissedMeterChanges = signal<string[]>(this.getStoredDismissedMeterChanges());
-
-  protected detectedMeterChanges = computed(() => {
-    const records = this.records();
-    return this.chartCalculationService.detectMeterChanges(records);
-  });
-
-  protected unconfirmedMeterChanges = computed(() => {
-    const detected = this.detectedMeterChanges();
-    const confirmed = this.confirmedMeterChanges();
-    const dismissed = this.dismissedMeterChanges();
-    return detected.filter(d => !confirmed.includes(d) && !dismissed.includes(d));
-  });
-
-  protected formattedMeterChangeDate = computed(() => {
-    const unconfirmed = this.unconfirmedMeterChanges();
-    if (unconfirmed.length === 0) return '';
-
-    const dateStr = unconfirmed[0];
-    const date = new Date(dateStr);
-    const lang = this.languageService.currentLang();
-    const locale = lang === 'de' ? 'de-DE' : 'en-US';
-
-    return date.toLocaleDateString(locale, {
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric'
-    });
-  });
-
-  protected adjustedRecords = computed(() => {
-    const records = this.records();
-    const mode = this.displayMode();
-    const confirmed = this.confirmedMeterChanges();
-
-    // Only apply meter change adjustments for Total mode
-    // For incremental mode, the difference calculation handles this correctly
-    if (mode === 'incremental' || confirmed.length === 0) {
-      return records;
-    }
-    return this.chartCalculationService.adjustForMeterChanges(records, confirmed);
-  });
-
-  // Random seed for water facts - changes when chart view changes
-  private factRandomSeed = signal(Math.random());
 
   // Water fun fact - changes when chart view changes and is context-aware
   protected waterFact = computed(() => {
-    const records = this.adjustedRecords();
+    const records = this.records();
     const chartView = this.chartView();
     const mode = this.displayMode();
-    const lang = this.languageService.currentLang(); // Reactively update on language change
-    const seed = this.factRandomSeed(); // React to seed changes
+    const lang = this.languageService.currentLang();
+    const seed = this.factRandomSeed();
 
-    // Only show facts in total consumption mode
     if (mode !== 'total' || records.length === 0) {
       return null;
     }
 
-    // Calculate values from the latest record
     const latestRecord = records[records.length - 1];
+
     const kitchenTotal = latestRecord.kitchenWarm + latestRecord.kitchenCold;
     const bathroomTotal = latestRecord.bathroomWarm + latestRecord.bathroomCold;
     const warmTotal = latestRecord.kitchenWarm + latestRecord.bathroomWarm;
     const coldTotal = latestRecord.kitchenCold + latestRecord.bathroomCold;
     const totalLiters = kitchenTotal + bathroomTotal;
 
-    // Use random seed to get a random fact index
     const factIndex = Math.floor(seed * 20);
 
-    // Determine context and liters based on chart view
     type FactContext = 'total' | 'kitchen' | 'bathroom' | 'warm' | 'cold';
     let context: FactContext = 'total';
     let liters = totalLiters;
 
     switch (chartView) {
       case 'by-room':
-        // Randomly pick kitchen or bathroom, fallback to the other if empty
         if (seed > 0.5) {
           context = kitchenTotal > 0 ? 'kitchen' : (bathroomTotal > 0 ? 'bathroom' : 'total');
           liters = context === 'kitchen' ? kitchenTotal : (context === 'bathroom' ? bathroomTotal : totalLiters);
@@ -216,7 +173,6 @@ export class WaterComponent {
         }
         break;
       case 'by-type':
-        // Randomly pick warm or cold, fallback to the other if empty
         if (seed > 0.5) {
           context = warmTotal > 0 ? 'warm' : (coldTotal > 0 ? 'cold' : 'total');
           liters = context === 'warm' ? warmTotal : (context === 'cold' ? coldTotal : totalLiters);
@@ -233,6 +189,10 @@ export class WaterComponent {
     return this.waterFactsService.getFactByIndex(liters, factIndex, context);
   });
 
+  protected refreshFact(): void {
+    this.factRandomSeed.set(Math.random());
+  }
+
   // Methods
   protected handleCountryCodeChange(code: string) {
     this.effectiveComparisonCountryCode.set(code);
@@ -241,7 +201,7 @@ export class WaterComponent {
   // UI Handlers
   protected onChartViewChange = (view: ChartView) => {
     this.preferencesService.setChartView(view);
-    this.factRandomSeed.set(Math.random()); // Trigger new random fact
+    this.refreshFact();
   };
   protected onDisplayModeChange = (mode: DisplayMode) => this.preferencesService.setDisplayMode(mode);
 
@@ -300,7 +260,7 @@ export class WaterComponent {
   }
 
   protected saveRecord() {
-    if (this.hasValidInput() && !this.dateExists()) {
+    if (this.hasValidInput && !this.dateExists) {
       const newRecord = this.formService.createRecordFromState();
       if (newRecord) {
         this.dataService.saveRecord(newRecord);
@@ -326,15 +286,28 @@ export class WaterComponent {
   }
 
   // Calc Helpers
+  protected get hasValidInput(): boolean {
+    return this.formService.hasValidInput();
+  }
+
+  protected get dateExists(): boolean {
+    return this.formService.isDateDuplicate(this.records());
+  }
+
   protected calculateTotal = (record: unknown): number => calculateWaterTotal(record as ConsumptionRecord);
   protected calculateKitchenTotal = calculateKitchenTotal;
   protected calculateBathroomTotal = calculateBathroomTotal;
 
   // Meter Change Methods
+  private confirmedMeterChanges = signal<string[]>(this.getStoredMeterChanges());
+  private dismissedMeterChanges = signal<string[]>(this.getStoredDismissedMeterChanges());
+
   private getStoredMeterChanges(): string[] {
     const stored = this.localStorageService.getPreference('water_confirmed_meter_changes');
     try {
-      return stored ? JSON.parse(stored) : [];
+      const parsed = stored ? JSON.parse(stored) : [];
+      // Normalize: ensure we only have the date part YYYY-MM-DD
+      return Array.isArray(parsed) ? parsed.map((d: string) => d.split('T')[0]) : [];
     } catch {
       return [];
     }
@@ -343,30 +316,49 @@ export class WaterComponent {
   private getStoredDismissedMeterChanges(): string[] {
     const stored = this.localStorageService.getPreference('water_dismissed_meter_changes');
     try {
-      return stored ? JSON.parse(stored) : [];
+      const parsed = stored ? JSON.parse(stored) : [];
+      // Normalize: ensure we only have the date part YYYY-MM-DD
+      return Array.isArray(parsed) ? parsed.map((d: string) => d.split('T')[0]) : [];
     } catch {
       return [];
     }
   }
 
   private saveMeterChanges(): void {
-    this.localStorageService.setPreference(
-      'water_confirmed_meter_changes',
-      JSON.stringify(this.confirmedMeterChanges())
-    );
-    this.localStorageService.setPreference(
-      'water_dismissed_meter_changes',
-      JSON.stringify(this.dismissedMeterChanges())
-    );
+    const confirmed = this.confirmedMeterChanges();
+    const dismissed = this.dismissedMeterChanges();
+
+    // Ensure we are saving arrays
+    if (Array.isArray(confirmed)) {
+      this.localStorageService.setPreference(
+        'water_confirmed_meter_changes',
+        JSON.stringify(confirmed)
+      );
+    }
+
+    if (Array.isArray(dismissed)) {
+      this.localStorageService.setPreference(
+        'water_dismissed_meter_changes',
+        JSON.stringify(dismissed)
+      );
+    }
   }
 
   protected confirmMeterChange(date: string): void {
-    this.confirmedMeterChanges.update(changes => [...changes, date]);
+    if (!date) return;
+    this.confirmedMeterChanges.update((changes: string[]) => {
+      const newChanges = [...changes, date];
+      return [...new Set(newChanges)]; // Deduplicate
+    });
     this.saveMeterChanges();
   }
 
   protected dismissMeterChange(date: string): void {
-    this.dismissedMeterChanges.update(changes => [...changes, date]);
+    if (!date) return;
+    this.dismissedMeterChanges.update((changes: string[]) => {
+      const newChanges = [...changes, date];
+      return [...new Set(newChanges)]; // Deduplicate
+    });
     this.saveMeterChanges();
   }
 }

@@ -1,6 +1,7 @@
 export const electricity = {
     ELECTRICITY: {
         TITLE: 'Stromverbrauch',
+        CONSUMPTION: 'Stromverbrauch',
         VALUE: 'Verbrauch',
         UNIT: 'kWh',
         IMPORT_PLACEHOLDER_SKIPPED_SINGULAR: '{{count}} Datensatz mit 0 kWh Verbrauch übersprungen.',
@@ -28,6 +29,15 @@ export const electricity = {
         RECORD_HELP_STEP_3_DESC: 'Geben Sie den Wert Ihres Stromzählers in kWh ein.',
         RECORD_HELP_STEP_4_TITLE: 'Speichern',
         RECORD_HELP_STEP_4_DESC: 'Klicken Sie auf Speichern. Das Datumsfeld wird zurückgesetzt, um die schnelle Eingabe mehrerer Datensätze zu ermöglichen.',
+        // Chart Hilfe
+        CHART_HELP_STEP_1_TITLE: 'Was das Diagramm zeigt',
+        CHART_HELP_STEP_1_DESC: 'Das Diagramm visualisiert Ihren Stromverbrauch in kWh im Zeitverlauf. Es hilft Ihnen, Perioden mit hohem Verbrauch und Trends zu erkennen.',
+        CHART_HELP_STEP_2_TITLE: 'Anzeigemodi',
+        CHART_HELP_STEP_2_DESC: 'Wechseln Sie zwischen "Gesamter kumulierter Zählerstand" (Ihre Rohwerte) und "Täglicher Durchschnittsverbrauch" (berechneter Durchschnittsverbrauch pro Tag zwischen Ablesungen).',
+        CHART_HELP_STEP_3_TITLE: 'Vergleich',
+        CHART_HELP_STEP_3_DESC: 'Aktivieren Sie im Modus "Täglicher Durchschnittsverbrauch" die Option "Durchschnitt anzeigen", um den Verbrauch Ihres Haushalts mit dem nationalen Durchschnitt für einen Haushalt Ihrer Größe zu vergleichen.',
+        CHART_HELP_STEP_4_TITLE: 'Interaktion',
+        CHART_HELP_STEP_4_DESC: 'Verwenden Sie das Mausrad oder die Pinch-Geste, um hinein- oder herauszuzoomen. Ziehen Sie, um sich auf der Zeitachse zu bewegen. Klicken Sie auf "Zoom zurücksetzen", um zur Vollansicht zurückzukehren.',
         // Hilfe für Detaillierte Datensätze
         RECORDS_HELP_STEP_1_TITLE: 'Datensätze filtern',
         RECORDS_HELP_STEP_1_DESC: 'Verwenden Sie die Datumsbereichs-, Jahres- oder Monatsfilter, um bestimmte Stromdatensätze zu finden. Klicken Sie auf "Filter zurücksetzen", um alle aktiven Filter zu löschen und alle Datensätze anzuzeigen.',
@@ -39,24 +49,6 @@ export const electricity = {
         RECORDS_HELP_STEP_4_DESC: 'Exportieren Sie Ihre Daten als JSON-, Excel- oder PDF-Dateien. Importieren Sie zuvor exportierte JSON- oder Excel-Dateien, um Ihre Stromverbrauchsdaten wiederherzustellen. Es werden nur Datensätze mit Werten ungleich Null importiert.',
         RECORDS_HELP_STEP_5_TITLE: 'Smart Import',
         RECORDS_HELP_STEP_5_DESC: 'Verwenden Sie Smart Import, um Daten direkt aus Tabellen oder Text einzufügen. Datum und Zählerstände werden automatisch erkannt und Sie können die Daten vor dem Import prüfen und bestätigen.',
-        FACTS: {
-            LED: {
-                TITLE: 'LED-Beleuchtung',
-                MESSAGE: 'Der Wechsel zu LED-Lampen kann bis zu 80% der Beleuchtungsenergie im Vergleich zu Glühbirnen einsparen.'
-            },
-            STANDBY: {
-                TITLE: 'Standby-Strom',
-                MESSAGE: 'Geräte im Standby-Modus können bis zu 10% Ihres Haushaltsstromverbrauchs ausmachen.'
-            },
-            FRIDGE: {
-                TITLE: 'Kühlschrank-Effizienz',
-                MESSAGE: 'Ein voller Kühlschrank ist effizienter als ein leerer, da die thermische Masse ihn kalt hält.'
-            },
-            WASHING: {
-                TITLE: 'Waschmaschine',
-                MESSAGE: 'Wäsche bei 30°C statt 40°C oder 60°C zu waschen, spart erheblich Energie.'
-            }
-        },
         ALL_VALUES_IN_KWH: 'Alle Werte sind in kWh'
     }
 };

@@ -156,9 +156,9 @@ export const settings = {
     IMPORT_EXCEL_MISSING_ROOM_MAPPINGS_HINT: 'The imported file must contain column mappings for all configured rooms.',
     FAMILY_HELP_TITLE: 'How to Manage Family Members',
     FAMILY_HELP_STEP_1_TITLE: 'Why Add Family Members?',
-    FAMILY_HELP_STEP_1_DESC: 'Adding family members unlocks powerful comparison features! See how your household\'s water usage compares to the national average for families of your size.',
+    FAMILY_HELP_STEP_1_DESC: 'Adding family members unlocks powerful comparison features! See how your household\'s water, heating, and electricity usage compares to the national average for families of your size.',
     FAMILY_HELP_STEP_2_TITLE: 'Per-Person Insights',
-    FAMILY_HELP_STEP_2_DESC: 'Track consumption per person and identify opportunities to save water. The more accurate your family count, the better your comparison data!',
+    FAMILY_HELP_STEP_2_DESC: 'Track water, heating, and electricity consumption per person and identify opportunities to save. The more accurate your family count, the better your comparison data!',
     FAMILY_HELP_STEP_3_TITLE: 'Step 1: Enter Edit Mode',
     FAMILY_HELP_STEP_3_DESC: 'Click the "Edit Family" button to start adding or changing family members.',
     FAMILY_HELP_STEP_4_TITLE: 'Step 2: Fill in Details',
@@ -174,7 +174,7 @@ export const settings = {
     FAMILY_HELP_DONE: 'Got it!',
     ADDRESS_HELP_TITLE: 'How to Manage Your Address',
     ADDRESS_HELP_STEP_1_TITLE: 'Why Set Your Address?',
-    ADDRESS_HELP_STEP_1_DESC: 'Your address helps personalize your home management experience and can be useful for future features like local utility comparisons.',
+    ADDRESS_HELP_STEP_1_DESC: 'Your address helps personalize your home management experience. Your country is used to compare your water, heating, and electricity usage against national averages.',
     ADDRESS_HELP_STEP_2_TITLE: 'Step 1: Enter Your Details',
     ADDRESS_HELP_STEP_2_DESC: 'Fill in your street name, number, city, zip code, and country. Use the country search to quickly find your country!',
     ADDRESS_HELP_STEP_3_TITLE: 'Step 2: Save Your Address',
@@ -184,12 +184,12 @@ export const settings = {
     HELP: 'Help',
     EXCEL_HELP_TITLE: 'How to Use Excel Integration',
     EXCEL_HELP_STEP_1_TITLE: 'What is Excel Integration?',
-    EXCEL_HELP_STEP_1_DESC: 'Excel integration allows you to import and export your water and heating data directly from Excel spreadsheets. Perfect for advanced users!',
+    EXCEL_HELP_STEP_1_DESC: 'Excel integration allows you to import and export your water, heating, and electricity data directly from Excel spreadsheets. Perfect for advanced users!',
     EXCEL_HELP_STEP_2_TITLE: 'Step 1: Enable Integration',
     EXCEL_HELP_STEP_2_DESC: 'Toggle the "Enable Excel Integration" switch to activate the feature. This unlocks Excel import/export buttons.',
     EXCEL_HELP_STEP_3_TITLE: 'Step 2: Configure Columns',
     EXCEL_HELP_STEP_3_DESC: 'Click "Edit Excel Settings" to customize column names. Match these names to your Excel file headers for automatic data mapping.',
     EXCEL_HELP_STEP_4_TITLE: 'Step 3: Import Your Data',
-    EXCEL_HELP_STEP_4_DESC: 'Go to Water or Heating page and use "Import from Excel" to load your spreadsheet. The app will read data from your configured columns!'
+    EXCEL_HELP_STEP_4_DESC: 'Go to Water, Heating, or Electricity page and use "Import from Excel" to load your spreadsheet. The app will read data from your configured columns!'
   }
 };

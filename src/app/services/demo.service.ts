@@ -6,6 +6,7 @@ interface DemoData {
   waterRecords: unknown[];
   heatingRecords: unknown[];
   heatingSettings: unknown[];
+  electricityRecords: unknown[];
   family: unknown[];
   address: unknown;
   excelSettings: unknown;
@@ -34,6 +35,7 @@ export class DemoService {
     'water_records',
     'heating_consumption_records',
     'heating_room_config',
+    'electricity_consumption_records',
     'household_members',
     'household_address',
     'excel_settings'
@@ -89,6 +91,9 @@ export class DemoService {
       }
       if (demoData.address) {
         await this.storage.save('household_address', demoData.address);
+      }
+      if (demoData.electricityRecords) {
+        await this.storage.save('electricity_consumption_records', demoData.electricityRecords);
       }
       if (demoData.excelSettings) {
         await this.storage.save('excel_settings', demoData.excelSettings);
@@ -201,10 +206,11 @@ export class DemoService {
       localStorage.setItem('hm_user_backup', JSON.stringify(fullBackup));
     }
 
-    const [waterRecords, heatingRecords, heatingSettings, family, address, excelSettings] = await Promise.all([
+    const [waterRecords, heatingRecords, heatingSettings, electricityRecords, family, address, excelSettings] = await Promise.all([
       this.fetchJson(`${baseUrl}/water-consumption.json`),
       this.fetchJson(`${baseUrl}/heating-consumption.json`),
       this.fetchJson(`${baseUrl}/heating-settings.json`),
+      this.fetchJson(`${baseUrl}/electricity-consumption.json`),
       this.fetchJson(`${baseUrl}/family.json`),
       this.fetchJson(`${baseUrl}/address.json`),
       this.fetchJson(`${baseUrl}/excel-settings.json`)
@@ -214,6 +220,7 @@ export class DemoService {
       waterRecords: (waterRecords as unknown[] | null) ?? [],
       heatingRecords: (heatingRecords as unknown[] | null) ?? [],
       heatingSettings: (heatingSettings as unknown[] | null) ?? [],
+      electricityRecords: (electricityRecords as unknown[] | null) ?? [],
       family: (family as unknown[] | null) ?? [],
       address: address ?? null,
       excelSettings: excelSettings ?? null

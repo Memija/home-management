@@ -156,9 +156,9 @@ export const settings = {
     IMPORT_EXCEL_MISSING_ROOM_MAPPINGS_HINT: 'Die importierte Datei muss Spaltenzuordnungen für alle konfigurierten Räume enthalten.',
     FAMILY_HELP_TITLE: 'Familienmitglieder verwalten',
     FAMILY_HELP_STEP_1_TITLE: 'Warum Familienmitglieder hinzufügen?',
-    FAMILY_HELP_STEP_1_DESC: 'Das Hinzufügen von Familienmitgliedern schaltet leistungsstarke Vergleichsfunktionen frei! Sehen Sie, wie Ihr Wasserverbrauch im Vergleich zum Landesdurchschnitt für Familien Ihrer Größe abschneidet.',
+    FAMILY_HELP_STEP_1_DESC: 'Das Hinzufügen von Familienmitgliedern schaltet leistungsstarke Vergleichsfunktionen frei! Sehen Sie, wie Ihr Wasser-, Heizungs- und Stromverbrauch im Vergleich zum Landesdurchschnitt für Familien Ihrer Größe abschneidet.',
     FAMILY_HELP_STEP_2_TITLE: 'Pro-Person Einblicke',
-    FAMILY_HELP_STEP_2_DESC: 'Verfolgen Sie den Verbrauch pro Person und finden Sie Möglichkeiten zum Wassersparen. Je genauer Ihre Familienanzahl, desto besser Ihre Vergleichsdaten!',
+    FAMILY_HELP_STEP_2_DESC: 'Verfolgen Sie den Wasser-, Heizungs- und Stromverbrauch pro Person und finden Sie Sparmöglichkeiten. Je genauer Ihre Familienanzahl, desto besser Ihre Vergleichsdaten!',
     FAMILY_HELP_STEP_3_TITLE: 'Schritt 1: Bearbeitungsmodus',
     FAMILY_HELP_STEP_3_DESC: 'Klicken Sie auf "Familie bearbeiten" um Familienmitglieder hinzuzufügen oder zu ändern.',
     FAMILY_HELP_STEP_4_TITLE: 'Schritt 2: Details eingeben',
@@ -174,7 +174,7 @@ export const settings = {
     FAMILY_HELP_DONE: 'Verstanden!',
     ADDRESS_HELP_TITLE: 'Adresse verwalten',
     ADDRESS_HELP_STEP_1_TITLE: 'Warum Adresse eingeben?',
-    ADDRESS_HELP_STEP_1_DESC: 'Ihre Adresse hilft, Ihre Hausverwaltungserfahrung zu personalisieren und kann für zukünftige Funktionen wie lokale Verbrauchsvergleiche nützlich sein.',
+    ADDRESS_HELP_STEP_1_DESC: 'Ihre Adresse hilft, Ihre Hausverwaltungserfahrung zu personalisieren. Ihr Land wird verwendet, um Ihren Wasser-, Heizungs- und Stromverbrauch mit dem Landesdurchschnitt zu vergleichen.',
     ADDRESS_HELP_STEP_2_TITLE: 'Schritt 1: Details eingeben',
     ADDRESS_HELP_STEP_2_DESC: 'Geben Sie Straßenname, Hausnummer, Stadt, Postleitzahl und Land ein. Nutzen Sie die Ländersuche für schnelles Finden!',
     ADDRESS_HELP_STEP_3_TITLE: 'Schritt 2: Adresse speichern',
@@ -184,12 +184,12 @@ export const settings = {
     HELP: 'Hilfe',
     EXCEL_HELP_TITLE: 'Excel-Integration verwenden',
     EXCEL_HELP_STEP_1_TITLE: 'Was ist Excel-Integration?',
-    EXCEL_HELP_STEP_1_DESC: 'Die Excel-Integration ermöglicht den Import und Export Ihrer Wasser- und Heizungsdaten direkt aus Excel-Tabellen. Perfekt für fortgeschrittene Nutzer!',
+    EXCEL_HELP_STEP_1_DESC: 'Die Excel-Integration ermöglicht den Import und Export Ihrer Wasser-, Heizungs- und Stromdaten direkt aus Excel-Tabellen. Perfekt für fortgeschrittene Nutzer!',
     EXCEL_HELP_STEP_2_TITLE: 'Schritt 1: Integration aktivieren',
     EXCEL_HELP_STEP_2_DESC: 'Schalten Sie "Excel-Integration aktivieren" ein, um die Funktion zu aktivieren. Dies schaltet die Excel Import/Export-Buttons frei.',
     EXCEL_HELP_STEP_3_TITLE: 'Schritt 2: Spalten konfigurieren',
     EXCEL_HELP_STEP_3_DESC: 'Klicken Sie auf "Excel-Einstellungen bearbeiten" um die Spaltennamen anzupassen. Passen Sie diese Namen an Ihre Excel-Überschriften an.',
     EXCEL_HELP_STEP_4_TITLE: 'Schritt 3: Daten importieren',
-    EXCEL_HELP_STEP_4_DESC: 'Gehen Sie zur Wasser- oder Heizungsseite und nutzen Sie "Aus Excel importieren" um Ihre Tabelle zu laden. Die App liest Daten aus Ihren konfigurierten Spalten!'
+    EXCEL_HELP_STEP_4_DESC: 'Gehen Sie zur Wasser-, Heizungs- oder Stromseite und nutzen Sie "Aus Excel importieren" um Ihre Tabelle zu laden. Die App liest Daten aus Ihren konfigurierten Spalten!'
   }
 };

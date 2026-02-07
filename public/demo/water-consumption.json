@@ -117,5 +117,40 @@
     "kitchenCold": 0,
     "bathroomWarm": 4890,
     "bathroomCold": 6157
+  },
+  {
+    "date": "2026-01-03T23:00:00.000Z",
+    "kitchenWarm": 0,
+    "kitchenCold": 0,
+    "bathroomWarm": 5422,
+    "bathroomCold": 7228
+  },
+  {
+    "date": "2026-01-11T00:00:00.000Z",
+    "kitchenWarm": 0,
+    "kitchenCold": 0,
+    "bathroomWarm": 6080,
+    "bathroomCold": 8171
+  },
+  {
+    "date": "2026-01-18T00:00:00.000Z",
+    "kitchenWarm": 0,
+    "kitchenCold": 0,
+    "bathroomWarm": 6762,
+    "bathroomCold": 9545
+  },
+  {
+    "date": "2026-01-25T00:00:00.000Z",
+    "kitchenWarm": 0,
+    "kitchenCold": 0,
+    "bathroomWarm": 7505,
+    "bathroomCold": 10748
+  },
+  {
+    "date": "2026-02-01T00:00:00.000Z",
+    "kitchenWarm": 0,
+    "kitchenCold": 0,
+    "bathroomWarm": 8121,
+    "bathroomCold": 11855
   }
 ]

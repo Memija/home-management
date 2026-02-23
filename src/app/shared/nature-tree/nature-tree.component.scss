@@ -1,0 +1,185 @@
+:host {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: -2;
+  pointer-events: none;
+  opacity: 0.15;
+  transition: opacity 0.5s ease;
+}
+
+.detailed-tree-svg {
+  width: 100%;
+  height: 100%;
+
+  .branch-path {
+    stroke: var(--text-primary);
+    opacity: 0.6;
+  }
+
+  .animated-branch {
+    animation: branch-sway ease-in-out infinite alternate;
+    transform-origin: 0px 0px; // Origin at start of branch
+  }
+
+  .leaves {
+    fill: var(--text-primary);
+    opacity: 0.55;
+
+    &.autumn {
+      fill: #d97706; // fall amber
+    }
+
+    .leaf-group {
+      animation: rustle 3s ease-in-out infinite alternate;
+      transform-origin: 0px 0px;
+    }
+  }
+
+  .flowers {
+    opacity: 0.8;
+
+    .flower-group {
+      animation: rustle 4s ease-in-out infinite alternate;
+      transform-origin: 0px 0px;
+    }
+  }
+
+  .snow-layer {
+    .snowflake {
+      fill: #fff;
+      opacity: 0.6;
+      animation: fall linear infinite;
+    }
+  }
+
+  .rain-layer {
+    .raindrop {
+      stroke: #60a5fa; // light blue rain
+      stroke-width: 1;
+      opacity: 0.5;
+      animation: rain-fall linear infinite;
+    }
+  }
+
+  .lanterns {
+    opacity: 0;
+    transition: opacity 1s ease;
+
+    line {
+      stroke: #b45309; // darker amber for the string
+    }
+
+    .glow {
+      fill: #fcd34d;
+      opacity: 1;
+      animation: flicker 4s infinite alternate;
+    }
+
+    .core {
+      fill: #fef3c7;
+    }
+
+    &.show-lanterns {
+      opacity: 1;
+
+      .lantern-sway {
+        animation: lantern-sway 4s ease-in-out infinite alternate;
+      }
+    }
+  }
+}
+
+:host-context([data-theme="dark"]) .detailed-tree-svg {
+  .branch-path {
+    stroke: #94a3b8;
+  }
+
+  .leaves {
+    fill: #64748b;
+
+    &.autumn {
+      fill: #b45309; // darker amber for dark mode
+    }
+  }
+}
+
+:host-context([data-theme="light"]) {
+  opacity: 0.3;
+}
+
+:host-context([data-theme="dark"]) {
+  opacity: 0.25;
+}
+
+@keyframes flicker {
+
+  0%,
+  100% {
+    opacity: 0.8;
+  }
+
+  50% {
+    opacity: 0.5;
+  }
+
+  25% {
+    opacity: 0.6;
+  }
+
+  75% {
+    opacity: 0.9;
+  }
+}
+
+@keyframes lantern-sway {
+  0% {
+    transform: rotate(-8deg);
+  }
+
+  100% {
+    transform: rotate(12deg);
+  }
+}
+
+@keyframes branch-sway {
+  0% {
+    transform: rotate(-1.5deg); // Use rotate relative to base transform unfortunately requires additive blend logic in HTML styles usually, but for branch-sway we just need small css-based angular adjustments within relative transform bounds
+  }
+
+  100% {
+    transform: rotate(2.5deg);
+  }
+}
+
+@keyframes rustle {
+  0% {
+    transform: rotate(-10deg);
+  }
+
+  100% {
+    transform: rotate(15deg);
+  }
+}
+
+@keyframes fall {
+  0% {
+    transform: translate(0, 0) rotate(0deg);
+  }
+
+  100% {
+    transform: translate(300px, 2000px) rotate(360deg);
+  }
+}
+
+@keyframes rain-fall {
+  0% {
+    transform: translate(0, 0);
+  }
+
+  100% {
+    transform: translate(250px, 2000px);
+  }
+}

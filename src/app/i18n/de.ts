@@ -11,6 +11,7 @@ import { excel } from './modules/de/excel';
 import { waterFacts } from './modules/de/water-facts';
 import { countryFacts } from './modules/de/country-facts/index';
 import { electricity } from './modules/de/electricity';
+import { auth } from './modules/de/auth';
 
 export const de = {
   ...common,
@@ -23,6 +24,7 @@ export const de = {
   ...errors,
   ...excel,
   ...electricity,
+  ...auth,
   WATER_FACTS: waterFacts,
   COUNTRY_FACTS: countryFacts
 };

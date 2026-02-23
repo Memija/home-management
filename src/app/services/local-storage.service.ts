@@ -30,7 +30,13 @@ export class LocalStorageService extends StorageService {
 
     try {
       const item = localStorage.getItem(this.prefix + key);
-      return item ? JSON.parse(item) : null;
+      if (item === null) return null;
+
+      try {
+        return JSON.parse(item) as T;
+      } catch {
+        return item as unknown as T;
+      }
     } catch (error) {
       console.error(`Error loading from localStorage with key ${key}:`, error);
       return null;

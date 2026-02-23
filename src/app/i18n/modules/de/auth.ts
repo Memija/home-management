@@ -1,0 +1,46 @@
+// Authentication translations - German
+export const auth = {
+  AUTH: {
+    SIGN_IN: 'Anmelden',
+    SIGN_OUT: 'Abmelden',
+    SIGN_IN_WITH_GOOGLE: 'Mit Google anmelden',
+    SIGNED_IN_AS: 'Angemeldet als',
+    NOT_SIGNED_IN: 'Nicht angemeldet',
+    SIGN_IN_ERROR: 'Anmeldung fehlgeschlagen. Bitte versuchen Sie es erneut.',
+    SIGN_OUT_ERROR: 'Abmeldung fehlgeschlagen. Bitte versuchen Sie es erneut.'
+  },
+  STORAGE: {
+    MODE_LOCAL: 'Nur Lokal',
+    MODE_CLOUD: 'Cloud-Sync',
+    CLOUD_SYNC_ENABLED: 'Cloud-Sync aktiviert',
+    CLOUD_SYNC_DISABLED: 'Cloud-Sync deaktiviert',
+    LAST_SYNCED: 'Zuletzt synchronisiert',
+    NEVER_SYNCED: 'Nie synchronisiert',
+    SYNCING: 'Synchronisiere...',
+    SYNC_NOW: 'Jetzt synchronisieren',
+    MIGRATE_TO_CLOUD: 'In Cloud hochladen',
+    MIGRATE_SUCCESS: 'Daten erfolgreich in Cloud hochgeladen',
+    MIGRATE_ERROR: 'Hochladen in Cloud fehlgeschlagen',
+    PULL_FROM_CLOUD: 'Aus Cloud herunterladen',
+    PULL_SUCCESS: 'Daten erfolgreich aus Cloud heruntergeladen',
+    PULL_ERROR: 'Herunterladen aus Cloud fehlgeschlagen',
+    PULL_CONFIRM_TITLE: 'Aus Cloud herunterladen?',
+    PULL_CONFIRM_MESSAGE: 'Dies wird Ihre aktuellen lokalen Daten mit Daten aus der Cloud überschreiben. Diese Aktion kann nicht rückgängig gemacht werden.',
+    CLOUD_DESCRIPTION: 'Wenn aktiviert, werden Ihre Daten in der Cloud gesichert und geräteübergreifend synchronisiert.',
+    LOCAL_DESCRIPTION: 'Daten bleiben nur auf diesem Gerät. Kein Konto erforderlich.',
+    SIGN_IN_REQUIRED: 'Anmelden um Cloud-Sync zu aktivieren',
+    DEMO_MODE_WARNING: 'Cloud-Sync ist im Demomodus deaktiviert.',
+    DELETE_CLOUD_DATA: 'Cloud-Daten löschen',
+    DELETE_CLOUD_TITLE: 'Cloud-Daten löschen?',
+    DELETE_CLOUD_MESSAGE: 'Dies wird alle Ihre Daten dauerhaft aus der Cloud löschen. Ihre lokalen Daten bleiben sicher. Diese Aktion kann nicht rückgängig gemacht werden.',
+    DELETE_SUCCESS: 'Cloud-Daten erfolgreich gelöscht. Ihre Daten befinden sich nicht mehr in der Cloud, bleiben aber auf diesem Gerät erhalten.',
+    DELETE_ERROR: 'Löschen der Cloud-Daten fehlgeschlagen',
+    HELP_TITLE: 'Über Cloud-Sync',
+    HELP_STEP1_TITLE: 'Was ist Cloud-Sync?',
+    HELP_STEP1_DESC: 'Cloud-Sync sichert Ihre Haushaltsdaten sicher in der Cloud. Wenn aktiviert, werden Ihre Daten automatisch synchronisiert, sodass Sie von jedem Gerät darauf zugreifen können, das mit Ihrem Google-Konto angemeldet ist. Derzeit werden nur Google-Konten unterstützt.',
+    HELP_STEP2_TITLE: 'Hochladen & Herunterladen',
+    HELP_STEP2_DESC: 'Verwenden Sie "In Cloud hochladen", um Ihre lokalen Daten in die Cloud zu übertragen. Verwenden Sie "Aus Cloud herunterladen", um Cloud-Daten auf dieses Gerät wiederherzustellen. Das Herunterladen überschreibt Ihre aktuellen lokalen Daten.',
+    HELP_STEP3_TITLE: 'Datenschutz & Sicherheit',
+    HELP_STEP3_DESC: 'Ihre Daten werden in Firebase gespeichert und durch Sicherheitsregeln geschützt, sodass andere Benutzer keinen Zugriff haben. Der App-Administrator kann Daten in der Firebase-Konsole einsehen. Sie können alle Cloud-Daten jederzeit löschen. Lokale Daten bleiben immer auf Ihrem Gerät, unabhängig von den Cloud-Einstellungen.'
+  }
+};

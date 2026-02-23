@@ -1,6 +1,27 @@
 <footer class="app-footer">
   <div class="footer-content">
-    <p class="copyright">© {{ currentYear }} {{ 'FOOTER.APP_NAME' | translate }}. {{ 'FOOTER.ALL_RIGHTS' | translate }}
-    </p>
+    <a routerLink="/release-plan" class="release-plan-link" title="{{ 'FOOTER.RELEASE_PLAN' | translate }}">
+      <lucide-icon [img]="RocketIcon" [size]="16"></lucide-icon>
+      <span>{{ 'FOOTER.RELEASE_PLAN' | translate }}</span>
+    </a>
+    <span class="divider">•</span>
+    <button type="button" class="donate-link" (click)="showSupportModal = true"
+      title="{{ 'FOOTER.SUPPORT_PROJECT' | translate }}">
+      <lucide-icon [img]="HeartIcon" [size]="16"></lucide-icon>
+      <span>{{ 'FOOTER.SUPPORT_PROJECT' | translate }}</span>
+    </button>
+    <span class="divider">•</span>
+    <a href="https://github.com/Memija/home-management" target="_blank" rel="noopener noreferrer" class="github-link"
+      title="{{ 'FOOTER.CONTRIBUTE' | translate }}">
+      <lucide-icon [img]="GithubIcon" [size]="16"></lucide-icon>
+      <span>{{ 'FOOTER.CONTRIBUTE' | translate }}</span>
+    </a>
+    <span class="divider">•</span>
+    <span class="version" title="{{ 'FOOTER.VERSION' | translate:{ version: appVersion } }}">{{ 'FOOTER.VERSION' |
+      translate:{ version: appVersion } }}</span>
   </div>
+
+  @if (showSupportModal) {
+  <app-support-modal (close)="showSupportModal = false"></app-support-modal>
+  }
 </footer>

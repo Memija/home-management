@@ -299,66 +299,16 @@ export class WaterComponent {
   protected calculateBathroomTotal = calculateBathroomTotal;
 
   // Meter Change Methods
-  private confirmedMeterChanges = signal<string[]>(this.getStoredMeterChanges());
-  private dismissedMeterChanges = signal<string[]>(this.getStoredDismissedMeterChanges());
-
-  private getStoredMeterChanges(): string[] {
-    const stored = this.localStorageService.getPreference('water_confirmed_meter_changes');
-    try {
-      const parsed = stored ? JSON.parse(stored) : [];
-      // Normalize: ensure we only have the date part YYYY-MM-DD
-      return Array.isArray(parsed) ? parsed.map((d: string) => d.split('T')[0]) : [];
-    } catch {
-      return [];
-    }
-  }
-
-  private getStoredDismissedMeterChanges(): string[] {
-    const stored = this.localStorageService.getPreference('water_dismissed_meter_changes');
-    try {
-      const parsed = stored ? JSON.parse(stored) : [];
-      // Normalize: ensure we only have the date part YYYY-MM-DD
-      return Array.isArray(parsed) ? parsed.map((d: string) => d.split('T')[0]) : [];
-    } catch {
-      return [];
-    }
-  }
-
-  private saveMeterChanges(): void {
-    const confirmed = this.confirmedMeterChanges();
-    const dismissed = this.dismissedMeterChanges();
-
-    // Ensure we are saving arrays
-    if (Array.isArray(confirmed)) {
-      this.localStorageService.setPreference(
-        'water_confirmed_meter_changes',
-        JSON.stringify(confirmed)
-      );
-    }
-
-    if (Array.isArray(dismissed)) {
-      this.localStorageService.setPreference(
-        'water_dismissed_meter_changes',
-        JSON.stringify(dismissed)
-      );
-    }
-  }
+  private confirmedMeterChanges = this.preferencesService.confirmedMeterChanges;
+  private dismissedMeterChanges = this.preferencesService.dismissedMeterChanges;
 
   protected confirmMeterChange(date: string): void {
     if (!date) return;
-    this.confirmedMeterChanges.update((changes: string[]) => {
-      const newChanges = [...changes, date];
-      return [...new Set(newChanges)]; // Deduplicate
-    });
-    this.saveMeterChanges();
+    this.preferencesService.setMeterChangeConfirmed(date);
   }
 
   protected dismissMeterChange(date: string): void {
     if (!date) return;
-    this.dismissedMeterChanges.update((changes: string[]) => {
-      const newChanges = [...changes, date];
-      return [...new Set(newChanges)]; // Deduplicate
-    });
-    this.saveMeterChanges();
+    this.preferencesService.setMeterChangeDismissed(date);
   }
 }

@@ -9,7 +9,7 @@ export type DisplayMode = 'total' | 'incremental';
 
 export interface ChartDataParams<T = ConsumptionRecord> {
   records: T[];
-  originalRecords?: any[]; // Passed when mode is 'incremental' to provide date context
+  originalRecords?: T[]; // Passed when mode is 'incremental' to provide date context
   labels: string[];
   view: ChartView;
   mode: DisplayMode;

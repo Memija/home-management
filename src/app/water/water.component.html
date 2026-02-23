@@ -21,10 +21,12 @@
       </div>
     </div>
     <div class="notification-actions">
-      <button type="button" class="btn-confirm" (click)="confirmMeterChange(unconfirmedMeterChanges()[0])">
+      <button type="button" class="btn-confirm" (click)="confirmMeterChange(unconfirmedMeterChanges()[0])"
+        aria-label="{{ 'CHART.CONFIRM_METER_CHANGE' | translate }}">
         {{ 'CHART.CONFIRM_METER_CHANGE' | translate }}
       </button>
-      <button type="button" class="btn-dismiss" (click)="dismissMeterChange(unconfirmedMeterChanges()[0])">
+      <button type="button" class="btn-dismiss" (click)="dismissMeterChange(unconfirmedMeterChanges()[0])"
+        aria-label="{{ 'CHART.DISMISS_METER_CHANGE' | translate }}">
         {{ 'CHART.DISMISS_METER_CHANGE' | translate }}
       </button>
     </div>
@@ -111,13 +113,14 @@
     <div class="modal-header">
       <lucide-icon [img]="CheckCircleIcon" size="32" class="success-icon"></lucide-icon>
       <h3>{{ successTitle() | translate }}</h3>
-      <button class="close-btn" (click)="closeSuccessModal()">×</button>
+      <button class="close-btn" (click)="closeSuccessModal()" title="{{ 'ACTIONS.CLOSE' | translate }}"
+        aria-label="{{ 'ACTIONS.CLOSE' | translate }}">×</button>
     </div>
     <div class="modal-body">
       <p>{{ successMessage() | translate }}</p>
     </div>
     <div class="modal-footer">
-      <button class="btn-primary" (click)="closeSuccessModal()">OK</button>
+      <button class="btn-primary" (click)="closeSuccessModal()" aria-label="OK">OK</button>
     </div>
   </div>
 </div>

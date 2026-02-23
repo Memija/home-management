@@ -1,0 +1,108 @@
+<div class="section storage-section">
+  <div class="section-header">
+    <h2>{{ (isCloudMode() ? 'STORAGE.MODE_CLOUD' : 'STORAGE.MODE_LOCAL') | translate }}</h2>
+    <button type="button" class="help-btn" (click)="showHelp()" title="{{ 'STORAGE.HELP_TITLE' | translate }}">
+      <lucide-icon [img]="HelpIcon" size="20"></lucide-icon>
+    </button>
+  </div>
+  <p class="description">
+    {{ (isCloudMode() ? 'STORAGE.CLOUD_DESCRIPTION' : 'STORAGE.LOCAL_DESCRIPTION') | translate }}
+  </p>
+
+  @if (isDemoMode()) {
+  <div class="auth-warning">
+    <lucide-icon [img]="AlertIcon" size="16"></lucide-icon>
+    <span>{{ 'STORAGE.DEMO_MODE_WARNING' | translate }}</span>
+  </div>
+  } @else if (!isAuthenticated()) {
+  <div class="auth-warning">
+    <lucide-icon [img]="AlertIcon" size="16"></lucide-icon>
+    <span>{{ 'STORAGE.SIGN_IN_REQUIRED' | translate }}</span>
+  </div>
+  }
+
+  <div class="controls">
+    <div class="toggle-wrapper">
+      <label class="switch">
+        <input type="checkbox" [checked]="isCloudMode()" [disabled]="isToggleDisabled" (change)="toggleMode()">
+        <span class="slider round"></span>
+        <span class="sr-only">{{ (isCloudMode() ? 'STORAGE.CLOUD_SYNC_ENABLED' : 'STORAGE.CLOUD_SYNC_DISABLED')
+          | translate }}</span>
+      </label>
+      <span class="label-text">
+        {{ (isCloudMode() ? 'STORAGE.CLOUD_SYNC_ENABLED' : 'STORAGE.CLOUD_SYNC_DISABLED') | translate }}
+      </span>
+    </div>
+
+    @if (isCloudMode()) {
+    <div class="sync-info">
+      @if (lastSyncTime()) {
+      <span class="last-sync">
+        {{ 'STORAGE.LAST_SYNCED' | translate }}: {{ lastSyncTime() | date:'short':undefined:currentLang() }}
+      </span>
+      } @else {
+      <span class="last-sync">{{ 'STORAGE.NEVER_SYNCED' | translate }}</span>
+      }
+    </div>
+
+    <div class="actions">
+      <button class="btn-cloud-upload" (click)="migrateToCloud()" [disabled]="isSyncing()"
+        title="{{ 'STORAGE.MIGRATE_TO_CLOUD' | translate }}">
+        @if (isSyncing()) {
+        <lucide-icon [img]="RefreshIcon" size="18" class="spin"></lucide-icon>
+        } @else {
+        <lucide-icon [img]="UploadIcon" size="18"></lucide-icon>
+        }
+        <span class="btn-text">{{ 'STORAGE.MIGRATE_TO_CLOUD' | translate }}</span>
+      </button>
+
+      <button class="btn-cloud-download" (click)="openDownloadModal()" [disabled]="isSyncing()"
+        title="{{ 'STORAGE.PULL_FROM_CLOUD' | translate }}">
+        @if (isSyncing()) {
+        <lucide-icon [img]="RefreshIcon" size="18" class="spin"></lucide-icon>
+        } @else {
+        <lucide-icon [img]="DownloadIcon" size="18"></lucide-icon>
+        }
+        <span class="btn-text">{{ 'STORAGE.PULL_FROM_CLOUD' | translate }}</span>
+      </button>
+
+      <button class="btn-danger" (click)="openDeleteModal()" [disabled]="isSyncing()"
+        title="{{ 'STORAGE.DELETE_CLOUD_DATA' | translate }}">
+        <lucide-icon [img]="AlertIcon" size="18"></lucide-icon>
+        <span class="btn-text">{{ 'STORAGE.DELETE_CLOUD_DATA' | translate }}</span>
+      </button>
+    </div>
+    }
+  </div>
+
+  @if (isSyncing()) {
+  <div class="status-message syncing">
+    <lucide-icon [img]="RefreshIcon" class="spin"></lucide-icon>
+    <span>{{ 'STORAGE.SYNCING' | translate }}</span>
+  </div>
+  }
+
+  @if (actionStatus(); as status) {
+  <div class="status-message" [class.error]="status.type === 'error'" [class.success]="status.type === 'success'">
+    @if (status.type === 'success') {
+    <lucide-icon [img]="CheckIcon" size="18"></lucide-icon>
+    } @else {
+    <lucide-icon [img]="AlertIcon" size="18"></lucide-icon>
+    }
+    <span>{{ status.message | translate }}</span>
+  </div>
+  }
+</div>
+
+<app-delete-confirmation-modal [show]="isDeleteModalOpen()" titleKey="STORAGE.DELETE_CLOUD_TITLE"
+  messageKey="STORAGE.DELETE_CLOUD_MESSAGE" cancelKey="ACTIONS.CANCEL" deleteKey="ACTIONS.DELETE" [icon]="AlertIcon"
+  (confirm)="onConfirmDelete()" (cancel)="closeDeleteModal()">
+</app-delete-confirmation-modal>
+
+<app-confirmation-modal [show]="isDownloadModalOpen()" [titleKey]="'STORAGE.PULL_CONFIRM_TITLE'"
+  [messageKey]="'STORAGE.PULL_CONFIRM_MESSAGE'" [cancelKey]="'ACTIONS.CANCEL'" [confirmKey]="'STORAGE.PULL_FROM_CLOUD'"
+  [icon]="DownloadIcon" (confirm)="onConfirmDownload()" (cancel)="closeDownloadModal()">
+</app-confirmation-modal>
+
+<app-help-modal [show]="isHelpModalOpen()" [titleKey]="'STORAGE.HELP_TITLE'" [steps]="helpSteps" (close)="closeHelp()">
+</app-help-modal>

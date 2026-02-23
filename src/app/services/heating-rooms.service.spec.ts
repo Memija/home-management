@@ -1,19 +1,24 @@
 import { TestBed } from '@angular/core/testing';
 import { HeatingRoomsService } from './heating-rooms.service';
-import { LocalStorageService } from './local-storage.service';
+import { STORAGE_SERVICE } from './storage.service';
 import { LanguageService } from './language.service';
-import { describe, it, expect, beforeEach, vi, afterEach } from 'vitest';
+import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { signal } from '@angular/core';
 
 describe('HeatingRoomsService', () => {
   let service: HeatingRoomsService;
-  let mockLocalStorageService: any;
+  let mockStorageService: any;
   let mockLanguageService: any;
 
+  // Helper to wait for the async loadRooms to complete
+  const waitForInit = async () => {
+    await new Promise(resolve => setTimeout(resolve, 0));
+  };
+
   beforeEach(() => {
-    mockLocalStorageService = {
-      getPreference: vi.fn().mockReturnValue(null),
-      setPreference: vi.fn(),
+    mockStorageService = {
+      load: vi.fn().mockResolvedValue(null),
+      save: vi.fn().mockResolvedValue(undefined),
     };
 
     mockLanguageService = {
@@ -24,7 +29,7 @@ describe('HeatingRoomsService', () => {
     TestBed.configureTestingModule({
       providers: [
         HeatingRoomsService,
-        { provide: LocalStorageService, useValue: mockLocalStorageService },
+        { provide: STORAGE_SERVICE, useValue: mockStorageService },
         { provide: LanguageService, useValue: mockLanguageService }
       ]
     });
@@ -36,36 +41,43 @@ describe('HeatingRoomsService', () => {
   });
 
   describe('Initialization', () => {
-    it('should load rooms from storage', () => {
+    it('should load rooms from storage', async () => {
       const storedRooms = [{ id: 'room_1', name: 'Living Room' }];
-      mockLocalStorageService.getPreference.mockReturnValue(JSON.stringify(storedRooms));
+      mockStorageService.load.mockResolvedValue(storedRooms);
 
       // Re-create service to trigger load
       TestBed.resetTestingModule();
       TestBed.configureTestingModule({
         providers: [
           HeatingRoomsService,
-          { provide: LocalStorageService, useValue: mockLocalStorageService },
+          { provide: STORAGE_SERVICE, useValue: mockStorageService },
           { provide: LanguageService, useValue: mockLanguageService }
         ]
       });
+
       const newService = TestBed.inject(HeatingRoomsService);
+      await waitForInit(); // Wait for loadRooms to complete
 
       expect(newService.rooms().length).toBe(1);
       expect(newService.rooms()[0].name).toBe('Living Room');
     });
 
-    it('should start empty if no storage', () => {
+    it('should start empty if no storage', async () => {
+      await waitForInit();
       expect(service.rooms().length).toBe(0);
     });
   });
 
   describe('Room Management', () => {
+    beforeEach(async () => {
+      await waitForInit();
+    });
+
     it('should add a room', () => {
       service.addRoom();
       expect(service.rooms().length).toBe(1);
       expect(service.rooms()[0].id).toBe('room_1');
-      expect(mockLocalStorageService.setPreference).toHaveBeenCalled();
+      expect(mockStorageService.save).toHaveBeenCalled();
     });
 
     it('should remove a room', () => {
@@ -75,6 +87,7 @@ describe('HeatingRoomsService', () => {
 
       expect(service.rooms().length).toBe(1);
       expect(service.rooms()[0].id).toBe('room_2');
+      expect(mockStorageService.save).toHaveBeenCalled();
     });
 
     it('should update room name', () => {
@@ -87,6 +100,7 @@ describe('HeatingRoomsService', () => {
       service.addRoom();
       service.reset();
       expect(service.rooms().length).toBe(0);
+      expect(mockStorageService.save).toHaveBeenCalled();
     });
 
     it('should set rooms', () => {
@@ -94,6 +108,7 @@ describe('HeatingRoomsService', () => {
       service.setRooms(rooms);
       expect(service.rooms().length).toBe(1);
       expect(service.rooms()[0].id).toBe('custom');
+      expect(mockStorageService.save).toHaveBeenCalled();
     });
 
     it('should limit max rooms', () => {
@@ -110,6 +125,10 @@ describe('HeatingRoomsService', () => {
   });
 
   describe('Predefined names', () => {
+    beforeEach(async () => {
+      await waitForInit();
+    });
+
     it('should use predefined names for first few rooms', () => {
       service.addRoom();
       expect(mockLanguageService.translate).toHaveBeenCalledWith('HEATING.ROOM_LIVING_ROOM');
@@ -117,10 +136,13 @@ describe('HeatingRoomsService', () => {
       service.addRoom();
       expect(mockLanguageService.translate).toHaveBeenCalledWith('HEATING.ROOM_BEDROOM');
     });
-
   });
 
   describe('Export/Import', () => {
+    beforeEach(async () => {
+      await waitForInit();
+    });
+
     it('should export rooms to JSON file', () => {
       // Setup mock DOM methods
       const mockCreateElement = vi.spyOn(document, 'createElement');
@@ -166,6 +188,7 @@ describe('HeatingRoomsService', () => {
       expect(result.success).toBe(true);
       expect(service.rooms().length).toBe(2);
       expect(service.rooms()[0].name).toBe('Kitchen');
+      expect(mockStorageService.save).toHaveBeenCalled();
     });
 
     it('should reject non-array data', async () => {

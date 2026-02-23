@@ -1,0 +1,46 @@
+// Authentication translations - English
+export const auth = {
+  AUTH: {
+    SIGN_IN: 'Sign In',
+    SIGN_OUT: 'Sign Out',
+    SIGN_IN_WITH_GOOGLE: 'Sign in with Google',
+    SIGNED_IN_AS: 'Signed in as',
+    NOT_SIGNED_IN: 'Not signed in',
+    SIGN_IN_ERROR: 'Sign in failed. Please try again.',
+    SIGN_OUT_ERROR: 'Sign out failed. Please try again.'
+  },
+  STORAGE: {
+    MODE_LOCAL: 'Local Only',
+    MODE_CLOUD: 'Cloud Sync',
+    CLOUD_SYNC_ENABLED: 'Cloud sync enabled',
+    CLOUD_SYNC_DISABLED: 'Cloud sync disabled',
+    LAST_SYNCED: 'Last synced',
+    NEVER_SYNCED: 'Never synced',
+    SYNCING: 'Syncing...',
+    SYNC_NOW: 'Sync Now',
+    MIGRATE_TO_CLOUD: 'Upload to Cloud',
+    MIGRATE_SUCCESS: 'Data successfully uploaded to cloud',
+    MIGRATE_ERROR: 'Failed to upload data to cloud',
+    PULL_FROM_CLOUD: 'Download from Cloud',
+    PULL_SUCCESS: 'Data successfully downloaded from cloud',
+    PULL_ERROR: 'Failed to download data from cloud',
+    PULL_CONFIRM_TITLE: 'Download from Cloud?',
+    PULL_CONFIRM_MESSAGE: 'This will overwrite your current local data with data from the cloud. This action cannot be undone.',
+    CLOUD_DESCRIPTION: 'When enabled, your data is backed up to the cloud and synced across devices.',
+    LOCAL_DESCRIPTION: 'Data stays only on this device. No account required.',
+    SIGN_IN_REQUIRED: 'Sign in to enable cloud sync',
+    DEMO_MODE_WARNING: 'Cloud sync is disabled in demo mode.',
+    DELETE_CLOUD_DATA: 'Delete Cloud Data',
+    DELETE_CLOUD_TITLE: 'Delete Cloud Data?',
+    DELETE_CLOUD_MESSAGE: 'This will permanently delete all your data from the cloud. Your local data will remain safe. This action cannot be undone.',
+    DELETE_SUCCESS: 'Cloud data deleted successfully. Your data is no longer in the cloud but remains on this device.',
+    DELETE_ERROR: 'Failed to delete cloud data',
+    HELP_TITLE: 'About Cloud Sync',
+    HELP_STEP1_TITLE: 'What is Cloud Sync?',
+    HELP_STEP1_DESC: 'Cloud Sync securely backs up your household data to the cloud. When enabled, your data is automatically synchronized so you can access it from any device signed in with your Google account. Currently, only Google accounts are supported.',
+    HELP_STEP2_TITLE: 'Upload & Download',
+    HELP_STEP2_DESC: 'Use "Upload to Cloud" to push your local data to the cloud. Use "Download from Cloud" to restore cloud data onto this device. Downloading will overwrite your current local data.',
+    HELP_STEP3_TITLE: 'Privacy & Safety',
+    HELP_STEP3_DESC: 'Your data is stored in Firebase and protected by security rules so other users cannot access it. The app administrator can view data in the Firebase Console. You can delete all cloud data at any time. Local data always remains on your device regardless of cloud settings.'
+  }
+};

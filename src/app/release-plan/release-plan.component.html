@@ -1,0 +1,65 @@
+<div class="page-container release-plan-page">
+  <!-- Hero Section -->
+  <div class="hero-section">
+    <div class="hero-icon">
+      <lucide-icon [img]="RocketIcon" [size]="48"></lucide-icon>
+    </div>
+    <h1>{{ 'RELEASE_PLAN.TITLE' | translate }}</h1>
+    <p class="shared-card-text">{{ 'RELEASE_PLAN.SUBTITLE' | translate }}</p>
+    <div class="version-badge">
+      <lucide-icon [img]="CalendarIcon" [size]="14"></lucide-icon>
+      <span>{{ 'RELEASE_PLAN.COMING_SOON' | translate }}</span>
+    </div>
+  </div>
+
+  <!-- Filter Tabs -->
+  <div class="filter-tabs">
+    <button class="filter-tab" [class.active]="activeFilter() === 'all'" (click)="setFilter('all')"
+      title="Show all features">
+      {{ 'RELEASE_PLAN.FILTER_ALL' | translate }}
+      <span class="filter-count">{{ filterOptions().all }}</span>
+    </button>
+    <button class="filter-tab tag-new" [class.active]="activeFilter() === 'new'" (click)="setFilter('new')"
+      title="Show new features">
+      <lucide-icon [img]="SparklesIcon" [size]="12"></lucide-icon>
+      {{ 'RELEASE_PLAN.NEW_FEATURE' | translate }}
+      <span class="filter-count">{{ filterOptions().new }}</span>
+    </button>
+    <button class="filter-tab tag-enhancement" [class.active]="activeFilter() === 'enhancement'"
+      (click)="setFilter('enhancement')" title="Show enhancements">
+      <lucide-icon [img]="EnhancementIcon" [size]="12"></lucide-icon>
+      {{ 'RELEASE_PLAN.ENHANCEMENT' | translate }}
+      <span class="filter-count">{{ filterOptions().enhancement }}</span>
+    </button>
+    <button class="filter-tab tag-smart" [class.active]="activeFilter() === 'smart'" (click)="setFilter('smart')"
+      title="Show smart features">
+      <lucide-icon [img]="SmartIcon" [size]="12"></lucide-icon>
+      {{ 'RELEASE_PLAN.SMART' | translate }}
+      <span class="filter-count">{{ filterOptions().smart }}</span>
+    </button>
+  </div>
+
+  <!-- Features Grid -->
+  <div class="features-grid">
+    @for (feature of filteredFeatures(); track feature.id) {
+    <div class="feature-card" [class]="feature.colorClass">
+      <div class="feature-icon">
+        <lucide-icon [img]="feature.icon" [size]="32"></lucide-icon>
+      </div>
+      <div class="feature-content">
+        <h2>{{ feature.titleKey | translate }}</h2>
+        <p>{{ feature.descKey | translate }}</p>
+      </div>
+      <div class="feature-tag" [class]="'tag-' + feature.tag">
+        <lucide-icon [img]="getTagIcon(feature.tag)" [size]="12"></lucide-icon>
+        <span>{{ getTagTranslationKey(feature.tag) | translate }}</span>
+      </div>
+    </div>
+    }
+  </div>
+
+  <!-- Call to Action -->
+  <div class="cta-section">
+    <p class="shared-card-text cta-text">{{ 'RELEASE_PLAN.CTA_TEXT' | translate }}</p>
+  </div>
+</div>

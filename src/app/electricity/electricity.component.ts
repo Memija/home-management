@@ -100,8 +100,8 @@ export class ElectricityComponent {
   protected sortOptions = computed<SortOptionConfig[]>(() => [
     { value: 'date-desc', labelKey: 'HOME.SORT.DATE_DESC', direction: '↓' },
     { value: 'date-asc', labelKey: 'HOME.SORT.DATE_ASC', direction: '↑' },
-    { value: 'value-desc', labelKey: 'ELECTRICITY.SORT_VALUE_DESC', direction: '↓' },
-    { value: 'value-asc', labelKey: 'ELECTRICITY.SORT_VALUE_ASC', direction: '↑' }
+    { value: 'value-desc', labelKey: 'HOME.SORT.TOTAL_DESC', direction: '↓' },
+    { value: 'value-asc', labelKey: 'HOME.SORT.TOTAL_ASC', direction: '↑' }
   ]);
 
   protected consumptionGroups = computed<ConsumptionGroup[]>(() => [

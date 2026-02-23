@@ -1,3 +1,4 @@
+@use 'styles/theme';
 @use 'styles/buttons';
 @use 'styles/forms';
 @use 'styles/layout';
@@ -7,6 +8,7 @@
 @use 'styles/notifications';
 @use 'styles/comparison';
 @use 'styles/demo';
+@use 'styles/animations';
 
 /* You can add global styles to this file, and also import other style files */
 

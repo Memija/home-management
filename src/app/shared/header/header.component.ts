@@ -2,6 +2,7 @@ import { Component, inject, signal, HostListener, ElementRef, computed } from '@
 import { Router } from '@angular/router';
 import { TranslatePipe } from '../../pipes/translate.pipe';
 import { LanguageSwitcherComponent } from '../../components/language-switcher/language-switcher.component';
+import { AuthButtonComponent } from '../../components/auth-button/auth-button.component';
 import { LucideAngularModule, Play, X, Bell, ArrowRight, Sun, Moon, Monitor } from 'lucide-angular';
 import { DemoService } from '../../services/demo.service';
 import { NotificationService, Notification } from '../../services/notification.service';
@@ -11,7 +12,7 @@ import { LanguageService } from '../../services/language.service';
 @Component({
   selector: 'app-header',
   standalone: true,
-  imports: [TranslatePipe, LanguageSwitcherComponent, LucideAngularModule],
+  imports: [TranslatePipe, LanguageSwitcherComponent, AuthButtonComponent, LucideAngularModule],
   templateUrl: './header.component.html',
   styleUrl: './header.component.scss'
 })
@@ -23,8 +24,8 @@ export class HeaderComponent {
   protected readonly themeService = inject(ThemeService);
   private readonly languageService = inject(LanguageService);
 
-  protected readonly PlayIcon = Play;
   protected readonly XIcon = X;
+  protected readonly PlayIcon = Play;
   protected readonly BellIcon = Bell;
   protected readonly ArrowRightIcon = ArrowRight;
   protected readonly SunIcon = Sun;

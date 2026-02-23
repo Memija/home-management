@@ -175,6 +175,37 @@
   }
 }
 
+// Cloud sync action buttons
+.btn-cloud-upload {
+  @extend %btn-base;
+  background: $info;
+
+  &:hover:not(:disabled) {
+    background: color.adjust($info, $lightness: -10%);
+    box-shadow: 0 2px 8px rgba($info, 0.3);
+  }
+}
+
+.btn-cloud-download {
+  @extend %btn-base;
+  background: $success;
+
+  &:hover:not(:disabled) {
+    background: color.adjust($success, $lightness: -10%);
+    box-shadow: 0 2px 8px rgba($success, 0.3);
+  }
+}
+
+.btn-danger {
+  @extend %btn-base;
+  background: $danger;
+
+  &:hover:not(:disabled) {
+    background: $danger-dark;
+    box-shadow: 0 2px 8px rgba($danger, 0.3);
+  }
+}
+
 // New shared outline button style
 .btn-outline {
   display: inline-flex;
@@ -249,7 +280,10 @@
   .upload-btn,
   .btn-outline,
   .delete-all-btn,
-  .reset-filters-btn {
+  .reset-filters-btn,
+  .btn-cloud-upload,
+  .btn-cloud-download,
+  .btn-danger {
     .btn-text {
       display: none;
     }

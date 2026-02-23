@@ -37,8 +37,29 @@ export const common = {
   },
   FOOTER: {
     APP_NAME: 'Home Management',
-    ALL_RIGHTS: 'All rights reserved',
-    CONTACT_US: 'Contact Us'
+    SUPPORT_PROJECT: 'Support this Project',
+    RELEASE_PLAN: 'Upcoming Features',
+    CONTRIBUTE: 'Contribute',
+    VERSION: 'Version {{version}}'
+  },
+  RELEASE_PLAN: {
+    TITLE: 'Upcoming Features',
+    SUBTITLE: 'See what\'s coming in our next release to make your home management even better',
+    COMING_SOON: 'Coming Soon',
+    NEW_FEATURE: 'New',
+    ENHANCEMENT: 'Enhancement',
+    SMART: 'Smart',
+    FILTER_ALL: 'All',
+    FEATURE_1_TITLE: 'Cold Water Only Mode',
+    FEATURE_1_DESC: 'Not everyone has a separate warm water meter. Soon you\'ll be able to record your total water consumption even when warm water tracking isn\'t available, giving you complete flexibility in how you monitor your usage.',
+    FEATURE_2_TITLE: 'Full-Screen Charts',
+    FEATURE_2_DESC: 'Get a better view of your consumption data with the ability to expand charts to full screen. Perfect for detailed analysis and presentations, making it easier to spot trends and patterns in your usage.',
+    FEATURE_3_TITLE: 'Smart Usage Predictions',
+    FEATURE_3_DESC: 'Let the app analyze your historical consumption data and provide intelligent predictions for future usage. Plan ahead, set better budgets, and understand your consumption patterns like never before.',
+    FEATURE_4_TITLE: 'Image-Based Meter Reading',
+    FEATURE_4_DESC: 'Simply take a photo of your meter and let the app automatically recognize the numbers from the image. No more manual entry - just snap a picture and the reading is captured!',
+    CTA_TEXT: 'Your support helps us build these features faster. Thank you for being part of our community!',
+    BACK_TO_HOME: 'Back to Home'
   },
   DEMO: {
     TITLE: 'Try Demo Mode',

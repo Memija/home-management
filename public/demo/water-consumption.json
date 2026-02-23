@@ -152,5 +152,12 @@
     "kitchenCold": 0,
     "bathroomWarm": 8121,
     "bathroomCold": 11855
+  },
+  {
+    "date": "2026-02-08T00:00:00.000Z",
+    "kitchenWarm": 0,
+    "kitchenCold": 0,
+    "bathroomWarm": 8899,
+    "bathroomCold": 13052
   }
 ]

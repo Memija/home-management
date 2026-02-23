@@ -44,3 +44,6 @@ Thumbs.db
 
 # Data files
 data
+
+# Firebase config (contains API keys)
+src/app/config/firebase.config.ts

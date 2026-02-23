@@ -1,0 +1,29 @@
+@if (isLoading()) {
+<div class="auth-button">
+  <span class="spinner"></span>
+</div>
+} @else if (isAuthenticated()) {
+<div class="auth-button authenticated">
+  @if (user()?.photoURL) {
+  <img [src]="user()?.photoURL" alt="{{ user()?.displayName || 'User' }}" title="{{ user()?.displayName || 'User' }}"
+    class="user-avatar" referrerpolicy="no-referrer" />
+  } @else {
+  <lucide-icon [img]="UserIcon" class="user-icon"></lucide-icon>
+  }
+  <span class="user-name">{{ user()?.displayName || user()?.email }}</span>
+  <button class="btn-logout" (click)="signOut()" title="{{ 'AUTH.SIGN_OUT' | translate }}"
+    aria-label="{{ 'AUTH.SIGN_OUT' | translate }}">
+    <lucide-icon [img]="LogOutIcon"></lucide-icon>
+  </button>
+</div>
+} @else {
+<button class="auth-button sign-in" (click)="signIn()" [disabled]="isSigningIn"
+  title="{{ 'AUTH.SIGN_IN_WITH_GOOGLE' | translate }}">
+  @if (isSigningIn) {
+  <span class="spinner"></span>
+  } @else {
+  <lucide-icon [img]="LogInIcon"></lucide-icon>
+  }
+  <span class="sign-in-text">{{ 'AUTH.SIGN_IN' | translate }}</span>
+</button>
+}

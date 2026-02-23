@@ -51,7 +51,9 @@
               "rgbcolor",
               "raf",
               "core-js",
-              "hammerjs"
+              "hammerjs",
+              "@grpc/grpc-js",
+              "@grpc/proto-loader"
             ]
           },
           "configurations": {

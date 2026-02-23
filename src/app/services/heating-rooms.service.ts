@@ -1,5 +1,5 @@
-import { Injectable, signal, computed, inject, effect, untracked } from '@angular/core';
-import { LocalStorageService } from './local-storage.service';
+import { Injectable, signal, computed, inject } from '@angular/core';
+import { STORAGE_SERVICE } from './storage.service';
 import { LanguageService } from './language.service';
 
 /**
@@ -25,30 +25,15 @@ export const PREDEFINED_ROOM_KEYS = [
   providedIn: 'root'
 })
 export class HeatingRoomsService {
-  private localStorage = inject(LocalStorageService);
+  private storage = inject(STORAGE_SERVICE);
   private languageService = inject(LanguageService);
 
   // Room configurations signal
-  private _rooms = signal<HeatingRoomConfig[]>(this.loadRooms());
+  private _rooms = signal<HeatingRoomConfig[]>([]);
   readonly rooms = this._rooms.asReadonly();
 
   constructor() {
-    // Effect to update default room name once translations are loaded
-    effect(() => {
-      // This dependency triggers the effect when translations change/load
-      const defaultName = this.languageService.translate('HEATING.ROOM_LIVING_ROOM');
-
-      // Update state without tracking dependencies to avoid cycles
-      untracked(() => {
-        const currentRooms = this._rooms();
-        const defaultRoom = currentRooms.find(r => r.id === 'room_1');
-
-        // Only update if it currently equals the translation key (meaning load failed initially)
-        if (defaultRoom && defaultRoom.name === 'HEATING.ROOM_LIVING_ROOM') {
-          this.updateRoomName('room_1', defaultName);
-        }
-      });
-    });
+    this.loadRooms();
   }
 
   // Computed helpers
@@ -56,44 +41,17 @@ export class HeatingRoomsService {
   readonly canAddRoom = computed(() => this._rooms().length < MAX_ROOMS);
   readonly canRemoveRoom = computed(() => this._rooms().length > 0);
 
-  private getDefaultRoom(): HeatingRoomConfig {
-    return {
-      id: 'room_1',
-      name: this.languageService.translate('HEATING.ROOM_LIVING_ROOM'),
-      type: 'HEATING.ROOM_LIVING_ROOM'
-    };
-  }
+  private async loadRooms(): Promise<void> {
+    const stored = await this.storage.load<HeatingRoomConfig[]>(STORAGE_KEY);
 
-  private loadRooms(): HeatingRoomConfig[] {
-    // Try new key first
-    let stored = this.localStorage.getPreference(STORAGE_KEY);
-
-    // Migration: if new key is empty, try old key
-    if (!stored) {
-      const oldKey = 'heating_room_configs';
-      const oldData = this.localStorage.getPreference(oldKey);
-      if (oldData) {
-        // Migrate to new key
-        this.localStorage.setPreference(STORAGE_KEY, oldData);
-        stored = oldData;
-      }
+    if (stored && Array.isArray(stored)) {
+      this._rooms.set(stored);
     }
-
-    if (stored) {
-      try {
-        const parsed = JSON.parse(stored);
-        if (Array.isArray(parsed)) {
-          return parsed;
-        }
-      } catch {
-        // Fall through to default
-      }
-    }
-    return [];
   }
 
   private saveRooms(): void {
-    this.localStorage.setPreference(STORAGE_KEY, JSON.stringify(this._rooms()));
+    // Fire and forget save
+    this.storage.save(STORAGE_KEY, this._rooms());
   }
 
   /**

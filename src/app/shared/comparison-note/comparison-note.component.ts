@@ -113,17 +113,34 @@ export class ComparisonNoteComponent {
     });
 
     protected effectiveComparisonCountryCode = computed(() => {
-        return this.comparisonCountry() || this.countryName() || 'DE';
+        const selected = this.comparisonCountry();
+        if (selected) return selected;
+
+        // Fallback to user's country or default
+        const userCountry = this.countryName();
+        // Check if user's country is valid for the current type
+        if (userCountry && this.isValidCountry(userCountry)) {
+            return userCountry;
+        }
+
+        return 'DE';
     });
 
     protected effectiveComparisonCountryName = computed(() => {
         const code = this.effectiveComparisonCountryCode();
-        // Find the country in available countries and return its translated name
+        // Register translation dependency
+        const lang = this.languageService.currentLang();
+
+        // Find the country in available countries using the code
         const countries = this.availableCountries();
         const country = countries.find(c => c.code.toLowerCase() === code.toLowerCase());
+
         if (country) {
             return this.languageService.translate(country.translationKey);
         }
+
+        // Try to translate the code directly if it's a known country code key
+        // or just return the code
         return code.toUpperCase();
     });
 
@@ -142,6 +159,10 @@ export class ComparisonNoteComponent {
         const country = countries.find(c => c.code.toLowerCase() === code.toLowerCase());
         return country?.average || 150;
     });
+
+    private isValidCountry(code: string): boolean {
+        return this.availableCountries().some(c => c.code.toLowerCase() === code.toLowerCase());
+    }
 
     // Water fact - for water comparison mode
     protected waterFact = computed(() => {
@@ -187,6 +208,40 @@ export class ComparisonNoteComponent {
 
     protected electricityFactTitle = computed(() => {
         return this.electricityFact()?.title || '';
+    });
+
+    // Main comparison text computed in TS to ensure reactivity and stability
+    protected comparisonText = computed(() => {
+        const type = this.type();
+        const countryName = this.effectiveComparisonCountryName();
+        const average = this.countryAverage();
+        const size = this.familySize();
+
+        // Ensure language dependency is tracked
+        this.languageService.currentLang();
+
+        if (type === 'water') {
+            return this.languageService.translate('CHART.COMPARISON_NOTE_COUNTRY', {
+                country: countryName,
+                average: average,
+                size: size
+            });
+        }
+
+        if (type === 'heating') {
+            const text = this.languageService.translate('CHART.COMPARISON_NOTE_COUNTRY_HEATING', {
+                country: countryName,
+                average: average
+            });
+            // console.log('[ComparisonNote] Heating text:', text, { country: countryName, average });
+            return text;
+        }
+
+        return this.languageService.translate('CHART.COMPARISON_NOTE_COUNTRY_ELECTRICITY', {
+            country: countryName,
+            average: average,
+            size: size
+        });
     });
 
     constructor() {

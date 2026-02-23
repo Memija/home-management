@@ -1,0 +1,17 @@
+<div class="modal-overlay" (click)="onClose()">
+  <div class="modal-container" (click)="$event.stopPropagation()">
+    <div class="modal-header">
+      <div class="header-title">
+        <lucide-icon [img]="HeartIcon" class="header-icon" size="24"></lucide-icon>
+        <h2>{{ 'FOOTER.SUPPORT_PROJECT' | translate }}</h2>
+      </div>
+      <button type="button" class="close-btn" (click)="onClose()" title="{{ 'ACTIONS.CLOSE' | translate }}">
+        <lucide-icon [img]="XIcon" size="24"></lucide-icon>
+      </button>
+    </div>
+
+    <div class="modal-body">
+      <iframe id='kofiframe' [src]='kofiUrl' title='memija'></iframe>
+    </div>
+  </div>
+</div>

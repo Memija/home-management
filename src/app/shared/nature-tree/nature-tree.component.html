@@ -1,0 +1,121 @@
+<svg class="detailed-tree-svg" [ngClass]="'season-' + season" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 2000 1200"
+  preserveAspectRatio="xMidYMax slice">
+  <defs>
+    <filter id="lantern-glow" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur stdDeviation="8" result="blur" />
+      <feMerge>
+        <feMergeNode in="blur" />
+        <feMergeNode in="SourceGraphic" />
+      </feMerge>
+    </filter>
+
+    <!-- Organic leaf shapes -->
+    <path id="leaf-0" d="M0,0 C-12,-8 -18,8 0,25 C18,8 12,-8 0,0 Z" />
+    <path id="leaf-1" d="M0,0 C-10,-12 8,-18 20,0 C8,18 -10,12 0,0 Z" />
+    <path id="leaf-2" d="M0,0 C-8,-10 -12,0 0,20 C12,0 8,-10 0,0 Z" />
+
+    <!-- Flower blossom shape -->
+    <g id="blossom">
+      <circle cx="0" cy="0" r="10" />
+      <circle cx="15" cy="-8" r="12" />
+      <circle cx="10" cy="-20" r="10" />
+      <circle cx="-5" cy="-22" r="12" />
+      <circle cx="-16" cy="-10" r="10" />
+      <circle cx="-10" cy="5" r="12" />
+      <circle cx="2" cy="-10" r="5" fill="#fcd34d" />
+    </g>
+  </defs>
+
+  <!-- Weather Layer: Snow (Winter) -->
+  @if (season === 'winter') {
+  <g class="snow-layer">
+    @for (flake of snowflakes; track flake.x + '_' + flake.y + '_' + $index) {
+    <circle class="snowflake" [attr.cx]="flake.x" [attr.cy]="flake.y" [attr.r]="flake.size"
+      [style.animation-duration]="flake.animDuration" [style.animation-delay]="flake.animDelay" />
+    }
+  </g>
+  }
+
+  <!-- Weather Layer: Rain (Autumn) -->
+  @if (season === 'autumn') {
+  <g class="rain-layer">
+    @for (drop of raindrops; track $index) {
+    <line class="raindrop" [attr.x1]="drop.x" [attr.y1]="drop.y" [attr.x2]="drop.x - drop.height * 0.2"
+      [attr.y2]="drop.y + drop.height" [style.animation-duration]="drop.animDuration"
+      [style.animation-delay]="drop.animDelay" />
+    }
+  </g>
+  }
+
+  <!-- Recursive Branch Template -->
+  <ng-template #branchTemplate let-node="branch">
+    @if (node) {
+    <!-- Wrap in a static transform group so CSS animations don't override the translation/rotation coordinates -->
+    <g [style.transform]="'translate(' + node.x + 'px, ' + node.y + 'px) rotate(' + node.angle + 'deg)'">
+      <g class="animated-branch" [style.animation-duration]="node.animDuration"
+        [style.animation-delay]="node.animDelay">
+
+        <!-- Structural Line -->
+        <line class="branch-path" x1="0" y1="0" x2="0" [attr.y2]="-node.length" [attr.stroke-width]="node.width"
+          stroke-linecap="round" />
+
+        <!-- Children Branches -->
+        @for (child of node.children; track $index) {
+        <ng-container *ngTemplateOutlet="branchTemplate; context:{ branch: child }"></ng-container>
+        }
+
+        <!-- Leaves (Hidden in Winter) -->
+        @if (season !== 'winter') {
+        <g class="leaves" [class.autumn]="season === 'autumn'">
+          @for (leaf of node.leaves; track leaf.animDelay + $index) {
+          <g [style.transform]="'translate(' + leaf.offsetX + 'px, ' + leaf.offsetY + 'px)'">
+            <g class="leaf-group" [style.animation-delay]="leaf.animDelay">
+              <use [attr.href]="'#leaf-' + leaf.type"
+                [attr.transform]="'rotate(' + leaf.rotation + ') scale(' + leaf.scale + ')'" />
+            </g>
+          </g>
+          }
+        </g>
+        }
+
+        <!-- Spring Flowers -->
+        @if (season === 'spring') {
+        <g class="flowers">
+          @for (flower of node.flowers; track $index) {
+          <g [style.transform]="'translate(' + flower.offsetX + 'px, ' + flower.offsetY + 'px)'">
+            <g class="flower-group" [style.animation-delay]="flower.animDelay">
+              <use href="#blossom" [attr.fill]="flower.color"
+                [attr.transform]="'rotate(' + flower.rotation + ') scale(' + flower.scale + ')'" />
+            </g>
+          </g>
+          }
+        </g>
+        }
+
+        <!-- Lanterns (Visible in Dark Mode usually) -->
+        <g class="lanterns" [class.show-lanterns]="themeService.resolvedTheme() === 'dark'">
+          @for (lantern of node.lanterns; track $index) {
+          <g class="lantern-group-windy"
+            [style.transform]="'translate(' + lantern.offsetX + 'px, ' + lantern.offsetY + 'px)'"
+            [style.animation-delay]="lantern.animDelay">
+            <g class="lantern-sway" [style.transform-origin]="'0px 0px'">
+              <!-- Magic orbs attached directly to branches -->
+              <g [style.transform]="'rotate(' + (-node.angle) + 'deg)'">
+                <circle cx="0" [attr.cy]="14" r="18" filter="url(#lantern-glow)" class="glow" />
+                <circle cx="0" [attr.cy]="14" r="10" class="core" />
+                <circle cx="0" [attr.cy]="14" r="5" fill="#fff" />
+              </g>
+            </g>
+          </g>
+          }
+        </g>
+      </g>
+    </g>
+    }
+  </ng-template>
+
+  <!-- Render Root Branches -->
+  @for (rootNode of branches; track $index) {
+  <ng-container *ngTemplateOutlet="branchTemplate; context:{ branch: rootNode }"></ng-container>
+  }
+</svg>

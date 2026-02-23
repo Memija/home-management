@@ -94,13 +94,11 @@ describe('LocalStorageService', () => {
       expect(result).toBeNull();
     });
 
-    it('should handle JSON parse errors', async () => {
+    it('should return raw string for non-JSON values', async () => {
       mockLocalStorage.getItem.mockReturnValue('invalid-json');
-      const consoleSpy = vi.spyOn(console, 'error');
 
       const result = await service.load('key');
-      expect(result).toBeNull();
-      expect(consoleSpy).toHaveBeenCalled();
+      expect(result).toBe('invalid-json');
     });
 
     it('should not load if not browser', async () => {

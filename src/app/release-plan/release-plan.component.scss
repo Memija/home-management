@@ -1,0 +1,284 @@
+@use 'variables' as *;
+
+$tag-new: #1976d2;
+$tag-enh: #7c3aed;
+$tag-smart: #059669;
+
+.release-plan-page {
+  max-width: 900px;
+  margin: 0 auto;
+  padding-bottom: 2rem;
+}
+
+.hero-section {
+  text-align: center;
+  margin-bottom: 2rem;
+  padding: 2rem 1rem;
+
+  .hero-icon {
+    width: 100px;
+    height: 100px;
+    margin: 0 auto 1.5rem;
+    background: linear-gradient(135deg, #6366f1, #a855f7);
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+  }
+
+  h1 {
+    margin: 0 0 .75rem;
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: #6366f1;
+  }
+
+  .version-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 1rem;
+    background: var(--card-bg);
+    border: 1px solid var(--border-light);
+    border-radius: 20px;
+    font-size: 0.875rem;
+    color: var(--text-secondary);
+    font-weight: 500;
+  }
+}
+
+.shared-card-text {
+  margin: 0 auto 1.5rem;
+  font-size: 1.15rem;
+  color: var(--text-primary);
+  max-width: 600px;
+  line-height: 1.6;
+  background-color: var(--card-bg);
+  padding: 1.25rem 2rem;
+  border-radius: 2rem;
+  border: 1px solid var(--border-light);
+  box-shadow: var(--shadow);
+  display: block;
+  text-align: center;
+  position: relative;
+  z-index: 10;
+
+  &.cta-text {
+    max-width: 700px;
+    font-size: 1.05rem;
+    padding: 1.5rem 2.5rem;
+  }
+}
+
+.filter-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  margin-bottom: 2rem;
+  justify-content: center;
+}
+
+.filter-tab {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.6rem 1.25rem;
+  border: 1px solid var(--border-light);
+  border-radius: 25px;
+  background: var(--card-bg);
+  color: var(--text-secondary);
+  font-size: 0.875rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+
+  &:hover {
+    border-color: var(--text-secondary);
+  }
+
+  &.active {
+    border-color: currentColor;
+    box-shadow: var(--shadow-sm);
+  }
+
+  .filter-count {
+    background: var(--border-light);
+    color: var(--text-primary);
+    padding: 0.15rem 0.5rem;
+    border-radius: 10px;
+    font-size: 0.75rem;
+  }
+}
+
+$tags: (
+  'new': $tag-new,
+  'enhancement': $tag-enh,
+  'smart': $tag-smart
+);
+
+@each $name, $color in $tags {
+  .tag-#{$name} {
+    color: $color;
+
+    &.active {
+      @if $name =='smart' {
+        background: var(--card-bg);
+        border-color: $color;
+      }
+
+      @else {
+        background: rgba($color, 0.1);
+      }
+    }
+  }
+}
+
+.features-grid {
+  display: grid;
+  gap: 1.5rem;
+  margin-bottom: 3rem;
+}
+
+.feature-card {
+  background: var(--card-bg);
+  border: 1px solid var(--border-light);
+  border-radius: 16px;
+  padding: 1.75rem;
+  position: relative;
+  overflow: hidden;
+
+  &::before {
+    content: '';
+    position: absolute;
+    inset: 0 0 auto 0;
+    height: 4px;
+    border-radius: 16px 16px 0 0;
+    background: linear-gradient(90deg, var(--f-c, #ccc), var(--f-l2, #eee));
+  }
+
+  &:hover {
+    box-shadow: var(--shadow-lg);
+  }
+
+  .feature-icon {
+    width: 64px;
+    height: 64px;
+    border-radius: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 1.25rem;
+    background: linear-gradient(135deg, var(--f-l1, #eee), var(--f-l2, #ddd));
+    color: var(--f-c, inherit);
+  }
+
+  .feature-content h2 {
+    margin: 0 0 0.75rem;
+    font-size: 1.35rem;
+    font-weight: 600;
+    color: var(--text-primary);
+  }
+
+  .feature-content p {
+    margin: 0;
+    font-size: 1rem;
+    color: var(--text-secondary);
+    line-height: 1.7;
+  }
+
+  .feature-tag {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    padding: 0.35rem 0.75rem;
+    border-radius: 12px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+
+    @each $name, $color in $tags {
+      &.tag-#{$name} {
+        color: $color;
+
+        @if $name =='smart' {
+          background: var(--card-bg);
+          border: 1px solid $color;
+          box-shadow: var(--shadow-sm);
+        }
+
+        @else {
+          background: rgba($color, 0.1);
+        }
+      }
+    }
+  }
+}
+
+.new-feature {
+  --f-c: #{$tag-new};
+  --f-l1: #e3f2fd;
+  --f-l2: #bbdefb;
+}
+
+.enhancement-feature {
+  --f-c: #{$tag-enh};
+  --f-l1: #ede9fe;
+  --f-l2: #ddd6fe;
+}
+
+.prediction-feature {
+  --f-c: #{$tag-smart};
+  --f-l1: #d1fae5;
+  --f-l2: #a7f3d0;
+}
+
+@media (max-width: 768px) {
+  .hero-section {
+    padding: 1.5rem 1rem;
+
+    .hero-icon {
+      width: 80px;
+      height: 80px;
+    }
+
+    h1 {
+      font-size: 2rem;
+    }
+
+    .shared-card-text {
+      font-size: 1rem;
+    }
+  }
+
+  .filter-tabs {
+    gap: 0.5rem;
+  }
+
+  .filter-tab {
+    padding: 0.5rem 1rem;
+    font-size: 0.8rem;
+  }
+
+  .feature-card {
+    padding: 1.5rem;
+
+    .feature-icon {
+      width: 56px;
+      height: 56px;
+    }
+
+    .feature-content h2 {
+      font-size: 1.2rem;
+    }
+
+    .feature-tag {
+      position: static;
+      margin-top: 1rem;
+    }
+  }
+}

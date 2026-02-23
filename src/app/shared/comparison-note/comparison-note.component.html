@@ -1,16 +1,7 @@
 <div class="comparison-note" [class.disabled]="!hasSufficientDataForComparison()">
     <div class="comparison-content">
         @if (hasSufficientDataForComparison()) {
-        @if (type() === 'water') {
-        <p>{{ 'CHART.COMPARISON_NOTE_COUNTRY' | translate:{ country: effectiveComparisonCountryName(), average:
-            countryAverage(), size: familySize() } }}</p>
-        } @else if (type() === 'heating') {
-        <p>{{ 'CHART.COMPARISON_NOTE_COUNTRY_HEATING' | translate:{ country: effectiveComparisonCountryName(), average:
-            countryAverage() } }}</p>
-        } @else {
-        <p>{{ 'CHART.COMPARISON_NOTE_COUNTRY_ELECTRICITY' | translate:{ country: effectiveComparisonCountryName(),
-            average: countryAverage(), size: familySize() } }}</p>
-        }
+        <p>{{ comparisonText() }}</p>
         } @else {
         <p class="disabled-message">
             <lucide-icon [img]="InfoIcon" size="16" class="info-icon"></lucide-icon>

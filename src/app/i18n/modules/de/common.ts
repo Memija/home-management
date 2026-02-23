@@ -37,8 +37,29 @@ export const common = {
   },
   FOOTER: {
     APP_NAME: 'Haushaltsmanagement',
-    ALL_RIGHTS: 'Alle Rechte vorbehalten',
-    CONTACT_US: 'Kontaktiere uns'
+    SUPPORT_PROJECT: 'Projekt unterstützen',
+    RELEASE_PLAN: 'Kommende Funktionen',
+    CONTRIBUTE: 'Mitwirken',
+    VERSION: 'Version {{version}}'
+  },
+  RELEASE_PLAN: {
+    TITLE: 'Kommende Funktionen',
+    SUBTITLE: 'Entdecken Sie, was in unserem nächsten Release kommt, um Ihr Haushaltsmanagement noch besser zu machen',
+    COMING_SOON: 'Demnächst',
+    NEW_FEATURE: 'Neu',
+    ENHANCEMENT: 'Verbesserung',
+    SMART: 'Intelligent',
+    FILTER_ALL: 'Alle',
+    FEATURE_1_TITLE: 'Nur-Kaltwasser-Modus',
+    FEATURE_1_DESC: 'Nicht jeder hat einen separaten Warmwasserzähler. Bald können Sie Ihren Gesamtwasserverbrauch erfassen, auch wenn keine Warmwassererfassung verfügbar ist, was Ihnen volle Flexibilität bei der Überwachung Ihres Verbrauchs bietet.',
+    FEATURE_2_TITLE: 'Vollbild-Diagramme',
+    FEATURE_2_DESC: 'Erhalten Sie eine bessere Ansicht Ihrer Verbrauchsdaten mit der Möglichkeit, Diagramme im Vollbildmodus anzuzeigen. Perfekt für detaillierte Analysen und Präsentationen, um Trends und Muster in Ihrem Verbrauch leichter zu erkennen.',
+    FEATURE_3_TITLE: 'Intelligente Verbrauchsprognosen',
+    FEATURE_3_DESC: 'Lassen Sie die App Ihre historischen Verbrauchsdaten analysieren und intelligente Vorhersagen für den zukünftigen Verbrauch erstellen. Planen Sie voraus, setzen Sie bessere Budgets und verstehen Sie Ihre Verbrauchsmuster wie nie zuvor.',
+    FEATURE_4_TITLE: 'Zählerablesung per Foto',
+    FEATURE_4_DESC: 'Fotografieren Sie einfach Ihren Zähler und lassen Sie die App die Zahlen automatisch im Bild erkennen. Keine manuelle Eingabe mehr - einfach ein Foto machen und fertig!',
+    CTA_TEXT: 'Ihre Unterstützung hilft uns, diese Funktionen schneller zu entwickeln. Danke, dass Sie Teil unserer Community sind!',
+    BACK_TO_HOME: 'Zurück zur Startseite'
   },
   DEMO: {
     TITLE: 'Demo-Modus ausprobieren',

@@ -44,7 +44,11 @@ describe('ComparisonNoteComponent', () => {
   };
 
   const mockHeatingFactsService = {
-    getFactByIndex: vi.fn().mockReturnValue({ message: 'Heating fact', title: 'Heating Tip' })
+    getFactByIndex: vi.fn().mockReturnValue({ message: 'Heating fact', title: 'Heating Tip' }),
+    getAvailableCountries: vi.fn().mockReturnValue([
+      { code: 'DE', nameKey: 'COUNTRY.DE' },
+      { code: 'US', nameKey: 'COUNTRY.US' }
+    ])
   };
 
   const mockHeatingAveragesService = {
@@ -52,7 +56,11 @@ describe('ComparisonNoteComponent', () => {
   };
 
   const mockElectricityFactsService = {
-    getFactByIndex: vi.fn().mockReturnValue({ message: 'Electricity fact', title: 'Power Tip' })
+    getFactByIndex: vi.fn().mockReturnValue({ message: 'Electricity fact', title: 'Power Tip' }),
+    getAvailableCountries: vi.fn().mockReturnValue([
+      { code: 'DE', nameKey: 'COUNTRY.DE' },
+      { code: 'US', nameKey: 'COUNTRY.US' }
+    ])
   };
 
   const mockElectricityAveragesService = {
@@ -83,16 +91,6 @@ describe('ComparisonNoteComponent', () => {
 
     // Set required inputs using componentRef.setInput()
     fixture.componentRef.setInput('records', [{ date: new Date() }, { date: new Date() }, { date: new Date() }]);
-
-    // Set default countries lists
-    fixture.componentRef.setInput('heatingCountries', [
-      { code: 'DE', nameKey: 'COUNTRY.DE' },
-      { code: 'US', nameKey: 'COUNTRY.US' }
-    ]);
-    fixture.componentRef.setInput('electricityCountries', [
-      { code: 'DE', nameKey: 'COUNTRY.DE' },
-      { code: 'US', nameKey: 'COUNTRY.US' }
-    ]);
 
     // Default type
     fixture.componentRef.setInput('type', 'water');

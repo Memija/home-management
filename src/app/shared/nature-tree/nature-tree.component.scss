@@ -4,10 +4,14 @@
   left: 0;
   width: 100vw;
   height: 100vh;
-  z-index: -2;
+  z-index: -1;
   pointer-events: none;
   opacity: 0.15;
   transition: opacity 0.5s ease;
+  /* stylelint-disable plugin/no-unsupported-browser-features */
+  contain: strict;
+  /* stylelint-enable plugin/no-unsupported-browser-features */
+  will-change: opacity;
 }
 
 .detailed-tree-svg {
@@ -75,7 +79,7 @@
     .glow {
       fill: #fcd34d;
       opacity: 1;
-      animation: flicker 4s infinite alternate;
+      // Simplified: removed per-element flicker animation to reduce GPU load
     }
 
     .core {
@@ -87,6 +91,11 @@
 
       .lantern-sway {
         animation: lantern-sway 4s ease-in-out infinite alternate;
+      }
+
+      // Apply flicker only when lanterns are visible
+      .glow {
+        animation: flicker 4s infinite alternate;
       }
     }
   }
@@ -146,7 +155,7 @@
 
 @keyframes branch-sway {
   0% {
-    transform: rotate(-1.5deg); // Use rotate relative to base transform unfortunately requires additive blend logic in HTML styles usually, but for branch-sway we just need small css-based angular adjustments within relative transform bounds
+    transform: rotate(-1.5deg);
   }
 
   100% {

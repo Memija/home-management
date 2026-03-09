@@ -13,28 +13,38 @@ const canDeactivateSettings: CanDeactivateFn<any> = (component) => {
 const routes: Routes = [
   {
     path: '',
-    loadComponent: () => import('./dashboard/dashboard.component').then(m => m.DashboardComponent)
+    loadComponent: () => import('./landing/landing.component').then(m => m.LandingComponent)
   },
   {
-    path: 'water',
-    loadComponent: () => import('./water/water.component').then(m => m.WaterComponent)
-  },
-  {
-    path: 'heating',
-    loadComponent: () => import('./heating/heating.component').then(m => m.HeatingComponent)
-  },
-  {
-    path: 'electricity',
-    loadComponent: () => import('./electricity/electricity.component').then(m => m.ElectricityComponent)
-  },
-  {
-    path: 'release-plan',
-    loadComponent: () => import('./release-plan/release-plan.component').then(m => m.ReleasePlanComponent)
-  },
-  {
-    path: 'settings',
-    loadComponent: () => import('./settings/settings.component').then(m => m.SettingsComponent),
-    canDeactivate: [canDeactivateSettings]
+    path: 'dashboard',
+    loadComponent: () => import('./layout/app-layout.component').then(m => m.AppLayoutComponent),
+    children: [
+      {
+        path: '',
+        loadComponent: () => import('./dashboard/dashboard.component').then(m => m.DashboardComponent)
+      },
+      {
+        path: 'water',
+        loadComponent: () => import('./water/water.component').then(m => m.WaterComponent)
+      },
+      {
+        path: 'heating',
+        loadComponent: () => import('./heating/heating.component').then(m => m.HeatingComponent)
+      },
+      {
+        path: 'electricity',
+        loadComponent: () => import('./electricity/electricity.component').then(m => m.ElectricityComponent)
+      },
+      {
+        path: 'release-plan',
+        loadComponent: () => import('./release-plan/release-plan.component').then(m => m.ReleasePlanComponent)
+      },
+      {
+        path: 'settings',
+        loadComponent: () => import('./settings/settings.component').then(m => m.SettingsComponent),
+        canDeactivate: [canDeactivateSettings]
+      }
+    ]
   }
 ];
 

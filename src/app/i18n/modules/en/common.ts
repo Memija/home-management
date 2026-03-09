@@ -134,5 +134,25 @@ export const common = {
     OCTOBER: 'october',
     NOVEMBER: 'november',
     DECEMBER: 'december'
+  },
+  SEASONS: {
+    PREVIOUS: 'Previous season',
+    NEXT: 'Next season',
+    SPRING: {
+      NAME: 'Spring',
+      TAGLINE: 'Flowers blooming, allergies booming 🤧'
+    },
+    SUMMER: {
+      NAME: 'Summer',
+      TAGLINE: 'Too hot to think, perfect to drink 🥤'
+    },
+    AUTUMN: {
+      NAME: 'Autumn',
+      TAGLINE: 'Too rainy to go out, cozy inside 🌧️'
+    },
+    WINTER: {
+      NAME: 'Winter',
+      TAGLINE: 'Too cold to move, time for hot cocoa ☕'
+    }
   }
 };

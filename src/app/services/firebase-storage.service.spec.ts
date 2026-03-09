@@ -14,8 +14,11 @@ const mockCollection = vi.fn();
 const mockGetDocs = vi.fn();
 const mockDeleteField = vi.fn();
 
-vi.mock('@angular/fire/firestore', () => ({
+let globalFirestoreMock: any = {};
+
+vi.mock('firebase/firestore', () => ({
   Firestore: class { },
+  getFirestore: () => globalFirestoreMock,
   doc: (...args: any[]) => mockDoc(...args),
   setDoc: (...args: any[]) => mockSetDoc(...args),
   getDoc: (...args: any[]) => mockGetDoc(...args),
@@ -23,6 +26,12 @@ vi.mock('@angular/fire/firestore', () => ({
   collection: (...args: any[]) => mockCollection(...args),
   getDocs: (...args: any[]) => mockGetDocs(...args),
   deleteField: () => mockDeleteField()
+}));
+
+vi.mock('firebase/app', () => ({
+  initializeApp: vi.fn(),
+  getApps: vi.fn().mockReturnValue([]),
+  getApp: vi.fn(),
 }));
 
 describe('FirebaseStorageService', () => {
@@ -36,6 +45,7 @@ describe('FirebaseStorageService', () => {
     };
 
     firestoreMock = {};
+    globalFirestoreMock = firestoreMock;
 
     TestBed.configureTestingModule({
       providers: [

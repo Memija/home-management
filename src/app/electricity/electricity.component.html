@@ -7,7 +7,7 @@
 
   @if (records().length > 0 && familySize() > 0 && displayMode() === 'incremental') {
   <app-comparison-note [records]="records()" [chartView]="chartView()" type="electricity"
-    [electricityCountries]="availableElectricityCountries" (countryCodeChange)="handleCountryCodeChange($event)">
+    (countryCodeChange)="handleCountryCodeChange($event)">
   </app-comparison-note>
   }
 

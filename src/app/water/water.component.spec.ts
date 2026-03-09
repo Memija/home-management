@@ -80,6 +80,8 @@ describe('WaterComponent', () => {
       errorDetails: signal(''),
       errorInstructions: signal<string[]>([]),
       errorType: signal<'error' | 'warning'>('error'),
+      successTitle: signal('HOME.SUCCESS_TITLE'),
+      successMessage: signal('HOME.RECORD_SAVED'),
       recordToDelete: signal<ConsumptionRecord | null>(null),
       recordsToDelete: signal<ConsumptionRecord[]>([]),
       importData: vi.fn(),
@@ -257,11 +259,11 @@ describe('WaterComponent', () => {
       expect((component as any).recordsHelpSteps).toBe(RECORDS_LIST_HELP_STEPS);
     });
 
-    it('should initialize successTitle to HOME.SUCCESS', () => {
-      expect((component as any).successTitle()).toBe('HOME.SUCCESS');
+    it('should delegate successTitle to data service', () => {
+      expect((component as any).successTitle()).toBe('HOME.SUCCESS_TITLE');
     });
 
-    it('should initialize successMessage to HOME.RECORD_SAVED', () => {
+    it('should delegate successMessage to data service', () => {
       expect((component as any).successMessage()).toBe('HOME.RECORD_SAVED');
     });
 

@@ -1,0 +1,132 @@
+@use 'variables' as *;
+
+:host {
+  position: fixed;
+  // Desktop: header (113px) + menu-bar height (~46px)
+  top: 156px;
+  left: 0;
+  right: 0;
+  z-index: 998;
+  width: 100%;
+
+  // Hide on mobile — tree regeneration is too expensive
+  @media (max-width: 768px) {
+    display: none;
+  }
+}
+
+.season-switcher {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.35rem 1rem;
+  background: var(--bg-secondary);
+  border-bottom: 1px solid var(--border-light);
+  /* stylelint-disable plugin/no-unsupported-browser-features */
+  -webkit-user-select: none;
+  user-select: none;
+  /* stylelint-enable plugin/no-unsupported-browser-features */
+  position: relative;
+  overflow: hidden;
+
+  // Subtle gradient overlay for depth
+  &::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(90deg,
+        transparent 0%,
+        var(--primary-light-bg) 30%,
+        var(--primary-light-bg) 70%,
+        transparent 100%);
+    opacity: 0.3;
+    pointer-events: none;
+  }
+}
+
+.season-nav-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  padding: 0;
+  border: 1px solid var(--border-color);
+  border-radius: 50%;
+  background: var(--card-bg);
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: all 0.25s ease;
+  position: relative;
+  z-index: 1;
+  flex-shrink: 0;
+
+  &:hover {
+    background: var(--bg-tertiary);
+    color: var(--text-primary);
+    border-color: var(--text-muted);
+    transform: scale(1.1);
+  }
+
+  &:active {
+    transform: scale(0.95);
+  }
+}
+
+.season-display {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  position: relative;
+  z-index: 1;
+  min-width: 0;
+
+  .season-emoji {
+    font-size: 1.15rem;
+    line-height: 1;
+    flex-shrink: 0;
+    animation: gentle-bounce 2s ease-in-out infinite;
+  }
+
+  .season-text {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0;
+    min-width: 0;
+
+    .season-name {
+      font-size: 0.72rem;
+      font-weight: 600;
+      color: var(--text-primary);
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+      white-space: nowrap;
+      line-height: 1.3;
+    }
+
+    .season-tagline {
+      font-size: 0.68rem;
+      color: var(--text-muted);
+      font-style: italic;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      max-width: 280px;
+      line-height: 1.3;
+    }
+  }
+}
+
+@keyframes gentle-bounce {
+
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+
+  50% {
+    transform: translateY(-2px);
+  }
+}

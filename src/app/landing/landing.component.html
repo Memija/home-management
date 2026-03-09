@@ -1,0 +1,230 @@
+<div class="landing-page">
+  <!-- Floating Toolbar: Theme + Language -->
+  <div class="landing-toolbar" [class.scrolled]="scrollY() > 50">
+    <div class="toolbar-inner">
+      <div class="toolbar-brand">
+        <img src="/assets/logo.png" alt="Home Management Logo" class="toolbar-logo">
+      </div>
+      <div class="toolbar-actions">
+        <button type="button" class="theme-toggle-btn" (click)="cycleTheme()" [title]="getThemeTitle()"
+          aria-label="Toggle theme">
+          <span class="theme-icon">{{ getThemeIcon() }}</span>
+        </button>
+        <app-language-switcher></app-language-switcher>
+      </div>
+    </div>
+  </div>
+
+  <!-- Road Progress Indicator (Interactive) -->
+  <div class="road-progress" (click)="onRoadClick($event)" role="scrollbar" aria-label="Page scroll progress"
+    aria-controls="features" aria-orientation="vertical" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"
+    [attr.aria-valuenow]="roadProgress()">
+    <div class="road-track">
+      <div class="road-fill" [style.height.%]="roadProgress()"></div>
+      <div class="road-car" [style.top.%]="roadProgress()" (mousedown)="onRoadDragStart($event)">🏠</div>
+    </div>
+  </div>
+
+  <!-- Hero Section -->
+  <section class="hero-section">
+    <div class="hero-bg">
+      <div class="hero-road">
+        <svg class="road-svg" viewBox="0 0 200 800" preserveAspectRatio="none">
+          <path d="M100,0 C60,200 140,300 100,500 C60,700 140,800 100,800" stroke="rgba(255,255,255,0.1)"
+            stroke-width="40" fill="none" />
+          <path d="M100,0 C60,200 140,300 100,500 C60,700 140,800 100,800" stroke="rgba(255,255,255,0.05)"
+            stroke-width="2" fill="none" stroke-dasharray="12 8" />
+        </svg>
+      </div>
+      <div class="floating-icons" [style.transform]="getParallaxTransform(-0.3)">
+        @for(icon of floatingIcons; track i; let i = $index) {
+        <span class="float-icon" [style.top]="icon.top" [style.left]="icon.left" [style.right]="icon.right || 'auto'"
+          [style.font-size]="icon.size" [style.animation-delay]="icon.delay">{{ icon.icon }}</span>
+        }
+      </div>
+    </div>
+
+    <div class="hero-content">
+      <div class="hero-badge">{{ 'LANDING.BADGE' | translate }}</div>
+      <h1 class="hero-title">
+        <span class="title-line">{{ 'LANDING.TITLE_LINE_1' | translate }}</span>
+        <span class="title-line gradient-text">{{ 'LANDING.TITLE_LINE_2' | translate }}</span>
+      </h1>
+      <p class="hero-subtitle">
+        {{ 'LANDING.SUBTITLE' | translate }}
+      </p>
+      <div class="hero-actions">
+        <a routerLink="/dashboard" class="cta-button primary" id="hero-cta">
+          <span>{{ 'LANDING.CTA_OPEN_APP' | translate }}</span>
+          <span class="cta-arrow">→</span>
+        </a>
+        <a href="#features" class="cta-button secondary" id="hero-learn-more">
+          <span>{{ 'LANDING.CTA_SEE_FEATURES' | translate }}</span>
+          <span class="cta-arrow">↓</span>
+        </a>
+      </div>
+    </div>
+
+    <div class="hero-scroll-indicator">
+      <div class="scroll-mouse">
+        <div class="scroll-wheel"></div>
+      </div>
+      <span>{{ 'LANDING.SCROLL_TO_EXPLORE' | translate }}</span>
+    </div>
+  </section>
+
+  <!-- Stats Bar -->
+  <section class="stats-section" data-animate="stats">
+    <div class="stats-container" [class.visible]="isVisible()['stats']">
+      @for (stat of statKeys; track stat.labelKey) {
+      <div class="stat-item">
+        <span class="stat-value">{{ stat.value }}</span>
+        <span class="stat-label">{{ stat.labelKey | translate }}</span>
+      </div>
+      }
+    </div>
+  </section>
+
+  <!-- Full-Page Road with Scenery -->
+  <div class="page-road-scenery" data-animate="scenery" [class.visible]="isVisible()['scenery']">
+    <!-- Curving road SVG -->
+    <svg class="page-road-svg" viewBox="0 0 200 1000" preserveAspectRatio="none" aria-hidden="true">
+      <!-- Road surface (single lane) -->
+      <path class="road-surface"
+        d="M100,0 C60,100 140,200 100,300 C60,400 140,500 100,600 C60,700 140,800 100,900 C80,950 120,1000 100,1000"
+        stroke-width="14" fill="none" />
+    </svg>
+    <!-- Left side of the road -->
+    @for(item of leftScenery; track i; let i = $index) {
+    <span class="scenery-item {{ item.type }}" [style.top.%]="item.top" [style.left.%]="item.left"
+      [style.transition-delay.s]="item.delay">
+      {{ item.icon }}
+    </span>
+    }
+
+    <!-- Right side of the road -->
+    @for(item of rightScenery; track i; let i = $index) {
+    <span class="scenery-item {{ item.type }}" [style.top.%]="item.top" [style.left.%]="item.left"
+      [style.transition-delay.s]="item.delay">
+      {{ item.icon }}
+    </span>
+    }
+  </div>
+
+  <!-- Road Journey / Features Section -->
+  <section class="features-section" id="features">
+    <div class="section-header" data-animate="features-header">
+      <div [class.visible]="isVisible()['features-header']">
+        <h2 class="section-title">{{ 'LANDING.FEATURES.SECTION_TITLE' | translate }}</h2>
+        <p class="section-subtitle">{{ 'LANDING.FEATURES.SECTION_SUBTITLE' | translate }}</p>
+      </div>
+    </div>
+
+    <div class="features-road">
+      <!-- Road SVG backbone -->
+      <div class="road-backbone">
+        <svg viewBox="0 0 100 2400" preserveAspectRatio="none" class="road-line-svg">
+          <path d="M50,0 L50,2400" stroke="var(--border-color)" stroke-width="3" fill="none" stroke-dasharray="8 6"
+            opacity="0.5" />
+        </svg>
+      </div>
+
+      @for (feature of featureKeys; track feature.titleKey; let i = $index) {
+      <div class="feature-stop" [attr.data-animate]="'feature-' + i" [class.visible]="isVisible()['feature-' + i]"
+        [class.left]="i % 2 === 0" [class.right]="i % 2 !== 0">
+
+        <!-- Road milestone marker -->
+        <div class="milestone-marker">
+          <div class="milestone-dot" [style.border-color]="feature.color">
+            <div class="milestone-inner" [style.background]="feature.color"></div>
+          </div>
+        </div>
+
+        <div class="feature-card">
+          <div class="feature-icon-wrapper" [style.background]="feature.color + '18'">
+            <span class="feature-icon">{{ feature.icon }}</span>
+          </div>
+          <div class="feature-content">
+            <h3 class="feature-title" [style.color]="feature.color">{{ feature.titleKey | translate }}</h3>
+            <p class="feature-description">{{ feature.descKey | translate }}</p>
+          </div>
+          <div class="feature-number" [style.color]="feature.color + '30'">{{ i + 1 }}</div>
+        </div>
+      </div>
+      }
+    </div>
+  </section>
+
+  <!-- How It Works -->
+  <section class="how-section" data-animate="how">
+    <div [class.visible]="isVisible()['how']">
+      <h2 class="section-title">{{ 'LANDING.HOW.TITLE' | translate }}</h2>
+      <p class="section-subtitle">{{ 'LANDING.HOW.SUBTITLE' | translate }}</p>
+    </div>
+
+    <div class="steps-container" data-animate="steps">
+      <div class="step-row" [class.visible]="isVisible()['steps']">
+        <div class="step-card">
+          <div class="step-number">1</div>
+          <div class="step-icon">📖</div>
+          <h3>{{ 'LANDING.HOW.STEP_1_TITLE' | translate }}</h3>
+          <p>{{ 'LANDING.HOW.STEP_1_DESC' | translate }}</p>
+        </div>
+        <div class="step-connector">
+          <div class="connector-line"></div>
+          <div class="connector-arrow">→</div>
+        </div>
+        <div class="step-card">
+          <div class="step-number">2</div>
+          <div class="step-icon">✏️</div>
+          <h3>{{ 'LANDING.HOW.STEP_2_TITLE' | translate }}</h3>
+          <p>{{ 'LANDING.HOW.STEP_2_DESC' | translate }}</p>
+        </div>
+        <div class="step-connector">
+          <div class="connector-line"></div>
+          <div class="connector-arrow">→</div>
+        </div>
+        <div class="step-card">
+          <div class="step-number">3</div>
+          <div class="step-icon">📈</div>
+          <h3>{{ 'LANDING.HOW.STEP_3_TITLE' | translate }}</h3>
+          <p>{{ 'LANDING.HOW.STEP_3_DESC' | translate }}</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Final CTA -->
+  <section class="cta-section" data-animate="cta">
+    <div class="cta-container" [class.visible]="isVisible()['cta']">
+      <div class="cta-bg-decoration">
+        <div class="cta-circle circle-1"></div>
+        <div class="cta-circle circle-2"></div>
+        <div class="cta-circle circle-3"></div>
+      </div>
+      <div class="cta-content">
+        <h2>{{ 'LANDING.CTA.TITLE' | translate }}</h2>
+        <p>{{ 'LANDING.CTA.SUBTITLE' | translate }}</p>
+        <a routerLink="/dashboard" class="cta-button primary large" id="final-cta">
+          <span>{{ 'LANDING.CTA.BUTTON' | translate }}</span>
+          <span class="cta-arrow">→</span>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Minimal Footer -->
+  <footer class="landing-footer">
+    <div class="footer-inner">
+      <div class="footer-brand">
+        <img src="/assets/logo.png" alt="Home Management Logo" class="footer-logo">
+        <span class="footer-name">{{ 'FOOTER.APP_NAME' | translate }}</span>
+      </div>
+      <div class="footer-links">
+        <a href="https://github.com/Memija/home-management" target="_blank" rel="noopener noreferrer">{{
+          'LANDING.FOOTER.GITHUB' | translate }}</a>
+        <a routerLink="/dashboard">{{ 'LANDING.FOOTER.OPEN_APP' | translate }}</a>
+      </div>
+    </div>
+  </footer>
+</div>

@@ -1,6 +1,7 @@
-import { Component, OnInit } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { Component, inject, effect, ChangeDetectionStrategy, ChangeDetectorRef, PLATFORM_ID } from '@angular/core';
+import { isPlatformBrowser, CommonModule } from '@angular/common';
 import { ThemeService } from '../../services/theme.service';
+import { SeasonService, Season } from '../../services/season.service';
 
 interface Branch {
   x: number;
@@ -58,42 +59,92 @@ interface Raindrop {
   animDelay: string;
 }
 
+/** Maximum tree depth */
+const MAX_DEPTH = 5;
+/** Maximum snowflakes — reduced from 250 for performance */
+const MAX_SNOWFLAKES = 50;
+/** Maximum raindrops — reduced from 120 for performance */
+const MAX_RAINDROPS = 30;
+/** FPS threshold — below this the tree is disabled */
+const MIN_FPS_THRESHOLD = 24;
+/** Number of frames to sample for performance detection */
+const FPS_SAMPLE_FRAMES = 30;
+
 @Component({
   selector: 'app-nature-tree',
   standalone: true,
   imports: [CommonModule],
   templateUrl: './nature-tree.component.html',
-  styleUrl: './nature-tree.component.scss'
+  styleUrl: './nature-tree.component.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class NatureTreeComponent implements OnInit {
+export class NatureTreeComponent {
   branches: Branch[] = [];
   snowflakes: Snowflake[] = [];
   raindrops: Raindrop[] = [];
-  season: 'spring' | 'summer' | 'autumn' | 'winter' = 'summer';
+  season: Season = 'summer';
 
   // Use a fixed seed so the tree is mostly deterministic and doesn't jitter on reload.
   private seed = 51234;
+  private performanceChecked = false;
+  private platformId = inject(PLATFORM_ID);
 
-  constructor(public themeService: ThemeService) { }
+  public themeService = inject(ThemeService);
+  protected seasonService = inject(SeasonService);
+  private cdr = inject(ChangeDetectorRef);
 
-  ngOnInit() {
-    this.determineSeason();
-    // Generate a tree from the center bottom up
-    this.resetAndGenerate();
+  constructor() {
+    // Reactively regenerate the tree whenever the season changes
+    effect(() => {
+      this.season = this.seasonService.currentSeason();
+
+      // If already disabled due to poor performance, don't regenerate
+      if (this.seasonService.disabled()) return;
+
+      this.resetAndGenerate();
+      this.cdr.markForCheck();
+
+      // Run performance check only once (on first render)
+      if (!this.performanceChecked && isPlatformBrowser(this.platformId)) {
+        this.performanceChecked = true;
+        this.checkPerformance();
+      }
+    });
   }
 
-  private determineSeason() {
-    const month = new Date().getMonth();
-    // Northern Hemisphere Seasons (approximate)
-    if (month >= 2 && month <= 4) {
-      this.season = 'spring';
-    } else if (month >= 5 && month <= 7) {
-      this.season = 'summer';
-    } else if (month >= 8 && month <= 10) {
-      this.season = 'autumn';
-    } else {
-      this.season = 'winter';
-    }
+  /**
+   * Measures FPS over a short sampling period.
+   * If FPS is below the threshold, disables the tree entirely.
+   */
+  private checkPerformance(): void {
+    let frameCount = 0;
+    let startTime = 0;
+
+    const measureFrame = (timestamp: number) => {
+      if (frameCount === 0) {
+        startTime = timestamp;
+      }
+      frameCount++;
+
+      if (frameCount >= FPS_SAMPLE_FRAMES) {
+        const elapsed = timestamp - startTime;
+        const fps = (FPS_SAMPLE_FRAMES / elapsed) * 1000;
+
+        if (fps < MIN_FPS_THRESHOLD) {
+          console.warn(`[NatureTree] Low FPS detected (${fps.toFixed(1)}fps). Disabling tree for better performance.`);
+          this.seasonService.disabled.set(true);
+          this.branches = [];
+          this.snowflakes = [];
+          this.raindrops = [];
+          this.cdr.markForCheck();
+        }
+        return;
+      }
+      requestAnimationFrame(measureFrame);
+    };
+
+    // Delay start slightly to let the tree render first
+    setTimeout(() => requestAnimationFrame(measureFrame), 200);
   }
 
   private resetAndGenerate() {
@@ -103,14 +154,13 @@ export class NatureTreeComponent implements OnInit {
     this.seed = 51234;
 
     // Generate base trunk
-    const START_DEPTH = 6;
     const trunk: Branch = {
       x: 1000,
       y: 1200,
       angle: 0,
-      length: 180,
+      length: 240,
       width: 50,
-      depth: START_DEPTH,
+      depth: MAX_DEPTH,
       animDelay: '0s',
       animDuration: '8s',
       children: [],
@@ -119,26 +169,26 @@ export class NatureTreeComponent implements OnInit {
       flowers: []
     };
 
-    this.generateBranchChildren(trunk, START_DEPTH);
+    this.generateBranchChildren(trunk, MAX_DEPTH);
     this.branches.push(trunk);
     this.generateWeather();
   }
 
   private generateWeather() {
     if (this.season === 'winter') {
-      for (let i = 0; i < 250; i++) {
+      for (let i = 0; i < MAX_SNOWFLAKES; i++) {
         this.snowflakes.push({
-          x: Math.random() * 3000 - 1000, // Range from -1000 to 2000 to cover 2000px width with wind allowance
-          y: Math.random() * 1200 - 1200, // Start above the screen
+          x: Math.random() * 3000 - 1000,
+          y: Math.random() * 1200 - 1200,
           size: 1.5 + Math.random() * 3.5,
           animDuration: (8 + Math.random() * 12) + 's',
           animDelay: '-' + (Math.random() * 20) + 's'
         });
       }
     } else if (this.season === 'autumn') {
-      for (let i = 0; i < 120; i++) {
+      for (let i = 0; i < MAX_RAINDROPS; i++) {
         this.raindrops.push({
-          x: Math.random() * 3000 - 500, // Starts wider to account for wind
+          x: Math.random() * 3000 - 500,
           y: Math.random() * 1200 - 1200,
           height: 15 + Math.random() * 25,
           animDuration: (0.4 + Math.random() * 0.6) + 's',
@@ -156,13 +206,13 @@ export class NatureTreeComponent implements OnInit {
 
   private generateBranchChildren(parent: Branch, depth: number) {
     if (depth === 0) {
-      // Add a cluster of leaves at the end of the branches (except in winter)
+      // Add a cluster of leaves at the end of branches (except in winter)
       if (this.season !== 'winter') {
-        const leafCount = this.season === 'autumn' ? 3 : 5; // fewer leaves in autumn
+        const leafCount = this.season === 'autumn' ? 3 : 4;
         for (let i = 0; i < leafCount; i++) {
           parent.leaves.push({
             offsetX: this.random() * 50 - 25,
-            offsetY: -(parent.length + this.random() * 50 - 25), // Relative to end of branch
+            offsetY: -(parent.length + this.random() * 50 - 25),
             rotation: this.random() * 360,
             scale: 1.2 + this.random() * 2.0,
             type: Math.floor(this.random() * 3),
@@ -175,10 +225,10 @@ export class NatureTreeComponent implements OnInit {
 
     // Lanterns on medium depth branches
     if (depth <= 5 && depth >= 2 && this.random() > 0.4) {
-      if (parent.width < 35) { // don't hang from the thickest branches
+      if (parent.width < 35) {
         parent.lanterns.push({
           offsetX: 0,
-          offsetY: -parent.length, // Hang from end of branch
+          offsetY: -parent.length,
           length: 40 + this.random() * 60,
           animDelay: '-' + (this.random() * 5).toFixed(2) + 's'
         });
@@ -187,7 +237,7 @@ export class NatureTreeComponent implements OnInit {
 
     // Flowers for Spring
     if (this.season === 'spring' && depth < 4 && this.random() > 0.6) {
-      const colors = ['#f472b6', '#fbcfe8', '#fff1f2', '#fda4af']; // Pink blossoms
+      const colors = ['#f472b6', '#fbcfe8', '#fff1f2', '#fda4af'];
       parent.flowers.push({
         offsetX: this.random() * 30 - 15,
         offsetY: -(parent.length + this.random() * 30 - 15),
@@ -198,7 +248,7 @@ export class NatureTreeComponent implements OnInit {
       });
     }
 
-    // Add side leaves
+    // Add side leaves along branches
     if (depth < 4 && this.season !== 'winter') {
       const leafCount = this.season === 'autumn' ? 1 : 2;
       for (let i = 0; i < leafCount; i++) {
@@ -206,7 +256,7 @@ export class NatureTreeComponent implements OnInit {
           const t = this.random();
           parent.leaves.push({
             offsetX: this.random() * 40 - 20,
-            offsetY: -(parent.length * t), // Along the branch
+            offsetY: -(parent.length * t),
             rotation: this.random() * 360,
             scale: 1.0 + this.random() * 1.5,
             type: Math.floor(this.random() * 3),
@@ -222,7 +272,6 @@ export class NatureTreeComponent implements OnInit {
     // Spread angle becomes wider as depth decrements
     const angleSpread = 40 + this.random() * 50;
 
-    // Note: New angles are relative to 0 so we just specify the rotation delta from the parent
     let angleDeltas: number[] = [];
     if (numBranches === 2) {
       angleDeltas = [
@@ -238,16 +287,16 @@ export class NatureTreeComponent implements OnInit {
     }
 
     // Ensure root splits look nice
-    if (depth === 6) {
+    if (depth === MAX_DEPTH) {
       angleDeltas = [-25, 30, -5];
     }
 
     for (const delta of angleDeltas) {
-      const childLength = depth * 32 + this.random() * 45; // Shorter as depth decreases
+      const childLength = depth * 40 + this.random() * 45;
       const child: Branch = {
         x: 0,
-        y: -parent.length, // Children start at the end of the parent branch
-        angle: delta, // Relative rotation
+        y: -parent.length,
+        angle: delta,
         length: childLength,
         width: parent.width * 0.7,
         depth: depth - 1,

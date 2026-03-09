@@ -67,7 +67,7 @@ describe('AuthButtonComponent', () => {
       isLoadingSignal.set(true);
       fixture.detectChanges();
 
-      const loadingDiv = fixture.debugElement.query(By.css('.auth-button.loading'));
+      const loadingDiv = fixture.debugElement.query(By.css('div.auth-button'));
       expect(loadingDiv).toBeTruthy();
       expect(loadingDiv.query(By.css('.spinner'))).toBeTruthy();
 

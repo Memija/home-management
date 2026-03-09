@@ -1,16 +1,37 @@
 import { TestBed } from '@angular/core/testing';
-import { AuthService, AuthUser } from './auth.service';
+import { AuthService } from './auth.service';
 import { Auth } from '@angular/fire/auth';
 import { PLATFORM_ID } from '@angular/core';
 import { describe, it, expect, beforeEach, vi, afterEach } from 'vitest';
+
+const flushPromises = () => new Promise(resolve => setTimeout(resolve, 0));
+
+const waitFor = async (fn: () => boolean, timeout = 1000) => {
+  const start = Date.now();
+  while (!fn() && Date.now() - start < timeout) {
+    await new Promise(r => setTimeout(r, 5));
+  }
+};
 
 const mockSignInWithPopup = vi.fn();
 const mockSignOut = vi.fn();
 const mockOnAuthStateChanged = vi.fn();
 
-vi.mock('@angular/fire/auth', () => ({
+let globalAuthMock: any = {};
+
+vi.mock('firebase/auth', () => ({
   Auth: class { },
   GoogleAuthProvider: class { },
+  getAuth: () => globalAuthMock,
+  signInWithPopup: (...args: any[]) => mockSignInWithPopup(...args),
+  signOut: (...args: any[]) => mockSignOut(...args),
+  onAuthStateChanged: (...args: any[]) => mockOnAuthStateChanged(...args),
+}));
+
+vi.mock('@firebase/auth', () => ({
+  Auth: class { },
+  GoogleAuthProvider: class { },
+  getAuth: () => globalAuthMock,
   signInWithPopup: (...args: any[]) => mockSignInWithPopup(...args),
   signOut: (...args: any[]) => mockSignOut(...args),
   onAuthStateChanged: (...args: any[]) => mockOnAuthStateChanged(...args),
@@ -22,6 +43,17 @@ describe('AuthService', () => {
 
   beforeEach(() => {
     authMock = {};
+    globalAuthMock = authMock;
+    vi.mock('firebase/app', () => ({
+      initializeApp: vi.fn(),
+      getApps: vi.fn().mockReturnValue([]),
+      getApp: vi.fn(),
+    }));
+    vi.mock('@firebase/app', () => ({
+      initializeApp: vi.fn(),
+      getApps: vi.fn().mockReturnValue([]),
+      getApp: vi.fn(),
+    }));
 
     // Clear mocks before each test
     vi.clearAllMocks();
@@ -44,26 +76,28 @@ describe('AuthService', () => {
   };
 
   describe('constructor and initAuthListener', () => {
-    it('should initialize auth listener and be loading in browser platform', () => {
+    it('should initialize auth listener and be loading in browser platform', async () => {
       // Don't call the callback immediately
       mockOnAuthStateChanged.mockImplementation((auth, callback) => {
         // Just register it
       });
 
       setupTestBed('browser');
+      await waitFor(() => mockOnAuthStateChanged.mock.calls.length > 0);
 
-      expect(mockOnAuthStateChanged).toHaveBeenCalledWith(authMock, expect.any(Function));
+      expect(mockOnAuthStateChanged).toHaveBeenCalledWith(globalAuthMock, expect.any(Function));
       expect(service.isLoading()).toBe(true);
     });
 
-    it('should skip auth listener and not be loading in server platform', () => {
+    it('should skip auth listener and not be loading in server platform', async () => {
       setupTestBed('server');
+      await flushPromises();
 
       expect(mockOnAuthStateChanged).not.toHaveBeenCalled();
       expect(service.isLoading()).toBe(false);
     });
 
-    it('should set authenticated user when firebase user is provided', () => {
+    it('should set authenticated user when firebase user is provided', async () => {
       const mockFirebaseUser = {
         uid: 'test-uid',
         email: 'test@example.com',
@@ -76,7 +110,9 @@ describe('AuthService', () => {
       });
 
       setupTestBed('browser');
+      await waitFor(() => service.isAuthenticated() === true);
 
+      // manually verify state
       expect(service.user()).toEqual({
         uid: 'test-uid',
         email: 'test@example.com',
@@ -88,12 +124,13 @@ describe('AuthService', () => {
       expect(service.getCurrentUid()).toBe('test-uid');
     });
 
-    it('should clear user when firebase user is null', () => {
+    it('should clear user when firebase user is null', async () => {
       mockOnAuthStateChanged.mockImplementation((auth, callback) => {
         callback(null);
       });
 
       setupTestBed('browser');
+      await waitFor(() => service.isLoading() === false);
 
       expect(service.user()).toBeNull();
       expect(service.isAuthenticated()).toBe(false);
@@ -103,8 +140,9 @@ describe('AuthService', () => {
   });
 
   describe('signInWithGoogle', () => {
-    beforeEach(() => {
+    beforeEach(async () => {
       setupTestBed('browser');
+      await waitFor(() => mockOnAuthStateChanged.mock.calls.length > 0); // Wait for initialization to pass
     });
 
     it('should returning user data on successful sign in', async () => {
@@ -139,8 +177,9 @@ describe('AuthService', () => {
   });
 
   describe('signOut', () => {
-    beforeEach(() => {
+    beforeEach(async () => {
       setupTestBed('browser');
+      await waitFor(() => mockOnAuthStateChanged.mock.calls.length > 0);
     });
 
     it('should sign out successfully', async () => {
@@ -148,7 +187,7 @@ describe('AuthService', () => {
 
       await service.signOut();
 
-      expect(mockSignOut).toHaveBeenCalledWith(authMock);
+      expect(mockSignOut).toHaveBeenCalledWith(globalAuthMock);
     });
 
     it('should throw and console.error on sign out failure', async () => {
@@ -162,21 +201,24 @@ describe('AuthService', () => {
   });
 
   describe('getCurrentUid', () => {
-    it('should return null when not authenticated', () => {
+    it('should return null when not authenticated', async () => {
       mockOnAuthStateChanged.mockImplementation((auth, callback) => {
         callback(null);
       });
       setupTestBed('browser');
+      await waitFor(() => service.isLoading() === false);
 
       expect(service.getCurrentUid()).toBeNull();
     });
 
-    it('should return uid when authenticated', () => {
+    it('should return uid when authenticated', async () => {
       mockOnAuthStateChanged.mockImplementation((auth, callback) => {
         callback({ uid: 'my-uid' });
       });
       setupTestBed('browser');
+      await waitFor(() => service.isLoading() === false);
 
+      // Wait for the synchronous behavior Subject updates behind the mock to settle
       expect(service.getCurrentUid()).toBe('my-uid');
     });
   });

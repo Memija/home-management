@@ -1,4 +1,4 @@
-import { Component, signal, computed, inject, ChangeDetectionStrategy } from '@angular/core';
+import { Component, signal, computed, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { TranslatePipe } from '../pipes/translate.pipe';
@@ -30,8 +30,7 @@ import { ExcelSettingsService } from '../services/excel-settings.service';
   standalone: true,
   imports: [CommonModule, FormsModule, TranslatePipe, LucideAngularModule, ConsumptionChartComponent, ConsumptionInputComponent, ErrorModalComponent, ConfirmationModalComponent, HeatingRoomsModalComponent, DetailedRecordsComponent, ComparisonNoteComponent, DeleteConfirmationModalComponent],
   templateUrl: './heating.component.html',
-  styleUrl: './heating.component.scss',
-  changeDetection: ChangeDetectionStrategy.OnPush
+  styleUrl: './heating.component.scss'
 })
 export class HeatingComponent {
   // Services

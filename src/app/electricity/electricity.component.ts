@@ -55,12 +55,12 @@ export class ElectricityComponent {
 
   protected adjustedRecords = this.records; // Start with records, can be adjustments if needed
 
-  protected showSuccessModal = signal(false);
-  protected showErrorModal = signal(false);
+  protected showSuccessModal = this.dataService.showSuccessModal;
+  protected showErrorModal = this.dataService.showErrorModal;
   protected showDeleteModal = this.dataService.showDeleteModal;
   protected showDeleteAllModal = this.dataService.showDeleteAllModal;
-  protected successMessage = signal('ELECTRICITY.RECORD_SAVED'); // Default success message key
-  protected successTitle = signal('HOME.SUCCESS');
+  protected successMessage = this.dataService.successMessage;
+  protected successTitle = this.dataService.successTitle;
 
   protected deleteAllMessageKey = computed(() => 'ELECTRICITY.DELETE_ALL_CONFIRM_MESSAGE');
   protected deleteAllMessageParams = computed<Record<string, string>>(() => ({ count: this.dataService.recordsToDelete().length.toString() }));

@@ -1,0 +1,183 @@
+// ============================================
+// Landing Page Styles
+// ============================================
+
+$landing-font: 'Inter', 'Segoe UI', system-ui, -apple-system, sans-serif;
+
+.landing-page {
+  font-family: $landing-font;
+  color: var(--text-primary);
+  overflow-x: hidden;
+  background: var(--bg-primary);
+}
+
+// ============================================
+// Floating Toolbar
+// ============================================
+.landing-toolbar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 1000;
+  padding: 1rem 2rem;
+  transition: all 0.3s ease;
+
+  &.scrolled {
+    background: rgba(15, 23, 42, 0.85);
+    -webkit-backdrop-filter: blur(16px);
+    backdrop-filter: blur(16px);
+    padding: 0.6rem 2rem;
+    box-shadow: 0 2px 20px rgba(0, 0, 0, 0.3);
+  }
+}
+
+.toolbar-inner {
+  max-width: 1200px;
+  margin: 0 auto;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.toolbar-brand {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.toolbar-logo {
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  transition: transform 0.3s ease;
+
+  &:hover {
+    transform: scale(1.1);
+  }
+}
+
+.toolbar-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.theme-toggle-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  background: rgba(255, 255, 255, 0.08);
+  cursor: pointer;
+  transition: all 0.3s ease;
+  padding: 0;
+
+  &:hover {
+    background: rgba(255, 255, 255, 0.15);
+    border-color: rgba(255, 255, 255, 0.25);
+    transform: translateY(-1px);
+  }
+
+  .theme-icon {
+    font-size: 1.2rem;
+    line-height: 1;
+  }
+}
+
+// Landing page language switcher overrides (dark hero context)
+:host ::ng-deep .language-switcher {
+  gap: 0.35rem;
+
+  button {
+    padding: 0.3rem 0.6rem;
+    border-radius: 8px;
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    background: rgba(255, 255, 255, 0.08);
+    color: #a0a0a0;
+    font-size: 0.8rem;
+    font-weight: 600;
+    letter-spacing: 0.03em;
+    cursor: pointer;
+    transition: all 0.3s ease;
+
+    &:hover {
+      background: rgba(255, 255, 255, 0.15);
+      color: #e2e8f0;
+    }
+
+    &.active {
+      background: linear-gradient(135deg, #008080, #007bff);
+      color: white;
+      border-color: transparent;
+      box-shadow: 0 2px 8px rgba(0, 128, 128, 0.35);
+    }
+  }
+}
+
+// Theme-aware overrides for light mode
+// Using :host-context to traverse up the DOM past Angular's encapsulation
+:host-context([data-theme="light"]) {
+  .landing-toolbar.scrolled {
+    background: rgba(255, 255, 255, 0.9);
+    box-shadow: 0 2px 20px rgba(0, 0, 0, 0.08);
+  }
+
+  .theme-toggle-btn {
+    border-color: var(--border-color);
+    background: var(--bg-secondary);
+
+    &:hover {
+      background: var(--bg-primary);
+      border-color: var(--text-secondary);
+    }
+  }
+
+  // Language switcher in light mode toolbar
+  ::ng-deep .language-switcher button {
+    border-color: var(--border-color);
+    background: var(--bg-secondary);
+    color: var(--text-secondary);
+
+    &:hover {
+      background: var(--bg-primary);
+      color: var(--text-primary);
+    }
+
+    &.active {
+      background: linear-gradient(135deg, #008080, #007bff);
+      color: white;
+      border-color: transparent;
+    }
+  }
+}
+
+// ============================================
+// Responsive adjustments
+// ============================================
+@media (max-width: 480px) {
+  .landing-toolbar {
+    padding: 0.75rem 1rem;
+
+    &.scrolled {
+      padding: 0.5rem 1rem;
+    }
+  }
+
+  .toolbar-logo {
+    width: 28px;
+    height: 28px;
+  }
+
+  .theme-toggle-btn {
+    width: 36px;
+    height: 36px;
+
+    .theme-icon {
+      font-size: 1rem;
+    }
+  }
+}

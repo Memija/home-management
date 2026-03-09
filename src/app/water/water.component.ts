@@ -117,8 +117,8 @@ export class WaterComponent {
     return new Date(dates[0]).toLocaleDateString(this.languageService.currentLang());
   });
 
-  protected successTitle = signal('HOME.SUCCESS');
-  protected successMessage = signal('HOME.RECORD_SAVED');
+  protected successTitle = this.dataService.successTitle;
+  protected successMessage = this.dataService.successMessage;
 
   protected deleteAllMessageKey = computed(() => 'HOME.DELETE_ALL_CONFIRM_MESSAGE');
   protected deleteAllMessageParams = computed<Record<string, string>>(() => ({ count: this.dataService.recordsToDelete().length.toString() }));

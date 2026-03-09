@@ -158,6 +158,83 @@ describe('NotificationService', () => {
     expect(mockStorageService.save).toHaveBeenLastCalledWith('dismissed_notifications', []);
   });
 
+  describe('Monthly Schedules Special Handling', () => {
+    afterEach(() => {
+      vi.useRealTimers();
+    });
+
+    it('should detect monthly due when same day of next month is reached', async () => {
+      await new Promise(resolve => setTimeout(resolve, 0));
+
+      vi.useFakeTimers();
+      vi.setSystemTime(new Date('2026-03-15T12:00:00Z'));
+
+      const records: ConsumptionRecord[] = [
+        { date: new Date('2026-01-15T12:00:00Z'), kitchenWarm: 0, kitchenCold: 0, bathroomWarm: 0, bathroomCold: 0 },
+        { date: new Date('2026-02-15T12:00:00Z'), kitchenWarm: 0, kitchenCold: 0, bathroomWarm: 0, bathroomCold: 0 }
+      ];
+
+      service.setWaterRecords(records);
+
+      const notifications = service.notifications();
+      expect(notifications.some(n => n.id === 'water-due')).toBe(true);
+    });
+
+    it('should detect monthly due at the end of a shorter month', async () => {
+      await new Promise(resolve => setTimeout(resolve, 0));
+
+      vi.useFakeTimers();
+      // February 2026 has 28 days
+      vi.setSystemTime(new Date('2026-02-28T12:00:00Z'));
+
+      const records: ConsumptionRecord[] = [
+        { date: new Date('2025-12-31T12:00:00Z'), kitchenWarm: 0, kitchenCold: 0, bathroomWarm: 0, bathroomCold: 0 },
+        { date: new Date('2026-01-31T12:00:00Z'), kitchenWarm: 0, kitchenCold: 0, bathroomWarm: 0, bathroomCold: 0 }
+      ];
+
+      service.setWaterRecords(records);
+
+      const notifications = service.notifications();
+      expect(notifications.some(n => n.id === 'water-due')).toBe(true);
+    });
+
+    it('should not detect monthly due before the target date in the current month', async () => {
+      await new Promise(resolve => setTimeout(resolve, 0));
+
+      vi.useFakeTimers();
+      // Current date is 14th, target date is 15th
+      vi.setSystemTime(new Date('2026-03-14T12:00:00Z'));
+
+      const records: ConsumptionRecord[] = [
+        { date: new Date('2026-01-15T12:00:00Z'), kitchenWarm: 0, kitchenCold: 0, bathroomWarm: 0, bathroomCold: 0 },
+        { date: new Date('2026-02-15T12:00:00Z'), kitchenWarm: 0, kitchenCold: 0, bathroomWarm: 0, bathroomCold: 0 }
+      ];
+
+      service.setWaterRecords(records);
+
+      const notifications = service.notifications();
+      expect(notifications.some(n => n.id === 'water-due')).toBe(false);
+    });
+
+    it('should not detect monthly due before the end of a shorter month', async () => {
+      await new Promise(resolve => setTimeout(resolve, 0));
+
+      vi.useFakeTimers();
+      // February 2026 has 28 days, checking on the 27th (target was 31st)
+      vi.setSystemTime(new Date('2026-02-27T12:00:00Z'));
+
+      const records: ConsumptionRecord[] = [
+        { date: new Date('2025-12-31T12:00:00Z'), kitchenWarm: 0, kitchenCold: 0, bathroomWarm: 0, bathroomCold: 0 },
+        { date: new Date('2026-01-31T12:00:00Z'), kitchenWarm: 0, kitchenCold: 0, bathroomWarm: 0, bathroomCold: 0 }
+      ];
+
+      service.setWaterRecords(records);
+
+      const notifications = service.notifications();
+      expect(notifications.some(n => n.id === 'water-due')).toBe(false);
+    });
+  });
+
   // Heating Tests
   it('should detect heating due (at average interval)', async () => {
     await new Promise(resolve => setTimeout(resolve, 0));

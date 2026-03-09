@@ -41,7 +41,7 @@ export class HelpModalComponent {
   });
 
   protected isFirstStep = computed(() => this.currentStep() === 0);
-  protected isLastStep = computed(() => this.currentStep() === this.totalSteps() - 1);
+  protected isLastStep = computed(() => this.totalSteps() === 0 || this.currentStep() === this.totalSteps() - 1);
 
   previousStep() {
     if (!this.isFirstStep()) {

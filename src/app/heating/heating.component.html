@@ -30,7 +30,7 @@
   <!-- Country Energy Facts - Incremental Mode -->
   @if (displayMode() === 'incremental') {
   <app-comparison-note [type]="'heating'" [records]="chartRecords()" [chartView]="chartView()"
-    [heatingCountries]="availableCountries" (countryCodeChange)="onCountryChange($event)">
+    (countryCodeChange)="onCountryChange($event)">
   </app-comparison-note>
   }
 

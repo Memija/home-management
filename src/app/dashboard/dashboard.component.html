@@ -5,7 +5,7 @@
   </div>
 
   <div class="tracker-grid">
-    <button type="button" routerLink="/water" class="tracker-card water-card">
+    <button type="button" routerLink="/dashboard/water" class="tracker-card water-card">
       <div class="icon-wrapper">
         <lucide-icon [img]="DropletsIcon" [size]="64"></lucide-icon>
       </div>
@@ -13,7 +13,7 @@
       <p>{{ 'DASHBOARD.WATER_DESC' | translate }}</p>
     </button>
 
-    <button type="button" routerLink="/heating" class="tracker-card heating-card">
+    <button type="button" routerLink="/dashboard/heating" class="tracker-card heating-card">
       <div class="icon-wrapper">
         <lucide-icon [img]="FlameIcon" [size]="64"></lucide-icon>
       </div>
@@ -21,7 +21,7 @@
       <p>{{ 'DASHBOARD.HEATING_DESC' | translate }}</p>
     </button>
 
-    <button type="button" routerLink="/electricity" class="tracker-card electricity-card">
+    <button type="button" routerLink="/dashboard/electricity" class="tracker-card electricity-card">
       <div class="icon-wrapper">
         <lucide-icon [img]="ZapIcon" [size]="64"></lucide-icon>
       </div>

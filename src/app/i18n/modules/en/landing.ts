@@ -28,7 +28,11 @@ export const landing = {
       ANALYTICS_TITLE: 'Smart Analytics',
       ANALYTICS_DESC: 'Beautiful interactive charts with flexible date filtering. Compare periods and discover consumption patterns.',
       CLOUD_TITLE: 'Cloud Sync',
-      CLOUD_DESC: 'Optionally sync your data across devices with Firebase to have your data always backed up and accessible.'
+      CLOUD_DESC: 'Optionally sync your data across devices with Firebase to have your data always backed up and accessible.',
+      COUNTRY_TITLE: 'Country Comparisons',
+      COUNTRY_DESC: 'Compare your utility prices and consumption against various countries. Contextualize your performance globally.',
+      EXPORT_TITLE: 'PDF & Excel Export',
+      EXPORT_DESC: 'Generate comprehensive PDF reports or export your raw data to Excel for external processing and record keeping.'
     },
     HOW: {
       TITLE: 'Simple as 1-2-3',

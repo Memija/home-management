@@ -57,10 +57,22 @@ export class LandingComponent implements OnInit, OnDestroy {
       color: '#ec4899'
     },
     {
+      icon: '🌍',
+      titleKey: 'LANDING.FEATURES.COUNTRY_TITLE',
+      descKey: 'LANDING.FEATURES.COUNTRY_DESC',
+      color: '#f97316'
+    },
+    {
       icon: '☁️',
       titleKey: 'LANDING.FEATURES.CLOUD_TITLE',
       descKey: 'LANDING.FEATURES.CLOUD_DESC',
       color: '#06b6d4'
+    },
+    {
+      icon: '📄',
+      titleKey: 'LANDING.FEATURES.EXPORT_TITLE',
+      descKey: 'LANDING.FEATURES.EXPORT_DESC',
+      color: '#14b8a6'
     }
   ];
 

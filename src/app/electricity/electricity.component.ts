@@ -1,4 +1,4 @@
-import { Component, computed, inject, signal, effect } from '@angular/core';
+import { Component, computed, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 
@@ -8,7 +8,7 @@ import { ConsumptionInputComponent, type ConsumptionData, type ConsumptionGroup 
 import { DeleteConfirmationModalComponent } from '../shared/delete-confirmation-modal/delete-confirmation-modal.component';
 import { ConfirmationModalComponent } from '../shared/confirmation-modal/confirmation-modal.component';
 import { DetailedRecordsComponent, SortOptionConfig } from '../shared/detailed-records/detailed-records.component';
-import { ElectricityRecord, getDateKey } from '../models/records.model';
+import { ElectricityRecord } from '../models/records.model';
 import { ComparisonNoteComponent } from '../shared/comparison-note/comparison-note.component';
 import { ConsumptionChartComponent, type ChartView, type DisplayMode } from '../shared/consumption-chart/consumption-chart.component';
 import { ErrorModalComponent } from '../shared/error-modal/error-modal.component';

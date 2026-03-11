@@ -28,7 +28,11 @@ export const landing = {
       ANALYTICS_TITLE: 'Intelligente Analysen',
       ANALYTICS_DESC: 'Schöne interaktive Diagramme mit flexibler Datumsfilterung. Vergleiche Zeiträume und entdecke Verbrauchsmuster.',
       CLOUD_TITLE: 'Cloud-Synchronisierung',
-      CLOUD_DESC: 'Synchronisiere optional deine Daten über Geräte hinweg mit Firebase, damit sie immer gesichert und zugänglich sind.'
+      CLOUD_DESC: 'Synchronisiere optional deine Daten über Geräte hinweg mit Firebase, damit sie immer gesichert und zugänglich sind.',
+      COUNTRY_TITLE: 'Ländervergleiche',
+      COUNTRY_DESC: 'Vergleiche deine Versorgungspreise und deinen Verbrauch mit verschiedenen Ländern. Ordne deine Leistung global ein.',
+      EXPORT_TITLE: 'PDF- und Excel-Export',
+      EXPORT_DESC: 'Erstelle umfassende PDF-Berichte oder exportiere deine Rohdaten nach Excel für externe Verarbeitung und Aufzeichnungen.'
     },
     HOW: {
       TITLE: 'Einfach wie 1-2-3',

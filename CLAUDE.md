@@ -685,6 +685,24 @@ refactor: extract modal styles to _modal.scss
 - **Provide context in keys** - `BUTTON.SAVE` vs `MODAL.SAVE` if different
 - **Keep translations in sync** - Update all language files together
 
+### German Compound Words (Full Forms Only)
+
+**CRITICAL RULE:** In German translations, always use full compound word forms. Never use abbreviated hyphenated forms.
+
+```text
+// ❌ BAD - Abbreviated compound forms
+'Wasser-, Heizungs- und Stromverbrauch'
+'Kalt- und Warmwasserverbrauch'
+'Wasser-, Heizungs- oder Stromzähler'
+
+// ✅ GOOD - Full compound word forms
+'Wasserverbrauch, Heizungsverbrauch und Stromverbrauch'
+'Kaltwasserverbrauch und Warmwasserverbrauch'
+'Wasserzähler, Heizungszähler oder Stromzähler'
+```
+
+This applies to **all** German translation strings where compound words share a common suffix.
+
 ### Date/Number Formatting
 
 - **Use locale-aware pipes** - `{{ date | date:'shortDate' }}`

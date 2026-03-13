@@ -1,0 +1,115 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // Helper: Check if user is authenticated and matches the requested userId
+    function isOwner(userId) {
+      return request.auth != null && request.auth.uid == userId;
+    }
+
+    // Helper: Validate document schema for Records
+    // Enforces exactly two fields: 'value' (any type) and 'updatedAt' (string)
+    function isValidSchema() {
+      return request.resource.data.keys().hasAll(['value', 'updatedAt'])
+        && request.resource.data.size() == 2
+        && request.resource.data.updatedAt is string;
+    }
+
+    // Helper: Validate Settings Document Schema
+  // data must be a Map where every key present must match the expected type
+    function isValidSettings() {
+      let data = request.resource.data;
+
+      return
+      // 1. Check optional Maps
+      (!('excel_settings' in data) || data.excel_settings is map)
+        && (!('household_address' in data) || data.household_address is map)
+
+      // 2. Check optional Strings
+        && (!('storage_mode' in data) || data.storage_mode is string)
+        && (!('last_sync_timestamp' in data) || data.last_sync_timestamp is string)
+        && (!('theme' in data) || data.theme is string)
+        && (!('preferred_language' in data) || data.preferred_language is string)
+        && (!('water_chart_view' in data) || data.water_chart_view is string)
+        && (!('water_display_mode' in data) || data.water_display_mode is string)
+        && (!('heating_chart_view' in data) || data.heating_chart_view is string)
+        && (!('heating_display_mode' in data) || data.heating_display_mode is string)
+        && (!('electricity_chart_view' in data) || data.electricity_chart_view is string)
+        && (!('electricity_display_mode' in data) || data.electricity_display_mode is string)
+
+      // 3. Check optional Numbers
+      // household_members is actually a List (Array of objects), not a number
+
+      // 4. Check optional Lists
+        && (!('heating_room_configuration' in data) || data.heating_room_configuration is list)
+        && (!('household_members' in data) || data.household_members is list)
+        && (!('dismissed_notifications' in data) || data.dismissed_notifications is list)
+        && (!('water_confirmed_meter_changes' in data) || data.water_confirmed_meter_changes is list)
+        && (!('water_dismissed_meter_changes' in data) || data.water_dismissed_meter_changes is list)
+        && (!('electricity_confirmed_meter_changes' in data) || data.electricity_confirmed_meter_changes is list)
+        && (!('electricity_dismissed_meter_changes' in data) || data.electricity_dismissed_meter_changes is list)
+        && (!('heating_confirmed_spikes' in data) || data.heating_confirmed_spikes is list)
+        && (!('heating_dismissed_spikes' in data) || data.heating_dismissed_spikes is list)
+
+      // 5. Check optional Booleans
+        && (!('water_chart_trendline_visible' in data) || data.water_chart_trendline_visible is bool)
+        && (!('heating_chart_trendline_visible' in data) || data.heating_chart_trendline_visible is bool)
+        && (!('electricity_chart_trendline_visible' in data) || data.electricity_chart_trendline_visible is bool)
+        && (!('water_chart_average_visible' in data) || data.water_chart_average_visible is bool)
+        && (!('heating_chart_average_visible' in data) || data.heating_chart_average_visible is bool)
+        && (!('electricity_chart_average_visible' in data) || data.electricity_chart_average_visible is bool)
+        && (!('excel_preview_is_collapsed' in data) || data.excel_preview_is_collapsed is bool)
+        && (!('detailed_records_for_water_are_collapsed' in data) || data.detailed_records_for_water_are_collapsed is bool)
+        && (!('detailed_records_for_heating_are_collapsed' in data) || data.detailed_records_for_heating_are_collapsed is bool)
+        && (!('detailed_records_for_electricity_are_collapsed' in data) || data.detailed_records_for_electricity_are_collapsed is bool)
+        && (!('detailed_records_for_home_are_collapsed' in data) || data.detailed_records_for_home_are_collapsed is bool)
+
+      // 5. Check optional Booleans (or Strings)
+        && (!('water_chart_trendline_visible' in data) || data.water_chart_trendline_visible is bool || data.water_chart_trendline_visible is string)
+        && (!('heating_chart_trendline_visible' in data) || data.heating_chart_trendline_visible is bool || data.heating_chart_trendline_visible is string)
+        && (!('electricity_chart_trendline_visible' in data) || data.electricity_chart_trendline_visible is bool || data.electricity_chart_trendline_visible is string)
+        && (!('water_chart_average_visible' in data) || data.water_chart_average_visible is bool || data.water_chart_average_visible is string)
+        && (!('heating_chart_average_visible' in data) || data.heating_chart_average_visible is bool || data.heating_chart_average_visible is string)
+        && (!('electricity_chart_average_visible' in data) || data.electricity_chart_average_visible is bool || data.electricity_chart_average_visible is string)
+        && (!('excel_preview_is_collapsed' in data) || data.excel_preview_is_collapsed is bool || data.excel_preview_is_collapsed is string)
+        && (!('detailed_records_for_water_are_collapsed' in data) || data.detailed_records_for_water_are_collapsed is bool || data.detailed_records_for_water_are_collapsed is string)
+        && (!('detailed_records_for_heating_are_collapsed' in data) || data.detailed_records_for_heating_are_collapsed is bool || data.detailed_records_for_heating_are_collapsed is string)
+        && (!('detailed_records_for_electricity_are_collapsed' in data) || data.detailed_records_for_electricity_are_collapsed is bool || data.detailed_records_for_electricity_are_collapsed is string)
+        && (!('detailed_records_for_home_are_collapsed' in data) || data.detailed_records_for_home_are_collapsed is bool || data.detailed_records_for_home_are_collapsed is string);
+    }
+
+    // Helper: Whitelist of allowed document keys for records
+    // Only consumption records are stored as separate documents
+    function isValidKey(key) {
+      return key in [
+      'water_consumption_records',
+      'electricity_consumption_records',
+      'heating_consumption_records'
+      ];
+    }
+
+    // 1. Settings Document (Aggregated preferences)
+    match /users/{userId}/data/user_settings {
+      // Allow read/write if owner AND valid schema
+      allow read, write: if isOwner(userId)
+        && isValidSettings()
+        && request.resource.size() < 1048576;
+    }
+
+    // 2. Consumption Records (Large Data)
+    match /users/{userId}/data/{document} {
+      // Allow reading if owner
+      allow read: if isOwner(userId);
+
+      // Allow delete if owner (no schema check needed for deletion)
+      allow delete: if isOwner(userId);
+
+      // Allow create/update for records only
+      allow create, update: if isOwner(userId)
+        && isValidSchema()
+        && isValidKey(document)
+        && request.resource.size() < 262144; // 256KB limit per record type
+    }
+  }
+}

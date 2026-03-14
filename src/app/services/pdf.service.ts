@@ -55,7 +55,7 @@ export class PdfService {
 
     // Try to load and add logo
     try {
-      const logoBase64 = await this.loadImageAsBase64('/assets/logo.png');
+      const logoBase64 = await this.loadImageAsBase64('/assets/logo-128.png');
       doc.addImage(logoBase64, 'PNG', 14, 8, 15, 15);
     } catch (error) {
       console.warn('Could not load logo for PDF:', error);
@@ -215,7 +215,7 @@ export class PdfService {
 
     // Try to load and add logo
     try {
-      const logoBase64 = await this.loadImageAsBase64('/assets/logo.png');
+      const logoBase64 = await this.loadImageAsBase64('/assets/logo-128.png');
       doc.addImage(logoBase64, 'PNG', 14, 8, 15, 15);
     } catch (error) {
       console.warn('Could not load logo for PDF:', error);
@@ -386,7 +386,7 @@ export class PdfService {
     const doc = new jsPDF('landscape');
 
     try {
-      const logoBase64 = await this.loadImageAsBase64('/assets/logo.png');
+      const logoBase64 = await this.loadImageAsBase64('/assets/logo-128.png');
       doc.addImage(logoBase64, 'PNG', 14, 8, 15, 15);
     } catch (error) {
       console.warn('Could not load logo for PDF:', error);

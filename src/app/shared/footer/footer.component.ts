@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { TranslatePipe } from '../../pipes/translate.pipe';
-import { LucideAngularModule, Heart, Rocket, Github } from 'lucide-angular';
+import { LucideAngularModule, Heart, Rocket, Github, Shield } from 'lucide-angular';
 
 import { SupportModalComponent } from '../support-modal/support-modal.component';
 import { APP_VERSION } from '../../app.constants';
@@ -17,6 +17,7 @@ export class FooterComponent {
   readonly HeartIcon = Heart;
   readonly RocketIcon = Rocket;
   readonly GithubIcon = Github;
+  readonly ShieldIcon = Shield;
   readonly appVersion = APP_VERSION;
 
   showSupportModal = false;

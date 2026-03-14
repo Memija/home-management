@@ -1,7 +1,7 @@
 import { TestBed } from '@angular/core/testing';
 import { FooterComponent } from './footer.component';
 import { describe, it, expect, beforeEach } from 'vitest';
-import { Heart, Rocket, Github } from 'lucide-angular';
+import { Heart, Rocket, Github, Shield } from 'lucide-angular';
 import { APP_VERSION } from '../../app.constants';
 
 /**
@@ -60,6 +60,10 @@ describe('FooterComponent', () => {
       expect(component.GithubIcon).toBe(Github);
     });
 
+    it('should have ShieldIcon set to lucide Shield icon', () => {
+      expect(component.ShieldIcon).toBe(Shield);
+    });
+
     it('should have HeartIcon as readonly (same reference across accesses)', () => {
       const first = component.HeartIcon;
       const second = component.HeartIcon;
@@ -78,8 +82,14 @@ describe('FooterComponent', () => {
       expect(first).toBe(second);
     });
 
+    it('should have ShieldIcon as readonly (same reference across accesses)', () => {
+      const first = component.ShieldIcon;
+      const second = component.ShieldIcon;
+      expect(first).toBe(second);
+    });
+
     it('should have all icons as non-null, non-undefined values', () => {
-      const icons = [component.HeartIcon, component.RocketIcon, component.GithubIcon];
+      const icons = [component.HeartIcon, component.RocketIcon, component.GithubIcon, component.ShieldIcon];
       for (const icon of icons) {
         expect(icon).not.toBeNull();
         expect(icon).not.toBeUndefined();
@@ -89,14 +99,20 @@ describe('FooterComponent', () => {
     it('should have distinct icon references (no accidental duplicates)', () => {
       expect(component.HeartIcon).not.toBe(component.RocketIcon);
       expect(component.HeartIcon).not.toBe(component.GithubIcon);
+      expect(component.HeartIcon).not.toBe(component.ShieldIcon);
       expect(component.RocketIcon).not.toBe(component.GithubIcon);
+      expect(component.RocketIcon).not.toBe(component.ShieldIcon);
+      expect(component.GithubIcon).not.toBe(component.ShieldIcon);
     });
 
-    it('should have exactly three icon properties', () => {
-      const iconKeys = ['HeartIcon', 'RocketIcon', 'GithubIcon'] as const;
+    it('should have exactly four icon properties', () => {
+      const iconKeys = ['HeartIcon', 'RocketIcon', 'GithubIcon', 'ShieldIcon'] as const;
       iconKeys.forEach(key => {
         expect(component[key]).toBeDefined();
       });
+      // Verify count
+      const keys = Object.keys(component).filter(k => k.endsWith('Icon'));
+      expect(keys.length).toBe(4);
     });
   });
 
@@ -228,6 +244,11 @@ describe('FooterComponent', () => {
       expect(component.GithubIcon).not.toBeUndefined();
     });
 
+    it('should have ShieldIcon as a non-null value', () => {
+      expect(component.ShieldIcon).not.toBeNull();
+      expect(component.ShieldIcon).not.toBeUndefined();
+    });
+
     it('should have appVersion as a non-null value', () => {
       expect(component.appVersion).not.toBeNull();
       expect(component.appVersion).not.toBeUndefined();
@@ -241,6 +262,7 @@ describe('FooterComponent', () => {
       expect(component).toHaveProperty('HeartIcon');
       expect(component).toHaveProperty('RocketIcon');
       expect(component).toHaveProperty('GithubIcon');
+      expect(component).toHaveProperty('ShieldIcon');
       expect(component).toHaveProperty('appVersion');
       expect(component).toHaveProperty('showSupportModal');
     });
@@ -252,10 +274,11 @@ describe('FooterComponent', () => {
       expect(typeof component.HeartIcon).toBe('object');
       expect(typeof component.RocketIcon).toBe('object');
       expect(typeof component.GithubIcon).toBe('object');
+      expect(typeof component.ShieldIcon).toBe('object');
     });
 
     it('should not have unexpected enumerable properties beyond the public API', () => {
-      const expectedKeys = ['HeartIcon', 'RocketIcon', 'GithubIcon', 'appVersion', 'showSupportModal'];
+      const expectedKeys = ['HeartIcon', 'RocketIcon', 'GithubIcon', 'ShieldIcon', 'appVersion', 'showSupportModal'];
       const actualKeys = Object.keys(component);
       // All actual keys should be a subset of expected keys
       actualKeys.forEach(key => {
@@ -284,6 +307,7 @@ describe('FooterComponent', () => {
       expect(component.HeartIcon).toBe(component2.HeartIcon);
       expect(component.RocketIcon).toBe(component2.RocketIcon);
       expect(component.GithubIcon).toBe(component2.GithubIcon);
+      expect(component.ShieldIcon).toBe(component2.ShieldIcon);
     });
 
     it('should share the same version across instances', () => {
@@ -351,7 +375,8 @@ describe('FooterComponent', () => {
       const iconsBefore = {
         heart: component.HeartIcon,
         rocket: component.RocketIcon,
-        github: component.GithubIcon
+        github: component.GithubIcon,
+        shield: component.ShieldIcon
       };
 
       // Toggle modal many times
@@ -363,6 +388,7 @@ describe('FooterComponent', () => {
       expect(component.HeartIcon).toBe(iconsBefore.heart);
       expect(component.RocketIcon).toBe(iconsBefore.rocket);
       expect(component.GithubIcon).toBe(iconsBefore.github);
+      expect(component.ShieldIcon).toBe(iconsBefore.shield);
     });
 
     it('should have stable version after modal state changes', () => {
@@ -384,6 +410,7 @@ describe('FooterComponent', () => {
       expect(component.HeartIcon).toBe(Heart);
       expect(component.RocketIcon).toBe(Rocket);
       expect(component.GithubIcon).toBe(Github);
+      expect(component.ShieldIcon).toBe(Shield);
       expect(component.appVersion).toBe(APP_VERSION);
       // 1000 toggles from false => ends at false
       expect(component.showSupportModal).toBe(false);
@@ -393,6 +420,7 @@ describe('FooterComponent', () => {
       expect(typeof component.HeartIcon).not.toBe('undefined');
       expect(typeof component.RocketIcon).not.toBe('undefined');
       expect(typeof component.GithubIcon).not.toBe('undefined');
+      expect(typeof component.ShieldIcon).not.toBe('undefined');
       expect(typeof component.appVersion).toBe('string');
       expect(typeof component.showSupportModal).toBe('boolean');
     });
@@ -403,6 +431,7 @@ describe('FooterComponent', () => {
       expect(() => freshComponent.HeartIcon).not.toThrow();
       expect(() => freshComponent.RocketIcon).not.toThrow();
       expect(() => freshComponent.GithubIcon).not.toThrow();
+      expect(() => freshComponent.ShieldIcon).not.toThrow();
       expect(() => freshComponent.appVersion).not.toThrow();
       expect(() => freshComponent.showSupportModal).not.toThrow();
     });

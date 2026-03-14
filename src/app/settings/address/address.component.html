@@ -102,7 +102,7 @@
     </div>
     <div class="form-group span-2">
       <label for="country">{{ 'SETTINGS.COUNTRY' | translate }}</label>
-      <app-country-selector [countryCode]="country()" [hasError]="countryError().length > 0"
+      <app-country-selector inputId="country" inputName="country" [countryCode]="country()" [hasError]="countryError().length > 0"
         (countryCodeChange)="onCountryChange($event)" (validationErrors)="onCountryValidationChange($event)">
       </app-country-selector>
       @if (countryError().length > 0) {

@@ -17,6 +17,11 @@
       <span>{{ 'FOOTER.CONTRIBUTE' | translate }}</span>
     </a>
     <span class="divider">•</span>
+    <a routerLink="/dashboard/privacy" class="privacy-link" title="{{ 'FOOTER.PRIVACY_POLICY' | translate }}">
+      <lucide-icon [img]="ShieldIcon" [size]="16"></lucide-icon>
+      <span>{{ 'FOOTER.PRIVACY_POLICY' | translate }}</span>
+    </a>
+    <span class="divider">•</span>
     <span class="version" title="{{ 'FOOTER.VERSION' | translate:{ version: appVersion } }}">{{ 'FOOTER.VERSION' |
       translate:{ version: appVersion } }}</span>
   </div>

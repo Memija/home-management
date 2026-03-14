@@ -40,6 +40,7 @@ export const common = {
     SUPPORT_PROJECT: 'Support this Project',
     RELEASE_PLAN: 'Upcoming Features',
     CONTRIBUTE: 'Contribute',
+    PRIVACY_POLICY: 'Privacy Policy',
     VERSION: 'Version {{version}}'
   },
   RELEASE_PLAN: {

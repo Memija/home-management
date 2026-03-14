@@ -40,6 +40,10 @@ const routes: Routes = [
         loadComponent: () => import('./release-plan/release-plan.component').then(m => m.ReleasePlanComponent)
       },
       {
+        path: 'privacy',
+        loadComponent: () => import('./privacy/privacy.component').then(m => m.PrivacyComponent)
+      },
+      {
         path: 'settings',
         loadComponent: () => import('./settings/settings.component').then(m => m.SettingsComponent),
         canDeactivate: [canDeactivateSettings]

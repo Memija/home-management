@@ -38,8 +38,13 @@ export class CountrySelectorComponent {
   /** Placeholder text for the input */
   @Input() placeholder = 'SETTINGS.SEARCH_COUNTRY';
 
-  /** Whether the input has an error state */
   @Input() hasError = false;
+
+  /** HTML id applied to the input field */
+  @Input() inputId = 'country-selector-input';
+
+  /** HTML name applied to the input field */
+  @Input() inputName = 'country-selector';
 
   /** Emits when country code changes */
   @Output() countryCodeChange = new EventEmitter<string>();

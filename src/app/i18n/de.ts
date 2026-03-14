@@ -13,6 +13,7 @@ import { countryFacts } from './modules/de/country-facts/index';
 import { electricity } from './modules/de/electricity';
 import { auth } from './modules/de/auth';
 import { landing } from './modules/de/landing';
+import { privacy } from './modules/de/privacy';
 
 export const de = {
   ...common,
@@ -27,6 +28,7 @@ export const de = {
   ...electricity,
   ...auth,
   ...landing,
+  ...privacy,
   WATER_FACTS: waterFacts,
   COUNTRY_FACTS: countryFacts
 };

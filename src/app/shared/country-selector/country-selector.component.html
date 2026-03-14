@@ -2,7 +2,7 @@
   <input type="text" autocomplete="country-name" title="Search country" placeholder="Search country"
     aria-label="Search country" [ngModel]="_countrySearch()" (ngModelChange)="onSearchChange($event)"
     [class.error]="hasError" [placeholder]="placeholder | translate" [title]="placeholder | translate"
-    [attr.aria-label]="placeholder | translate">
+    [attr.aria-label]="placeholder | translate" [id]="inputId" [name]="inputName">
 
   @if (filteredCountries().length > 0) {
   <ul class="country-dropdown">

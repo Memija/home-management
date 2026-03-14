@@ -1,0 +1,57 @@
+<div class="page-container privacy-page">
+  <!-- Hero Section -->
+  <div class="privacy-hero">
+    <div class="hero-icon">
+      <lucide-icon [img]="ShieldIcon" [size]="48"></lucide-icon>
+    </div>
+    <h1>{{ 'FOOTER.PRIVACY_POLICY' | translate }}</h1>
+    <p class="shared-card-text">{{ 'PRIVACY.HERO_SUBTITLE' | translate }}</p>
+  </div>
+
+  <main class="privacy-grid">
+    <section class="privacy-card data-collection">
+      <div class="card-icon">
+        <lucide-icon [img]="LockIcon" [size]="24"></lucide-icon>
+      </div>
+      <div class="card-content">
+        <h2>{{ 'PRIVACY.COLLECTION_TITLE' | translate }}</h2>
+        <p>{{ 'PRIVACY.COLLECTION_P1' | translate }}</p>
+        <p>{{ 'PRIVACY.COLLECTION_P2' | translate }}</p>
+      </div>
+    </section>
+
+    <section class="privacy-card data-usage">
+      <div class="card-icon">
+        <lucide-icon [img]="DatabaseIcon" [size]="24"></lucide-icon>
+      </div>
+      <div class="card-content">
+        <h2>{{ 'PRIVACY.USAGE_TITLE' | translate }}</h2>
+        <p>{{ 'PRIVACY.USAGE_P1' | translate }}</p>
+      </div>
+    </section>
+
+    <section class="privacy-card data-storage">
+      <div class="card-icon">
+        <lucide-icon [img]="ShieldIcon" [size]="24"></lucide-icon>
+      </div>
+      <div class="card-content">
+        <h2>{{ 'PRIVACY.STORAGE_TITLE' | translate }}</h2>
+        <p>{{ 'PRIVACY.STORAGE_P1' | translate }}</p>
+        <div class="shared-computer-warning">
+          <strong>⚠️ {{ 'PRIVACY.SECURITY_NOTE_TITLE' | translate }}</strong> {{ 'PRIVACY.SECURITY_NOTE_TEXT' |
+          translate }}
+        </div>
+      </div>
+    </section>
+
+    <section class="privacy-card cookies">
+      <div class="card-icon">
+        <lucide-icon [img]="CookieIcon" [size]="24"></lucide-icon>
+      </div>
+      <div class="card-content">
+        <h2>{{ 'PRIVACY.COOKIES_TITLE' | translate }}</h2>
+        <p>{{ 'PRIVACY.COOKIES_P1' | translate }}</p>
+      </div>
+    </section>
+  </main>
+</div>

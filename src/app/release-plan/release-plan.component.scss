@@ -10,7 +10,7 @@ $tag-smart: #059669;
   padding-bottom: 2rem;
 }
 
-.hero-section {
+.release-plan-hero {
   text-align: center;
   margin-bottom: 2rem;
   padding: 2rem 1rem;
@@ -238,7 +238,7 @@ $tags: (
 }
 
 @media (max-width: 768px) {
-  .hero-section {
+  .release-plan-hero {
     padding: 1.5rem 1rem;
 
     .hero-icon {

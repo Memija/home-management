@@ -140,7 +140,7 @@ $landing-font: 'Inter', 'Segoe UI', system-ui, -apple-system, sans-serif;
   ::ng-deep .language-switcher button {
     border-color: var(--border-color);
     background: var(--bg-secondary);
-    color: var(--text-secondary);
+    color: #495057;
 
     &:hover {
       background: var(--bg-primary);

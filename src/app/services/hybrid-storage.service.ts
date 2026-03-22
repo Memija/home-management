@@ -408,4 +408,10 @@ export class HybridStorageService extends StorageService {
       this.isSyncing.set(false);
     }
   }
+  /**
+   * Delete all local data
+   */
+  async clearLocalData(): Promise<void> {
+    await this.localStorage.clearAll();
+  }
 }

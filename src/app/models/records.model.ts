@@ -95,13 +95,34 @@ export function calculateDynamicHeatingTotal(record: DynamicHeatingRecord): numb
   return Object.values(record.rooms).reduce((sum, val) => sum + (val || 0), 0);
 }
 
-/**
- * Get normalized date key (YYYY-MM-DD) for deduplication.
- * Strips time component to ensure same dates with different times are treated as duplicates.
- */
 export function getDateKey(date: Date): string {
-  const d = new Date(date);
+  const d = parseSafeDate(date);
+  if (isNaN(d.getTime())) return '';
   return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+}
+
+/**
+ * Safely parse a date that might be a string, a Date object, or a Firebase Timestamp
+ */
+export function parseSafeDate(dateRaw: any): Date {
+  if (!dateRaw) return new Date(NaN);
+  
+  if (dateRaw instanceof Date) {
+    return dateRaw;
+  }
+  
+  // Check for Firebase Timestamp-like objects
+  if (typeof dateRaw === 'object') {
+    if (typeof dateRaw.toDate === 'function') {
+      return dateRaw.toDate();
+    }
+    if ('seconds' in dateRaw) {
+      return new Date(dateRaw.seconds * 1000);
+    }
+  }
+  
+  // Fallback for strings/numbers
+  return new Date(dateRaw);
 }
 
 /**

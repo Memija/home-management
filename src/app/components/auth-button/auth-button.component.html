@@ -16,7 +16,7 @@
     <lucide-icon [img]="LogOutIcon"></lucide-icon>
   </button>
 </div>
-} @else {
+} @else if (isAuthSupported()) {
 <button class="auth-button sign-in" (click)="signIn()" [disabled]="isSigningIn"
   title="{{ 'AUTH.SIGN_IN_WITH_GOOGLE' | translate }}">
   @if (isSigningIn) {

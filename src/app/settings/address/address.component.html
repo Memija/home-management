@@ -21,15 +21,15 @@
     <p><strong>{{ 'SETTINGS.COUNTRY' | translate }}:</strong> {{ countryDisplayName() }}</p>
   </div>
   <div class="button-group">
-    <button type="button" class="edit-btn" (click)="editAddress()">
+    <button type="button" class="edit-btn" (click)="editAddress()" title="{{ 'SETTINGS.EDIT_ADDRESS' | translate }}">
       <lucide-icon [img]="EditIcon" size="16"></lucide-icon> <span class="btn-text">{{ 'SETTINGS.EDIT_ADDRESS' |
         translate }}</span>
     </button>
-    <button type="button" class="export-btn" (click)="exportAddress()">
+    <button type="button" class="export-btn" (click)="exportAddress()" title="{{ 'SETTINGS.EXPORT_ADDRESS' | translate }}">
       <lucide-icon [img]="ExportIcon" size="16"></lucide-icon> <span class="btn-text">{{ 'SETTINGS.EXPORT_ADDRESS' |
         translate }}</span>
     </button>
-    <button type="button" class="import-btn" (click)="fileInput.click()">
+    <button type="button" class="import-btn" (click)="fileInput.click()" title="{{ 'SETTINGS.IMPORT_ADDRESS' | translate }}">
       <lucide-icon [img]="ImportIcon" size="16"></lucide-icon> <span class="btn-text">{{ 'SETTINGS.IMPORT_ADDRESS' |
         translate }}</span>
     </button>
@@ -118,17 +118,17 @@
     </div>
   </div>
   <div class="button-group">
-    <button type="button" class="save-btn" (click)="saveAddress()" [disabled]="!isAddressFormValid()">
+    <button type="button" class="save-btn" (click)="saveAddress()" [disabled]="!isAddressFormValid()" title="{{ 'SETTINGS.SAVE_ADDRESS' | translate }}">
       <lucide-icon [img]="SaveIcon" size="16"></lucide-icon> <span class="btn-text">{{ 'SETTINGS.SAVE_ADDRESS' |
         translate }}</span>
     </button>
     @if (householdService.address()) {
-    <button type="button" class="cancel-btn" (click)="cancelEdit()">
+    <button type="button" class="cancel-btn" (click)="cancelEdit()" title="{{ 'SETTINGS.CANCEL' | translate }}">
       <lucide-icon [img]="CancelIcon" size="16"></lucide-icon> <span class="btn-text">{{ 'SETTINGS.CANCEL' | translate
         }}</span>
     </button>
     }
-    <button type="button" class="import-btn" (click)="editFileInput.click()">
+    <button type="button" class="import-btn" (click)="editFileInput.click()" title="{{ 'SETTINGS.IMPORT_ADDRESS' | translate }}">
       <lucide-icon [img]="ImportIcon" size="16"></lucide-icon> <span class="btn-text">{{ 'SETTINGS.IMPORT_ADDRESS' |
         translate }}</span>
     </button>

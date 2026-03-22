@@ -72,6 +72,14 @@
         <span class="btn-text">{{ 'STORAGE.DELETE_CLOUD_DATA' | translate }}</span>
       </button>
     </div>
+    } @else {
+    <div class="actions">
+      <button class="btn-danger" (click)="isClearLocalModalOpen.set(true)"
+        title="{{ 'STORAGE.CLEAR_LOCAL' | translate }}">
+        <lucide-icon [img]="AlertIcon" size="18"></lucide-icon>
+        <span class="btn-text">{{ 'STORAGE.CLEAR_LOCAL' | translate }}</span>
+      </button>
+    </div>
     }
   </div>
 
@@ -97,6 +105,11 @@
 <app-delete-confirmation-modal [show]="isDeleteModalOpen()" titleKey="STORAGE.DELETE_CLOUD_TITLE"
   messageKey="STORAGE.DELETE_CLOUD_MESSAGE" cancelKey="ACTIONS.CANCEL" deleteKey="ACTIONS.DELETE" [icon]="AlertIcon"
   (confirm)="onConfirmDelete()" (cancel)="closeDeleteModal()">
+</app-delete-confirmation-modal>
+
+<app-delete-confirmation-modal [show]="isClearLocalModalOpen()" titleKey="STORAGE.CLEAR_LOCAL_TITLE"
+  messageKey="STORAGE.CLEAR_LOCAL_MESSAGE" cancelKey="STORAGE.KEEP_LOCAL" deleteKey="STORAGE.CLEAR_LOCAL" [icon]="AlertIcon"
+  (confirm)="onConfirmClearLocal()" (cancel)="onCancelClearLocal()">
 </app-delete-confirmation-modal>
 
 <app-confirmation-modal [show]="isDownloadModalOpen()" [titleKey]="'STORAGE.PULL_CONFIRM_TITLE'"

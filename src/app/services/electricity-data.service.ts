@@ -1,5 +1,5 @@
 import { Injectable, signal, inject, computed } from '@angular/core';
-import { ElectricityRecord, mergeRecords, filterZeroPlaceholders, isElectricityRecordAllZero } from '../models/records.model';
+import { ElectricityRecord, mergeRecords, filterZeroPlaceholders, isElectricityRecordAllZero, parseSafeDate } from '../models/records.model';
 import { STORAGE_SERVICE } from './storage.service';
 import { FileStorageService } from './file-storage.service';
 import { ExcelService } from './excel.service';
@@ -108,7 +108,10 @@ export class ElectricityDataService {
 
   async loadData() {
     const data = await this.storage.load<ElectricityRecord[]>('electricity_consumption_records');
-    this.records.set(data || []);
+    const parsedData = (data || [])
+      .map(r => ({ ...r, date: parseSafeDate(r.date) }))
+      .filter(r => !isNaN(r.date.getTime()));
+    this.records.set(parsedData);
     this.notificationService.setElectricityRecords(this.records());
   }
 
@@ -146,9 +149,15 @@ export class ElectricityDataService {
 
   // --- CRUD Operations ---
   async saveRecord(newRecord: ElectricityRecord) {
-    const existingRecordIndex = this.records().findIndex(r =>
-      new Date(r.date).toISOString().split('T')[0] === new Date(newRecord.date).toISOString().split('T')[0]
-    );
+    const newRecordDate = new Date(newRecord.date);
+    if (isNaN(newRecordDate.getTime())) return;
+
+    const newRecordIso = newRecordDate.toISOString().split('T')[0];
+
+    const existingRecordIndex = this.records().findIndex(r => {
+      const d = new Date(r.date);
+      return !isNaN(d.getTime()) && d.toISOString().split('T')[0] === newRecordIso;
+    });
 
     this.records.update(records => {
       const updated = [...records];

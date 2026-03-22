@@ -1,10 +1,13 @@
 import { Injectable, signal, inject, PLATFORM_ID } from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
+import { LocalStorageService } from './local-storage.service';
 
 export type Season = 'spring' | 'summer' | 'autumn' | 'winter';
 
 /** Storage key for user's preferred season override (hm = homemanagement) */
-const SEASON_STORAGE_KEY = 'hm_season';
+const SEASON_STORAGE_KEY = 'season';
+/** Storage key for last synced day to detect new days */
+const SEASON_SYNC_KEY = 'season_sync';
 
 /** Ordered list of seasons for cycling */
 const SEASON_ORDER: Season[] = ['spring', 'summer', 'autumn', 'winter'];
@@ -14,6 +17,7 @@ const SEASON_ORDER: Season[] = ['spring', 'summer', 'autumn', 'winter'];
 })
 export class SeasonService {
   private platformId = inject(PLATFORM_ID);
+  private localStorageService = inject(LocalStorageService);
 
   /** Current active season */
   readonly currentSeason = signal<Season>(this.getInitialSeason());
@@ -38,7 +42,17 @@ export class SeasonService {
   private getInitialSeason(): Season {
     if (!isPlatformBrowser(this.platformId)) return 'summer';
 
-    const stored = localStorage.getItem(SEASON_STORAGE_KEY);
+    const today = new Date().toISOString().split('T')[0];
+    const lastSync = this.localStorageService.getPreference(SEASON_SYNC_KEY);
+
+    // If it's a new day, we reset the preference to revert to natural season
+    if (lastSync !== today) {
+      this.localStorageService.removePreference(SEASON_STORAGE_KEY);
+      this.localStorageService.setPreference(SEASON_SYNC_KEY, today);
+      return this.getNaturalSeason();
+    }
+
+    const stored = this.localStorageService.getPreference(SEASON_STORAGE_KEY);
     if (stored && SEASON_ORDER.includes(stored as Season)) {
       return stored as Season;
     }
@@ -51,7 +65,10 @@ export class SeasonService {
   setSeason(season: Season): void {
     this.currentSeason.set(season);
     if (isPlatformBrowser(this.platformId)) {
-      localStorage.setItem(SEASON_STORAGE_KEY, season);
+      this.localStorageService.setPreference(SEASON_STORAGE_KEY, season);
+      // Ensure sync date is updated when user makes a manual choice
+      const today = new Date().toISOString().split('T')[0];
+      this.localStorageService.setPreference(SEASON_SYNC_KEY, today);
     }
   }
 
@@ -82,7 +99,7 @@ export class SeasonService {
     const natural = this.getNaturalSeason();
     this.currentSeason.set(natural);
     if (isPlatformBrowser(this.platformId)) {
-      localStorage.removeItem(SEASON_STORAGE_KEY);
+      this.localStorageService.removePreference(SEASON_STORAGE_KEY);
     }
   }
 }

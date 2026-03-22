@@ -11,7 +11,7 @@
   </app-comparison-note>
   }
 
-  @if (displayMode() === 'total' && unconfirmedMeterChanges().length > 0) {
+  @if (unconfirmedMeterChanges().length > 0) {
   <div class="notification-card notification-card--warning">
     <div class="notification-content">
       <lucide-icon [img]="AlertTriangleIcon" size="20" class="notification-icon"></lucide-icon>

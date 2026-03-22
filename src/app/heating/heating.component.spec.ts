@@ -242,14 +242,20 @@ describe('HeatingComponent', () => {
       expect((component as any).unconfirmedSpike()).toBeUndefined();
     });
 
-    it('should compute unconfirmedSpikeRoomName', () => {
+    it('should compute unconfirmedSpikeRoomName using translated type', () => {
       (mockChartCalculationService.detectNewRoomSpikes as any).mockReturnValue([{ date: '2025-01-01', roomId: 'room-1' }]);
-      expect((component as any).unconfirmedSpikeRoomName()).toBe('Living Room');
+      expect((component as any).unconfirmedSpikeRoomName()).toBe('LIVING_ROOM');
     });
 
     it('should fallback to roomId if unconfirmedSpikeRoomName not found', () => {
       (mockChartCalculationService.detectNewRoomSpikes as any).mockReturnValue([{ date: '2025-01-01', roomId: 'non-existent' }]);
       expect((component as any).unconfirmedSpikeRoomName()).toBe('non-existent');
+    });
+
+    it('should fallback to room.name if room has no type', () => {
+      (mockRoomsService.rooms as WritableSignal<HeatingRoomConfig[]>).set([{ id: 'room-1', name: 'Custom Room' }]);
+      (mockChartCalculationService.detectNewRoomSpikes as any).mockReturnValue([{ date: '2025-01-01', roomId: 'room-1' }]);
+      expect((component as any).unconfirmedSpikeRoomName()).toBe('Custom Room');
     });
 
     it('should dismiss spike and save to local storage', () => {

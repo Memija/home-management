@@ -32,21 +32,35 @@ export class DemoService {
 
   // Storage keys used by the app (data stored via storage.save)
   private readonly storageKeys = [
-    'water_records',
+    'water_consumption_records',
     'heating_consumption_records',
-    'heating_room_config',
+    'heating_room_configuration',
     'electricity_consumption_records',
     'household_members',
     'household_address',
-    'excel_settings'
+    'excel_settings',
+    'water_chart_view',
+    'water_display_mode',
+    'heating_chart_view',
+    'heating_display_mode',
+    'electricity_chart_view',
+    'electricity_display_mode'
   ];
 
   // Preference keys used by the app (stored via setPreference with hm_ prefix)
   private readonly preferenceKeys = [
     'water_confirmed_meter_changes',
     'water_dismissed_meter_changes',
+    'heating_confirmed_spikes',
+    'heating_dismissed_spikes',
     'storage_mode',
-    'last_sync_timestamp'
+    'last_sync_timestamp',
+    'water_chart_average_visible',
+    'heating_chart_average_visible',
+    'electricity_chart_average_visible',
+    'water_chart_trendline_visible',
+    'heating_chart_trendline_visible',
+    'electricity_chart_trendline_visible'
   ];
 
   constructor() {
@@ -80,13 +94,13 @@ export class DemoService {
 
       // Save demo data to storage
       if (demoData.waterRecords) {
-        await this.storage.save('water_records', demoData.waterRecords);
+        await this.storage.save('water_consumption_records', demoData.waterRecords);
       }
       if (demoData.heatingRecords) {
         await this.storage.save('heating_consumption_records', demoData.heatingRecords);
       }
       if (demoData.heatingSettings) {
-        await this.storage.save('heating_room_config', demoData.heatingSettings);
+        await this.storage.save('heating_room_configuration', demoData.heatingSettings);
       }
       if (demoData.family) {
         await this.storage.save('household_members', demoData.family);
@@ -105,6 +119,19 @@ export class DemoService {
       for (const key of this.preferenceKeys) {
         this.storage.removePreference(key);
       }
+
+      // Set demo-optimal chart preferences: average (incremental) + detailed/by-room views
+      await this.storage.save('water_chart_view', 'detailed');
+      await this.storage.save('water_display_mode', 'incremental');
+      await this.storage.save('heating_chart_view', 'by-room');
+      await this.storage.save('heating_display_mode', 'incremental');
+      await this.storage.save('electricity_chart_view', 'detailed');
+      await this.storage.save('electricity_display_mode', 'incremental');
+
+      // Enable "Show Average" comparison on all chart pages for demo
+      this.storage.setPreference('electricity_chart_average_visible', 'true');
+      this.storage.setPreference('heating_chart_average_visible', 'false');
+      this.storage.setPreference('water_chart_average_visible', 'true');
 
       // Set demo mode flag
       localStorage.setItem('hm_demo_mode_is_active', 'true');

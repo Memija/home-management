@@ -4,6 +4,7 @@ import { HeaderComponent } from '../shared/header/header.component';
 import { FooterComponent } from '../shared/footer/footer.component';
 import { MenuBarComponent } from '../shared/menu-bar/menu-bar.component';
 import { ThemeService } from '../services/theme.service';
+import { DemoService } from '../services/demo.service';
 import { NatureTreeComponent } from '../shared/nature-tree/nature-tree.component';
 import { SeasonSwitcherComponent } from '../shared/season-switcher/season-switcher.component';
 
@@ -17,4 +18,5 @@ import { SeasonSwitcherComponent } from '../shared/season-switcher/season-switch
 export class AppLayoutComponent {
   // Inject ThemeService to ensure it initializes when entering the app
   private readonly themeService = inject(ThemeService);
+  protected readonly demoService = inject(DemoService);
 }

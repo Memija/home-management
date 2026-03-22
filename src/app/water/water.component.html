@@ -6,12 +6,7 @@
 
   </div>
 
-  @if (records().length > 0 && familySize() > 0 && displayMode() === 'incremental') {
-  <app-comparison-note [records]="records()" [chartView]="chartView()"
-    (countryCodeChange)="handleCountryCodeChange($event)"></app-comparison-note>
-  }
-
-  @if (displayMode() === 'total' && unconfirmedMeterChanges().length > 0) {
+  @if (unconfirmedMeterChanges().length > 0) {
   <div class="notification-card notification-card--warning">
     <div class="notification-content">
       <lucide-icon [img]="AlertTriangleIcon" size="20" class="notification-icon"></lucide-icon>
@@ -31,7 +26,14 @@
       </button>
     </div>
   </div>
-  } @else if (displayMode() === 'total' && waterFact()) {
+  }
+
+  @if (records().length > 0 && familySize() > 0 && displayMode() === 'incremental') {
+  <app-comparison-note [records]="records()" [chartView]="chartView()"
+    (countryCodeChange)="handleCountryCodeChange($event)"></app-comparison-note>
+  }
+
+  @if (displayMode() === 'total' && waterFact()) {
   <div class="notification-card notification-card--info">
     <div class="notification-content">
       <lucide-icon [img]="LightbulbIcon" size="20" class="notification-icon"></lucide-icon>

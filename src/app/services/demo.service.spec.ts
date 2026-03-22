@@ -230,9 +230,9 @@ describe('DemoService', () => {
       await service.activateDemo();
 
       // Verify all demo data was saved to correct storage keys
-      expect(mockLocalStorageService.save).toHaveBeenCalledWith('water_records', mockWaterRecords);
+      expect(mockLocalStorageService.save).toHaveBeenCalledWith('water_consumption_records', mockWaterRecords);
       expect(mockLocalStorageService.save).toHaveBeenCalledWith('heating_consumption_records', mockHeatingRecords);
-      expect(mockLocalStorageService.save).toHaveBeenCalledWith('heating_room_config', mockHeatingSettings);
+      expect(mockLocalStorageService.save).toHaveBeenCalledWith('heating_room_configuration', mockHeatingSettings);
       expect(mockLocalStorageService.save).toHaveBeenCalledWith('electricity_consumption_records', mockElectricityRecords);
       expect(mockLocalStorageService.save).toHaveBeenCalledWith('household_members', mockFamily);
       expect(mockLocalStorageService.save).toHaveBeenCalledWith('household_address', mockAddress);
@@ -330,9 +330,9 @@ describe('DemoService', () => {
 
       await service.deactivateDemo();
 
-      expect(mockLocalStorageService.delete).toHaveBeenCalledWith('water_records');
+      expect(mockLocalStorageService.delete).toHaveBeenCalledWith('water_consumption_records');
       expect(mockLocalStorageService.delete).toHaveBeenCalledWith('heating_consumption_records');
-      expect(mockLocalStorageService.delete).toHaveBeenCalledWith('heating_room_config');
+      expect(mockLocalStorageService.delete).toHaveBeenCalledWith('heating_room_configuration');
       expect(mockLocalStorageService.delete).toHaveBeenCalledWith('electricity_consumption_records');
       expect(mockLocalStorageService.delete).toHaveBeenCalledWith('household_members');
       expect(mockLocalStorageService.delete).toHaveBeenCalledWith('household_address');
@@ -346,6 +346,8 @@ describe('DemoService', () => {
 
       expect(mockLocalStorageService.removePreference).toHaveBeenCalledWith('water_confirmed_meter_changes');
       expect(mockLocalStorageService.removePreference).toHaveBeenCalledWith('water_dismissed_meter_changes');
+      expect(mockLocalStorageService.removePreference).toHaveBeenCalledWith('heating_confirmed_spikes');
+      expect(mockLocalStorageService.removePreference).toHaveBeenCalledWith('heating_dismissed_spikes');
     });
   });
 });

@@ -86,15 +86,15 @@
   <!-- Action Button -->
   @if (enabled()) {
   <div class="action-buttons">
-    <button type="button" class="edit-btn" (click)="openModal()">
+    <button type="button" class="edit-btn" (click)="openModal()" title="{{ 'SETTINGS.EDIT_EXCEL_SETTINGS' | translate }}">
       <lucide-icon [img]="EditIcon" size="16"></lucide-icon>
       <span class="btn-text">{{ 'SETTINGS.EDIT_EXCEL_SETTINGS' | translate }}</span>
     </button>
-    <button type="button" class="export-btn" (click)="exportSettings()">
+    <button type="button" class="export-btn" (click)="exportSettings()" title="{{ 'SETTINGS.EXPORT_EXCEL_SETTINGS' | translate }}">
       <lucide-icon [img]="ExportIcon" size="16"></lucide-icon>
       <span class="btn-text">{{ 'SETTINGS.EXPORT_EXCEL_SETTINGS' | translate }}</span>
     </button>
-    <button type="button" class="import-btn" (click)="fileInput.click()">
+    <button type="button" class="import-btn" (click)="fileInput.click()" title="{{ 'SETTINGS.IMPORT_EXCEL_SETTINGS' | translate }}">
       <lucide-icon [img]="ImportIcon" size="16"></lucide-icon>
       <span class="btn-text">{{ 'SETTINGS.IMPORT_EXCEL_SETTINGS' | translate }}</span>
     </button>
@@ -336,14 +336,14 @@
       </div>
 
       <div class="modal-footer">
-        <button type="button" class="btn-secondary" (click)="resetDefaults()">
+        <button type="button" class="btn-secondary" (click)="resetDefaults()" title="{{ 'SETTINGS.EXCEL_RESET_DEFAULTS' | translate }}">
           <lucide-icon [img]="RotateCcwIcon" size="16"></lucide-icon>
           {{ 'SETTINGS.EXCEL_RESET_DEFAULTS' | translate }}
         </button>
-        <button type="button" class="btn-outline" (click)="closeModal()">
+        <button type="button" class="btn-outline" (click)="closeModal()" title="{{ 'SETTINGS.CANCEL' | translate }}">
           {{ 'SETTINGS.CANCEL' | translate }}
         </button>
-        <button type="button" class="btn-primary" (click)="saveSettings()" [disabled]="!isFormValid()">
+        <button type="button" class="btn-primary" (click)="saveSettings()" [disabled]="!isFormValid()" title="{{ 'SETTINGS.EXCEL_SAVE_SETTINGS' | translate }}">
           {{ 'SETTINGS.EXCEL_SAVE_SETTINGS' | translate }}
         </button>
       </div>

@@ -48,6 +48,7 @@ export class StorageSettingsComponent {
   readonly actionStatus = signal<{ type: 'success' | 'error', message: string } | null>(null);
   readonly isDeleteModalOpen = signal(false);
   readonly isDownloadModalOpen = signal(false);
+  readonly isClearLocalModalOpen = signal(false);
   readonly isHelpModalOpen = signal(false);
 
   // Help steps
@@ -71,7 +72,31 @@ export class StorageSettingsComponent {
 
   toggleMode(): void {
     if (!this.isAuthenticated()) return;
-    this.storage.toggleMode();
+
+    const currentMode = this.mode();
+    if (currentMode === 'cloud') {
+      // Disabling cloud sync - switch to local mode immediately
+      this.storage.setMode('local');
+      // Then offer to clear local data
+      this.isClearLocalModalOpen.set(true);
+    } else {
+      // Enabling cloud sync
+      this.storage.setMode('cloud');
+    }
+  }
+
+  closeClearLocalModal(): void {
+    this.isClearLocalModalOpen.set(false);
+  }
+
+  async onConfirmClearLocal(): Promise<void> {
+    this.isClearLocalModalOpen.set(false);
+    await this.storage.clearLocalData();
+    window.location.reload();
+  }
+
+  onCancelClearLocal(): void {
+    this.isClearLocalModalOpen.set(false);
   }
 
   async migrateToCloud(): Promise<void> {

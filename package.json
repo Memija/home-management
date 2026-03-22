@@ -7,7 +7,7 @@
     "prestart": "npm run config:generate",
     "start": "ng serve home-management",
     "prebuild": "npm run config:generate",
-    "build": "ng build home-management",
+    "build": "ng build home-management && copy dist\\home-management\\browser\\index.csr.html dist\\home-management\\browser\\index.html",
     "watch": "ng build home-management --watch --configuration development",
     "test": "ng test home-management",
     "serve:ssr:home-management": "node dist/home-management/server/server.mjs"

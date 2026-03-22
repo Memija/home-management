@@ -1,6 +1,6 @@
 import { Injectable, inject, computed, signal } from '@angular/core';
 import { STORAGE_SERVICE } from './storage.service';
-import { ConsumptionRecord, ElectricityRecord } from '../models/records.model';
+import { ConsumptionRecord, ElectricityRecord, parseSafeDate } from '../models/records.model';
 import { DemoService } from './demo.service';
 import { Address, HouseholdMember } from './household.service';
 
@@ -44,17 +44,17 @@ export class NotificationService {
     // Use correct storage keys matching the data services
     const waterRecords = await this.storage.load<ConsumptionRecord[]>('water_consumption_records');
     if (waterRecords) {
-      this.waterRecords.set(waterRecords);
+      this.waterRecords.set(waterRecords.map(r => ({ ...r, date: parseSafeDate(r.date) })));
     }
 
     const heatingRecords = await this.storage.load<{ date: Date }[]>('heating_consumption_records');
     if (heatingRecords) {
-      this.heatingRecords.set(heatingRecords);
+      this.heatingRecords.set(heatingRecords.map(r => ({ ...r, date: parseSafeDate(r.date) })));
     }
 
     const electricityRecords = await this.storage.load<ElectricityRecord[]>('electricity_consumption_records');
     if (electricityRecords) {
-      this.electricityRecords.set(electricityRecords);
+      this.electricityRecords.set(electricityRecords.map(r => ({ ...r, date: parseSafeDate(r.date) })));
     }
 
     // Load address and family data
@@ -351,13 +351,13 @@ export class NotificationService {
 
     // Sort by date
     const sorted = [...records].sort(
-      (a, b) => new Date(a.date).getTime() - new Date(b.date).getTime()
+      (a, b) => parseSafeDate(a.date).getTime() - parseSafeDate(b.date).getTime()
     );
 
     // Calculate average days between entries
     let totalDays = 0;
     for (let i = 1; i < sorted.length; i++) {
-      const diff = new Date(sorted[i].date).getTime() - new Date(sorted[i - 1].date).getTime();
+      const diff = parseSafeDate(sorted[i].date).getTime() - parseSafeDate(sorted[i - 1].date).getTime();
       totalDays += diff / (1000 * 60 * 60 * 24);
     }
     const averageDays = totalDays / (sorted.length - 1);
@@ -365,7 +365,7 @@ export class NotificationService {
     // Calculate days since last entry
     const lastEntry = sorted[sorted.length - 1];
     const daysSinceLast = Math.floor(
-      (Date.now() - new Date(lastEntry.date).getTime()) / (1000 * 60 * 60 * 24)
+      (Date.now() - parseSafeDate(lastEntry.date).getTime()) / (1000 * 60 * 60 * 24)
     );
 
     // Due when at or past average interval
@@ -376,7 +376,7 @@ export class NotificationService {
     // (e.g., February has 28 days, taking a reading on 1st of every month)
     let isMonthlyDue = false;
     if (averageDays >= 27 && averageDays <= 32) {
-      const lastDate = new Date(lastEntry.date);
+      const lastDate = parseSafeDate(lastEntry.date);
       const today = new Date();
       const monthDiff = (today.getFullYear() * 12 + today.getMonth()) -
         (lastDate.getFullYear() * 12 + lastDate.getMonth());

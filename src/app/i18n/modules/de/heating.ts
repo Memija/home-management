@@ -9,7 +9,7 @@ export const heating = {
     EXPORT_PDF: 'Als PDF exportieren',
     EXPORT_DISABLED_TOOLTIP: 'Keine Datensätze zum Exportieren',
     ENERGY_FACTS_FOR: 'Energiefakten für {{country}}',
-    SELECT_COUNTRY_INFO: 'Wählen Sie ein Land aus, um energie- und heizungsspezifische Fakten für diese Region zu sehen',
+    SELECT_COUNTRY_INFO: 'Wählen Sie ein Land aus, um energiespezifische Fakten und heizungsspezifische Fakten für diese Region zu sehen',
     EXCEL_IMPORT_ERROR_TITLE: 'Excel-Import fehlgeschlagen',
     EXCEL_IMPORT_ERROR: 'Excel-Daten konnten nicht importiert werden. Bitte überprüfen Sie die Details unten und befolgen Sie die Anweisungen zur Behebung des Problems.',
     JSON_IMPORT_ERROR_TITLE: 'JSON-Import fehlgeschlagen',

@@ -41,6 +41,10 @@ export const auth = {
     HELP_STEP2_TITLE: 'Hochladen & Herunterladen',
     HELP_STEP2_DESC: 'Verwenden Sie "In Cloud hochladen", um Ihre lokalen Daten in die Cloud zu übertragen. Verwenden Sie "Aus Cloud herunterladen", um Cloud-Daten auf dieses Gerät wiederherzustellen. Das Herunterladen überschreibt Ihre aktuellen lokalen Daten.',
     HELP_STEP3_TITLE: 'Datenschutz & Sicherheit',
-    HELP_STEP3_DESC: 'Ihre Daten werden in Firebase gespeichert und durch Sicherheitsregeln geschützt, sodass andere Benutzer keinen Zugriff haben. Der App-Administrator kann Daten in der Firebase-Konsole einsehen. Sie können alle Cloud-Daten jederzeit löschen. Lokale Daten bleiben immer auf Ihrem Gerät, unabhängig von den Cloud-Einstellungen.'
+    HELP_STEP3_DESC: 'Ihre Daten werden in Firebase gespeichert und durch Sicherheitsregeln geschützt, sodass andere Benutzer keinen Zugriff haben. Der App-Administrator kann Daten in der Firebase-Konsole einsehen. Sie können alle Cloud-Daten jederzeit löschen. Lokale Daten bleiben immer auf Ihrem Gerät, unabhängig von den Cloud-Einstellungen.',
+    CLEAR_LOCAL_TITLE: 'Lokale Daten löschen?',
+    CLEAR_LOCAL_MESSAGE: 'Der Cloud-Sync wurde deaktiviert. Möchten Sie alle lokalen Daten von diesem Gerät löschen? Diese Aktion kann nicht rückgängig gemacht werden.',
+    KEEP_LOCAL: 'Lokale Daten behalten',
+    CLEAR_LOCAL: 'Lokale Daten löschen'
   }
 };

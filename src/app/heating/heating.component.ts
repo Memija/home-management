@@ -156,7 +156,8 @@ export class HeatingComponent {
     const spike = this.unconfirmedSpike();
     if (!spike) return '';
     const room = this.roomsService.rooms().find(r => r.id === spike.roomId);
-    return room ? room.name : spike.roomId;
+    if (!room) return spike.roomId;
+    return room.type ? this.languageService.translate(room.type) : room.name;
   });
 
   protected formattedSpikeDate = computed(() => {

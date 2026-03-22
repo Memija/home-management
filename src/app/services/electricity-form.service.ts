@@ -20,14 +20,18 @@ export class ElectricityFormService {
 
         // Check if a record already exists for the selected date
         return currentRecords.some(r => {
-            const recordDate = new Date(r.date).toISOString().split('T')[0];
-            return recordDate === this.selectedDate();
+            const d = new Date(r.date);
+            if (isNaN(d.getTime())) return false;
+            return d.toISOString().split('T')[0] === this.selectedDate();
         });
     }
 
     startEdit(record: ElectricityRecord) {
         this.editingRecord.set(record);
-        this.selectedDate.set(new Date(record.date).toISOString().split('T')[0]);
+        const date = new Date(record.date);
+        if (!isNaN(date.getTime())) {
+            this.selectedDate.set(date.toISOString().split('T')[0]);
+        }
         this.value.set(record.value);
     }
 

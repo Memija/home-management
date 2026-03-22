@@ -27,6 +27,7 @@ export class ConsumptionFormService {
         if (!selected) return false;
         return records.some(r => {
             const rDate = new Date(r.date);
+            if (isNaN(rDate.getTime())) return false;
             return rDate.toISOString().split('T')[0] === selected;
         });
     }
@@ -34,7 +35,10 @@ export class ConsumptionFormService {
     // Actions
     startEdit(record: ConsumptionRecord) {
         this.editingRecord.set(record);
-        this.selectedDate.set(new Date(record.date).toISOString().split('T')[0]);
+        const date = new Date(record.date);
+        if (!isNaN(date.getTime())) {
+            this.selectedDate.set(date.toISOString().split('T')[0]);
+        }
         this.kitchenWarm.set(record.kitchenWarm);
         this.kitchenCold.set(record.kitchenCold);
         this.bathroomWarm.set(record.bathroomWarm);

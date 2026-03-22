@@ -21,6 +21,7 @@ export class AuthButtonComponent {
   readonly user = this.authService.user;
   readonly isLoading = this.authService.isLoading;
   readonly isAuthenticated = this.authService.isAuthenticated;
+  readonly isAuthSupported = this.authService.isAuthSupported;
 
   isSigningIn = false;
 

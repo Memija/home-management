@@ -2,6 +2,7 @@ import { Injectable, inject, signal, computed, PLATFORM_ID } from '@angular/core
 import { isPlatformBrowser } from '@angular/common';
 import { Auth, User as FirebaseUser } from 'firebase/auth';
 import { firebaseConfig } from '../config/firebase.config';
+import { environment } from '../../environments/environment';
 import { BehaviorSubject } from 'rxjs';
 
 export interface AuthUser {
@@ -31,8 +32,19 @@ export class AuthService {
   /** Whether user is currently authenticated */
   readonly isAuthenticated = computed(() => this.user() !== null);
 
+  /** Whether authentication is supported on the current domain */
+  readonly isAuthSupported = signal<boolean>(true);
+
   constructor() {
     if (isPlatformBrowser(this.platformId)) {
+      const hostname = window.location.hostname;
+      // Define authorized domains (matching Firebase Console settings)
+      const isAuthorized = hostname === 'home-management.dev' || 
+                           hostname.endsWith('.firebaseapp.com') || 
+                           hostname.endsWith('.web.app') ||
+                           (hostname === 'localhost' && environment.allowLocalAuth);
+      
+      this.isAuthSupported.set(isAuthorized);
       this.initAuthListener();
     } else {
       this.isLoading.set(false);

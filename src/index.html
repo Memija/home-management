@@ -9,6 +9,12 @@
   <base href="/">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <link rel="icon" type="image/png" href="assets/logo-128.png">
+  <script>
+    // Redirect default Firebase domains to the custom domain
+    if (window.location.hostname === 'home-management-be965.web.app' || window.location.hostname === 'home-management-be965.firebaseapp.com') {
+      window.location.replace('https://home-management.dev' + window.location.pathname + window.location.search + window.location.hash);
+    }
+  </script>
 </head>
 
 <body>

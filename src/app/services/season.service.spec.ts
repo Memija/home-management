@@ -48,8 +48,10 @@ describe('SeasonService', () => {
     });
 
     describe('localStorage initialization', () => {
-      it('should load season from localStorage if valid', () => {
+      it('should load season from localStorage if valid and same day', () => {
+        const todayStr = new Date().toISOString().split('T')[0];
         localStorage.setItem('hm_season', 'autumn');
+        localStorage.setItem('hm_season_sync', todayStr);
         const service = TestBed.inject(SeasonService);
         expect(service.currentSeason()).toBe('autumn');
       });
@@ -70,7 +72,9 @@ describe('SeasonService', () => {
 
     describe('Season cycling bounds', () => {
       it('nextSeason should cycle from winter to spring (wrap around forward)', () => {
+        const todayStr = new Date().toISOString().split('T')[0];
         localStorage.setItem('hm_season', 'winter');
+        localStorage.setItem('hm_season_sync', todayStr);
         const service = TestBed.inject(SeasonService);
         service.nextSeason();
         expect(service.currentSeason()).toBe('spring');
@@ -78,7 +82,9 @@ describe('SeasonService', () => {
       });
 
       it('previousSeason should cycle from spring to winter (wrap around backward)', () => {
+        const todayStr = new Date().toISOString().split('T')[0];
         localStorage.setItem('hm_season', 'spring');
+        localStorage.setItem('hm_season_sync', todayStr);
         const service = TestBed.inject(SeasonService);
         service.previousSeason();
         expect(service.currentSeason()).toBe('winter');
@@ -86,7 +92,9 @@ describe('SeasonService', () => {
       });
 
       it('nextSeason and previousSeason should handle regular cycles seamlessly', () => {
+        const todayStr = new Date().toISOString().split('T')[0];
         localStorage.setItem('hm_season', 'spring');
+        localStorage.setItem('hm_season_sync', todayStr);
         const service = TestBed.inject(SeasonService);
 
         service.nextSeason();
@@ -109,7 +117,9 @@ describe('SeasonService', () => {
 
       it('resetToNaturalSeason should set natural season and remove localStorage config', () => {
         vi.setSystemTime(new Date(2023, 8, 15)); // Sep -> autumn
+        const todayStr = new Date(2023, 8, 15).toISOString().split('T')[0];
         localStorage.setItem('hm_season', 'summer');
+        localStorage.setItem('hm_season_sync', todayStr);
         const service = TestBed.inject(SeasonService);
 
         expect(service.currentSeason()).toBe('summer'); // Read from setup localStorage
@@ -117,6 +127,36 @@ describe('SeasonService', () => {
         service.resetToNaturalSeason();
         expect(service.currentSeason()).toBe('autumn'); // Reset using natural (mocked) Date
         expect(localStorage.getItem('hm_season')).toBeNull(); // localStorage value cleared
+      });
+
+      describe('Daily reset functionality', () => {
+        it('should reset season to natural if the day has changed', () => {
+          const today = new Date(2023, 2, 15); // March -> spring
+          const yesterday = new Date(2023, 2, 14);
+          const yesterdayStr = yesterday.toISOString().split('T')[0];
+
+          vi.setSystemTime(today);
+          localStorage.setItem('hm_season', 'winter');
+          localStorage.setItem('hm_season_sync', yesterdayStr);
+
+          const service = TestBed.inject(SeasonService);
+          expect(service.currentSeason()).toBe('spring');
+          expect(localStorage.getItem('hm_season')).toBeNull();
+          expect(localStorage.getItem('hm_season_sync')).toBe(today.toISOString().split('T')[0]);
+        });
+
+        it('should keep season override if it is still the same day', () => {
+          const today = new Date(2023, 2, 15);
+          const todayStr = today.toISOString().split('T')[0];
+
+          vi.setSystemTime(today);
+          localStorage.setItem('hm_season', 'winter');
+          localStorage.setItem('hm_season_sync', todayStr);
+
+          const service = TestBed.inject(SeasonService);
+          expect(service.currentSeason()).toBe('winter');
+          expect(localStorage.getItem('hm_season')).toBe('winter');
+        });
       });
     });
   });

@@ -1,6 +1,6 @@
 import { Component, signal, computed } from '@angular/core';
 import { TranslatePipe } from '../pipes/translate.pipe';
-import { LucideAngularModule, Rocket, Droplets, Maximize2, TrendingUp, Calendar, Sparkles, Camera, ArrowUpCircle, Lightbulb, LucideIconData } from 'lucide-angular';
+import { LucideAngularModule, Rocket, Droplets, Maximize2, TrendingUp, Calendar, Sparkles, Camera, ArrowUpCircle, Lightbulb, Zap, ShieldCheck, LucideIconData } from 'lucide-angular';
 
 type FeatureTag = 'new' | 'enhancement' | 'smart';
 
@@ -64,6 +64,24 @@ export class ReleasePlanComponent {
       icon: TrendingUp,
       tag: 'smart',
       colorClass: 'prediction-feature'
+    },
+    // Quality/Performance
+    {
+      id: 5,
+      titleKey: 'RELEASE_PLAN.FEATURE_5_TITLE',
+      descKey: 'RELEASE_PLAN.FEATURE_5_DESC',
+      icon: Zap,
+      tag: 'enhancement',
+      colorClass: 'enhancement-feature'
+    },
+    // Code Quality
+    {
+      id: 6,
+      titleKey: 'RELEASE_PLAN.FEATURE_6_TITLE',
+      descKey: 'RELEASE_PLAN.FEATURE_6_DESC',
+      icon: ShieldCheck,
+      tag: 'enhancement',
+      colorClass: 'enhancement-feature'
     }
   ];
 

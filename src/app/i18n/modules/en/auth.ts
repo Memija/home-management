@@ -41,6 +41,10 @@ export const auth = {
     HELP_STEP2_TITLE: 'Upload & Download',
     HELP_STEP2_DESC: 'Use "Upload to Cloud" to push your local data to the cloud. Use "Download from Cloud" to restore cloud data onto this device. Downloading will overwrite your current local data.',
     HELP_STEP3_TITLE: 'Privacy & Safety',
-    HELP_STEP3_DESC: 'Your data is stored in Firebase and protected by security rules so other users cannot access it. The app administrator can view data in the Firebase Console. You can delete all cloud data at any time. Local data always remains on your device regardless of cloud settings.'
+    HELP_STEP3_DESC: 'Your data is stored in Firebase and protected by security rules so other users cannot access it. The app administrator can view data in the Firebase Console. You can delete all cloud data at any time. Local data always remains on your device regardless of cloud settings.',
+    CLEAR_LOCAL_TITLE: 'Delete local data?',
+    CLEAR_LOCAL_MESSAGE: 'Cloud sync has been disabled. Do you want to delete all local data from this device? This action cannot be undone.',
+    KEEP_LOCAL: 'Keep local data',
+    CLEAR_LOCAL: 'Delete local data'
   }
 };

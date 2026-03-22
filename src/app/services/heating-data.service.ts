@@ -10,7 +10,8 @@ import { HeatingRoomsService } from './heating-rooms.service';
 import {
     DynamicHeatingRecord,
     filterZeroPlaceholders,
-    isDynamicHeatingRecordAllZero
+    isDynamicHeatingRecordAllZero,
+    parseSafeDate
 } from '../models/records.model';
 
 /**
@@ -56,7 +57,11 @@ export class HeatingDataService {
     async loadData(): Promise<void> {
         const records = await this.storage.load<DynamicHeatingRecord[]>('heating_consumption_records');
         if (records) {
-            const parsedRecords = records.map(r => ({ ...r, date: new Date(r.date) }));
+            const parsedRecords = records
+                .map(r => ({ ...r, date: parseSafeDate(r.date) }))
+                .filter(r => {
+                    return r.date instanceof Date && !isNaN(r.date.getTime());
+                });
             this.records.set(parsedRecords);
             this.notificationService.setHeatingRecords(this.records());
         }

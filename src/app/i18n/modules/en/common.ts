@@ -59,6 +59,10 @@ export const common = {
     FEATURE_3_DESC: 'Let the app analyze your historical consumption data and provide intelligent predictions for future usage. Plan ahead, set better budgets, and understand your consumption patterns like never before.',
     FEATURE_4_TITLE: 'Image-Based Meter Reading',
     FEATURE_4_DESC: 'Simply take a photo of your meter and let the app automatically recognize the numbers from the image. No more manual entry - just snap a picture and the reading is captured!',
+    FEATURE_5_TITLE: 'Performance & Quality Excellence',
+    FEATURE_5_DESC: 'We\'re striving for perfection. Our next update aims to achieve a 100% Lighthouse score across performance, accessibility, and SEO, ensuring the smoothest and most accessible experience for everyone.',
+    FEATURE_6_TITLE: 'Code Quality Excellence',
+    FEATURE_6_DESC: 'We are committed to maintaining the highest code standards. Our next release will focus on deeper SonarCloud integration and resolving all reported Sonar issues.',
     CTA_TEXT: 'Your support helps us build these features faster. Thank you for being part of our community!',
     BACK_TO_HOME: 'Back to Home'
   },

@@ -1,8 +1,8 @@
 @use 'variables' as *;
 
 $tag-new: #1976d2;
-$tag-enh: #7c3aed;
-$tag-smart: #059669;
+$tag-enh: #059669; // Green
+$tag-smart: #d97706; // Amber/Gold
 
 .release-plan-page {
   max-width: 900px;
@@ -19,7 +19,7 @@ $tag-smart: #059669;
     width: 100px;
     height: 100px;
     margin: 0 auto 1.5rem;
-    background: linear-gradient(135deg, #6366f1, #a855f7);
+    background: linear-gradient(135deg, #1d4ed8, #4f46e5); // Blue to Indigo
     color: white;
     display: flex;
     align-items: center;
@@ -31,7 +31,7 @@ $tag-smart: #059669;
     margin: 0 0 .75rem;
     font-size: 2.5rem;
     font-weight: 700;
-    color: #6366f1;
+    color: #4f46e5;
   }
 
   .version-badge {
@@ -227,14 +227,14 @@ $tags: (
 
 .enhancement-feature {
   --f-c: #{$tag-enh};
-  --f-l1: #ede9fe;
-  --f-l2: #ddd6fe;
+  --f-l1: #d1fae5;
+  --f-l2: #a7f3d0;
 }
 
 .prediction-feature {
   --f-c: #{$tag-smart};
-  --f-l1: #d1fae5;
-  --f-l2: #a7f3d0;
+  --f-l1: #fffbeb;
+  --f-l2: #fef3c7;
 }
 
 @media (max-width: 768px) {

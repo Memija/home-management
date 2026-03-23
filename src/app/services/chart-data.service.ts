@@ -135,22 +135,7 @@ export class ChartDataService {
         if (effectiveShowTrendline && heatingRecs.length > 1) {
           const trendData = this.calculationService.generateTrendlineData(totalData);
 
-          // Calculate slope to determine trend direction
-          // Use first and last points of trendline to calculate overall slope
-          const firstVal = trendData[0] as number;
-          const lastVal = trendData[trendData.length - 1] as number;
-          const slope = lastVal - firstVal;
-
-          // Determine color based on slope direction
-          // Red = increasing (bad, consumption going up)
-          // Green = decreasing (good, consumption going down)
-          // Black = flat (no significant change)
-          let trendColor = '#000000'; // Black for flat
-          if (slope > 1) {
-            trendColor = '#dc3545'; // Red for increasing
-          } else if (slope < -1) {
-            trendColor = '#28a745'; // Green for decreasing
-          }
+          const trendColor = this.calculationService.getTrendColor(trendData);
 
           totalDatasets.push({
             data: trendData,
@@ -332,17 +317,7 @@ export class ChartDataService {
     if (showTrendline && mode === 'incremental' && electricityRecs.length > 1) {
       const trendData = this.calculationService.generateTrendlineData(dataPoints);
 
-      // Calculate slope to determine trend direction
-      const firstVal = trendData[0] as number;
-      const lastVal = trendData[trendData.length - 1] as number;
-      const slope = lastVal - firstVal;
-
-      let trendColor = '#000000';
-      if (slope > 1) {
-        trendColor = '#dc3545'; // Red (increasing)
-      } else if (slope < -1) {
-        trendColor = '#28a745'; // Green (decreasing)
-      }
+      const trendColor = this.calculationService.getTrendColor(trendData);
 
       datasets.push({
         data: trendData,

@@ -28,9 +28,9 @@
   }
 
   <!-- Country Energy Facts - Incremental Mode -->
-  @if (displayMode() === 'incremental') {
+  @if (chartRecords().length > 0 && displayMode() === 'incremental') {
   <app-comparison-note [type]="'heating'" [records]="chartRecords()" [chartView]="chartView()"
-    (countryCodeChange)="onCountryChange($event)">
+    [country]="selectedCountryCode()" (countryCodeChange)="onCountryChange($event)">
   </app-comparison-note>
   }
 

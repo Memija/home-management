@@ -77,6 +77,14 @@ export class HeatingAveragesService {
     'israel': { averageKwhPerYear: 4500, source: 'CBS Israel', year: 2020 },
     'cyprus': { averageKwhPerYear: 4000, source: 'Eurostat', year: 2020 },
     'malta': { averageKwhPerYear: 3000, source: 'NSO Malta', year: 2020 },
+    'bosnia and herzegovina': { averageKwhPerYear: 9000, source: 'Energy Sector Study BiH', year: 2020 },
+    'serbia': { averageKwhPerYear: 9500, source: 'Statistical Office Serbia', year: 2020 },
+    'montenegro': { averageKwhPerYear: 7000, source: 'MONSTAT', year: 2020 },
+    'north macedonia': { averageKwhPerYear: 8000, source: 'SSO', year: 2020 },
+    'albania': { averageKwhPerYear: 4000, source: 'INSTAT', year: 2020 },
+    'kosovo': { averageKwhPerYear: 8500, source: 'KAS', year: 2020 },
+    'romania': { averageKwhPerYear: 10000, source: 'INS', year: 2020 },
+    'bulgaria': { averageKwhPerYear: 8000, source: 'NSI', year: 2020 },
 
     // Oceania
     'australia': { averageKwhPerYear: 5000, source: 'ABS', year: 2020 },
@@ -134,20 +142,26 @@ export class HeatingAveragesService {
     'lv': 'latvia', 'lt': 'lithuania', 'cz': 'czech republic', 'sk': 'slovakia',
     'hu': 'hungary', 'gr': 'greece', 'hr': 'croatia', 'si': 'slovenia',
     'cy': 'cyprus', 'mt': 'malta', 'ru': 'russia', 'tr': 'turkey',
+    'ba': 'bosnia and herzegovina', 'rs': 'serbia', 'me': 'montenegro',
+    'mk': 'north macedonia', 'al': 'albania', 'xk': 'kosovo', 'ro': 'romania',
+    'bg': 'bulgaria',
 
     // Americas
     'us': 'usa', 'ca': 'canada', 'mx': 'mexico', 'br': 'brazil',
     'ar': 'argentina', 'cl': 'chile', 'co': 'colombia', 'pe': 'peru', 've': 'venezuela',
+    'uy': 'uruguay', 'py': 'paraguay', 'bo': 'bolivia', 'ec': 'ecuador',
 
     // Asia & Middle East
     'jp': 'japan', 'kr': 'south korea', 'cn': 'china', 'in': 'india',
     'th': 'thailand', 'vn': 'vietnam', 'id': 'indonesia', 'ph': 'philippines',
     'my': 'malaysia', 'sg': 'singapore', 'il': 'israel', 'sa': 'saudi arabia',
-    'ae': 'uae', 'qa': 'qatar', 'eg': 'egypt',
+    'ae': 'uae', 'qa': 'qatar', 'eg': 'egypt', 'kw': 'kuwait', 'jo': 'jordan',
+    'lb': 'lebanon', 'om': 'oman', 'bh': 'bahrain', 'ir': 'iran',
 
     // Africa
     'za': 'south africa', 'ng': 'nigeria', 'ke': 'kenya', 'et': 'ethiopia',
-    'ma': 'morocco', 'tn': 'tunisia', 'dz': 'algeria',
+    'ma': 'morocco', 'tn': 'tunisia', 'dz': 'algeria', 'gh': 'ghana',
+    'tz': 'tanzania',
 
     // Oceania
     'au': 'australia', 'nz': 'new zealand',

@@ -30,6 +30,7 @@
 
   @if (records().length > 0 && familySize() > 0 && displayMode() === 'incremental') {
   <app-comparison-note [records]="records()" [chartView]="chartView()"
+    [country]="effectiveComparisonCountryCode()"
     (countryCodeChange)="handleCountryCodeChange($event)"></app-comparison-note>
   }
 

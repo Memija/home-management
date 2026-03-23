@@ -42,7 +42,7 @@ describe('ReleasePlanComponent', () => {
 
   it('should show all features when filter is "all"', () => {
     component.setFilter('all');
-    expect(component.filteredFeatures().length).toBe(4);
+    expect(component.filteredFeatures().length).toBe(6);
   });
 
   it('should filter features by "new"', () => {
@@ -55,7 +55,7 @@ describe('ReleasePlanComponent', () => {
   it('should filter features by "enhancement"', () => {
     component.setFilter('enhancement');
     const filtered = component.filteredFeatures();
-    expect(filtered.length).toBe(2);
+    expect(filtered.length).toBe(4);
     filtered.forEach(feature => {
       expect(feature.tag).toBe('enhancement');
     });
@@ -70,9 +70,9 @@ describe('ReleasePlanComponent', () => {
 
   it('should calculate filter counts correctly', () => {
     const counts = component.filterOptions();
-    expect(counts['all']).toBe(4);
+    expect(counts['all']).toBe(6);
     expect(counts['new']).toBe(1);
-    expect(counts['enhancement']).toBe(2);
+    expect(counts['enhancement']).toBe(4);
     expect(counts['smart']).toBe(1);
   });
 
@@ -95,6 +95,6 @@ describe('ReleasePlanComponent', () => {
 
     component.setFilter('all');
     expect(component.activeFilter()).toBe('all');
-    expect(component.filteredFeatures().length).toBe(4);
+    expect(component.filteredFeatures().length).toBe(6);
   });
 });

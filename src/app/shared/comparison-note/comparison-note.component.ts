@@ -1,4 +1,4 @@
-import { Component, computed, inject, input, output, effect, signal } from '@angular/core';
+import { Component, computed, inject, input, output, effect, signal, model } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { LucideAngularModule, Info, Lightbulb } from 'lucide-angular';
@@ -52,7 +52,7 @@ export class ComparisonNoteComponent {
   // Internal State
   protected readonly InfoIcon = Info;
   protected readonly LightbulbIcon = Lightbulb;
-  protected comparisonCountry = signal<string | null>(null);
+  comparisonCountry = model<string | null>(null, { alias: 'country' });
   protected factSeed = signal(Date.now()); // Used to generate new facts
 
   protected familySize = computed(() => this.householdService.members().length);

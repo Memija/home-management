@@ -1,4 +1,4 @@
-import { Component, signal, computed, inject } from '@angular/core';
+import { Component, signal, computed, inject, effect } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { TranslatePipe } from '../pipes/translate.pipe';
@@ -10,6 +10,7 @@ import { LucideAngularModule, ArrowLeft, ChevronDown, ChevronLeft, ChevronRight,
 import { ConsumptionChartComponent, type ChartView, type DisplayMode } from '../shared/consumption-chart/consumption-chart.component';
 import { ConsumptionInputComponent, type ConsumptionData, type ConsumptionGroup } from '../shared/consumption-input/consumption-input.component';
 import { ErrorModalComponent } from '../shared/error-modal/error-modal.component';
+import { HouseholdService } from '../services/household.service';
 import { ConfirmationModalComponent } from '../shared/confirmation-modal/confirmation-modal.component';
 import { HeatingRoomsModalComponent } from '../shared/heating-rooms-modal/heating-rooms-modal.component';
 import { DetailedRecordsComponent, SortOptionConfig, GenericRecord } from '../shared/detailed-records/detailed-records.component';
@@ -44,6 +45,7 @@ export class HeatingComponent {
   private localStorageService = inject(LocalStorageService);
   private roomUtilsService = inject(HeatingRoomUtilsService);
   private languageService = inject(LanguageService);
+  private householdService = inject(HouseholdService);
 
   // Icons
   protected readonly ArrowLeftIcon = ArrowLeft;
@@ -84,6 +86,17 @@ export class HeatingComponent {
   // Country selection for facts
   protected readonly availableCountries = this.heatingFactsService.getAvailableCountries();
   protected selectedCountryCode = signal('DE');
+
+  private syncCountryFromAddress = effect(() => {
+    const address = this.householdService.address();
+    if (address?.country) {
+      // Find if this country is valid for heating facts
+      const isValid = this.availableCountries.some(c => c.code.toLowerCase() === address.country.toLowerCase());
+      if (isValid) {
+        this.selectedCountryCode.set(address.country.toUpperCase());
+      }
+    }
+  });
   protected selectedCountryName = computed(() => {
     const code = this.selectedCountryCode();
     const country = this.availableCountries.find(c => c.code === code);
@@ -116,7 +129,7 @@ export class HeatingComponent {
     const records = this.chartRecords();
     const mode = this.displayMode();
     const seed = this.factRandomSeed();
-    const countryCode = mode === 'total' ? 'GENERAL' : this.selectedCountryCode();
+    const countryCode = this.selectedCountryCode();
     if (records.length === 0) return null;
     const factIndex = Math.floor(seed * 15);
     const factMode = mode === 'total' ? 'historical' : 'country';

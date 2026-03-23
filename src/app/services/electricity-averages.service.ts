@@ -58,7 +58,12 @@ export class ElectricityAveragesService {
     'es': 'spain', 'pt': 'portugal', 'pl': 'poland', 'nl': 'netherlands',
     'be': 'belgium', 'se': 'sweden', 'no': 'norway', 'fi': 'finland',
     'dk': 'denmark', 'cz': 'czech republic', 'sk': 'slovakia', 'hu': 'hungary',
+    'ro': 'romania', 'hr': 'croatia', 'si': 'slovenia', 'rs': 'serbia',
+    'ba': 'bosnia and herzegovina', 'me': 'montenegro', 'mk': 'north macedonia',
+    'al': 'albania', 'xk': 'kosovo', 'bg': 'bulgaria', 'gr': 'greece',
     'us': 'usa', 'ca': 'canada', 'jp': 'japan', 'cn': 'china', 'in': 'india',
+    'br': 'brazil', 'ar': 'argentina', 'mx': 'mexico', 'za': 'south africa',
+    'eg': 'egypt', 'tr': 'turkey', 'il': 'israel', 'ae': 'uae', 'sa': 'saudi arabia',
     'world': 'world'
   };
 

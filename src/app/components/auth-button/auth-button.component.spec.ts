@@ -33,6 +33,7 @@ describe('AuthButtonComponent', () => {
       user: userSignal,
       isLoading: isLoadingSignal,
       isAuthenticated: computed(() => userSignal() !== null),
+      isAuthSupported: signal(true),
       signInWithGoogle: vi.fn().mockResolvedValue(undefined),
       signOut: vi.fn().mockResolvedValue(undefined)
     };

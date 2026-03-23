@@ -19,7 +19,8 @@ describe('WaterChartService', () => {
       generateComparisonData: vi.fn().mockReturnValue([
         { kitchenWarm: 5, kitchenCold: 5, bathroomWarm: 5, bathroomCold: 5 }
       ]),
-      generateTrendlineData: vi.fn().mockReturnValue([10, 20, 30])
+      generateTrendlineData: vi.fn().mockReturnValue([10, 20, 30]),
+      getTrendColor: vi.fn().mockReturnValue('#000000')
     };
 
     TestBed.configureTestingModule({

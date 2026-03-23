@@ -132,6 +132,25 @@ export class ChartCalculationService {
   }
 
   /**
+   * Determine trend color based on the slope of the trendline
+   * Red = increasing (bad for consumption), Green = decreasing (good), Black = flat
+   */
+  getTrendColor(trendData: number[]): string {
+    if (trendData.length < 2) return '#000000';
+
+    const firstVal = trendData[0] as number;
+    const lastVal = trendData[trendData.length - 1] as number;
+    const slope = lastVal - firstVal;
+
+    if (slope > 1) {
+      return '#dc3545'; // Red for increasing
+    } else if (slope < -1) {
+      return '#28a745'; // Green for decreasing
+    }
+    return '#000000'; // Black for flat
+  }
+
+  /**
    * Generate comparison data based on country averages
    */
   generateComparisonData(processedData: ConsumptionRecord[], familySize: number, country: string): ComparisonData[] {

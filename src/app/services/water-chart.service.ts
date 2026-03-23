@@ -84,7 +84,7 @@ export class WaterChartService {
         data: trendData,
         label: this.languageService.translate('CHART.TRENDLINE'),
         type: 'line',
-        borderColor: '#28a745',
+        borderColor: this.calculationService.getTrendColor(trendData),
         borderWidth: 2,
         pointRadius: 0,
         fill: false
@@ -130,7 +130,7 @@ export class WaterChartService {
           data: kitchenTrend,
           label: this.languageService.translate('CHART.KITCHEN') + ' ' + this.languageService.translate('CHART.TRENDLINE'),
           type: 'line',
-          borderColor: '#17a2b8',
+          borderColor: '#17a2b8', // Kitchen color
           borderWidth: 2,
           borderDash: [3, 3],
           pointRadius: 0,
@@ -143,7 +143,7 @@ export class WaterChartService {
           data: bathroomTrend,
           label: this.languageService.translate('CHART.BATHROOM') + ' ' + this.languageService.translate('CHART.TRENDLINE'),
           type: 'line',
-          borderColor: '#6c757d',
+          borderColor: '#6c757d', // Bathroom color
           borderWidth: 2,
           borderDash: [3, 3],
           pointRadius: 0,
@@ -221,7 +221,7 @@ export class WaterChartService {
           data: warmTrend,
           label: this.languageService.translate('CHART.WARM_WATER_TOTAL') + ' ' + this.languageService.translate('CHART.TRENDLINE'),
           type: 'line',
-          borderColor: '#ffc107',
+          borderColor: '#ffc107', // Warm color
           borderWidth: 2,
           borderDash: [3, 3],
           pointRadius: 0,
@@ -234,7 +234,7 @@ export class WaterChartService {
           data: coldTrend,
           label: this.languageService.translate('CHART.COLD_WATER_TOTAL') + ' ' + this.languageService.translate('CHART.TRENDLINE'),
           type: 'line',
-          borderColor: '#6c757d',
+          borderColor: '#6c757d', // Cold color
           borderWidth: 2,
           borderDash: [3, 3],
           pointRadius: 0,
@@ -333,11 +333,12 @@ export class WaterChartService {
     // Add trendlines for each category if enabled
     if (showTrendline && recs.length >= 2) {
       if (hasKitchenWarmData) {
+        const trendData = this.calculationService.generateTrendlineData(kitchenWarmData);
         datasets.push({
-          data: this.calculationService.generateTrendlineData(kitchenWarmData),
+          data: trendData,
           label: this.languageService.translate('CHART.KITCHEN_WARM') + ' ' + this.languageService.translate('CHART.TRENDLINE'),
           type: 'line',
-          borderColor: '#ff6384',
+          borderColor: '#ff6384', // Kitchen Warm color
           borderWidth: 2,
           borderDash: [3, 3],
           pointRadius: 0,
@@ -345,11 +346,12 @@ export class WaterChartService {
         });
       }
       if (hasKitchenColdData) {
+        const trendData = this.calculationService.generateTrendlineData(kitchenColdData);
         datasets.push({
-          data: this.calculationService.generateTrendlineData(kitchenColdData),
+          data: trendData,
           label: this.languageService.translate('CHART.KITCHEN_COLD') + ' ' + this.languageService.translate('CHART.TRENDLINE'),
           type: 'line',
-          borderColor: '#36a2eb',
+          borderColor: '#36a2eb', // Kitchen Cold color
           borderWidth: 2,
           borderDash: [3, 3],
           pointRadius: 0,
@@ -357,11 +359,12 @@ export class WaterChartService {
         });
       }
       if (hasBathroomWarmData) {
+        const trendData = this.calculationService.generateTrendlineData(bathroomWarmData);
         datasets.push({
-          data: this.calculationService.generateTrendlineData(bathroomWarmData),
+          data: trendData,
           label: this.languageService.translate('CHART.BATHROOM_WARM') + ' ' + this.languageService.translate('CHART.TRENDLINE'),
           type: 'line',
-          borderColor: '#ffcd56',
+          borderColor: '#ffcd56', // Bathroom Warm color
           borderWidth: 2,
           borderDash: [3, 3],
           pointRadius: 0,
@@ -369,11 +372,12 @@ export class WaterChartService {
         });
       }
       if (hasBathroomColdData) {
+        const trendData = this.calculationService.generateTrendlineData(bathroomColdData);
         datasets.push({
-          data: this.calculationService.generateTrendlineData(bathroomColdData),
+          data: trendData,
           label: this.languageService.translate('CHART.BATHROOM_COLD') + ' ' + this.languageService.translate('CHART.TRENDLINE'),
           type: 'line',
-          borderColor: '#4bc0c0',
+          borderColor: '#4bc0c0', // Bathroom Cold color
           borderWidth: 2,
           borderDash: [3, 3],
           pointRadius: 0,

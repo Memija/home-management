@@ -1,6 +1,7 @@
 import { Injectable, signal, effect, inject, untracked } from '@angular/core';
 import { STORAGE_SERVICE, StorageService } from './storage.service';
 import { NotificationService } from './notification.service';
+import { CountryService } from './country.service';
 
 export interface Address {
   streetName: string;
@@ -25,6 +26,7 @@ export interface HouseholdMember {
 export class HouseholdService {
   private storage = inject(STORAGE_SERVICE);
   private notificationService = inject(NotificationService);
+  private countryService = inject(CountryService);
   private isInitialized = false;
 
   readonly members = signal<HouseholdMember[]>([]);
@@ -75,7 +77,7 @@ export class HouseholdService {
 
     const address = await this.storage.load<Address>('household_address');
     if (address) {
-      this.address.set(address);
+      this.address.set(this.normalizeAddress(address));
     }
 
     // Delay initialization flag to ensure initial signal updates don't trigger effects
@@ -101,7 +103,21 @@ export class HouseholdService {
   }
 
   updateAddress(address: Address) {
-    this.address.set(address);
+    this.address.set(this.normalizeAddress(address));
+  }
+
+  private normalizeAddress(address: Address): Address {
+    if (!address.country) return address;
+
+    // Migrate legacy name-based country to code if needed
+    let countryCode = address.country;
+    if (address.country.length > 2) {
+      const info = this.countryService.getCountryInfoByNameAnyLanguage(address.country);
+      if (info) {
+        countryCode = info.code;
+      }
+    }
+    return { ...address, country: countryCode.toLowerCase() };
   }
 
   updateMembers(members: HouseholdMember[]) {

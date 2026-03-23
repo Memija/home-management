@@ -67,6 +67,13 @@ export class WaterComponent {
   protected chartView = this.preferencesService.chartView;
   protected displayMode = this.preferencesService.displayMode;
   protected effectiveComparisonCountryCode = signal('DE'); // Default
+
+  private syncCountryFromAddress = effect(() => {
+    const address = this.householdService.address();
+    if (address?.country) {
+      this.effectiveComparisonCountryCode.set(address.country.toUpperCase());
+    }
+  });
   protected factRandomSeed = signal(Math.random());
 
   // Template Helpers & Signals

@@ -23,10 +23,11 @@ describe('StorageSettingsComponent', () => {
     isCloudMode: signal(false),
     lastSyncTime: signal<Date | null>(null),
     isSyncing: signal(false),
-    toggleMode: vi.fn(),
+    setMode: vi.fn(),
     migrateLocalToCloud: vi.fn().mockResolvedValue(undefined),
     pullFromCloud: vi.fn().mockResolvedValue(undefined),
     clearCloudData: vi.fn().mockResolvedValue(undefined),
+    clearLocalData: vi.fn().mockResolvedValue(undefined),
   };
 
   const mockAuth = {
@@ -214,16 +215,25 @@ describe('StorageSettingsComponent', () => {
   // ─── Toggle Mode ─────────────────────────────────────────────────────
 
   describe('toggleMode', () => {
-    it('should call storage.toggleMode() when authenticated', () => {
+    it('should call storage.setMode("cloud") when currently in local mode and authenticated', () => {
       mockAuth.isAuthenticated.set(true);
+      mockStorage.mode.set('local');
       component.toggleMode();
-      expect(mockStorage.toggleMode).toHaveBeenCalledTimes(1);
+      expect(mockStorage.setMode).toHaveBeenCalledWith('cloud');
     });
 
-    it('should not call storage.toggleMode() when not authenticated', () => {
+    it('should call storage.setMode("local") and open clear local modal when currently in cloud mode and authenticated', () => {
+      mockAuth.isAuthenticated.set(true);
+      mockStorage.mode.set('cloud');
+      component.toggleMode();
+      expect(mockStorage.setMode).toHaveBeenCalledWith('local');
+      expect(component.isClearLocalModalOpen()).toBe(true);
+    });
+
+    it('should not call storage.setMode() when not authenticated', () => {
       mockAuth.isAuthenticated.set(false);
       component.toggleMode();
-      expect(mockStorage.toggleMode).not.toHaveBeenCalled();
+      expect(mockStorage.setMode).not.toHaveBeenCalled();
     });
 
     it('should not throw when called while unauthenticated', () => {

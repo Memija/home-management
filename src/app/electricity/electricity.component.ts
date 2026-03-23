@@ -1,4 +1,4 @@
-import { Component, computed, inject, signal } from '@angular/core';
+import { Component, computed, inject, signal, effect } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 
@@ -51,6 +51,17 @@ export class ElectricityComponent {
   protected chartView = this.preferencesService.electricityChartView;
   protected displayMode = this.preferencesService.electricityDisplayMode;
   protected effectiveComparisonCountryCode = signal('DE');
+
+  private syncCountryFromAddress = effect(() => {
+    const address = this.householdService.address();
+    if (address?.country) {
+      // Find if this country is valid for electricity facts
+      const isValid = availableElectricityCountries.some(c => c.code.toLowerCase() === address.country.toLowerCase());
+      if (isValid) {
+        this.effectiveComparisonCountryCode.set(address.country.toUpperCase());
+      }
+    }
+  });
   protected factRandomSeed = signal(Math.random());
 
   protected adjustedRecords = this.records; // Start with records, can be adjustments if needed

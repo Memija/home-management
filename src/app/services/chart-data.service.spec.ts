@@ -34,6 +34,7 @@ describe('ChartDataService', () => {
         return incrementalData.map(r => ({ ...r, normalized: { days: 7 } }));
       }),
       generateElectricityComparisonData: vi.fn(() => []),
+      getTrendColor: vi.fn(() => '#000000'),
     };
 
     waterChartServiceMock = {

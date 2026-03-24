@@ -24,6 +24,7 @@ export const auth = {
     PULL_FROM_CLOUD: 'Download from Cloud',
     PULL_SUCCESS: 'Data successfully downloaded from cloud',
     PULL_ERROR: 'Failed to download data from cloud',
+    SYNC_ERROR: 'Initial synchronization failed',
     PULL_CONFIRM_TITLE: 'Download from Cloud?',
     PULL_CONFIRM_MESSAGE: 'This will overwrite your current local data with data from the cloud. This action cannot be undone.',
     CLOUD_DESCRIPTION: 'When enabled, your data is backed up to the cloud and synced across devices.',
@@ -45,6 +46,7 @@ export const auth = {
     CLEAR_LOCAL_TITLE: 'Delete local data?',
     CLEAR_LOCAL_MESSAGE: 'Cloud sync has been disabled. Do you want to delete all local data from this device? This action cannot be undone.',
     KEEP_LOCAL: 'Keep local data',
-    CLEAR_LOCAL: 'Delete local data'
+    CLEAR_LOCAL: 'Delete local data',
+    CLEAR_LOCAL_DEMO_DISABLED: 'Local data deletion is disabled in demo mode.'
   }
 };

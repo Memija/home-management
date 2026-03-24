@@ -24,6 +24,7 @@ export const auth = {
     PULL_FROM_CLOUD: 'Aus Cloud herunterladen',
     PULL_SUCCESS: 'Daten erfolgreich aus Cloud heruntergeladen',
     PULL_ERROR: 'Herunterladen aus Cloud fehlgeschlagen',
+    SYNC_ERROR: 'Erste-Synchronisation fehlgeschlagen',
     PULL_CONFIRM_TITLE: 'Aus Cloud herunterladen?',
     PULL_CONFIRM_MESSAGE: 'Dies wird Ihre aktuellen lokalen Daten mit Daten aus der Cloud überschreiben. Diese Aktion kann nicht rückgängig gemacht werden.',
     CLOUD_DESCRIPTION: 'Wenn aktiviert, werden Ihre Daten in der Cloud gesichert und geräteübergreifend synchronisiert.',
@@ -45,6 +46,7 @@ export const auth = {
     CLEAR_LOCAL_TITLE: 'Lokale Daten löschen?',
     CLEAR_LOCAL_MESSAGE: 'Der Cloud-Sync wurde deaktiviert. Möchten Sie alle lokalen Daten von diesem Gerät löschen? Diese Aktion kann nicht rückgängig gemacht werden.',
     KEEP_LOCAL: 'Lokale Daten behalten',
-    CLEAR_LOCAL: 'Lokale Daten löschen'
+    CLEAR_LOCAL: 'Lokale Daten löschen',
+    CLEAR_LOCAL_DEMO_DISABLED: 'Das Löschen lokaler Daten ist im Demomodus deaktiviert.'
   }
 };

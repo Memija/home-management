@@ -61,8 +61,20 @@ export class HybridStorageService extends StorageService {
   /** Last sync timestamp (for display purposes) */
   readonly lastSyncTime = signal<Date | null>(null);
 
-  /** Whether a sync is currently in progress */
-  readonly isSyncing = signal<boolean>(false);
+  /** Whether an upload (push) to cloud is currently in progress */
+  readonly isUploading = signal<boolean>(false);
+
+  /** Whether a download (pull) from cloud is currently in progress */
+  readonly isDownloading = signal<boolean>(false);
+
+  /** Whether a cloud data deletion is currently in progress */
+  readonly isDeletingCloud = signal<boolean>(false);
+
+  /** Whether any sync activity is currently in progress */
+  readonly isSyncing = computed(() => this.isUploading() || this.isDownloading() || this.isDeletingCloud());
+
+  /** Whether there is any local user data beyond system keys */
+  readonly hasUserContent = signal<boolean>(false);
 
   /** Whether cloud sync is available (user is authenticated) */
   readonly canUseCloud = computed(() => this.authService.isAuthenticated());
@@ -80,6 +92,7 @@ export class HybridStorageService extends StorageService {
     super();
     if (isPlatformBrowser(this.platformId)) {
       this.loadStoredMode();
+      this.refreshLocalContentStatus();
     }
   }
 
@@ -114,6 +127,7 @@ export class HybridStorageService extends StorageService {
     this.mode.set(mode);
     if (this.isBrowser) {
       this.localStorage.setPreference(STORAGE_MODE_KEY, mode);
+      this.refreshLocalContentStatus();
     }
   }
 
@@ -144,6 +158,8 @@ export class HybridStorageService extends StorageService {
         });
       }
     }
+
+    this.refreshLocalContentStatus();
   }
 
   /**
@@ -170,6 +186,8 @@ export class HybridStorageService extends StorageService {
         });
       }
     }
+
+    this.refreshLocalContentStatus();
   }
 
   /**
@@ -197,6 +215,8 @@ export class HybridStorageService extends StorageService {
         console.error('Background cloud import failed:', error);
       });
     }
+
+    this.refreshLocalContentStatus();
   }
 
   /**
@@ -217,6 +237,8 @@ export class HybridStorageService extends StorageService {
         console.error(`Background cloud record import failed for ${recordKey}:`, error);
       });
     }
+
+    this.refreshLocalContentStatus();
   }
 
   /**
@@ -253,12 +275,11 @@ export class HybridStorageService extends StorageService {
       throw new Error('Cannot migrate: user not authenticated');
     }
 
-    this.isSyncing.set(true);
+    this.isUploading.set(true);
 
     try {
       const allData = await this.localStorage.exportAll();
       const keys = Object.keys(allData);
-      console.info('[CloudSync] Migrating keys to cloud:', keys);
 
       if (keys.length === 0) {
         console.warn('[CloudSync] No local data found to migrate');
@@ -289,13 +310,12 @@ export class HybridStorageService extends StorageService {
         await this.firebaseStorage.save(key, allData[key]);
       }
 
-      console.info('[CloudSync] Migration complete —', keys.length, 'keys uploaded');
       this.updateLastSyncTime();
     } catch (error) {
       console.error('Migration to cloud failed:', error);
       throw error;
     } finally {
-      this.isSyncing.set(false);
+      this.isUploading.set(false);
     }
   }
 
@@ -307,7 +327,7 @@ export class HybridStorageService extends StorageService {
       throw new Error('Cannot pull: user not authenticated');
     }
 
-    this.isSyncing.set(true);
+    this.isDownloading.set(true);
 
     try {
       const cloudData = await this.firebaseStorage.exportAll();
@@ -358,7 +378,7 @@ export class HybridStorageService extends StorageService {
       console.error('Pull from cloud failed:', error);
       throw error;
     } finally {
-      this.isSyncing.set(false);
+      this.isDownloading.set(false);
     }
   }
 
@@ -371,16 +391,14 @@ export class HybridStorageService extends StorageService {
       throw new Error('Cannot sync: user not authenticated');
     }
 
-    this.isSyncing.set(true);
-
     try {
-      // Push local to cloud first (local wins)
+      // Local wins on conflict: Push local to cloud first
       await this.migrateLocalToCloud();
+      // Then pull cloud data (including what we just pushed) back to local
+      await this.pullFromCloud();
     } catch (error) {
       console.error('Full sync failed:', error);
       throw error;
-    } finally {
-      this.isSyncing.set(false);
     }
   }
 
@@ -392,7 +410,7 @@ export class HybridStorageService extends StorageService {
       throw new Error('Cannot clear cloud data: user not authenticated');
     }
 
-    this.isSyncing.set(true);
+    this.isDeletingCloud.set(true);
 
     try {
       await this.firebaseStorage.deleteAllUserData();
@@ -405,7 +423,7 @@ export class HybridStorageService extends StorageService {
       console.error('Clear cloud data failed:', error);
       throw error;
     } finally {
-      this.isSyncing.set(false);
+      this.isDeletingCloud.set(false);
     }
   }
   /**
@@ -413,5 +431,36 @@ export class HybridStorageService extends StorageService {
    */
   async clearLocalData(): Promise<void> {
     await this.localStorage.clearAll();
+    this.refreshLocalContentStatus();
+  }
+
+  /**
+   * Refreshes the hasUserContent signal by checking if there is any local data beyond system keys.
+   */
+  refreshLocalContentStatus(): void {
+    if (!this.isBrowser) {
+      this.hasUserContent.set(false);
+      return;
+    }
+
+    // System keys that are always present or set on navigation
+    const IGNORED_KEYS = [
+      'hm_season_sync',
+      'hm_excel_preview_is_collapsed',
+      'hm_storage_mode',
+      'hm_last_sync_timestamp',
+      'hm_theme',
+      'hm_preferred_language'
+    ];
+
+    let hasData = false;
+    for (let i = 0; i < localStorage.length; i++) {
+      const key = localStorage.key(i);
+      if (key?.startsWith('hm_') && !IGNORED_KEYS.includes(key)) {
+        hasData = true;
+        break;
+      }
+    }
+    this.hasUserContent.set(hasData);
   }
 }

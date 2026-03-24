@@ -59,6 +59,6 @@ export const appConfig: ApplicationConfig = {
     provideRouter(routes),
     // Firebase SDK will be lazy-loaded on demand
     // Use hybrid storage (cache-first with optional cloud sync)
-    { provide: STORAGE_SERVICE, useClass: HybridStorageService }
+    { provide: STORAGE_SERVICE, useExisting: HybridStorageService }
   ]
 };

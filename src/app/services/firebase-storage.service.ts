@@ -60,7 +60,6 @@ export class FirebaseStorageService extends StorageService {
       const { doc, setDoc } = await import('firebase/firestore');
       const docRef = doc(fs, path);
       await setDoc(docRef, { value: data, updatedAt: new Date().toISOString() });
-      console.info(`[Firestore] Saved key "${key}" to ${path}`);
     } catch (error) {
       console.error(`Error saving to Firestore with key ${key}:`, error);
       throw error;
@@ -170,7 +169,6 @@ export class FirebaseStorageService extends StorageService {
       const docRef = doc(fs, this.getDocPath('user_settings'));
       // Use merge: true to update only provided fields
       await setDoc(docRef, partialSettings, { merge: true });
-      console.info(`[Firestore] Updated settings:`, Object.keys(partialSettings));
     } catch (error) {
       console.error('Error updating settings in Firestore:', error);
       throw error;
@@ -225,7 +223,6 @@ export class FirebaseStorageService extends StorageService {
       });
 
       await Promise.all(deletePromises);
-      console.info(`[Firestore] Deleted ${deletePromises.length} documents for user ${this.uid}`);
     } catch (error) {
       console.error('Error deleting all user data from Firestore:', error);
       throw error;

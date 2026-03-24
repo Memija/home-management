@@ -5,7 +5,7 @@ import { FirebaseStorageService } from './firebase-storage.service';
 import { AuthService } from './auth.service';
 import { DemoService } from './demo.service';
 import { PLATFORM_ID } from '@angular/core';
-import { describe, it, expect, beforeEach, vi, Mock } from 'vitest';
+import { describe, it, expect, beforeEach, afterEach, vi, Mock } from 'vitest';
 
 describe('HybridStorageService', () => {
   let service: HybridStorageService;
@@ -182,6 +182,12 @@ describe('HybridStorageService', () => {
       expect(firebaseStorageSpy.save).toHaveBeenCalledWith(key, data);
     });
 
+    it('save() should trigger refreshLocalContentStatus', async () => {
+      const spy = vi.spyOn(service, 'refreshLocalContentStatus');
+      await service.save('test_key', { foo: 'bar' });
+      expect(spy).toHaveBeenCalled();
+    });
+
     it('save() should NOT sync to cloud if isCloudMode is false', async () => {
       service.mode.set('local');
 
@@ -220,6 +226,12 @@ describe('HybridStorageService', () => {
 
       expect(localStorageSpy.delete).toHaveBeenCalledWith(key);
       expect(firebaseStorageSpy.delete).toHaveBeenCalledWith(key);
+    });
+
+    it('delete() should trigger refreshLocalContentStatus', async () => {
+      const spy = vi.spyOn(service, 'refreshLocalContentStatus');
+      await service.delete('test_key');
+      expect(spy).toHaveBeenCalled();
     });
   });
 
@@ -290,6 +302,18 @@ describe('HybridStorageService', () => {
       expect(service.lastSyncTime()).toBe(null);
       expect(localStorageSpy.removePreference).toHaveBeenCalledWith('last_sync_timestamp');
     });
+
+    it('importAll() should trigger refreshLocalContentStatus', async () => {
+      const spy = vi.spyOn(service, 'refreshLocalContentStatus');
+      await service.importAll({ some: 'data' });
+      expect(spy).toHaveBeenCalled();
+    });
+
+    it('importRecords() should trigger refreshLocalContentStatus', async () => {
+      const spy = vi.spyOn(service, 'refreshLocalContentStatus');
+      await service.importRecords('key', []);
+      expect(spy).toHaveBeenCalled();
+    });
   });
 
   describe('Edge Cases', () => {
@@ -350,6 +374,71 @@ describe('HybridStorageService', () => {
       expect(error).toBeUndefined();
       expect(localStorageSpy.save).toHaveBeenCalled();
       expect(firebaseStorageSpy.save).toHaveBeenCalled();
+    });
+  });
+
+  describe('refreshLocalContentStatus()', () => {
+    let localStorageMock: Record<string, string> = {};
+
+    beforeEach(() => {
+      localStorageMock = {};
+      vi.stubGlobal('localStorage', {
+        get length() { return Object.keys(localStorageMock).length; },
+        key: vi.fn((i: number) => Object.keys(localStorageMock)[i] || null),
+        getItem: vi.fn((key: string) => localStorageMock[key] || null),
+        setItem: vi.fn((key: string, val: string) => localStorageMock[key] = val),
+        removeItem: vi.fn((key: string) => delete localStorageMock[key]),
+        clear: vi.fn(() => localStorageMock = {})
+      });
+    });
+
+    afterEach(() => {
+      vi.unstubAllGlobals();
+    });
+
+    it('should set hasUserContent to false if only system keys are present', () => {
+      localStorageMock['hm_season_sync'] = 'true';
+      localStorageMock['hm_excel_preview_is_collapsed'] = 'true';
+      localStorageMock['hm_storage_mode'] = 'local';
+      localStorageMock['hm_theme'] = 'dark';
+      localStorageMock['hm_preferred_language'] = 'en';
+
+      service.refreshLocalContentStatus();
+      expect(service.hasUserContent()).toBe(false);
+    });
+
+    it('should set hasUserContent to true if any non-system hm_ keys are present', () => {
+      localStorageMock['hm_season_sync'] = 'true';
+      localStorageMock['hm_household_address'] = '{}';
+
+      service.refreshLocalContentStatus();
+      expect(service.hasUserContent()).toBe(true);
+    });
+
+    it('should set hasUserContent to false if NO hm_ keys are present', () => {
+      localStorageMock['other_app_key'] = 'val';
+
+      service.refreshLocalContentStatus();
+      expect(service.hasUserContent()).toBe(false);
+    });
+
+    it('should set hasUserContent to true if consumption records are present', () => {
+      localStorageMock['hm_water_consumption_records'] = '[]';
+
+      service.refreshLocalContentStatus();
+      expect(service.hasUserContent()).toBe(true);
+    });
+
+    it('should set hasUserContent to true if household members are present', () => {
+      localStorageMock['hm_household_members'] = '[]';
+
+      service.refreshLocalContentStatus();
+      expect(service.hasUserContent()).toBe(true);
+    });
+
+    it('should handle empty localStorage', () => {
+      service.refreshLocalContentStatus();
+      expect(service.hasUserContent()).toBe(false);
     });
   });
 });

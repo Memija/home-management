@@ -1,4 +1,4 @@
-import { Component, inject, signal, computed } from '@angular/core';
+import { Component, inject, signal, computed, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { TranslatePipe } from '../../pipes/translate.pipe';
 import { LucideAngularModule, Cloud, CloudOff, RefreshCw, Upload, Download, Check, AlertTriangle, HelpCircle } from 'lucide-angular';
@@ -17,7 +17,7 @@ import { HelpModalComponent, HelpStep } from '../../shared/help-modal/help-modal
   templateUrl: './storage-settings.component.html',
   styleUrl: './storage-settings.component.scss'
 })
-export class StorageSettingsComponent {
+export class StorageSettingsComponent implements OnInit {
   private storage = inject(HybridStorageService);
   private auth = inject(AuthService);
   private demo = inject(DemoService);
@@ -43,6 +43,9 @@ export class StorageSettingsComponent {
   readonly isDemoMode = this.demo.isDemoMode;
   readonly lastSyncTime = this.storage.lastSyncTime;
   readonly isSyncing = this.storage.isSyncing;
+  readonly isUploading = this.storage.isUploading;
+  readonly isDownloading = this.storage.isDownloading;
+  readonly hasUserContent = this.storage.hasUserContent;
 
   // Local state
   readonly actionStatus = signal<{ type: 'success' | 'error', message: string } | null>(null);
@@ -58,6 +61,10 @@ export class StorageSettingsComponent {
     { titleKey: 'STORAGE.HELP_STEP3_TITLE', descriptionKey: 'STORAGE.HELP_STEP3_DESC' }
   ];
 
+  ngOnInit(): void {
+    this.storage.refreshLocalContentStatus();
+  }
+
   get isToggleDisabled(): boolean {
     return !this.isAuthenticated() || this.isDemoMode();
   }
@@ -70,7 +77,7 @@ export class StorageSettingsComponent {
     this.isHelpModalOpen.set(false);
   }
 
-  toggleMode(): void {
+  async toggleMode(): Promise<void> {
     if (!this.isAuthenticated()) return;
 
     const currentMode = this.mode();
@@ -82,6 +89,22 @@ export class StorageSettingsComponent {
     } else {
       // Enabling cloud sync
       this.storage.setMode('cloud');
+      
+      // Initial automatic sync
+      try {
+        if (this.hasUserContent()) {
+          // If we have local data, do a full sync so everything is merged
+          await this.storage.fullSync();
+        } else {
+          // If no local data, just pull everything for the fresh device
+          await this.storage.pullFromCloud();
+        }
+        // Force reload to apply synced data across all services
+        window.location.reload();
+      } catch (error) {
+        console.error('Initial sync failed:', error);
+        this.showStatus('error', 'STORAGE.SYNC_ERROR');
+      }
     }
   }
 

@@ -46,9 +46,9 @@
     </div>
 
     <div class="actions">
-      <button class="btn-cloud-upload" (click)="migrateToCloud()" [disabled]="isSyncing()"
+      <button class="btn-cloud-upload" (click)="migrateToCloud()" [disabled]="isSyncing() || !hasUserContent()"
         title="{{ 'STORAGE.MIGRATE_TO_CLOUD' | translate }}">
-        @if (isSyncing()) {
+        @if (isUploading()) {
         <lucide-icon [img]="RefreshIcon" size="18" class="spin"></lucide-icon>
         } @else {
         <lucide-icon [img]="UploadIcon" size="18"></lucide-icon>
@@ -58,7 +58,7 @@
 
       <button class="btn-cloud-download" (click)="openDownloadModal()" [disabled]="isSyncing()"
         title="{{ 'STORAGE.PULL_FROM_CLOUD' | translate }}">
-        @if (isSyncing()) {
+        @if (isDownloading()) {
         <lucide-icon [img]="RefreshIcon" size="18" class="spin"></lucide-icon>
         } @else {
         <lucide-icon [img]="DownloadIcon" size="18"></lucide-icon>
@@ -74,8 +74,8 @@
     </div>
     } @else {
     <div class="actions">
-      <button class="btn-danger" (click)="isClearLocalModalOpen.set(true)"
-        title="{{ 'STORAGE.CLEAR_LOCAL' | translate }}">
+      <button class="btn-danger" (click)="isClearLocalModalOpen.set(true)" [disabled]="!hasUserContent() || isDemoMode()"
+        title="{{ (isDemoMode() ? 'STORAGE.CLEAR_LOCAL_DEMO_DISABLED' : 'STORAGE.CLEAR_LOCAL') | translate }}">
         <lucide-icon [img]="AlertIcon" size="18"></lucide-icon>
         <span class="btn-text">{{ 'STORAGE.CLEAR_LOCAL' | translate }}</span>
       </button>

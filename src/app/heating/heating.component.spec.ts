@@ -12,6 +12,7 @@ import { HeatingRoomUtilsService } from '../services/heating-room-utils.service'
 import { LanguageService } from '../services/language.service';
 import { ExcelSettingsService } from '../services/excel-settings.service';
 import { DynamicHeatingRecord } from '../models/records.model';
+import { HouseholdService } from '../services/household.service';
 import { describe, it, expect, beforeEach, vi, afterEach } from 'vitest';
 
 describe('HeatingComponent', () => {
@@ -126,6 +127,10 @@ describe('HeatingComponent', () => {
       settings: signal({ enabled: false }),
     } as any;
 
+    const mockHouseholdService = {
+      address: signal({ country: 'DE' }),
+    } as any;
+
     TestBed.configureTestingModule({
       providers: [
         { provide: HeatingDataService, useValue: mockDataService },
@@ -138,6 +143,7 @@ describe('HeatingComponent', () => {
         { provide: HeatingRoomUtilsService, useValue: mockRoomUtilsService },
         { provide: LanguageService, useValue: mockLanguageService },
         { provide: ExcelSettingsService, useValue: mockExcelSettingsService },
+        { provide: HouseholdService, useValue: mockHouseholdService },
       ],
     });
 

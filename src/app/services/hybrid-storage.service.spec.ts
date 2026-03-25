@@ -378,59 +378,49 @@ describe('HybridStorageService', () => {
   });
 
   describe('refreshLocalContentStatus()', () => {
-    let localStorageMock: Record<string, string> = {};
-
     beforeEach(() => {
-      localStorageMock = {};
-      vi.stubGlobal('localStorage', {
-        get length() { return Object.keys(localStorageMock).length; },
-        key: vi.fn((i: number) => Object.keys(localStorageMock)[i] || null),
-        getItem: vi.fn((key: string) => localStorageMock[key] || null),
-        setItem: vi.fn((key: string, val: string) => localStorageMock[key] = val),
-        removeItem: vi.fn((key: string) => delete localStorageMock[key]),
-        clear: vi.fn(() => localStorageMock = {})
-      });
+      localStorage.clear();
     });
 
     afterEach(() => {
-      vi.unstubAllGlobals();
+      localStorage.clear();
     });
 
     it('should set hasUserContent to false if only system keys are present', () => {
-      localStorageMock['hm_season_sync'] = 'true';
-      localStorageMock['hm_excel_preview_is_collapsed'] = 'true';
-      localStorageMock['hm_storage_mode'] = 'local';
-      localStorageMock['hm_theme'] = 'dark';
-      localStorageMock['hm_preferred_language'] = 'en';
+      localStorage.setItem('hm_season_sync', 'true');
+      localStorage.setItem('hm_excel_preview_is_collapsed', 'true');
+      localStorage.setItem('hm_storage_mode', 'local');
+      localStorage.setItem('hm_theme', 'dark');
+      localStorage.setItem('hm_preferred_language', 'en');
 
       service.refreshLocalContentStatus();
       expect(service.hasUserContent()).toBe(false);
     });
 
     it('should set hasUserContent to true if any non-system hm_ keys are present', () => {
-      localStorageMock['hm_season_sync'] = 'true';
-      localStorageMock['hm_household_address'] = '{}';
+      localStorage.setItem('hm_season_sync', 'true');
+      localStorage.setItem('hm_household_address', '{"street":"1"}');
 
       service.refreshLocalContentStatus();
       expect(service.hasUserContent()).toBe(true);
     });
 
     it('should set hasUserContent to false if NO hm_ keys are present', () => {
-      localStorageMock['other_app_key'] = 'val';
+      localStorage.setItem('other_app_key', 'val');
 
       service.refreshLocalContentStatus();
       expect(service.hasUserContent()).toBe(false);
     });
 
     it('should set hasUserContent to true if consumption records are present', () => {
-      localStorageMock['hm_water_consumption_records'] = '[]';
+      localStorage.setItem('hm_water_consumption_records', '[]');
 
       service.refreshLocalContentStatus();
       expect(service.hasUserContent()).toBe(true);
     });
 
     it('should set hasUserContent to true if household members are present', () => {
-      localStorageMock['hm_household_members'] = '[]';
+      localStorage.setItem('hm_household_members', '[{"id":"1"}]');
 
       service.refreshLocalContentStatus();
       expect(service.hasUserContent()).toBe(true);

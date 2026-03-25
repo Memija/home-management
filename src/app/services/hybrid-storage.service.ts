@@ -1,4 +1,4 @@
-import { Injectable, inject, signal, computed, PLATFORM_ID, effect } from '@angular/core';
+import { Injectable, inject, signal, computed, PLATFORM_ID, effect, untracked } from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
 import { StorageService } from './storage.service';
 import { LocalStorageService } from './local-storage.service';
@@ -90,9 +90,31 @@ export class HybridStorageService extends StorageService {
 
   constructor() {
     super();
-    if (isPlatformBrowser(this.platformId)) {
+    if (this.isBrowser) {
       this.loadStoredMode();
       this.refreshLocalContentStatus();
+
+      // Enable cloud mode automatically if user signs in and there's no local data
+      effect(() => {
+        const authenticated = this.authService.isAuthenticated();
+        const noLocalContent = !this.hasUserContent();
+        
+        if (authenticated && noLocalContent) {
+          // Check other conditions untracked to avoid unnecessary dependencies
+          const currentMode = untracked(() => this.mode());
+          const isDemo = untracked(() => this.demoService.isDemoMode());
+
+          if (currentMode === 'local' && !isDemo) {
+            console.info('[HybridStorage] Auto-enabling cloud mode (User signed in + No local data)');
+            untracked(() => {
+              this.setMode('cloud');
+              // If we just enabled cloud mode because there was no data, 
+              // we should pull whatever is in the cloud to this device
+              this.pullFromCloud().catch(err => console.error('[HybridStorage] Auto-pull failed:', err));
+            });
+          }
+        }
+      });
     }
   }
 
@@ -443,7 +465,7 @@ export class HybridStorageService extends StorageService {
       return;
     }
 
-    // System keys that are always present or set on navigation
+    // System keys and preferences that are always present or set on navigation
     const IGNORED_KEYS = [
       'hm_season_sync',
       'hm_excel_preview_is_collapsed',
@@ -457,6 +479,19 @@ export class HybridStorageService extends StorageService {
     for (let i = 0; i < localStorage.length; i++) {
       const key = localStorage.key(i);
       if (key?.startsWith('hm_') && !IGNORED_KEYS.includes(key)) {
+        // Only count as user data if it's not default/empty values
+        const value = localStorage.getItem(key);
+        
+        // Skip empty/default values for core settings (JSON stringified)
+        if (key === 'hm_household_members' && (value === '[]' || value === 'null' || value === null)) continue;
+        if (key === 'hm_household_address' && (value === 'null' || value === null)) continue;
+        if (key === 'hm_dismissed_notifications' && (value === '[]' || value === 'null' || value === null)) continue;
+        
+        // Skip chart views, display modes, and UI state which have defaults
+        if (key.endsWith('_chart_view') || key.endsWith('_display_mode')) continue;
+        if (key.endsWith('_trendline_visible') || key.endsWith('_average_visible')) continue;
+        if (key.endsWith('_collapsed')) continue;
+
         hasData = true;
         break;
       }

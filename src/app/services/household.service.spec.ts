@@ -74,7 +74,7 @@ describe('HouseholdService', () => {
   it('should update address', () => {
     const address = { streetName: 'Main St', streetNumber: '1', city: 'City', zipCode: '12345', country: 'Country' };
     service.updateAddress(address);
-    expect(service.address()).toEqual(address);
+    expect(service.address()).toEqual({ ...address, country: 'country' });
   });
 
   it('should update specific member', () => {
@@ -102,8 +102,8 @@ describe('HouseholdService', () => {
     service.updateAddress(address);
     await new Promise(resolve => setTimeout(resolve, 50));
 
-    expect(mockStorageService.save).toHaveBeenCalledWith('household_address', address);
-    expect(mockNotificationService.setAddress).toHaveBeenCalledWith(address);
+    expect(mockStorageService.save).toHaveBeenCalledWith('household_address', { ...address, country: 'country' });
+    expect(mockNotificationService.setAddress).toHaveBeenCalledWith({ ...address, country: 'country' });
   });
 
   it('should not save during initialization load', async () => {

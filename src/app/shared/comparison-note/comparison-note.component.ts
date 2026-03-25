@@ -95,7 +95,6 @@ export class ComparisonNoteComponent {
 
   protected availableCountries = computed(() => {
     if (this.type() === 'heating') {
-      console.log('DEBUG: sortedHeatingCountries:', this.sortedHeatingCountries().slice(0, 3));
       return this.sortedHeatingCountries().map(c => ({
         translationKey: c.nameKey,
         code: c.code,
@@ -235,7 +234,6 @@ export class ComparisonNoteComponent {
         country: countryName,
         average: average
       });
-      // console.log('[ComparisonNote] Heating text:', text, { country: countryName, average });
       return text;
     }
 

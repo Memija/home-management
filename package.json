@@ -25,6 +25,7 @@
     ]
   },
   "private": true,
+  "license": "SEE LICENSE IN LICENSE.md",
   "packageManager": "npm@11.6.2",
   "dependencies": {
     "@angular/animations": "^21.1.4",

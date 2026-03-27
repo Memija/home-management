@@ -141,6 +141,15 @@ npm run build && npx firebase deploy --only hosting
 
 ---
 
+## ❤️ Community
+
+We welcome contributions of all kinds! Please check out our:
+
+- [**Contributing Guidelines**](./CONTRIBUTING.md) to understand how to get started and how we handle commercial-safe contributions.
+- [**Code of Conduct**](./CODE_OF_CONDUCT.md) for our standards on community behavior.
+
+---
+
 ## 📄 License & Commercial Terms
 
 This project is licensed under the **Prosperity Public License 3.0.0**.

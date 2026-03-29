@@ -1,5 +1,11 @@
 import { Injectable, signal, inject, computed } from '@angular/core';
-import { ConsumptionRecord, mergeRecords, filterZeroPlaceholders, isWaterRecordAllZero, parseSafeDate } from '../models/records.model';
+import {
+  ConsumptionRecord,
+  mergeRecords,
+  filterZeroPlaceholders,
+  isWaterRecordAllZero,
+  parseSafeDate,
+} from '../models/records.model';
 import { STORAGE_SERVICE } from './storage.service';
 import { FileStorageService } from './file-storage.service';
 import { ExcelService } from './excel.service';
@@ -10,7 +16,7 @@ import { HouseholdService } from './household.service';
 import { NotificationService } from './notification.service';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class ConsumptionDataService {
   private storage = inject(STORAGE_SERVICE);
@@ -35,7 +41,7 @@ export class ConsumptionDataService {
     year: null,
     month: null,
     startDate: null,
-    endDate: null
+    endDate: null,
   });
 
   readonly filteredRecords = computed(() => {
@@ -43,7 +49,7 @@ export class ConsumptionDataService {
     let records = this.records();
 
     if (startDate) {
-      records = records.filter(r => {
+      records = records.filter((r) => {
         const date = new Date(r.date);
         const recordDate = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
         return recordDate >= startDate;
@@ -51,7 +57,7 @@ export class ConsumptionDataService {
     }
 
     if (endDate) {
-      records = records.filter(r => {
+      records = records.filter((r) => {
         const date = new Date(r.date);
         const recordDate = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
         return recordDate <= endDate;
@@ -59,11 +65,11 @@ export class ConsumptionDataService {
     }
 
     if (year) {
-      records = records.filter(r => new Date(r.date).getFullYear() === year);
+      records = records.filter((r) => new Date(r.date).getFullYear() === year);
     }
 
     if (month !== null) {
-      records = records.filter(r => new Date(r.date).getMonth() === month);
+      records = records.filter((r) => new Date(r.date).getMonth() === month);
     }
 
     return records;
@@ -112,15 +118,20 @@ export class ConsumptionDataService {
     // using load<T> instead of getRecords
     const data = await this.storage.load<ConsumptionRecord[]>('water_consumption_records');
     const parsedData = (data || [])
-      .map(r => ({ ...r, date: parseSafeDate(r.date) }))
-      .filter(r => !isNaN(r.date.getTime()));
+      .map((r) => ({ ...r, date: parseSafeDate(r.date) }))
+      .filter((r) => !isNaN(r.date.getTime()));
     this.records.set(parsedData);
     // Sync with notification service for due/overdue reminders
     this.notificationService.setWaterRecords(this.records());
   }
 
   // --- Filter Helpers ---
-  updateFilterState(newState: { year: number | null; month: number | null; startDate: string | null; endDate: string | null }) {
+  updateFilterState(newState: {
+    year: number | null;
+    month: number | null;
+    startDate: string | null;
+    endDate: string | null;
+  }) {
     this.filterState.set(newState);
   }
 
@@ -170,12 +181,12 @@ export class ConsumptionDataService {
 
     const newRecordIso = newRecordDate.toISOString().split('T')[0];
 
-    const existingRecordIndex = this.records().findIndex(r => {
+    const existingRecordIndex = this.records().findIndex((r) => {
       const d = new Date(r.date);
       return !isNaN(d.getTime()) && d.toISOString().split('T')[0] === newRecordIso;
     });
 
-    this.records.update(records => {
+    this.records.update((records) => {
       const updated = [...records];
       if (existingRecordIndex !== -1) {
         updated[existingRecordIndex] = newRecord;
@@ -198,7 +209,9 @@ export class ConsumptionDataService {
   confirmDelete() {
     const record = this.recordToDelete();
     if (record) {
-      this.records.update(records => records.filter(r => new Date(r.date).getTime() !== new Date(record.date).getTime()));
+      this.records.update((records) =>
+        records.filter((r) => new Date(r.date).getTime() !== new Date(record.date).getTime()),
+      );
       void this.storage.save('water_consumption_records', this.records());
       // Update notification service
       this.notificationService.setWaterRecords(this.records());
@@ -208,9 +221,11 @@ export class ConsumptionDataService {
   }
 
   confirmDeleteAll() {
-    const recordsToDeleteSet = new Set(this.recordsToDelete().map(r => new Date(r.date).getTime()));
-    this.records.update(records =>
-      records.filter(r => !recordsToDeleteSet.has(new Date(r.date).getTime()))
+    const recordsToDeleteSet = new Set(
+      this.recordsToDelete().map((r) => new Date(r.date).getTime()),
+    );
+    this.records.update((records) =>
+      records.filter((r) => !recordsToDeleteSet.has(new Date(r.date).getTime())),
     );
     void this.storage.save('water_consumption_records', this.records());
     // Update notification service
@@ -287,16 +302,29 @@ export class ConsumptionDataService {
         if (result.errors.length > 0) throw new Error(result.errors.join('\n'));
 
         // Filter out zero-value placeholders on the freshest date
-        const { filtered, skippedCount } = filterZeroPlaceholders(result.validRecords, isWaterRecordAllZero);
+        const { filtered, skippedCount } = filterZeroPlaceholders(
+          result.validRecords,
+          isWaterRecordAllZero,
+        );
         const warnings: string[] = [];
         if (skippedCount > 0) {
-          const key = skippedCount === 1 ? 'WATER.IMPORT_PLACEHOLDER_SKIPPED_SINGULAR' : 'WATER.IMPORT_PLACEHOLDER_SKIPPED_PLURAL';
-          warnings.push(this.languageService.translate(key).replace('{{count}}', skippedCount.toString()));
+          const key =
+            skippedCount === 1
+              ? 'WATER.IMPORT_PLACEHOLDER_SKIPPED_SINGULAR'
+              : 'WATER.IMPORT_PLACEHOLDER_SKIPPED_PLURAL';
+          warnings.push(
+            this.languageService.translate(key).replace('{{count}}', skippedCount.toString()),
+          );
         }
 
         await this.processImport(filtered, warnings, 'IMPORT.JSON_SUCCESS');
       } catch (error) {
-        this.handleImportError(error, 'WATER.JSON_IMPORT_ERROR_TITLE', 'WATER.JSON_IMPORT_ERROR', true);
+        this.handleImportError(
+          error,
+          'WATER.JSON_IMPORT_ERROR_TITLE',
+          'WATER.JSON_IMPORT_ERROR',
+          true,
+        );
       }
     }
     this.showImportConfirmModal.set(false);
@@ -313,7 +341,9 @@ export class ConsumptionDataService {
         const validExtensions = ['.xlsx', '.xls', '.csv'];
         const fileExtension = file.name.toLowerCase().substring(file.name.lastIndexOf('.'));
         if (!validExtensions.includes(fileExtension)) {
-          const message = this.languageService.translate('ERROR.IMPORT_INVALID_EXCEL_FILE_TYPE').replace('{{extension}}', fileExtension);
+          const message = this.languageService
+            .translate('ERROR.IMPORT_INVALID_EXCEL_FILE_TYPE')
+            .replace('{{extension}}', fileExtension);
           throw new Error(message);
         }
 
@@ -323,13 +353,23 @@ export class ConsumptionDataService {
         const { filtered, skippedCount } = filterZeroPlaceholders(records, isWaterRecordAllZero);
         const warnings = [...missingColumns];
         if (skippedCount > 0) {
-          const key = skippedCount === 1 ? 'WATER.IMPORT_PLACEHOLDER_SKIPPED_SINGULAR' : 'WATER.IMPORT_PLACEHOLDER_SKIPPED_PLURAL';
-          warnings.push(this.languageService.translate(key).replace('{{count}}', skippedCount.toString()));
+          const key =
+            skippedCount === 1
+              ? 'WATER.IMPORT_PLACEHOLDER_SKIPPED_SINGULAR'
+              : 'WATER.IMPORT_PLACEHOLDER_SKIPPED_PLURAL';
+          warnings.push(
+            this.languageService.translate(key).replace('{{count}}', skippedCount.toString()),
+          );
         }
 
         await this.processImport(filtered, warnings, 'IMPORT.EXCEL_SUCCESS');
       } catch (error) {
-        this.handleImportError(error, 'WATER.EXCEL_IMPORT_ERROR_TITLE', 'WATER.EXCEL_IMPORT_ERROR', false);
+        this.handleImportError(
+          error,
+          'WATER.EXCEL_IMPORT_ERROR_TITLE',
+          'WATER.EXCEL_IMPORT_ERROR',
+          false,
+        );
       } finally {
         this.isImporting.set(false);
         input.value = '';
@@ -356,7 +396,7 @@ export class ConsumptionDataService {
 
   async finishImport(records: ConsumptionRecord[], warnings: string[], successKey: string) {
     try {
-      this.records.update(existing => mergeRecords(existing, records));
+      this.records.update((existing) => mergeRecords(existing, records));
       await this.storage.save('water_consumption_records', this.records());
       // Update notification service
       this.notificationService.setWaterRecords(this.records());
@@ -364,7 +404,9 @@ export class ConsumptionDataService {
       if (warnings.length > 0) {
         this.errorTitle.set(this.languageService.translate('HOME.IMPORT_WARNING_TITLE'));
         this.errorMessage.set(this.languageService.translate('HOME.IMPORT_WARNING_MESSAGE'));
-        this.errorDetails.set(this.languageService.translate('HOME.MISSING_COLUMNS') + ': ' + warnings.join(', '));
+        this.errorDetails.set(
+          this.languageService.translate('HOME.MISSING_COLUMNS') + ': ' + warnings.join(', '),
+        );
         this.errorInstructions.set([]);
         this.errorType.set('warning');
         this.showErrorModal.set(true);
@@ -374,7 +416,12 @@ export class ConsumptionDataService {
         this.showSuccessModal.set(true);
       }
     } catch (error) {
-      this.handleImportError(error, 'WATER.JSON_IMPORT_ERROR_TITLE', 'WATER.JSON_IMPORT_ERROR', true);
+      this.handleImportError(
+        error,
+        'WATER.JSON_IMPORT_ERROR_TITLE',
+        'WATER.JSON_IMPORT_ERROR',
+        true,
+      );
     } finally {
       this.isImporting.set(false);
       this.showFilterWarningModal.set(false);
@@ -385,7 +432,11 @@ export class ConsumptionDataService {
   }
 
   confirmFilterWarningImport() {
-    this.finishImport(this.pendingImportRecords(), this.pendingImportWarnings(), this.pendingImportSuccessKey());
+    this.finishImport(
+      this.pendingImportRecords(),
+      this.pendingImportWarnings(),
+      this.pendingImportSuccessKey(),
+    );
   }
 
   cancelFilterWarningImport() {

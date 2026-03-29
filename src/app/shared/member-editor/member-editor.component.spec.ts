@@ -7,7 +7,7 @@ import { vi } from 'vitest';
 
 @Pipe({
   name: 'translate',
-  standalone: true
+  standalone: true,
 })
 class MockTranslatePipe implements PipeTransform {
   transform(key: string, ...args: any[]): string {
@@ -25,18 +25,18 @@ describe('MemberEditorComponent', () => {
     surname: 'Doe',
     type: 'adult',
     gender: 'male',
-    avatar: 'avatar1.png'
+    avatar: 'avatar1.png',
   };
 
   const mockAvatars = ['avatar1.png', 'avatar2.png', 'avatar3.png'];
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [MemberEditorComponent]
+      imports: [MemberEditorComponent],
     })
       .overrideComponent(MemberEditorComponent, {
         remove: { imports: [TranslatePipe] },
-        add: { imports: [MockTranslatePipe] }
+        add: { imports: [MockTranslatePipe] },
       })
       .compileComponents();
 
@@ -75,7 +75,7 @@ describe('MemberEditorComponent', () => {
       const updatedMember: HouseholdMember = {
         ...mockMember,
         name: 'Alice',
-        type: 'kid'
+        type: 'kid',
       };
 
       fixture.componentRef.setInput('member', updatedMember);
@@ -114,7 +114,7 @@ describe('MemberEditorComponent', () => {
 
       const file = new File(['dummy content'], 'test.png', { type: 'image/png' });
       const event = {
-        target: { files: [file] }
+        target: { files: [file] },
       } as unknown as Event;
 
       component.handleFileUpload(event);
@@ -127,7 +127,7 @@ describe('MemberEditorComponent', () => {
 
     it('should ignore file upload if no file is selected', () => {
       const event = {
-        target: { files: [] }
+        target: { files: [] },
       } as unknown as Event;
 
       component.handleFileUpload(event);
@@ -138,7 +138,7 @@ describe('MemberEditorComponent', () => {
     it('should ignore non-image file uploads', () => {
       const file = new File(['dummy text'], 'test.txt', { type: 'text/plain' });
       const event = {
-        target: { files: [file] }
+        target: { files: [file] },
       } as unknown as Event;
 
       component.handleFileUpload(event);
@@ -221,7 +221,7 @@ describe('MemberEditorComponent', () => {
         surname: 'Smith',
         type: 'other',
         gender: 'other',
-        avatar: 'avatar2.png'
+        avatar: 'avatar2.png',
       });
     });
 
@@ -258,7 +258,7 @@ describe('MemberEditorComponent', () => {
         surname: 'Smith',
         type: 'adult',
         gender: 'male',
-        avatar: 'data:image/png;base64,...'
+        avatar: 'data:image/png;base64,...',
       });
     });
   });

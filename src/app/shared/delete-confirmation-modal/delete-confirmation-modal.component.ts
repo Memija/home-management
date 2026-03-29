@@ -10,7 +10,7 @@ import { inject } from '@angular/core';
   standalone: true,
   imports: [CommonModule, LucideAngularModule, TranslatePipe],
   templateUrl: './delete-confirmation-modal.component.html',
-  styleUrl: './delete-confirmation-modal.component.scss'
+  styleUrl: './delete-confirmation-modal.component.scss',
 })
 export class DeleteConfirmationModalComponent {
   private languageService = inject(LanguageService);
@@ -28,7 +28,7 @@ export class DeleteConfirmationModalComponent {
     this.languageService.currentLang();
     let message = this.languageService.translate(this.messageKey);
     // Replace placeholders with params
-    Object.keys(this.messageParams).forEach(key => {
+    Object.keys(this.messageParams).forEach((key) => {
       message = message.replace(`{{${key}}}`, this.messageParams[key]);
     });
     return message;

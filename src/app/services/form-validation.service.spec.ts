@@ -13,10 +13,7 @@ describe('FormValidationService', () => {
     };
 
     TestBed.configureTestingModule({
-      providers: [
-        FormValidationService,
-        { provide: CountryService, useValue: mockCountryService },
-      ],
+      providers: [FormValidationService, { provide: CountryService, useValue: mockCountryService }],
     });
 
     service = TestBed.inject(FormValidationService);
@@ -59,7 +56,9 @@ describe('FormValidationService', () => {
       expect(service.getStreetNameError('A')).toContain('SETTINGS.ERRORS.TOO_SHORT');
     });
     it('should return error for too long', () => {
-      expect(service.getStreetNameError('A'.repeat(51))).toContain('SETTINGS.ERRORS.STREET_TOO_LONG');
+      expect(service.getStreetNameError('A'.repeat(51))).toContain(
+        'SETTINGS.ERRORS.STREET_TOO_LONG',
+      );
     });
     it('should return error for no letters', () => {
       expect(service.getStreetNameError('123')).toContain('SETTINGS.ERRORS.MUST_CONTAIN_LETTERS');
@@ -74,10 +73,14 @@ describe('FormValidationService', () => {
       expect(service.getStreetNumberError('123/4')).toEqual([]);
     });
     it('should return error for too long', () => {
-      expect(service.getStreetNumberError('12345678901')).toContain('SETTINGS.ERRORS.NUMBER_TOO_LONG');
+      expect(service.getStreetNumberError('12345678901')).toContain(
+        'SETTINGS.ERRORS.NUMBER_TOO_LONG',
+      );
     });
     it('should return error for invalid chars', () => {
-      expect(service.getStreetNumberError('123!')).toContain('SETTINGS.ERRORS.INVALID_STREET_NUMBER');
+      expect(service.getStreetNumberError('123!')).toContain(
+        'SETTINGS.ERRORS.INVALID_STREET_NUMBER',
+      );
     });
   });
 

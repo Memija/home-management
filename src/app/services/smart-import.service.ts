@@ -20,11 +20,11 @@ const MONTH_KEYS = [
   'MONTHS.SEPTEMBER',
   'MONTHS.OCTOBER',
   'MONTHS.NOVEMBER',
-  'MONTHS.DECEMBER'
+  'MONTHS.DECEMBER',
 ];
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class SmartImportService {
   private languageService = inject(LanguageService);
@@ -32,7 +32,7 @@ export class SmartImportService {
   // Cache for month-to-index maps per language
   private monthMapsCache: Map<string, Map<string, number>> = new Map();
 
-  constructor() { }
+  constructor() {}
 
   /**
    * Parses raw text to extract date and value pairs.
@@ -55,7 +55,7 @@ export class SmartImportService {
         records.push({
           date: date,
           value: value,
-          originalLine: trimmedLine
+          originalLine: trimmedLine,
         });
       }
     }
@@ -113,7 +113,7 @@ export class SmartImportService {
         records.push({
           date: pendingDate,
           value: value,
-          originalLine: `${pendingDateLine} | ${trimmedLine}`
+          originalLine: `${pendingDateLine} | ${trimmedLine}`,
         });
         pendingDate = null;
         pendingDateLine = '';
@@ -226,8 +226,8 @@ export class SmartImportService {
 
     // Remove date-like patterns from string to avoid false positives (like year 2024 or day/month)
     let lineWithoutDate = cleanLine
-      .replace(/(\d{1,2})\.(\d{1,2})\.(\d{4})/, '')  // DD.MM.YYYY
-      .replace(/(\d{4})-(\d{1,2})-(\d{1,2})/, '');    // YYYY-MM-DD
+      .replace(/(\d{1,2})\.(\d{1,2})\.(\d{4})/, '') // DD.MM.YYYY
+      .replace(/(\d{4})-(\d{1,2})-(\d{1,2})/, ''); // YYYY-MM-DD
 
     // Remove text date patterns (works for any language with Unicode \p{L})
     // Pattern 1: Day first - "1. Januar 2026", "Donnerstag, 1. Januar 2026", "1 janvier 2026"

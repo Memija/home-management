@@ -57,25 +57,25 @@ npm install -g @angular/cli
 
 1. **Clone the repository:**
 
-    ```bash
-    git clone https://github.com/Memija/home-management.git
-    ```
+   ```bash
+   git clone https://github.com/Memija/home-management.git
+   ```
 
 2. **Install dependencies:**
 
-    ```bash
-    npm install
-    ```
+   ```bash
+   npm install
+   ```
 
 3. **Start the development server:**
 
-    ```bash
-    npm start
-    ```
+   ```bash
+   npm start
+   ```
 
 4. **Access the application:**
 
-    Open your browser and navigate to `http://localhost:4200/`. The app will automatically reload when you save changes.
+   Open your browser and navigate to `http://localhost:4200/`. The app will automatically reload when you save changes.
 
 ---
 
@@ -105,12 +105,12 @@ Create the file manually at `src/app/config/firebase.config.ts` with your projec
 
 ```typescript
 export const firebaseConfig = {
-  apiKey: "YOUR_API_KEY",
-  authDomain: "YOUR_AUTH_DOMAIN",
-  projectId: "YOUR_PROJECT_ID",
-  storageBucket: "YOUR_STORAGE_BUCKET",
-  messagingSenderId: "YOUR_SENDER_ID",
-  appId: "YOUR_APP_ID"
+  apiKey: 'YOUR_API_KEY',
+  authDomain: 'YOUR_AUTH_DOMAIN',
+  projectId: 'YOUR_PROJECT_ID',
+  storageBucket: 'YOUR_STORAGE_BUCKET',
+  messagingSenderId: 'YOUR_SENDER_ID',
+  appId: 'YOUR_APP_ID',
 };
 ```
 

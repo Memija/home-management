@@ -13,7 +13,7 @@ export const middleEastElectricityFacts = {
     'Meerwasserentsalzung erfordert enorme Strommengen.',
     'Smart Meter wurden schnell eingeführt.',
     'Netzverbindungen mit Nachbarn werden ausgebaut.',
-    'Grüner Wasserstoff ist ein Kernbestandteil von Vision 2030.'
+    'Grüner Wasserstoff ist ein Kernbestandteil von Vision 2030.',
   ],
 
   // UAE
@@ -29,7 +29,7 @@ export const middleEastElectricityFacts = {
     'Demand-Response-Programme werden getestet.',
     'Fernkühlung reduziert die Spitzenstromnachfrage.',
     'Pilotprojekte für grünen Wasserstoff laufen.',
-    'Die VAE exportieren Strom in das GCC-Netz.'
+    'Die VAE exportieren Strom in das GCC-Netz.',
   ],
 
   // Israel
@@ -45,7 +45,7 @@ export const middleEastElectricityFacts = {
     'Eine Netzverbindung nach Europa ist geplant.',
     'Die Einführung von Elektrofahrzeugen beschleunigt sich.',
     'Start-ups innovieren im Bereich Netztechnologie.',
-    'Die Kohlenutzung soll bis 2026 enden.'
+    'Die Kohlenutzung soll bis 2026 enden.',
   ],
 
   // Turkey
@@ -61,6 +61,6 @@ export const middleEastElectricityFacts = {
     'Regeln für Dach-Solaranlagen wurden vereinfacht.',
     'Die Türkei produziert Solarmodule und Windturbinen.',
     'Die Strommärkte sind teilweise liberalisiert.',
-    'Effizienzprogramme zielen auf Industrie und Gebäude.'
-  ]
+    'Effizienzprogramme zielen auf Industrie und Gebäude.',
+  ],
 };

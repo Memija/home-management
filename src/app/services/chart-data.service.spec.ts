@@ -24,14 +24,16 @@ describe('ChartDataService', () => {
       generateComparisonData: vi.fn(),
       generateTrendlineData: vi.fn((data: number[]) => {
         // Simple mock: return same data for trendline
-        return data.map((_, i) => data[0] + (i * ((data[data.length - 1] - data[0]) / (data.length - 1 || 1))));
+        return data.map(
+          (_, i) => data[0] + i * ((data[data.length - 1] - data[0]) / (data.length - 1 || 1)),
+        );
       }),
       calculateDailyAverage: vi.fn((incrementalData: any[], _originalData: any[], type: string) => {
         // Return data with normalized metadata based on type
         if (type === 'electricity') {
-          return incrementalData.map(r => ({ ...r, normalized: { days: 7, raw: r.value } }));
+          return incrementalData.map((r) => ({ ...r, normalized: { days: 7, raw: r.value } }));
         }
-        return incrementalData.map(r => ({ ...r, normalized: { days: 7 } }));
+        return incrementalData.map((r) => ({ ...r, normalized: { days: 7 } }));
       }),
       generateElectricityComparisonData: vi.fn(() => []),
       getTrendColor: vi.fn(() => '#000000'),
@@ -72,7 +74,10 @@ describe('ChartDataService', () => {
     it('should call calculationService.calculateIncrementalData', () => {
       const records: ConsumptionRecord[] = [];
       service.calculateIncrementalData(records);
-      expect(calculationServiceMock.calculateIncrementalData).toHaveBeenCalledWith(records, undefined);
+      expect(calculationServiceMock.calculateIncrementalData).toHaveBeenCalledWith(
+        records,
+        undefined,
+      );
     });
   });
 
@@ -102,20 +107,20 @@ describe('ChartDataService', () => {
       {
         date: new Date('2023-01-01'),
         rooms: {
-          'room1': 10,
-          'room2': 5,
-          'room3': 3,
-          'room4': 2
-        }
+          room1: 10,
+          room2: 5,
+          room3: 3,
+          room4: 2,
+        },
       },
       {
         date: new Date('2023-01-08'),
         rooms: {
-          'room1': 12,
-          'room2': 6,
-          'room3': 4,
-          'room4': 3
-        }
+          room1: 12,
+          room2: 6,
+          room3: 4,
+          room4: 3,
+        },
       },
     ];
     const labels = ['Week 1', 'Week 2'];
@@ -129,7 +134,7 @@ describe('ChartDataService', () => {
         view: 'total',
         mode: 'total',
         roomNames,
-        roomIds
+        roomIds,
       };
 
       const result = service.getHeatingChartData(params);
@@ -147,7 +152,7 @@ describe('ChartDataService', () => {
         view: 'total',
         mode: 'incremental',
         roomNames,
-        roomIds
+        roomIds,
       };
 
       const result = service.getHeatingChartData(params);
@@ -164,7 +169,7 @@ describe('ChartDataService', () => {
         view: 'by-room',
         mode: 'total',
         roomNames,
-        roomIds
+        roomIds,
       };
 
       const result = service.getHeatingChartData(params);
@@ -188,7 +193,7 @@ describe('ChartDataService', () => {
         view: 'detailed',
         mode: 'total',
         roomNames,
-        roomIds
+        roomIds,
       };
 
       const result = service.getHeatingChartData(params);
@@ -203,7 +208,7 @@ describe('ChartDataService', () => {
         view: 'by-type',
         mode: 'total',
         roomNames,
-        roomIds
+        roomIds,
       };
 
       const result = service.getHeatingChartData(params);
@@ -221,7 +226,7 @@ describe('ChartDataService', () => {
           mode: 'total',
           roomNames,
           roomIds,
-          showTrendline: true
+          showTrendline: true,
         };
 
         const result = service.getHeatingChartData(params);
@@ -239,7 +244,7 @@ describe('ChartDataService', () => {
           mode: 'total',
           roomNames,
           roomIds,
-          showTrendline: false
+          showTrendline: false,
         };
 
         const result = service.getHeatingChartData(params);
@@ -255,7 +260,7 @@ describe('ChartDataService', () => {
           mode: 'total',
           roomNames,
           roomIds,
-          showTrendline: true
+          showTrendline: true,
         };
 
         const result = service.getHeatingChartData(params);
@@ -271,7 +276,7 @@ describe('ChartDataService', () => {
           const records: any[] = [
             { date: new Date('2023-01-01'), value: 100 },
             { date: new Date('2023-01-08'), value: 110 },
-            { date: new Date('2023-01-15'), value: 125 }
+            { date: new Date('2023-01-15'), value: 125 },
           ];
           const labels = ['Jan 1', 'Jan 8', 'Jan 15'];
 
@@ -279,14 +284,14 @@ describe('ChartDataService', () => {
           calculationServiceMock.calculateIncrementalData.mockReturnValue([
             { date: '2023-01-01', value: 100 }, // First point
             { date: '2023-01-08', value: 10 },
-            { date: '2023-01-15', value: 15 }
+            { date: '2023-01-15', value: 15 },
           ]);
 
           const params: ChartDataParams<any> = {
             records,
             labels,
             view: 'total',
-            mode: 'incremental'
+            mode: 'incremental',
           };
 
           const result = service.getElectricityChartData(params);
@@ -301,7 +306,7 @@ describe('ChartDataService', () => {
             records: [],
             labels: ['A', 'B'],
             view: 'total',
-            mode: 'incremental'
+            mode: 'incremental',
           };
 
           service.getWaterChartData(params);
@@ -312,14 +317,14 @@ describe('ChartDataService', () => {
         it('should return N labels for N heating records in incremental mode', () => {
           const records: any[] = [
             { date: new Date(), rooms: { r1: 10 } },
-            { date: new Date(), rooms: { r1: 20 } }
+            { date: new Date(), rooms: { r1: 20 } },
           ];
           const labels = ['Jan 1', 'Jan 8'];
 
           // Mock N items
           calculationServiceMock.calculateIncrementalData.mockReturnValue([
             { date: 'Jan 1', rooms: { r1: 10 } },
-            { date: 'Jan 8', rooms: { r1: 10 } }
+            { date: 'Jan 8', rooms: { r1: 10 } },
           ]);
 
           const params: ChartDataParams<any> = {
@@ -328,7 +333,7 @@ describe('ChartDataService', () => {
             view: 'total',
             mode: 'incremental',
             roomNames: ['R1'],
-            roomIds: ['r1']
+            roomIds: ['r1'],
           };
 
           const result = service.getHeatingChartData(params);
@@ -339,7 +344,6 @@ describe('ChartDataService', () => {
         });
       });
     });
-
 
     // New tests for country average comparison
     describe('country average comparison', () => {
@@ -352,13 +356,13 @@ describe('ChartDataService', () => {
           roomNames,
           roomIds,
           showAverageComparison: true,
-          country: 'DE'
+          country: 'DE',
         };
 
         const result = service.getHeatingChartData(params);
 
         // Find the country average dataset
-        const avgDataset = result.datasets.find(d => d.label === 'CHART.COUNTRY_AVERAGE');
+        const avgDataset = result.datasets.find((d) => d.label === 'CHART.COUNTRY_AVERAGE');
         expect(avgDataset).toBeDefined();
         expect(heatingAveragesServiceMock.getAverageKwhPerYear).toHaveBeenCalledWith('DE');
       });
@@ -372,12 +376,12 @@ describe('ChartDataService', () => {
           roomNames,
           roomIds,
           showAverageComparison: true,
-          country: 'DE'
+          country: 'DE',
         };
 
         const result = service.getHeatingChartData(params);
 
-        const avgDataset = result.datasets.find(d => d.label === 'CHART.COUNTRY_AVERAGE');
+        const avgDataset = result.datasets.find((d) => d.label === 'CHART.COUNTRY_AVERAGE');
         expect(avgDataset).toBeUndefined();
       });
 
@@ -390,7 +394,7 @@ describe('ChartDataService', () => {
           roomNames,
           roomIds,
           showAverageComparison: true,
-          country: 'FI'
+          country: 'FI',
         };
 
         service.getHeatingChartData(paramsDE);
@@ -405,11 +409,11 @@ describe('ChartDataService', () => {
         const recordsWithEmptyRoom: DynamicHeatingRecord[] = [
           {
             date: new Date('2023-01-01'),
-            rooms: { 'room1': 10, 'room2': 0, 'room3': 5, 'room4': 0 }
+            rooms: { room1: 10, room2: 0, room3: 5, room4: 0 },
           },
           {
             date: new Date('2023-01-08'),
-            rooms: { 'room1': 12, 'room2': 0, 'room3': 6, 'room4': 0 }
+            rooms: { room1: 12, room2: 0, room3: 6, room4: 0 },
           },
         ];
 
@@ -420,7 +424,7 @@ describe('ChartDataService', () => {
           mode: 'total',
           roomNames,
           roomIds,
-          showTrendline: false
+          showTrendline: false,
         };
 
         const result = service.getHeatingChartData(params);
@@ -440,7 +444,7 @@ describe('ChartDataService', () => {
           view: 'total',
           mode: 'incremental',
           roomNames,
-          roomIds
+          roomIds,
         };
 
         const result = service.getHeatingChartData(params);
@@ -458,7 +462,7 @@ describe('ChartDataService', () => {
           view: 'total',
           mode: 'total',
           roomNames,
-          roomIds
+          roomIds,
         };
 
         service.getHeatingChartData(params);
@@ -471,20 +475,32 @@ describe('ChartDataService', () => {
   describe('getWaterChartData normalization', () => {
     it('should call calculateDailyAverageForWater in incremental mode', () => {
       const records: any[] = [
-        { date: new Date('2023-01-01'), kitchenWarm: 10, kitchenCold: 20, bathroomWarm: 30, bathroomCold: 40 },
-        { date: new Date('2023-01-08'), kitchenWarm: 15, kitchenCold: 25, bathroomWarm: 35, bathroomCold: 45 }
+        {
+          date: new Date('2023-01-01'),
+          kitchenWarm: 10,
+          kitchenCold: 20,
+          bathroomWarm: 30,
+          bathroomCold: 40,
+        },
+        {
+          date: new Date('2023-01-08'),
+          kitchenWarm: 15,
+          kitchenCold: 25,
+          bathroomWarm: 35,
+          bathroomCold: 45,
+        },
       ];
 
       waterChartServiceMock.getWaterChartData.mockReturnValue({
         labels: ['Jan 1', 'Jan 8'],
-        datasets: [{ label: 'Test', data: [1, 2] }]
+        datasets: [{ label: 'Test', data: [1, 2] }],
       });
 
       const params: ChartDataParams = {
         records,
         labels: ['Jan 1', 'Jan 8'],
         view: 'total',
-        mode: 'incremental'
+        mode: 'incremental',
       };
 
       const result = service.getWaterChartData(params);
@@ -496,15 +512,23 @@ describe('ChartDataService', () => {
     it('should pass through to waterChartService in total mode', () => {
       waterChartServiceMock.getWaterChartData.mockReturnValue({
         labels: ['Jan 1'],
-        datasets: [{ label: 'Test', data: [1] }]
+        datasets: [{ label: 'Test', data: [1] }],
       });
       calculationServiceMock.calculateDailyAverage.mockClear();
 
       const params: ChartDataParams = {
-        records: [{ date: new Date('2023-01-01'), kitchenWarm: 10, kitchenCold: 20, bathroomWarm: 30, bathroomCold: 40 }],
+        records: [
+          {
+            date: new Date('2023-01-01'),
+            kitchenWarm: 10,
+            kitchenCold: 20,
+            bathroomWarm: 30,
+            bathroomCold: 40,
+          },
+        ],
         labels: ['Jan 1'],
         view: 'total',
-        mode: 'total'
+        mode: 'total',
       };
 
       service.getWaterChartData(params);
@@ -518,14 +542,14 @@ describe('ChartDataService', () => {
     it('should call calculateDailyAverageForElectricity in incremental mode', () => {
       const records: any[] = [
         { date: new Date('2023-01-01'), value: 100 },
-        { date: new Date('2023-01-08'), value: 110 }
+        { date: new Date('2023-01-08'), value: 110 },
       ];
 
       const params: ChartDataParams<any> = {
         records,
         labels: ['Jan 1', 'Jan 8'],
         view: 'total',
-        mode: 'incremental'
+        mode: 'incremental',
       };
 
       const result = service.getElectricityChartData(params);
@@ -537,15 +561,13 @@ describe('ChartDataService', () => {
     it('should not call normalization in total mode', () => {
       calculationServiceMock.calculateDailyAverage.mockClear();
 
-      const records: any[] = [
-        { date: new Date('2023-01-01'), value: 100 }
-      ];
+      const records: any[] = [{ date: new Date('2023-01-01'), value: 100 }];
 
       const params: ChartDataParams<any> = {
         records,
         labels: ['Jan 1'],
         view: 'total',
-        mode: 'total'
+        mode: 'total',
       };
 
       const result = service.getElectricityChartData(params);
@@ -559,7 +581,7 @@ describe('ChartDataService', () => {
         records: [],
         labels: [],
         view: 'total',
-        mode: 'incremental'
+        mode: 'incremental',
       };
 
       const result = service.getElectricityChartData(params);

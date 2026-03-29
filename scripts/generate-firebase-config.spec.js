@@ -19,12 +19,12 @@ describe('generate-firebase-config', () => {
     vi.clearAllMocks();
 
     // Setup spies
-    exitSpy = vi.spyOn(process, 'exit').mockImplementation(() => { });
-    consoleInfoSpy = vi.spyOn(console, 'info').mockImplementation(() => { });
-    consoleErrorSpy = vi.spyOn(console, 'error').mockImplementation(() => { });
+    exitSpy = vi.spyOn(process, 'exit').mockImplementation(() => {});
+    consoleInfoSpy = vi.spyOn(console, 'info').mockImplementation(() => {});
+    consoleErrorSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
     existsSyncSpy = vi.spyOn(fs, 'existsSync').mockReturnValue(false);
-    mkdirSyncSpy = vi.spyOn(fs, 'mkdirSync').mockImplementation(() => { });
-    writeFileSyncSpy = vi.spyOn(fs, 'writeFileSync').mockImplementation(() => { });
+    mkdirSyncSpy = vi.spyOn(fs, 'mkdirSync').mockImplementation(() => {});
+    writeFileSyncSpy = vi.spyOn(fs, 'writeFileSync').mockImplementation(() => {});
   });
 
   afterEach(() => {
@@ -44,7 +44,9 @@ describe('generate-firebase-config', () => {
     await loadModule();
 
     expect(existsSyncSpy).toHaveBeenCalled();
-    expect(consoleInfoSpy).toHaveBeenCalledWith('[config] firebase.config.ts already exists — skipping generation');
+    expect(consoleInfoSpy).toHaveBeenCalledWith(
+      '[config] firebase.config.ts already exists — skipping generation',
+    );
     expect(exitSpy).toHaveBeenCalledWith(0);
     expect(writeFileSyncSpy).not.toHaveBeenCalled();
   });
@@ -57,8 +59,12 @@ describe('generate-firebase-config', () => {
 
     await loadModule();
 
-    expect(consoleErrorSpy).toHaveBeenCalledWith(expect.stringContaining('[config] Missing environment variables:'));
-    expect(consoleErrorSpy).toHaveBeenCalledWith('[config] Set these in your CI/CD secrets or create firebase.config.ts manually.');
+    expect(consoleErrorSpy).toHaveBeenCalledWith(
+      expect.stringContaining('[config] Missing environment variables:'),
+    );
+    expect(consoleErrorSpy).toHaveBeenCalledWith(
+      '[config] Set these in your CI/CD secrets or create firebase.config.ts manually.',
+    );
     expect(exitSpy).toHaveBeenCalledWith(1);
     expect(writeFileSyncSpy).not.toHaveBeenCalled();
   });
@@ -89,7 +95,9 @@ describe('generate-firebase-config', () => {
     expect(content).toContain("messagingSenderId: 'test-sender'");
     expect(content).toContain("appId: 'test-app-id'");
 
-    expect(consoleInfoSpy).toHaveBeenCalledWith('[config] Generated firebase.config.ts from environment variables');
+    expect(consoleInfoSpy).toHaveBeenCalledWith(
+      '[config] Generated firebase.config.ts from environment variables',
+    );
     expect(exitSpy).not.toHaveBeenCalled();
   });
 });

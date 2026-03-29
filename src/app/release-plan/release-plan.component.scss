@@ -28,7 +28,7 @@ $tag-smart: #d97706; // Amber/Gold
   }
 
   h1 {
-    margin: 0 0 .75rem;
+    margin: 0 0 0.75rem;
     font-size: 2.5rem;
     font-weight: 700;
     color: #4f46e5;
@@ -114,7 +114,7 @@ $tag-smart: #d97706; // Amber/Gold
 $tags: (
   'new': $tag-new,
   'enhancement': $tag-enh,
-  'smart': $tag-smart
+  'smart': $tag-smart,
 );
 
 @each $name, $color in $tags {
@@ -122,12 +122,10 @@ $tags: (
     color: $color;
 
     &.active {
-      @if $name =='smart' {
+      @if $name == 'smart' {
         background: var(--card-bg);
         border-color: $color;
-      }
-
-      @else {
+      } @else {
         background: rgba($color, 0.1);
       }
     }
@@ -205,13 +203,11 @@ $tags: (
       &.tag-#{$name} {
         color: $color;
 
-        @if $name =='smart' {
+        @if $name == 'smart' {
           background: var(--card-bg);
           border: 1px solid $color;
           box-shadow: var(--shadow-sm);
-        }
-
-        @else {
+        } @else {
           background: rgba($color, 0.1);
         }
       }

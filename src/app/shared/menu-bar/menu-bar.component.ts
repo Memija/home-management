@@ -9,7 +9,7 @@ import { EmailClient } from '../contact-modal/contact-modal.component';
   standalone: true,
   imports: [RouterLink, RouterLinkActive, TranslatePipe, ContactModalComponent],
   templateUrl: './menu-bar.component.html',
-  styleUrl: './menu-bar.component.scss'
+  styleUrl: './menu-bar.component.scss',
 })
 export class MenuBarComponent {
   // Contact modal state
@@ -23,7 +23,13 @@ export class MenuBarComponent {
     this.showContactModal.set(false);
   }
 
-  protected onComposeEmail(data: { name: string; email: string; subject: string; message: string; client: EmailClient }) {
+  protected onComposeEmail(data: {
+    name: string;
+    email: string;
+    subject: string;
+    message: string;
+    client: EmailClient;
+  }) {
     const recipient = 'support@homemanagement.app';
     const subject = encodeURIComponent(`[${data.name}] ${data.subject}`);
     const body = encodeURIComponent(`From: ${data.name} (${data.email})\n\n${data.message}`);

@@ -6,13 +6,24 @@ import { LocalStorageService } from '../../services/local-storage.service';
 import { TranslatePipe } from '../../pipes/translate.pipe';
 import { HelpModalComponent } from '../help-modal/help-modal.component';
 import { BaseChartDirective } from 'ng2-charts';
-import { Pipe, PipeTransform, Component, Input, Output, EventEmitter, Directive, signal } from '@angular/core';
+import {
+  Pipe,
+  PipeTransform,
+  Component,
+  Input,
+  Output,
+  EventEmitter,
+  Directive,
+  signal,
+} from '@angular/core';
 import { vi, afterEach } from 'vitest';
 import { ConsumptionRecord } from '../../models/records.model';
 
 @Pipe({ name: 'translate', standalone: true })
 class MockTranslatePipe implements PipeTransform {
-  transform(key: string): string { return key; }
+  transform(key: string): string {
+    return key;
+  }
 }
 
 @Component({ selector: 'app-help-modal', standalone: true, template: '' })
@@ -33,12 +44,12 @@ class MockBaseChartDirective {
 }
 
 const makeWaterData = (dates: string[]): ConsumptionRecord[] =>
-  dates.map(dateStr => ({
+  dates.map((dateStr) => ({
     date: new Date(dateStr),
     kitchenWarm: 10,
     kitchenCold: 20,
     bathroomWarm: 5,
-    bathroomCold: 15
+    bathroomCold: 15,
   }));
 
 describe('ConsumptionChartComponent', () => {
@@ -51,7 +62,7 @@ describe('ConsumptionChartComponent', () => {
   beforeEach(async () => {
     languageServiceMock = {
       currentLang: signal('en'),
-      translate: vi.fn().mockImplementation((key: string) => key)
+      translate: vi.fn().mockImplementation((key: string) => key),
     };
 
     chartDataServiceMock = {
@@ -59,21 +70,21 @@ describe('ConsumptionChartComponent', () => {
       generateComparisonData: vi.fn().mockReturnValue([]),
       getWaterChartData: vi.fn().mockReturnValue({ labels: [], datasets: [] }),
       getHeatingChartData: vi.fn().mockReturnValue({ labels: [], datasets: [] }),
-      getElectricityChartData: vi.fn().mockReturnValue({ labels: [], datasets: [] })
+      getElectricityChartData: vi.fn().mockReturnValue({ labels: [], datasets: [] }),
     };
 
     localStorageServiceMock = {
       getPreference: vi.fn().mockReturnValue(null),
       setPreference: vi.fn(),
-      removePreference: vi.fn()
+      removePreference: vi.fn(),
     };
 
     await TestBed.configureTestingModule({
-      imports: [ConsumptionChartComponent]
+      imports: [ConsumptionChartComponent],
     })
       .overrideComponent(ConsumptionChartComponent, {
         remove: { imports: [TranslatePipe, HelpModalComponent, BaseChartDirective] },
-        add: { imports: [MockTranslatePipe, MockHelpModalComponent, MockBaseChartDirective] }
+        add: { imports: [MockTranslatePipe, MockHelpModalComponent, MockBaseChartDirective] },
       })
       .overrideProvider(LanguageService, { useValue: languageServiceMock })
       .overrideProvider(ChartDataService, { useValue: chartDataServiceMock })
@@ -94,7 +105,10 @@ describe('ConsumptionChartComponent', () => {
     chartType?: string;
     displayMode?: string;
   }) => {
-    fixture.componentRef.setInput('data', overrides?.data ?? makeWaterData(['2024-01-15', '2024-02-15']));
+    fixture.componentRef.setInput(
+      'data',
+      overrides?.data ?? makeWaterData(['2024-01-15', '2024-02-15']),
+    );
     fixture.componentRef.setInput('currentView', overrides?.currentView ?? 'total');
     component.chartType = (overrides?.chartType ?? 'water') as any;
     component.onViewChange = vi.fn();
@@ -147,7 +161,7 @@ describe('ConsumptionChartComponent', () => {
       const spy = component.onViewChange as ReturnType<typeof vi.fn>;
 
       const views = ['total', 'by-room', 'by-type', 'detailed'];
-      views.forEach(view => {
+      views.forEach((view) => {
         (component as any).setView(view);
         expect(spy).toHaveBeenCalledWith(view);
       });
@@ -199,7 +213,7 @@ describe('ConsumptionChartComponent', () => {
       (component as any).toggleTrendline();
       expect(localStorageServiceMock.setPreference).toHaveBeenCalledWith(
         'water_chart_trendline_visible',
-        'false'
+        'false',
       );
     });
 
@@ -210,7 +224,7 @@ describe('ConsumptionChartComponent', () => {
       (component as any).toggleTrendline();
       expect(localStorageServiceMock.setPreference).toHaveBeenCalledWith(
         'heating_chart_trendline_visible',
-        'false'
+        'false',
       );
     });
 
@@ -245,7 +259,7 @@ describe('ConsumptionChartComponent', () => {
       (component as any).toggleAverageComparison();
       expect(localStorageServiceMock.setPreference).toHaveBeenCalledWith(
         'water_chart_average_visible',
-        'false'
+        'false',
       );
     });
 
@@ -292,7 +306,7 @@ describe('ConsumptionChartComponent', () => {
     it('should require 3+ data points for incremental mode', () => {
       initWithDefaults({
         data: makeWaterData(['2024-01-15', '2024-02-15']),
-        displayMode: 'incremental'
+        displayMode: 'incremental',
       });
       expect((component as any).hasSufficientDataForTrendline()).toBe(false);
     });
@@ -300,7 +314,7 @@ describe('ConsumptionChartComponent', () => {
     it('should return true with 3 data points in incremental mode', () => {
       initWithDefaults({
         data: makeWaterData(['2024-01-15', '2024-02-15', '2024-03-15']),
-        displayMode: 'incremental'
+        displayMode: 'incremental',
       });
       expect((component as any).hasSufficientDataForTrendline()).toBe(true);
     });
@@ -314,14 +328,14 @@ describe('ConsumptionChartComponent', () => {
   describe('hasSufficientDataForComparison', () => {
     it('should return true with 3+ data points', () => {
       initWithDefaults({
-        data: makeWaterData(['2024-01-15', '2024-02-15', '2024-03-15'])
+        data: makeWaterData(['2024-01-15', '2024-02-15', '2024-03-15']),
       });
       expect((component as any).hasSufficientDataForComparison()).toBe(true);
     });
 
     it('should return false with 2 data points', () => {
       initWithDefaults({
-        data: makeWaterData(['2024-01-15', '2024-02-15'])
+        data: makeWaterData(['2024-01-15', '2024-02-15']),
       });
       expect((component as any).hasSufficientDataForComparison()).toBe(false);
     });

@@ -1,86 +1,127 @@
 <header class="app-header">
   <div class="header-content">
     <div class="logo-section">
-      <img src="/assets/logo-128.png" alt="Home Management Logo" class="logo" width="32" height="32">
+      <img
+        src="/assets/logo-128.png"
+        alt="Home Management Logo"
+        class="logo"
+        width="32"
+        height="32"
+      />
       <h1 class="app-title">{{ 'FOOTER.APP_NAME' | translate }}</h1>
     </div>
     <div class="header-actions">
       <!-- Theme Toggle -->
-      <button type="button" class="theme-toggle" (click)="cycleTheme()" [title]="getThemeTitle()"
+      <button
+        type="button"
+        class="theme-toggle"
+        (click)="cycleTheme()"
+        [title]="getThemeTitle()"
         [class.is-dark]="themeService.resolvedTheme() === 'dark'"
-        [class.is-system]="themeService.currentTheme() === 'system'">
+        [class.is-system]="themeService.currentTheme() === 'system'"
+      >
         <span class="theme-icon-wrapper">
           @if (themeService.currentTheme() === 'system') {
-          <lucide-icon [img]="MonitorIcon" size="20" class="theme-icon monitor-icon"></lucide-icon>
-          <span class="system-indicator" [class.dark]="themeService.resolvedTheme() === 'dark'">
-            @if (themeService.resolvedTheme() === 'dark') {
-            <lucide-icon [img]="MoonIcon" size="10"></lucide-icon>
-            } @else {
-            <lucide-icon [img]="SunIcon" size="10"></lucide-icon>
-            }
-          </span>
+            <lucide-icon
+              [img]="MonitorIcon"
+              size="20"
+              class="theme-icon monitor-icon"
+            ></lucide-icon>
+            <span class="system-indicator" [class.dark]="themeService.resolvedTheme() === 'dark'">
+              @if (themeService.resolvedTheme() === 'dark') {
+                <lucide-icon [img]="MoonIcon" size="10"></lucide-icon>
+              } @else {
+                <lucide-icon [img]="SunIcon" size="10"></lucide-icon>
+              }
+            </span>
           } @else if (themeService.resolvedTheme() === 'dark') {
-          <lucide-icon [img]="MoonIcon" size="20" class="theme-icon moon-icon"></lucide-icon>
+            <lucide-icon [img]="MoonIcon" size="20" class="theme-icon moon-icon"></lucide-icon>
           } @else {
-          <lucide-icon [img]="SunIcon" size="20" class="theme-icon sun-icon"></lucide-icon>
+            <lucide-icon [img]="SunIcon" size="20" class="theme-icon sun-icon"></lucide-icon>
           }
         </span>
       </button>
 
       <!-- Notification Bell -->
       <div class="notification-wrapper">
-        <button type="button" class="notification-bell" (click)="toggleNotificationPanel()"
-          [class.has-notifications]="notificationCount() > 0" title="Notifications">
+        <button
+          type="button"
+          class="notification-bell"
+          (click)="toggleNotificationPanel()"
+          [class.has-notifications]="notificationCount() > 0"
+          title="Notifications"
+        >
           <lucide-icon [img]="BellIcon" size="22"></lucide-icon>
           @if (notificationCount() > 0) {
-          <span class="notification-badge">{{ notificationCount() }}</span>
+            <span class="notification-badge">{{ notificationCount() }}</span>
           }
         </button>
 
         <!-- Notification Dropdown Panel -->
         @if (isNotificationPanelOpen()) {
-        <div class="notification-panel">
-          <div class="notification-panel-header">
-            <span>{{ 'NOTIFICATIONS.TITLE' | translate }}</span>
-            <button type="button" class="close-btn" (click)="closePanel()" title="{{ 'ACTIONS.CLOSE' | translate }}">
-              <lucide-icon [img]="XIcon" size="16"></lucide-icon>
-            </button>
-          </div>
-          <div class="notification-panel-body">
-            @if (notificationService.notifications().length === 0) {
-            <div class="no-notifications">
-              {{ 'NOTIFICATIONS.NO_NOTIFICATIONS' | translate }}
+          <div class="notification-panel">
+            <div class="notification-panel-header">
+              <span>{{ 'NOTIFICATIONS.TITLE' | translate }}</span>
+              <button
+                type="button"
+                class="close-btn"
+                (click)="closePanel()"
+                title="{{ 'ACTIONS.CLOSE' | translate }}"
+              >
+                <lucide-icon [img]="XIcon" size="16"></lucide-icon>
+              </button>
             </div>
-            } @else {
-            @for (notification of notificationService.notifications(); track notification.id) {
-            <div class="notification-item" [class.high-priority]="notification.priority === 'high'">
-              <div class="notification-item-content">
-                <strong>{{ notification.titleKey | translate }}</strong>
-                <p>{{ notification.messageKey | translate:notification.messageParams }}</p>
-              </div>
-              <div class="notification-item-actions">
-                @if (notification.route) {
-                <button type="button" class="action-link" (click)="navigateToNotification(notification)"
-                  title="{{ (notification.route === '/settings' ? 'NOTIFICATIONS.GO_TO_SETTINGS' : 'NOTIFICATIONS.GO_TO_TRACKER') | translate }}">
-                  <lucide-icon [img]="ArrowRightIcon" size="16"></lucide-icon>
-                </button>
+            <div class="notification-panel-body">
+              @if (notificationService.notifications().length === 0) {
+                <div class="no-notifications">
+                  {{ 'NOTIFICATIONS.NO_NOTIFICATIONS' | translate }}
+                </div>
+              } @else {
+                @for (notification of notificationService.notifications(); track notification.id) {
+                  <div
+                    class="notification-item"
+                    [class.high-priority]="notification.priority === 'high'"
+                  >
+                    <div class="notification-item-content">
+                      <strong>{{ notification.titleKey | translate }}</strong>
+                      <p>{{ notification.messageKey | translate: notification.messageParams }}</p>
+                    </div>
+                    <div class="notification-item-actions">
+                      @if (notification.route) {
+                        <button
+                          type="button"
+                          class="action-link"
+                          (click)="navigateToNotification(notification)"
+                          title="{{
+                            (notification.route === '/settings'
+                              ? 'NOTIFICATIONS.GO_TO_SETTINGS'
+                              : 'NOTIFICATIONS.GO_TO_TRACKER'
+                            ) | translate
+                          }}"
+                        >
+                          <lucide-icon [img]="ArrowRightIcon" size="16"></lucide-icon>
+                        </button>
+                      }
+                      @if (notification.dismissible) {
+                        <button
+                          type="button"
+                          class="dismiss-btn"
+                          (click)="dismissNotification(notification.id, $event)"
+                          title="{{ 'NOTIFICATIONS.DISMISS' | translate }}"
+                        >
+                          <lucide-icon [img]="XIcon" size="14"></lucide-icon>
+                        </button>
+                      }
+                    </div>
+                  </div>
                 }
-                @if (notification.dismissible) {
-                <button type="button" class="dismiss-btn" (click)="dismissNotification(notification.id, $event)"
-                  title="{{ 'NOTIFICATIONS.DISMISS' | translate }}">
-                  <lucide-icon [img]="XIcon" size="14"></lucide-icon>
-                </button>
-                }
-              </div>
+              }
             </div>
-            }
-            }
           </div>
-        </div>
         }
       </div>
       @defer {
-      <app-auth-button></app-auth-button>
+        <app-auth-button></app-auth-button>
       }
       <app-language-switcher></app-language-switcher>
     </div>
@@ -89,14 +130,19 @@
 
 <!-- Global Demo Mode Banner -->
 @if (demoService.isDemoMode()) {
-<div class="demo-banner-global">
-  <div class="demo-banner-content">
-    <lucide-icon [img]="PlayIcon" size="18"></lucide-icon>
-    <span>{{ 'DEMO.BANNER_TEXT' | translate }}</span>
+  <div class="demo-banner-global">
+    <div class="demo-banner-content">
+      <lucide-icon [img]="PlayIcon" size="18"></lucide-icon>
+      <span>{{ 'DEMO.BANNER_TEXT' | translate }}</span>
+    </div>
+    <button
+      type="button"
+      class="exit-demo-btn"
+      (click)="exitDemo()"
+      [disabled]="demoService.isLoading()"
+    >
+      <lucide-icon [img]="XIcon" size="14"></lucide-icon>
+      <span class="btn-text">{{ 'DEMO.EXIT_BUTTON' | translate }}</span>
+    </button>
   </div>
-  <button type="button" class="exit-demo-btn" (click)="exitDemo()" [disabled]="demoService.isLoading()">
-    <lucide-icon [img]="XIcon" size="14"></lucide-icon>
-    <span class="btn-text">{{ 'DEMO.EXIT_BUTTON' | translate }}</span>
-  </button>
-</div>
 }

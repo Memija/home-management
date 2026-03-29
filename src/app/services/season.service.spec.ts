@@ -4,15 +4,12 @@ import { SeasonService, Season } from './season.service';
 import { vi } from 'vitest';
 
 describe('SeasonService', () => {
-
   describe('Browser Platform Environment', () => {
     beforeEach(() => {
       localStorage.clear();
       vi.useFakeTimers();
       TestBed.configureTestingModule({
-        providers: [
-          { provide: PLATFORM_ID, useValue: 'browser' }
-        ]
+        providers: [{ provide: PLATFORM_ID, useValue: 'browser' }],
       });
     });
 
@@ -29,11 +26,11 @@ describe('SeasonService', () => {
     describe('getNaturalSeason mapping (edge cases)', () => {
       const testCases: { date: Date; expected: Season }[] = [
         { date: new Date(2023, 1, 28), expected: 'winter' }, // Feb (edge)
-        { date: new Date(2023, 2, 1), expected: 'spring' },  // Mar (edge)
+        { date: new Date(2023, 2, 1), expected: 'spring' }, // Mar (edge)
         { date: new Date(2023, 4, 31), expected: 'spring' }, // May (edge)
-        { date: new Date(2023, 5, 1), expected: 'summer' },  // Jun (edge)
+        { date: new Date(2023, 5, 1), expected: 'summer' }, // Jun (edge)
         { date: new Date(2023, 7, 31), expected: 'summer' }, // Aug (edge)
-        { date: new Date(2023, 8, 1), expected: 'autumn' },  // Sep (edge)
+        { date: new Date(2023, 8, 1), expected: 'autumn' }, // Sep (edge)
         { date: new Date(2023, 10, 30), expected: 'autumn' }, // Nov (edge)
         { date: new Date(2023, 11, 1), expected: 'winter' }, // Dec (edge)
       ];
@@ -164,9 +161,7 @@ describe('SeasonService', () => {
   describe('Server Platform Environment', () => {
     beforeEach(() => {
       TestBed.configureTestingModule({
-        providers: [
-          { provide: PLATFORM_ID, useValue: 'server' }
-        ]
+        providers: [{ provide: PLATFORM_ID, useValue: 'server' }],
       });
     });
 

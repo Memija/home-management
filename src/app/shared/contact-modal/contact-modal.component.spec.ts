@@ -8,7 +8,9 @@ import { By } from '@angular/platform-browser';
 
 @Pipe({ name: 'translate', standalone: true })
 class MockTranslatePipe implements PipeTransform {
-  transform(key: string): string { return key; }
+  transform(key: string): string {
+    return key;
+  }
 }
 
 @Component({ selector: 'app-help-modal', standalone: true, template: '' })
@@ -25,11 +27,11 @@ describe('ContactModalComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [ContactModalComponent]
+      imports: [ContactModalComponent],
     })
       .overrideComponent(ContactModalComponent, {
         remove: { imports: [TranslatePipe, HelpModalComponent] },
-        add: { imports: [MockTranslatePipe, MockHelpModalComponent] }
+        add: { imports: [MockTranslatePipe, MockHelpModalComponent] },
       })
       .compileComponents();
 
@@ -164,7 +166,7 @@ describe('ContactModalComponent', () => {
 
     it('should handle all client types', () => {
       const clients: EmailClient[] = ['default', 'outlook', 'gmail'];
-      clients.forEach(client => {
+      clients.forEach((client) => {
         (component as any).selectEmailClient(client);
         expect(component.emailClient()).toBe(client);
       });
@@ -291,7 +293,7 @@ describe('ContactModalComponent', () => {
         email: 'john@example.com',
         subject: 'Test Subject',
         message: 'Test message content',
-        client: 'default'
+        client: 'default',
       });
     });
 
@@ -308,7 +310,7 @@ describe('ContactModalComponent', () => {
         email: 'john@example.com',
         subject: 'Test Subject',
         message: 'Test message content',
-        client: 'gmail'
+        client: 'gmail',
       });
     });
 

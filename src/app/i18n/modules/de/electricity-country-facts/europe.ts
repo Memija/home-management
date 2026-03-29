@@ -13,7 +13,7 @@ export const europeElectricityFacts = {
     'Offshore-Windparks in der Nordsee liefern riesige Mengen Strom nach Deutschland.',
     'Deutschland importiert und exportiert Strom mit allen Nachbarländern.',
     'Deutsche Geräte sparen effektiv Energie mit hohen Effizienzklassen.',
-    'Balkon-Solaranlagen werden in deutschen Wohnungen immer beliebter.'
+    'Balkon-Solaranlagen werden in deutschen Wohnungen immer beliebter.',
   ],
 
   // Austria
@@ -29,7 +29,7 @@ export const europeElectricityFacts = {
     'Kleinwasserkraftwerke sind im ländlichen Österreich verbreitet.',
     'Österreich hat eines der stabilsten Stromnetze in Europa.',
     'Pumpspeicherwerke in den Alpen fungieren als grüne Batterien.',
-    'Solarstrom ist bei vielen Neubauten in Österreich Pflicht.'
+    'Solarstrom ist bei vielen Neubauten in Österreich Pflicht.',
   ],
 
   // Switzerland
@@ -45,7 +45,7 @@ export const europeElectricityFacts = {
     'Schweizer Haushalte verbrauchen weniger Strom pro Kopf als viele Nachbarn.',
     'Wärmepumpen ersetzen Ölheizungen und erhöhen den Stromverbrauch.',
     'Die Schweiz hat über 600 Kleinwasserkraftwerke.',
-    'Auf Schweizer Stauseen werden schwimmende Solaranlagen getestet.'
+    'Auf Schweizer Stauseen werden schwimmende Solaranlagen getestet.',
   ],
 
   // Netherlands
@@ -61,7 +61,7 @@ export const europeElectricityFacts = {
     'In niederländischen Städten werden intelligente Energienetze getestet.',
     'Niederländische Gewächshäuser nutzen LED-Beleuchtung zur Energieeinsparung.',
     'Der Hafen von Rotterdam wird zum Drehkreuz für grünen Wasserstoff.',
-    'Radwege mit Solarmodulen werden getestet.'
+    'Radwege mit Solarmodulen werden getestet.',
   ],
 
   // France
@@ -77,7 +77,7 @@ export const europeElectricityFacts = {
     'Frankreich plant, den Kernkraftanteil bis 2035 auf 50% zu reduzieren.',
     'In der Rance-Mündung in der Bretagne wird Gezeitenenergie erzeugt.',
     'Frankreich hat strenge Energieeffizienzvorschriften für Gebäude.',
-    'Smart Meter namens „Linky" sind in den meisten französischen Haushalten installiert.'
+    'Smart Meter namens „Linky" sind in den meisten französischen Haushalten installiert.',
   ],
 
   // United Kingdom
@@ -93,7 +93,7 @@ export const europeElectricityFacts = {
     'Schottland produziert fast 100% seines Stroms aus erneuerbaren Energien.',
     'Das National Grid gleicht Angebot und Nachfrage sekundengenau aus.',
     'Batteriespeicheranlagen ersetzen Spitzenlast-Gaskraftwerke.',
-    'Das Gezeitenenergiepotenzial rund um die britischen Inseln ist enorm.'
+    'Das Gezeitenenergiepotenzial rund um die britischen Inseln ist enorm.',
   ],
 
   // Italy
@@ -109,7 +109,7 @@ export const europeElectricityFacts = {
     'Italiens Netz wird modernisiert, um erneuerbare Energien zu bewältigen.',
     'Energiegemeinschaften wachsen in italienischen Städten.',
     'Agri-Photovoltaik kombiniert Landwirtschaft und Solarenergie in Italien.',
-    'Italienische Inseln testen 100% erneuerbare Systeme.'
+    'Italienische Inseln testen 100% erneuerbare Systeme.',
   ],
 
   // Spain
@@ -125,7 +125,7 @@ export const europeElectricityFacts = {
     'Pumpspeicher hilft beim Ausgleich des spanischen Netzes.',
     'Spanien ist führend bei Projekten zur Produktion von grünem Wasserstoff.',
     'Elektroautohersteller investieren stark in Spanien.',
-    'Die Kanarischen Inseln streben Energieunabhängigkeit an.'
+    'Die Kanarischen Inseln streben Energieunabhängigkeit an.',
   ],
 
   // Belgium
@@ -141,7 +141,7 @@ export const europeElectricityFacts = {
     'Vor der belgischen Küste werden Energieinseln geplant.',
     'Smart Meter werden in ganz Belgien eingeführt.',
     'Gemeinschaftliche Energieteilung wird durch neue Gesetze unterstützt.',
-    'Belgien importiert grünen Strom aus Offshore-Windparks.'
+    'Belgien importiert grünen Strom aus Offshore-Windparks.',
   ],
 
   // Ireland
@@ -157,7 +157,7 @@ export const europeElectricityFacts = {
     'In Irland werden derzeit Smart Meter installiert.',
     'Energiespeicherbatterien stabilisieren das irische Netz.',
     'Irland hat das ganze Jahr über hervorragende Windressourcen.',
-    'Elektrische Wärmepumpen ersetzen Ölkessel.'
+    'Elektrische Wärmepumpen ersetzen Ölkessel.',
   ],
 
   // Norway
@@ -173,7 +173,7 @@ export const europeElectricityFacts = {
     'Rechenzentren ziehen nach Norwegen wegen günstigen grünen Stroms.',
     'Norwegens Wasserfälle versorgen die Industrie seit einem Jahrhundert mit Strom.',
     'Elektrofähren sind in norwegischen Fjorden üblich.',
-    'Norwegen investiert stark in zukünftige Energietechnologien.'
+    'Norwegen investiert stark in zukünftige Energietechnologien.',
   ],
 
   // Denmark
@@ -189,7 +189,7 @@ export const europeElectricityFacts = {
     'Dänemark plant, bis 2050 die Öl- und Gasförderung einzustellen.',
     'Biogas trägt erheblich zum dänischen Energiemix bei.',
     'Kopenhagen will die erste klimaneutrale Hauptstadt werden.',
-    'Dänische Häuser sind hochgradig energieeffizient.'
+    'Dänische Häuser sind hochgradig energieeffizient.',
   ],
 
   // Finland
@@ -205,7 +205,7 @@ export const europeElectricityFacts = {
     'Demand Response ist im finnischen Strommarkt aktiv.',
     'Solarenergie funktioniert in Finnlands langen Sommertagen gut.',
     'Finnland strebt Klimaneutralität bis 2035 an.',
-    'Wärmepumpen sind für die Heizung extrem beliebt.'
+    'Wärmepumpen sind für die Heizung extrem beliebt.',
   ],
 
   // Sweden
@@ -221,7 +221,7 @@ export const europeElectricityFacts = {
     'Elektrische Straßen zum Laden von LKWs werden getestet.',
     'Schwedische Häuser sind typischerweise gut isoliert und stromeffizient.',
     'Gotland strebt bis 2040 vollständig erneuerbare Energie an.',
-    'Intelligente Energiedienste sind in Schweden üblich.'
+    'Intelligente Energiedienste sind in Schweden üblich.',
   ],
 
   // Poland
@@ -237,7 +237,7 @@ export const europeElectricityFacts = {
     'Die Modernisierung des Netzes hat für Polen Priorität.',
     'Polen hat ein Förderprogramm „Mój Prąd" (Mein Strom).',
     'In einigen Kohlekraftwerken wird Biomasse mitverbrannt.',
-    'Pumpspeicher helfen beim Ausgleich des polnischen Netzes.'
+    'Pumpspeicher helfen beim Ausgleich des polnischen Netzes.',
   ],
 
   // Portugal
@@ -253,7 +253,7 @@ export const europeElectricityFacts = {
     'Portugal hat hervorragende Bedingungen für die Produktion von grünem Wasserstoff.',
     'Die Einführung von Elektrofahrzeugen wächst schnell.',
     'Kohlekraft wurde vollständig eingestellt.',
-    'Smart Grids werden landesweit ausgerollt.'
+    'Smart Grids werden landesweit ausgerollt.',
   ],
 
   // Greece
@@ -269,7 +269,7 @@ export const europeElectricityFacts = {
     'Pumpspeicherwerke werden ausgebaut.',
     'Griechenland hat erhebliches Geothermiepotenzial.',
     'Eine Stromverbindung nach Ägypten ist geplant.',
-    'Initiativen für Energiegemeinschaften wachsen.'
+    'Initiativen für Energiegemeinschaften wachsen.',
   ],
 
   // Croatia
@@ -285,7 +285,7 @@ export const europeElectricityFacts = {
     'Das Land strebt bis 2030 36% erneuerbare Energien an.',
     'Inselgemeinden pilotieren 100% erneuerbare Systeme.',
     'Das LNG-Terminal auf der Insel Krk diversifiziert die Gasversorgung.',
-    'Die Energieeffizienz in Gebäuden verbessert sich.'
+    'Die Energieeffizienz in Gebäuden verbessert sich.',
   ],
 
   // Czech Republic
@@ -301,7 +301,7 @@ export const europeElectricityFacts = {
     'Biomasse und Biogas tragen zu den Erneuerbaren-Zielen bei.',
     'Das Land plant einen schrittweisen Kohleausstieg.',
     'Smart-Grid-Technologien werden eingesetzt.',
-    'Die Infrastruktur für Elektrofahrzeuge wird ausgebaut.'
+    'Die Infrastruktur für Elektrofahrzeuge wird ausgebaut.',
   ],
 
   // Hungary
@@ -317,7 +317,7 @@ export const europeElectricityFacts = {
     'Die Entwicklung der Windkraft wurde eingeschränkt.',
     'Energieeffizienzziele sind Teil der EU-Konformität.',
     'Smart Meter werden landesweit installiert.',
-    'Elektrische Heizung ist aufgrund der Gasdominanz nicht üblich.'
+    'Elektrische Heizung ist aufgrund der Gasdominanz nicht üblich.',
   ],
 
   // Romania
@@ -333,7 +333,7 @@ export const europeElectricityFacts = {
     'Rumänien exportiert Strom in Nachbarländer.',
     'Die Smart-Meter-Einführung schreitet voran.',
     'Energiearmut betrifft ländliche Haushalte.',
-    'Das Land strebt bis 2030 30% erneuerbare Energien an.'
+    'Das Land strebt bis 2030 30% erneuerbare Energien an.',
   ],
 
   // Slovakia
@@ -349,7 +349,7 @@ export const europeElectricityFacts = {
     'Die Energieeffizienz in Gebäuden verbessert sich.',
     'Die Einführung von Elektrofahrzeugen beschleunigt sich.',
     'Die Slowakei strebt einen Kohleausstieg bis 2030 an.',
-    'Investitionen in Smart Grids nehmen zu.'
+    'Investitionen in Smart Grids nehmen zu.',
   ],
 
   // Slovenia
@@ -365,7 +365,7 @@ export const europeElectricityFacts = {
     'Die Infrastruktur für Elektrofahrzeuge wird ausgebaut.',
     'Slowenien exportiert überschüssigen Strom an Nachbarn.',
     'Energiegemeinschaften werden gegründet.',
-    'Smart Meter werden landesweit eingesetzt.'
+    'Smart Meter werden landesweit eingesetzt.',
   ],
 
   // Bulgaria
@@ -381,7 +381,7 @@ export const europeElectricityFacts = {
     'Der Kohleausstieg ist geplant, aber politisch sensibel.',
     'Die Energieeffizienz in der Industrie muss verbessert werden.',
     'Investitionen in Smart Grids sind im Gange.',
-    'Das Land strebt bis 2030 27% erneuerbare Energien an.'
+    'Das Land strebt bis 2030 27% erneuerbare Energien an.',
   ],
 
   // Serbia
@@ -397,7 +397,7 @@ export const europeElectricityFacts = {
     'Der EU-Beitritt treibt Energiereformanforderungen an.',
     'Zeitpläne für den Kohleausstieg sind ungewiss.',
     'Netzverbindungen mit Nachbarn sind stark.',
-    'Dach-Solarinstallationen nehmen zu.'
+    'Dach-Solarinstallationen nehmen zu.',
   ],
 
   // Bosnia and Herzegovina
@@ -413,7 +413,7 @@ export const europeElectricityFacts = {
     'EU-Energieanforderungen treiben Reformen an.',
     'Die ländliche Elektrifizierung ist nahezu vollständig.',
     'Kleinwasserkraftwerke werden entwickelt.',
-    'Biomasseheizung ist in ländlichen Gebieten verbreitet.'
+    'Biomasseheizung ist in ländlichen Gebieten verbreitet.',
   ],
 
   // Albania
@@ -429,7 +429,7 @@ export const europeElectricityFacts = {
     'Schwimmende Solaranlagen auf Stauseen werden untersucht.',
     'Tourismus treibt die Sommerspitzennachfrage an.',
     'Das Bewusstsein für Energieeffizienz wächst.',
-    'Die Installation von Smart Metern ist im Gange.'
+    'Die Installation von Smart Metern ist im Gange.',
   ],
 
   // Montenegro
@@ -445,7 +445,7 @@ export const europeElectricityFacts = {
     'Ziele für erneuerbare Energien entsprechen den EU-Zielen.',
     'Die Entwicklung von Kleinwasserkraft ist umstritten.',
     'Die Netzmodernisierung ist im Gange.',
-    'Smart Meter werden eingesetzt.'
+    'Smart Meter werden eingesetzt.',
   ],
 
   // North Macedonia
@@ -461,7 +461,7 @@ export const europeElectricityFacts = {
     'Dach-Solaranlagen werden immer beliebter.',
     'Die Netzverbindungen zu Nachbarn werden verbessert.',
     'Fernwärme nutzt Kohle und Holz.',
-    'Der EU-Beitritt treibt Energiereformen an.'
+    'Der EU-Beitritt treibt Energiereformen an.',
   ],
 
   // Kosovo
@@ -477,7 +477,7 @@ export const europeElectricityFacts = {
     'Haushalts-Solarinstallationen wachsen.',
     'Die Fernwärme muss modernisiert werden.',
     'Stromimporte ergänzen die heimische Versorgung.',
-    'Die Smart-Grid-Entwicklung befindet sich in frühen Stadien.'
+    'Die Smart-Grid-Entwicklung befindet sich in frühen Stadien.',
   ],
 
   // Iceland
@@ -493,7 +493,7 @@ export const europeElectricityFacts = {
     'Geothermische Wärme versorgt die meisten Gebäude.',
     'Island hat überschüssige erneuerbare Kapazität.',
     'Wasserstoffproduktion für den Export wird untersucht.',
-    'Das Netz ist isoliert, aber sehr stabil.'
+    'Das Netz ist isoliert, aber sehr stabil.',
   ],
 
   // Luxembourg
@@ -509,7 +509,7 @@ export const europeElectricityFacts = {
     'Smart Grids werden landesweit eingesetzt.',
     'Grüne Anleihen finanzieren die Energiewende.',
     'Fernwärme expandiert in städtischen Gebieten.',
-    'Das Netz ist gut mit Nachbarn verbunden.'
+    'Das Netz ist gut mit Nachbarn verbunden.',
   ],
 
   // Malta
@@ -525,7 +525,7 @@ export const europeElectricityFacts = {
     'Entsalzung verbraucht erheblich Strom.',
     'Batteriespeicherung wird erforscht.',
     'Schwimmende Wind- und Wellenenergie werden untersucht.',
-    'Die Inseln streben Klimaneutralität an.'
+    'Die Inseln streben Klimaneutralität an.',
   ],
 
   // Cyprus
@@ -541,7 +541,7 @@ export const europeElectricityFacts = {
     'Energiespeicherung ist für das isolierte Netz entscheidend.',
     'Die Einführung von Elektrofahrzeugen wächst.',
     'Klimaanlagen treiben die Sommerspitzennachfrage an.',
-    'Verbesserungen der Energieeffizienz sind im Gange.'
+    'Verbesserungen der Energieeffizienz sind im Gange.',
   ],
 
   // Estonia
@@ -557,7 +557,7 @@ export const europeElectricityFacts = {
     'Fernwärme ist verbreitet und effizient.',
     'Estland hat fortschrittliche digitale Energiedienste.',
     'Das Ladenetz für Elektrofahrzeuge ist umfangreich.',
-    'Die Energieeffizienz in Gebäuden hat sich verbessert.'
+    'Die Energieeffizienz in Gebäuden hat sich verbessert.',
   ],
 
   // Latvia
@@ -573,7 +573,7 @@ export const europeElectricityFacts = {
     'Fernwärme nutzt Gas und Biomasse.',
     'Energieeffizienzprogramme zielen auf Gebäude.',
     'Smart Meter werden installiert.',
-    'Offshore-Wind in der Ostsee wird erforscht.'
+    'Offshore-Wind in der Ostsee wird erforscht.',
   ],
 
   // Lithuania
@@ -589,6 +589,6 @@ export const europeElectricityFacts = {
     'Windparks arbeiten im ganzen Land.',
     'Energieunabhängigkeit ist eine nationale Priorität.',
     'Smart-Grid-Technologien werden eingesetzt.',
-    'Die Einführung von Elektrofahrzeugen beschleunigt sich.'
-  ]
+    'Die Einführung von Elektrofahrzeugen beschleunigt sich.',
+  ],
 };

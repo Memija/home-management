@@ -12,15 +12,15 @@ describe('ElectricityMeterService', () => {
     // 1. Create the mock object
     mockLocalStorageService = {
       getPreference: vi.fn(),
-      setPreference: vi.fn()
+      setPreference: vi.fn(),
     };
 
     // 2. Configure the TestBed
     TestBed.configureTestingModule({
       providers: [
         ElectricityMeterService,
-        { provide: LocalStorageService, useValue: mockLocalStorageService }
-      ]
+        { provide: LocalStorageService, useValue: mockLocalStorageService },
+      ],
     });
   });
 
@@ -88,7 +88,7 @@ describe('ElectricityMeterService', () => {
       const records: ElectricityRecord[] = [
         { date: new Date('2023-01-01'), value: 100 },
         { date: new Date('2023-01-02'), value: 110 },
-        { date: new Date('2023-01-03'), value: 120 }
+        { date: new Date('2023-01-03'), value: 120 },
       ];
       const changes = service.detectMeterChanges(records);
       expect(changes).toEqual([]);
@@ -98,7 +98,7 @@ describe('ElectricityMeterService', () => {
       const records: ElectricityRecord[] = [
         { date: new Date('2023-01-01'), value: 100 },
         { date: new Date('2023-01-02'), value: 50 }, // Drop here
-        { date: new Date('2023-01-03'), value: 60 }
+        { date: new Date('2023-01-03'), value: 60 },
       ];
       const changes = service.detectMeterChanges(records);
       expect(changes.length).toBe(1);
@@ -109,7 +109,7 @@ describe('ElectricityMeterService', () => {
       const records: ElectricityRecord[] = [
         { date: new Date('2023-01-01'), value: 100 },
         { date: new Date('2023-01-02'), value: 50 }, // First drop
-        { date: new Date('2023-01-03'), value: 20 }  // Second drop
+        { date: new Date('2023-01-03'), value: 20 }, // Second drop
       ];
       const changes = service.detectMeterChanges(records);
       expect(changes.length).toBe(2);
@@ -165,7 +165,7 @@ describe('ElectricityMeterService', () => {
       expect(service.confirmedMeterChanges()).toContain(date);
       expect(mockLocalStorageService.setPreference).toHaveBeenCalledWith(
         'electricity_confirmed_meter_changes',
-        expect.stringContaining(date)
+        expect.stringContaining(date),
       );
     });
 
@@ -176,7 +176,7 @@ describe('ElectricityMeterService', () => {
       expect(service.dismissedMeterChanges()).toContain(date);
       expect(mockLocalStorageService.setPreference).toHaveBeenCalledWith(
         'electricity_dismissed_meter_changes',
-        expect.stringContaining(date)
+        expect.stringContaining(date),
       );
     });
 
@@ -200,11 +200,11 @@ describe('ElectricityMeterService', () => {
       // saveMeterChanges saves both arrays
       expect(mockLocalStorageService.setPreference).toHaveBeenCalledWith(
         'electricity_confirmed_meter_changes',
-        JSON.stringify(['date1'])
+        JSON.stringify(['date1']),
       );
       expect(mockLocalStorageService.setPreference).toHaveBeenCalledWith(
         'electricity_dismissed_meter_changes',
-        JSON.stringify([])
+        JSON.stringify([]),
       );
     });
 
@@ -213,11 +213,11 @@ describe('ElectricityMeterService', () => {
 
       expect(mockLocalStorageService.setPreference).toHaveBeenCalledWith(
         'electricity_confirmed_meter_changes',
-        JSON.stringify([])
+        JSON.stringify([]),
       );
       expect(mockLocalStorageService.setPreference).toHaveBeenCalledWith(
         'electricity_dismissed_meter_changes',
-        JSON.stringify(['date1'])
+        JSON.stringify(['date1']),
       );
     });
 
@@ -226,11 +226,7 @@ describe('ElectricityMeterService', () => {
       service.confirmMeterChange('2023-02-01');
       service.confirmMeterChange('2023-03-01');
 
-      expect(service.confirmedMeterChanges()).toEqual([
-        '2023-01-01',
-        '2023-02-01',
-        '2023-03-01'
-      ]);
+      expect(service.confirmedMeterChanges()).toEqual(['2023-01-01', '2023-02-01', '2023-03-01']);
     });
 
     it('should allow dismissing multiple dates in sequence', () => {
@@ -238,11 +234,7 @@ describe('ElectricityMeterService', () => {
       service.dismissMeterChange('2023-02-01');
       service.dismissMeterChange('2023-03-01');
 
-      expect(service.dismissedMeterChanges()).toEqual([
-        '2023-01-01',
-        '2023-02-01',
-        '2023-03-01'
-      ]);
+      expect(service.dismissedMeterChanges()).toEqual(['2023-01-01', '2023-02-01', '2023-03-01']);
     });
 
     it('should allow confirming and dismissing different dates', () => {
@@ -280,7 +272,7 @@ describe('ElectricityMeterService', () => {
       const records: ElectricityRecord[] = [
         { date: new Date('2023-01-01'), value: 100 },
         { date: new Date('2023-01-02'), value: 100 },
-        { date: new Date('2023-01-03'), value: 100 }
+        { date: new Date('2023-01-03'), value: 100 },
       ];
       const changes = service.detectMeterChanges(records);
       expect(changes).toEqual([]);
@@ -289,7 +281,7 @@ describe('ElectricityMeterService', () => {
     it('should handle very large values', () => {
       const records: ElectricityRecord[] = [
         { date: new Date('2023-01-01'), value: 99999999 },
-        { date: new Date('2023-01-02'), value: 100000000 }
+        { date: new Date('2023-01-02'), value: 100000000 },
       ];
       const changes = service.detectMeterChanges(records);
       expect(changes).toEqual([]);
@@ -298,7 +290,7 @@ describe('ElectricityMeterService', () => {
     it('should handle very large value drops', () => {
       const records: ElectricityRecord[] = [
         { date: new Date('2023-01-01'), value: 100000000 },
-        { date: new Date('2023-01-02'), value: 100 }
+        { date: new Date('2023-01-02'), value: 100 },
       ];
       const changes = service.detectMeterChanges(records);
       expect(changes.length).toBe(1);
@@ -306,8 +298,8 @@ describe('ElectricityMeterService', () => {
 
     it('should handle decimal values', () => {
       const records: ElectricityRecord[] = [
-        { date: new Date('2023-01-01'), value: 100.50 },
-        { date: new Date('2023-01-02'), value: 110.75 }
+        { date: new Date('2023-01-01'), value: 100.5 },
+        { date: new Date('2023-01-02'), value: 110.75 },
       ];
       const changes = service.detectMeterChanges(records);
       expect(changes).toEqual([]);
@@ -315,8 +307,8 @@ describe('ElectricityMeterService', () => {
 
     it('should detect drop with decimal values', () => {
       const records: ElectricityRecord[] = [
-        { date: new Date('2023-01-01'), value: 100.50 },
-        { date: new Date('2023-01-02'), value: 100.49 }
+        { date: new Date('2023-01-01'), value: 100.5 },
+        { date: new Date('2023-01-02'), value: 100.49 },
       ];
       const changes = service.detectMeterChanges(records);
       expect(changes.length).toBe(1);
@@ -325,7 +317,7 @@ describe('ElectricityMeterService', () => {
     it('should handle zero values', () => {
       const records: ElectricityRecord[] = [
         { date: new Date('2023-01-01'), value: 0 },
-        { date: new Date('2023-01-02'), value: 10 }
+        { date: new Date('2023-01-02'), value: 10 },
       ];
       const changes = service.detectMeterChanges(records);
       expect(changes).toEqual([]);
@@ -334,7 +326,7 @@ describe('ElectricityMeterService', () => {
     it('should detect drop to zero', () => {
       const records: ElectricityRecord[] = [
         { date: new Date('2023-01-01'), value: 100 },
-        { date: new Date('2023-01-02'), value: 0 }
+        { date: new Date('2023-01-02'), value: 0 },
       ];
       const changes = service.detectMeterChanges(records);
       expect(changes.length).toBe(1);
@@ -343,7 +335,7 @@ describe('ElectricityMeterService', () => {
     it('should handle two records with drop', () => {
       const records: ElectricityRecord[] = [
         { date: new Date('2023-01-01'), value: 100 },
-        { date: new Date('2023-01-02'), value: 50 }
+        { date: new Date('2023-01-02'), value: 50 },
       ];
       const changes = service.detectMeterChanges(records);
       expect(changes.length).toBe(1);
@@ -353,8 +345,8 @@ describe('ElectricityMeterService', () => {
     it('should detect drop followed by increase', () => {
       const records: ElectricityRecord[] = [
         { date: new Date('2023-01-01'), value: 100 },
-        { date: new Date('2023-01-02'), value: 50 },  // Drop
-        { date: new Date('2023-01-03'), value: 150 }  // Increase
+        { date: new Date('2023-01-02'), value: 50 }, // Drop
+        { date: new Date('2023-01-03'), value: 150 }, // Increase
       ];
       const changes = service.detectMeterChanges(records);
       expect(changes.length).toBe(1);
@@ -365,7 +357,7 @@ describe('ElectricityMeterService', () => {
       const records: ElectricityRecord[] = [
         { date: new Date('2023-01-01'), value: 50 },
         { date: new Date('2023-01-02'), value: 100 }, // Increase
-        { date: new Date('2023-01-03'), value: 80 }   // Drop
+        { date: new Date('2023-01-03'), value: 80 }, // Drop
       ];
       const changes = service.detectMeterChanges(records);
       expect(changes.length).toBe(1);
@@ -375,7 +367,7 @@ describe('ElectricityMeterService', () => {
     it('should return ISO string format for dates', () => {
       const records: ElectricityRecord[] = [
         { date: new Date('2023-06-15T10:30:00'), value: 100 },
-        { date: new Date('2023-06-16T14:45:00'), value: 50 }
+        { date: new Date('2023-06-16T14:45:00'), value: 50 },
       ];
       const changes = service.detectMeterChanges(records);
       expect(changes[0]).toMatch(/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}/);
@@ -386,7 +378,7 @@ describe('ElectricityMeterService', () => {
       const records: ElectricityRecord[] = [
         { date: new Date('2023-01-01'), value: 100 },
         { date: new Date('2023-01-02'), value: 110 },
-        { date: new Date('2023-01-03'), value: 90 }  // Drop
+        { date: new Date('2023-01-03'), value: 90 }, // Drop
       ];
       const changes = service.detectMeterChanges(records);
       expect(changes.length).toBe(1);
@@ -398,7 +390,7 @@ describe('ElectricityMeterService', () => {
         { date: new Date('2023-01-02'), value: 80 },
         { date: new Date('2023-01-03'), value: 60 },
         { date: new Date('2023-01-04'), value: 40 },
-        { date: new Date('2023-01-05'), value: 20 }
+        { date: new Date('2023-01-05'), value: 20 },
       ];
       const changes = service.detectMeterChanges(records);
       expect(changes.length).toBe(4);
@@ -407,10 +399,10 @@ describe('ElectricityMeterService', () => {
     it('should handle alternating increases and drops', () => {
       const records: ElectricityRecord[] = [
         { date: new Date('2023-01-01'), value: 100 },
-        { date: new Date('2023-01-02'), value: 50 },  // Drop
-        { date: new Date('2023-01-03'), value: 80 },  // Increase
-        { date: new Date('2023-01-04'), value: 30 },  // Drop
-        { date: new Date('2023-01-05'), value: 60 }   // Increase
+        { date: new Date('2023-01-02'), value: 50 }, // Drop
+        { date: new Date('2023-01-03'), value: 80 }, // Increase
+        { date: new Date('2023-01-04'), value: 30 }, // Drop
+        { date: new Date('2023-01-05'), value: 60 }, // Increase
       ];
       const changes = service.detectMeterChanges(records);
       expect(changes.length).toBe(2);

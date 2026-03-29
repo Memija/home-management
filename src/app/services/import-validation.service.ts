@@ -8,7 +8,7 @@ export interface ValidationResult<T> {
 }
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class ImportValidationService {
   private languageService = inject(LanguageService);
@@ -45,7 +45,7 @@ export class ImportValidationService {
         kitchenWarm: numericResult.values['kitchenWarm'],
         kitchenCold: numericResult.values['kitchenCold'],
         bathroomWarm: numericResult.values['bathroomWarm'],
-        bathroomCold: numericResult.values['bathroomCold']
+        bathroomCold: numericResult.values['bathroomCold'],
       });
     }
 
@@ -55,7 +55,10 @@ export class ImportValidationService {
   /**
    * Validates JSON import data for heating consumption records (Dynamic format)
    */
-  validateHeatingJsonImport(data: unknown[], expectedRoomIds?: string[]): ValidationResult<DynamicHeatingRecord> {
+  validateHeatingJsonImport(
+    data: unknown[],
+    expectedRoomIds?: string[],
+  ): ValidationResult<DynamicHeatingRecord> {
     const validationErrors: string[] = [];
     const validRecords: { date: Date; rooms: Record<string, number> }[] = [];
     const seenDates = new Map<string, number>();
@@ -76,7 +79,9 @@ export class ImportValidationService {
 
       // Validate 'rooms' object
       if (!record['rooms'] || typeof record['rooms'] !== 'object') {
-        validationErrors.push(this.languageService.translate('ERROR.IMPORT_MISSING_ROOMS_OBJECT', { date: dateStr }));
+        validationErrors.push(
+          this.languageService.translate('ERROR.IMPORT_MISSING_ROOMS_OBJECT', { date: dateStr }),
+        );
         continue;
       }
 
@@ -91,7 +96,12 @@ export class ImportValidationService {
         // Check for missing rooms
         for (const expectedId of expectedRoomIds) {
           if (!recordRoomKeys.includes(expectedId)) {
-            validationErrors.push(this.languageService.translate('ERROR.IMPORT_MISSING_ROOM_DATA', { date: dateStr, room: expectedId }));
+            validationErrors.push(
+              this.languageService.translate('ERROR.IMPORT_MISSING_ROOM_DATA', {
+                date: dateStr,
+                room: expectedId,
+              }),
+            );
             hasRoomsError = true;
           }
         }
@@ -99,7 +109,12 @@ export class ImportValidationService {
         // Check for unknown rooms
         for (const key of recordRoomKeys) {
           if (!expectedRoomIds.includes(key)) {
-            validationErrors.push(this.languageService.translate('ERROR.IMPORT_UNKNOWN_ROOM', { date: dateStr, room: key }));
+            validationErrors.push(
+              this.languageService.translate('ERROR.IMPORT_UNKNOWN_ROOM', {
+                date: dateStr,
+                room: key,
+              }),
+            );
             hasRoomsError = true;
           }
         }
@@ -113,7 +128,13 @@ export class ImportValidationService {
         } else if (typeof value === 'string') {
           const num = Number(value);
           if (isNaN(num)) {
-            validationErrors.push(this.languageService.translate('ERROR.IMPORT_INVALID_ROOM_VALUE', { date: dateStr, value: value, room: roomId }));
+            validationErrors.push(
+              this.languageService.translate('ERROR.IMPORT_INVALID_ROOM_VALUE', {
+                date: dateStr,
+                value: value,
+                room: roomId,
+              }),
+            );
             hasRoomsError = true;
           } else {
             validRooms[roomId] = num;
@@ -121,7 +142,12 @@ export class ImportValidationService {
         } else if (value === null || value === undefined) {
           validRooms[roomId] = 0;
         } else {
-          validationErrors.push(this.languageService.translate('ERROR.IMPORT_INVALID_ROOM_TYPE', { date: dateStr, room: roomId }));
+          validationErrors.push(
+            this.languageService.translate('ERROR.IMPORT_INVALID_ROOM_TYPE', {
+              date: dateStr,
+              room: roomId,
+            }),
+          );
           hasRoomsError = true;
         }
       }
@@ -130,7 +156,7 @@ export class ImportValidationService {
 
       validRecords.push({
         date: dateResult.date!,
-        rooms: validRooms
+        rooms: validRooms,
       });
     }
 
@@ -140,7 +166,9 @@ export class ImportValidationService {
   /**
    * Validates JSON import data for electricity consumption records
    */
-  validateElectricityJsonImport(data: unknown[]): ValidationResult<import('../models/records.model').ElectricityRecord> {
+  validateElectricityJsonImport(
+    data: unknown[],
+  ): ValidationResult<import('../models/records.model').ElectricityRecord> {
     const validationErrors: string[] = [];
     const validRecords: import('../models/records.model').ElectricityRecord[] = [];
     const seenDates = new Map<string, number>();
@@ -166,13 +194,12 @@ export class ImportValidationService {
 
       validRecords.push({
         date: dateResult.date!,
-        value: numericResult.values['value']
+        value: numericResult.values['value'],
       });
     }
 
     return { validRecords, errors: validationErrors };
   }
-
 
   /**
    * Gets error instructions for JSON import errors
@@ -180,7 +207,11 @@ export class ImportValidationService {
   getJsonErrorInstructions(errorMessage: string): string[] {
     const instructions: string[] = [];
 
-    if (errorMessage.includes('INVALID_DATE') || errorMessage.includes('MISSING_DATE') || errorMessage.includes('INVALID_RECORD')) {
+    if (
+      errorMessage.includes('INVALID_DATE') ||
+      errorMessage.includes('MISSING_DATE') ||
+      errorMessage.includes('INVALID_RECORD')
+    ) {
       instructions.push('ERROR.JSON_DATE_FIX_1', 'ERROR.JSON_DATE_FIX_2');
     }
     if (errorMessage.includes('INVALID_NUMBER') || errorMessage.includes('INVALID_FIELD_TYPE')) {
@@ -194,7 +225,7 @@ export class ImportValidationService {
       instructions.push(
         'HOME.IMPORT_ERROR_INSTRUCTION_1',
         'HOME.IMPORT_ERROR_INSTRUCTION_2',
-        'HOME.IMPORT_ERROR_INSTRUCTION_3'
+        'HOME.IMPORT_ERROR_INSTRUCTION_3',
       );
     }
 
@@ -208,7 +239,11 @@ export class ImportValidationService {
     const instructions: string[] = [];
 
     if (errorMessage.includes('INVALID_DATE') || errorMessage.includes('MISSING_DATE')) {
-      instructions.push('ERROR.EXCEL_DATE_FIX_1', 'ERROR.EXCEL_DATE_FIX_2', 'ERROR.EXCEL_DATE_FIX_3');
+      instructions.push(
+        'ERROR.EXCEL_DATE_FIX_1',
+        'ERROR.EXCEL_DATE_FIX_2',
+        'ERROR.EXCEL_DATE_FIX_3',
+      );
     }
     if (errorMessage.includes('INVALID_NUMBER') || errorMessage.includes('INVALID_FIELD_TYPE')) {
       instructions.push('ERROR.EXCEL_NUMBER_FIX_1', 'ERROR.EXCEL_NUMBER_FIX_2');
@@ -245,13 +280,15 @@ export class ImportValidationService {
   private validateRecordAndDate(
     record: unknown,
     rowNumber: number,
-    seenDates: Map<string, number>
+    seenDates: Map<string, number>,
   ): { valid: boolean; date?: Date; errors: string[] } {
     const errors: string[] = [];
 
     // Check record is an object
     if (!record || typeof record !== 'object') {
-      errors.push(this.languageService.translate('ERROR.IMPORT_INVALID_RECORD_FORMAT', { row: rowNumber }));
+      errors.push(
+        this.languageService.translate('ERROR.IMPORT_INVALID_RECORD_FORMAT', { row: rowNumber }),
+      );
       return { valid: false, errors };
     }
 
@@ -259,7 +296,9 @@ export class ImportValidationService {
 
     // Check required date field exists
     if (!('date' in rec)) {
-      errors.push(this.languageService.translate('ERROR.IMPORT_MISSING_DATE_FIELD', { row: rowNumber }));
+      errors.push(
+        this.languageService.translate('ERROR.IMPORT_MISSING_DATE_FIELD', { row: rowNumber }),
+      );
       return { valid: false, errors };
     }
 
@@ -270,20 +309,33 @@ export class ImportValidationService {
     if (typeof dateValue === 'string') {
       parsedDate = new Date(dateValue);
       if (isNaN(parsedDate.getTime())) {
-        errors.push(this.languageService.translate('ERROR.IMPORT_INVALID_DATE_VALUE', { row: rowNumber, value: dateValue }));
+        errors.push(
+          this.languageService.translate('ERROR.IMPORT_INVALID_DATE_VALUE', {
+            row: rowNumber,
+            value: dateValue,
+          }),
+        );
         return { valid: false, errors };
       }
     } else if (dateValue instanceof Date) {
       parsedDate = dateValue;
     } else {
-      errors.push(this.languageService.translate('ERROR.IMPORT_INVALID_DATE_TYPE', { row: rowNumber }));
+      errors.push(
+        this.languageService.translate('ERROR.IMPORT_INVALID_DATE_TYPE', { row: rowNumber }),
+      );
       return { valid: false, errors };
     }
 
     // Check for duplicate dates (use local date to match display)
     const dateKey = this.formatLocalDate(parsedDate);
     if (seenDates.has(dateKey)) {
-      errors.push(this.languageService.translate('ERROR.IMPORT_DUPLICATE_DATE', { row: rowNumber, date: dateKey, firstRow: seenDates.get(dateKey) || 0 }));
+      errors.push(
+        this.languageService.translate('ERROR.IMPORT_DUPLICATE_DATE', {
+          row: rowNumber,
+          date: dateKey,
+          firstRow: seenDates.get(dateKey) || 0,
+        }),
+      );
       return { valid: false, errors };
     }
     seenDates.set(dateKey, rowNumber);
@@ -294,7 +346,7 @@ export class ImportValidationService {
   private validateNumericFields(
     record: Record<string, unknown>,
     rowNumber: number,
-    fields: string[]
+    fields: string[],
   ): { values: Record<string, number>; errors: string[] } {
     const errors: string[] = [];
     const values: Record<string, number> = {};
@@ -308,12 +360,23 @@ export class ImportValidationService {
       } else if (typeof value === 'string') {
         const num = Number(value);
         if (isNaN(num)) {
-          errors.push(this.languageService.translate('ERROR.IMPORT_INVALID_NUMBER_VALUE', { row: rowNumber, value: value, field: field }));
+          errors.push(
+            this.languageService.translate('ERROR.IMPORT_INVALID_NUMBER_VALUE', {
+              row: rowNumber,
+              value: value,
+              field: field,
+            }),
+          );
         } else {
           values[field] = num;
         }
       } else {
-        errors.push(this.languageService.translate('ERROR.IMPORT_INVALID_FIELD_TYPE', { row: rowNumber, field: field }));
+        errors.push(
+          this.languageService.translate('ERROR.IMPORT_INVALID_FIELD_TYPE', {
+            row: rowNumber,
+            field: field,
+          }),
+        );
       }
     }
 

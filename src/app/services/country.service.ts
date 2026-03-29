@@ -7,7 +7,7 @@ export interface CountryInfo {
 }
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class CountryService {
   private languageService = inject(LanguageService);
@@ -105,7 +105,7 @@ export class CountryService {
     { code: 'ae', translationKey: 'COUNTRIES.UAE' },
     { code: 'gb', translationKey: 'COUNTRIES.UNITED_KINGDOM' },
     { code: 'us', translationKey: 'COUNTRIES.USA' },
-    { code: 'vn', translationKey: 'COUNTRIES.VIETNAM' }
+    { code: 'vn', translationKey: 'COUNTRIES.VIETNAM' },
   ];
 
   /**
@@ -113,7 +113,7 @@ export class CountryService {
    */
   getCountries(): string[] {
     return this.countryData
-      .map(c => this.languageService.translate(c.translationKey))
+      .map((c) => this.languageService.translate(c.translationKey))
       .sort((a, b) => a.localeCompare(b));
   }
 
@@ -122,8 +122,8 @@ export class CountryService {
    */
   getCountryInfoByName(name: string): CountryInfo | undefined {
     const normalizedName = name.toLowerCase().trim();
-    return this.countryData.find(c =>
-      this.languageService.translate(c.translationKey).toLowerCase() === normalizedName
+    return this.countryData.find(
+      (c) => this.languageService.translate(c.translationKey).toLowerCase() === normalizedName,
     );
   }
 
@@ -131,7 +131,7 @@ export class CountryService {
    * Get country info by code
    */
   getCountryInfoByCode(code: string): CountryInfo | undefined {
-    return this.countryData.find(c => c.code.toLowerCase() === code.toLowerCase());
+    return this.countryData.find((c) => c.code.toLowerCase() === code.toLowerCase());
   }
 
   /**
@@ -150,14 +150,14 @@ export class CountryService {
     const normalizedName = name.toLowerCase().trim();
 
     // Try current language first
-    const currentLangMatch = this.countryData.find(c =>
-      this.languageService.translate(c.translationKey).toLowerCase() === normalizedName
+    const currentLangMatch = this.countryData.find(
+      (c) => this.languageService.translate(c.translationKey).toLowerCase() === normalizedName,
     );
     if (currentLangMatch) return currentLangMatch;
 
     // Try matching the English name embedded in the translation key
     // e.g., 'COUNTRIES.GERMANY' -> 'germany'
-    const keyMatch = this.countryData.find(c => {
+    const keyMatch = this.countryData.find((c) => {
       const keyName = c.translationKey.replace('COUNTRIES.', '').toLowerCase().replace(/_/g, ' ');
       return keyName === normalizedName;
     });
@@ -167,8 +167,10 @@ export class CountryService {
     const currentLang = this.languageService.currentLang();
     const otherLang = currentLang === 'en' ? 'de' : 'en';
 
-    const otherLangMatch = this.countryData.find(c =>
-      this.languageService.translateForLanguage(c.translationKey, otherLang).toLowerCase() === normalizedName
+    const otherLangMatch = this.countryData.find(
+      (c) =>
+        this.languageService.translateForLanguage(c.translationKey, otherLang).toLowerCase() ===
+        normalizedName,
     );
 
     if (otherLangMatch) return otherLangMatch;

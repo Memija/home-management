@@ -13,16 +13,23 @@ export const chart = {
     YOUR_FAMILY: 'Your Family',
     AVERAGE_FAMILY: 'Average (Same Size)',
     COMPARISON_NOTE: 'Comparison based on families of {{size}} members at this address',
-    COMPARISON_NOTE_CITY: 'Comparison based on {{city}} average (128 liters per person per day) for families of {{size}} members',
-    COMPARISON_NOTE_COUNTRY: 'Comparison based on {{country}} average ({{average}} liters per person per day) for families of {{size}} members',
-    COMPARISON_NOTE_COUNTRY_HEATING: 'Comparison based on {{country}} average ({{average}} kWh per household per year)',
-    COMPARISON_NOTE_COUNTRY_ELECTRICITY: 'Comparison based on {{country}} average ({{average}} kWh per person per year) for families of {{size}} members',
+    COMPARISON_NOTE_CITY:
+      'Comparison based on {{city}} average (128 liters per person per day) for families of {{size}} members',
+    COMPARISON_NOTE_COUNTRY:
+      'Comparison based on {{country}} average ({{average}} liters per person per day) for families of {{size}} members',
+    COMPARISON_NOTE_COUNTRY_HEATING:
+      'Comparison based on {{country}} average ({{average}} kWh per household per year)',
+    COMPARISON_NOTE_COUNTRY_ELECTRICITY:
+      'Comparison based on {{country}} average ({{average}} kWh per person per year) for families of {{size}} members',
     HISTORY_TITLE: 'Consumption History',
     CHART_ELECTRICITY: 'Electricity Consumption',
     COMPARE_WITH: 'Compare with',
-    COMPARE_WITH_INFO_WATER: 'Average water consumption data is sourced from national statistics and water utility reports for each country.',
-    COMPARE_WITH_INFO_ELECTRICITY: 'Average electricity consumption data is sourced from national energy statistics and utility reports for each country.',
-    COMPARE_WITH_INFO_HEATING: 'Average heating consumption data is sourced from national energy statistics and household surveys for each country.',
+    COMPARE_WITH_INFO_WATER:
+      'Average water consumption data is sourced from national statistics and water utility reports for each country.',
+    COMPARE_WITH_INFO_ELECTRICITY:
+      'Average electricity consumption data is sourced from national energy statistics and utility reports for each country.',
+    COMPARE_WITH_INFO_HEATING:
+      'Average heating consumption data is sourced from national energy statistics and household surveys for each country.',
     COMPARISON_REQUIRES_DATA: 'At least 3 entries are required for country comparison',
     KITCHEN_TOTAL: 'Kitchen Consumption',
     BATHROOM_TOTAL: 'Bathroom Consumption',
@@ -55,17 +62,20 @@ export const chart = {
     COUNTRY_AVERAGE: 'Country Average',
     AVERAGE_REQUIRES_FAMILY: 'Add family members in Settings to enable comparison',
     AVERAGE_REQUIRES_DATA: 'At least 2 data points are required for comparison',
-    HEATING_AVERAGE_INFO: 'Country average comparison is based on kWh values. If your heating meter uses different units (e.g., heat cost allocators), the comparison may not be accurate.',
+    HEATING_AVERAGE_INFO:
+      'Country average comparison is based on kWh values. If your heating meter uses different units (e.g., heat cost allocators), the comparison may not be accurate.',
     TRENDLINE_REQUIRES_DATA: 'At least 2 data points are required for trendline',
-    TRENDLINE_REQUIRES_DATA_INCREMENTAL: 'At least 3 entries are required for trendline in Between Measurements mode',
+    TRENDLINE_REQUIRES_DATA_INCREMENTAL:
+      'At least 3 entries are required for trendline in Between Measurements mode',
     COUNTRY_FLAG_ALT: 'Country flag for {{country}}',
     DID_YOU_KNOW: 'Did you know?',
     NEW_FACT: 'Show another fact',
     METER_CHANGE_DETECTED: 'Water Meter Change Detected',
-    METER_CHANGE_MESSAGE: 'A drop in consumption readings was detected on {{date}}. This typically happens when a water meter is replaced. Would you like the chart to be adjusted?',
+    METER_CHANGE_MESSAGE:
+      'A drop in consumption readings was detected on {{date}}. This typically happens when a water meter is replaced. Would you like the chart to be adjusted?',
     CONFIRM_METER_CHANGE: 'Yes, adjust chart',
     DISMISS_METER_CHANGE: 'No, keep as is',
     RESET_ZOOM: 'Reset Zoom',
-    ZOOM_HINT: 'Scroll to zoom, drag to pan'
-  }
+    ZOOM_HINT: 'Scroll to zoom, drag to pan',
+  },
 };

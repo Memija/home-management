@@ -1,115 +1,188 @@
 @if (data().length > 0) {
-<div class="chart-section">
-  <div class="chart-header">
-    <div class="title-with-help">
-      <h2>{{ 'HOME.HISTORY_TITLE' | translate }}</h2>
-      @if (helpSteps().length > 0) {
-      <button type="button" class="help-btn" (click)="showHelp()" title="{{ helpTitleKey() | translate }}">
-        <lucide-icon [img]="HelpIcon" size="20"></lucide-icon>
-      </button>
-      }
-    </div>
-    <div class="chart-controls">
-      <div class="display-mode-toggle">
-        <button type="button" [class.active]="displayMode() === 'total'" (click)="setDisplayMode('total')">
-          <lucide-icon [img]="BarChart3Icon" size="16"></lucide-icon>
-          {{ 'CHART.DISPLAY_MODE_TOTAL' | translate }}
-        </button>
-        <button type="button" [class.active]="displayMode() === 'incremental'" (click)="setDisplayMode('incremental')">
-          <lucide-icon [img]="TrendingUpIcon" size="16"></lucide-icon>
-          {{ 'CHART.DISPLAY_MODE_INCREMENTAL' | translate }}
-        </button>
-      </div>
-      @if (((chartType === 'water' || chartType === 'electricity') && displayMode() === 'incremental') || chartType ===
-      'heating') {
-      <label class="trendline-toggle" for="show-trendline" [class.disabled]="!hasSufficientDataForTrendline()">
-        <input id="show-trendline" type="checkbox" [checked]="showTrendline()" (change)="toggleTrendline()"
-          [disabled]="!hasSufficientDataForTrendline()">
-        <lucide-icon [img]="ActivityIcon" size="16"></lucide-icon>
-        {{ 'CHART.SHOW_TRENDLINE' | translate }}
-        @if (!hasSufficientDataForTrendline()) {
-        <span class="info-tooltip-container">
-          <lucide-icon [img]="InfoIcon" size="14" class="info-icon"></lucide-icon>
-          <span class="info-tooltip">{{ 'CHART.TRENDLINE_REQUIRES_DATA_INCREMENTAL' | translate }}</span>
-        </span>
-        }
-      </label>
-      }
-      @if ((chartType === 'water' || chartType === 'electricity') && displayMode() === 'incremental') {
-      <label class="trendline-toggle" for="show-average-comparison"
-        [class.disabled]="familySize() === 0 || !hasSufficientDataForComparison()">
-        <input id="show-average-comparison" type="checkbox" [checked]="showAverageComparison()"
-          (change)="toggleAverageComparison()" [disabled]="familySize() === 0 || !hasSufficientDataForComparison()">
-        <lucide-icon [img]="BarChart3Icon" size="16"></lucide-icon>
-        {{ 'CHART.SHOW_AVERAGE' | translate }}
-        @if (familySize() === 0) {
-        <span class="info-tooltip-container">
-          <lucide-icon [img]="InfoIcon" size="14" class="info-icon"></lucide-icon>
-          <span class="info-tooltip">{{ 'CHART.AVERAGE_REQUIRES_FAMILY' | translate }}</span>
-        </span>
-        } @else if (!hasSufficientDataForComparison()) {
-        <span class="info-tooltip-container">
-          <lucide-icon [img]="InfoIcon" size="14" class="info-icon"></lucide-icon>
-          <span class="info-tooltip">{{ 'CHART.AVERAGE_REQUIRES_DATA' | translate }}</span>
-        </span>
-        }
-      </label>
-      }
-      @if (chartType === 'heating' && displayMode() === 'incremental') {
-      <label class="trendline-toggle" for="show-heating-average" [class.disabled]="!hasSufficientDataForComparison()">
-        <input id="show-heating-average" type="checkbox" [checked]="showAverageComparison()"
-          (change)="toggleAverageComparison()" [disabled]="!hasSufficientDataForComparison()">
-        <lucide-icon [img]="BarChart3Icon" size="16"></lucide-icon>
-        {{ 'CHART.SHOW_AVERAGE' | translate }}
-        <span class="info-tooltip-container">
-          <lucide-icon [img]="InfoIcon" size="14" class="info-icon"></lucide-icon>
-          <span class="info-tooltip info-tooltip-wide">{{ 'CHART.HEATING_AVERAGE_INFO' | translate }}</span>
-        </span>
-        @if (!hasSufficientDataForComparison()) {
-        <span class="info-tooltip-container">
-          <lucide-icon [img]="InfoIcon" size="14" class="info-icon warning"></lucide-icon>
-          <span class="info-tooltip">{{ 'CHART.AVERAGE_REQUIRES_DATA' | translate }}</span>
-        </span>
-        }
-      </label>
-      }
-      @if (chartType !== 'electricity') {
-      <div class="chart-filters">
-        <button type="button" [class.active]="currentView() === 'total'" (click)="setView('total')">
-          <lucide-icon [img]="BarChart3Icon" size="16"></lucide-icon>
-          {{ 'HOME.FILTERS.TOTAL' | translate }}
-        </button>
-        <button type="button" [class.active]="currentView() === 'by-room'" (click)="setView('by-room')">
-          <lucide-icon [img]="DoorOpenIcon" size="16"></lucide-icon>
-          {{ 'HOME.FILTERS.BY_ROOM' | translate }}
-        </button>
-        @if (chartType === 'water' || chartType === 'home') {
-        <button type="button" [class.active]="currentView() === 'by-type'" (click)="setView('by-type')">
-          <lucide-icon [img]="DropletIcon" size="16"></lucide-icon>
-          {{ 'HOME.FILTERS.BY_TYPE' | translate }}
-        </button>
-        <button type="button" [class.active]="currentView() === 'detailed'" (click)="setView('detailed')">
-          <lucide-icon [img]="Grid3x3Icon" size="16"></lucide-icon>
-          {{ 'HOME.FILTERS.DETAILED' | translate }}
-        </button>
+  <div class="chart-section">
+    <div class="chart-header">
+      <div class="title-with-help">
+        <h2>{{ 'HOME.HISTORY_TITLE' | translate }}</h2>
+        @if (helpSteps().length > 0) {
+          <button
+            type="button"
+            class="help-btn"
+            (click)="showHelp()"
+            title="{{ helpTitleKey() | translate }}"
+          >
+            <lucide-icon [img]="HelpIcon" size="20"></lucide-icon>
+          </button>
         }
       </div>
-      }
-      <button type="button" class="reset-zoom-btn" (click)="resetZoom()" title="{{ 'CHART.RESET_ZOOM' | translate }}">
-        <lucide-icon [img]="ZoomInIcon" size="16"></lucide-icon>
-        {{ 'CHART.RESET_ZOOM' | translate }}
-      </button>
+      <div class="chart-controls">
+        <div class="display-mode-toggle">
+          <button
+            type="button"
+            [class.active]="displayMode() === 'total'"
+            (click)="setDisplayMode('total')"
+          >
+            <lucide-icon [img]="BarChart3Icon" size="16"></lucide-icon>
+            {{ 'CHART.DISPLAY_MODE_TOTAL' | translate }}
+          </button>
+          <button
+            type="button"
+            [class.active]="displayMode() === 'incremental'"
+            (click)="setDisplayMode('incremental')"
+          >
+            <lucide-icon [img]="TrendingUpIcon" size="16"></lucide-icon>
+            {{ 'CHART.DISPLAY_MODE_INCREMENTAL' | translate }}
+          </button>
+        </div>
+        @if (
+          ((chartType === 'water' || chartType === 'electricity') &&
+            displayMode() === 'incremental') ||
+          chartType === 'heating'
+        ) {
+          <label
+            class="trendline-toggle"
+            for="show-trendline"
+            [class.disabled]="!hasSufficientDataForTrendline()"
+          >
+            <input
+              id="show-trendline"
+              type="checkbox"
+              [checked]="showTrendline()"
+              (change)="toggleTrendline()"
+              [disabled]="!hasSufficientDataForTrendline()"
+            />
+            <lucide-icon [img]="ActivityIcon" size="16"></lucide-icon>
+            {{ 'CHART.SHOW_TRENDLINE' | translate }}
+            @if (!hasSufficientDataForTrendline()) {
+              <span class="info-tooltip-container">
+                <lucide-icon [img]="InfoIcon" size="14" class="info-icon"></lucide-icon>
+                <span class="info-tooltip">{{
+                  'CHART.TRENDLINE_REQUIRES_DATA_INCREMENTAL' | translate
+                }}</span>
+              </span>
+            }
+          </label>
+        }
+        @if (
+          (chartType === 'water' || chartType === 'electricity') && displayMode() === 'incremental'
+        ) {
+          <label
+            class="trendline-toggle"
+            for="show-average-comparison"
+            [class.disabled]="familySize() === 0 || !hasSufficientDataForComparison()"
+          >
+            <input
+              id="show-average-comparison"
+              type="checkbox"
+              [checked]="showAverageComparison()"
+              (change)="toggleAverageComparison()"
+              [disabled]="familySize() === 0 || !hasSufficientDataForComparison()"
+            />
+            <lucide-icon [img]="BarChart3Icon" size="16"></lucide-icon>
+            {{ 'CHART.SHOW_AVERAGE' | translate }}
+            @if (familySize() === 0) {
+              <span class="info-tooltip-container">
+                <lucide-icon [img]="InfoIcon" size="14" class="info-icon"></lucide-icon>
+                <span class="info-tooltip">{{ 'CHART.AVERAGE_REQUIRES_FAMILY' | translate }}</span>
+              </span>
+            } @else if (!hasSufficientDataForComparison()) {
+              <span class="info-tooltip-container">
+                <lucide-icon [img]="InfoIcon" size="14" class="info-icon"></lucide-icon>
+                <span class="info-tooltip">{{ 'CHART.AVERAGE_REQUIRES_DATA' | translate }}</span>
+              </span>
+            }
+          </label>
+        }
+        @if (chartType === 'heating' && displayMode() === 'incremental') {
+          <label
+            class="trendline-toggle"
+            for="show-heating-average"
+            [class.disabled]="!hasSufficientDataForComparison()"
+          >
+            <input
+              id="show-heating-average"
+              type="checkbox"
+              [checked]="showAverageComparison()"
+              (change)="toggleAverageComparison()"
+              [disabled]="!hasSufficientDataForComparison()"
+            />
+            <lucide-icon [img]="BarChart3Icon" size="16"></lucide-icon>
+            {{ 'CHART.SHOW_AVERAGE' | translate }}
+            <span class="info-tooltip-container">
+              <lucide-icon [img]="InfoIcon" size="14" class="info-icon"></lucide-icon>
+              <span class="info-tooltip info-tooltip-wide">{{
+                'CHART.HEATING_AVERAGE_INFO' | translate
+              }}</span>
+            </span>
+            @if (!hasSufficientDataForComparison()) {
+              <span class="info-tooltip-container">
+                <lucide-icon [img]="InfoIcon" size="14" class="info-icon warning"></lucide-icon>
+                <span class="info-tooltip">{{ 'CHART.AVERAGE_REQUIRES_DATA' | translate }}</span>
+              </span>
+            }
+          </label>
+        }
+        @if (chartType !== 'electricity') {
+          <div class="chart-filters">
+            <button
+              type="button"
+              [class.active]="currentView() === 'total'"
+              (click)="setView('total')"
+            >
+              <lucide-icon [img]="BarChart3Icon" size="16"></lucide-icon>
+              {{ 'HOME.FILTERS.TOTAL' | translate }}
+            </button>
+            <button
+              type="button"
+              [class.active]="currentView() === 'by-room'"
+              (click)="setView('by-room')"
+            >
+              <lucide-icon [img]="DoorOpenIcon" size="16"></lucide-icon>
+              {{ 'HOME.FILTERS.BY_ROOM' | translate }}
+            </button>
+            @if (chartType === 'water' || chartType === 'home') {
+              <button
+                type="button"
+                [class.active]="currentView() === 'by-type'"
+                (click)="setView('by-type')"
+              >
+                <lucide-icon [img]="DropletIcon" size="16"></lucide-icon>
+                {{ 'HOME.FILTERS.BY_TYPE' | translate }}
+              </button>
+              <button
+                type="button"
+                [class.active]="currentView() === 'detailed'"
+                (click)="setView('detailed')"
+              >
+                <lucide-icon [img]="Grid3x3Icon" size="16"></lucide-icon>
+                {{ 'HOME.FILTERS.DETAILED' | translate }}
+              </button>
+            }
+          </div>
+        }
+        <button
+          type="button"
+          class="reset-zoom-btn"
+          (click)="resetZoom()"
+          title="{{ 'CHART.RESET_ZOOM' | translate }}"
+        >
+          <lucide-icon [img]="ZoomInIcon" size="16"></lucide-icon>
+          {{ 'CHART.RESET_ZOOM' | translate }}
+        </button>
+      </div>
     </div>
+    <div class="chart-container">
+      <canvas baseChart [data]="chartData()" [options]="chartOptions()" type="line"> </canvas>
+    </div>
+    <p class="zoom-hint">{{ 'CHART.ZOOM_HINT' | translate }}</p>
   </div>
-  <div class="chart-container">
-    <canvas baseChart [data]="chartData()" [options]="chartOptions()" type="line">
-    </canvas>
-  </div>
-  <p class="zoom-hint">{{ 'CHART.ZOOM_HINT' | translate }}</p>
-</div>
 }
 
 @if (helpSteps().length > 0) {
-<app-help-modal [show]="showHelpModal()" [titleKey]="helpTitleKey()" [steps]="helpSteps()" (close)="closeHelp()">
-</app-help-modal>
+  <app-help-modal
+    [show]="showHelpModal()"
+    [titleKey]="helpTitleKey()"
+    [steps]="helpSteps()"
+    (close)="closeHelp()"
+  >
+  </app-help-modal>
 }

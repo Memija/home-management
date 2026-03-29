@@ -100,22 +100,22 @@ describe('AddressComponent', () => {
 
     mockHouseholdService = {
       address: addressSignal,
-      updateAddress: vi.fn()
+      updateAddress: vi.fn(),
     };
 
     mockLanguageService = {
       currentLang: signal('en'),
-      translate: vi.fn((key: string) => key)
+      translate: vi.fn((key: string) => key),
     };
 
     mockFileStorageService = {
       exportToFile: vi.fn(),
-      importFromFile: vi.fn()
+      importFromFile: vi.fn(),
     };
 
     mockCountryService = {
       getCountryInfoByCode: vi.fn(),
-      getCountryInfoByNameAnyLanguage: vi.fn()
+      getCountryInfoByNameAnyLanguage: vi.fn(),
     };
 
     mockFormValidationService = {
@@ -123,7 +123,7 @@ describe('AddressComponent', () => {
       getStreetNumberError: vi.fn().mockReturnValue([]),
       getCityError: vi.fn().mockReturnValue([]),
       getZipCodeError: vi.fn().mockReturnValue([]),
-      getCountryError: vi.fn().mockReturnValue([])
+      getCountryError: vi.fn().mockReturnValue([]),
     };
 
     await TestBed.configureTestingModule({
@@ -136,15 +136,15 @@ describe('AddressComponent', () => {
         StubErrorModalComponent,
         StubHelpModalComponent,
         StubCountrySelectorComponent,
-        StubTranslatePipe
+        StubTranslatePipe,
       ],
       providers: [
         { provide: HouseholdService, useValue: mockHouseholdService },
         { provide: LanguageService, useValue: mockLanguageService },
         { provide: FileStorageService, useValue: mockFileStorageService },
         { provide: CountryService, useValue: mockCountryService },
-        { provide: FormValidationService, useValue: mockFormValidationService }
-      ]
+        { provide: FormValidationService, useValue: mockFormValidationService },
+      ],
     })
       .overrideComponent(AddressComponent, {
         remove: {
@@ -155,8 +155,8 @@ describe('AddressComponent', () => {
             HelpModalComponent,
             CountrySelectorComponent,
             TranslatePipe,
-            LucideAngularModule
-          ]
+            LucideAngularModule,
+          ],
         },
         add: {
           imports: [
@@ -166,9 +166,9 @@ describe('AddressComponent', () => {
             StubHelpModalComponent,
             StubCountrySelectorComponent,
             StubTranslatePipe,
-            StubLucideIconComponent
-          ]
-        }
+            StubLucideIconComponent,
+          ],
+        },
       })
       .compileComponents();
 
@@ -203,7 +203,7 @@ describe('AddressComponent', () => {
         streetNumber: '123',
         city: 'Test City',
         zipCode: '12345',
-        country: 'de'
+        country: 'de',
       });
 
       fixture.detectChanges();
@@ -224,7 +224,7 @@ describe('AddressComponent', () => {
         streetNumber: '123',
         city: 'Test City',
         zipCode: '12345',
-        country: 'France'
+        country: 'France',
       });
 
       fixture.detectChanges();
@@ -289,7 +289,7 @@ describe('AddressComponent', () => {
         streetNumber: '123',
         city: 'Test City',
         zipCode: '12345',
-        country: 'de'
+        country: 'de',
       });
 
       (component as any).isEditingAddress.set(true);
@@ -378,7 +378,7 @@ describe('AddressComponent', () => {
         streetNumber: '123',
         city: 'Test City',
         zipCode: '12345',
-        country: 'de'
+        country: 'de',
       });
 
       expect((component as any).isEditingAddress()).toBe(false);
@@ -402,7 +402,7 @@ describe('AddressComponent', () => {
         streetNumber: '123',
         city: 'Test City',
         zipCode: '12345',
-        country: 'de'
+        country: 'de',
       };
       addressSignal.set(address);
 
@@ -410,7 +410,7 @@ describe('AddressComponent', () => {
 
       expect(mockFileStorageService.exportToFile).toHaveBeenCalledWith(
         { ...address, country: 'DE' },
-        'address.json'
+        'address.json',
       );
     });
 
@@ -431,7 +431,9 @@ describe('AddressComponent', () => {
       await component.confirmImportAddress();
 
       expect((component as any).showImportErrorModal()).toBe(true);
-      expect((component as any).importErrorMessage()).toContain('SETTINGS.IMPORT_ADDRESS_INVALID_FILE_TYPE');
+      expect((component as any).importErrorMessage()).toContain(
+        'SETTINGS.IMPORT_ADDRESS_INVALID_FILE_TYPE',
+      );
     });
 
     it('should successfully import valid address', async () => {
@@ -441,7 +443,7 @@ describe('AddressComponent', () => {
         streetNumber: '123',
         city: 'Test City',
         zipCode: '12345',
-        country: 'de'
+        country: 'de',
       };
 
       mockFileStorageService.importFromFile.mockResolvedValue(address);

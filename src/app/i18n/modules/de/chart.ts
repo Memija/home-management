@@ -13,16 +13,23 @@ export const chart = {
     YOUR_FAMILY: 'Ihre Familie',
     AVERAGE_FAMILY: 'Durchschnitt (Gleiche Größe)',
     COMPARISON_NOTE: 'Vergleich basiert auf Familien mit {{size}} Mitgliedern an dieser Adresse',
-    COMPARISON_NOTE_CITY: 'Vergleich basiert auf {{city}} Durchschnitt (128 Liter pro Person pro Tag) für Familien mit {{size}} Mitgliedern',
-    COMPARISON_NOTE_COUNTRY: 'Vergleich basiert auf {{country}} Durchschnitt ({{average}} Liter pro Person pro Tag) für Familien mit {{size}} Mitgliedern',
-    COMPARISON_NOTE_COUNTRY_HEATING: 'Vergleich basiert auf dem {{country}} Durchschnitt ({{average}} kWh pro Haushalt pro Jahr)',
-    COMPARISON_NOTE_COUNTRY_ELECTRICITY: 'Vergleich basiert auf {{country}} Durchschnitt ({{average}} kWh pro Person pro Jahr) für Familien mit {{size}} Mitgliedern',
+    COMPARISON_NOTE_CITY:
+      'Vergleich basiert auf {{city}} Durchschnitt (128 Liter pro Person pro Tag) für Familien mit {{size}} Mitgliedern',
+    COMPARISON_NOTE_COUNTRY:
+      'Vergleich basiert auf {{country}} Durchschnitt ({{average}} Liter pro Person pro Tag) für Familien mit {{size}} Mitgliedern',
+    COMPARISON_NOTE_COUNTRY_HEATING:
+      'Vergleich basiert auf dem {{country}} Durchschnitt ({{average}} kWh pro Haushalt pro Jahr)',
+    COMPARISON_NOTE_COUNTRY_ELECTRICITY:
+      'Vergleich basiert auf {{country}} Durchschnitt ({{average}} kWh pro Person pro Jahr) für Familien mit {{size}} Mitgliedern',
     HISTORY_TITLE: 'Verbrauchsverlauf',
     CHART_ELECTRICITY: 'Stromverbrauch',
     COMPARE_WITH: 'Vergleichen mit',
-    COMPARE_WITH_INFO_WATER: 'Die durchschnittlichen Wasserverbrauchsdaten stammen aus nationalen Statistiken und Berichten von Wasserversorgern für jedes Land.',
-    COMPARE_WITH_INFO_ELECTRICITY: 'Die durchschnittlichen Stromverbrauchsdaten stammen aus nationalen Energiestatistiken und Berichten von Energieversorgern für jedes Land.',
-    COMPARE_WITH_INFO_HEATING: 'Die durchschnittlichen Heizverbrauchsdaten stammen aus nationalen Energiestatistiken und Haushaltsbefragungen für jedes Land.',
+    COMPARE_WITH_INFO_WATER:
+      'Die durchschnittlichen Wasserverbrauchsdaten stammen aus nationalen Statistiken und Berichten von Wasserversorgern für jedes Land.',
+    COMPARE_WITH_INFO_ELECTRICITY:
+      'Die durchschnittlichen Stromverbrauchsdaten stammen aus nationalen Energiestatistiken und Berichten von Energieversorgern für jedes Land.',
+    COMPARE_WITH_INFO_HEATING:
+      'Die durchschnittlichen Heizverbrauchsdaten stammen aus nationalen Energiestatistiken und Haushaltsbefragungen für jedes Land.',
     COMPARISON_REQUIRES_DATA: 'Mindestens 3 Einträge sind für den Ländervergleich erforderlich',
     KITCHEN_TOTAL: 'Verbrauch Küche',
     BATHROOM_TOTAL: 'Verbrauch Badezimmer',
@@ -53,19 +60,23 @@ export const chart = {
     SHOW_AVERAGE: 'Durchschnitt anzeigen',
     YOU_VS_AVERAGE: 'Sie vs. Durchschnitt',
     COUNTRY_AVERAGE: 'Landesdurchschnitt',
-    AVERAGE_REQUIRES_FAMILY: 'Fügen Sie Familienmitglieder in den Einstellungen hinzu, um den Vergleich zu aktivieren',
+    AVERAGE_REQUIRES_FAMILY:
+      'Fügen Sie Familienmitglieder in den Einstellungen hinzu, um den Vergleich zu aktivieren',
     AVERAGE_REQUIRES_DATA: 'Mindestens 2 Datenpunkte sind für den Vergleich erforderlich',
-    HEATING_AVERAGE_INFO: 'Der Landesdurchschnitt basiert auf kWh-Werten. Wenn Ihr Heizkostenzähler andere Einheiten verwendet (z.B. Heizkostenverteiler), ist der Vergleich möglicherweise nicht aussagekräftig.',
+    HEATING_AVERAGE_INFO:
+      'Der Landesdurchschnitt basiert auf kWh-Werten. Wenn Ihr Heizkostenzähler andere Einheiten verwendet (z.B. Heizkostenverteiler), ist der Vergleich möglicherweise nicht aussagekräftig.',
     TRENDLINE_REQUIRES_DATA: 'Mindestens 2 Datenpunkte sind für die Trendlinie erforderlich',
-    TRENDLINE_REQUIRES_DATA_INCREMENTAL: 'Mindestens 3 Einträge sind für die Trendlinie im Modus "Zwischen Messungen" erforderlich',
+    TRENDLINE_REQUIRES_DATA_INCREMENTAL:
+      'Mindestens 3 Einträge sind für die Trendlinie im Modus "Zwischen Messungen" erforderlich',
     COUNTRY_FLAG_ALT: 'Landesflagge für {{country}}',
     DID_YOU_KNOW: 'Wussten Sie schon?',
     NEW_FACT: 'Weiterer Fakt anzeigen',
     METER_CHANGE_DETECTED: 'Wasserzählerwechsel erkannt',
-    METER_CHANGE_MESSAGE: 'Am {{date}} wurde ein Rückgang der Verbrauchswerte festgestellt. Dies passiert typischerweise bei einem Wasserzählerwechsel. Soll das Diagramm angepasst werden?',
+    METER_CHANGE_MESSAGE:
+      'Am {{date}} wurde ein Rückgang der Verbrauchswerte festgestellt. Dies passiert typischerweise bei einem Wasserzählerwechsel. Soll das Diagramm angepasst werden?',
     CONFIRM_METER_CHANGE: 'Ja, Diagramm anpassen',
     DISMISS_METER_CHANGE: 'Nein, beibehalten',
     RESET_ZOOM: 'Zoom zurücksetzen',
-    ZOOM_HINT: 'Scrollen zum Zoomen, Ziehen zum Schwenken'
-  }
+    ZOOM_HINT: 'Scrollen zum Zoomen, Ziehen zum Schwenken',
+  },
 };

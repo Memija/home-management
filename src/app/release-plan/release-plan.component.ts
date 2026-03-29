@@ -1,6 +1,20 @@
 import { Component, signal, computed } from '@angular/core';
 import { TranslatePipe } from '../pipes/translate.pipe';
-import { LucideAngularModule, Rocket, Droplets, Maximize2, TrendingUp, Calendar, Sparkles, Camera, ArrowUpCircle, Lightbulb, Zap, ShieldCheck, LucideIconData } from 'lucide-angular';
+import {
+  LucideAngularModule,
+  Rocket,
+  Droplets,
+  Maximize2,
+  TrendingUp,
+  Calendar,
+  Sparkles,
+  Camera,
+  ArrowUpCircle,
+  Brain,
+  Zap,
+  ShieldCheck,
+  LucideIconData,
+} from 'lucide-angular';
 
 type FeatureTag = 'new' | 'enhancement' | 'smart';
 
@@ -18,7 +32,7 @@ interface Feature {
   standalone: true,
   imports: [TranslatePipe, LucideAngularModule],
   templateUrl: './release-plan.component.html',
-  styleUrl: './release-plan.component.scss'
+  styleUrl: './release-plan.component.scss',
 })
 export class ReleasePlanComponent {
   // Icons
@@ -26,7 +40,7 @@ export class ReleasePlanComponent {
   readonly CalendarIcon = Calendar;
   readonly SparklesIcon = Sparkles;
   readonly EnhancementIcon = ArrowUpCircle;
-  readonly SmartIcon = Lightbulb;
+  readonly SmartIcon = Brain;
 
   // All features - grouped by tag type
   readonly features: Feature[] = [
@@ -37,7 +51,7 @@ export class ReleasePlanComponent {
       descKey: 'RELEASE_PLAN.FEATURE_4_DESC',
       icon: Camera,
       tag: 'new',
-      colorClass: 'new-feature'
+      colorClass: 'new-feature',
     },
     // Enhancement
     {
@@ -46,7 +60,7 @@ export class ReleasePlanComponent {
       descKey: 'RELEASE_PLAN.FEATURE_1_DESC',
       icon: Droplets,
       tag: 'enhancement',
-      colorClass: 'enhancement-feature'
+      colorClass: 'enhancement-feature',
     },
     {
       id: 2,
@@ -54,7 +68,7 @@ export class ReleasePlanComponent {
       descKey: 'RELEASE_PLAN.FEATURE_2_DESC',
       icon: Maximize2,
       tag: 'enhancement',
-      colorClass: 'enhancement-feature'
+      colorClass: 'enhancement-feature',
     },
     // Smart
     {
@@ -63,7 +77,7 @@ export class ReleasePlanComponent {
       descKey: 'RELEASE_PLAN.FEATURE_3_DESC',
       icon: TrendingUp,
       tag: 'smart',
-      colorClass: 'prediction-feature'
+      colorClass: 'prediction-feature',
     },
     // Quality/Performance
     {
@@ -72,7 +86,7 @@ export class ReleasePlanComponent {
       descKey: 'RELEASE_PLAN.FEATURE_5_DESC',
       icon: Zap,
       tag: 'enhancement',
-      colorClass: 'enhancement-feature'
+      colorClass: 'enhancement-feature',
     },
     // Code Quality
     {
@@ -81,8 +95,8 @@ export class ReleasePlanComponent {
       descKey: 'RELEASE_PLAN.FEATURE_6_DESC',
       icon: ShieldCheck,
       tag: 'enhancement',
-      colorClass: 'enhancement-feature'
-    }
+      colorClass: 'enhancement-feature',
+    },
   ];
 
   // Filter state
@@ -94,30 +108,30 @@ export class ReleasePlanComponent {
     if (filter === 'all') {
       return this.features;
     }
-    return this.features.filter(f => f.tag === filter);
+    return this.features.filter((f) => f.tag === filter);
   });
 
   // Tag translation keys
   readonly tagTranslationKeys: Record<FeatureTag, string> = {
-    'new': 'RELEASE_PLAN.NEW_FEATURE',
-    'enhancement': 'RELEASE_PLAN.ENHANCEMENT',
-    'smart': 'RELEASE_PLAN.SMART'
+    new: 'RELEASE_PLAN.NEW_FEATURE',
+    enhancement: 'RELEASE_PLAN.ENHANCEMENT',
+    smart: 'RELEASE_PLAN.SMART',
   };
 
   // Tag icons mapping
   readonly tagIcons: Record<FeatureTag, LucideIconData> = {
-    'new': this.SparklesIcon,
-    'enhancement': this.EnhancementIcon,
-    'smart': this.SmartIcon
+    new: this.SparklesIcon,
+    enhancement: this.EnhancementIcon,
+    smart: this.SmartIcon,
   };
 
   // Available filters with counts
   readonly filterOptions = computed(() => {
     const counts: Record<FeatureTag | 'all', number> = {
-      'all': this.features.length,
-      'new': this.features.filter(f => f.tag === 'new').length,
-      'enhancement': this.features.filter(f => f.tag === 'enhancement').length,
-      'smart': this.features.filter(f => f.tag === 'smart').length
+      all: this.features.length,
+      new: this.features.filter((f) => f.tag === 'new').length,
+      enhancement: this.features.filter((f) => f.tag === 'enhancement').length,
+      smart: this.features.filter((f) => f.tag === 'smart').length,
     };
     return counts;
   });

@@ -6,7 +6,7 @@ import { CountryService } from './country.service';
  * Includes address fields, person names, and other common validations.
  */
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class FormValidationService {
   private countryService = inject(CountryService);

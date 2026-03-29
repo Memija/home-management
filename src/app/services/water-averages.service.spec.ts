@@ -7,7 +7,7 @@ describe('WaterAveragesService', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      providers: [WaterAveragesService]
+      providers: [WaterAveragesService],
     });
     service = TestBed.inject(WaterAveragesService);
   });
@@ -82,7 +82,7 @@ describe('WaterAveragesService', () => {
     it('should return list of countries', () => {
       const countries = service.getAvailableCountries();
       expect(countries.length).toBeGreaterThan(0);
-      expect(countries.find(c => c.code === 'de')).toBeDefined();
+      expect(countries.find((c) => c.code === 'de')).toBeDefined();
     });
   });
 

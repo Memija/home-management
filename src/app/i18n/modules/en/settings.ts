@@ -40,17 +40,20 @@ export const settings = {
     IMPORT_FAMILY: 'Import Family',
     SHOW_ADD_MEMBER_FORM: 'Add Family Member',
     DELETE_MEMBER_CONFIRM_TITLE: 'Confirm Deletion',
-    DELETE_MEMBER_CONFIRM_MESSAGE: 'Are you sure you want to remove this family member? This action cannot be undone.',
+    DELETE_MEMBER_CONFIRM_MESSAGE:
+      'Are you sure you want to remove this family member? This action cannot be undone.',
     DELETE_MEMBER_BUTTON: 'Remove Member',
     UNSAVED_CHANGES_TITLE: 'Unsaved Changes',
-    UNSAVED_CHANGES_MESSAGE: 'You have unsaved changes to family members. If you leave now, your changes will be lost.',
-    UNSAVED_CHANGES_MESSAGE_GENERIC: 'You have unsaved changes. If you leave now, your changes will be lost.',
+    UNSAVED_CHANGES_MESSAGE:
+      'You have unsaved changes to family members. If you leave now, your changes will be lost.',
+    UNSAVED_CHANGES_MESSAGE_GENERIC:
+      'You have unsaved changes. If you leave now, your changes will be lost.',
     UNSAVED_CHANGES_LEAVE: 'Leave Without Saving',
     UNSAVED_CHANGES_STAY: 'Stay and Save',
     TYPES: {
       ADULT: 'Adult',
       KID: 'Kid',
-      OTHER: 'Other'
+      OTHER: 'Other',
     },
     ERRORS: {
       TOO_SHORT: 'Too short',
@@ -63,42 +66,55 @@ export const settings = {
       NUMBER_ONLY: 'Numbers only',
       INVALID_STREET_NUMBER: 'Invalid format',
       INVALID_COUNTRY: 'Please select a valid country',
-      INVALID_DATA_TYPE: 'Invalid data type (text expected)'
+      INVALID_DATA_TYPE: 'Invalid data type (text expected)',
     },
     EXPORT_ADDRESS: 'Export Address',
     IMPORT_ADDRESS: 'Import Address',
     IMPORT_SUCCESS: 'Address imported successfully!',
-    IMPORT_ERROR: 'Failed to import address. The file does not appear to contain valid address data. Please make sure you are importing an address file with street name, number, city, zip code and country fields.',
+    IMPORT_ERROR:
+      'Failed to import address. The file does not appear to contain valid address data. Please make sure you are importing an address file with street name, number, city, zip code and country fields.',
     IMPORT_FAMILY_CONFIRM_TITLE: 'Confirm Import',
-    IMPORT_FAMILY_CONFIRM_MESSAGE: 'Importing will replace all current family members. Are you sure you want to continue?',
+    IMPORT_FAMILY_CONFIRM_MESSAGE:
+      'Importing will replace all current family members. Are you sure you want to continue?',
     IMPORT_FAMILY_ERROR_TITLE: 'Import Failed',
-    IMPORT_FAMILY_INVALID_FILE_TYPE: 'Invalid file type. Please select a JSON file (.json extension) to import family data.',
+    IMPORT_FAMILY_INVALID_FILE_TYPE:
+      'Invalid file type. Please select a JSON file (.json extension) to import family data.',
     IMPORT_FAMILY_INVALID_FILE_TYPE_INSTRUCTION_1: 'Make sure the file has a .json extension',
-    IMPORT_FAMILY_INVALID_FILE_TYPE_INSTRUCTION_2: 'Export family data first to get a valid JSON file format',
+    IMPORT_FAMILY_INVALID_FILE_TYPE_INSTRUCTION_2:
+      'Export family data first to get a valid JSON file format',
     DUPLICATE_MEMBER_ERROR: 'A family member with this name already exists',
     DUPLICATE_MEMBER_NAME: 'Duplicate: {{name}} {{surname}}',
     DUPLICATE_MEMBER_INSTRUCTION_1: 'Use a different first name or surname for this member',
     DUPLICATE_MEMBER_INSTRUCTION_2: 'Add a middle name or nickname to distinguish them',
-    DUPLICATE_MEMBER_INSTRUCTION_3: 'Edit the existing member if you want to update their information',
+    DUPLICATE_MEMBER_INSTRUCTION_3:
+      'Edit the existing member if you want to update their information',
     MAX_MEMBERS_ERROR: 'Maximum family members reached',
-    MAX_MEMBERS_MESSAGE: 'You can add up to {{max}} family members. Please remove a member before adding another.',
+    MAX_MEMBERS_MESSAGE:
+      'You can add up to {{max}} family members. Please remove a member before adding another.',
     MAX_MEMBERS_INSTRUCTION_1: 'Remove an existing family member first',
-    MAX_MEMBERS_INSTRUCTION_2: 'Or export your current family data as a backup before making changes',
-    IMPORT_FAMILY_INVALID_DATA: 'The imported file contains invalid family member data. Please check the following issues:',
-    IMPORT_FAMILY_INVALID_FORMAT: 'Failed to import family. The file does not appear to contain valid family data. Please make sure you are importing a family file with an array of members, each having name, surname, type, and gender fields.',
-    IMPORT_FAMILY_ERROR_NOT_OBJECT: 'Each family member must be an object with name, surname, type, and gender fields',
-    IMPORT_FAMILY_ERROR_MISSING_NAME: 'Each family member must have a valid name (non-empty string)',
-    IMPORT_FAMILY_ERROR_MISSING_SURNAME: 'Each family member must have a valid surname (non-empty string)',
+    MAX_MEMBERS_INSTRUCTION_2:
+      'Or export your current family data as a backup before making changes',
+    IMPORT_FAMILY_INVALID_DATA:
+      'The imported file contains invalid family member data. Please check the following issues:',
+    IMPORT_FAMILY_INVALID_FORMAT:
+      'Failed to import family. The file does not appear to contain valid family data. Please make sure you are importing a family file with an array of members, each having name, surname, type, and gender fields.',
+    IMPORT_FAMILY_ERROR_NOT_OBJECT:
+      'Each family member must be an object with name, surname, type, and gender fields',
+    IMPORT_FAMILY_ERROR_MISSING_NAME:
+      'Each family member must have a valid name (non-empty string)',
+    IMPORT_FAMILY_ERROR_MISSING_SURNAME:
+      'Each family member must have a valid surname (non-empty string)',
     IMPORT_FAMILY_ERROR_INVALID_TYPE: 'Member type must be either "adult", "kid" or "other"',
     IMPORT_FAMILY_ERROR_INVALID_GENDER: 'Member gender must be either "male", "female" or "other"',
     IMPORT_FAMILY_ERROR_NO_VALID_MEMBERS: 'No valid family members found in the imported file',
     IMPORT_ADDRESS_CONFIRM_TITLE: 'Confirm Import',
-    IMPORT_ADDRESS_CONFIRM_MESSAGE: 'Importing will replace your current address. Are you sure you want to continue?',
+    IMPORT_ADDRESS_CONFIRM_MESSAGE:
+      'Importing will replace your current address. Are you sure you want to continue?',
     VALIDATION_FAILED: 'Validation Failed',
     GENDERS: {
       MALE: 'Male',
       FEMALE: 'Female',
-      OTHER: 'Other'
+      OTHER: 'Other',
     },
     EXCEL_TITLE: 'Excel Integration',
     EXCEL_ENABLED: 'Enable Excel Integration',
@@ -127,69 +143,97 @@ export const settings = {
     IMPORT_EXCEL_SETTINGS_SUCCESS: 'Excel settings imported successfully!',
     IMPORT_EXCEL_SETTINGS_ERROR: 'Failed to import Excel settings: {{error}}',
     IMPORT_EXCEL_SETTINGS_CONFIRM_TITLE: 'Confirm Import',
-    IMPORT_EXCEL_SETTINGS_CONFIRM_MESSAGE: 'Importing will replace your current Excel column settings. Are you sure you want to continue?',
+    IMPORT_EXCEL_SETTINGS_CONFIRM_MESSAGE:
+      'Importing will replace your current Excel column settings. Are you sure you want to continue?',
     IMPORT_EXCEL_SETTINGS_ERROR_TITLE: 'Import Failed',
     IMPORT_EXCEL_INVALID_ENABLED: 'Invalid enabled setting (must be boolean)',
     IMPORT_EXCEL_INVALID_ENABLED_HINT: 'The "enabled" field must be either true or false',
     IMPORT_EXCEL_MISSING_WATER: 'Missing or invalid water mapping data',
-    IMPORT_EXCEL_MISSING_WATER_HINT: 'The file must contain a "waterMapping" object with date, kitchenWarm, kitchenCold, bathroomWarm, and bathroomCold fields',
+    IMPORT_EXCEL_MISSING_WATER_HINT:
+      'The file must contain a "waterMapping" object with date, kitchenWarm, kitchenCold, bathroomWarm, and bathroomCold fields',
     IMPORT_EXCEL_MISSING_HEATING: 'Missing or invalid heating mapping data',
-    IMPORT_EXCEL_MISSING_HEATING_HINT: 'The file must contain a "heatingMapping" object with date, livingRoom, bedroom, kitchen, and bathroom fields',
-    IMPORT_EXCEL_SETTINGS_INVALID_FORMAT: 'Failed to import settings. The file does not appear to contain valid Excel settings. Please make sure you are importing an Excel settings file with enabled status, waterMapping, and heatingMapping fields.',
-    IMPORT_ADDRESS_INVALID_FILE_TYPE: 'Invalid file type. Please select a JSON file (.json extension) to import address data.',
+    IMPORT_EXCEL_MISSING_HEATING_HINT:
+      'The file must contain a "heatingMapping" object with date, livingRoom, bedroom, kitchen, and bathroom fields',
+    IMPORT_EXCEL_SETTINGS_INVALID_FORMAT:
+      'Failed to import settings. The file does not appear to contain valid Excel settings. Please make sure you are importing an Excel settings file with enabled status, waterMapping, and heatingMapping fields.',
+    IMPORT_ADDRESS_INVALID_FILE_TYPE:
+      'Invalid file type. Please select a JSON file (.json extension) to import address data.',
     IMPORT_ADDRESS_INVALID_FILE_TYPE_INSTRUCTION_1: 'Ensure the file has a .json extension',
-    IMPORT_ADDRESS_INVALID_FILE_TYPE_INSTRUCTION_2: 'Export address data first to get a valid JSON file format',
-    IMPORT_EXCEL_SETTINGS_INVALID_FILE_TYPE: 'Invalid file type. Please select a JSON file (.json extension) to import Excel settings.',
+    IMPORT_ADDRESS_INVALID_FILE_TYPE_INSTRUCTION_2:
+      'Export address data first to get a valid JSON file format',
+    IMPORT_EXCEL_SETTINGS_INVALID_FILE_TYPE:
+      'Invalid file type. Please select a JSON file (.json extension) to import Excel settings.',
     IMPORT_EXCEL_SETTINGS_INVALID_FILE_TYPE_INSTRUCTION_1: 'Ensure the file has a .json extension',
-    IMPORT_EXCEL_SETTINGS_INVALID_FILE_TYPE_INSTRUCTION_2: 'Export Excel settings first to get a valid JSON file format',
-    IMPORT_EXCEL_CROSS_SECTION_DUPLICATES: 'Column name conflict: {{columns}} is used in both Water and Heating sections',
-    IMPORT_EXCEL_CROSS_SECTION_DUPLICATES_HINT: 'Each column name must be unique across all sections. Use different names for water and heating columns.',
+    IMPORT_EXCEL_SETTINGS_INVALID_FILE_TYPE_INSTRUCTION_2:
+      'Export Excel settings first to get a valid JSON file format',
+    IMPORT_EXCEL_CROSS_SECTION_DUPLICATES:
+      'Column name conflict: {{columns}} is used in both Water and Heating sections',
+    IMPORT_EXCEL_CROSS_SECTION_DUPLICATES_HINT:
+      'Each column name must be unique across all sections. Use different names for water and heating columns.',
     IMPORT_EXCEL_MISSING_ROOMS: 'Missing or invalid "rooms" object in heating mapping',
-    IMPORT_EXCEL_MISSING_ROOMS_HINT: 'The heatingMapping must contain a "rooms" object with room IDs as keys and column names as values',
+    IMPORT_EXCEL_MISSING_ROOMS_HINT:
+      'The heatingMapping must contain a "rooms" object with room IDs as keys and column names as values',
     IMPORT_EXCEL_EMPTY_ROOMS: 'The "rooms" object in heating mapping is empty',
     IMPORT_EXCEL_EMPTY_ROOMS_HINT: 'Add at least one room to the "rooms" object in heatingMapping',
     IMPORT_EXCEL_UNEXPECTED_FIELDS: 'Unexpected fields in heating mapping: {{fields}}',
-    IMPORT_EXCEL_UNEXPECTED_FIELDS_HINT: 'The heatingMapping should only contain "date" and "rooms" fields. Remove legacy fields like livingRoom, bedroom, etc.',
+    IMPORT_EXCEL_UNEXPECTED_FIELDS_HINT:
+      'The heatingMapping should only contain "date" and "rooms" fields. Remove legacy fields like livingRoom, bedroom, etc.',
     IMPORT_EXCEL_UNKNOWN_ROOMS: 'Unknown room IDs in import: {{rooms}}',
-    IMPORT_EXCEL_UNKNOWN_ROOMS_HINT: 'The imported file contains rooms that are not configured. Add the missing rooms in Heating settings first, or export your current settings to get the correct room IDs.',
+    IMPORT_EXCEL_UNKNOWN_ROOMS_HINT:
+      'The imported file contains rooms that are not configured. Add the missing rooms in Heating settings first, or export your current settings to get the correct room IDs.',
     IMPORT_EXCEL_MISSING_ROOM_MAPPINGS: 'Missing column mappings for configured rooms: {{rooms}}',
-    IMPORT_EXCEL_MISSING_ROOM_MAPPINGS_HINT: 'The imported file must contain column mappings for all configured rooms.',
+    IMPORT_EXCEL_MISSING_ROOM_MAPPINGS_HINT:
+      'The imported file must contain column mappings for all configured rooms.',
     FAMILY_HELP_TITLE: 'How to Manage Family Members',
     FAMILY_HELP_STEP_1_TITLE: 'Why Add Family Members?',
-    FAMILY_HELP_STEP_1_DESC: 'Adding family members unlocks powerful comparison features! See how your household\'s water, heating, and electricity usage compares to the national average for families of your size.',
+    FAMILY_HELP_STEP_1_DESC:
+      "Adding family members unlocks powerful comparison features! See how your household's water, heating, and electricity usage compares to the national average for families of your size.",
     FAMILY_HELP_STEP_2_TITLE: 'Per-Person Insights',
-    FAMILY_HELP_STEP_2_DESC: 'Track water, heating, and electricity consumption per person and identify opportunities to save. The more accurate your family count, the better your comparison data!',
+    FAMILY_HELP_STEP_2_DESC:
+      'Track water, heating, and electricity consumption per person and identify opportunities to save. The more accurate your family count, the better your comparison data!',
     FAMILY_HELP_STEP_3_TITLE: 'Step 1: Enter Edit Mode',
-    FAMILY_HELP_STEP_3_DESC: 'Click the "Edit Family" button to start adding or changing family members.',
+    FAMILY_HELP_STEP_3_DESC:
+      'Click the "Edit Family" button to start adding or changing family members.',
     FAMILY_HELP_STEP_4_TITLE: 'Step 2: Fill in Details',
-    FAMILY_HELP_STEP_4_DESC: 'Enter the name and surname for each family member. You can also select their type (Adult/Kid) and gender if you want.',
+    FAMILY_HELP_STEP_4_DESC:
+      'Enter the name and surname for each family member. You can also select their type (Adult/Kid) and gender if you want.',
     FAMILY_HELP_STEP_5_TITLE: 'Step 3: Choose an Avatar',
     FAMILY_HELP_STEP_5_DESC: 'Pick a fun avatar picture for each person, or upload your own photo!',
     FAMILY_HELP_STEP_6_TITLE: 'Step 4: Save Your Changes',
-    FAMILY_HELP_STEP_6_DESC: 'Click the "Save Family" button to keep all your changes. Don\'t forget this step!',
+    FAMILY_HELP_STEP_6_DESC:
+      'Click the "Save Family" button to keep all your changes. Don\'t forget this step!',
     FAMILY_HELP_STEP_7_TITLE: 'Step 5: Backup & Restore',
-    FAMILY_HELP_STEP_7_DESC: 'Use "Export" to save a backup of your family to a file. Use "Import" to load family data from a backup file.',
+    FAMILY_HELP_STEP_7_DESC:
+      'Use "Export" to save a backup of your family to a file. Use "Import" to load family data from a backup file.',
     FAMILY_HELP_PREVIOUS: 'Previous',
     FAMILY_HELP_NEXT: 'Next',
     FAMILY_HELP_DONE: 'Got it!',
     ADDRESS_HELP_TITLE: 'How to Manage Your Address',
     ADDRESS_HELP_STEP_1_TITLE: 'Why Set Your Address?',
-    ADDRESS_HELP_STEP_1_DESC: 'Your address helps personalize your home management experience. Your country is used to compare your water, heating, and electricity usage against national averages.',
+    ADDRESS_HELP_STEP_1_DESC:
+      'Your address helps personalize your home management experience. Your country is used to compare your water, heating, and electricity usage against national averages.',
     ADDRESS_HELP_STEP_2_TITLE: 'Step 1: Enter Your Details',
-    ADDRESS_HELP_STEP_2_DESC: 'Fill in your street name, number, city, zip code, and country. Use the country search to quickly find your country!',
+    ADDRESS_HELP_STEP_2_DESC:
+      'Fill in your street name, number, city, zip code, and country. Use the country search to quickly find your country!',
     ADDRESS_HELP_STEP_3_TITLE: 'Step 2: Save Your Address',
-    ADDRESS_HELP_STEP_3_DESC: 'Click the "Save Address" button to store your information. You can edit it anytime by clicking "Edit Address".',
+    ADDRESS_HELP_STEP_3_DESC:
+      'Click the "Save Address" button to store your information. You can edit it anytime by clicking "Edit Address".',
     ADDRESS_HELP_STEP_4_TITLE: 'Step 3: Backup & Restore',
-    ADDRESS_HELP_STEP_4_DESC: 'Use "Export Address" to save a backup file. Use "Import Address" to restore from a backup. Great for moving to a new device!',
+    ADDRESS_HELP_STEP_4_DESC:
+      'Use "Export Address" to save a backup file. Use "Import Address" to restore from a backup. Great for moving to a new device!',
     HELP: 'Help',
     EXCEL_HELP_TITLE: 'How to Use Excel Integration',
     EXCEL_HELP_STEP_1_TITLE: 'What is Excel Integration?',
-    EXCEL_HELP_STEP_1_DESC: 'Excel integration allows you to import and export your water, heating, and electricity data directly from Excel spreadsheets. Perfect for advanced users!',
+    EXCEL_HELP_STEP_1_DESC:
+      'Excel integration allows you to import and export your water, heating, and electricity data directly from Excel spreadsheets. Perfect for advanced users!',
     EXCEL_HELP_STEP_2_TITLE: 'Step 1: Enable Integration',
-    EXCEL_HELP_STEP_2_DESC: 'Toggle the "Enable Excel Integration" switch to activate the feature. This unlocks Excel import/export buttons.',
+    EXCEL_HELP_STEP_2_DESC:
+      'Toggle the "Enable Excel Integration" switch to activate the feature. This unlocks Excel import/export buttons.',
     EXCEL_HELP_STEP_3_TITLE: 'Step 2: Configure Columns',
-    EXCEL_HELP_STEP_3_DESC: 'Click "Edit Excel Settings" to customize column names. Match these names to your Excel file headers for automatic data mapping.',
+    EXCEL_HELP_STEP_3_DESC:
+      'Click "Edit Excel Settings" to customize column names. Match these names to your Excel file headers for automatic data mapping.',
     EXCEL_HELP_STEP_4_TITLE: 'Step 3: Import Your Data',
-    EXCEL_HELP_STEP_4_DESC: 'Go to Water, Heating, or Electricity page and use "Import from Excel" to load your spreadsheet. The app will read data from your configured columns!'
-  }
+    EXCEL_HELP_STEP_4_DESC:
+      'Go to Water, Heating, or Electricity page and use "Import from Excel" to load your spreadsheet. The app will read data from your configured columns!',
+  },
 };

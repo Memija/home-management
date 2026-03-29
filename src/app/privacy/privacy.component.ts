@@ -7,7 +7,7 @@ import { TranslatePipe } from '../pipes/translate.pipe';
   standalone: true,
   imports: [LucideAngularModule, TranslatePipe],
   templateUrl: './privacy.component.html',
-  styleUrl: './privacy.component.scss'
+  styleUrl: './privacy.component.scss',
 })
 export class PrivacyComponent {
   readonly ShieldIcon = Shield;

@@ -14,7 +14,7 @@ export interface HelpStep {
   standalone: true,
   imports: [CommonModule, LucideAngularModule, TranslatePipe],
   templateUrl: './help-modal.component.html',
-  styleUrl: './help-modal.component.scss'
+  styleUrl: './help-modal.component.scss',
 })
 export class HelpModalComponent {
   show = input.required<boolean>();
@@ -41,17 +41,19 @@ export class HelpModalComponent {
   });
 
   protected isFirstStep = computed(() => this.currentStep() === 0);
-  protected isLastStep = computed(() => this.totalSteps() === 0 || this.currentStep() === this.totalSteps() - 1);
+  protected isLastStep = computed(
+    () => this.totalSteps() === 0 || this.currentStep() === this.totalSteps() - 1,
+  );
 
   previousStep() {
     if (!this.isFirstStep()) {
-      this.currentStep.update(v => v - 1);
+      this.currentStep.update((v) => v - 1);
     }
   }
 
   nextStep() {
     if (!this.isLastStep()) {
-      this.currentStep.update(v => v + 1);
+      this.currentStep.update((v) => v + 1);
     }
   }
 

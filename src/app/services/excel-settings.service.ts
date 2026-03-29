@@ -31,9 +31,8 @@ export interface ExcelSettings {
   electricityMapping: ElectricityColumnMapping;
 }
 
-
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class ExcelSettingsService {
   private storage = inject(STORAGE_SERVICE);
@@ -58,7 +57,7 @@ export class ExcelSettingsService {
       enabled: false,
       waterMapping: this.getDefaultWaterMapping(),
       heatingMapping: this.getDefaultHeatingMapping(),
-      electricityMapping: this.getDefaultElectricityMapping()
+      electricityMapping: this.getDefaultElectricityMapping(),
     };
   }
 
@@ -68,30 +67,29 @@ export class ExcelSettingsService {
       kitchenWarm: 'Kitchen Warm Water',
       kitchenCold: 'Kitchen Cold Water',
       bathroomWarm: 'Bathroom Warm Water',
-      bathroomCold: 'Bathroom Cold Water'
+      bathroomCold: 'Bathroom Cold Water',
     };
   }
 
   private getDefaultElectricityMapping(): ElectricityColumnMapping {
     return {
       date: 'Date',
-      value: 'Electricity Consumption (kWh)'
+      value: 'Electricity Consumption (kWh)',
     };
   }
-
 
   private getDefaultHeatingMapping(): HeatingColumnMapping {
     const configuredRooms = this.heatingRoomsService.rooms();
     const rooms: Record<string, string> = {};
 
     // Use configured room names as default column names
-    configuredRooms.forEach(room => {
+    configuredRooms.forEach((room) => {
       rooms[room.id] = room.name;
     });
 
     return {
       date: 'Date',
-      rooms
+      rooms,
     };
   }
 
@@ -102,7 +100,10 @@ export class ExcelSettingsService {
         enabled: settings.enabled ?? false,
         waterMapping: { ...this.getDefaultWaterMapping(), ...settings.waterMapping },
         heatingMapping: { ...this.getDefaultHeatingMapping(), ...settings.heatingMapping },
-        electricityMapping: { ...this.getDefaultElectricityMapping(), ...settings.electricityMapping }
+        electricityMapping: {
+          ...this.getDefaultElectricityMapping(),
+          ...settings.electricityMapping,
+        },
       });
     }
     // Delay initialization flag to ensure initial signal updates don't trigger effects
@@ -133,13 +134,13 @@ export class ExcelSettingsService {
     const rooms: Record<string, string> = {};
 
     // Build mapping using stored names or falling back to room display names
-    currentRooms.forEach(room => {
+    currentRooms.forEach((room) => {
       rooms[room.id] = stored.rooms?.[room.id] || room.name;
     });
 
     return {
       date: stored.date || 'Date',
-      rooms
+      rooms,
     };
   }
 

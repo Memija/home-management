@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class FileStorageService {
   /**
@@ -64,7 +64,11 @@ export class FileStorageService {
    * @param acceptAllTypes If true, accepts all file types and returns error for non-JSON
    * @returns The parsed data, null if cancelled, or error details
    */
-  async importData<T>(acceptAllTypes: boolean = false): Promise<{ data: T; error?: never } | { data?: never; error: 'invalid_file_type' | 'parse_error' } | null> {
+  async importData<T>(
+    acceptAllTypes: boolean = false,
+  ): Promise<
+    { data: T; error?: never } | { data?: never; error: 'invalid_file_type' | 'parse_error' } | null
+  > {
     return new Promise((resolve) => {
       const input = document.createElement('input');
       input.type = 'file';

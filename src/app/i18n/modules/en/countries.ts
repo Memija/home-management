@@ -104,6 +104,6 @@ export const countries = {
     USA: 'USA',
     VENEZUELA: 'Venezuela',
     VIETNAM: 'Vietnam',
-    WORLD: 'World'
-  }
+    WORLD: 'World',
+  },
 };

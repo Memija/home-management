@@ -16,14 +16,11 @@ describe('TranslatePipe', () => {
         if (key === 'hello') return 'Hello';
         if (key === 'welcome') return `Welcome ${params?.['name']}`;
         return key;
-      })
+      }),
     };
 
     TestBed.configureTestingModule({
-      providers: [
-        TranslatePipe,
-        { provide: LanguageService, useValue: languageServiceMock }
-      ]
+      providers: [TranslatePipe, { provide: LanguageService, useValue: languageServiceMock }],
     });
 
     pipe = TestBed.inject(TranslatePipe);

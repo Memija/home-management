@@ -6,30 +6,48 @@
         <div class="excel-icon">
           <svg viewBox="0 0 24 24" width="32" height="32">
             <rect x="3" y="3" width="18" height="18" rx="2" fill="#217346" />
-            <text x="12" y="16" font-family="Arial, sans-serif" font-size="12" font-weight="bold" fill="white"
-              text-anchor="middle">X</text>
+            <text
+              x="12"
+              y="16"
+              font-family="Arial, sans-serif"
+              font-size="12"
+              font-weight="bold"
+              fill="white"
+              text-anchor="middle"
+            >
+              X
+            </text>
           </svg>
         </div>
         <h2>{{ 'SETTINGS.EXCEL_TITLE' | translate }}</h2>
       </div>
-      <button type="button" class="help-btn" (click)="showHelpModal.set(true)"
-        title="{{ 'SETTINGS.HELP' | translate }}">
+      <button
+        type="button"
+        class="help-btn"
+        (click)="showHelpModal.set(true)"
+        title="{{ 'SETTINGS.HELP' | translate }}"
+      >
         <lucide-icon [img]="HelpIcon" size="20"></lucide-icon>
       </button>
     </div>
 
     <!-- Import Success Message -->
     @if (showImportSuccess()) {
-    <div class="success-message">
-      ✓ {{ 'SETTINGS.EXCEL_SETTINGS_IMPORT_SUCCESS' | translate }}
-    </div>
+      <div class="success-message">
+        ✓ {{ 'SETTINGS.EXCEL_SETTINGS_IMPORT_SUCCESS' | translate }}
+      </div>
     }
 
     <!-- Enable/Disable Toggle -->
     <div class="toggle-container">
       <label class="toggle-label" for="excel-integration-toggle">
-        <input id="excel-integration-toggle" type="checkbox" [checked]="enabled()" (change)="onEnabledChange($event)"
-          class="toggle-input">
+        <input
+          id="excel-integration-toggle"
+          type="checkbox"
+          [checked]="enabled()"
+          (change)="onEnabledChange($event)"
+          class="toggle-input"
+        />
         <span class="toggle-text">{{ 'SETTINGS.EXCEL_ENABLED' | translate }}</span>
       </label>
     </div>
@@ -37,337 +55,614 @@
 
   <!-- Column Mapping Preview (when enabled and not editing) -->
   @if (enabled()) {
-  <div class="column-preview">
-    <div class="preview-header" (click)="togglePreview()">
-      <h3>{{ 'SETTINGS.EXCEL_COLUMN_MAPPING' | translate }}</h3>
-      <button class="toggle-preview-btn" type="button"
-        [attr.aria-label]="isPreviewCollapsed() ? 'Expand column mapping' : 'Collapse column mapping'"
-        [attr.title]="isPreviewCollapsed() ? 'Expand column mapping' : 'Collapse column mapping'">
-        <span class="sr-only">{{ isPreviewCollapsed() ? 'Expand' : 'Collapse' }} column mapping</span>
-        <lucide-icon [img]="isPreviewCollapsed() ? ChevronDownIcon : ChevronUpIcon" size="20"></lucide-icon>
-      </button>
+    <div class="column-preview">
+      <div class="preview-header" (click)="togglePreview()">
+        <h3>{{ 'SETTINGS.EXCEL_COLUMN_MAPPING' | translate }}</h3>
+        <button
+          class="toggle-preview-btn"
+          type="button"
+          [attr.aria-label]="
+            isPreviewCollapsed() ? 'Expand column mapping' : 'Collapse column mapping'
+          "
+          [attr.title]="isPreviewCollapsed() ? 'Expand column mapping' : 'Collapse column mapping'"
+        >
+          <span class="sr-only"
+            >{{ isPreviewCollapsed() ? 'Expand' : 'Collapse' }} column mapping</span
+          >
+          <lucide-icon
+            [img]="isPreviewCollapsed() ? ChevronDownIcon : ChevronUpIcon"
+            size="20"
+          ></lucide-icon>
+        </button>
+      </div>
+
+      @if (!isPreviewCollapsed()) {
+        <div class="preview-content">
+          <div class="preview-section">
+            <h4>{{ 'SETTINGS.EXCEL_WATER_MAPPING_TITLE' | translate }}</h4>
+            <div class="preview-items">
+              <span class="preview-item">{{ waterDateCol() }}</span>
+              <span class="preview-item">{{ waterKitchenWarmCol() }}</span>
+              <span class="preview-item">{{ waterKitchenColdCol() }}</span>
+              <span class="preview-item">{{ waterBathroomWarmCol() }}</span>
+              <span class="preview-item">{{ waterBathroomColdCol() }}</span>
+            </div>
+          </div>
+
+          <div class="preview-section">
+            <h4>{{ 'SETTINGS.EXCEL_HEATING_MAPPING_TITLE' | translate }}</h4>
+            <div class="preview-items">
+              <span class="preview-item">{{ heatingDateCol() }}</span>
+              @for (room of rooms(); track room.id) {
+                <span class="preview-item">{{ getRoomCol(room.id) || room.name }}</span>
+              }
+            </div>
+          </div>
+
+          <div class="preview-section">
+            <h4>{{ 'SETTINGS.EXCEL_ELECTRICITY_MAPPING_TITLE' | translate }}</h4>
+            <div class="preview-items">
+              <span class="preview-item">{{ electricityDateCol() }}</span>
+              <span class="preview-item">{{ electricityValueCol() }}</span>
+            </div>
+          </div>
+        </div>
+      }
     </div>
-
-    @if (!isPreviewCollapsed()) {
-    <div class="preview-content">
-      <div class="preview-section">
-        <h4>{{ 'SETTINGS.EXCEL_WATER_MAPPING_TITLE' | translate }}</h4>
-        <div class="preview-items">
-          <span class="preview-item">{{ waterDateCol() }}</span>
-          <span class="preview-item">{{ waterKitchenWarmCol() }}</span>
-          <span class="preview-item">{{ waterKitchenColdCol() }}</span>
-          <span class="preview-item">{{ waterBathroomWarmCol() }}</span>
-          <span class="preview-item">{{ waterBathroomColdCol() }}</span>
-        </div>
-      </div>
-
-      <div class="preview-section">
-        <h4>{{ 'SETTINGS.EXCEL_HEATING_MAPPING_TITLE' | translate }}</h4>
-        <div class="preview-items">
-          <span class="preview-item">{{ heatingDateCol() }}</span>
-          @for (room of rooms(); track room.id) {
-          <span class="preview-item">{{ getRoomCol(room.id) || room.name }}</span>
-          }
-        </div>
-      </div>
-
-      <div class="preview-section">
-        <h4>{{ 'SETTINGS.EXCEL_ELECTRICITY_MAPPING_TITLE' | translate }}</h4>
-        <div class="preview-items">
-          <span class="preview-item">{{ electricityDateCol() }}</span>
-          <span class="preview-item">{{ electricityValueCol() }}</span>
-        </div>
-      </div>
-    </div>
-    }
-  </div>
   }
 
   <!-- Action Button -->
   @if (enabled()) {
-  <div class="action-buttons">
-    <button type="button" class="edit-btn" (click)="openModal()" title="{{ 'SETTINGS.EDIT_EXCEL_SETTINGS' | translate }}">
-      <lucide-icon [img]="EditIcon" size="16"></lucide-icon>
-      <span class="btn-text">{{ 'SETTINGS.EDIT_EXCEL_SETTINGS' | translate }}</span>
-    </button>
-    <button type="button" class="export-btn" (click)="exportSettings()" title="{{ 'SETTINGS.EXPORT_EXCEL_SETTINGS' | translate }}">
-      <lucide-icon [img]="ExportIcon" size="16"></lucide-icon>
-      <span class="btn-text">{{ 'SETTINGS.EXPORT_EXCEL_SETTINGS' | translate }}</span>
-    </button>
-    <button type="button" class="import-btn" (click)="fileInput.click()" title="{{ 'SETTINGS.IMPORT_EXCEL_SETTINGS' | translate }}">
-      <lucide-icon [img]="ImportIcon" size="16"></lucide-icon>
-      <span class="btn-text">{{ 'SETTINGS.IMPORT_EXCEL_SETTINGS' | translate }}</span>
-    </button>
-    <label for="excel-settings-file-import" class="sr-only">Import Excel Settings</label>
-    <input #fileInput id="excel-settings-file-import" type="file" (change)="importSettings($event)" accept=".json"
-      class="hidden-input" aria-label="Import Excel Settings" title="Import Excel Settings">
-  </div>
+    <div class="action-buttons">
+      <button
+        type="button"
+        class="edit-btn"
+        (click)="openModal()"
+        title="{{ 'SETTINGS.EDIT_EXCEL_SETTINGS' | translate }}"
+      >
+        <lucide-icon [img]="EditIcon" size="16"></lucide-icon>
+        <span class="btn-text">{{ 'SETTINGS.EDIT_EXCEL_SETTINGS' | translate }}</span>
+      </button>
+      <button
+        type="button"
+        class="export-btn"
+        (click)="exportSettings()"
+        title="{{ 'SETTINGS.EXPORT_EXCEL_SETTINGS' | translate }}"
+      >
+        <lucide-icon [img]="ExportIcon" size="16"></lucide-icon>
+        <span class="btn-text">{{ 'SETTINGS.EXPORT_EXCEL_SETTINGS' | translate }}</span>
+      </button>
+      <button
+        type="button"
+        class="import-btn"
+        (click)="fileInput.click()"
+        title="{{ 'SETTINGS.IMPORT_EXCEL_SETTINGS' | translate }}"
+      >
+        <lucide-icon [img]="ImportIcon" size="16"></lucide-icon>
+        <span class="btn-text">{{ 'SETTINGS.IMPORT_EXCEL_SETTINGS' | translate }}</span>
+      </button>
+      <label for="excel-settings-file-import" class="sr-only">Import Excel Settings</label>
+      <input
+        #fileInput
+        id="excel-settings-file-import"
+        type="file"
+        (change)="importSettings($event)"
+        accept=".json"
+        class="hidden-input"
+        aria-label="Import Excel Settings"
+        title="Import Excel Settings"
+      />
+    </div>
   }
 
   <!-- Edit Modal -->
   @if (showModal()) {
-  <div class="modal-overlay" (click)="closeModal()">
-    <div class="modal-content modal-lg" (click)="$event.stopPropagation()">
-      <div class="modal-header">
-        <h3>{{ 'SETTINGS.EDIT_EXCEL_SETTINGS' | translate }}</h3>
-        <button class="close-btn" (click)="closeModal()" [title]="'ACTIONS.CLOSE' | translate"
-          [attr.aria-label]="'ACTIONS.CLOSE' | translate">×</button>
-      </div>
+    <div class="modal-overlay" (click)="closeModal()">
+      <div class="modal-content modal-lg" (click)="$event.stopPropagation()">
+        <div class="modal-header">
+          <h3>{{ 'SETTINGS.EDIT_EXCEL_SETTINGS' | translate }}</h3>
+          <button
+            class="close-btn"
+            (click)="closeModal()"
+            [title]="'ACTIONS.CLOSE' | translate"
+            [attr.aria-label]="'ACTIONS.CLOSE' | translate"
+          >
+            ×
+          </button>
+        </div>
 
-      <!-- Success Message - Sticky at top -->
-      @if (showSaveSuccess()) {
-      <div class="success-banner">
-        {{ 'SETTINGS.EXCEL_SETTINGS_SAVED' | translate }}
-      </div>
-      }
-      @if (showImportSuccess()) {
-      <div class="success-banner">
-        {{ 'SETTINGS.EXCEL_SETTINGS_IMPORT_SUCCESS' | translate }}
-      </div>
-      }
+        <!-- Success Message - Sticky at top -->
+        @if (showSaveSuccess()) {
+          <div class="success-banner">
+            {{ 'SETTINGS.EXCEL_SETTINGS_SAVED' | translate }}
+          </div>
+        }
+        @if (showImportSuccess()) {
+          <div class="success-banner">
+            {{ 'SETTINGS.EXCEL_SETTINGS_IMPORT_SUCCESS' | translate }}
+          </div>
+        }
 
-      <div class="modal-body">
-        <!-- Water/Home Consumption Mapping -->
-        <div class="mapping-group">
-          <h4>{{ 'SETTINGS.EXCEL_WATER_MAPPING_TITLE' | translate }}</h4>
-          <div class="form-grid">
-            <div class="form-group">
-              <label for="water-date">{{ 'SETTINGS.EXCEL_COLUMN_DATE_NAME' | translate }}</label>
-              <input id="water-date" type="text" [(ngModel)]="waterDateCol" class="form-control"
-                [placeholder]="'EXCEL.DEFAULT_DATE' | translate" [title]="'SETTINGS.EXCEL_COLUMN_DATE_NAME' | translate"
-                [class.error]="(waterDateCol() && validationService.getValidationError(waterDateCol())) || isDuplicateWater(waterDateCol())">
-              @if (waterDateCol() && validationService.getValidationError(waterDateCol())) {
-              <div class="warning-message">
-                <lucide-icon [img]="TriangleAlertIcon" size="16" class="warning-icon"></lucide-icon>
-                <span>{{ validationService.getValidationError(waterDateCol()) }}</span>
+        <div class="modal-body">
+          <!-- Water/Home Consumption Mapping -->
+          <div class="mapping-group">
+            <h4>{{ 'SETTINGS.EXCEL_WATER_MAPPING_TITLE' | translate }}</h4>
+            <div class="form-grid">
+              <div class="form-group">
+                <label for="water-date">{{ 'SETTINGS.EXCEL_COLUMN_DATE_NAME' | translate }}</label>
+                <input
+                  id="water-date"
+                  type="text"
+                  [(ngModel)]="waterDateCol"
+                  class="form-control"
+                  [placeholder]="'EXCEL.DEFAULT_DATE' | translate"
+                  [title]="'SETTINGS.EXCEL_COLUMN_DATE_NAME' | translate"
+                  [class.error]="
+                    (waterDateCol() && validationService.getValidationError(waterDateCol())) ||
+                    isDuplicateWater(waterDateCol())
+                  "
+                />
+                @if (waterDateCol() && validationService.getValidationError(waterDateCol())) {
+                  <div class="warning-message">
+                    <lucide-icon
+                      [img]="TriangleAlertIcon"
+                      size="16"
+                      class="warning-icon"
+                    ></lucide-icon>
+                    <span>{{ validationService.getValidationError(waterDateCol()) }}</span>
+                  </div>
+                }
+                @if (
+                  !validationService.getValidationError(waterDateCol()) &&
+                  isDuplicateWater(waterDateCol())
+                ) {
+                  <div class="warning-message">
+                    <lucide-icon
+                      [img]="TriangleAlertIcon"
+                      size="16"
+                      class="warning-icon"
+                    ></lucide-icon>
+                    <span>{{ 'EXCEL.VALIDATION_DUPLICATES' | translate }}</span>
+                  </div>
+                }
               </div>
-              }
-              @if (!validationService.getValidationError(waterDateCol()) && isDuplicateWater(waterDateCol())) {
-              <div class="warning-message">
-                <lucide-icon [img]="TriangleAlertIcon" size="16" class="warning-icon"></lucide-icon>
-                <span>{{ 'EXCEL.VALIDATION_DUPLICATES' | translate }}</span>
+
+              <div class="form-group">
+                <label for="water-kitchen-warm">{{
+                  'SETTINGS.EXCEL_COLUMN_KITCHEN_WARM_NAME' | translate
+                }}</label>
+                <input
+                  id="water-kitchen-warm"
+                  type="text"
+                  [(ngModel)]="waterKitchenWarmCol"
+                  class="form-control"
+                  [placeholder]="'EXCEL.DEFAULT_KITCHEN_WARM' | translate"
+                  [class.error]="
+                    (waterKitchenWarmCol() &&
+                      validationService.getValidationError(waterKitchenWarmCol())) ||
+                    isDuplicateWater(waterKitchenWarmCol())
+                  "
+                />
+                @if (
+                  waterKitchenWarmCol() &&
+                  validationService.getValidationError(waterKitchenWarmCol())
+                ) {
+                  <div class="warning-message">
+                    <lucide-icon
+                      [img]="TriangleAlertIcon"
+                      size="16"
+                      class="warning-icon"
+                    ></lucide-icon>
+                    <span>{{ validationService.getValidationError(waterKitchenWarmCol()) }}</span>
+                  </div>
+                }
+                @if (
+                  !validationService.getValidationError(waterKitchenWarmCol()) &&
+                  isDuplicateWater(waterKitchenWarmCol())
+                ) {
+                  <div class="warning-message">
+                    <lucide-icon
+                      [img]="TriangleAlertIcon"
+                      size="16"
+                      class="warning-icon"
+                    ></lucide-icon>
+                    <span>{{ 'EXCEL.VALIDATION_DUPLICATES' | translate }}</span>
+                  </div>
+                }
               </div>
+
+              <div class="form-group">
+                <label for="water-kitchen-cold">{{
+                  'SETTINGS.EXCEL_COLUMN_KITCHEN_COLD_NAME' | translate
+                }}</label>
+                <input
+                  id="water-kitchen-cold"
+                  type="text"
+                  [(ngModel)]="waterKitchenColdCol"
+                  class="form-control"
+                  [placeholder]="'EXCEL.DEFAULT_KITCHEN_COLD' | translate"
+                  [class.error]="
+                    (waterKitchenColdCol() &&
+                      validationService.getValidationError(waterKitchenColdCol())) ||
+                    isDuplicateWater(waterKitchenColdCol())
+                  "
+                />
+                @if (
+                  waterKitchenColdCol() &&
+                  validationService.getValidationError(waterKitchenColdCol())
+                ) {
+                  <div class="warning-message">
+                    <lucide-icon
+                      [img]="TriangleAlertIcon"
+                      size="16"
+                      class="warning-icon"
+                    ></lucide-icon>
+                    <span>{{ validationService.getValidationError(waterKitchenColdCol()) }}</span>
+                  </div>
+                }
+                @if (
+                  !validationService.getValidationError(waterKitchenColdCol()) &&
+                  isDuplicateWater(waterKitchenColdCol())
+                ) {
+                  <div class="warning-message">
+                    <lucide-icon
+                      [img]="TriangleAlertIcon"
+                      size="16"
+                      class="warning-icon"
+                    ></lucide-icon>
+                    <span>{{ 'EXCEL.VALIDATION_DUPLICATES' | translate }}</span>
+                  </div>
+                }
+              </div>
+
+              <div class="form-group">
+                <label for="water-bathroom-warm">{{
+                  'SETTINGS.EXCEL_COLUMN_BATHROOM_WARM_NAME' | translate
+                }}</label>
+                <input
+                  id="water-bathroom-warm"
+                  type="text"
+                  [(ngModel)]="waterBathroomWarmCol"
+                  class="form-control"
+                  [placeholder]="'EXCEL.DEFAULT_BATHROOM_WARM' | translate"
+                  [class.error]="
+                    (waterBathroomWarmCol() &&
+                      validationService.getValidationError(waterBathroomWarmCol())) ||
+                    isDuplicateWater(waterBathroomWarmCol())
+                  "
+                />
+                @if (
+                  waterBathroomWarmCol() &&
+                  validationService.getValidationError(waterBathroomWarmCol())
+                ) {
+                  <div class="warning-message">
+                    <lucide-icon
+                      [img]="TriangleAlertIcon"
+                      size="16"
+                      class="warning-icon"
+                    ></lucide-icon>
+                    <span>{{ validationService.getValidationError(waterBathroomWarmCol()) }}</span>
+                  </div>
+                }
+                @if (
+                  !validationService.getValidationError(waterBathroomWarmCol()) &&
+                  isDuplicateWater(waterBathroomWarmCol())
+                ) {
+                  <div class="warning-message">
+                    <lucide-icon
+                      [img]="TriangleAlertIcon"
+                      size="16"
+                      class="warning-icon"
+                    ></lucide-icon>
+                    <span>{{ 'EXCEL.VALIDATION_DUPLICATES' | translate }}</span>
+                  </div>
+                }
+              </div>
+
+              <div class="form-group">
+                <label for="water-bathroom-cold">{{
+                  'SETTINGS.EXCEL_COLUMN_BATHROOM_COLD_NAME' | translate
+                }}</label>
+                <input
+                  id="water-bathroom-cold"
+                  type="text"
+                  [(ngModel)]="waterBathroomColdCol"
+                  class="form-control"
+                  [placeholder]="'EXCEL.DEFAULT_BATHROOM_COLD' | translate"
+                  [class.error]="
+                    (waterBathroomColdCol() &&
+                      validationService.getValidationError(waterBathroomColdCol())) ||
+                    isDuplicateWater(waterBathroomColdCol())
+                  "
+                />
+                @if (
+                  waterBathroomColdCol() &&
+                  validationService.getValidationError(waterBathroomColdCol())
+                ) {
+                  <div class="warning-message">
+                    <lucide-icon
+                      [img]="TriangleAlertIcon"
+                      size="16"
+                      class="warning-icon"
+                    ></lucide-icon>
+                    <span>{{ validationService.getValidationError(waterBathroomColdCol()) }}</span>
+                  </div>
+                }
+                @if (
+                  !validationService.getValidationError(waterBathroomColdCol()) &&
+                  isDuplicateWater(waterBathroomColdCol())
+                ) {
+                  <div class="warning-message">
+                    <lucide-icon
+                      [img]="TriangleAlertIcon"
+                      size="16"
+                      class="warning-icon"
+                    ></lucide-icon>
+                    <span>{{ 'EXCEL.VALIDATION_DUPLICATES' | translate }}</span>
+                  </div>
+                }
+              </div>
+            </div>
+          </div>
+
+          <!-- Heating Consumption Mapping -->
+          <div class="mapping-group">
+            <h4>{{ 'SETTINGS.EXCEL_HEATING_MAPPING_TITLE' | translate }}</h4>
+            <div class="form-grid">
+              <div class="form-group">
+                <label for="heating-date">{{
+                  'SETTINGS.EXCEL_COLUMN_DATE_NAME' | translate
+                }}</label>
+                <input
+                  id="heating-date"
+                  type="text"
+                  [(ngModel)]="heatingDateCol"
+                  class="form-control"
+                  [placeholder]="'EXCEL.DEFAULT_DATE' | translate"
+                  [class.error]="
+                    (heatingDateCol() && validationService.getValidationError(heatingDateCol())) ||
+                    isDuplicateHeating(heatingDateCol())
+                  "
+                />
+                @if (heatingDateCol() && validationService.getValidationError(heatingDateCol())) {
+                  <div class="warning-message">
+                    <lucide-icon
+                      [img]="TriangleAlertIcon"
+                      size="16"
+                      class="warning-icon"
+                    ></lucide-icon>
+                    <span>{{ validationService.getValidationError(heatingDateCol()) }}</span>
+                  </div>
+                }
+                @if (
+                  !validationService.getValidationError(heatingDateCol()) &&
+                  isDuplicateHeating(heatingDateCol())
+                ) {
+                  <div class="warning-message">
+                    <lucide-icon
+                      [img]="TriangleAlertIcon"
+                      size="16"
+                      class="warning-icon"
+                    ></lucide-icon>
+                    <span>{{ 'EXCEL.VALIDATION_DUPLICATES' | translate }}</span>
+                  </div>
+                }
+              </div>
+
+              @for (room of rooms(); track room.id) {
+                <div class="form-group">
+                  <label [for]="'heating-room-' + room.id">{{
+                    'SETTINGS.EXCEL_COLUMN_FOR_ROOM' | translate: { name: room.name }
+                  }}</label>
+                  <input
+                    title="{{ 'SETTINGS.EXCEL_COLUMN_FOR_ROOM' | translate: { name: room.name } }}"
+                    [id]="'heating-room-' + room.id"
+                    type="text"
+                    [value]="getRoomCol(room.id)"
+                    (input)="updateRoomCol(room.id, $any($event.target).value)"
+                    class="form-control"
+                    [placeholder]="room.name"
+                    [class.error]="
+                      (getRoomCol(room.id) &&
+                        validationService.getValidationError(getRoomCol(room.id))) ||
+                      isDuplicateHeating(getRoomCol(room.id))
+                    "
+                  />
+                  @if (
+                    getRoomCol(room.id) && validationService.getValidationError(getRoomCol(room.id))
+                  ) {
+                    <div class="warning-message">
+                      <lucide-icon
+                        [img]="TriangleAlertIcon"
+                        size="16"
+                        class="warning-icon"
+                      ></lucide-icon>
+                      <span>{{ validationService.getValidationError(getRoomCol(room.id)) }}</span>
+                    </div>
+                  }
+                  @if (
+                    !validationService.getValidationError(getRoomCol(room.id)) &&
+                    isDuplicateHeating(getRoomCol(room.id))
+                  ) {
+                    <div class="warning-message">
+                      <lucide-icon
+                        [img]="TriangleAlertIcon"
+                        size="16"
+                        class="warning-icon"
+                      ></lucide-icon>
+                      <span>{{ 'EXCEL.VALIDATION_DUPLICATES' | translate }}</span>
+                    </div>
+                  }
+                </div>
               }
             </div>
+          </div>
 
-            <div class="form-group">
-              <label for="water-kitchen-warm">{{ 'SETTINGS.EXCEL_COLUMN_KITCHEN_WARM_NAME' | translate
+          <!-- Electricity Consumption Mapping -->
+          <div class="mapping-group">
+            <h4>{{ 'SETTINGS.EXCEL_ELECTRICITY_MAPPING_TITLE' | translate }}</h4>
+            <div class="form-grid">
+              <div class="form-group">
+                <label for="electricity-date">{{
+                  'SETTINGS.EXCEL_COLUMN_DATE_NAME' | translate
                 }}</label>
-              <input id="water-kitchen-warm" type="text" [(ngModel)]="waterKitchenWarmCol" class="form-control"
-                [placeholder]="'EXCEL.DEFAULT_KITCHEN_WARM' | translate"
-                [class.error]="(waterKitchenWarmCol() && validationService.getValidationError(waterKitchenWarmCol())) || isDuplicateWater(waterKitchenWarmCol())">
-              @if (waterKitchenWarmCol() && validationService.getValidationError(waterKitchenWarmCol())) {
-              <div class="warning-message">
-                <lucide-icon [img]="TriangleAlertIcon" size="16" class="warning-icon"></lucide-icon>
-                <span>{{ validationService.getValidationError(waterKitchenWarmCol()) }}</span>
+                <input
+                  id="electricity-date"
+                  type="text"
+                  [(ngModel)]="electricityDateCol"
+                  class="form-control"
+                  [placeholder]="'EXCEL.DEFAULT_DATE' | translate"
+                  [class.error]="
+                    (electricityDateCol() &&
+                      validationService.getValidationError(electricityDateCol())) ||
+                    isDuplicateElectricity(electricityDateCol())
+                  "
+                />
+                @if (
+                  electricityDateCol() && validationService.getValidationError(electricityDateCol())
+                ) {
+                  <div class="warning-message">
+                    <lucide-icon
+                      [img]="TriangleAlertIcon"
+                      size="16"
+                      class="warning-icon"
+                    ></lucide-icon>
+                    <span>{{ validationService.getValidationError(electricityDateCol()) }}</span>
+                  </div>
+                }
+                @if (
+                  !validationService.getValidationError(electricityDateCol()) &&
+                  isDuplicateElectricity(electricityDateCol())
+                ) {
+                  <div class="warning-message">
+                    <lucide-icon
+                      [img]="TriangleAlertIcon"
+                      size="16"
+                      class="warning-icon"
+                    ></lucide-icon>
+                    <span>{{ 'EXCEL.VALIDATION_DUPLICATES' | translate }}</span>
+                  </div>
+                }
               </div>
-              }
-              @if (!validationService.getValidationError(waterKitchenWarmCol()) &&
-              isDuplicateWater(waterKitchenWarmCol())) {
-              <div class="warning-message">
-                <lucide-icon [img]="TriangleAlertIcon" size="16" class="warning-icon"></lucide-icon>
-                <span>{{ 'EXCEL.VALIDATION_DUPLICATES' | translate }}</span>
-              </div>
-              }
-            </div>
 
-            <div class="form-group">
-              <label for="water-kitchen-cold">{{ 'SETTINGS.EXCEL_COLUMN_KITCHEN_COLD_NAME' | translate
+              <div class="form-group">
+                <label for="electricity-value">{{
+                  'SETTINGS.EXCEL_COLUMN_ELECTRICITY_VALUE_NAME' | translate
                 }}</label>
-              <input id="water-kitchen-cold" type="text" [(ngModel)]="waterKitchenColdCol" class="form-control"
-                [placeholder]="'EXCEL.DEFAULT_KITCHEN_COLD' | translate"
-                [class.error]="(waterKitchenColdCol() && validationService.getValidationError(waterKitchenColdCol())) || isDuplicateWater(waterKitchenColdCol())">
-              @if (waterKitchenColdCol() && validationService.getValidationError(waterKitchenColdCol())) {
-              <div class="warning-message">
-                <lucide-icon [img]="TriangleAlertIcon" size="16" class="warning-icon"></lucide-icon>
-                <span>{{ validationService.getValidationError(waterKitchenColdCol()) }}</span>
+                <input
+                  id="electricity-value"
+                  type="text"
+                  [(ngModel)]="electricityValueCol"
+                  class="form-control"
+                  [placeholder]="'EXCEL.DEFAULT_ELECTRICITY_VALUE' | translate"
+                  [class.error]="
+                    (electricityValueCol() &&
+                      validationService.getValidationError(electricityValueCol())) ||
+                    isDuplicateElectricity(electricityValueCol())
+                  "
+                />
+                @if (
+                  electricityValueCol() &&
+                  validationService.getValidationError(electricityValueCol())
+                ) {
+                  <div class="warning-message">
+                    <lucide-icon
+                      [img]="TriangleAlertIcon"
+                      size="16"
+                      class="warning-icon"
+                    ></lucide-icon>
+                    <span>{{ validationService.getValidationError(electricityValueCol()) }}</span>
+                  </div>
+                }
+                @if (
+                  !validationService.getValidationError(electricityValueCol()) &&
+                  isDuplicateElectricity(electricityValueCol())
+                ) {
+                  <div class="warning-message">
+                    <lucide-icon
+                      [img]="TriangleAlertIcon"
+                      size="16"
+                      class="warning-icon"
+                    ></lucide-icon>
+                    <span>{{ 'EXCEL.VALIDATION_DUPLICATES' | translate }}</span>
+                  </div>
+                }
               </div>
-              }
-              @if (!validationService.getValidationError(waterKitchenColdCol()) &&
-              isDuplicateWater(waterKitchenColdCol())) {
-              <div class="warning-message">
-                <lucide-icon [img]="TriangleAlertIcon" size="16" class="warning-icon"></lucide-icon>
-                <span>{{ 'EXCEL.VALIDATION_DUPLICATES' | translate }}</span>
-              </div>
-              }
-            </div>
-
-            <div class="form-group">
-              <label for="water-bathroom-warm">{{ 'SETTINGS.EXCEL_COLUMN_BATHROOM_WARM_NAME' | translate
-                }}</label>
-              <input id="water-bathroom-warm" type="text" [(ngModel)]="waterBathroomWarmCol" class="form-control"
-                [placeholder]="'EXCEL.DEFAULT_BATHROOM_WARM' | translate"
-                [class.error]="(waterBathroomWarmCol() && validationService.getValidationError(waterBathroomWarmCol())) || isDuplicateWater(waterBathroomWarmCol())">
-              @if (waterBathroomWarmCol() && validationService.getValidationError(waterBathroomWarmCol())) {
-              <div class="warning-message">
-                <lucide-icon [img]="TriangleAlertIcon" size="16" class="warning-icon"></lucide-icon>
-                <span>{{ validationService.getValidationError(waterBathroomWarmCol()) }}</span>
-              </div>
-              }
-              @if (!validationService.getValidationError(waterBathroomWarmCol()) &&
-              isDuplicateWater(waterBathroomWarmCol())) {
-              <div class="warning-message">
-                <lucide-icon [img]="TriangleAlertIcon" size="16" class="warning-icon"></lucide-icon>
-                <span>{{ 'EXCEL.VALIDATION_DUPLICATES' | translate }}</span>
-              </div>
-              }
-            </div>
-
-            <div class="form-group">
-              <label for="water-bathroom-cold">{{ 'SETTINGS.EXCEL_COLUMN_BATHROOM_COLD_NAME' | translate
-                }}</label>
-              <input id="water-bathroom-cold" type="text" [(ngModel)]="waterBathroomColdCol" class="form-control"
-                [placeholder]="'EXCEL.DEFAULT_BATHROOM_COLD' | translate"
-                [class.error]="(waterBathroomColdCol() && validationService.getValidationError(waterBathroomColdCol())) || isDuplicateWater(waterBathroomColdCol())">
-              @if (waterBathroomColdCol() && validationService.getValidationError(waterBathroomColdCol())) {
-              <div class="warning-message">
-                <lucide-icon [img]="TriangleAlertIcon" size="16" class="warning-icon"></lucide-icon>
-                <span>{{ validationService.getValidationError(waterBathroomColdCol()) }}</span>
-              </div>
-              }
-              @if (!validationService.getValidationError(waterBathroomColdCol()) &&
-              isDuplicateWater(waterBathroomColdCol())) {
-              <div class="warning-message">
-                <lucide-icon [img]="TriangleAlertIcon" size="16" class="warning-icon"></lucide-icon>
-                <span>{{ 'EXCEL.VALIDATION_DUPLICATES' | translate }}</span>
-              </div>
-              }
             </div>
           </div>
         </div>
 
-        <!-- Heating Consumption Mapping -->
-        <div class="mapping-group">
-          <h4>{{ 'SETTINGS.EXCEL_HEATING_MAPPING_TITLE' | translate }}</h4>
-          <div class="form-grid">
-            <div class="form-group">
-              <label for="heating-date">{{ 'SETTINGS.EXCEL_COLUMN_DATE_NAME' | translate }}</label>
-              <input id="heating-date" type="text" [(ngModel)]="heatingDateCol" class="form-control"
-                [placeholder]="'EXCEL.DEFAULT_DATE' | translate"
-                [class.error]="(heatingDateCol() && validationService.getValidationError(heatingDateCol())) || isDuplicateHeating(heatingDateCol())">
-              @if (heatingDateCol() && validationService.getValidationError(heatingDateCol())) {
-              <div class="warning-message">
-                <lucide-icon [img]="TriangleAlertIcon" size="16" class="warning-icon"></lucide-icon>
-                <span>{{ validationService.getValidationError(heatingDateCol()) }}</span>
-              </div>
-              }
-              @if (!validationService.getValidationError(heatingDateCol()) && isDuplicateHeating(heatingDateCol())) {
-              <div class="warning-message">
-                <lucide-icon [img]="TriangleAlertIcon" size="16" class="warning-icon"></lucide-icon>
-                <span>{{ 'EXCEL.VALIDATION_DUPLICATES' | translate }}</span>
-              </div>
-              }
-            </div>
-
-            @for (room of rooms(); track room.id) {
-            <div class="form-group">
-              <label [for]="'heating-room-' + room.id">{{ 'SETTINGS.EXCEL_COLUMN_FOR_ROOM' | translate: { name:
-                room.name } }}</label>
-              <input title="{{ 'SETTINGS.EXCEL_COLUMN_FOR_ROOM' | translate: { name: room.name } }}"
-                [id]="'heating-room-' + room.id" type="text" [value]="getRoomCol(room.id)"
-                (input)="updateRoomCol(room.id, $any($event.target).value)" class="form-control"
-                [placeholder]="room.name"
-                [class.error]="(getRoomCol(room.id) && validationService.getValidationError(getRoomCol(room.id))) || isDuplicateHeating(getRoomCol(room.id))">
-              @if (getRoomCol(room.id) && validationService.getValidationError(getRoomCol(room.id))) {
-              <div class="warning-message">
-                <lucide-icon [img]="TriangleAlertIcon" size="16" class="warning-icon"></lucide-icon>
-                <span>{{ validationService.getValidationError(getRoomCol(room.id)) }}</span>
-              </div>
-              }
-              @if (!validationService.getValidationError(getRoomCol(room.id)) &&
-              isDuplicateHeating(getRoomCol(room.id))) {
-              <div class="warning-message">
-                <lucide-icon [img]="TriangleAlertIcon" size="16" class="warning-icon"></lucide-icon>
-                <span>{{ 'EXCEL.VALIDATION_DUPLICATES' | translate }}</span>
-              </div>
-              }
-            </div>
-            }
-          </div>
+        <div class="modal-footer">
+          <button
+            type="button"
+            class="btn-secondary"
+            (click)="resetDefaults()"
+            title="{{ 'SETTINGS.EXCEL_RESET_DEFAULTS' | translate }}"
+          >
+            <lucide-icon [img]="RotateCcwIcon" size="16"></lucide-icon>
+            {{ 'SETTINGS.EXCEL_RESET_DEFAULTS' | translate }}
+          </button>
+          <button
+            type="button"
+            class="btn-outline"
+            (click)="closeModal()"
+            title="{{ 'SETTINGS.CANCEL' | translate }}"
+          >
+            {{ 'SETTINGS.CANCEL' | translate }}
+          </button>
+          <button
+            type="button"
+            class="btn-primary"
+            (click)="saveSettings()"
+            [disabled]="!isFormValid()"
+            title="{{ 'SETTINGS.EXCEL_SAVE_SETTINGS' | translate }}"
+          >
+            {{ 'SETTINGS.EXCEL_SAVE_SETTINGS' | translate }}
+          </button>
         </div>
-
-        <!-- Electricity Consumption Mapping -->
-        <div class="mapping-group">
-          <h4>{{ 'SETTINGS.EXCEL_ELECTRICITY_MAPPING_TITLE' | translate }}</h4>
-          <div class="form-grid">
-            <div class="form-group">
-              <label for="electricity-date">{{ 'SETTINGS.EXCEL_COLUMN_DATE_NAME' | translate }}</label>
-              <input id="electricity-date" type="text" [(ngModel)]="electricityDateCol" class="form-control"
-                [placeholder]="'EXCEL.DEFAULT_DATE' | translate"
-                [class.error]="(electricityDateCol() && validationService.getValidationError(electricityDateCol())) || isDuplicateElectricity(electricityDateCol())">
-              @if (electricityDateCol() && validationService.getValidationError(electricityDateCol())) {
-              <div class="warning-message">
-                <lucide-icon [img]="TriangleAlertIcon" size="16" class="warning-icon"></lucide-icon>
-                <span>{{ validationService.getValidationError(electricityDateCol()) }}</span>
-              </div>
-              }
-              @if (!validationService.getValidationError(electricityDateCol()) &&
-              isDuplicateElectricity(electricityDateCol())) {
-              <div class="warning-message">
-                <lucide-icon [img]="TriangleAlertIcon" size="16" class="warning-icon"></lucide-icon>
-                <span>{{ 'EXCEL.VALIDATION_DUPLICATES' | translate }}</span>
-              </div>
-              }
-            </div>
-
-            <div class="form-group">
-              <label for="electricity-value">{{ 'SETTINGS.EXCEL_COLUMN_ELECTRICITY_VALUE_NAME' | translate }}</label>
-              <input id="electricity-value" type="text" [(ngModel)]="electricityValueCol" class="form-control"
-                [placeholder]="'EXCEL.DEFAULT_ELECTRICITY_VALUE' | translate"
-                [class.error]="(electricityValueCol() && validationService.getValidationError(electricityValueCol())) || isDuplicateElectricity(electricityValueCol())">
-              @if (electricityValueCol() && validationService.getValidationError(electricityValueCol())) {
-              <div class="warning-message">
-                <lucide-icon [img]="TriangleAlertIcon" size="16" class="warning-icon"></lucide-icon>
-                <span>{{ validationService.getValidationError(electricityValueCol()) }}</span>
-              </div>
-              }
-              @if (!validationService.getValidationError(electricityValueCol()) &&
-              isDuplicateElectricity(electricityValueCol())) {
-              <div class="warning-message">
-                <lucide-icon [img]="TriangleAlertIcon" size="16" class="warning-icon"></lucide-icon>
-                <span>{{ 'EXCEL.VALIDATION_DUPLICATES' | translate }}</span>
-              </div>
-              }
-            </div>
-          </div>
-        </div>
-
-
-      </div>
-
-      <div class="modal-footer">
-        <button type="button" class="btn-secondary" (click)="resetDefaults()" title="{{ 'SETTINGS.EXCEL_RESET_DEFAULTS' | translate }}">
-          <lucide-icon [img]="RotateCcwIcon" size="16"></lucide-icon>
-          {{ 'SETTINGS.EXCEL_RESET_DEFAULTS' | translate }}
-        </button>
-        <button type="button" class="btn-outline" (click)="closeModal()" title="{{ 'SETTINGS.CANCEL' | translate }}">
-          {{ 'SETTINGS.CANCEL' | translate }}
-        </button>
-        <button type="button" class="btn-primary" (click)="saveSettings()" [disabled]="!isFormValid()" title="{{ 'SETTINGS.EXCEL_SAVE_SETTINGS' | translate }}">
-          {{ 'SETTINGS.EXCEL_SAVE_SETTINGS' | translate }}
-        </button>
       </div>
     </div>
-  </div>
   }
 
-  <app-delete-confirmation-modal [show]="showUnsavedChangesModal()" [titleKey]="'SETTINGS.UNSAVED_CHANGES_TITLE'"
-    [messageKey]="'SETTINGS.UNSAVED_CHANGES_MESSAGE_GENERIC'" [cancelKey]="'SETTINGS.UNSAVED_CHANGES_STAY'"
-    [deleteKey]="'SETTINGS.UNSAVED_CHANGES_LEAVE'" [icon]="TriangleAlertIcon" (confirm)="confirmLeaveWithoutSaving()"
-    (cancel)="stayAndSave()">
+  <app-delete-confirmation-modal
+    [show]="showUnsavedChangesModal()"
+    [titleKey]="'SETTINGS.UNSAVED_CHANGES_TITLE'"
+    [messageKey]="'SETTINGS.UNSAVED_CHANGES_MESSAGE_GENERIC'"
+    [cancelKey]="'SETTINGS.UNSAVED_CHANGES_STAY'"
+    [deleteKey]="'SETTINGS.UNSAVED_CHANGES_LEAVE'"
+    [icon]="TriangleAlertIcon"
+    (confirm)="confirmLeaveWithoutSaving()"
+    (cancel)="stayAndSave()"
+  >
   </app-delete-confirmation-modal>
 
-  <app-confirmation-modal [show]="showImportConfirmModal()" [titleKey]="'SETTINGS.IMPORT_EXCEL_SETTINGS_CONFIRM_TITLE'"
-    [messageKey]="'SETTINGS.IMPORT_EXCEL_SETTINGS_CONFIRM_MESSAGE'" [cancelKey]="'SETTINGS.CANCEL'"
-    [confirmKey]="'HOME.IMPORT_BUTTON'" [icon]="ImportIcon" (confirm)="confirmImportSettings()"
-    (cancel)="cancelImportSettings()">
+  <app-confirmation-modal
+    [show]="showImportConfirmModal()"
+    [titleKey]="'SETTINGS.IMPORT_EXCEL_SETTINGS_CONFIRM_TITLE'"
+    [messageKey]="'SETTINGS.IMPORT_EXCEL_SETTINGS_CONFIRM_MESSAGE'"
+    [cancelKey]="'SETTINGS.CANCEL'"
+    [confirmKey]="'HOME.IMPORT_BUTTON'"
+    [icon]="ImportIcon"
+    (confirm)="confirmImportSettings()"
+    (cancel)="cancelImportSettings()"
+  >
   </app-confirmation-modal>
 
-  <app-error-modal [show]="showImportErrorModal()" [title]="'SETTINGS.IMPORT_EXCEL_SETTINGS_ERROR_TITLE'"
-    [message]="importErrorMessage()" [details]="importErrorDetails()" [instructions]="importErrorInstructions()"
-    (cancel)="closeImportErrorModal()">
+  <app-error-modal
+    [show]="showImportErrorModal()"
+    [title]="'SETTINGS.IMPORT_EXCEL_SETTINGS_ERROR_TITLE'"
+    [message]="importErrorMessage()"
+    [details]="importErrorDetails()"
+    [instructions]="importErrorInstructions()"
+    (cancel)="closeImportErrorModal()"
+  >
   </app-error-modal>
 
-  <app-help-modal [show]="showHelpModal()" [titleKey]="'SETTINGS.EXCEL_HELP_TITLE'" [steps]="helpSteps"
-    (close)="showHelpModal.set(false)">
+  <app-help-modal
+    [show]="showHelpModal()"
+    [titleKey]="'SETTINGS.EXCEL_HELP_TITLE'"
+    [steps]="helpSteps"
+    (close)="showHelpModal.set(false)"
+  >
   </app-help-modal>
+</div>

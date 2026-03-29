@@ -9,7 +9,7 @@ describe('ConsumptionPreferencesService', () => {
 
   // Helper to wait for the async loadPreferences to complete
   const waitForInit = async () => {
-    await new Promise(resolve => setTimeout(resolve, 0));
+    await new Promise((resolve) => setTimeout(resolve, 0));
   };
 
   // Helper to configure and inject service with current mock setup
@@ -163,7 +163,10 @@ describe('ConsumptionPreferencesService', () => {
       service.setDisplayMode('incremental', 'electricity');
 
       expect(service.electricityDisplayMode()).toBe('incremental');
-      expect(mockStorageService.save).toHaveBeenCalledWith('electricity_display_mode', 'incremental');
+      expect(mockStorageService.save).toHaveBeenCalledWith(
+        'electricity_display_mode',
+        'incremental',
+      );
     });
   });
 
@@ -285,7 +288,9 @@ describe('ConsumptionPreferencesService', () => {
       service.setMeterChangeConfirmed('2025-01-15');
 
       expect(service.confirmedMeterChanges()).toEqual(['2025-01-15']);
-      expect(mockStorageService.save).toHaveBeenCalledWith('water_confirmed_meter_changes', ['2025-01-15']);
+      expect(mockStorageService.save).toHaveBeenCalledWith('water_confirmed_meter_changes', [
+        '2025-01-15',
+      ]);
     });
 
     it('should add dismissed meter change and save to storage', async () => {
@@ -295,7 +300,9 @@ describe('ConsumptionPreferencesService', () => {
       service.setMeterChangeDismissed('2025-02-10');
 
       expect(service.dismissedMeterChanges()).toEqual(['2025-02-10']);
-      expect(mockStorageService.save).toHaveBeenCalledWith('water_dismissed_meter_changes', ['2025-02-10']);
+      expect(mockStorageService.save).toHaveBeenCalledWith('water_dismissed_meter_changes', [
+        '2025-02-10',
+      ]);
     });
 
     it('should accumulate multiple confirmed meter changes', async () => {
@@ -359,12 +366,12 @@ describe('ConsumptionPreferencesService', () => {
     it('should handle all chart types loading from storage simultaneously', async () => {
       mockStorageService.load.mockImplementation(async (key: string) => {
         const data: Record<string, unknown> = {
-          'water_chart_view': 'by-room',
-          'water_display_mode': 'total',
-          'heating_chart_view': 'detailed',
-          'heating_display_mode': 'incremental',
-          'electricity_chart_view': 'by-type',
-          'electricity_display_mode': 'incremental',
+          water_chart_view: 'by-room',
+          water_display_mode: 'total',
+          heating_chart_view: 'detailed',
+          heating_display_mode: 'incremental',
+          electricity_chart_view: 'by-type',
+          electricity_display_mode: 'incremental',
         };
         return data[key] ?? null;
       });

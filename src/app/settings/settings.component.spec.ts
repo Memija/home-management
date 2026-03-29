@@ -13,11 +13,13 @@ import { describe, it, expect, beforeEach, vi, type Mock } from 'vitest';
  */
 
 /** Helper to create a mock child component implementing ComponentWithUnsavedChanges */
-function createMockChild(overrides: Partial<{
-  hasUnsavedChanges: () => boolean;
-  triggerNavigationWarning: (cb: () => void) => void;
-  stayAndSave: () => void;
-}> = {}) {
+function createMockChild(
+  overrides: Partial<{
+    hasUnsavedChanges: () => boolean;
+    triggerNavigationWarning: (cb: () => void) => void;
+    stayAndSave: () => void;
+  }> = {},
+) {
   return {
     hasUnsavedChanges: vi.fn().mockReturnValue(false),
     triggerNavigationWarning: vi.fn(),
@@ -40,9 +42,7 @@ describe('SettingsComponent', () => {
     vi.clearAllMocks();
 
     TestBed.configureTestingModule({
-      providers: [
-        { provide: LanguageService, useValue: mockLanguageService },
-      ],
+      providers: [{ provide: LanguageService, useValue: mockLanguageService }],
     });
 
     component = TestBed.runInInjectionContext(() => {
@@ -374,9 +374,7 @@ describe('SettingsComponent', () => {
 
     it('should handle hasUnsavedChanges returning false for all after being true', async () => {
       const mockChild = createMockChild({
-        hasUnsavedChanges: vi.fn()
-          .mockReturnValueOnce(true)
-          .mockReturnValue(false) as any,
+        hasUnsavedChanges: vi.fn().mockReturnValueOnce(true).mockReturnValue(false) as any,
         triggerNavigationWarning: vi.fn((cb: () => void) => cb()),
       });
 
@@ -443,7 +441,7 @@ describe('SettingsComponent', () => {
       const promise2 = component.canDeactivate() as Promise<boolean>;
 
       // Resolve both
-      triggerCallbacks.forEach(cb => cb());
+      triggerCallbacks.forEach((cb) => cb());
 
       const [result1, result2] = await Promise.all([promise1, promise2]);
       expect(result1).toBe(true);
@@ -452,7 +450,9 @@ describe('SettingsComponent', () => {
 
     it('should handle child component where hasUnsavedChanges throws', () => {
       (component as any).familyComponent = {
-        hasUnsavedChanges: () => { throw new Error('unexpected'); },
+        hasUnsavedChanges: () => {
+          throw new Error('unexpected');
+        },
         triggerNavigationWarning: vi.fn(),
         stayAndSave: vi.fn(),
       };

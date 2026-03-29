@@ -4,194 +4,307 @@
       <h2>{{ 'HOME.DETAILED_RECORDS' | translate }}</h2>
       <div class="header-spacer"></div>
       @if (helpSteps().length > 0) {
-      <button type="button" class="help-btn" (click)="showHelp()" title="{{ helpTitleKey() | translate }}">
-        <lucide-icon [img]="HelpIcon" size="20"></lucide-icon>
-      </button>
+        <button
+          type="button"
+          class="help-btn"
+          (click)="showHelp()"
+          title="{{ helpTitleKey() | translate }}"
+        >
+          <lucide-icon [img]="HelpIcon" size="20"></lucide-icon>
+        </button>
       }
     </div>
     <div class="filters-container">
       @if (records().length > 0) {
-      @if (showSearchDate()) {
-      <div class="search-box date-range">
-        <app-date-picker [date]="startDate() || ''" (dateChange)="startDate.set($event || null)"
-          [placeholder]="'HOME.FILTER_DATE_FROM' | translate">
-        </app-date-picker>
-        <app-date-picker [date]="endDate() || ''" (dateChange)="endDate.set($event || null)"
-          [placeholder]="'HOME.FILTER_DATE_TO' | translate">
-        </app-date-picker>
-      </div>
-      }
-      @if (showYearMonth()) {
-      <div class="filter-box">
-        <div class="select-with-icon">
-          <lucide-icon [img]="CalendarDaysIcon" size="16"></lucide-icon>
-          <select id="year-filter" name="year-filter" [ngModel]="searchYear() ?? ''"
-            (ngModelChange)="searchYear.set($event === '' ? null : +$event)" aria-label="Filter by year">
-            <option value="">{{ 'HOME.FILTER_YEAR' | translate }}</option>
-            @for (year of availableYears(); track year) {
-            <option [value]="year" [disabled]="isYearDisabled(year)">{{ year }}</option>
-            }
-          </select>
-        </div>
-        <div class="select-with-icon">
-          <lucide-icon [img]="CalendarDaysIcon" size="16"></lucide-icon>
-          <select id="month-filter" name="month-filter" [ngModel]="searchMonth()"
-            (ngModelChange)="searchMonth.set($event !== 'null' ? +$event : null)" aria-label="Filter by month">
-            <option value="null">{{ 'HOME.FILTER_MONTH' | translate }}</option>
-            <option value="0" [disabled]="isMonthDisabled(0)">{{ 'HOME.MONTHS.JANUARY' | translate }}</option>
-            <option value="1" [disabled]="isMonthDisabled(1)">{{ 'HOME.MONTHS.FEBRUARY' | translate }}</option>
-            <option value="2" [disabled]="isMonthDisabled(2)">{{ 'HOME.MONTHS.MARCH' | translate }}</option>
-            <option value="3" [disabled]="isMonthDisabled(3)">{{ 'HOME.MONTHS.APRIL' | translate }}</option>
-            <option value="4" [disabled]="isMonthDisabled(4)">{{ 'HOME.MONTHS.MAY' | translate }}</option>
-            <option value="5" [disabled]="isMonthDisabled(5)">{{ 'HOME.MONTHS.JUNE' | translate }}</option>
-            <option value="6" [disabled]="isMonthDisabled(6)">{{ 'HOME.MONTHS.JULY' | translate }}</option>
-            <option value="7" [disabled]="isMonthDisabled(7)">{{ 'HOME.MONTHS.AUGUST' | translate }}</option>
-            <option value="8" [disabled]="isMonthDisabled(8)">{{ 'HOME.MONTHS.SEPTEMBER' | translate }}</option>
-            <option value="9" [disabled]="isMonthDisabled(9)">{{ 'HOME.MONTHS.OCTOBER' | translate }}</option>
-            <option value="10" [disabled]="isMonthDisabled(10)">{{ 'HOME.MONTHS.NOVEMBER' | translate }}</option>
-            <option value="11" [disabled]="isMonthDisabled(11)">{{ 'HOME.MONTHS.DECEMBER' | translate }}</option>
-          </select>
-        </div>
-      </div>
-      }
-      @if (isFilterActive()) {
-      <button type="button" class="reset-filters-btn" (click)="resetFilters()"
-        title="{{ 'HOME.RESET_FILTERS' | translate }}">
-        <lucide-icon [img]="ResetIcon" size="16"></lucide-icon>
-        <span class="btn-text">{{ 'HOME.RESET_FILTERS' | translate }}</span>
-      </button>
-      }
-      @if (filteredRecords().length > 0) {
-      <div class="filter-box">
-        <div class="select-with-icon">
-          <lucide-icon [img]="ArrowUpDownIcon" size="16"></lucide-icon>
-          <select id="sort-records" name="sort-records" [ngModel]="sortOption()" (ngModelChange)="setSortOption($event)"
-            aria-label="Sort records">
-            @for (option of sortOptions(); track option.value) {
-            <option [value]="option.value">{{ option.direction }} {{ option.labelKey | translate }}</option>
-            }
-          </select>
-        </div>
-      </div>
-      }
+        @if (showSearchDate()) {
+          <div class="search-box date-range">
+            <app-date-picker
+              [date]="startDate() || ''"
+              (dateChange)="startDate.set($event || null)"
+              [placeholder]="'HOME.FILTER_DATE_FROM' | translate"
+            >
+            </app-date-picker>
+            <app-date-picker
+              [date]="endDate() || ''"
+              (dateChange)="endDate.set($event || null)"
+              [placeholder]="'HOME.FILTER_DATE_TO' | translate"
+            >
+            </app-date-picker>
+          </div>
+        }
+        @if (showYearMonth()) {
+          <div class="filter-box">
+            <div class="select-with-icon">
+              <lucide-icon [img]="CalendarDaysIcon" size="16"></lucide-icon>
+              <select
+                id="year-filter"
+                name="year-filter"
+                [ngModel]="searchYear() ?? ''"
+                (ngModelChange)="searchYear.set($event === '' ? null : +$event)"
+                aria-label="Filter by year"
+              >
+                <option value="">{{ 'HOME.FILTER_YEAR' | translate }}</option>
+                @for (year of availableYears(); track year) {
+                  <option [value]="year" [disabled]="isYearDisabled(year)">{{ year }}</option>
+                }
+              </select>
+            </div>
+            <div class="select-with-icon">
+              <lucide-icon [img]="CalendarDaysIcon" size="16"></lucide-icon>
+              <select
+                id="month-filter"
+                name="month-filter"
+                [ngModel]="searchMonth()"
+                (ngModelChange)="searchMonth.set($event !== 'null' ? +$event : null)"
+                aria-label="Filter by month"
+              >
+                <option value="null">{{ 'HOME.FILTER_MONTH' | translate }}</option>
+                <option value="0" [disabled]="isMonthDisabled(0)">
+                  {{ 'HOME.MONTHS.JANUARY' | translate }}
+                </option>
+                <option value="1" [disabled]="isMonthDisabled(1)">
+                  {{ 'HOME.MONTHS.FEBRUARY' | translate }}
+                </option>
+                <option value="2" [disabled]="isMonthDisabled(2)">
+                  {{ 'HOME.MONTHS.MARCH' | translate }}
+                </option>
+                <option value="3" [disabled]="isMonthDisabled(3)">
+                  {{ 'HOME.MONTHS.APRIL' | translate }}
+                </option>
+                <option value="4" [disabled]="isMonthDisabled(4)">
+                  {{ 'HOME.MONTHS.MAY' | translate }}
+                </option>
+                <option value="5" [disabled]="isMonthDisabled(5)">
+                  {{ 'HOME.MONTHS.JUNE' | translate }}
+                </option>
+                <option value="6" [disabled]="isMonthDisabled(6)">
+                  {{ 'HOME.MONTHS.JULY' | translate }}
+                </option>
+                <option value="7" [disabled]="isMonthDisabled(7)">
+                  {{ 'HOME.MONTHS.AUGUST' | translate }}
+                </option>
+                <option value="8" [disabled]="isMonthDisabled(8)">
+                  {{ 'HOME.MONTHS.SEPTEMBER' | translate }}
+                </option>
+                <option value="9" [disabled]="isMonthDisabled(9)">
+                  {{ 'HOME.MONTHS.OCTOBER' | translate }}
+                </option>
+                <option value="10" [disabled]="isMonthDisabled(10)">
+                  {{ 'HOME.MONTHS.NOVEMBER' | translate }}
+                </option>
+                <option value="11" [disabled]="isMonthDisabled(11)">
+                  {{ 'HOME.MONTHS.DECEMBER' | translate }}
+                </option>
+              </select>
+            </div>
+          </div>
+        }
+        @if (isFilterActive()) {
+          <button
+            type="button"
+            class="reset-filters-btn"
+            (click)="resetFilters()"
+            title="{{ 'HOME.RESET_FILTERS' | translate }}"
+          >
+            <lucide-icon [img]="ResetIcon" size="16"></lucide-icon>
+            <span class="btn-text">{{ 'HOME.RESET_FILTERS' | translate }}</span>
+          </button>
+        }
+        @if (filteredRecords().length > 0) {
+          <div class="filter-box">
+            <div class="select-with-icon">
+              <lucide-icon [img]="ArrowUpDownIcon" size="16"></lucide-icon>
+              <select
+                id="sort-records"
+                name="sort-records"
+                [ngModel]="sortOption()"
+                (ngModelChange)="setSortOption($event)"
+                aria-label="Sort records"
+              >
+                @for (option of sortOptions(); track option.value) {
+                  <option [value]="option.value">
+                    {{ option.direction }} {{ option.labelKey | translate }}
+                  </option>
+                }
+              </select>
+            </div>
+          </div>
+        }
       }
       <!-- Slot for parent component to project buttons (e.g., Import/Export) -->
       <ng-content select="[slot=action-buttons]"></ng-content>
       @if (filteredRecords().length > 0 && showEditDelete()) {
-      <button type="button" class="delete-all-btn" (click)="onDeleteAllRecords()"
-        title="{{ 'HOME.DELETE_ALL_TOOLTIP' | translate }}">
-        <lucide-icon [img]="TrashIcon" size="16"></lucide-icon>
-        <span class="btn-text">{{ 'HOME.DELETE_ALL_BUTTON' | translate }} ({{ filteredRecords().length }})</span>
-      </button>
+        <button
+          type="button"
+          class="delete-all-btn"
+          (click)="onDeleteAllRecords()"
+          title="{{ 'HOME.DELETE_ALL_TOOLTIP' | translate }}"
+        >
+          <lucide-icon [img]="TrashIcon" size="16"></lucide-icon>
+          <span class="btn-text"
+            >{{ 'HOME.DELETE_ALL_BUTTON' | translate }} ({{ filteredRecords().length }})</span
+          >
+        </button>
       }
     </div>
   </div>
 
   @if (filteredRecords().length === 0) {
-  <div class="no-records-message">
-    <lucide-icon [img]="InfoIcon" size="14"></lucide-icon>
-    <p>{{ 'HOME.NO_RECORDS' | translate }}</p>
-  </div>
-  } @else {
-  <div class="liters-note-container">
-    @if (valuesNoteKey()) {
-    <p class="liters-note">
+    <div class="no-records-message">
       <lucide-icon [img]="InfoIcon" size="14"></lucide-icon>
-      {{ valuesNoteKey() | translate }}
-    </p>
-    }
-    @if (allowCollapse()) {
-    <button type="button" class="collapse-toggle" (click)="toggleCollapse()"
-      title="{{ (isCollapsed() ? 'HOME.EXPAND' : 'HOME.COLLAPSE') | translate }}">
-      <lucide-icon [img]="isCollapsed() ? ChevronDownIcon : ChevronUpIcon" size="20"></lucide-icon>
-    </button>
-    }
-  </div>
-  <div class="history-list" [class.collapsed]="isCollapsed()">
-    <ul>@for (record of displayedRecords(); track record.date) {
-      <li>
-        <div class="record-header" [class.no-details]="!hasDetails()">
-          <span class="date">{{ record.date | date:'fullDate':undefined:currentLang() }}</span>
-          <div class="record-actions">
-            @if (showTotal()) {
-            <span class="total">{{ totalLabelKey() | translate }}: {{ calculateTotalFn()(record) }}</span>
-            }
-            @if (showEditDelete()) {
-            <button type="button" class="edit-btn" (click)="onEditRecord(record)"
-              title="{{ 'HOME.EDIT_TOOLTIP' | translate }}">
-              <lucide-icon [img]="EditIcon" size="16"></lucide-icon>
-            </button>
-            <button type="button" class="remove-btn" (click)="onDeleteRecord(record)"
-              title="{{ 'HOME.DELETE_TOOLTIP' | translate }}">
-              <lucide-icon [img]="TrashIcon" size="16"></lucide-icon>
-            </button>
-            }
-          </div>
-        </div>
-        @if (hasDetails()) {
-        <div class="record-details">
-          @if (recordDetailsTemplate) {
-          <ng-container *ngTemplateOutlet="recordDetailsTemplate; context: { $implicit: record }"></ng-container>
-          } @else {
-          <div class="consumption-row">
-            <strong>{{ 'HOME.KITCHEN' | translate }}:</strong>
-            <span class="warm-water">{{ 'HOME.WARM_WATER' | translate }}: {{ record['kitchenWarm'] }}</span>
-            <span class="cold-water">{{ 'HOME.COLD_WATER' | translate }}: {{ record['kitchenCold'] }}</span>
-          </div>
-          <div class="consumption-row">
-            <strong>{{ 'HOME.BATHROOM' | translate }}:</strong>
-            <span class="warm-water">{{ 'HOME.WARM_WATER' | translate }}: {{ record['bathroomWarm'] }}</span>
-            <span class="cold-water">{{ 'HOME.COLD_WATER' | translate }}: {{ record['bathroomCold'] }}</span>
-          </div>
-          <div class="consumption-row combined-totals">
-            <span></span>
-            <span class="warm-water">{{ 'HOME.WARM_WATER' | translate }}: {{ record['kitchenWarm'] +
-              record['bathroomWarm']
-              }}</span>
-            <span class="cold-water">{{ 'HOME.COLD_WATER' | translate }}: {{ record['kitchenCold'] +
-              record['bathroomCold']
-              }}</span>
-          </div>
-          }
-        </div>
-        }
-      </li>
+      <p>{{ 'HOME.NO_RECORDS' | translate }}</p>
+    </div>
+  } @else {
+    <div class="liters-note-container">
+      @if (valuesNoteKey()) {
+        <p class="liters-note">
+          <lucide-icon [img]="InfoIcon" size="14"></lucide-icon>
+          {{ valuesNoteKey() | translate }}
+        </p>
       }
-    </ul>
-  </div>
-  @if (!isCollapsed()) {
-  @if (filteredRecords().length > 0) {
-  <div class="pagination-container">
-    <div class="pagination-info">
-      <div class="filter-box pagination-size-selector">
-        <label for="pagination-size">{{ 'HOME.PAGINATION_SIZE' | translate }}:</label>
-        <select id="pagination-size" [ngModel]="paginationSize()" (ngModelChange)="onPaginationSizeChange(+$event)">
-          <option [value]="5">5</option>
-          <option [value]="10">10</option>
-          <option [value]="20">20</option>
-          <option [value]="50">50</option>
-        </select>
-      </div>
-      <p class="records-info">{{ showingRecordsText() }}</p>
-      <p class="page-info">{{ pageOfText() }}</p>
+      @if (allowCollapse()) {
+        <button
+          type="button"
+          class="collapse-toggle"
+          (click)="toggleCollapse()"
+          title="{{ (isCollapsed() ? 'HOME.EXPAND' : 'HOME.COLLAPSE') | translate }}"
+        >
+          <lucide-icon
+            [img]="isCollapsed() ? ChevronDownIcon : ChevronUpIcon"
+            size="20"
+          ></lucide-icon>
+        </button>
+      }
     </div>
-    <div class="pagination-controls">
-      <button type="button" class="pagination-btn" (click)="prevPage()" [disabled]="currentPage() === 1">
-        <lucide-icon [img]="ChevronLeftIcon" size="16"></lucide-icon>
-        {{ 'HOME.PREVIOUS_PAGE' | translate }}
-      </button>
-      <button type="button" class="pagination-btn" (click)="nextPage()" [disabled]="currentPage() >= totalPages()">
-        {{ 'HOME.NEXT_PAGE' | translate }}
-        <lucide-icon [img]="ChevronRightIcon" size="16"></lucide-icon>
-      </button>
+    <div class="history-list" [class.collapsed]="isCollapsed()">
+      <ul>
+        @for (record of displayedRecords(); track record.date) {
+          <li>
+            <div class="record-header" [class.no-details]="!hasDetails()">
+              <span class="date">{{
+                record.date | date: 'fullDate' : undefined : currentLang()
+              }}</span>
+              <div class="record-actions">
+                @if (showTotal()) {
+                  <span class="total"
+                    >{{ totalLabelKey() | translate }}: {{ calculateTotalFn()(record) }}</span
+                  >
+                }
+                @if (showEditDelete()) {
+                  <button
+                    type="button"
+                    class="edit-btn"
+                    (click)="onEditRecord(record)"
+                    title="{{ 'HOME.EDIT_TOOLTIP' | translate }}"
+                  >
+                    <lucide-icon [img]="EditIcon" size="16"></lucide-icon>
+                  </button>
+                  <button
+                    type="button"
+                    class="remove-btn"
+                    (click)="onDeleteRecord(record)"
+                    title="{{ 'HOME.DELETE_TOOLTIP' | translate }}"
+                  >
+                    <lucide-icon [img]="TrashIcon" size="16"></lucide-icon>
+                  </button>
+                }
+              </div>
+            </div>
+            @if (hasDetails()) {
+              <div class="record-details">
+                @if (recordDetailsTemplate) {
+                  <ng-container
+                    *ngTemplateOutlet="recordDetailsTemplate; context: { $implicit: record }"
+                  ></ng-container>
+                } @else {
+                  <div class="consumption-row">
+                    <strong>{{ 'HOME.KITCHEN' | translate }}:</strong>
+                    <span class="warm-water"
+                      >{{ 'HOME.WARM_WATER' | translate }}: {{ record['kitchenWarm'] }}</span
+                    >
+                    <span class="cold-water"
+                      >{{ 'HOME.COLD_WATER' | translate }}: {{ record['kitchenCold'] }}</span
+                    >
+                  </div>
+                  <div class="consumption-row">
+                    <strong>{{ 'HOME.BATHROOM' | translate }}:</strong>
+                    <span class="warm-water"
+                      >{{ 'HOME.WARM_WATER' | translate }}: {{ record['bathroomWarm'] }}</span
+                    >
+                    <span class="cold-water"
+                      >{{ 'HOME.COLD_WATER' | translate }}: {{ record['bathroomCold'] }}</span
+                    >
+                  </div>
+                  <div class="consumption-row combined-totals">
+                    <span></span>
+                    <span class="warm-water"
+                      >{{ 'HOME.WARM_WATER' | translate }}:
+                      {{ record['kitchenWarm'] + record['bathroomWarm'] }}</span
+                    >
+                    <span class="cold-water"
+                      >{{ 'HOME.COLD_WATER' | translate }}:
+                      {{ record['kitchenCold'] + record['bathroomCold'] }}</span
+                    >
+                  </div>
+                }
+              </div>
+            }
+          </li>
+        }
+      </ul>
     </div>
-  </div>
-  }
-  }
+    @if (!isCollapsed()) {
+      @if (filteredRecords().length > 0) {
+        <div class="pagination-container">
+          <div class="pagination-info">
+            <div class="filter-box pagination-size-selector">
+              <label for="pagination-size">{{ 'HOME.PAGINATION_SIZE' | translate }}:</label>
+              <select
+                id="pagination-size"
+                [ngModel]="paginationSize()"
+                (ngModelChange)="onPaginationSizeChange(+$event)"
+              >
+                <option [value]="5">5</option>
+                <option [value]="10">10</option>
+                <option [value]="20">20</option>
+                <option [value]="50">50</option>
+              </select>
+            </div>
+            <p class="records-info">{{ showingRecordsText() }}</p>
+            <p class="page-info">{{ pageOfText() }}</p>
+          </div>
+          <div class="pagination-controls">
+            <button
+              type="button"
+              class="pagination-btn"
+              (click)="prevPage()"
+              [disabled]="currentPage() === 1"
+            >
+              <lucide-icon [img]="ChevronLeftIcon" size="16"></lucide-icon>
+              {{ 'HOME.PREVIOUS_PAGE' | translate }}
+            </button>
+            <button
+              type="button"
+              class="pagination-btn"
+              (click)="nextPage()"
+              [disabled]="currentPage() >= totalPages()"
+            >
+              {{ 'HOME.NEXT_PAGE' | translate }}
+              <lucide-icon [img]="ChevronRightIcon" size="16"></lucide-icon>
+            </button>
+          </div>
+        </div>
+      }
+    }
   }
 </div>
 
 @if (helpSteps().length > 0) {
-<app-help-modal [show]="showHelpModal()" [titleKey]="helpTitleKey()" [steps]="helpSteps()" (close)="closeHelp()">
-</app-help-modal>
+  <app-help-modal
+    [show]="showHelpModal()"
+    [titleKey]="helpTitleKey()"
+    [steps]="helpSteps()"
+    (close)="closeHelp()"
+  >
+  </app-help-modal>
 }

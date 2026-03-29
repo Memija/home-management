@@ -1,4 +1,12 @@
-import { Component, inject, signal, HostListener, OnInit, OnDestroy, PLATFORM_ID } from '@angular/core';
+import {
+  Component,
+  inject,
+  signal,
+  HostListener,
+  OnInit,
+  OnDestroy,
+  PLATFORM_ID,
+} from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { ThemeService, Theme } from '../services/theme.service';
@@ -11,7 +19,7 @@ import { TranslatePipe } from '../pipes/translate.pipe';
   standalone: true,
   imports: [RouterLink, LanguageSwitcherComponent, TranslatePipe],
   templateUrl: './landing.component.html',
-  styleUrl: './landing.component.scss'
+  styleUrl: './landing.component.scss',
 })
 export class LandingComponent implements OnInit, OnDestroy {
   protected readonly themeService = inject(ThemeService);
@@ -30,57 +38,57 @@ export class LandingComponent implements OnInit, OnDestroy {
       icon: '💧',
       titleKey: 'LANDING.FEATURES.WATER_TITLE',
       descKey: 'LANDING.FEATURES.WATER_DESC',
-      color: '#3b82f6'
+      color: '#3b82f6',
     },
     {
       icon: '🔥',
       titleKey: 'LANDING.FEATURES.HEATING_TITLE',
       descKey: 'LANDING.FEATURES.HEATING_DESC',
-      color: '#f59e0b'
+      color: '#f59e0b',
     },
     {
       icon: '⚡',
       titleKey: 'LANDING.FEATURES.ELECTRICITY_TITLE',
       descKey: 'LANDING.FEATURES.ELECTRICITY_DESC',
-      color: '#8b5cf6'
+      color: '#8b5cf6',
     },
     {
       icon: '👨‍👩‍👧‍👦',
       titleKey: 'LANDING.FEATURES.FAMILY_TITLE',
       descKey: 'LANDING.FEATURES.FAMILY_DESC',
-      color: '#10b981'
+      color: '#10b981',
     },
     {
       icon: '📊',
       titleKey: 'LANDING.FEATURES.ANALYTICS_TITLE',
       descKey: 'LANDING.FEATURES.ANALYTICS_DESC',
-      color: '#ec4899'
+      color: '#ec4899',
     },
     {
       icon: '🌍',
       titleKey: 'LANDING.FEATURES.COUNTRY_TITLE',
       descKey: 'LANDING.FEATURES.COUNTRY_DESC',
-      color: '#f97316'
+      color: '#f97316',
     },
     {
       icon: '☁️',
       titleKey: 'LANDING.FEATURES.CLOUD_TITLE',
       descKey: 'LANDING.FEATURES.CLOUD_DESC',
-      color: '#06b6d4'
+      color: '#06b6d4',
     },
     {
       icon: '📄',
       titleKey: 'LANDING.FEATURES.EXPORT_TITLE',
       descKey: 'LANDING.FEATURES.EXPORT_DESC',
-      color: '#14b8a6'
-    }
+      color: '#14b8a6',
+    },
   ];
 
   protected readonly statKeys = [
     { value: '100%', labelKey: 'LANDING.STATS.FREE' },
     { value: '3', labelKey: 'LANDING.STATS.TRACKERS' },
     { value: '∞', labelKey: 'LANDING.STATS.DATA_POINTS' },
-    { value: '0', labelKey: 'LANDING.STATS.ADS' }
+    { value: '0', labelKey: 'LANDING.STATS.ADS' },
   ];
 
   protected readonly leftScenery = [
@@ -114,7 +122,7 @@ export class LandingComponent implements OnInit, OnDestroy {
     { icon: '🔥', top: '25%', left: 'auto', right: '15%', delay: '-4s', size: '2rem' },
     { icon: '⚡', top: '60%', left: '20%', delay: '-8s', size: '2.2rem' },
     { icon: '📊', top: '70%', left: 'auto', right: '10%', delay: '-12s', size: '1.8rem' },
-    { icon: '🏠', top: '40%', left: '70%', delay: '-16s', size: '3rem' }
+    { icon: '🏠', top: '40%', left: '70%', delay: '-16s', size: '3rem' },
   ];
 
   private observer: IntersectionObserver | null = null;
@@ -142,20 +150,20 @@ export class LandingComponent implements OnInit, OnDestroy {
   private setupIntersectionObserver(): void {
     this.observer = new IntersectionObserver(
       (entries) => {
-        entries.forEach(entry => {
+        entries.forEach((entry) => {
           const id = entry.target.getAttribute('data-animate');
           if (id && entry.isIntersecting) {
             // Once visible, stay visible (don't hide on leave)
-            this.isVisible.update(prev => ({ ...prev, [id]: true }));
+            this.isVisible.update((prev) => ({ ...prev, [id]: true }));
           }
         });
       },
-      { threshold: 0.15, rootMargin: '0px 0px -50px 0px' }
+      { threshold: 0.15, rootMargin: '0px 0px -50px 0px' },
     );
 
     // Observe after a tick so the DOM is ready
     setTimeout(() => {
-      document.querySelectorAll('[data-animate]').forEach(el => {
+      document.querySelectorAll('[data-animate]').forEach((el) => {
         this.observer?.observe(el);
       });
     }, 100);
@@ -234,7 +242,7 @@ export class LandingComponent implements OnInit, OnDestroy {
     const themeNames: Record<Theme, string> = {
       light: this.languageService.translate('SETTINGS.THEME_LIGHT'),
       dark: this.languageService.translate('SETTINGS.THEME_DARK'),
-      system: this.languageService.translate('SETTINGS.THEME_SYSTEM')
+      system: this.languageService.translate('SETTINGS.THEME_SYSTEM'),
     };
 
     if (current === 'system') {

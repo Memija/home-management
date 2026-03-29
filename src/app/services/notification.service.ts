@@ -17,7 +17,7 @@ export interface Notification {
 }
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class NotificationService {
   private storage = inject(STORAGE_SERVICE);
@@ -44,17 +44,21 @@ export class NotificationService {
     // Use correct storage keys matching the data services
     const waterRecords = await this.storage.load<ConsumptionRecord[]>('water_consumption_records');
     if (waterRecords) {
-      this.waterRecords.set(waterRecords.map(r => ({ ...r, date: parseSafeDate(r.date) })));
+      this.waterRecords.set(waterRecords.map((r) => ({ ...r, date: parseSafeDate(r.date) })));
     }
 
     const heatingRecords = await this.storage.load<{ date: Date }[]>('heating_consumption_records');
     if (heatingRecords) {
-      this.heatingRecords.set(heatingRecords.map(r => ({ ...r, date: parseSafeDate(r.date) })));
+      this.heatingRecords.set(heatingRecords.map((r) => ({ ...r, date: parseSafeDate(r.date) })));
     }
 
-    const electricityRecords = await this.storage.load<ElectricityRecord[]>('electricity_consumption_records');
+    const electricityRecords = await this.storage.load<ElectricityRecord[]>(
+      'electricity_consumption_records',
+    );
     if (electricityRecords) {
-      this.electricityRecords.set(electricityRecords.map(r => ({ ...r, date: parseSafeDate(r.date) })));
+      this.electricityRecords.set(
+        electricityRecords.map((r) => ({ ...r, date: parseSafeDate(r.date) })),
+      );
     }
 
     // Load address and family data
@@ -127,7 +131,7 @@ export class NotificationService {
         priority: 'high',
         dismissible: true,
         route: '/dashboard/water',
-        fragment: 'input-section'
+        fragment: 'input-section',
       };
       if (!dismissed.includes(notif.id)) {
         notifications.push(notif);
@@ -144,7 +148,7 @@ export class NotificationService {
         priority: 'high',
         dismissible: true,
         route: '/dashboard/heating',
-        fragment: 'input-section'
+        fragment: 'input-section',
       };
       if (!dismissed.includes(notif.id)) {
         notifications.push(notif);
@@ -161,7 +165,7 @@ export class NotificationService {
         priority: 'high',
         dismissible: true,
         route: '/dashboard/electricity',
-        fragment: 'input-section'
+        fragment: 'input-section',
       };
       if (!dismissed.includes(notif.id)) {
         notifications.push(notif);
@@ -181,7 +185,7 @@ export class NotificationService {
         priority: 'low',
         dismissible: true,
         route: '/dashboard/water',
-        fragment: 'input-section'
+        fragment: 'input-section',
       };
       if (!dismissed.includes(notif.id)) {
         notifications.push(notif);
@@ -199,7 +203,7 @@ export class NotificationService {
         priority: 'medium',
         dismissible: true,
         route: '/dashboard/water',
-        fragment: 'input-section'
+        fragment: 'input-section',
       };
       if (!dismissed.includes(notif.id)) {
         notifications.push(notif);
@@ -219,7 +223,7 @@ export class NotificationService {
         priority: 'low',
         dismissible: true,
         route: '/dashboard/heating',
-        fragment: 'input-section'
+        fragment: 'input-section',
       };
       if (!dismissed.includes(notif.id)) {
         notifications.push(notif);
@@ -237,7 +241,7 @@ export class NotificationService {
         priority: 'medium',
         dismissible: true,
         route: '/dashboard/heating',
-        fragment: 'input-section'
+        fragment: 'input-section',
       };
       if (!dismissed.includes(notif.id)) {
         notifications.push(notif);
@@ -257,7 +261,7 @@ export class NotificationService {
         priority: 'low',
         dismissible: true,
         route: '/dashboard/electricity',
-        fragment: 'input-section'
+        fragment: 'input-section',
       };
       if (!dismissed.includes(notif.id)) {
         notifications.push(notif);
@@ -275,7 +279,7 @@ export class NotificationService {
         priority: 'medium',
         dismissible: true,
         route: '/dashboard/electricity',
-        fragment: 'input-section'
+        fragment: 'input-section',
       };
       if (!dismissed.includes(notif.id)) {
         notifications.push(notif);
@@ -292,7 +296,7 @@ export class NotificationService {
         priority: 'medium',
         dismissible: true,
         route: '/dashboard/settings',
-        fragment: 'address-section'
+        fragment: 'address-section',
       };
       if (!dismissed.includes(notif.id)) {
         notifications.push(notif);
@@ -309,7 +313,7 @@ export class NotificationService {
         priority: 'medium',
         dismissible: true,
         route: '/dashboard/settings',
-        fragment: 'family-section'
+        fragment: 'family-section',
       };
       if (!dismissed.includes(notif.id)) {
         notifications.push(notif);
@@ -329,21 +333,33 @@ export class NotificationService {
   /**
    * Calculate if heating reading is due or overdue based on average entry frequency
    */
-  private checkHeatingReadingStatus(): { isDue: boolean; isOverdue: boolean; daysSinceLast: number } {
+  private checkHeatingReadingStatus(): {
+    isDue: boolean;
+    isOverdue: boolean;
+    daysSinceLast: number;
+  } {
     return this.calculateReadingStatus(this.heatingRecords());
   }
 
   /**
    * Calculate if electricity reading is due or overdue based on average entry frequency
    */
-  private checkElectricityReadingStatus(): { isDue: boolean; isOverdue: boolean; daysSinceLast: number } {
+  private checkElectricityReadingStatus(): {
+    isDue: boolean;
+    isOverdue: boolean;
+    daysSinceLast: number;
+  } {
     return this.calculateReadingStatus(this.electricityRecords());
   }
 
   /**
    * Generic method to calculate if a reading is due or overdue based on history
    */
-  private calculateReadingStatus(records: { date: Date | string }[]): { isDue: boolean; isOverdue: boolean; daysSinceLast: number } {
+  private calculateReadingStatus(records: { date: Date | string }[]): {
+    isDue: boolean;
+    isOverdue: boolean;
+    daysSinceLast: number;
+  } {
     // Need at least 2 records to calculate average frequency
     if (records.length < 2) {
       return { isDue: false, isOverdue: false, daysSinceLast: 0 };
@@ -351,13 +367,14 @@ export class NotificationService {
 
     // Sort by date
     const sorted = [...records].sort(
-      (a, b) => parseSafeDate(a.date).getTime() - parseSafeDate(b.date).getTime()
+      (a, b) => parseSafeDate(a.date).getTime() - parseSafeDate(b.date).getTime(),
     );
 
     // Calculate average days between entries
     let totalDays = 0;
     for (let i = 1; i < sorted.length; i++) {
-      const diff = parseSafeDate(sorted[i].date).getTime() - parseSafeDate(sorted[i - 1].date).getTime();
+      const diff =
+        parseSafeDate(sorted[i].date).getTime() - parseSafeDate(sorted[i - 1].date).getTime();
       totalDays += diff / (1000 * 60 * 60 * 24);
     }
     const averageDays = totalDays / (sorted.length - 1);
@@ -365,7 +382,7 @@ export class NotificationService {
     // Calculate days since last entry
     const lastEntry = sorted[sorted.length - 1];
     const daysSinceLast = Math.floor(
-      (Date.now() - parseSafeDate(lastEntry.date).getTime()) / (1000 * 60 * 60 * 24)
+      (Date.now() - parseSafeDate(lastEntry.date).getTime()) / (1000 * 60 * 60 * 24),
     );
 
     // Due when at or past average interval
@@ -378,13 +395,20 @@ export class NotificationService {
     if (averageDays >= 27 && averageDays <= 32) {
       const lastDate = parseSafeDate(lastEntry.date);
       const today = new Date();
-      const monthDiff = (today.getFullYear() * 12 + today.getMonth()) -
+      const monthDiff =
+        today.getFullYear() * 12 +
+        today.getMonth() -
         (lastDate.getFullYear() * 12 + lastDate.getMonth());
 
       if (monthDiff > 0) {
         const isSameOrLaterDay = today.getDate() >= lastDate.getDate();
-        const lastDayOfCurrentMonth = new Date(today.getFullYear(), today.getMonth() + 1, 0).getDate();
-        const isEndOfShorterMonth = today.getDate() === lastDayOfCurrentMonth && lastDate.getDate() > lastDayOfCurrentMonth;
+        const lastDayOfCurrentMonth = new Date(
+          today.getFullYear(),
+          today.getMonth() + 1,
+          0,
+        ).getDate();
+        const isEndOfShorterMonth =
+          today.getDate() === lastDayOfCurrentMonth && lastDate.getDate() > lastDayOfCurrentMonth;
 
         if (isSameOrLaterDay || isEndOfShorterMonth) {
           isMonthlyDue = true;
@@ -418,7 +442,7 @@ export class NotificationService {
    */
   clearDismissed(id: string): void {
     const current = this.dismissedNotifications();
-    const updated = current.filter(n => n !== id);
+    const updated = current.filter((n) => n !== id);
     this.dismissedNotifications.set(updated);
     this.saveDismissedNotifications(updated);
   }

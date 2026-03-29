@@ -30,5 +30,5 @@ export const de = {
   ...landing,
   ...privacy,
   WATER_FACTS: waterFacts,
-  COUNTRY_FACTS: countryFacts
+  COUNTRY_FACTS: countryFacts,
 };

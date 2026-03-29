@@ -15,9 +15,12 @@ describe('ExcelImportService', () => {
       translate: vi.fn((key: string) => {
         const placeholders: Record<string, string> = {
           'SETTINGS.IMPORT_EXCEL_UNKNOWN_ROOMS': 'SETTINGS.IMPORT_EXCEL_UNKNOWN_ROOMS {{rooms}}',
-          'SETTINGS.IMPORT_EXCEL_MISSING_ROOM_MAPPINGS': 'SETTINGS.IMPORT_EXCEL_MISSING_ROOM_MAPPINGS {{rooms}}',
-          'SETTINGS.IMPORT_EXCEL_UNEXPECTED_FIELDS': 'SETTINGS.IMPORT_EXCEL_UNEXPECTED_FIELDS {{fields}}',
-          'SETTINGS.IMPORT_EXCEL_CROSS_SECTION_DUPLICATES': 'SETTINGS.IMPORT_EXCEL_CROSS_SECTION_DUPLICATES {{columns}}'
+          'SETTINGS.IMPORT_EXCEL_MISSING_ROOM_MAPPINGS':
+            'SETTINGS.IMPORT_EXCEL_MISSING_ROOM_MAPPINGS {{rooms}}',
+          'SETTINGS.IMPORT_EXCEL_UNEXPECTED_FIELDS':
+            'SETTINGS.IMPORT_EXCEL_UNEXPECTED_FIELDS {{fields}}',
+          'SETTINGS.IMPORT_EXCEL_CROSS_SECTION_DUPLICATES':
+            'SETTINGS.IMPORT_EXCEL_CROSS_SECTION_DUPLICATES {{columns}}',
         };
         return placeholders[key] || key;
       }),
@@ -42,10 +45,10 @@ describe('ExcelImportService', () => {
               { id: 'livingRoom', name: 'Living Room' },
               { id: 'bedroom', name: 'Bedroom' },
               { id: 'kitchen', name: 'Kitchen' },
-              { id: 'bathroom', name: 'Bathroom' }
-            ])
-          }
-        }
+              { id: 'bathroom', name: 'Bathroom' },
+            ]),
+          },
+        },
       ],
     });
 
@@ -87,7 +90,7 @@ describe('ExcelImportService', () => {
           kitchenWarm: 'KW',
           kitchenCold: 'KC',
           bathroomWarm: 'BW',
-          bathroomCold: 'BC'
+          bathroomCold: 'BC',
         },
         heatingMapping: {
           date: 'Heating Date',
@@ -95,9 +98,9 @@ describe('ExcelImportService', () => {
             livingRoom: 'L',
             bedroom: 'B',
             kitchen: 'K',
-            bathroom: 'BA'
-          }
-        }
+            bathroom: 'BA',
+          },
+        },
       };
 
       const result = service.validateImportedSettings(validData);
@@ -106,8 +109,8 @@ describe('ExcelImportService', () => {
         ...validData,
         electricityMapping: {
           date: 'Date',
-          value: 'Electricity Consumption (kWh)'
-        }
+          value: 'Electricity Consumption (kWh)',
+        },
       };
 
       expect(result).toEqual(expected);
@@ -123,9 +126,9 @@ describe('ExcelImportService', () => {
             livingRoom: 'L',
             bedroom: 'B',
             kitchen: 'K',
-            bathroom: 'BA'
-          }
-        }
+            bathroom: 'BA',
+          },
+        },
       };
 
       try {
@@ -145,7 +148,7 @@ describe('ExcelImportService', () => {
           kitchenWarm: 'KW',
           kitchenCold: 'KC',
           bathroomWarm: 'BW',
-          bathroomCold: 'BC'
+          bathroomCold: 'BC',
         },
         heatingMapping: {
           date: 'Date',
@@ -153,9 +156,9 @@ describe('ExcelImportService', () => {
             livingRoom: 'L',
             bedroom: 'B',
             kitchen: 'K',
-            bathroom: 'BA'
-          }
-        }
+            bathroom: 'BA',
+          },
+        },
       };
 
       try {
@@ -175,7 +178,7 @@ describe('ExcelImportService', () => {
           kitchenWarm: 'Duplicate',
           kitchenCold: 'Duplicate',
           bathroomWarm: 'BW',
-          bathroomCold: 'BC'
+          bathroomCold: 'BC',
         },
         heatingMapping: {
           date: 'Date',
@@ -183,9 +186,9 @@ describe('ExcelImportService', () => {
             livingRoom: 'L',
             bedroom: 'B',
             kitchen: 'K',
-            bathroom: 'BA'
-          }
-        }
+            bathroom: 'BA',
+          },
+        },
       };
 
       try {
@@ -207,7 +210,7 @@ describe('ExcelImportService', () => {
           kitchenWarm: 'KW',
           kitchenCold: 'KC',
           bathroomWarm: 'BW',
-          bathroomCold: 'BC'
+          bathroomCold: 'BC',
         },
         heatingMapping: {
           date: 'Heating Date',
@@ -215,13 +218,13 @@ describe('ExcelImportService', () => {
             livingRoom: 'L',
             bedroom: 'B',
             kitchen: 'K',
-            bathroom: 'BA'
-          }
+            bathroom: 'BA',
+          },
         },
         electricityMapping: {
           date: 'Elec Date',
-          value: 'Elec Value'
-        }
+          value: 'Elec Value',
+        },
       };
 
       const result = service.validateImportedSettings(validData);
@@ -236,12 +239,12 @@ describe('ExcelImportService', () => {
           kitchenWarm: 'KW',
           kitchenCold: 'KC',
           bathroomWarm: 'BW',
-          bathroomCold: 'BC'
+          bathroomCold: 'BC',
         },
         electricityMapping: {
-          date: 'Elec Date'
+          date: 'Elec Date',
           // Missing value
-        }
+        },
       };
 
       try {
@@ -258,8 +261,8 @@ describe('ExcelImportService', () => {
         enabled: true,
         electricityMapping: {
           date: 'Same Column',
-          value: 'Same Column'
-        }
+          value: 'Same Column',
+        },
       };
 
       try {
@@ -282,7 +285,7 @@ describe('ExcelImportService', () => {
           kitchenWarm: 'KW',
           kitchenCold: 'KC',
           bathroomWarm: 'BW',
-          bathroomCold: 'BC'
+          bathroomCold: 'BC',
         },
         heatingMapping: {
           date: 'Shared Date', // Duplicate with Water
@@ -290,9 +293,9 @@ describe('ExcelImportService', () => {
             livingRoom: 'L',
             bedroom: 'B',
             kitchen: 'K',
-            bathroom: 'BA'
-          }
-        }
+            bathroom: 'BA',
+          },
+        },
       };
 
       try {
@@ -313,7 +316,7 @@ describe('ExcelImportService', () => {
           kitchenWarm: 'KW',
           kitchenCold: 'KC',
           bathroomWarm: 'BW',
-          bathroomCold: 'BC'
+          bathroomCold: 'BC',
         },
         heatingMapping: {
           date: 'Heating Date',
@@ -321,9 +324,9 @@ describe('ExcelImportService', () => {
             livingRoom: 'L',
             bedroom: 'B',
             kitchen: 'K',
-            bathroom: 'BA'
-          }
-        }
+            bathroom: 'BA',
+          },
+        },
       };
 
       const result = service.validateImportedSettings(validData);
@@ -340,8 +343,8 @@ describe('ExcelImportService', () => {
           kitchenWarm: 'KW',
           kitchenCold: 'KC',
           bathroomWarm: 'BW',
-          bathroomCold: 'BC'
-        }
+          bathroomCold: 'BC',
+        },
       };
 
       try {
@@ -368,7 +371,7 @@ describe('ExcelImportService', () => {
       const error: ImportError = {
         message: 'Validation Failed',
         details: 'Details...',
-        hintKeys: ['HINT1']
+        hintKeys: ['HINT1'],
       };
       const result = service.mapImportError(error);
       expect(result.message).toBe('Validation Failed');
@@ -391,7 +394,7 @@ describe('ExcelImportService', () => {
           kitchenWarm: 'KW',
           kitchenCold: 'KC',
           bathroomWarm: 'BW',
-          bathroomCold: 'BC'
+          bathroomCold: 'BC',
         },
         heatingMapping: {
           date: 'Heating Date',
@@ -399,9 +402,9 @@ describe('ExcelImportService', () => {
             livingRoom: 'Living Room Column',
             bedroom: 'Bedroom Column',
             kitchen: 'Kitchen Column',
-            bathroom: 'Bathroom Column'
-          }
-        }
+            bathroom: 'Bathroom Column',
+          },
+        },
       };
 
       const result = service.validateImportedSettings(validData);
@@ -417,7 +420,7 @@ describe('ExcelImportService', () => {
           kitchenWarm: 'KW',
           kitchenCold: 'KC',
           bathroomWarm: 'BW',
-          bathroomCold: 'BC'
+          bathroomCold: 'BC',
         },
         heatingMapping: {
           date: 'Heating Date',
@@ -425,9 +428,9 @@ describe('ExcelImportService', () => {
             livingRoom: 'Living Room Column',
             bedroom: 'Bedroom Column',
             kitchen: 'Kitchen Column',
-            bathroom: 'Bathroom Column'
-          }
-        }
+            bathroom: 'Bathroom Column',
+          },
+        },
       };
 
       const result = service.validateImportedSettings(validData);
@@ -442,12 +445,12 @@ describe('ExcelImportService', () => {
           kitchenWarm: 'KW',
           kitchenCold: 'KC',
           bathroomWarm: 'BW',
-          bathroomCold: 'BC'
+          bathroomCold: 'BC',
         },
         heatingMapping: {
           date: 'Heating Date',
-          rooms: {}
-        }
+          rooms: {},
+        },
       };
 
       try {
@@ -466,15 +469,15 @@ describe('ExcelImportService', () => {
           kitchenWarm: 'KW',
           kitchenCold: 'KC',
           bathroomWarm: 'BW',
-          bathroomCold: 'BC'
+          bathroomCold: 'BC',
         },
         heatingMapping: {
           date: 'Heating Date',
           rooms: {
             livingRoom: '', // Empty value
-            bedroom: 'Bedroom'
-          }
-        }
+            bedroom: 'Bedroom',
+          },
+        },
       };
 
       try {
@@ -494,9 +497,9 @@ describe('ExcelImportService', () => {
             bedroom: 'B',
             kitchen: 'K',
             bathroom: 'BA',
-            extraRoom: 'E' // Unknown room ID
-          }
-        }
+            extraRoom: 'E', // Unknown room ID
+          },
+        },
       };
 
       try {
@@ -518,8 +521,8 @@ describe('ExcelImportService', () => {
             livingRoom: 'L',
             bedroom: 'B',
             // Missing kitchen and bathroom
-          }
-        }
+          },
+        },
       };
 
       try {
@@ -542,10 +545,10 @@ describe('ExcelImportService', () => {
             livingRoom: 'L',
             bedroom: 'B',
             kitchen: 'K',
-            bathroom: 'BA'
+            bathroom: 'BA',
           },
-          unexpectedField: 'Value' // Disallowed field
-        }
+          unexpectedField: 'Value', // Disallowed field
+        },
       };
 
       try {

@@ -1,7 +1,15 @@
 import { Component, output, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { TranslatePipe } from '../../pipes/translate.pipe';
-import { LucideAngularModule, X, Mail, AtSign, Laptop, TriangleAlert, HelpCircle } from 'lucide-angular';
+import {
+  LucideAngularModule,
+  X,
+  Mail,
+  AtSign,
+  Laptop,
+  TriangleAlert,
+  HelpCircle,
+} from 'lucide-angular';
 import { HelpModalComponent, HelpStep } from '../help-modal/help-modal.component';
 
 export type EmailClient = 'default' | 'outlook' | 'gmail';
@@ -11,7 +19,7 @@ export type EmailClient = 'default' | 'outlook' | 'gmail';
   standalone: true,
   imports: [FormsModule, TranslatePipe, LucideAngularModule, HelpModalComponent],
   templateUrl: './contact-modal.component.html',
-  styleUrl: './contact-modal.component.scss'
+  styleUrl: './contact-modal.component.scss',
 })
 export class ContactModalComponent {
   protected readonly XIcon = X;
@@ -28,7 +36,7 @@ export class ContactModalComponent {
     { titleKey: 'CONTACT.HELP_STEP_2_TITLE', descriptionKey: 'CONTACT.HELP_STEP_2_DESC' },
     { titleKey: 'CONTACT.HELP_STEP_3_TITLE', descriptionKey: 'CONTACT.HELP_STEP_3_DESC' },
     { titleKey: 'CONTACT.HELP_STEP_4_TITLE', descriptionKey: 'CONTACT.HELP_STEP_4_DESC' },
-    { titleKey: 'CONTACT.HELP_STEP_5_TITLE', descriptionKey: 'CONTACT.HELP_STEP_5_DESC' }
+    { titleKey: 'CONTACT.HELP_STEP_5_TITLE', descriptionKey: 'CONTACT.HELP_STEP_5_DESC' },
   ];
 
   // Form data
@@ -44,7 +52,13 @@ export class ContactModalComponent {
 
   // Output
   close = output<void>();
-  compose = output<{ name: string; email: string; subject: string; message: string; client: EmailClient }>();
+  compose = output<{
+    name: string;
+    email: string;
+    subject: string;
+    message: string;
+    client: EmailClient;
+  }>();
 
   protected validateEmail(email: string): boolean {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -71,17 +85,23 @@ export class ContactModalComponent {
 
   protected getClientIcon(client: EmailClient) {
     switch (client) {
-      case 'default': return this.LaptopIcon;
-      case 'outlook': return this.MailIcon;
-      case 'gmail': return this.AtSignIcon;
+      case 'default':
+        return this.LaptopIcon;
+      case 'outlook':
+        return this.MailIcon;
+      case 'gmail':
+        return this.AtSignIcon;
     }
   }
 
   protected getClientLabel(client: EmailClient): string {
     switch (client) {
-      case 'outlook': return 'Outlook';
-      case 'gmail': return 'Gmail';
-      default: return '';
+      case 'outlook':
+        return 'Outlook';
+      case 'gmail':
+        return 'Gmail';
+      default:
+        return '';
     }
   }
 
@@ -107,7 +127,7 @@ export class ContactModalComponent {
       email: this.email(),
       subject: this.subject(),
       message: this.message(),
-      client: this.emailClient()
+      client: this.emailClient(),
     });
 
     // Reset form

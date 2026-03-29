@@ -13,7 +13,7 @@ import { AuthService } from './auth.service';
  * they stay within Angular's injection context even after async/await boundaries.
  */
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class FirebaseStorageService extends StorageService {
   private firestoreInstance: Firestore | null = null;
@@ -50,7 +50,9 @@ export class FirebaseStorageService extends StorageService {
 
   async save<T>(key: string, data: T): Promise<void> {
     if (!this.isBrowser || !this.uid) {
-      console.warn(`[Firestore] Skipping save for key "${key}" — uid: ${this.uid}, isBrowser: ${this.isBrowser}`);
+      console.warn(
+        `[Firestore] Skipping save for key "${key}" — uid: ${this.uid}, isBrowser: ${this.isBrowser}`,
+      );
       return;
     }
 

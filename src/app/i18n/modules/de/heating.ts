@@ -9,11 +9,14 @@ export const heating = {
     EXPORT_PDF: 'Als PDF exportieren',
     EXPORT_DISABLED_TOOLTIP: 'Keine Datensätze zum Exportieren',
     ENERGY_FACTS_FOR: 'Energiefakten für {{country}}',
-    SELECT_COUNTRY_INFO: 'Wählen Sie ein Land aus, um energiespezifische Fakten und heizungsspezifische Fakten für diese Region zu sehen',
+    SELECT_COUNTRY_INFO:
+      'Wählen Sie ein Land aus, um energiespezifische Fakten und heizungsspezifische Fakten für diese Region zu sehen',
     EXCEL_IMPORT_ERROR_TITLE: 'Excel-Import fehlgeschlagen',
-    EXCEL_IMPORT_ERROR: 'Excel-Daten konnten nicht importiert werden. Bitte überprüfen Sie die Details unten und befolgen Sie die Anweisungen zur Behebung des Problems.',
+    EXCEL_IMPORT_ERROR:
+      'Excel-Daten konnten nicht importiert werden. Bitte überprüfen Sie die Details unten und befolgen Sie die Anweisungen zur Behebung des Problems.',
     JSON_IMPORT_ERROR_TITLE: 'JSON-Import fehlgeschlagen',
-    JSON_IMPORT_ERROR: 'JSON-Daten konnten nicht importiert werden. Bitte überprüfen Sie die Details unten und befolgen Sie die Anweisungen zur Behebung des Problems.',
+    JSON_IMPORT_ERROR:
+      'JSON-Daten konnten nicht importiert werden. Bitte überprüfen Sie die Details unten und befolgen Sie die Anweisungen zur Behebung des Problems.',
     LIVING_AREAS: 'Wohnbereiche',
     SERVICE_AREAS: 'Servicebereiche',
     LIVING_ROOM: 'Wohnzimmer',
@@ -23,14 +26,16 @@ export const heating = {
     SUCCESS_TITLE: 'Erfolg',
     RECORD_SAVED: 'Heizungsverbrauch erfolgreich gespeichert!',
     NEW_ROOM_DETECTED_TITLE: 'Neuer Raum erkannt',
-    NEW_ROOM_DETECTED_MESSAGE: 'Für {{room}} wurde am {{date}} ein erheblicher Verbrauchsanstieg festgestellt. Dies passiert typischerweise, wenn ein neuer Raum während der Saison hinzugefügt wird. Soll das Diagramm angepasst werden, um den Anfangswert zu ignorieren?',
+    NEW_ROOM_DETECTED_MESSAGE:
+      'Für {{room}} wurde am {{date}} ein erheblicher Verbrauchsanstieg festgestellt. Dies passiert typischerweise, wenn ein neuer Raum während der Saison hinzugefügt wird. Soll das Diagramm angepasst werden, um den Anfangswert zu ignorieren?',
     CONFIRM_NEW_ROOM: 'Ja, Diagramm anpassen',
     DISMISS_NEW_ROOM: 'Nein, beibehalten',
     RECORD_CONSUMPTION: 'Heizungsverbrauch erfassen',
     IMPORT_PLACEHOLDER_SKIPPED_SINGULAR: '1 leerer Datensatz ohne Werte wurde übersprungen.',
     IMPORT_PLACEHOLDER_SKIPPED_PLURAL: '{{count}} leere Datensätze ohne Werte wurden übersprungen.',
     ROOMS_SETTINGS_TITLE: 'Raumeinstellungen',
-    ROOMS_SETTINGS_DESCRIPTION: 'Konfigurieren Sie, welche Räume für den Heizungsverbrauch erfasst werden sollen.',
+    ROOMS_SETTINGS_DESCRIPTION:
+      'Konfigurieren Sie, welche Räume für den Heizungsverbrauch erfasst werden sollen.',
     ROOM_NAME_PLACEHOLDER: 'Raumname eingeben',
     ADD_ROOM: 'Raum hinzufügen',
     REMOVE_ROOM: 'Raum entfernen',
@@ -48,37 +53,49 @@ export const heating = {
     MAX_ROOMS_REACHED: 'Maximum von {{max}} Räumen erreicht',
     ERROR_ROOM_NAME_REQUIRED: 'Raumname ist erforderlich',
     ERROR_ROOM_NAME_TOO_LONG: 'Raumname darf 125 Zeichen nicht überschreiten',
-    ERROR_ROOM_NAME_INVALID_CHARS: 'Raumname muss mindestens einen Buchstaben oder eine Zahl enthalten',
+    ERROR_ROOM_NAME_INVALID_CHARS:
+      'Raumname muss mindestens einen Buchstaben oder eine Zahl enthalten',
     ERROR_MIN_ONE_ROOM: 'Mindestens ein Raum ist erforderlich',
     ROOM_LOCKED_TOOLTIP: 'Dieser Raum hat gespeicherte Daten und ist gesperrt',
     ROOM_UNLOCKED_TOOLTIP: 'Klicken zum Sperren dieses Raums',
     UNLOCK_WARNING_TITLE: 'Raum entsperren?',
-    UNLOCK_WARNING_MESSAGE: 'Dieser Raum hat Heizdaten zugeordnet. Das Ändern oder Löschen kann zu Anzeigeproblemen führen.',
+    UNLOCK_WARNING_MESSAGE:
+      'Dieser Raum hat Heizdaten zugeordnet. Das Ändern oder Löschen kann zu Anzeigeproblemen führen.',
     UNLOCK_BUTTON: 'Entsperren',
     DISCARD_WARNING_TITLE: 'Änderungen verwerfen?',
-    DISCARD_WARNING_MESSAGE: 'Sie haben nicht gespeicherte Änderungen. Möchten Sie diese wirklich verwerfen?',
+    DISCARD_WARNING_MESSAGE:
+      'Sie haben nicht gespeicherte Änderungen. Möchten Sie diese wirklich verwerfen?',
     DISCARD_BUTTON: 'Verwerfen',
     // Help Modal
     RECORD_HELP_TITLE: 'Heizungsverbrauch erfassen - Anleitung',
     RECORD_HELP_STEP_1_TITLE: 'Räume konfigurieren',
-    RECORD_HELP_STEP_1_DESC: 'Klicken Sie auf das Zahnrad-Symbol (⚙️), um die zu überwachenden Räume hinzuzufügen oder zu ändern. Sie können bis zu 10 Räume mit benutzerdefinierten Namen hinzufügen.',
+    RECORD_HELP_STEP_1_DESC:
+      'Klicken Sie auf das Zahnrad-Symbol (⚙️), um die zu überwachenden Räume hinzuzufügen oder zu ändern. Sie können bis zu 10 Räume mit benutzerdefinierten Namen hinzufügen.',
     RECORD_HELP_STEP_2_TITLE: 'Datum auswählen',
-    RECORD_HELP_STEP_2_DESC: 'Wählen Sie das Datum für Ihre Ablesung. Die Datumsauswahl verhindert zukünftige Daten, um genaue Aufzeichnungen zu gewährleisten.',
+    RECORD_HELP_STEP_2_DESC:
+      'Wählen Sie das Datum für Ihre Ablesung. Die Datumsauswahl verhindert zukünftige Daten, um genaue Aufzeichnungen zu gewährleisten.',
     RECORD_HELP_STEP_3_TITLE: 'Raumwerte eingeben',
-    RECORD_HELP_STEP_3_DESC: 'Geben Sie den Wert für jeden Raum ein. Sie müssen nicht alle Räume ausfüllen - Teileinträge sind erlaubt!',
+    RECORD_HELP_STEP_3_DESC:
+      'Geben Sie den Wert für jeden Raum ein. Sie müssen nicht alle Räume ausfüllen - Teileinträge sind erlaubt!',
     RECORD_HELP_STEP_4_TITLE: 'Eintrag speichern',
-    RECORD_HELP_STEP_4_DESC: 'Klicken Sie auf "Speichern", um Ihre Heizungsverbrauchsdaten zu speichern. Der Eintrag erscheint im Verlaufsbereich oben.',
+    RECORD_HELP_STEP_4_DESC:
+      'Klicken Sie auf "Speichern", um Ihre Heizungsverbrauchsdaten zu speichern. Der Eintrag erscheint im Verlaufsbereich oben.',
     RECORD_HELP_STEP_5_TITLE: 'Gesperrte Räume',
-    RECORD_HELP_STEP_5_DESC: 'Räume werden gesperrt, wenn ihnen Daten zugeordnet sind, um versehentliche Änderungen zu verhindern. Sie können in den Einstellungen (⚙️) entsperrt werden, es wird jedoch empfohlen, sie gesperrt zu lassen, um die Datenintegrität zu wahren.',
+    RECORD_HELP_STEP_5_DESC:
+      'Räume werden gesperrt, wenn ihnen Daten zugeordnet sind, um versehentliche Änderungen zu verhindern. Sie können in den Einstellungen (⚙️) entsperrt werden, es wird jedoch empfohlen, sie gesperrt zu lassen, um die Datenintegrität zu wahren.',
     // Chart Hilfe
     CHART_HELP_STEP_1_TITLE: 'Was das Diagramm zeigt',
-    CHART_HELP_STEP_1_DESC: 'Das Diagramm visualisiert Ihren Heizverbrauch im Zeitverlauf. Es hilft Ihnen, Perioden mit hohem Verbrauch und saisonale Trends zu erkennen.',
+    CHART_HELP_STEP_1_DESC:
+      'Das Diagramm visualisiert Ihren Heizverbrauch im Zeitverlauf. Es hilft Ihnen, Perioden mit hohem Verbrauch und saisonale Trends zu erkennen.',
     CHART_HELP_STEP_2_TITLE: 'Anzeigemodi & Ansichten',
-    CHART_HELP_STEP_2_DESC: 'Wechseln Sie zwischen "Gesamt kumuliert" (Rohwerte) und "Täglicher Durchschnitt" (Verbrauch pro Tag). Nutzen Sie die Filter, um den Gesamtverbrauch oder die Aufschlüsselung nach Räumen zu sehen.',
+    CHART_HELP_STEP_2_DESC:
+      'Wechseln Sie zwischen "Gesamt kumuliert" (Rohwerte) und "Täglicher Durchschnitt" (Verbrauch pro Tag). Nutzen Sie die Filter, um den Gesamtverbrauch oder die Aufschlüsselung nach Räumen zu sehen.',
     CHART_HELP_STEP_3_TITLE: 'Vergleich',
-    CHART_HELP_STEP_3_DESC: 'Aktivieren Sie im Modus "Täglicher Durchschnitt" die Option "Durchschnitt anzeigen", um Ihren Verbrauch zu vergleichen. Hinweis: Der Vergleich basiert auf kWh und kann bei anderen Einheiten (z. B. Heizkostenverteilern) ungenau sein.',
+    CHART_HELP_STEP_3_DESC:
+      'Aktivieren Sie im Modus "Täglicher Durchschnitt" die Option "Durchschnitt anzeigen", um Ihren Verbrauch zu vergleichen. Hinweis: Der Vergleich basiert auf kWh und kann bei anderen Einheiten (z. B. Heizkostenverteilern) ungenau sein.',
     CHART_HELP_STEP_4_TITLE: 'Interaktion',
-    CHART_HELP_STEP_4_DESC: 'Nutzen Sie Mausrad oder "Pinch"-Geste zum Zoomen. Ziehen Sie zum Verschieben. Klicken Sie auf "Zoom zurücksetzen" für die Vollansicht. Klicken Sie auf Legenden, um Räume ein-/auszublenden.',
+    CHART_HELP_STEP_4_DESC:
+      'Nutzen Sie Mausrad oder "Pinch"-Geste zum Zoomen. Ziehen Sie zum Verschieben. Klicken Sie auf "Zoom zurücksetzen" für die Vollansicht. Klicken Sie auf Legenden, um Räume ein-/auszublenden.',
     ALL_VALUES_IN_UNIT: 'Alle Werte sind in kWh',
     NO_VALUES_ERROR: 'Bitte geben Sie einen Wert für mindestens einen Raum ein.',
     INCOMPLETE_ROOM_ERROR: 'Bitte vervollständigen Sie alle begonnenen Räume.',
@@ -96,22 +113,29 @@ export const heating = {
     IMPORT_ROOMS: 'Importieren',
     // Help Modal for Records List
     RECORDS_HELP_STEP_1_TITLE: 'Datensätze filtern',
-    RECORDS_HELP_STEP_1_DESC: 'Verwenden Sie die Datumsbereichs-, Jahres- oder Monatsfilter, um Ihre Heizungsaufzeichnungen einzugrenzen. Klicken Sie auf "Filter zurücksetzen", um alle aktiven Filter zu löschen und alle Datensätze anzuzeigen.',
+    RECORDS_HELP_STEP_1_DESC:
+      'Verwenden Sie die Datumsbereichs-, Jahres- oder Monatsfilter, um Ihre Heizungsaufzeichnungen einzugrenzen. Klicken Sie auf "Filter zurücksetzen", um alle aktiven Filter zu löschen und alle Datensätze anzuzeigen.',
     RECORDS_HELP_STEP_2_TITLE: 'Sortierung & Seitennummerierung',
-    RECORDS_HELP_STEP_2_DESC: 'Sortieren Sie Datensätze nach Datum oder Gesamtverbrauch über das Dropdown-Menü. Steuern Sie, wie viele Datensätze pro Seite angezeigt werden (5, 10, 20 oder 50) und navigieren Sie mit den Schaltflächen Zurück/Weiter.',
+    RECORDS_HELP_STEP_2_DESC:
+      'Sortieren Sie Datensätze nach Datum oder Gesamtverbrauch über das Dropdown-Menü. Steuern Sie, wie viele Datensätze pro Seite angezeigt werden (5, 10, 20 oder 50) und navigieren Sie mit den Schaltflächen Zurück/Weiter.',
     RECORDS_HELP_STEP_3_TITLE: 'Bearbeiten & Löschen',
-    RECORDS_HELP_STEP_3_DESC: 'Klicken Sie auf das Bearbeitungssymbol (✏️), um einen Datensatz zu ändern, oder auf das Papierkorbsymbol (🗑️), um ihn zu löschen. Sie können auch alle sichtbaren gefilterten Datensätze auf einmal löschen.',
+    RECORDS_HELP_STEP_3_DESC:
+      'Klicken Sie auf das Bearbeitungssymbol (✏️), um einen Datensatz zu ändern, oder auf das Papierkorbsymbol (🗑️), um ihn zu löschen. Sie können auch alle sichtbaren gefilterten Datensätze auf einmal löschen.',
     RECORDS_HELP_STEP_4_TITLE: 'Exportieren & Importieren',
-    RECORDS_HELP_STEP_4_DESC: 'Exportieren Sie Ihre Daten als JSON-, Excel- oder PDF-Dateien. Importieren Sie zuvor exportierte JSON- oder Excel-Dateien, um Ihre Heizungsverbrauchsdaten wiederherzustellen. Es werden nur Datensätze mit Werten ungleich Null importiert.',
+    RECORDS_HELP_STEP_4_DESC:
+      'Exportieren Sie Ihre Daten als JSON-, Excel- oder PDF-Dateien. Importieren Sie zuvor exportierte JSON- oder Excel-Dateien, um Ihre Heizungsverbrauchsdaten wiederherzustellen. Es werden nur Datensätze mit Werten ungleich Null importiert.',
     // Help Modal for Room Settings
     HELP: {
       TITLE: 'Raumeinstellungen Hilfe',
       ROOM_MANAGEMENT_TITLE: 'Räume verwalten',
-      ROOM_MANAGEMENT_DESC: 'Fügen Sie Räume hinzu, bearbeiten oder entfernen Sie sie, um anzupassen, welche Bereiche Sie verfolgen möchten. Sie können bis zu 10 Räume haben. Jeder Raumname muss eindeutig sein und mindestens einen Buchstaben oder eine Zahl enthalten.',
+      ROOM_MANAGEMENT_DESC:
+        'Fügen Sie Räume hinzu, bearbeiten oder entfernen Sie sie, um anzupassen, welche Bereiche Sie verfolgen möchten. Sie können bis zu 10 Räume haben. Jeder Raumname muss eindeutig sein und mindestens einen Buchstaben oder eine Zahl enthalten.',
       LOCKED_ROOMS_TITLE: 'Gesperrte Räume (🔒)',
-      LOCKED_ROOMS_DESC: 'Räume mit vorhandenen Heizdaten werden automatisch gesperrt, um versehentliche Änderungen zu verhindern, die Ihre Aufzeichnungen beeinträchtigen könnten. Sie können sie bei Bedarf entsperren, es wird jedoch empfohlen, sie gesperrt zu lassen, um die Datenintegrität zu wahren.',
+      LOCKED_ROOMS_DESC:
+        'Räume mit vorhandenen Heizdaten werden automatisch gesperrt, um versehentliche Änderungen zu verhindern, die Ihre Aufzeichnungen beeinträchtigen könnten. Sie können sie bei Bedarf entsperren, es wird jedoch empfohlen, sie gesperrt zu lassen, um die Datenintegrität zu wahren.',
       IMPORT_EXPORT_TITLE: 'Konfiguration importieren & exportieren',
-      IMPORT_EXPORT_DESC: 'Speichern Sie Ihre Raumkonfiguration als JSON, um sie zu sichern oder auf ein anderes Gerät zu übertragen. Importieren Sie eine zuvor gespeicherte Konfiguration, um Ihre Raumeinrichtung schnell wiederherzustellen.'
-    }
-  }
+      IMPORT_EXPORT_DESC:
+        'Speichern Sie Ihre Raumkonfiguration als JSON, um sie zu sichern oder auf ein anderes Gerät zu übertragen. Importieren Sie eine zuvor gespeicherte Konfiguration, um Ihre Raumeinrichtung schnell wiederherzustellen.',
+    },
+  },
 };

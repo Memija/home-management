@@ -1,14 +1,44 @@
-import { Component, signal, computed, input, output, effect, inject, ContentChild, TemplateRef, untracked } from '@angular/core';
+import {
+  Component,
+  signal,
+  computed,
+  input,
+  output,
+  effect,
+  inject,
+  ContentChild,
+  TemplateRef,
+  untracked,
+} from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { DatePipe, NgTemplateOutlet } from '@angular/common';
-import { LucideAngularModule, Pencil, Trash2, Calendar, Info, ChevronDown, ChevronUp, ChevronLeft, ChevronRight, CalendarDays, ArrowUpDown, HelpCircle, RotateCcw } from 'lucide-angular';
+import {
+  LucideAngularModule,
+  Pencil,
+  Trash2,
+  Calendar,
+  Info,
+  ChevronDown,
+  ChevronUp,
+  ChevronLeft,
+  ChevronRight,
+  CalendarDays,
+  ArrowUpDown,
+  HelpCircle,
+  RotateCcw,
+} from 'lucide-angular';
 import { TranslatePipe } from '../../pipes/translate.pipe';
 import { DatePickerComponent } from '../date-picker/date-picker.component';
 import { HelpModalComponent, HelpStep } from '../help-modal/help-modal.component';
 import { LanguageService } from '../../services/language.service';
 import { LocalStorageService } from '../../services/local-storage.service';
 
-import { ConsumptionRecord, calculateWaterTotal, calculateKitchenTotal, calculateBathroomTotal } from '../../models/records.model';
+import {
+  ConsumptionRecord,
+  calculateWaterTotal,
+  calculateKitchenTotal,
+  calculateBathroomTotal,
+} from '../../models/records.model';
 
 // Re-export for consumers
 export type { ConsumptionRecord } from '../../models/records.model';
@@ -33,9 +63,17 @@ export type SortOption = string; // Now generic string instead of union
 @Component({
   selector: 'app-detailed-records',
   standalone: true,
-  imports: [FormsModule, DatePipe, NgTemplateOutlet, LucideAngularModule, TranslatePipe, DatePickerComponent, HelpModalComponent],
+  imports: [
+    FormsModule,
+    DatePipe,
+    NgTemplateOutlet,
+    LucideAngularModule,
+    TranslatePipe,
+    DatePickerComponent,
+    HelpModalComponent,
+  ],
   templateUrl: './detailed-records.component.html',
-  styleUrl: './detailed-records.component.scss'
+  styleUrl: './detailed-records.component.scss',
 })
 export class DetailedRecordsComponent {
   private languageService = inject(LanguageService);
@@ -78,7 +116,7 @@ export class DetailedRecordsComponent {
     { value: 'kitchen-desc', labelKey: 'HOME.SORT.KITCHEN_DESC', direction: '↓' },
     { value: 'kitchen-asc', labelKey: 'HOME.SORT.KITCHEN_ASC', direction: '↑' },
     { value: 'bathroom-desc', labelKey: 'HOME.SORT.BATHROOM_DESC', direction: '↓' },
-    { value: 'bathroom-asc', labelKey: 'HOME.SORT.BATHROOM_ASC', direction: '↑' }
+    { value: 'bathroom-asc', labelKey: 'HOME.SORT.BATHROOM_ASC', direction: '↑' },
   ]);
 
   // Callback for calculating total - parent provides record-specific logic
@@ -95,7 +133,12 @@ export class DetailedRecordsComponent {
   deleteRecord = output<GenericRecord>();
   deleteAllRecords = output<GenericRecord[]>();
   filteredRecordsChange = output<GenericRecord[]>();
-  filterStateChange = output<{ year: number | null; month: number | null; startDate: string | null; endDate: string | null }>();
+  filterStateChange = output<{
+    year: number | null;
+    month: number | null;
+    startDate: string | null;
+    endDate: string | null;
+  }>();
 
   // State
   protected startDate = signal<string | null>(null);
@@ -134,7 +177,7 @@ export class DetailedRecordsComponent {
         year: this.searchYear(),
         month: this.searchMonth(),
         startDate: this.startDate(),
-        endDate: this.endDate()
+        endDate: this.endDate(),
       });
     });
   }
@@ -145,7 +188,7 @@ export class DetailedRecordsComponent {
   protected currentLang = computed(() => this.languageService.currentLang());
 
   protected availableYears = computed(() => {
-    const years = new Set(this.records().map(r => new Date(r.date).getFullYear()));
+    const years = new Set(this.records().map((r) => new Date(r.date).getFullYear()));
     return Array.from(years).sort((a, b) => b - a);
   });
 
@@ -157,7 +200,7 @@ export class DetailedRecordsComponent {
     let records = this.records();
 
     if (startDate) {
-      records = records.filter(r => {
+      records = records.filter((r) => {
         const date = new Date(r.date);
         const recordDate = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
         return recordDate >= startDate;
@@ -165,7 +208,7 @@ export class DetailedRecordsComponent {
     }
 
     if (endDate) {
-      records = records.filter(r => {
+      records = records.filter((r) => {
         const date = new Date(r.date);
         const recordDate = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
         return recordDate <= endDate;
@@ -173,21 +216,23 @@ export class DetailedRecordsComponent {
     }
 
     if (searchYear) {
-      records = records.filter(r => new Date(r.date).getFullYear() === searchYear);
+      records = records.filter((r) => new Date(r.date).getFullYear() === searchYear);
     }
 
     if (searchMonth !== null) {
-      records = records.filter(r => new Date(r.date).getMonth() === searchMonth);
+      records = records.filter((r) => new Date(r.date).getMonth() === searchMonth);
     }
 
     return records;
   });
 
   protected isFilterActive = computed(() => {
-    return this.startDate() !== null ||
+    return (
+      this.startDate() !== null ||
       this.endDate() !== null ||
       this.searchYear() !== null ||
-      this.searchMonth() !== null;
+      this.searchMonth() !== null
+    );
   });
 
   protected displayedRecords = computed(() => {
@@ -211,22 +256,37 @@ export class DetailedRecordsComponent {
       }
       // For water-specific sorts, fall back to legacy functions if record has required properties
       if (sortOption === 'kitchen-desc' && 'kitchenWarm' in a) {
-        return calculateKitchenTotal(b as unknown as ConsumptionRecord) - calculateKitchenTotal(a as unknown as ConsumptionRecord);
+        return (
+          calculateKitchenTotal(b as unknown as ConsumptionRecord) -
+          calculateKitchenTotal(a as unknown as ConsumptionRecord)
+        );
       }
       if (sortOption === 'kitchen-asc' && 'kitchenWarm' in a) {
-        return calculateKitchenTotal(a as unknown as ConsumptionRecord) - calculateKitchenTotal(b as unknown as ConsumptionRecord);
+        return (
+          calculateKitchenTotal(a as unknown as ConsumptionRecord) -
+          calculateKitchenTotal(b as unknown as ConsumptionRecord)
+        );
       }
       if (sortOption === 'bathroom-desc' && 'bathroomWarm' in a) {
-        return calculateBathroomTotal(b as unknown as ConsumptionRecord) - calculateBathroomTotal(a as unknown as ConsumptionRecord);
+        return (
+          calculateBathroomTotal(b as unknown as ConsumptionRecord) -
+          calculateBathroomTotal(a as unknown as ConsumptionRecord)
+        );
       }
       if (sortOption === 'bathroom-asc' && 'bathroomWarm' in a) {
-        return calculateBathroomTotal(a as unknown as ConsumptionRecord) - calculateBathroomTotal(b as unknown as ConsumptionRecord);
+        return (
+          calculateBathroomTotal(a as unknown as ConsumptionRecord) -
+          calculateBathroomTotal(b as unknown as ConsumptionRecord)
+        );
       }
       return 0;
     });
 
     // Limit records based on current page and pagination size
-    return records.slice((this.currentPage() - 1) * this.paginationSize(), this.currentPage() * this.paginationSize());
+    return records.slice(
+      (this.currentPage() - 1) * this.paginationSize(),
+      this.currentPage() * this.paginationSize(),
+    );
   });
 
   protected totalPages = computed(() => {
@@ -236,18 +296,16 @@ export class DetailedRecordsComponent {
   protected pageOfText = computed(() => {
     return this.languageService.translate('HOME.PAGE_OF', {
       current: this.currentPage(),
-      total: this.totalPages()
+      total: this.totalPages(),
     });
   });
 
   protected showingRecordsText = computed(() => {
     return this.languageService.translate('HOME.SHOWING_RECORDS', {
       current: this.displayedRecords().length,
-      total: this.filteredRecords().length
+      total: this.filteredRecords().length,
     });
   });
-
-
 
   // Filter Constraint Helpers
   protected isYearDisabled(year: number): boolean {
@@ -298,7 +356,9 @@ export class DetailedRecordsComponent {
       const endDate = new Date(end);
 
       // Calculate month difference
-      const monthsDiff = (endDate.getFullYear() - startDate.getFullYear()) * 12 + (endDate.getMonth() - startDate.getMonth());
+      const monthsDiff =
+        (endDate.getFullYear() - startDate.getFullYear()) * 12 +
+        (endDate.getMonth() - startDate.getMonth());
 
       // If range covers 12 months or more, all months are valid
       if (monthsDiff >= 11) return false;
@@ -350,13 +410,13 @@ export class DetailedRecordsComponent {
   // Pagination methods
   protected nextPage() {
     if (this.currentPage() < this.totalPages()) {
-      this.currentPage.update(page => page + 1);
+      this.currentPage.update((page) => page + 1);
     }
   }
 
   protected prevPage() {
     if (this.currentPage() > 1) {
-      this.currentPage.update(page => page - 1);
+      this.currentPage.update((page) => page - 1);
     }
   }
 
@@ -391,7 +451,7 @@ export class DetailedRecordsComponent {
   }
 
   protected toggleCollapse() {
-    this.isCollapsed.update(v => !v);
+    this.isCollapsed.update((v) => !v);
     const key = `detailed_records_for_${this.recordType()}_are_collapsed`;
     this.localStorageService.setPreference(key, String(this.isCollapsed()));
   }

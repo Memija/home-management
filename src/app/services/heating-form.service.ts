@@ -3,7 +3,7 @@ import { DynamicHeatingRecord } from '../models/records.model';
 import { HeatingRoomsService } from './heating-rooms.service';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class HeatingFormService {
   private roomsService = inject(HeatingRoomsService);
@@ -17,12 +17,12 @@ export class HeatingFormService {
   readonly hasValidInput = computed(() => {
     const values = this.roomValues();
     const rooms = this.roomsService.rooms();
-    return rooms.some(room => values[room.id] !== null && values[room.id] !== undefined);
+    return rooms.some((room) => values[room.id] !== null && values[room.id] !== undefined);
   });
 
   // Get room display name from config
   getRoomDisplayName(roomId: string): string {
-    const roomConfig = this.roomsService.rooms().find(r => r.id === roomId);
+    const roomConfig = this.roomsService.rooms().find((r) => r.id === roomId);
     return roomConfig?.name || roomId;
   }
 
@@ -35,7 +35,7 @@ export class HeatingFormService {
     if (this.editingRecord()) return false;
     const selected = this.selectedDate();
     if (!selected) return false;
-    return records.some(r => {
+    return records.some((r) => {
       const rDate = new Date(r.date);
       return rDate.toISOString().split('T')[0] === selected;
     });
@@ -60,9 +60,9 @@ export class HeatingFormService {
   }
 
   updateField(roomId: string, value: number | null) {
-    this.roomValues.update(values => ({
+    this.roomValues.update((values) => ({
       ...values,
-      [roomId]: value
+      [roomId]: value,
     }));
   }
 
@@ -84,7 +84,7 @@ export class HeatingFormService {
 
     return {
       date: new Date(this.selectedDate()),
-      rooms
+      rooms,
     };
   }
 }

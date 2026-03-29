@@ -22,14 +22,11 @@ describe('LocalStorageService', () => {
     // Replace global localStorage with mock
     Object.defineProperty(window, 'localStorage', {
       value: mockLocalStorage,
-      writable: true
+      writable: true,
     });
 
     TestBed.configureTestingModule({
-      providers: [
-        LocalStorageService,
-        { provide: PLATFORM_ID, useValue: mockPlatformId }
-      ]
+      providers: [LocalStorageService, { provide: PLATFORM_ID, useValue: mockPlatformId }],
     });
     service = TestBed.inject(LocalStorageService);
   });
@@ -54,21 +51,23 @@ describe('LocalStorageService', () => {
       const key = 'testKey';
       const data = { value: 123 };
       const error = new Error('Storage full');
-      mockLocalStorage.setItem.mockImplementation(() => { throw error; });
+      mockLocalStorage.setItem.mockImplementation(() => {
+        throw error;
+      });
       const consoleSpy = vi.spyOn(console, 'error');
 
       await service.save(key, data);
 
-      expect(consoleSpy).toHaveBeenCalledWith(`Error saving to localStorage with key ${key}:`, error);
+      expect(consoleSpy).toHaveBeenCalledWith(
+        `Error saving to localStorage with key ${key}:`,
+        error,
+      );
     });
 
     it('should not save if not browser', async () => {
       TestBed.resetTestingModule();
       TestBed.configureTestingModule({
-        providers: [
-          LocalStorageService,
-          { provide: PLATFORM_ID, useValue: 'server' }
-        ]
+        providers: [LocalStorageService, { provide: PLATFORM_ID, useValue: 'server' }],
       });
       service = TestBed.inject(LocalStorageService);
 
@@ -104,10 +103,7 @@ describe('LocalStorageService', () => {
     it('should not load if not browser', async () => {
       TestBed.resetTestingModule();
       TestBed.configureTestingModule({
-        providers: [
-          LocalStorageService,
-          { provide: PLATFORM_ID, useValue: 'server' }
-        ]
+        providers: [LocalStorageService, { provide: PLATFORM_ID, useValue: 'server' }],
       });
       service = TestBed.inject(LocalStorageService);
       const result = await service.load('key');
@@ -124,11 +120,16 @@ describe('LocalStorageService', () => {
 
     it('should handle errors during delete', async () => {
       const error = new Error('Delete failed');
-      mockLocalStorage.removeItem.mockImplementation(() => { throw error; });
+      mockLocalStorage.removeItem.mockImplementation(() => {
+        throw error;
+      });
       const consoleSpy = vi.spyOn(console, 'error');
 
       await service.delete('testKey');
-      expect(consoleSpy).toHaveBeenCalledWith(`Error deleting from localStorage with key testKey:`, error);
+      expect(consoleSpy).toHaveBeenCalledWith(
+        `Error deleting from localStorage with key testKey:`,
+        error,
+      );
     });
   });
 

@@ -3,11 +3,22 @@
   <div class="landing-toolbar" [class.scrolled]="scrollY() > 50">
     <div class="toolbar-inner">
       <div class="toolbar-brand">
-        <img src="/assets/logo-128.png" alt="Home Management Logo" class="toolbar-logo" width="32" height="32">
+        <img
+          src="/assets/logo-128.png"
+          alt="Home Management Logo"
+          class="toolbar-logo"
+          width="32"
+          height="32"
+        />
       </div>
       <div class="toolbar-actions">
-        <button type="button" class="theme-toggle-btn" (click)="cycleTheme()" [title]="getThemeTitle()"
-          aria-label="Toggle theme">
+        <button
+          type="button"
+          class="theme-toggle-btn"
+          (click)="cycleTheme()"
+          [title]="getThemeTitle()"
+          aria-label="Toggle theme"
+        >
           <span class="theme-icon">{{ getThemeIcon() }}</span>
         </button>
         <app-language-switcher></app-language-switcher>
@@ -16,12 +27,23 @@
   </div>
 
   <!-- Road Progress Indicator (Interactive) -->
-  <div class="road-progress" (click)="onRoadClick($event)" role="scrollbar" aria-label="Page scroll progress"
-    aria-controls="features" aria-orientation="vertical" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"
-    [attr.aria-valuenow]="roadProgress()">
+  <div
+    class="road-progress"
+    (click)="onRoadClick($event)"
+    role="scrollbar"
+    aria-label="Page scroll progress"
+    aria-controls="features"
+    aria-orientation="vertical"
+    aria-valuemin="0"
+    aria-valuemax="100"
+    aria-valuenow="0"
+    [attr.aria-valuenow]="roadProgress()"
+  >
     <div class="road-track">
       <div class="road-fill" [style.height.%]="roadProgress()"></div>
-      <div class="road-car" [style.top.%]="roadProgress()" (mousedown)="onRoadDragStart($event)">🏠</div>
+      <div class="road-car" [style.top.%]="roadProgress()" (mousedown)="onRoadDragStart($event)">
+        🏠
+      </div>
     </div>
   </div>
 
@@ -30,16 +52,32 @@
     <div class="hero-bg">
       <div class="hero-road">
         <svg class="road-svg" viewBox="0 0 200 800" preserveAspectRatio="none">
-          <path d="M100,0 C60,200 140,300 100,500 C60,700 140,800 100,800" stroke="rgba(255,255,255,0.1)"
-            stroke-width="40" fill="none" />
-          <path d="M100,0 C60,200 140,300 100,500 C60,700 140,800 100,800" stroke="rgba(255,255,255,0.05)"
-            stroke-width="2" fill="none" stroke-dasharray="12 8" />
+          <path
+            d="M100,0 C60,200 140,300 100,500 C60,700 140,800 100,800"
+            stroke="rgba(255,255,255,0.1)"
+            stroke-width="40"
+            fill="none"
+          />
+          <path
+            d="M100,0 C60,200 140,300 100,500 C60,700 140,800 100,800"
+            stroke="rgba(255,255,255,0.05)"
+            stroke-width="2"
+            fill="none"
+            stroke-dasharray="12 8"
+          />
         </svg>
       </div>
       <div class="floating-icons" [style.transform]="getParallaxTransform(-0.3)">
-        @for(icon of floatingIcons; track i; let i = $index) {
-        <span class="float-icon" [style.top]="icon.top" [style.left]="icon.left" [style.right]="icon.right || 'auto'"
-          [style.font-size]="icon.size" [style.animation-delay]="icon.delay">{{ icon.icon }}</span>
+        @for (icon of floatingIcons; track i; let i = $index) {
+          <span
+            class="float-icon"
+            [style.top]="icon.top"
+            [style.left]="icon.left"
+            [style.right]="icon.right || 'auto'"
+            [style.font-size]="icon.size"
+            [style.animation-delay]="icon.delay"
+            >{{ icon.icon }}</span
+          >
         }
       </div>
     </div>
@@ -77,10 +115,10 @@
   <section class="stats-section" data-animate="stats">
     <div class="stats-container" [class.visible]="isVisible()['stats']">
       @for (stat of statKeys; track stat.labelKey) {
-      <div class="stat-item">
-        <span class="stat-value">{{ stat.value }}</span>
-        <span class="stat-label">{{ stat.labelKey | translate }}</span>
-      </div>
+        <div class="stat-item">
+          <span class="stat-value">{{ stat.value }}</span>
+          <span class="stat-label">{{ stat.labelKey | translate }}</span>
+        </div>
       }
     </div>
   </section>
@@ -90,24 +128,35 @@
     <!-- Curving road SVG -->
     <svg class="page-road-svg" viewBox="0 0 200 1000" preserveAspectRatio="none" aria-hidden="true">
       <!-- Road surface (single lane) -->
-      <path class="road-surface"
+      <path
+        class="road-surface"
         d="M100,0 C60,100 140,200 100,300 C60,400 140,500 100,600 C60,700 140,800 100,900 C80,950 120,1000 100,1000"
-        stroke-width="14" fill="none" />
+        stroke-width="14"
+        fill="none"
+      />
     </svg>
     <!-- Left side of the road -->
-    @for(item of leftScenery; track i; let i = $index) {
-    <span class="scenery-item {{ item.type }}" [style.top.%]="item.top" [style.left.%]="item.left"
-      [style.transition-delay.s]="item.delay">
-      {{ item.icon }}
-    </span>
+    @for (item of leftScenery; track i; let i = $index) {
+      <span
+        class="scenery-item {{ item.type }}"
+        [style.top.%]="item.top"
+        [style.left.%]="item.left"
+        [style.transition-delay.s]="item.delay"
+      >
+        {{ item.icon }}
+      </span>
     }
 
     <!-- Right side of the road -->
-    @for(item of rightScenery; track i; let i = $index) {
-    <span class="scenery-item {{ item.type }}" [style.top.%]="item.top" [style.left.%]="item.left"
-      [style.transition-delay.s]="item.delay">
-      {{ item.icon }}
-    </span>
+    @for (item of rightScenery; track i; let i = $index) {
+      <span
+        class="scenery-item {{ item.type }}"
+        [style.top.%]="item.top"
+        [style.left.%]="item.left"
+        [style.transition-delay.s]="item.delay"
+      >
+        {{ item.icon }}
+      </span>
     }
   </div>
 
@@ -124,33 +173,45 @@
       <!-- Road SVG backbone -->
       <div class="road-backbone">
         <svg viewBox="0 0 100 2400" preserveAspectRatio="none" class="road-line-svg">
-          <path d="M50,0 L50,2400" stroke="var(--border-color)" stroke-width="3" fill="none" stroke-dasharray="8 6"
-            opacity="0.5" />
+          <path
+            d="M50,0 L50,2400"
+            stroke="var(--border-color)"
+            stroke-width="3"
+            fill="none"
+            stroke-dasharray="8 6"
+            opacity="0.5"
+          />
         </svg>
       </div>
 
       @for (feature of featureKeys; track feature.titleKey; let i = $index) {
-      <div class="feature-stop" [attr.data-animate]="'feature-' + i" [class.visible]="isVisible()['feature-' + i]"
-        [class.left]="i % 2 === 0" [class.right]="i % 2 !== 0">
+        <div
+          class="feature-stop"
+          [attr.data-animate]="'feature-' + i"
+          [class.visible]="isVisible()['feature-' + i]"
+          [class.left]="i % 2 === 0"
+          [class.right]="i % 2 !== 0"
+        >
+          <!-- Road milestone marker -->
+          <div class="milestone-marker">
+            <div class="milestone-dot" [style.border-color]="feature.color">
+              <div class="milestone-inner" [style.background]="feature.color"></div>
+            </div>
+          </div>
 
-        <!-- Road milestone marker -->
-        <div class="milestone-marker">
-          <div class="milestone-dot" [style.border-color]="feature.color">
-            <div class="milestone-inner" [style.background]="feature.color"></div>
+          <div class="feature-card">
+            <div class="feature-icon-wrapper" [style.background]="feature.color + '18'">
+              <span class="feature-icon">{{ feature.icon }}</span>
+            </div>
+            <div class="feature-content">
+              <h3 class="feature-title" [style.color]="feature.color">
+                {{ feature.titleKey | translate }}
+              </h3>
+              <p class="feature-description">{{ feature.descKey | translate }}</p>
+            </div>
+            <div class="feature-number" [style.color]="feature.color + '30'">{{ i + 1 }}</div>
           </div>
         </div>
-
-        <div class="feature-card">
-          <div class="feature-icon-wrapper" [style.background]="feature.color + '18'">
-            <span class="feature-icon">{{ feature.icon }}</span>
-          </div>
-          <div class="feature-content">
-            <h3 class="feature-title" [style.color]="feature.color">{{ feature.titleKey | translate }}</h3>
-            <p class="feature-description">{{ feature.descKey | translate }}</p>
-          </div>
-          <div class="feature-number" [style.color]="feature.color + '30'">{{ i + 1 }}</div>
-        </div>
-      </div>
       }
     </div>
   </section>
@@ -217,12 +278,22 @@
   <footer class="landing-footer">
     <div class="footer-inner">
       <div class="footer-brand">
-        <img src="/assets/logo-128.png" alt="Home Management Logo" class="footer-logo" width="28" height="28">
+        <img
+          src="/assets/logo-128.png"
+          alt="Home Management Logo"
+          class="footer-logo"
+          width="28"
+          height="28"
+        />
         <span class="footer-name">{{ 'FOOTER.APP_NAME' | translate }}</span>
       </div>
       <div class="footer-links">
-        <a href="https://github.com/Memija/home-management" target="_blank" rel="noopener noreferrer">{{
-          'LANDING.FOOTER.GITHUB' | translate }}</a>
+        <a
+          href="https://github.com/Memija/home-management"
+          target="_blank"
+          rel="noopener noreferrer"
+          >{{ 'LANDING.FOOTER.GITHUB' | translate }}</a
+        >
         <a routerLink="/dashboard">{{ 'LANDING.FOOTER.OPEN_APP' | translate }}</a>
       </div>
     </div>

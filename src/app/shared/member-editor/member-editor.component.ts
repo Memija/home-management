@@ -1,7 +1,17 @@
 import { Component, input, output, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { LucideAngularModule, Save, X, Upload, User, Baby, Mars, Venus, TriangleAlert } from 'lucide-angular';
+import {
+  LucideAngularModule,
+  Save,
+  X,
+  Upload,
+  User,
+  Baby,
+  Mars,
+  Venus,
+  TriangleAlert,
+} from 'lucide-angular';
 import { HouseholdMember } from '../../services/household.service';
 import { TranslatePipe } from '../../pipes/translate.pipe';
 
@@ -19,7 +29,7 @@ export interface MemberEditData {
   standalone: true,
   imports: [CommonModule, FormsModule, LucideAngularModule, TranslatePipe],
   templateUrl: './member-editor.component.html',
-  styleUrl: './member-editor.component.scss'
+  styleUrl: './member-editor.component.scss',
 })
 export class MemberEditorComponent {
   /** The member being edited */
@@ -27,7 +37,6 @@ export class MemberEditorComponent {
 
   /** Available avatar options */
   avatars = input.required<string[]>();
-
 
   /** Emits the updated member data on save */
   save = output<MemberEditData>();
@@ -120,7 +129,7 @@ export class MemberEditorComponent {
       surname: this.editSurname(),
       type: this.editType(),
       gender: this.editGender(),
-      avatar: avatar
+      avatar: avatar,
     });
   }
 

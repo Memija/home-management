@@ -19,7 +19,7 @@ const defaultElectricityFacts = {
     'Windenergie ist eine der am schnellsten wachsenden Stromquellen der Welt.',
     'Solarmodule können auch an bewölkten Tagen Strom erzeugen, wenn auch weniger effektiv.',
     'Kernkraftwerke liefern etwa 10% des weltweiten Stroms.',
-    'Das größte Kraftwerk der Welt ist der Drei-Schluchten-Staudamm in China.'
+    'Das größte Kraftwerk der Welt ist der Drei-Schluchten-Staudamm in China.',
   ],
   WORLD: [
     'Der erste Elektromotor wurde 1821 von Michael Faraday gebaut.',
@@ -33,8 +33,8 @@ const defaultElectricityFacts = {
     'Elektroautos werden immer beliebter, um die Abhängigkeit von fossilen Brennstoffen zu reduzieren.',
     'Smart Meter ermöglichen Haushalten, ihren Stromverbrauch in Echtzeit zu verfolgen.',
     'Mikronetze sind kleine Stromnetze, die unabhängig vom Hauptnetz arbeiten können.',
-    'Hochspannungs-Gleichstrom (HGÜ) ermöglicht eine effiziente Stromübertragung über lange Strecken.'
-  ]
+    'Hochspannungs-Gleichstrom (HGÜ) ermöglicht eine effiziente Stromübertragung über lange Strecken.',
+  ],
 };
 
 // Merge all regional facts
@@ -44,7 +44,7 @@ export const electricityCountryFacts: Record<string, string[]> = {
   ...asiaPacificElectricityFacts,
   ...middleEastElectricityFacts,
   ...africaElectricityFacts,
-  ...defaultElectricityFacts
+  ...defaultElectricityFacts,
 };
 
 // List of available countries with translation keys
@@ -113,5 +113,5 @@ export const availableElectricityCountries = [
   { code: 'EG', nameKey: 'COUNTRIES.EGYPT' },
   { code: 'NG', nameKey: 'COUNTRIES.NIGERIA' },
   { code: 'KE', nameKey: 'COUNTRIES.KENYA' },
-  { code: 'MA', nameKey: 'COUNTRIES.MOROCCO' }
+  { code: 'MA', nameKey: 'COUNTRIES.MOROCCO' },
 ];

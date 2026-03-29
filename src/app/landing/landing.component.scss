@@ -2,7 +2,12 @@
 // Landing Page Styles
 // ============================================
 
-$landing-font: 'Inter', 'Segoe UI', system-ui, -apple-system, sans-serif;
+$landing-font:
+  'Inter',
+  'Segoe UI',
+  system-ui,
+  -apple-system,
+  sans-serif;
 
 .landing-page {
   font-family: $landing-font;
@@ -120,7 +125,7 @@ $landing-font: 'Inter', 'Segoe UI', system-ui, -apple-system, sans-serif;
 
 // Theme-aware overrides for light mode
 // Using :host-context to traverse up the DOM past Angular's encapsulation
-:host-context([data-theme="light"]) {
+:host-context([data-theme='light']) {
   .landing-toolbar.scrolled {
     background: rgba(255, 255, 255, 0.9);
     box-shadow: 0 2px 20px rgba(0, 0, 0, 0.08);

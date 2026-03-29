@@ -19,7 +19,7 @@ const createMockCtx = () => ({
   lineWidth: 0,
   font: '',
   textAlign: '' as CanvasTextAlign,
-  textBaseline: '' as CanvasTextBaseline
+  textBaseline: '' as CanvasTextBaseline,
 });
 
 const createMockChart = (recordCount: number) => {
@@ -28,26 +28,25 @@ const createMockChart = (recordCount: number) => {
     ctx,
     scales: {
       x: {
-        getPixelForValue: vi.fn().mockImplementation((index: number) => 100 + index * 50)
-      }
+        getPixelForValue: vi.fn().mockImplementation((index: number) => 100 + index * 50),
+      },
     },
     chartArea: {
       top: 10,
       bottom: 300,
       left: 50,
-      right: 500
-    }
+      right: 500,
+    },
   } as unknown as Chart;
 };
 
 const makeHeatingRecords = (values: number[]): DynamicHeatingRecord[] =>
   values.map((v, i) => ({
     date: new Date(2024, i, 15),
-    rooms: { room1: v }
+    rooms: { room1: v },
   }));
 
 describe('Chart Plugins', () => {
-
   afterEach(() => {
     vi.restoreAllMocks();
   });
@@ -208,7 +207,7 @@ describe('Chart Plugins', () => {
         const records = [
           { date: new Date(2024, 0, 15) },
           { date: new Date(2024, 1, 15) },
-          { date: new Date(2024, 2, 15) }
+          { date: new Date(2024, 2, 15) },
         ];
         // All return 0, so they're all "flat" → should detect a period
         summerSunPlugin.beforeDatasetsDraw(chart, {}, { enabled: true, records });
@@ -220,7 +219,7 @@ describe('Chart Plugins', () => {
         const records: DynamicHeatingRecord[] = [
           { date: new Date(2024, 0, 15), rooms: { room1: 50, room2: 50 } },
           { date: new Date(2024, 1, 15), rooms: { room1: 50, room2: 50 } },
-          { date: new Date(2024, 2, 15), rooms: { room1: 60, room2: 60 } }
+          { date: new Date(2024, 2, 15), rooms: { room1: 60, room2: 60 } },
         ];
         // Total: 100, 100, 120 → flat from 0-1
         summerSunPlugin.beforeDatasetsDraw(chart, {}, { enabled: true, records });
@@ -263,10 +262,7 @@ describe('Chart Plugins', () => {
       it('should return early when xScale is missing', () => {
         const chart = createMockChart(2);
         (chart as any).scales = {};
-        const records = [
-          { date: new Date(2023, 11, 15) },
-          { date: new Date(2024, 0, 15) }
-        ];
+        const records = [{ date: new Date(2023, 11, 15) }, { date: new Date(2024, 0, 15) }];
         newYearMarkerPlugin.beforeDatasetsDraw(chart, {}, { enabled: true, records });
         expect((chart.ctx as any).save).not.toHaveBeenCalled();
       });
@@ -274,10 +270,7 @@ describe('Chart Plugins', () => {
       it('should return early when chartArea is missing', () => {
         const chart = createMockChart(2);
         (chart as any).chartArea = undefined;
-        const records = [
-          { date: new Date(2023, 11, 15) },
-          { date: new Date(2024, 0, 15) }
-        ];
+        const records = [{ date: new Date(2023, 11, 15) }, { date: new Date(2024, 0, 15) }];
         newYearMarkerPlugin.beforeDatasetsDraw(chart, {}, { enabled: true, records });
         expect((chart.ctx as any).save).not.toHaveBeenCalled();
       });
@@ -286,10 +279,7 @@ describe('Chart Plugins', () => {
     describe('Year change detection', () => {
       it('should detect year boundary', () => {
         const chart = createMockChart(2);
-        const records = [
-          { date: new Date(2023, 11, 15) },
-          { date: new Date(2024, 0, 15) }
-        ];
+        const records = [{ date: new Date(2023, 11, 15) }, { date: new Date(2024, 0, 15) }];
         newYearMarkerPlugin.beforeDatasetsDraw(chart, {}, { enabled: true, records });
 
         expect((chart.ctx as any).save).toHaveBeenCalled();
@@ -301,7 +291,7 @@ describe('Chart Plugins', () => {
         const records = [
           { date: new Date(2024, 0, 15) },
           { date: new Date(2024, 3, 15) },
-          { date: new Date(2024, 6, 15) }
+          { date: new Date(2024, 6, 15) },
         ];
         newYearMarkerPlugin.beforeDatasetsDraw(chart, {}, { enabled: true, records });
 
@@ -314,7 +304,7 @@ describe('Chart Plugins', () => {
           { date: new Date(2022, 11, 15) },
           { date: new Date(2023, 0, 15) },
           { date: new Date(2023, 11, 15) },
-          { date: new Date(2024, 0, 15) }
+          { date: new Date(2024, 0, 15) },
         ];
         newYearMarkerPlugin.beforeDatasetsDraw(chart, {}, { enabled: true, records });
 
@@ -326,10 +316,7 @@ describe('Chart Plugins', () => {
     describe('Drawing operations', () => {
       it('should draw dashed vertical line at year boundary', () => {
         const chart = createMockChart(2);
-        const records = [
-          { date: new Date(2023, 11, 15) },
-          { date: new Date(2024, 0, 15) }
-        ];
+        const records = [{ date: new Date(2023, 11, 15) }, { date: new Date(2024, 0, 15) }];
         newYearMarkerPlugin.beforeDatasetsDraw(chart, {}, { enabled: true, records });
 
         const ctx = chart.ctx as any;
@@ -339,10 +326,7 @@ describe('Chart Plugins', () => {
 
       it('should draw year label', () => {
         const chart = createMockChart(2);
-        const records = [
-          { date: new Date(2023, 11, 15) },
-          { date: new Date(2024, 0, 15) }
-        ];
+        const records = [{ date: new Date(2023, 11, 15) }, { date: new Date(2024, 0, 15) }];
         newYearMarkerPlugin.beforeDatasetsDraw(chart, {}, { enabled: true, records });
 
         const ctx = chart.ctx as any;
@@ -355,10 +339,7 @@ describe('Chart Plugins', () => {
 
       it('should draw star icon', () => {
         const chart = createMockChart(2);
-        const records = [
-          { date: new Date(2023, 11, 15) },
-          { date: new Date(2024, 0, 15) }
-        ];
+        const records = [{ date: new Date(2023, 11, 15) }, { date: new Date(2024, 0, 15) }];
         newYearMarkerPlugin.beforeDatasetsDraw(chart, {}, { enabled: true, records });
 
         const ctx = chart.ctx as any;
@@ -370,10 +351,7 @@ describe('Chart Plugins', () => {
 
       it('should draw purple background for label', () => {
         const chart = createMockChart(2);
-        const records = [
-          { date: new Date(2023, 11, 15) },
-          { date: new Date(2024, 0, 15) }
-        ];
+        const records = [{ date: new Date(2023, 11, 15) }, { date: new Date(2024, 0, 15) }];
         newYearMarkerPlugin.beforeDatasetsDraw(chart, {}, { enabled: true, records });
 
         const ctx = chart.ctx as any;
@@ -382,10 +360,7 @@ describe('Chart Plugins', () => {
 
       it('should call save and restore for each year change', () => {
         const chart = createMockChart(2);
-        const records = [
-          { date: new Date(2023, 11, 15) },
-          { date: new Date(2024, 0, 15) }
-        ];
+        const records = [{ date: new Date(2023, 11, 15) }, { date: new Date(2024, 0, 15) }];
         newYearMarkerPlugin.beforeDatasetsDraw(chart, {}, { enabled: true, records });
 
         const ctx = chart.ctx as any;
@@ -395,10 +370,7 @@ describe('Chart Plugins', () => {
 
       it('should use correct pixel positions from xScale', () => {
         const chart = createMockChart(2);
-        const records = [
-          { date: new Date(2023, 11, 15) },
-          { date: new Date(2024, 0, 15) }
-        ];
+        const records = [{ date: new Date(2023, 11, 15) }, { date: new Date(2024, 0, 15) }];
         newYearMarkerPlugin.beforeDatasetsDraw(chart, {}, { enabled: true, records });
 
         // Year change at index 1, so getPixelForValue(1) should be called
@@ -409,7 +381,7 @@ describe('Chart Plugins', () => {
 
   describe('registerChartPlugins', () => {
     it('should register both plugins with Chart.js', () => {
-      const registerSpy = vi.spyOn(Chart, 'register').mockImplementation(() => { });
+      const registerSpy = vi.spyOn(Chart, 'register').mockImplementation(() => {});
 
       registerChartPlugins();
 
@@ -448,10 +420,7 @@ describe('Chart Plugins', () => {
 
     it('newYearMarker: should handle dates at exact year boundary', () => {
       const chart = createMockChart(2);
-      const records = [
-        { date: new Date(2023, 11, 31) },
-        { date: new Date(2024, 0, 1) }
-      ];
+      const records = [{ date: new Date(2023, 11, 31) }, { date: new Date(2024, 0, 1) }];
       newYearMarkerPlugin.beforeDatasetsDraw(chart, {}, { enabled: true, records });
 
       expect((chart.ctx as any).save).toHaveBeenCalled();
@@ -459,10 +428,7 @@ describe('Chart Plugins', () => {
 
     it('newYearMarker: should not trigger for same year different months', () => {
       const chart = createMockChart(2);
-      const records = [
-        { date: new Date(2024, 0, 1) },
-        { date: new Date(2024, 11, 31) }
-      ];
+      const records = [{ date: new Date(2024, 0, 1) }, { date: new Date(2024, 11, 31) }];
       newYearMarkerPlugin.beforeDatasetsDraw(chart, {}, { enabled: true, records });
 
       expect((chart.ctx as any).save).not.toHaveBeenCalled();
@@ -470,10 +436,7 @@ describe('Chart Plugins', () => {
 
     it('newYearMarker: should handle large year gaps', () => {
       const chart = createMockChart(2);
-      const records = [
-        { date: new Date(2020, 5, 15) },
-        { date: new Date(2024, 5, 15) }
-      ];
+      const records = [{ date: new Date(2020, 5, 15) }, { date: new Date(2024, 5, 15) }];
       newYearMarkerPlugin.beforeDatasetsDraw(chart, {}, { enabled: true, records });
 
       // currYear (2024) > prevYear (2020), so should draw once

@@ -9,7 +9,9 @@ import { vi, afterEach } from 'vitest';
 
 @Pipe({ name: 'translate', standalone: true })
 class MockTranslatePipe implements PipeTransform {
-  transform(key: string): string { return key; }
+  transform(key: string): string {
+    return key;
+  }
 }
 
 @Component({ selector: 'app-date-picker', standalone: true, template: '' })
@@ -35,8 +37,8 @@ const makeGroups = (values: Record<string, number | null>[]): ConsumptionGroup[]
     fields: Object.entries(fields).map(([key, value]) => ({
       key,
       label: `LABEL_${key}`,
-      value
-    }))
+      value,
+    })),
   }));
 };
 
@@ -48,15 +50,15 @@ describe('ConsumptionInputComponent', () => {
   beforeEach(async () => {
     languageServiceMock = {
       currentLang: signal('en'),
-      translate: vi.fn().mockImplementation((key: string) => key)
+      translate: vi.fn().mockImplementation((key: string) => key),
     };
 
     await TestBed.configureTestingModule({
-      imports: [ConsumptionInputComponent]
+      imports: [ConsumptionInputComponent],
     })
       .overrideComponent(ConsumptionInputComponent, {
         remove: { imports: [TranslatePipe, DatePickerComponent, HelpModalComponent] },
-        add: { imports: [MockTranslatePipe, MockDatePickerComponent, MockHelpModalComponent] }
+        add: { imports: [MockTranslatePipe, MockDatePickerComponent, MockHelpModalComponent] },
       })
       .overrideProvider(LanguageService, { useValue: languageServiceMock })
       .compileComponents();
@@ -74,7 +76,10 @@ describe('ConsumptionInputComponent', () => {
     selectedDate?: string;
     maxDate?: string;
   }) => {
-    fixture.componentRef.setInput('groups', overrides?.groups ?? makeGroups([{ a: null, b: null }]));
+    fixture.componentRef.setInput(
+      'groups',
+      overrides?.groups ?? makeGroups([{ a: null, b: null }]),
+    );
     fixture.componentRef.setInput('selectedDate', overrides?.selectedDate ?? '2024-06-15');
     fixture.componentRef.setInput('maxDate', overrides?.maxDate ?? '2024-12-31');
     fixture.detectChanges();
@@ -314,17 +319,32 @@ describe('ConsumptionInputComponent', () => {
     });
 
     it('should return true with one complete group and one empty group', () => {
-      initWithDefaults({ groups: makeGroups([{ a: 10, b: 20 }, { c: null, d: null }]) });
+      initWithDefaults({
+        groups: makeGroups([
+          { a: 10, b: 20 },
+          { c: null, d: null },
+        ]),
+      });
       expect((component as any).hasValidInput()).toBe(true);
     });
 
     it('should return false with one partial group and one empty group', () => {
-      initWithDefaults({ groups: makeGroups([{ a: 10, b: null }, { c: null, d: null }]) });
+      initWithDefaults({
+        groups: makeGroups([
+          { a: 10, b: null },
+          { c: null, d: null },
+        ]),
+      });
       expect((component as any).hasValidInput()).toBe(false);
     });
 
     it('should return true when all groups are complete', () => {
-      initWithDefaults({ groups: makeGroups([{ a: 10, b: 20 }, { c: 30, d: 40 }]) });
+      initWithDefaults({
+        groups: makeGroups([
+          { a: 10, b: 20 },
+          { c: 30, d: 40 },
+        ]),
+      });
       expect((component as any).hasValidInput()).toBe(true);
     });
   });
@@ -400,13 +420,16 @@ describe('ConsumptionInputComponent', () => {
       (component as any).onSave();
       expect(spy).toHaveBeenCalledWith({
         date: '2024-06-15',
-        fields: { coldWater: 10, warmWater: 20 }
+        fields: { coldWater: 10, warmWater: 20 },
       });
     });
 
     it('should only emit non-null fields in save data', () => {
       initWithDefaults({
-        groups: makeGroups([{ a: 10, b: 20 }, { c: null, d: null }])
+        groups: makeGroups([
+          { a: 10, b: 20 },
+          { c: null, d: null },
+        ]),
       });
 
       const spy = vi.fn();
@@ -415,7 +438,7 @@ describe('ConsumptionInputComponent', () => {
       (component as any).onSave();
       expect(spy).toHaveBeenCalledWith({
         date: '2024-06-15',
-        fields: { a: 10, b: 20 }
+        fields: { a: 10, b: 20 },
       });
     });
 
@@ -432,7 +455,7 @@ describe('ConsumptionInputComponent', () => {
       (component as any).onSave();
       expect(spy).toHaveBeenCalledWith({
         date: '2024-06-15',
-        fields: { a: 10 }
+        fields: { a: 10 },
       });
     });
 
@@ -516,8 +539,20 @@ describe('ConsumptionInputComponent', () => {
 
     it('should handle multiple groups with mixed completeness', () => {
       const groups: ConsumptionGroup[] = [
-        { title: 'Kitchen', fields: [{ key: 'kw', label: 'Warm', value: 10 }, { key: 'kc', label: 'Cold', value: 20 }] },
-        { title: 'Bathroom', fields: [{ key: 'bw', label: 'Warm', value: null }, { key: 'bc', label: 'Cold', value: null }] }
+        {
+          title: 'Kitchen',
+          fields: [
+            { key: 'kw', label: 'Warm', value: 10 },
+            { key: 'kc', label: 'Cold', value: 20 },
+          ],
+        },
+        {
+          title: 'Bathroom',
+          fields: [
+            { key: 'bw', label: 'Warm', value: null },
+            { key: 'bc', label: 'Cold', value: null },
+          ],
+        },
       ];
       initWithDefaults({ groups });
       expect((component as any).hasValidInput()).toBe(true); // Kitchen complete, Bathroom empty
@@ -541,7 +576,7 @@ describe('ConsumptionInputComponent', () => {
       (component as any).onSave();
       expect(spy).toHaveBeenCalledWith({
         date: '2024-06-15',
-        fields: { a: 0, b: 5 }
+        fields: { a: 0, b: 5 },
       });
     });
 
@@ -559,7 +594,7 @@ describe('ConsumptionInputComponent', () => {
       (component as any).onSave();
       expect(spy).toHaveBeenCalledWith({
         date: '2024-06-15',
-        fields: { a: 999999, b: 888888 }
+        fields: { a: 999999, b: 888888 },
       });
     });
 

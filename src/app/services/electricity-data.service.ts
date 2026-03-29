@@ -1,5 +1,11 @@
 import { Injectable, signal, inject, computed } from '@angular/core';
-import { ElectricityRecord, mergeRecords, filterZeroPlaceholders, isElectricityRecordAllZero, parseSafeDate } from '../models/records.model';
+import {
+  ElectricityRecord,
+  mergeRecords,
+  filterZeroPlaceholders,
+  isElectricityRecordAllZero,
+  parseSafeDate,
+} from '../models/records.model';
 import { STORAGE_SERVICE } from './storage.service';
 import { FileStorageService } from './file-storage.service';
 import { ExcelService } from './excel.service';
@@ -9,7 +15,7 @@ import { LanguageService } from './language.service';
 import { NotificationService } from './notification.service';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class ElectricityDataService {
   private storage = inject(STORAGE_SERVICE);
@@ -33,7 +39,7 @@ export class ElectricityDataService {
     year: null,
     month: null,
     startDate: null,
-    endDate: null
+    endDate: null,
   });
 
   readonly filteredRecords = computed(() => {
@@ -41,7 +47,7 @@ export class ElectricityDataService {
     let records = this.records();
 
     if (startDate) {
-      records = records.filter(r => {
+      records = records.filter((r) => {
         const date = new Date(r.date);
         const recordDate = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
         return recordDate >= startDate;
@@ -49,7 +55,7 @@ export class ElectricityDataService {
     }
 
     if (endDate) {
-      records = records.filter(r => {
+      records = records.filter((r) => {
         const date = new Date(r.date);
         const recordDate = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
         return recordDate <= endDate;
@@ -57,11 +63,11 @@ export class ElectricityDataService {
     }
 
     if (year) {
-      records = records.filter(r => new Date(r.date).getFullYear() === year);
+      records = records.filter((r) => new Date(r.date).getFullYear() === year);
     }
 
     if (month !== null) {
-      records = records.filter(r => new Date(r.date).getMonth() === month);
+      records = records.filter((r) => new Date(r.date).getMonth() === month);
     }
 
     return records;
@@ -109,14 +115,19 @@ export class ElectricityDataService {
   async loadData() {
     const data = await this.storage.load<ElectricityRecord[]>('electricity_consumption_records');
     const parsedData = (data || [])
-      .map(r => ({ ...r, date: parseSafeDate(r.date) }))
-      .filter(r => !isNaN(r.date.getTime()));
+      .map((r) => ({ ...r, date: parseSafeDate(r.date) }))
+      .filter((r) => !isNaN(r.date.getTime()));
     this.records.set(parsedData);
     this.notificationService.setElectricityRecords(this.records());
   }
 
   // --- Filter Helpers ---
-  updateFilterState(newState: { year: number | null; month: number | null; startDate: string | null; endDate: string | null }) {
+  updateFilterState(newState: {
+    year: number | null;
+    month: number | null;
+    startDate: string | null;
+    endDate: string | null;
+  }) {
     this.filterState.set(newState);
   }
 
@@ -154,12 +165,12 @@ export class ElectricityDataService {
 
     const newRecordIso = newRecordDate.toISOString().split('T')[0];
 
-    const existingRecordIndex = this.records().findIndex(r => {
+    const existingRecordIndex = this.records().findIndex((r) => {
       const d = new Date(r.date);
       return !isNaN(d.getTime()) && d.toISOString().split('T')[0] === newRecordIso;
     });
 
-    this.records.update(records => {
+    this.records.update((records) => {
       const updated = [...records];
       if (existingRecordIndex !== -1) {
         updated[existingRecordIndex] = newRecord;
@@ -183,7 +194,9 @@ export class ElectricityDataService {
   confirmDelete() {
     const record = this.recordToDelete();
     if (record) {
-      this.records.update(records => records.filter(r => new Date(r.date).getTime() !== new Date(record.date).getTime()));
+      this.records.update((records) =>
+        records.filter((r) => new Date(r.date).getTime() !== new Date(record.date).getTime()),
+      );
       void this.storage.save('electricity_consumption_records', this.records());
     }
     this.showDeleteModal.set(false);
@@ -191,9 +204,11 @@ export class ElectricityDataService {
   }
 
   confirmDeleteAll() {
-    const recordsToDeleteSet = new Set(this.recordsToDelete().map(r => new Date(r.date).getTime()));
-    this.records.update(records =>
-      records.filter(r => !recordsToDeleteSet.has(new Date(r.date).getTime()))
+    const recordsToDeleteSet = new Set(
+      this.recordsToDelete().map((r) => new Date(r.date).getTime()),
+    );
+    this.records.update((records) =>
+      records.filter((r) => !recordsToDeleteSet.has(new Date(r.date).getTime())),
     );
     void this.storage.save('electricity_consumption_records', this.records());
     this.showDeleteAllModal.set(false);
@@ -262,20 +277,35 @@ export class ElectricityDataService {
         if (arrayError) throw new Error(arrayError);
 
         // Need validateElectricityJsonImport in ImportValidationService
-        const result = this.importValidationService.validateElectricityJsonImport(data as unknown[]);
+        const result = this.importValidationService.validateElectricityJsonImport(
+          data as unknown[],
+        );
         if (result.errors.length > 0) throw new Error(result.errors.join('\n'));
 
-        const { filtered, skippedCount } = filterZeroPlaceholders(result.validRecords, isElectricityRecordAllZero);
+        const { filtered, skippedCount } = filterZeroPlaceholders(
+          result.validRecords,
+          isElectricityRecordAllZero,
+        );
         const warnings: string[] = [];
         if (skippedCount > 0) {
           // Need translation keys
-          const key = skippedCount === 1 ? 'ELECTRICITY.IMPORT_PLACEHOLDER_SKIPPED_SINGULAR' : 'ELECTRICITY.IMPORT_PLACEHOLDER_SKIPPED_PLURAL';
-          warnings.push(this.languageService.translate(key).replace('{{count}}', skippedCount.toString()));
+          const key =
+            skippedCount === 1
+              ? 'ELECTRICITY.IMPORT_PLACEHOLDER_SKIPPED_SINGULAR'
+              : 'ELECTRICITY.IMPORT_PLACEHOLDER_SKIPPED_PLURAL';
+          warnings.push(
+            this.languageService.translate(key).replace('{{count}}', skippedCount.toString()),
+          );
         }
 
         await this.processImport(filtered, warnings, 'IMPORT.JSON_SUCCESS');
       } catch (error) {
-        this.handleImportError(error, 'ELECTRICITY.JSON_IMPORT_ERROR_TITLE', 'ELECTRICITY.JSON_IMPORT_ERROR', true);
+        this.handleImportError(
+          error,
+          'ELECTRICITY.JSON_IMPORT_ERROR_TITLE',
+          'ELECTRICITY.JSON_IMPORT_ERROR',
+          true,
+        );
       }
     }
     this.showImportConfirmModal.set(false);
@@ -292,23 +322,39 @@ export class ElectricityDataService {
         const validExtensions = ['.xlsx', '.xls', '.csv'];
         const fileExtension = file.name.toLowerCase().substring(file.name.lastIndexOf('.'));
         if (!validExtensions.includes(fileExtension)) {
-          const message = this.languageService.translate('ERROR.IMPORT_INVALID_EXCEL_FILE_TYPE').replace('{{extension}}', fileExtension);
+          const message = this.languageService
+            .translate('ERROR.IMPORT_INVALID_EXCEL_FILE_TYPE')
+            .replace('{{extension}}', fileExtension);
           throw new Error(message);
         }
 
         // Need importElectricityFromExcel in ExcelService
-        const { records, missingColumns } = await this.excelService.importElectricityFromExcel(file);
+        const { records, missingColumns } =
+          await this.excelService.importElectricityFromExcel(file);
 
-        const { filtered, skippedCount } = filterZeroPlaceholders(records, isElectricityRecordAllZero);
+        const { filtered, skippedCount } = filterZeroPlaceholders(
+          records,
+          isElectricityRecordAllZero,
+        );
         const warnings = [...missingColumns];
         if (skippedCount > 0) {
-          const key = skippedCount === 1 ? 'ELECTRICITY.IMPORT_PLACEHOLDER_SKIPPED_SINGULAR' : 'ELECTRICITY.IMPORT_PLACEHOLDER_SKIPPED_PLURAL';
-          warnings.push(this.languageService.translate(key).replace('{{count}}', skippedCount.toString()));
+          const key =
+            skippedCount === 1
+              ? 'ELECTRICITY.IMPORT_PLACEHOLDER_SKIPPED_SINGULAR'
+              : 'ELECTRICITY.IMPORT_PLACEHOLDER_SKIPPED_PLURAL';
+          warnings.push(
+            this.languageService.translate(key).replace('{{count}}', skippedCount.toString()),
+          );
         }
 
         await this.processImport(filtered, warnings, 'IMPORT.EXCEL_SUCCESS');
       } catch (error) {
-        this.handleImportError(error, 'ELECTRICITY.EXCEL_IMPORT_ERROR_TITLE', 'ELECTRICITY.EXCEL_IMPORT_ERROR', false);
+        this.handleImportError(
+          error,
+          'ELECTRICITY.EXCEL_IMPORT_ERROR_TITLE',
+          'ELECTRICITY.EXCEL_IMPORT_ERROR',
+          false,
+        );
       } finally {
         this.isImporting.set(false);
         input.value = '';
@@ -335,7 +381,7 @@ export class ElectricityDataService {
 
   async finishImport(records: ElectricityRecord[], warnings: string[], successKey: string) {
     try {
-      this.records.update(existing => mergeRecords(existing, records));
+      this.records.update((existing) => mergeRecords(existing, records));
       await this.storage.save('electricity_consumption_records', this.records());
 
       // Update notification service with new records
@@ -345,7 +391,9 @@ export class ElectricityDataService {
       if (warnings.length > 0) {
         this.errorTitle.set(this.languageService.translate('HOME.IMPORT_WARNING_TITLE'));
         this.errorMessage.set(this.languageService.translate('HOME.IMPORT_WARNING_MESSAGE'));
-        this.errorDetails.set(this.languageService.translate('HOME.MISSING_COLUMNS') + ': ' + warnings.join(', '));
+        this.errorDetails.set(
+          this.languageService.translate('HOME.MISSING_COLUMNS') + ': ' + warnings.join(', '),
+        );
         this.errorInstructions.set([]);
         this.errorType.set('warning');
         this.showErrorModal.set(true);
@@ -355,7 +403,12 @@ export class ElectricityDataService {
         this.showSuccessModal.set(true);
       }
     } catch (error) {
-      this.handleImportError(error, 'ELECTRICITY.JSON_IMPORT_ERROR_TITLE', 'ELECTRICITY.JSON_IMPORT_ERROR', true);
+      this.handleImportError(
+        error,
+        'ELECTRICITY.JSON_IMPORT_ERROR_TITLE',
+        'ELECTRICITY.JSON_IMPORT_ERROR',
+        true,
+      );
     } finally {
       this.isImporting.set(false);
       this.showFilterWarningModal.set(false);
@@ -366,7 +419,11 @@ export class ElectricityDataService {
   }
 
   confirmFilterWarningImport() {
-    this.finishImport(this.pendingImportRecords(), this.pendingImportWarnings(), this.pendingImportSuccessKey());
+    this.finishImport(
+      this.pendingImportRecords(),
+      this.pendingImportWarnings(),
+      this.pendingImportSuccessKey(),
+    );
   }
 
   cancelFilterWarningImport() {

@@ -10,23 +10,47 @@ import { MenuBarComponent } from '../shared/menu-bar/menu-bar.component';
 import { NatureTreeComponent } from '../shared/nature-tree/nature-tree.component';
 import { SeasonSwitcherComponent } from '../shared/season-switcher/season-switcher.component';
 
-@Component({ selector: 'app-header', standalone: true, template: '<div class="mock-header"></div>' })
-class MockHeaderComponent { }
+@Component({
+  selector: 'app-header',
+  standalone: true,
+  template: '<div class="mock-header"></div>',
+})
+class MockHeaderComponent {}
 
-@Component({ selector: 'app-footer', standalone: true, template: '<div class="mock-footer"></div>' })
-class MockFooterComponent { }
+@Component({
+  selector: 'app-footer',
+  standalone: true,
+  template: '<div class="mock-footer"></div>',
+})
+class MockFooterComponent {}
 
-@Component({ selector: 'app-menu-bar', standalone: true, template: '<div class="mock-menu-bar"></div>' })
-class MockMenuBarComponent { }
+@Component({
+  selector: 'app-menu-bar',
+  standalone: true,
+  template: '<div class="mock-menu-bar"></div>',
+})
+class MockMenuBarComponent {}
 
-@Component({ selector: 'app-nature-tree', standalone: true, template: '<div class="mock-nature-tree"></div>' })
-class MockNatureTreeComponent { }
+@Component({
+  selector: 'app-nature-tree',
+  standalone: true,
+  template: '<div class="mock-nature-tree"></div>',
+})
+class MockNatureTreeComponent {}
 
-@Component({ selector: 'app-season-switcher', standalone: true, template: '<div class="mock-season-switcher"></div>' })
-class MockSeasonSwitcherComponent { }
+@Component({
+  selector: 'app-season-switcher',
+  standalone: true,
+  template: '<div class="mock-season-switcher"></div>',
+})
+class MockSeasonSwitcherComponent {}
 
-@Component({ selector: 'router-outlet', standalone: true, template: '<div class="mock-router-outlet"></div>' })
-class MockRouterOutletComponent { }
+@Component({
+  selector: 'router-outlet',
+  standalone: true,
+  template: '<div class="mock-router-outlet"></div>',
+})
+class MockRouterOutletComponent {}
 
 describe('AppLayoutComponent', () => {
   let component: AppLayoutComponent;
@@ -38,9 +62,7 @@ describe('AppLayoutComponent', () => {
 
     await TestBed.configureTestingModule({
       imports: [AppLayoutComponent],
-      providers: [
-        { provide: ThemeService, useValue: mockThemeService }
-      ]
+      providers: [{ provide: ThemeService, useValue: mockThemeService }],
     })
       .overrideComponent(AppLayoutComponent, {
         remove: {
@@ -50,8 +72,8 @@ describe('AppLayoutComponent', () => {
             FooterComponent,
             MenuBarComponent,
             NatureTreeComponent,
-            SeasonSwitcherComponent
-          ]
+            SeasonSwitcherComponent,
+          ],
         },
         add: {
           imports: [
@@ -60,9 +82,9 @@ describe('AppLayoutComponent', () => {
             MockFooterComponent,
             MockMenuBarComponent,
             MockNatureTreeComponent,
-            MockSeasonSwitcherComponent
-          ]
-        }
+            MockSeasonSwitcherComponent,
+          ],
+        },
       })
       .compileComponents();
 

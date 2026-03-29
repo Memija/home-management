@@ -9,7 +9,7 @@ import { vi } from 'vitest';
 
 @Pipe({
   name: 'translate',
-  standalone: true
+  standalone: true,
 })
 class MockTranslatePipe implements PipeTransform {
   transform(key: string): string {
@@ -25,23 +25,23 @@ describe('SmartImportModalComponent', () => {
 
   beforeEach(async () => {
     mockSmartImportService = {
-      parseRawText: vi.fn()
+      parseRawText: vi.fn(),
     };
     mockLanguageService = {
       currentLang: signal('en'),
-      translate: vi.fn((key: string) => key)
+      translate: vi.fn((key: string) => key),
     };
 
     await TestBed.configureTestingModule({
       imports: [SmartImportModalComponent],
       providers: [
         { provide: SmartImportService, useValue: mockSmartImportService },
-        { provide: LanguageService, useValue: mockLanguageService }
-      ]
+        { provide: LanguageService, useValue: mockLanguageService },
+      ],
     })
       .overrideComponent(SmartImportModalComponent, {
         remove: { imports: [TranslatePipe] },
-        add: { imports: [MockTranslatePipe] }
+        add: { imports: [MockTranslatePipe] },
       })
       .compileComponents();
 
@@ -68,7 +68,7 @@ describe('SmartImportModalComponent', () => {
 
     it('should parse text, set records and change step to preview if text exists', () => {
       const mockRecords: ParsedRecord[] = [
-        { date: new Date(), value: 100, originalLine: 'test line' }
+        { date: new Date(), value: 100, originalLine: 'test line' },
       ];
       mockSmartImportService.parseRawText.mockReturnValue(mockRecords);
 
@@ -99,7 +99,7 @@ describe('SmartImportModalComponent', () => {
   describe('confirmImport', () => {
     it('should emit parsed records, reset state, and emit close event', () => {
       const mockRecords: ParsedRecord[] = [
-        { date: new Date(), value: 200, originalLine: 'test line 2' }
+        { date: new Date(), value: 200, originalLine: 'test line 2' },
       ];
       const compAsAny = component as any;
       compAsAny.parsedRecords.set(mockRecords);

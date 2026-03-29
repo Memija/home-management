@@ -11,9 +11,11 @@ export const heating = {
     ENERGY_FACTS_FOR: 'Energy facts for {{country}}',
     SELECT_COUNTRY_INFO: 'Select a country to see energy and heating facts specific to that region',
     EXCEL_IMPORT_ERROR_TITLE: 'Excel Import Failed',
-    EXCEL_IMPORT_ERROR: 'Failed to import Excel data. Please check the details below and follow the instructions to fix the issue.',
+    EXCEL_IMPORT_ERROR:
+      'Failed to import Excel data. Please check the details below and follow the instructions to fix the issue.',
     JSON_IMPORT_ERROR_TITLE: 'JSON Import Failed',
-    JSON_IMPORT_ERROR: 'Failed to import JSON data. Please check the details below and follow the instructions to fix the issue.',
+    JSON_IMPORT_ERROR:
+      'Failed to import JSON data. Please check the details below and follow the instructions to fix the issue.',
     LIVING_AREAS: 'Living Areas',
     SERVICE_AREAS: 'Service Areas',
     LIVING_ROOM: 'Living Room',
@@ -23,7 +25,8 @@ export const heating = {
     SUCCESS_TITLE: 'Success',
     RECORD_SAVED: 'Heating consumption record saved successfully!',
     NEW_ROOM_DETECTED_TITLE: 'New Room Detected',
-    NEW_ROOM_DETECTED_MESSAGE: 'A significant jump in consumption was detected for {{room}} on {{date}}. This usually happens when a new room is added mid-season. Would you like to adjust the chart to ignore the initial reading?',
+    NEW_ROOM_DETECTED_MESSAGE:
+      'A significant jump in consumption was detected for {{room}} on {{date}}. This usually happens when a new room is added mid-season. Would you like to adjust the chart to ignore the initial reading?',
     CONFIRM_NEW_ROOM: 'Yes, adjust chart',
     DISMISS_NEW_ROOM: 'No, keep as is',
     RECORD_CONSUMPTION: 'Record Heating Consumption',
@@ -53,7 +56,8 @@ export const heating = {
     ROOM_LOCKED_TOOLTIP: 'This room has recorded data and is locked',
     ROOM_UNLOCKED_TOOLTIP: 'Click to lock this room',
     UNLOCK_WARNING_TITLE: 'Unlock Room?',
-    UNLOCK_WARNING_MESSAGE: 'This room has heating data associated with it. Modifying or deleting it may cause data display issues.',
+    UNLOCK_WARNING_MESSAGE:
+      'This room has heating data associated with it. Modifying or deleting it may cause data display issues.',
     UNLOCK_BUTTON: 'Unlock',
     DISCARD_WARNING_TITLE: 'Discard Changes?',
     DISCARD_WARNING_MESSAGE: 'You have unsaved changes. Are you sure you want to discard them?',
@@ -61,24 +65,33 @@ export const heating = {
     // Help Modal
     RECORD_HELP_TITLE: 'How to Record Heating Consumption',
     RECORD_HELP_STEP_1_TITLE: 'Configure Your Rooms',
-    RECORD_HELP_STEP_1_DESC: 'Click the settings icon (⚙️) to add or modify the rooms you want to track. You can add up to 10 rooms with custom names.',
+    RECORD_HELP_STEP_1_DESC:
+      'Click the settings icon (⚙️) to add or modify the rooms you want to track. You can add up to 10 rooms with custom names.',
     RECORD_HELP_STEP_2_TITLE: 'Select the Date',
-    RECORD_HELP_STEP_2_DESC: 'Choose the date for your reading. The date picker restricts future dates to keep your records accurate.',
+    RECORD_HELP_STEP_2_DESC:
+      'Choose the date for your reading. The date picker restricts future dates to keep your records accurate.',
     RECORD_HELP_STEP_3_TITLE: 'Enter Room Readings',
-    RECORD_HELP_STEP_3_DESC: 'Enter the reading for each room. You don\'t need to fill all rooms - partial entries are allowed!',
+    RECORD_HELP_STEP_3_DESC:
+      "Enter the reading for each room. You don't need to fill all rooms - partial entries are allowed!",
     RECORD_HELP_STEP_4_TITLE: 'Save Your Record',
-    RECORD_HELP_STEP_4_DESC: 'Click "Save" to store your heating consumption data. The record will appear in the history section above.',
+    RECORD_HELP_STEP_4_DESC:
+      'Click "Save" to store your heating consumption data. The record will appear in the history section above.',
     RECORD_HELP_STEP_5_TITLE: 'Locked Rooms',
-    RECORD_HELP_STEP_5_DESC: 'Rooms are locked when they have data associated with them to prevent accidental changes. You can unlock them in settings (⚙️) if needed, but it is advised to keep them locked to maintain data integrity.',
+    RECORD_HELP_STEP_5_DESC:
+      'Rooms are locked when they have data associated with them to prevent accidental changes. You can unlock them in settings (⚙️) if needed, but it is advised to keep them locked to maintain data integrity.',
     // Chart Help
     CHART_HELP_STEP_1_TITLE: 'What the Chart Shows',
-    CHART_HELP_STEP_1_DESC: 'The chart visualizes your heating consumption over time. It helps you identify high-usage periods and seasonal trends.',
+    CHART_HELP_STEP_1_DESC:
+      'The chart visualizes your heating consumption over time. It helps you identify high-usage periods and seasonal trends.',
     CHART_HELP_STEP_2_TITLE: 'Display Modes & Views',
-    CHART_HELP_STEP_2_DESC: 'Switch between "Total Cumulative" (raw meter scale) and "Daily Average" (consumption per day) modes. Use filter buttons to view Total consumption or detailed breakdown By Room.',
+    CHART_HELP_STEP_2_DESC:
+      'Switch between "Total Cumulative" (raw meter scale) and "Daily Average" (consumption per day) modes. Use filter buttons to view Total consumption or detailed breakdown By Room.',
     CHART_HELP_STEP_3_TITLE: 'Comparison',
-    CHART_HELP_STEP_3_DESC: 'In Daily Average mode, enable "Show Average" to compare your household usage against the national average. Note: Comparison assumes kWh; if using other units (e.g., heat allocators), it may not be accurate.',
+    CHART_HELP_STEP_3_DESC:
+      'In Daily Average mode, enable "Show Average" to compare your household usage against the national average. Note: Comparison assumes kWh; if using other units (e.g., heat allocators), it may not be accurate.',
     CHART_HELP_STEP_4_TITLE: 'Interaction',
-    CHART_HELP_STEP_4_DESC: 'Use mouse wheel or pinch gesture to zoom in/out. Drag to pan. Click "Reset Zoom" to restore full view. Click on room legends to show/hide specific rooms.',
+    CHART_HELP_STEP_4_DESC:
+      'Use mouse wheel or pinch gesture to zoom in/out. Drag to pan. Click "Reset Zoom" to restore full view. Click on room legends to show/hide specific rooms.',
     ALL_VALUES_IN_UNIT: 'All values are in kWh',
     NO_VALUES_ERROR: 'Please enter a value for at least one room.',
     INCOMPLETE_ROOM_ERROR: 'Please complete all started rooms.',
@@ -96,22 +109,29 @@ export const heating = {
     IMPORT_ROOMS: 'Import',
     // Help Modal for Records List
     RECORDS_HELP_STEP_1_TITLE: 'Filtering Records',
-    RECORDS_HELP_STEP_1_DESC: 'Use the date range, year, or month filters to narrow down your heating records. Click "Reset Filters" to clear all active filters and view all records.',
+    RECORDS_HELP_STEP_1_DESC:
+      'Use the date range, year, or month filters to narrow down your heating records. Click "Reset Filters" to clear all active filters and view all records.',
     RECORDS_HELP_STEP_2_TITLE: 'Sorting & Pagination',
-    RECORDS_HELP_STEP_2_DESC: 'Sort records by date or total consumption using the dropdown. Control how many records to display per page (5, 10, 20, or 50) and navigate using Previous/Next buttons.',
+    RECORDS_HELP_STEP_2_DESC:
+      'Sort records by date or total consumption using the dropdown. Control how many records to display per page (5, 10, 20, or 50) and navigate using Previous/Next buttons.',
     RECORDS_HELP_STEP_3_TITLE: 'Editing & Deleting',
-    RECORDS_HELP_STEP_3_DESC: 'Click the edit icon (✏️) to modify a record or the trash icon (🗑️) to delete it. You can also delete all visible filtered records at once.',
+    RECORDS_HELP_STEP_3_DESC:
+      'Click the edit icon (✏️) to modify a record or the trash icon (🗑️) to delete it. You can also delete all visible filtered records at once.',
     RECORDS_HELP_STEP_4_TITLE: 'Export & Import',
-    RECORDS_HELP_STEP_4_DESC: 'Export your data as JSON, Excel, or PDF files. Import previously exported JSON or Excel files to restore your heating consumption records. Only non-zero records are imported.',
+    RECORDS_HELP_STEP_4_DESC:
+      'Export your data as JSON, Excel, or PDF files. Import previously exported JSON or Excel files to restore your heating consumption records. Only non-zero records are imported.',
     // Help Modal for Room Settings
     HELP: {
       TITLE: 'Room Settings Help',
       ROOM_MANAGEMENT_TITLE: 'Managing Rooms',
-      ROOM_MANAGEMENT_DESC: 'Add, edit, or remove rooms to customize which areas you want to track. You can have up to 10 rooms. Each room name must be unique and contain at least one letter or number.',
+      ROOM_MANAGEMENT_DESC:
+        'Add, edit, or remove rooms to customize which areas you want to track. You can have up to 10 rooms. Each room name must be unique and contain at least one letter or number.',
       LOCKED_ROOMS_TITLE: 'Locked Rooms (🔒)',
-      LOCKED_ROOMS_DESC: 'Rooms with existing heating data are automatically locked to prevent accidental changes that could affect your records. You can unlock them if needed, but it is advised to keep them locked to maintain data integrity.',
+      LOCKED_ROOMS_DESC:
+        'Rooms with existing heating data are automatically locked to prevent accidental changes that could affect your records. You can unlock them if needed, but it is advised to keep them locked to maintain data integrity.',
       IMPORT_EXPORT_TITLE: 'Import & Export Configuration',
-      IMPORT_EXPORT_DESC: 'Save your room configuration as JSON to back it up or transfer to another device. Import a previously saved configuration to quickly restore your room setup.'
-    }
-  }
+      IMPORT_EXPORT_DESC:
+        'Save your room configuration as JSON to back it up or transfer to another device. Import a previously saved configuration to quickly restore your room setup.',
+    },
+  },
 };

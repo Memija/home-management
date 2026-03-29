@@ -37,7 +37,7 @@ describe('NotificationService', () => {
 
   it('should be created and load data', async () => {
     expect(service).toBeTruthy();
-    await new Promise(resolve => setTimeout(resolve, 0)); // wait for loadData
+    await new Promise((resolve) => setTimeout(resolve, 0)); // wait for loadData
     expect(mockStorageService.load).toHaveBeenCalledWith('water_consumption_records');
     expect(mockStorageService.load).toHaveBeenCalledWith('heating_consumption_records');
     expect(mockStorageService.load).toHaveBeenCalledWith('household_address');
@@ -50,10 +50,10 @@ describe('NotificationService', () => {
   });
 
   it('should show initial notifications when no data exists', async () => {
-    await new Promise(resolve => setTimeout(resolve, 0));
+    await new Promise((resolve) => setTimeout(resolve, 0));
 
     const notifications = service.notifications();
-    const ids = notifications.map(n => n.id);
+    const ids = notifications.map((n) => n.id);
 
     expect(ids).toContain('water-initial');
     expect(ids).toContain('heating-initial');
@@ -63,34 +63,48 @@ describe('NotificationService', () => {
 
   it('should not show notifications in demo mode', async () => {
     mockDemoService.isDemoMode.mockReturnValue(true);
-    await new Promise(resolve => setTimeout(resolve, 0));
+    await new Promise((resolve) => setTimeout(resolve, 0));
 
     const notifications = service.notifications();
     expect(notifications.length).toBe(0);
   });
 
   it('should update notifications when data is set', async () => {
-    await new Promise(resolve => setTimeout(resolve, 0));
+    await new Promise((resolve) => setTimeout(resolve, 0));
 
     // Initially has water-initial
-    expect(service.notifications().some(n => n.id === 'water-initial')).toBe(true);
+    expect(service.notifications().some((n) => n.id === 'water-initial')).toBe(true);
 
     // Set water records
-    service.setWaterRecords([{ date: new Date(), kitchenWarm: 0, kitchenCold: 0, bathroomWarm: 0, bathroomCold: 0 }]);
+    service.setWaterRecords([
+      { date: new Date(), kitchenWarm: 0, kitchenCold: 0, bathroomWarm: 0, bathroomCold: 0 },
+    ]);
 
     // Check again
-    expect(service.notifications().some(n => n.id === 'water-initial')).toBe(false);
+    expect(service.notifications().some((n) => n.id === 'water-initial')).toBe(false);
   });
 
   it('should detect water due (at average interval)', async () => {
-    await new Promise(resolve => setTimeout(resolve, 0));
+    await new Promise((resolve) => setTimeout(resolve, 0));
 
     const now = new Date();
     // Create records with 3-day average interval (less than previous 7-day min)
     // Last entry was 3 days ago (at average, should show "due")
     const records: ConsumptionRecord[] = [
-      { date: new Date(now.getTime() - 3 * 24 * 60 * 60 * 1000), kitchenWarm: 0, kitchenCold: 0, bathroomWarm: 0, bathroomCold: 0 },
-      { date: new Date(now.getTime() - 6 * 24 * 60 * 60 * 1000), kitchenWarm: 0, kitchenCold: 0, bathroomWarm: 0, bathroomCold: 0 }
+      {
+        date: new Date(now.getTime() - 3 * 24 * 60 * 60 * 1000),
+        kitchenWarm: 0,
+        kitchenCold: 0,
+        bathroomWarm: 0,
+        bathroomCold: 0,
+      },
+      {
+        date: new Date(now.getTime() - 6 * 24 * 60 * 60 * 1000),
+        kitchenWarm: 0,
+        kitchenCold: 0,
+        bathroomWarm: 0,
+        bathroomCold: 0,
+      },
     ];
     // Avg gap: 3 days. Due threshold: floor(3) = 3 days.
     // Days since last (3 days ago) = 3.
@@ -99,20 +113,32 @@ describe('NotificationService', () => {
     service.setWaterRecords(records);
 
     const notifications = service.notifications();
-    expect(notifications.some(n => n.id === 'water-due')).toBe(true);
-    expect(notifications.some(n => n.id === 'water-overdue')).toBe(false);
+    expect(notifications.some((n) => n.id === 'water-due')).toBe(true);
+    expect(notifications.some((n) => n.id === 'water-overdue')).toBe(false);
   });
 
   it('should detect water overdue (significantly late)', async () => {
-    await new Promise(resolve => setTimeout(resolve, 0));
+    await new Promise((resolve) => setTimeout(resolve, 0));
 
     const now = new Date();
     // Create records with 2-day average interval
     // Overdue threshold: max(2 * 1.5, 10) = 10 days
     // Last entry was 11 days ago -> Overdue
     const records: ConsumptionRecord[] = [
-      { date: new Date(now.getTime() - 11 * 24 * 60 * 60 * 1000), kitchenWarm: 0, kitchenCold: 0, bathroomWarm: 0, bathroomCold: 0 },
-      { date: new Date(now.getTime() - 13 * 24 * 60 * 60 * 1000), kitchenWarm: 0, kitchenCold: 0, bathroomWarm: 0, bathroomCold: 0 }
+      {
+        date: new Date(now.getTime() - 11 * 24 * 60 * 60 * 1000),
+        kitchenWarm: 0,
+        kitchenCold: 0,
+        bathroomWarm: 0,
+        bathroomCold: 0,
+      },
+      {
+        date: new Date(now.getTime() - 13 * 24 * 60 * 60 * 1000),
+        kitchenWarm: 0,
+        kitchenCold: 0,
+        bathroomWarm: 0,
+        bathroomCold: 0,
+      },
     ];
     // Avg gap: 2 days. Overdue threshold: max(3, 10) = 10 days.
     // Days since last (11 days ago) = 11.
@@ -121,32 +147,32 @@ describe('NotificationService', () => {
     service.setWaterRecords(records);
 
     const notifications = service.notifications();
-    expect(notifications.some(n => n.id === 'water-overdue')).toBe(true);
-    expect(notifications.find(n => n.id === 'water-overdue')?.messageParams?.['days']).toBe(11);
+    expect(notifications.some((n) => n.id === 'water-overdue')).toBe(true);
+    expect(notifications.find((n) => n.id === 'water-overdue')?.messageParams?.['days']).toBe(11);
   });
 
   it('should dismiss notification', async () => {
-    await new Promise(resolve => setTimeout(resolve, 0));
+    await new Promise((resolve) => setTimeout(resolve, 0));
 
     const id = 'water-initial';
     service.dismissNotification(id);
 
     const notifications = service.notifications();
-    expect(notifications.some(n => n.id === id)).toBe(false);
+    expect(notifications.some((n) => n.id === id)).toBe(false);
     expect(mockStorageService.save).toHaveBeenCalledWith('dismissed_notifications', [id]);
   });
 
   it('should clear dismissed notification (undismiss)', async () => {
-    await new Promise(resolve => setTimeout(resolve, 0));
+    await new Promise((resolve) => setTimeout(resolve, 0));
     const id = 'water-initial';
 
     // Dismiss first
     service.dismissNotification(id);
-    expect(service.notifications().some(n => n.id === id)).toBe(false);
+    expect(service.notifications().some((n) => n.id === id)).toBe(false);
 
     // Clear dismissal
     service.clearDismissed(id);
-    expect(service.notifications().some(n => n.id === id)).toBe(true);
+    expect(service.notifications().some((n) => n.id === id)).toBe(true);
     expect(mockStorageService.save).toHaveBeenCalledWith('dismissed_notifications', []);
   });
 
@@ -164,103 +190,151 @@ describe('NotificationService', () => {
     });
 
     it('should detect monthly due when same day of next month is reached', async () => {
-      await new Promise(resolve => setTimeout(resolve, 0));
+      await new Promise((resolve) => setTimeout(resolve, 0));
 
       vi.useFakeTimers();
       vi.setSystemTime(new Date('2026-03-15T12:00:00Z'));
 
       const records: ConsumptionRecord[] = [
-        { date: new Date('2026-01-15T12:00:00Z'), kitchenWarm: 0, kitchenCold: 0, bathroomWarm: 0, bathroomCold: 0 },
-        { date: new Date('2026-02-15T12:00:00Z'), kitchenWarm: 0, kitchenCold: 0, bathroomWarm: 0, bathroomCold: 0 }
+        {
+          date: new Date('2026-01-15T12:00:00Z'),
+          kitchenWarm: 0,
+          kitchenCold: 0,
+          bathroomWarm: 0,
+          bathroomCold: 0,
+        },
+        {
+          date: new Date('2026-02-15T12:00:00Z'),
+          kitchenWarm: 0,
+          kitchenCold: 0,
+          bathroomWarm: 0,
+          bathroomCold: 0,
+        },
       ];
 
       service.setWaterRecords(records);
 
       const notifications = service.notifications();
-      expect(notifications.some(n => n.id === 'water-due')).toBe(true);
+      expect(notifications.some((n) => n.id === 'water-due')).toBe(true);
     });
 
     it('should detect monthly due at the end of a shorter month', async () => {
-      await new Promise(resolve => setTimeout(resolve, 0));
+      await new Promise((resolve) => setTimeout(resolve, 0));
 
       vi.useFakeTimers();
       // February 2026 has 28 days
       vi.setSystemTime(new Date('2026-02-28T12:00:00Z'));
 
       const records: ConsumptionRecord[] = [
-        { date: new Date('2025-12-31T12:00:00Z'), kitchenWarm: 0, kitchenCold: 0, bathroomWarm: 0, bathroomCold: 0 },
-        { date: new Date('2026-01-31T12:00:00Z'), kitchenWarm: 0, kitchenCold: 0, bathroomWarm: 0, bathroomCold: 0 }
+        {
+          date: new Date('2025-12-31T12:00:00Z'),
+          kitchenWarm: 0,
+          kitchenCold: 0,
+          bathroomWarm: 0,
+          bathroomCold: 0,
+        },
+        {
+          date: new Date('2026-01-31T12:00:00Z'),
+          kitchenWarm: 0,
+          kitchenCold: 0,
+          bathroomWarm: 0,
+          bathroomCold: 0,
+        },
       ];
 
       service.setWaterRecords(records);
 
       const notifications = service.notifications();
-      expect(notifications.some(n => n.id === 'water-due')).toBe(true);
+      expect(notifications.some((n) => n.id === 'water-due')).toBe(true);
     });
 
     it('should not detect monthly due before the target date in the current month', async () => {
-      await new Promise(resolve => setTimeout(resolve, 0));
+      await new Promise((resolve) => setTimeout(resolve, 0));
 
       vi.useFakeTimers();
       // Current date is 14th, target date is 15th
       vi.setSystemTime(new Date('2026-03-14T12:00:00Z'));
 
       const records: ConsumptionRecord[] = [
-        { date: new Date('2026-01-15T12:00:00Z'), kitchenWarm: 0, kitchenCold: 0, bathroomWarm: 0, bathroomCold: 0 },
-        { date: new Date('2026-02-15T12:00:00Z'), kitchenWarm: 0, kitchenCold: 0, bathroomWarm: 0, bathroomCold: 0 }
+        {
+          date: new Date('2026-01-15T12:00:00Z'),
+          kitchenWarm: 0,
+          kitchenCold: 0,
+          bathroomWarm: 0,
+          bathroomCold: 0,
+        },
+        {
+          date: new Date('2026-02-15T12:00:00Z'),
+          kitchenWarm: 0,
+          kitchenCold: 0,
+          bathroomWarm: 0,
+          bathroomCold: 0,
+        },
       ];
 
       service.setWaterRecords(records);
 
       const notifications = service.notifications();
-      expect(notifications.some(n => n.id === 'water-due')).toBe(false);
+      expect(notifications.some((n) => n.id === 'water-due')).toBe(false);
     });
 
     it('should not detect monthly due before the end of a shorter month', async () => {
-      await new Promise(resolve => setTimeout(resolve, 0));
+      await new Promise((resolve) => setTimeout(resolve, 0));
 
       vi.useFakeTimers();
       // February 2026 has 28 days, checking on the 27th (target was 31st)
       vi.setSystemTime(new Date('2026-02-27T12:00:00Z'));
 
       const records: ConsumptionRecord[] = [
-        { date: new Date('2025-12-31T12:00:00Z'), kitchenWarm: 0, kitchenCold: 0, bathroomWarm: 0, bathroomCold: 0 },
-        { date: new Date('2026-01-31T12:00:00Z'), kitchenWarm: 0, kitchenCold: 0, bathroomWarm: 0, bathroomCold: 0 }
+        {
+          date: new Date('2025-12-31T12:00:00Z'),
+          kitchenWarm: 0,
+          kitchenCold: 0,
+          bathroomWarm: 0,
+          bathroomCold: 0,
+        },
+        {
+          date: new Date('2026-01-31T12:00:00Z'),
+          kitchenWarm: 0,
+          kitchenCold: 0,
+          bathroomWarm: 0,
+          bathroomCold: 0,
+        },
       ];
 
       service.setWaterRecords(records);
 
       const notifications = service.notifications();
-      expect(notifications.some(n => n.id === 'water-due')).toBe(false);
+      expect(notifications.some((n) => n.id === 'water-due')).toBe(false);
     });
   });
 
   // Heating Tests
   it('should detect heating due (at average interval)', async () => {
-    await new Promise(resolve => setTimeout(resolve, 0));
+    await new Promise((resolve) => setTimeout(resolve, 0));
 
     const now = new Date();
     // Create records with 3-day average interval
     const records = [
       { date: new Date(now.getTime() - 3 * 24 * 60 * 60 * 1000) },
-      { date: new Date(now.getTime() - 6 * 24 * 60 * 60 * 1000) }
+      { date: new Date(now.getTime() - 6 * 24 * 60 * 60 * 1000) },
     ];
     // Avg gap: 3 days. Due threshold: 3. Days since last: 3.
 
     service.setHeatingRecords(records);
 
     const notifications = service.notifications();
-    expect(notifications.some(n => n.id === 'heating-due')).toBe(true);
+    expect(notifications.some((n) => n.id === 'heating-due')).toBe(true);
   });
 
   it('should detect heating overdue (significantly late)', async () => {
-    await new Promise(resolve => setTimeout(resolve, 0));
+    await new Promise((resolve) => setTimeout(resolve, 0));
 
     const now = new Date();
     // Create records with 2-day average interval
     const records = [
       { date: new Date(now.getTime() - 11 * 24 * 60 * 60 * 1000) },
-      { date: new Date(now.getTime() - 13 * 24 * 60 * 60 * 1000) }
+      { date: new Date(now.getTime() - 13 * 24 * 60 * 60 * 1000) },
     ];
     // Avg gap: 2 days. Overdue threshold: max(3, 10) = 10 days.
     // Days since last: 11. 11 > 10 -> Overdue.
@@ -268,37 +342,37 @@ describe('NotificationService', () => {
     service.setHeatingRecords(records);
 
     const notifications = service.notifications();
-    expect(notifications.some(n => n.id === 'heating-overdue')).toBe(true);
-    expect(notifications.find(n => n.id === 'heating-overdue')?.messageParams?.['days']).toBe(11);
+    expect(notifications.some((n) => n.id === 'heating-overdue')).toBe(true);
+    expect(notifications.find((n) => n.id === 'heating-overdue')?.messageParams?.['days']).toBe(11);
   });
 
   // Electricity Tests
   it('should detect electricity due (at average interval)', async () => {
-    await new Promise(resolve => setTimeout(resolve, 0));
+    await new Promise((resolve) => setTimeout(resolve, 0));
 
     const now = new Date();
     // Create records with 3-day average interval
     // ElectricityRecord has more fields but we only need date for this test
     const records: ElectricityRecord[] = [
       { date: new Date(now.getTime() - 3 * 24 * 60 * 60 * 1000), value: 100 } as any,
-      { date: new Date(now.getTime() - 6 * 24 * 60 * 60 * 1000), value: 90 } as any
+      { date: new Date(now.getTime() - 6 * 24 * 60 * 60 * 1000), value: 90 } as any,
     ];
     // Avg gap: 3 days. Due threshold: 3. Days since last: 3.
 
     service.setElectricityRecords(records);
 
     const notifications = service.notifications();
-    expect(notifications.some(n => n.id === 'electricity-due')).toBe(true);
+    expect(notifications.some((n) => n.id === 'electricity-due')).toBe(true);
   });
 
   it('should detect electricity overdue (significantly late)', async () => {
-    await new Promise(resolve => setTimeout(resolve, 0));
+    await new Promise((resolve) => setTimeout(resolve, 0));
 
     const now = new Date();
     // Create records with 2-day average interval
     const records: ElectricityRecord[] = [
       { date: new Date(now.getTime() - 11 * 24 * 60 * 60 * 1000), value: 100 } as any,
-      { date: new Date(now.getTime() - 13 * 24 * 60 * 60 * 1000), value: 90 } as any
+      { date: new Date(now.getTime() - 13 * 24 * 60 * 60 * 1000), value: 90 } as any,
     ];
     // Avg gap: 2 days. Overdue threshold: max(3, 10) = 10 days.
     // Days since last: 11. 11 > 10 -> Overdue.
@@ -306,7 +380,7 @@ describe('NotificationService', () => {
     service.setElectricityRecords(records);
 
     const notifications = service.notifications();
-    expect(notifications.some(n => n.id === 'electricity-overdue')).toBe(true);
+    expect(notifications.some((n) => n.id === 'electricity-overdue')).toBe(true);
   });
 
   it('should reset electricity overdue when records added', async () => {

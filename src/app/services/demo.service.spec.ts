@@ -25,20 +25,20 @@ describe('DemoService', () => {
   beforeEach(() => {
     // Mock LocalStorageService
     mockLocalStorageService = {
-      exportAll: vi.fn().mockResolvedValue({ 'key': 'value' }),
+      exportAll: vi.fn().mockResolvedValue({ key: 'value' }),
       save: vi.fn().mockResolvedValue(undefined),
       delete: vi.fn().mockResolvedValue(undefined),
       importAll: vi.fn().mockResolvedValue(undefined),
       getPreference: vi.fn().mockReturnValue('true'),
       setPreference: vi.fn(),
-      removePreference: vi.fn()
+      removePreference: vi.fn(),
     };
 
     // Mock window.fetch
     originalFetch = window.fetch;
     window.fetch = vi.fn().mockResolvedValue({
       ok: true,
-      json: () => Promise.resolve([])
+      json: () => Promise.resolve([]),
     });
 
     // Mock window.location.reload
@@ -57,8 +57,8 @@ describe('DemoService', () => {
       providers: [
         DemoService,
         { provide: LocalStorageService, useValue: mockLocalStorageService },
-        { provide: PLATFORM_ID, useValue: mockPlatformId }
-      ]
+        { provide: PLATFORM_ID, useValue: mockPlatformId },
+      ],
     });
     service = TestBed.inject(DemoService);
 
@@ -86,8 +86,8 @@ describe('DemoService', () => {
         providers: [
           DemoService,
           { provide: LocalStorageService, useValue: mockLocalStorageService },
-          { provide: PLATFORM_ID, useValue: 'browser' }
-        ]
+          { provide: PLATFORM_ID, useValue: 'browser' },
+        ],
       });
       const newService = TestBed.inject(DemoService);
 
@@ -101,8 +101,8 @@ describe('DemoService', () => {
         providers: [
           DemoService,
           { provide: LocalStorageService, useValue: mockLocalStorageService },
-          { provide: PLATFORM_ID, useValue: 'server' }
-        ]
+          { provide: PLATFORM_ID, useValue: 'server' },
+        ],
       });
       const newService = TestBed.inject(DemoService);
 
@@ -116,7 +116,7 @@ describe('DemoService', () => {
     it('should back up data, load demo data, and reload page', async () => {
       vi.mocked(window.fetch).mockResolvedValue({
         ok: true,
-        json: () => Promise.resolve([{ data: 'test' }])
+        json: () => Promise.resolve([{ data: 'test' }]),
       } as any);
 
       await service.activateDemo();
@@ -138,10 +138,10 @@ describe('DemoService', () => {
     });
 
     it('should handle errors and restore backup', async () => {
-      mockLocalStorageService.exportAll.mockResolvedValue({ 'backup': true });
+      mockLocalStorageService.exportAll.mockResolvedValue({ backup: true });
       vi.mocked(window.fetch).mockResolvedValue({
         ok: true,
-        json: () => Promise.resolve(['data'])
+        json: () => Promise.resolve(['data']),
       } as any);
       mockLocalStorageService.save.mockRejectedValue(new Error('Storage full'));
 
@@ -149,7 +149,7 @@ describe('DemoService', () => {
 
       expect(mockLocalStorageService.exportAll).toHaveBeenCalled();
       expect(mockLocalStorageService.save).toHaveBeenCalled();
-      expect(mockLocalStorageService.importAll).toHaveBeenCalledWith({ 'backup': true });
+      expect(mockLocalStorageService.importAll).toHaveBeenCalledWith({ backup: true });
     });
 
     it('should set isLoading to true during activation and false after', async () => {
@@ -171,8 +171,8 @@ describe('DemoService', () => {
         providers: [
           DemoService,
           { provide: LocalStorageService, useValue: mockLocalStorageService },
-          { provide: PLATFORM_ID, useValue: 'server' }
-        ]
+          { provide: PLATFORM_ID, useValue: 'server' },
+        ],
       });
       const serverService = TestBed.inject(DemoService);
 
@@ -182,12 +182,12 @@ describe('DemoService', () => {
     });
 
     it('should handle fetch failure gracefully and still activate with empty data', async () => {
-      mockLocalStorageService.exportAll.mockResolvedValue({ 'backup': true });
+      mockLocalStorageService.exportAll.mockResolvedValue({ backup: true });
       // fetchJson catches errors and returns null, so activation still proceeds
       vi.mocked(window.fetch).mockResolvedValue({
         ok: false,
         status: 404,
-        json: () => Promise.reject(new Error('Not found'))
+        json: () => Promise.reject(new Error('Not found')),
       } as any);
 
       await service.activateDemo();
@@ -210,19 +210,34 @@ describe('DemoService', () => {
       // Mock fetch to return different data based on URL
       vi.mocked(window.fetch).mockImplementation((url: any) => {
         if (url.includes('water-consumption.json')) {
-          return Promise.resolve({ ok: true, json: () => Promise.resolve(mockWaterRecords) } as any);
+          return Promise.resolve({
+            ok: true,
+            json: () => Promise.resolve(mockWaterRecords),
+          } as any);
         } else if (url.includes('heating-consumption.json')) {
-          return Promise.resolve({ ok: true, json: () => Promise.resolve(mockHeatingRecords) } as any);
+          return Promise.resolve({
+            ok: true,
+            json: () => Promise.resolve(mockHeatingRecords),
+          } as any);
         } else if (url.includes('heating-settings.json')) {
-          return Promise.resolve({ ok: true, json: () => Promise.resolve(mockHeatingSettings) } as any);
+          return Promise.resolve({
+            ok: true,
+            json: () => Promise.resolve(mockHeatingSettings),
+          } as any);
         } else if (url.includes('electricity-consumption.json')) {
-          return Promise.resolve({ ok: true, json: () => Promise.resolve(mockElectricityRecords) } as any);
+          return Promise.resolve({
+            ok: true,
+            json: () => Promise.resolve(mockElectricityRecords),
+          } as any);
         } else if (url.includes('family.json')) {
           return Promise.resolve({ ok: true, json: () => Promise.resolve(mockFamily) } as any);
         } else if (url.includes('address.json')) {
           return Promise.resolve({ ok: true, json: () => Promise.resolve(mockAddress) } as any);
         } else if (url.includes('excel-settings.json')) {
-          return Promise.resolve({ ok: true, json: () => Promise.resolve(mockExcelSettings) } as any);
+          return Promise.resolve({
+            ok: true,
+            json: () => Promise.resolve(mockExcelSettings),
+          } as any);
         }
         return Promise.resolve({ ok: false } as any);
       });
@@ -230,13 +245,28 @@ describe('DemoService', () => {
       await service.activateDemo();
 
       // Verify all demo data was saved to correct storage keys
-      expect(mockLocalStorageService.save).toHaveBeenCalledWith('water_consumption_records', mockWaterRecords);
-      expect(mockLocalStorageService.save).toHaveBeenCalledWith('heating_consumption_records', mockHeatingRecords);
-      expect(mockLocalStorageService.save).toHaveBeenCalledWith('heating_room_configuration', mockHeatingSettings);
-      expect(mockLocalStorageService.save).toHaveBeenCalledWith('electricity_consumption_records', mockElectricityRecords);
+      expect(mockLocalStorageService.save).toHaveBeenCalledWith(
+        'water_consumption_records',
+        mockWaterRecords,
+      );
+      expect(mockLocalStorageService.save).toHaveBeenCalledWith(
+        'heating_consumption_records',
+        mockHeatingRecords,
+      );
+      expect(mockLocalStorageService.save).toHaveBeenCalledWith(
+        'heating_room_configuration',
+        mockHeatingSettings,
+      );
+      expect(mockLocalStorageService.save).toHaveBeenCalledWith(
+        'electricity_consumption_records',
+        mockElectricityRecords,
+      );
       expect(mockLocalStorageService.save).toHaveBeenCalledWith('household_members', mockFamily);
       expect(mockLocalStorageService.save).toHaveBeenCalledWith('household_address', mockAddress);
-      expect(mockLocalStorageService.save).toHaveBeenCalledWith('excel_settings', mockExcelSettings);
+      expect(mockLocalStorageService.save).toHaveBeenCalledWith(
+        'excel_settings',
+        mockExcelSettings,
+      );
     });
   });
 
@@ -247,7 +277,8 @@ describe('DemoService', () => {
 
     it('should clear demo data, restore user data, and reload', async () => {
       vi.mocked(localStorage.getItem).mockImplementation((key) => {
-        if (key === 'hm_user_backup') return JSON.stringify({ storage: { k: 'v' }, preferences: { p: 'v' } });
+        if (key === 'hm_user_backup')
+          return JSON.stringify({ storage: { k: 'v' }, preferences: { p: 'v' } });
         return null;
       });
 
@@ -288,8 +319,8 @@ describe('DemoService', () => {
         providers: [
           DemoService,
           { provide: LocalStorageService, useValue: mockLocalStorageService },
-          { provide: PLATFORM_ID, useValue: 'server' }
-        ]
+          { provide: PLATFORM_ID, useValue: 'server' },
+        ],
       });
       const serverService = TestBed.inject(DemoService);
       (serverService.isDemoMode as any).set(true);
@@ -333,7 +364,9 @@ describe('DemoService', () => {
       expect(mockLocalStorageService.delete).toHaveBeenCalledWith('water_consumption_records');
       expect(mockLocalStorageService.delete).toHaveBeenCalledWith('heating_consumption_records');
       expect(mockLocalStorageService.delete).toHaveBeenCalledWith('heating_room_configuration');
-      expect(mockLocalStorageService.delete).toHaveBeenCalledWith('electricity_consumption_records');
+      expect(mockLocalStorageService.delete).toHaveBeenCalledWith(
+        'electricity_consumption_records',
+      );
       expect(mockLocalStorageService.delete).toHaveBeenCalledWith('household_members');
       expect(mockLocalStorageService.delete).toHaveBeenCalledWith('household_address');
       expect(mockLocalStorageService.delete).toHaveBeenCalledWith('excel_settings');
@@ -344,10 +377,18 @@ describe('DemoService', () => {
 
       await service.deactivateDemo();
 
-      expect(mockLocalStorageService.removePreference).toHaveBeenCalledWith('water_confirmed_meter_changes');
-      expect(mockLocalStorageService.removePreference).toHaveBeenCalledWith('water_dismissed_meter_changes');
-      expect(mockLocalStorageService.removePreference).toHaveBeenCalledWith('heating_confirmed_spikes');
-      expect(mockLocalStorageService.removePreference).toHaveBeenCalledWith('heating_dismissed_spikes');
+      expect(mockLocalStorageService.removePreference).toHaveBeenCalledWith(
+        'water_confirmed_meter_changes',
+      );
+      expect(mockLocalStorageService.removePreference).toHaveBeenCalledWith(
+        'water_dismissed_meter_changes',
+      );
+      expect(mockLocalStorageService.removePreference).toHaveBeenCalledWith(
+        'heating_confirmed_spikes',
+      );
+      expect(mockLocalStorageService.removePreference).toHaveBeenCalledWith(
+        'heating_dismissed_spikes',
+      );
     });
   });
 });

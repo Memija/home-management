@@ -14,7 +14,7 @@ import { LanguageService } from '../../services/language.service';
   standalone: true,
   imports: [TranslatePipe, LanguageSwitcherComponent, AuthButtonComponent, LucideAngularModule],
   templateUrl: './header.component.html',
-  styleUrl: './header.component.scss'
+  styleUrl: './header.component.scss',
 })
 export class HeaderComponent {
   private elementRef = inject(ElementRef);
@@ -45,7 +45,7 @@ export class HeaderComponent {
   }
 
   protected toggleNotificationPanel(): void {
-    this.isNotificationPanelOpen.update(v => !v);
+    this.isNotificationPanelOpen.update((v) => !v);
   }
 
   protected dismissNotification(id: string, event: Event): void {
@@ -56,19 +56,21 @@ export class HeaderComponent {
   protected navigateToNotification(notification: Notification): void {
     this.closePanel();
     if (notification.route) {
-      this.router.navigate([notification.route], {
-        fragment: notification.fragment
-      }).then(() => {
-        // Scroll to fragment after navigation with a small delay
-        if (notification.fragment) {
-          setTimeout(() => {
-            const element = document.getElementById(notification.fragment!);
-            if (element) {
-              element.scrollIntoView({ behavior: 'smooth', block: 'center' });
-            }
-          }, 100);
-        }
-      });
+      this.router
+        .navigate([notification.route], {
+          fragment: notification.fragment,
+        })
+        .then(() => {
+          // Scroll to fragment after navigation with a small delay
+          if (notification.fragment) {
+            setTimeout(() => {
+              const element = document.getElementById(notification.fragment!);
+              if (element) {
+                element.scrollIntoView({ behavior: 'smooth', block: 'center' });
+              }
+            }, 100);
+          }
+        });
     }
   }
 
@@ -98,7 +100,7 @@ export class HeaderComponent {
     const themeNames: Record<Theme, string> = {
       light: this.languageService.translate('SETTINGS.THEME_LIGHT'),
       dark: this.languageService.translate('SETTINGS.THEME_DARK'),
-      system: this.languageService.translate('SETTINGS.THEME_SYSTEM')
+      system: this.languageService.translate('SETTINGS.THEME_SYSTEM'),
     };
 
     if (current === 'system') {

@@ -1,5 +1,14 @@
 import { Component, signal, effect, inject, computed, HostListener } from '@angular/core';
-import { LucideAngularModule, Pencil, Save, X, Download, Upload, HelpCircle, TriangleAlert } from 'lucide-angular';
+import {
+  LucideAngularModule,
+  Pencil,
+  Save,
+  X,
+  Download,
+  Upload,
+  HelpCircle,
+  TriangleAlert,
+} from 'lucide-angular';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { HouseholdService, Address } from '../../services/household.service';
@@ -9,7 +18,10 @@ import { CountryService } from '../../services/country.service';
 import { FormValidationService } from '../../services/form-validation.service';
 import { TranslatePipe } from '../../pipes/translate.pipe';
 import { ConfirmationModalComponent } from '../../shared/confirmation-modal/confirmation-modal.component';
-import { ErrorModalComponent, ErrorInstruction } from '../../shared/error-modal/error-modal.component';
+import {
+  ErrorModalComponent,
+  ErrorInstruction,
+} from '../../shared/error-modal/error-modal.component';
 import { HelpModalComponent, HelpStep } from '../../shared/help-modal/help-modal.component';
 import { CountrySelectorComponent } from '../../shared/country-selector/country-selector.component';
 import { DeleteConfirmationModalComponent } from '../../shared/delete-confirmation-modal/delete-confirmation-modal.component';
@@ -26,10 +38,10 @@ import { DeleteConfirmationModalComponent } from '../../shared/delete-confirmati
     DeleteConfirmationModalComponent,
     ErrorModalComponent,
     HelpModalComponent,
-    CountrySelectorComponent
+    CountrySelectorComponent,
   ],
   templateUrl: './address.component.html',
-  styleUrl: './address.component.scss'
+  styleUrl: './address.component.scss',
 })
 export class AddressComponent {
   protected languageService = inject(LanguageService);
@@ -50,10 +62,22 @@ export class AddressComponent {
   // Help modal
   protected showHelpModal = signal(false);
   protected readonly helpSteps: HelpStep[] = [
-    { titleKey: 'SETTINGS.ADDRESS_HELP_STEP_1_TITLE', descriptionKey: 'SETTINGS.ADDRESS_HELP_STEP_1_DESC' },
-    { titleKey: 'SETTINGS.ADDRESS_HELP_STEP_2_TITLE', descriptionKey: 'SETTINGS.ADDRESS_HELP_STEP_2_DESC' },
-    { titleKey: 'SETTINGS.ADDRESS_HELP_STEP_3_TITLE', descriptionKey: 'SETTINGS.ADDRESS_HELP_STEP_3_DESC' },
-    { titleKey: 'SETTINGS.ADDRESS_HELP_STEP_4_TITLE', descriptionKey: 'SETTINGS.ADDRESS_HELP_STEP_4_DESC' }
+    {
+      titleKey: 'SETTINGS.ADDRESS_HELP_STEP_1_TITLE',
+      descriptionKey: 'SETTINGS.ADDRESS_HELP_STEP_1_DESC',
+    },
+    {
+      titleKey: 'SETTINGS.ADDRESS_HELP_STEP_2_TITLE',
+      descriptionKey: 'SETTINGS.ADDRESS_HELP_STEP_2_DESC',
+    },
+    {
+      titleKey: 'SETTINGS.ADDRESS_HELP_STEP_3_TITLE',
+      descriptionKey: 'SETTINGS.ADDRESS_HELP_STEP_3_DESC',
+    },
+    {
+      titleKey: 'SETTINGS.ADDRESS_HELP_STEP_4_TITLE',
+      descriptionKey: 'SETTINGS.ADDRESS_HELP_STEP_4_DESC',
+    },
   ];
 
   // Address Form Signals with defaults
@@ -106,7 +130,8 @@ export class AddressComponent {
 
   // Form validation
   protected isAddressFormValid = computed(() => {
-    return this.streetName().trim() !== '' &&
+    return (
+      this.streetName().trim() !== '' &&
       this.streetNumber().trim() !== '' &&
       this.city().trim() !== '' &&
       this.zipCode().trim() !== '' &&
@@ -116,7 +141,8 @@ export class AddressComponent {
       this.cityError().length === 0 &&
       this.zipCodeError().length === 0 &&
       this.countryError().length === 0 &&
-      this.isValidCountry();
+      this.isValidCountry()
+    );
   });
 
   // Check for unsaved changes
@@ -127,19 +153,23 @@ export class AddressComponent {
     const saved = this.householdService.address();
     // If no saved address and we are editing, check if any field has content
     if (!saved) {
-      return this.streetName().trim() !== '' ||
+      return (
+        this.streetName().trim() !== '' ||
         this.streetNumber().trim() !== '' ||
         this.city().trim() !== '' ||
         this.zipCode().trim() !== '' ||
-        this.country().trim() !== '';
+        this.country().trim() !== ''
+      );
     }
 
     // Compare strictly
-    return this.streetName() !== saved.streetName ||
+    return (
+      this.streetName() !== saved.streetName ||
       this.streetNumber() !== saved.streetNumber ||
       this.city() !== saved.city ||
       this.zipCode() !== saved.zipCode ||
-      this.country() !== (saved.country || '');
+      this.country() !== (saved.country || '')
+    );
     // Note: saved.country logic in constructor might normalize to code,
     // but here we just compare what is in signals vs what is in service.
     // Ideally service should have Normalized data, but we'll assume equality check is sufficient
@@ -288,7 +318,7 @@ export class AddressComponent {
         streetNumber: this.streetNumber(),
         city: this.city(),
         zipCode: this.zipCode(),
-        country: this.country()
+        country: this.country(),
       };
       this.householdService.updateAddress(address);
       this.isEditingAddress.set(false);
@@ -323,10 +353,12 @@ export class AddressComponent {
     if (file) {
       // Validate file extension
       if (!file.name.toLowerCase().endsWith('.json')) {
-        this.importErrorMessage.set(this.languageService.translate('SETTINGS.IMPORT_ADDRESS_INVALID_FILE_TYPE'));
+        this.importErrorMessage.set(
+          this.languageService.translate('SETTINGS.IMPORT_ADDRESS_INVALID_FILE_TYPE'),
+        );
         this.importErrorInstructions.set([
           'SETTINGS.IMPORT_ADDRESS_INVALID_FILE_TYPE_INSTRUCTION_1',
-          'SETTINGS.IMPORT_ADDRESS_INVALID_FILE_TYPE_INSTRUCTION_2'
+          'SETTINGS.IMPORT_ADDRESS_INVALID_FILE_TYPE_INSTRUCTION_2',
         ]);
         this.showImportErrorModal.set(true);
         this.showImportConfirmModal.set(false);
@@ -352,42 +384,63 @@ export class AddressComponent {
         }
 
         // Validate required fields
-        if (data && data.streetName && data.streetNumber && data.city && data.zipCode && data.country) {
+        if (
+          data &&
+          data.streetName &&
+          data.streetNumber &&
+          data.city &&
+          data.zipCode &&
+          data.country
+        ) {
           const errors: string[] = [];
           const fieldKeys: string[] = [];
 
           const streetNameErrs = this.validationService.getStreetNameError(data.streetName);
           if (streetNameErrs.length > 0) {
             fieldKeys.push('SETTINGS.STREET_NAME');
-            errors.push(`${this.languageService.translate('SETTINGS.STREET_NAME')}: ${streetNameErrs.map(e => this.languageService.translate(e)).join(', ')}`);
+            errors.push(
+              `${this.languageService.translate('SETTINGS.STREET_NAME')}: ${streetNameErrs.map((e) => this.languageService.translate(e)).join(', ')}`,
+            );
           }
 
           const streetNumErrs = this.validationService.getStreetNumberError(data.streetNumber);
           if (streetNumErrs.length > 0) {
             fieldKeys.push('SETTINGS.NUMBER');
-            errors.push(`${this.languageService.translate('SETTINGS.NUMBER')}: ${streetNumErrs.map(e => this.languageService.translate(e)).join(', ')}`);
+            errors.push(
+              `${this.languageService.translate('SETTINGS.NUMBER')}: ${streetNumErrs.map((e) => this.languageService.translate(e)).join(', ')}`,
+            );
           }
 
           const cityErrs = this.validationService.getCityError(data.city);
           if (cityErrs.length > 0) {
             fieldKeys.push('SETTINGS.CITY');
-            errors.push(`${this.languageService.translate('SETTINGS.CITY')}: ${cityErrs.map(e => this.languageService.translate(e)).join(', ')}`);
+            errors.push(
+              `${this.languageService.translate('SETTINGS.CITY')}: ${cityErrs.map((e) => this.languageService.translate(e)).join(', ')}`,
+            );
           }
 
           const zipErrs = this.validationService.getZipCodeError(data.zipCode);
           if (zipErrs.length > 0) {
             fieldKeys.push('SETTINGS.ZIP_CODE');
-            errors.push(`${this.languageService.translate('SETTINGS.ZIP_CODE')}: ${zipErrs.map(e => this.languageService.translate(e)).join(', ')}`);
+            errors.push(
+              `${this.languageService.translate('SETTINGS.ZIP_CODE')}: ${zipErrs.map((e) => this.languageService.translate(e)).join(', ')}`,
+            );
           }
 
           const countryErrs = this.validationService.getCountryError(data.country);
           if (countryErrs.length > 0) {
             fieldKeys.push('SETTINGS.COUNTRY');
-            errors.push(`${this.languageService.translate('SETTINGS.COUNTRY')}: ${countryErrs.map(e => this.languageService.translate(e)).join(', ')}`);
+            errors.push(
+              `${this.languageService.translate('SETTINGS.COUNTRY')}: ${countryErrs.map((e) => this.languageService.translate(e)).join(', ')}`,
+            );
           }
 
           if (errors.length > 0) {
-            throw { message: this.languageService.translate('SETTINGS.VALIDATION_FAILED'), details: errors.join('\n'), fieldKeys };
+            throw {
+              message: this.languageService.translate('SETTINGS.VALIDATION_FAILED'),
+              details: errors.join('\n'),
+              fieldKeys,
+            };
           }
 
           this.householdService.updateAddress(data);
@@ -407,23 +460,37 @@ export class AddressComponent {
         console.error('Error importing address:', error);
 
         // Handle explicit invalid file type errors from fileStorage import (if any)
-        if (error.message === 'invalid_file_type' || (error.error && error.error === 'invalid_file_type')) {
-          this.importErrorMessage.set(this.languageService.translate('SETTINGS.IMPORT_ADDRESS_INVALID_FILE_TYPE'));
+        if (
+          error.message === 'invalid_file_type' ||
+          (error.error && error.error === 'invalid_file_type')
+        ) {
+          this.importErrorMessage.set(
+            this.languageService.translate('SETTINGS.IMPORT_ADDRESS_INVALID_FILE_TYPE'),
+          );
           this.importErrorInstructions.set([
             'SETTINGS.IMPORT_ADDRESS_INVALID_FILE_TYPE_INSTRUCTION_1',
-            'SETTINGS.IMPORT_ADDRESS_INVALID_FILE_TYPE_INSTRUCTION_2'
+            'SETTINGS.IMPORT_ADDRESS_INVALID_FILE_TYPE_INSTRUCTION_2',
           ]);
         } else {
-          this.importErrorMessage.set(error.message || this.languageService.translate('SETTINGS.IMPORT_ERROR'));
+          this.importErrorMessage.set(
+            error.message || this.languageService.translate('SETTINGS.IMPORT_ERROR'),
+          );
           this.importErrorDetails.set(error.details || '');
 
           const instructions: (string | ErrorInstruction)[] = [];
           if (error.fieldKeys && Array.isArray(error.fieldKeys)) {
             error.fieldKeys.forEach((key: string) => {
-              instructions.push({ key: 'HOME.IMPORT_ERROR_CHECK_FIELD', params: { field: this.languageService.translate(key) } });
+              instructions.push({
+                key: 'HOME.IMPORT_ERROR_CHECK_FIELD',
+                params: { field: this.languageService.translate(key) },
+              });
             });
           }
-          instructions.push('HOME.IMPORT_ERROR_INSTRUCTION_1', 'HOME.IMPORT_ERROR_INSTRUCTION_2', 'HOME.IMPORT_ERROR_INSTRUCTION_3');
+          instructions.push(
+            'HOME.IMPORT_ERROR_INSTRUCTION_1',
+            'HOME.IMPORT_ERROR_INSTRUCTION_2',
+            'HOME.IMPORT_ERROR_INSTRUCTION_3',
+          );
           this.importErrorInstructions.set(instructions);
         }
 

@@ -1,10 +1,16 @@
 import { Injectable, inject } from '@angular/core';
 import { WaterAveragesService } from './water-averages.service';
 import { ElectricityAveragesService } from './electricity-averages.service';
-import { ConsumptionRecord, DynamicHeatingRecord, CombinedData, ComparisonData, ElectricityRecord } from '../models/records.model';
+import {
+  ConsumptionRecord,
+  DynamicHeatingRecord,
+  CombinedData,
+  ComparisonData,
+  ElectricityRecord,
+} from '../models/records.model';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class ChartCalculationService {
   private waterAveragesService = inject(WaterAveragesService);
@@ -13,9 +19,12 @@ export class ChartCalculationService {
   /**
    * Calculate incremental (delta) data between consecutive readings
    */
-  calculateIncrementalData(recs: (ConsumptionRecord | DynamicHeatingRecord | ElectricityRecord)[], ignoredSpikes?: { date: string, roomId: string }[]): CombinedData[] {
+  calculateIncrementalData(
+    recs: (ConsumptionRecord | DynamicHeatingRecord | ElectricityRecord)[],
+    ignoredSpikes?: { date: string; roomId: string }[],
+  ): CombinedData[] {
     // Defensive filter against invalid dates
-    const validRecs = recs.filter(r => r && r.date && !isNaN(new Date(r.date).getTime()));
+    const validRecs = recs.filter((r) => r && r.date && !isNaN(new Date(r.date).getTime()));
     if (validRecs.length <= 1) return [];
 
     const incrementalData: CombinedData[] = [];
@@ -36,9 +45,11 @@ export class ChartCalculationService {
         const incRooms: Record<string, number> = {};
 
         // Calculate delta for each room
-        Object.keys(currRooms).forEach(roomId => {
+        Object.keys(currRooms).forEach((roomId) => {
           // Check if this specific record/room is a confirmed spike
-          const isSpike = ignoredSpikes?.some(s => s.date === currentDateStr && s.roomId === roomId);
+          const isSpike = ignoredSpikes?.some(
+            (s) => s.date === currentDateStr && s.roomId === roomId,
+          );
 
           if (isSpike) {
             incRooms[roomId] = 0; // Ignore spike consumption (treat as 0 usage initialization)
@@ -66,7 +77,8 @@ export class ChartCalculationService {
         // Handle ElectricityRecord explicitly or generic logic
         if ('value' in current) {
           const currVal = (current as unknown as ElectricityRecord).value;
-          const prevVal = 'value' in (previous as object) ? (previous as unknown as ElectricityRecord).value : 0;
+          const prevVal =
+            'value' in (previous as object) ? (previous as unknown as ElectricityRecord).value : 0;
 
           if (currVal < prevVal) {
             // Reset detected
@@ -76,7 +88,7 @@ export class ChartCalculationService {
           }
         } else {
           // Water consumption logic (generic keys)
-          Object.keys(current).forEach(key => {
+          Object.keys(current).forEach((key) => {
             const currVal = currentObj[key];
             const prevVal = previousObj[key] ?? 0;
 
@@ -153,7 +165,11 @@ export class ChartCalculationService {
   /**
    * Generate comparison data based on country averages
    */
-  generateComparisonData(processedData: ConsumptionRecord[], familySize: number, country: string): ComparisonData[] {
+  generateComparisonData(
+    processedData: ConsumptionRecord[],
+    familySize: number,
+    country: string,
+  ): ComparisonData[] {
     if (processedData.length === 0 || familySize === 0) return [];
 
     const countryData = this.waterAveragesService.getCountryData(country);
@@ -189,11 +205,16 @@ export class ChartCalculationService {
    * Returns array of date strings where ANY field had a drop
    */
   detectMeterChanges(records: ConsumptionRecord[]): string[] {
-    const validRecords = records.filter(r => r && r.date && !isNaN(new Date(r.date).getTime()));
+    const validRecords = records.filter((r) => r && r.date && !isNaN(new Date(r.date).getTime()));
     if (validRecords.length < 2) return [];
 
     const changesSet = new Set<string>();
-    const fields: (keyof ConsumptionRecord)[] = ['kitchenWarm', 'kitchenCold', 'bathroomWarm', 'bathroomCold'];
+    const fields: (keyof ConsumptionRecord)[] = [
+      'kitchenWarm',
+      'kitchenCold',
+      'bathroomWarm',
+      'bathroomCold',
+    ];
 
     for (let i = 1; i < validRecords.length; i++) {
       const prevRecord = validRecords[i - 1];
@@ -218,19 +239,27 @@ export class ChartCalculationService {
    * Example: If bathroom warm meter dropped from 116210 to 587 on Nov 9,
    * only the bathroomWarm field gets offset = 116210, other fields unchanged
    */
-  adjustForMeterChanges(records: ConsumptionRecord[], confirmedChangeDates: string[]): ConsumptionRecord[] {
-    const validRecords = records.filter(r => r && r.date && !isNaN(new Date(r.date).getTime()));
+  adjustForMeterChanges(
+    records: ConsumptionRecord[],
+    confirmedChangeDates: string[],
+  ): ConsumptionRecord[] {
+    const validRecords = records.filter((r) => r && r.date && !isNaN(new Date(r.date).getTime()));
     if (validRecords.length < 2 || confirmedChangeDates.length === 0) return records;
 
     const adjustedRecords: ConsumptionRecord[] = [];
-    const fields: (keyof ConsumptionRecord)[] = ['kitchenWarm', 'kitchenCold', 'bathroomWarm', 'bathroomCold'];
+    const fields: (keyof ConsumptionRecord)[] = [
+      'kitchenWarm',
+      'kitchenCold',
+      'bathroomWarm',
+      'bathroomCold',
+    ];
 
     // Track offset for each field independently
     const offsets: Record<string, number> = {
       kitchenWarm: 0,
       kitchenCold: 0,
       bathroomWarm: 0,
-      bathroomCold: 0
+      bathroomCold: 0,
     };
 
     for (let i = 0; i < validRecords.length; i++) {
@@ -261,7 +290,7 @@ export class ChartCalculationService {
         kitchenWarm: record.kitchenWarm + offsets['kitchenWarm'],
         kitchenCold: record.kitchenCold + offsets['kitchenCold'],
         bathroomWarm: record.bathroomWarm + offsets['bathroomWarm'],
-        bathroomCold: record.bathroomCold + offsets['bathroomCold']
+        bathroomCold: record.bathroomCold + offsets['bathroomCold'],
       });
     }
 
@@ -273,11 +302,13 @@ export class ChartCalculationService {
    * This happens when a room is added mid-season
    * Returns array of { date, roomId, value, averageDelta }
    */
-  detectNewRoomSpikes(records: DynamicHeatingRecord[]): { date: string, roomId: string, value: number, averageDelta: number }[] {
-    const validRecords = records.filter(r => r && r.date && !isNaN(new Date(r.date).getTime()));
+  detectNewRoomSpikes(
+    records: DynamicHeatingRecord[],
+  ): { date: string; roomId: string; value: number; averageDelta: number }[] {
+    const validRecords = records.filter((r) => r && r.date && !isNaN(new Date(r.date).getTime()));
     if (validRecords.length < 2) return [];
 
-    const spikes: { date: string, roomId: string, value: number, averageDelta: number }[] = [];
+    const spikes: { date: string; roomId: string; value: number; averageDelta: number }[] = [];
 
     for (let i = 1; i < validRecords.length; i++) {
       const prevRecord = validRecords[i - 1];
@@ -287,7 +318,7 @@ export class ChartCalculationService {
       let otherDeltasSum = 0;
       let otherDeltasCount = 0;
 
-      Object.keys(currRecord.rooms).forEach(rId => {
+      Object.keys(currRecord.rooms).forEach((rId) => {
         const pVal = prevRecord.rooms[rId] || 0;
         const cVal = currRecord.rooms[rId] || 0;
         // Consider "existing" if previous value was > 0
@@ -300,7 +331,7 @@ export class ChartCalculationService {
       const avgOtherDelta = otherDeltasCount > 0 ? otherDeltasSum / otherDeltasCount : 0;
 
       // Check for spikes
-      Object.keys(currRecord.rooms).forEach(rId => {
+      Object.keys(currRecord.rooms).forEach((rId) => {
         const pVal = prevRecord.rooms[rId] || 0;
         const cVal = currRecord.rooms[rId] || 0;
         const delta = cVal - pVal;
@@ -312,14 +343,14 @@ export class ChartCalculationService {
         //    OR if no other rooms to compare, just check absolute value (e.g. > 100)
         if (pVal === 0 && cVal > 0) {
           // User said "way off the average". Using 5x average as heuristic.
-          const isWayOffAverage = otherDeltasCount > 0 ? delta > (avgOtherDelta * 5) : delta > 100;
+          const isWayOffAverage = otherDeltasCount > 0 ? delta > avgOtherDelta * 5 : delta > 100;
 
           if (isWayOffAverage && delta > 50) {
             spikes.push({
               date: new Date(currRecord.date).toISOString().split('T')[0],
               roomId: rId,
               value: cVal,
-              averageDelta: avgOtherDelta
+              averageDelta: avgOtherDelta,
             });
           }
         }
@@ -332,8 +363,11 @@ export class ChartCalculationService {
    * Adjust records for new room spikes by applying offsets
    * This smooths the chart by treating the spike value as the baseline (start)
    */
-  adjustForNewRooms(records: DynamicHeatingRecord[], ignoredSpikes: { date: string, roomId: string }[]): DynamicHeatingRecord[] {
-    const validRecords = records.filter(r => r && r.date && !isNaN(new Date(r.date).getTime()));
+  adjustForNewRooms(
+    records: DynamicHeatingRecord[],
+    ignoredSpikes: { date: string; roomId: string }[],
+  ): DynamicHeatingRecord[] {
+    const validRecords = records.filter((r) => r && r.date && !isNaN(new Date(r.date).getTime()));
     if (validRecords.length < 2 || ignoredSpikes.length === 0) return records;
 
     const adjustedRecords: DynamicHeatingRecord[] = [];
@@ -344,12 +378,12 @@ export class ChartCalculationService {
       const recordDate = new Date(record.date).toISOString().split('T')[0];
       const newRooms: Record<string, number> = {};
 
-      Object.keys(record.rooms).forEach(roomId => {
+      Object.keys(record.rooms).forEach((roomId) => {
         const rawVal = record.rooms[roomId] || 0;
 
         // Update offset if this is a spike date for this room
         if (i > 0) {
-          const isSpike = ignoredSpikes.some(s => s.date === recordDate && s.roomId === roomId);
+          const isSpike = ignoredSpikes.some((s) => s.date === recordDate && s.roomId === roomId);
           if (isSpike) {
             const spikeVal = rawVal;
             // Add to existing offset (cumulative)
@@ -373,7 +407,7 @@ export class ChartCalculationService {
 
       adjustedRecords.push({
         ...record,
-        rooms: newRooms
+        rooms: newRooms,
       });
     }
 
@@ -383,7 +417,11 @@ export class ChartCalculationService {
   /**
    * Generate comparison data based on country electricity averages
    */
-  generateElectricityComparisonData(processedData: ElectricityRecord[], familySize: number, country: string): ElectricityRecord[] {
+  generateElectricityComparisonData(
+    processedData: ElectricityRecord[],
+    familySize: number,
+    country: string,
+  ): ElectricityRecord[] {
     if (processedData.length === 0 || familySize === 0) return [];
 
     const countryData = this.electricityAveragesService.getCountryData(country);
@@ -398,7 +436,7 @@ export class ChartCalculationService {
     const result = processedData.map((current) => {
       return {
         date: current.date,
-        value: comparisonVal // Constant daily average
+        value: comparisonVal, // Constant daily average
       };
     });
 
@@ -420,7 +458,7 @@ export class ChartCalculationService {
   calculateDailyAverage(
     incrementalData: CombinedData[],
     originalData: (ElectricityRecord | ConsumptionRecord | DynamicHeatingRecord)[],
-    type: 'electricity' | 'water' | 'heating'
+    type: 'electricity' | 'water' | 'heating',
   ): CombinedData[] {
     if (incrementalData.length === 0) return incrementalData;
 
@@ -488,7 +526,7 @@ export class ChartCalculationService {
    */
   private normalizeWaterRecord(record: any, daysDiff: number): void {
     const fields = ['kitchenWarm', 'kitchenCold', 'bathroomWarm', 'bathroomCold'];
-    fields.forEach(field => {
+    fields.forEach((field) => {
       if (typeof record[field] === 'number') {
         const rawVal = record[field];
         record[field] = Math.round(rawVal / daysDiff);
@@ -502,7 +540,7 @@ export class ChartCalculationService {
    */
   private normalizeHeatingRecord(record: any, daysDiff: number): void {
     if (record.rooms) {
-      Object.keys(record.rooms).forEach(roomId => {
+      Object.keys(record.rooms).forEach((roomId) => {
         const rawVal = record.rooms[roomId];
         if (typeof rawVal === 'number') {
           record.rooms[roomId] = Math.round(rawVal / daysDiff);
@@ -516,4 +554,3 @@ export class ChartCalculationService {
     return record.kitchenWarm + record.kitchenCold + record.bathroomWarm + record.bathroomCold;
   }
 }
-

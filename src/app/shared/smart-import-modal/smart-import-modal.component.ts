@@ -10,7 +10,7 @@ import { SmartImportService, ParsedRecord } from '../../services/smart-import.se
   standalone: true,
   imports: [CommonModule, FormsModule, LucideAngularModule, TranslatePipe],
   templateUrl: './smart-import-modal.component.html',
-  styleUrl: './smart-import-modal.component.scss'
+  styleUrl: './smart-import-modal.component.scss',
 })
 export class SmartImportModalComponent {
   private smartImportService = inject(SmartImportService);

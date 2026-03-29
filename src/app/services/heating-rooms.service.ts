@@ -6,9 +6,9 @@ import { LanguageService } from './language.service';
  * Configuration for a heating room
  */
 export interface HeatingRoomConfig {
-  id: string;      // Unique identifier (e.g., 'room_1')
-  name: string;    // Display name (e.g., 'Living Room')
-  type?: string;   // Room type key for icon matching (e.g., 'HEATING.ROOM_LIVING_ROOM')
+  id: string; // Unique identifier (e.g., 'room_1')
+  name: string; // Display name (e.g., 'Living Room')
+  type?: string; // Room type key for icon matching (e.g., 'HEATING.ROOM_LIVING_ROOM')
 }
 
 const STORAGE_KEY = 'heating_room_configuration';
@@ -16,13 +16,20 @@ const MAX_ROOMS = 10;
 
 // Predefined room name translation keys
 export const PREDEFINED_ROOM_KEYS = [
-  'HEATING.ROOM_LIVING_ROOM', 'HEATING.ROOM_BEDROOM', 'HEATING.ROOM_KIDS_ROOM', 'HEATING.ROOM_KITCHEN',
-  'HEATING.ROOM_BATHROOM', 'HEATING.ROOM_OFFICE', 'HEATING.ROOM_GUEST_ROOM', 'HEATING.ROOM_DINING_ROOM',
-  'HEATING.ROOM_HALLWAY', 'HEATING.ROOM_ATTIC'
+  'HEATING.ROOM_LIVING_ROOM',
+  'HEATING.ROOM_BEDROOM',
+  'HEATING.ROOM_KIDS_ROOM',
+  'HEATING.ROOM_KITCHEN',
+  'HEATING.ROOM_BATHROOM',
+  'HEATING.ROOM_OFFICE',
+  'HEATING.ROOM_GUEST_ROOM',
+  'HEATING.ROOM_DINING_ROOM',
+  'HEATING.ROOM_HALLWAY',
+  'HEATING.ROOM_ATTIC',
 ];
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class HeatingRoomsService {
   private storage = inject(STORAGE_SERVICE);
@@ -60,7 +67,7 @@ export class HeatingRoomsService {
   addRoom(): void {
     if (!this.canAddRoom()) return;
 
-    const existingIds = this._rooms().map(r => r.id);
+    const existingIds = this._rooms().map((r) => r.id);
     let newId = '';
     let counter = 1;
     do {
@@ -77,11 +84,14 @@ export class HeatingRoomsService {
 
     const type = isPredefined ? PREDEFINED_ROOM_KEYS[roomIndex] : undefined;
 
-    this._rooms.update(rooms => [...rooms, {
-      id: newId,
-      name: roomName,
-      type
-    }]);
+    this._rooms.update((rooms) => [
+      ...rooms,
+      {
+        id: newId,
+        name: roomName,
+        type,
+      },
+    ]);
     this.saveRooms();
   }
 
@@ -91,7 +101,7 @@ export class HeatingRoomsService {
   removeRoom(id: string): void {
     if (!this.canRemoveRoom()) return;
 
-    this._rooms.update(rooms => rooms.filter(r => r.id !== id));
+    this._rooms.update((rooms) => rooms.filter((r) => r.id !== id));
     this.saveRooms();
   }
 
@@ -99,8 +109,8 @@ export class HeatingRoomsService {
    * Update a room's name
    */
   updateRoomName(id: string, name: string): void {
-    this._rooms.update(rooms =>
-      rooms.map(r => r.id === id ? { ...r, name: name.trim() || r.name } : r)
+    this._rooms.update((rooms) =>
+      rooms.map((r) => (r.id === id ? { ...r, name: name.trim() || r.name } : r)),
     );
     this.saveRooms();
   }
@@ -109,7 +119,7 @@ export class HeatingRoomsService {
    * Get room by ID
    */
   getRoom(id: string): HeatingRoomConfig | undefined {
-    return this._rooms().find(r => r.id === id);
+    return this._rooms().find((r) => r.id === id);
   }
 
   /**

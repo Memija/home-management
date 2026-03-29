@@ -17,14 +17,12 @@ describe('LanguageSwitcherComponent', () => {
 
     languageServiceMock = {
       currentLang: currentLangSignal,
-      setLanguage: vi.fn()
+      setLanguage: vi.fn(),
     };
 
     await TestBed.configureTestingModule({
       imports: [LanguageSwitcherComponent],
-      providers: [
-        { provide: LanguageService, useValue: languageServiceMock }
-      ]
+      providers: [{ provide: LanguageService, useValue: languageServiceMock }],
     }).compileComponents();
 
     fixture = TestBed.createComponent(LanguageSwitcherComponent);

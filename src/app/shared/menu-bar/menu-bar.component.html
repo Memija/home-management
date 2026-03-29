@@ -1,6 +1,11 @@
 <nav class="menu-bar">
   <div class="menu-content">
-    <a routerLink="/dashboard" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}" class="menu-item">
+    <a
+      routerLink="/dashboard"
+      routerLinkActive="active"
+      [routerLinkActiveOptions]="{ exact: true }"
+      class="menu-item"
+    >
       <span class="emoji-icon">🏠</span>
       <span>{{ 'MENU.HOME' | translate }}</span>
     </a>
@@ -28,5 +33,8 @@
 </nav>
 
 @if (showContactModal()) {
-<app-contact-modal (close)="onCloseModal()" (compose)="onComposeEmail($event)"></app-contact-modal>
+  <app-contact-modal
+    (close)="onCloseModal()"
+    (compose)="onComposeEmail($event)"
+  ></app-contact-modal>
 }

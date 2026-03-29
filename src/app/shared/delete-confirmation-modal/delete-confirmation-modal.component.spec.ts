@@ -9,7 +9,9 @@ import { AlertTriangle } from 'lucide-angular';
 
 @Pipe({ name: 'translate', standalone: true })
 class MockTranslatePipe implements PipeTransform {
-  transform(key: string): string { return key; }
+  transform(key: string): string {
+    return key;
+  }
 }
 
 describe('DeleteConfirmationModalComponent', () => {
@@ -25,21 +27,22 @@ describe('DeleteConfirmationModalComponent', () => {
         const translations: Record<string, string> = {
           'DELETE.TITLE': 'Delete Item',
           'DELETE.MESSAGE': 'Are you sure you want to delete this?',
-          'DELETE.MESSAGE_WITH_PARAMS': 'Are you sure you want to delete {{count}} items from {{source}}?',
+          'DELETE.MESSAGE_WITH_PARAMS':
+            'Are you sure you want to delete {{count}} items from {{source}}?',
           'ACTIONS.CANCEL': 'Cancel',
           'ACTIONS.DELETE': 'Delete',
-          'ACTIONS.CLOSE': 'Close'
+          'ACTIONS.CLOSE': 'Close',
         };
         return translations[key] || key;
-      })
+      }),
     };
 
     await TestBed.configureTestingModule({
-      imports: [DeleteConfirmationModalComponent]
+      imports: [DeleteConfirmationModalComponent],
     })
       .overrideComponent(DeleteConfirmationModalComponent, {
         remove: { imports: [TranslatePipe] },
-        add: { imports: [MockTranslatePipe] }
+        add: { imports: [MockTranslatePipe] },
       })
       .overrideProvider(LanguageService, { useValue: languageServiceMock })
       .compileComponents();

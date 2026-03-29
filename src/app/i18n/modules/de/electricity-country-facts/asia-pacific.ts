@@ -13,7 +13,7 @@ export const asiaPacificElectricityFacts = {
     'Japan strebt Klimaneutralität bis 2050 an.',
     'Die Liberalisierung hat vielen neuen Anbietern den Markteintritt ermöglicht.',
     'Pumpspeicherwerke sind in Japan weit verbreitet.',
-    'Geothermie hat Potenzial, stößt aber auf lokalen Widerstand.'
+    'Geothermie hat Potenzial, stößt aber auf lokalen Widerstand.',
   ],
 
   // China
@@ -29,7 +29,7 @@ export const asiaPacificElectricityFacts = {
     'Strompreise werden vom Staat reguliert.',
     'China strebt an, die Emissionen vor 2030 zu maximieren.',
     'Dezentrale Solaranlagen wachsen in ländlichen Dörfern.',
-    'Energiespeicherung schafft neue Möglichkeiten für das Netz.'
+    'Energiespeicherung schafft neue Möglichkeiten für das Netz.',
   ],
 
   // India
@@ -45,7 +45,7 @@ export const asiaPacificElectricityFacts = {
     'Landwirtschaftliche Solarpumpen ersetzen Dieselpumpen.',
     'Dach-Solaranlagen sind in einigen indischen Städten vorgeschrieben.',
     'Indien investiert stark in grünen Wasserstoff.',
-    'Der Stromverbrauch soll sich in den kommenden Jahrzehnten verdoppeln.'
+    'Der Stromverbrauch soll sich in den kommenden Jahrzehnten verdoppeln.',
   ],
 
   // Australia
@@ -61,7 +61,7 @@ export const asiaPacificElectricityFacts = {
     'Buschfeuer bedrohen die Netzinfrastruktur.',
     'Virtuelle Kraftwerke bündeln Hausbatterien.',
     'Tasmanien wird zu 100% erneuerbar betrieben (Wasser-/Windkraft).',
-    'Die Strompreise waren volatil, stabilisieren sich aber.'
+    'Die Strompreise waren volatil, stabilisieren sich aber.',
   ],
 
   // New Zealand
@@ -77,6 +77,6 @@ export const asiaPacificElectricityFacts = {
     'Prozesswärme in der Industrie wird elektrifiziert.',
     'Dezentrale Stromerzeugung ist einfach anzuschließen.',
     'Neuseeland hat keine Kernkraft.',
-    'In der Cookstraße wird Gezeitenenergie erforscht.'
-  ]
+    'In der Cookstraße wird Gezeitenenergie erforscht.',
+  ],
 };

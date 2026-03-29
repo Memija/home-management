@@ -48,9 +48,7 @@ describe('StorageService', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      providers: [
-        { provide: STORAGE_SERVICE, useClass: MockStorageService }
-      ]
+      providers: [{ provide: STORAGE_SERVICE, useClass: MockStorageService }],
     });
     service = TestBed.inject(STORAGE_SERVICE);
   });

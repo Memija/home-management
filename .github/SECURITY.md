@@ -22,9 +22,9 @@ We take the security of Home Management seriously. If you believe you have found
 
 ### What We Request
 
-* Give us a reasonable amount of time to resolve the issue before making it public.
-* Avoid data modification or exfiltration.
-* Only use your own accounts and data for testing.
+- Give us a reasonable amount of time to resolve the issue before making it public.
+- Avoid data modification or exfiltration.
+- Only use your own accounts and data for testing.
 
 ---
 

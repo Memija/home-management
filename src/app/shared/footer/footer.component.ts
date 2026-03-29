@@ -11,7 +11,7 @@ import { APP_VERSION } from '../../app.constants';
   standalone: true,
   imports: [TranslatePipe, LucideAngularModule, RouterLink, SupportModalComponent],
   templateUrl: './footer.component.html',
-  styleUrl: './footer.component.scss'
+  styleUrl: './footer.component.scss',
 })
 export class FooterComponent {
   readonly HeartIcon = Heart;

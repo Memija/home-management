@@ -2,7 +2,13 @@ import { Component, input, output, signal, computed, inject } from '@angular/cor
 import { FormsModule } from '@angular/forms';
 import { LanguageService } from '../../services/language.service';
 import { TranslatePipe } from '../../pipes/translate.pipe';
-import { LucideAngularModule, TriangleAlert, HelpCircle, Home, type LucideIconData } from 'lucide-angular';
+import {
+  LucideAngularModule,
+  TriangleAlert,
+  HelpCircle,
+  Home,
+  type LucideIconData,
+} from 'lucide-angular';
 import { DatePickerComponent } from '../date-picker/date-picker.component';
 import { HelpModalComponent, HelpStep } from '../help-modal/help-modal.component';
 
@@ -26,9 +32,15 @@ export interface ConsumptionData {
 @Component({
   selector: 'app-consumption-input',
   standalone: true,
-  imports: [FormsModule, TranslatePipe, LucideAngularModule, DatePickerComponent, HelpModalComponent],
+  imports: [
+    FormsModule,
+    TranslatePipe,
+    LucideAngularModule,
+    DatePickerComponent,
+    HelpModalComponent,
+  ],
   templateUrl: './consumption-input.component.html',
-  styleUrl: './consumption-input.component.scss'
+  styleUrl: './consumption-input.component.scss',
 })
 export class ConsumptionInputComponent {
   private languageService = inject(LanguageService);
@@ -75,9 +87,10 @@ export class ConsumptionInputComponent {
 
   protected hasValidInput = computed(() => {
     const grps = this.groups();
-    const isGroupComplete = (group: ConsumptionGroup) => group.fields.every(f => f.value !== null);
-    const isGroupEmpty = (group: ConsumptionGroup) => group.fields.every(f => f.value === null);
-    const hasAnyValue = (group: ConsumptionGroup) => group.fields.some(f => f.value !== null);
+    const isGroupComplete = (group: ConsumptionGroup) =>
+      group.fields.every((f) => f.value !== null);
+    const isGroupEmpty = (group: ConsumptionGroup) => group.fields.every((f) => f.value === null);
+    const hasAnyValue = (group: ConsumptionGroup) => group.fields.some((f) => f.value !== null);
 
     // In partial groups mode (heating), just need at least one field with a value
     if (this.allowPartialGroups()) {
@@ -85,7 +98,7 @@ export class ConsumptionInputComponent {
     }
 
     // Standard mode (water): each group must be either complete or empty
-    const allGroupsValid = grps.every(group => isGroupComplete(group) || isGroupEmpty(group));
+    const allGroupsValid = grps.every((group) => isGroupComplete(group) || isGroupEmpty(group));
     // At least one group must be complete
     const atLeastOneComplete = grps.some(isGroupComplete);
 
@@ -144,12 +157,15 @@ export class ConsumptionInputComponent {
 
     // Check for specific validation failures
     const grps = this.groups();
-    const isGroupComplete = (group: ConsumptionGroup) => group.fields.every(f => f.value !== null);
-    const isGroupEmpty = (group: ConsumptionGroup) => group.fields.every(f => f.value === null);
-    const isGroupPartial = (group: ConsumptionGroup) => !isGroupComplete(group) && !isGroupEmpty(group);
-    const hasAnyValue = (group: ConsumptionGroup) => group.fields.some(f => f.value !== null);
+    const isGroupComplete = (group: ConsumptionGroup) =>
+      group.fields.every((f) => f.value !== null);
+    const isGroupEmpty = (group: ConsumptionGroup) => group.fields.every((f) => f.value === null);
+    const isGroupPartial = (group: ConsumptionGroup) =>
+      !isGroupComplete(group) && !isGroupEmpty(group);
+    const hasAnyValue = (group: ConsumptionGroup) => group.fields.some((f) => f.value !== null);
     // Check if at least one field has a non-zero, non-null value
-    const hasNonZeroValue = (group: ConsumptionGroup) => group.fields.some(f => f.value !== null && f.value > 0);
+    const hasNonZeroValue = (group: ConsumptionGroup) =>
+      group.fields.some((f) => f.value !== null && f.value > 0);
 
     const hasPartialGroups = grps.some(isGroupPartial);
     const hasCompleteGroups = grps.some(isGroupComplete);
@@ -184,8 +200,8 @@ export class ConsumptionInputComponent {
     }
 
     const fields: Record<string, number> = {};
-    this.groups().forEach(group => {
-      group.fields.forEach(field => {
+    this.groups().forEach((group) => {
+      group.fields.forEach((field) => {
         if (field.value !== null) {
           fields[field.key] = field.value;
         }
@@ -194,7 +210,7 @@ export class ConsumptionInputComponent {
 
     this.save.emit({
       date: this.selectedDate(),
-      fields
+      fields,
     });
   }
 

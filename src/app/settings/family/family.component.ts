@@ -1,7 +1,31 @@
-import { Component, signal, inject, effect, computed, HostListener, ChangeDetectionStrategy } from '@angular/core';
+import {
+  Component,
+  signal,
+  inject,
+  effect,
+  computed,
+  HostListener,
+  ChangeDetectionStrategy,
+} from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { LucideAngularModule, Pencil, Save, X, Trash2, Plus, Download, Upload, User, Baby, Mars, Venus, AlertTriangle, HelpCircle, TriangleAlert } from 'lucide-angular';
+import {
+  LucideAngularModule,
+  Pencil,
+  Save,
+  X,
+  Trash2,
+  Plus,
+  Download,
+  Upload,
+  User,
+  Baby,
+  Mars,
+  Venus,
+  AlertTriangle,
+  HelpCircle,
+  TriangleAlert,
+} from 'lucide-angular';
 import { HouseholdService, HouseholdMember } from '../../services/household.service';
 import { LanguageService } from '../../services/language.service';
 import { FormValidationService } from '../../services/form-validation.service';
@@ -12,15 +36,28 @@ import { DeleteConfirmationModalComponent } from '../../shared/delete-confirmati
 import { ConfirmationModalComponent } from '../../shared/confirmation-modal/confirmation-modal.component';
 import { ErrorModalComponent } from '../../shared/error-modal/error-modal.component';
 import { HelpModalComponent, HelpStep } from '../../shared/help-modal/help-modal.component';
-import { MemberEditorComponent, MemberEditData } from '../../shared/member-editor/member-editor.component';
+import {
+  MemberEditorComponent,
+  MemberEditData,
+} from '../../shared/member-editor/member-editor.component';
 
 @Component({
   selector: 'app-family',
   standalone: true,
-  imports: [CommonModule, FormsModule, LucideAngularModule, TranslatePipe, DeleteConfirmationModalComponent, ConfirmationModalComponent, ErrorModalComponent, HelpModalComponent, MemberEditorComponent],
+  imports: [
+    CommonModule,
+    FormsModule,
+    LucideAngularModule,
+    TranslatePipe,
+    DeleteConfirmationModalComponent,
+    ConfirmationModalComponent,
+    ErrorModalComponent,
+    HelpModalComponent,
+    MemberEditorComponent,
+  ],
   templateUrl: './family.component.html',
   styleUrl: './family.component.scss',
-  changeDetection: ChangeDetectionStrategy.OnPush
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class FamilyComponent {
   // Maximum number of family members allowed
@@ -60,13 +97,34 @@ export class FamilyComponent {
   protected showHelpModal = signal(false);
 
   protected readonly helpSteps: HelpStep[] = [
-    { titleKey: 'SETTINGS.FAMILY_HELP_STEP_1_TITLE', descriptionKey: 'SETTINGS.FAMILY_HELP_STEP_1_DESC' },
-    { titleKey: 'SETTINGS.FAMILY_HELP_STEP_2_TITLE', descriptionKey: 'SETTINGS.FAMILY_HELP_STEP_2_DESC' },
-    { titleKey: 'SETTINGS.FAMILY_HELP_STEP_3_TITLE', descriptionKey: 'SETTINGS.FAMILY_HELP_STEP_3_DESC' },
-    { titleKey: 'SETTINGS.FAMILY_HELP_STEP_4_TITLE', descriptionKey: 'SETTINGS.FAMILY_HELP_STEP_4_DESC' },
-    { titleKey: 'SETTINGS.FAMILY_HELP_STEP_5_TITLE', descriptionKey: 'SETTINGS.FAMILY_HELP_STEP_5_DESC' },
-    { titleKey: 'SETTINGS.FAMILY_HELP_STEP_6_TITLE', descriptionKey: 'SETTINGS.FAMILY_HELP_STEP_6_DESC' },
-    { titleKey: 'SETTINGS.FAMILY_HELP_STEP_7_TITLE', descriptionKey: 'SETTINGS.FAMILY_HELP_STEP_7_DESC' }
+    {
+      titleKey: 'SETTINGS.FAMILY_HELP_STEP_1_TITLE',
+      descriptionKey: 'SETTINGS.FAMILY_HELP_STEP_1_DESC',
+    },
+    {
+      titleKey: 'SETTINGS.FAMILY_HELP_STEP_2_TITLE',
+      descriptionKey: 'SETTINGS.FAMILY_HELP_STEP_2_DESC',
+    },
+    {
+      titleKey: 'SETTINGS.FAMILY_HELP_STEP_3_TITLE',
+      descriptionKey: 'SETTINGS.FAMILY_HELP_STEP_3_DESC',
+    },
+    {
+      titleKey: 'SETTINGS.FAMILY_HELP_STEP_4_TITLE',
+      descriptionKey: 'SETTINGS.FAMILY_HELP_STEP_4_DESC',
+    },
+    {
+      titleKey: 'SETTINGS.FAMILY_HELP_STEP_5_TITLE',
+      descriptionKey: 'SETTINGS.FAMILY_HELP_STEP_5_DESC',
+    },
+    {
+      titleKey: 'SETTINGS.FAMILY_HELP_STEP_6_TITLE',
+      descriptionKey: 'SETTINGS.FAMILY_HELP_STEP_6_DESC',
+    },
+    {
+      titleKey: 'SETTINGS.FAMILY_HELP_STEP_7_TITLE',
+      descriptionKey: 'SETTINGS.FAMILY_HELP_STEP_7_DESC',
+    },
   ];
 
   // Error modal state
@@ -141,12 +199,14 @@ export class FamilyComponent {
     if (savedMembers.length !== draft.length) return true;
     return !savedMembers.every((saved, index) => {
       const draftMember = draft[index];
-      return saved.id === draftMember.id &&
+      return (
+        saved.id === draftMember.id &&
         saved.name === draftMember.name &&
         saved.surname === draftMember.surname &&
         saved.type === draftMember.type &&
         saved.gender === draftMember.gender &&
-        saved.avatar === draftMember.avatar;
+        saved.avatar === draftMember.avatar
+      );
     });
   });
 
@@ -220,7 +280,7 @@ export class FamilyComponent {
       const newName = this.newMemberName().trim().toLowerCase();
       const newSurname = this.newMemberSurname().trim().toLowerCase();
       const existingMember = this.draftMembers().find(
-        m => m.name.toLowerCase() === newName && m.surname.toLowerCase() === newSurname
+        (m) => m.name.toLowerCase() === newName && m.surname.toLowerCase() === newSurname,
       );
 
       if (existingMember) {
@@ -229,7 +289,12 @@ export class FamilyComponent {
         return;
       }
 
-      const avatar = this.newMemberPicturePreview() || this.selectedAvatar() || this.householdService.avatars[Math.floor(Math.random() * this.householdService.avatars.length)];
+      const avatar =
+        this.newMemberPicturePreview() ||
+        this.selectedAvatar() ||
+        this.householdService.avatars[
+          Math.floor(Math.random() * this.householdService.avatars.length)
+        ];
 
       const newMember: HouseholdMember = {
         id: crypto.randomUUID(),
@@ -237,10 +302,10 @@ export class FamilyComponent {
         surname: this.newMemberSurname().trim(),
         type: this.newMemberType(),
         gender: this.newMemberGender(),
-        avatar: avatar
+        avatar: avatar,
       };
 
-      this.draftMembers.update(members => [...members, newMember]);
+      this.draftMembers.update((members) => [...members, newMember]);
       this.resetForm();
     }
   }
@@ -263,7 +328,7 @@ export class FamilyComponent {
   confirmDelete() {
     const memberId = this.memberToDelete();
     if (memberId) {
-      this.draftMembers.update(members => members.filter(m => m.id !== memberId));
+      this.draftMembers.update((members) => members.filter((m) => m.id !== memberId));
     }
     this.showDeleteModal.set(false);
     this.memberToDelete.set(null);
@@ -287,15 +352,19 @@ export class FamilyComponent {
   }
 
   onMemberEditorSave(data: MemberEditData) {
-    this.draftMembers.update(members =>
-      members.map(m => m.id === data.id ? {
-        ...m,
-        name: data.name,
-        surname: data.surname,
-        type: data.type,
-        gender: data.gender,
-        avatar: data.avatar
-      } : m)
+    this.draftMembers.update((members) =>
+      members.map((m) =>
+        m.id === data.id
+          ? {
+              ...m,
+              name: data.name,
+              surname: data.surname,
+              type: data.type,
+              gender: data.gender,
+              avatar: data.avatar,
+            }
+          : m,
+      ),
     );
     this.editingMemberId.set(null);
   }
@@ -370,8 +439,6 @@ export class FamilyComponent {
     this.newMemberPicturePreview.set(null);
     this.showAddMemberForm.set(false);
   }
-
-
 
   showHelp() {
     this.showHelpModal.set(true);

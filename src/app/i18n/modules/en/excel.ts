@@ -24,6 +24,6 @@ export const excel = {
     VALIDATION_INVALID_CHARS_HINT: 'Remove the characters [ ] * / \\ ? : from column names',
     VALIDATION_DUPLICATES: 'Column names must be unique within each section',
     VALIDATION_DUPLICATES_HINT: 'Each column name must be different - check for duplicate values',
-    VALIDATION_FORM_INVALID: 'Please fix validation errors before saving'
-  }
+    VALIDATION_FORM_INVALID: 'Please fix validation errors before saving',
+  },
 };

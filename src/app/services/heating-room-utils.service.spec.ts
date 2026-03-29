@@ -3,12 +3,25 @@ import { HeatingRoomUtilsService } from './heating-room-utils.service';
 import { LanguageService } from './language.service';
 import { HeatingRoomConfig } from './heating-rooms.service';
 import { describe, it, expect, beforeEach, vi } from 'vitest';
-import { Armchair, Bed, Baby, CookingPot, Bath, Briefcase, DoorOpen, UtensilsCrossed, Home } from 'lucide-angular';
+import {
+  Armchair,
+  Bed,
+  Baby,
+  CookingPot,
+  Bath,
+  Briefcase,
+  DoorOpen,
+  UtensilsCrossed,
+  Home,
+} from 'lucide-angular';
 import { signal } from '@angular/core';
 
 describe('HeatingRoomUtilsService', () => {
   let service: HeatingRoomUtilsService;
-  let languageServiceMock: { translate: ReturnType<typeof vi.fn>; currentLang: ReturnType<typeof signal<string>> };
+  let languageServiceMock: {
+    translate: ReturnType<typeof vi.fn>;
+    currentLang: ReturnType<typeof signal<string>>;
+  };
 
   beforeEach(() => {
     languageServiceMock = {
@@ -24,17 +37,17 @@ describe('HeatingRoomUtilsService', () => {
           'HEATING.ROOM_PATTERNS_OFFICE': 'office,büro,arbeitszimmer',
           'HEATING.ROOM_PATTERNS_GUEST': 'guest,gästezimmer',
           'HEATING.ROOM_PATTERNS_DINING': 'dining,esszimmer',
-          'HEATING.ROOM_PATTERNS_HALLWAY': 'hallway,flur'
+          'HEATING.ROOM_PATTERNS_HALLWAY': 'hallway,flur',
         };
         return patterns[key] ?? key;
-      })
+      }),
     };
 
     TestBed.configureTestingModule({
       providers: [
         HeatingRoomUtilsService,
-        { provide: LanguageService, useValue: languageServiceMock }
-      ]
+        { provide: LanguageService, useValue: languageServiceMock },
+      ],
     });
     service = TestBed.inject(HeatingRoomUtilsService);
   });
@@ -46,27 +59,47 @@ describe('HeatingRoomUtilsService', () => {
   describe('getRoomIcon', () => {
     describe('with explicit room type', () => {
       it('should return Armchair icon for living room type', () => {
-        const room: HeatingRoomConfig = { id: 'r1', name: 'Any Name', type: 'HEATING.ROOM_LIVING_ROOM' };
+        const room: HeatingRoomConfig = {
+          id: 'r1',
+          name: 'Any Name',
+          type: 'HEATING.ROOM_LIVING_ROOM',
+        };
         expect(service.getRoomIcon(room)).toBe(Armchair);
       });
 
       it('should return Bed icon for bedroom type', () => {
-        const room: HeatingRoomConfig = { id: 'r1', name: 'Any Name', type: 'HEATING.ROOM_BEDROOM' };
+        const room: HeatingRoomConfig = {
+          id: 'r1',
+          name: 'Any Name',
+          type: 'HEATING.ROOM_BEDROOM',
+        };
         expect(service.getRoomIcon(room)).toBe(Bed);
       });
 
       it('should return Baby icon for kids room type', () => {
-        const room: HeatingRoomConfig = { id: 'r1', name: 'Any Name', type: 'HEATING.ROOM_KIDS_ROOM' };
+        const room: HeatingRoomConfig = {
+          id: 'r1',
+          name: 'Any Name',
+          type: 'HEATING.ROOM_KIDS_ROOM',
+        };
         expect(service.getRoomIcon(room)).toBe(Baby);
       });
 
       it('should return CookingPot icon for kitchen type', () => {
-        const room: HeatingRoomConfig = { id: 'r1', name: 'Any Name', type: 'HEATING.ROOM_KITCHEN' };
+        const room: HeatingRoomConfig = {
+          id: 'r1',
+          name: 'Any Name',
+          type: 'HEATING.ROOM_KITCHEN',
+        };
         expect(service.getRoomIcon(room)).toBe(CookingPot);
       });
 
       it('should return Bath icon for bathroom type', () => {
-        const room: HeatingRoomConfig = { id: 'r1', name: 'Any Name', type: 'HEATING.ROOM_BATHROOM' };
+        const room: HeatingRoomConfig = {
+          id: 'r1',
+          name: 'Any Name',
+          type: 'HEATING.ROOM_BATHROOM',
+        };
         expect(service.getRoomIcon(room)).toBe(Bath);
       });
 
@@ -76,17 +109,29 @@ describe('HeatingRoomUtilsService', () => {
       });
 
       it('should return DoorOpen icon for guest room type', () => {
-        const room: HeatingRoomConfig = { id: 'r1', name: 'Any Name', type: 'HEATING.ROOM_GUEST_ROOM' };
+        const room: HeatingRoomConfig = {
+          id: 'r1',
+          name: 'Any Name',
+          type: 'HEATING.ROOM_GUEST_ROOM',
+        };
         expect(service.getRoomIcon(room)).toBe(DoorOpen);
       });
 
       it('should return UtensilsCrossed icon for dining room type', () => {
-        const room: HeatingRoomConfig = { id: 'r1', name: 'Any Name', type: 'HEATING.ROOM_DINING_ROOM' };
+        const room: HeatingRoomConfig = {
+          id: 'r1',
+          name: 'Any Name',
+          type: 'HEATING.ROOM_DINING_ROOM',
+        };
         expect(service.getRoomIcon(room)).toBe(UtensilsCrossed);
       });
 
       it('should return DoorOpen icon for hallway type', () => {
-        const room: HeatingRoomConfig = { id: 'r1', name: 'Any Name', type: 'HEATING.ROOM_HALLWAY' };
+        const room: HeatingRoomConfig = {
+          id: 'r1',
+          name: 'Any Name',
+          type: 'HEATING.ROOM_HALLWAY',
+        };
         expect(service.getRoomIcon(room)).toBe(DoorOpen);
       });
 

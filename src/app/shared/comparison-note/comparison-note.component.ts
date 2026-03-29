@@ -30,7 +30,7 @@ export interface ElectricityCountry {
   standalone: true,
   imports: [CommonModule, FormsModule, LucideAngularModule, TranslatePipe],
   templateUrl: './comparison-note.component.html',
-  styleUrl: './comparison-note.component.scss'
+  styleUrl: './comparison-note.component.scss',
 })
 export class ComparisonNoteComponent {
   private householdService = inject(HouseholdService);
@@ -95,17 +95,17 @@ export class ComparisonNoteComponent {
 
   protected availableCountries = computed(() => {
     if (this.type() === 'heating') {
-      return this.sortedHeatingCountries().map(c => ({
+      return this.sortedHeatingCountries().map((c) => ({
         translationKey: c.nameKey,
         code: c.code,
-        average: this.heatingAveragesService.getAverageKwhPerYear(c.code)
+        average: this.heatingAveragesService.getAverageKwhPerYear(c.code),
       }));
     }
     if (this.type() === 'electricity') {
-      return this.sortedElectricityCountries().map(c => ({
+      return this.sortedElectricityCountries().map((c) => ({
         translationKey: c.nameKey,
         code: c.code,
-        average: this.electricityAveragesService.getAverageKwhPerPersonPerYear(c.code)
+        average: this.electricityAveragesService.getAverageKwhPerPersonPerYear(c.code),
       }));
     }
     return this.waterCountries();
@@ -133,7 +133,7 @@ export class ComparisonNoteComponent {
 
     // Find the country in available countries using the code
     const countries = this.availableCountries();
-    const country = countries.find(c => c.code.toLowerCase() === code.toLowerCase());
+    const country = countries.find((c) => c.code.toLowerCase() === code.toLowerCase());
 
     if (country) {
       return this.languageService.translate(country.translationKey);
@@ -156,12 +156,12 @@ export class ComparisonNoteComponent {
     }
 
     const countries = this.availableCountries();
-    const country = countries.find(c => c.code.toLowerCase() === code.toLowerCase());
+    const country = countries.find((c) => c.code.toLowerCase() === code.toLowerCase());
     return country?.average || 150;
   });
 
   private isValidCountry(code: string): boolean {
-    return this.availableCountries().some(c => c.code.toLowerCase() === code.toLowerCase());
+    return this.availableCountries().some((c) => c.code.toLowerCase() === code.toLowerCase());
   }
 
   // Water fact - for water comparison mode
@@ -225,14 +225,14 @@ export class ComparisonNoteComponent {
       return this.languageService.translate('CHART.COMPARISON_NOTE_COUNTRY', {
         country: countryName,
         average: average,
-        size: size
+        size: size,
       });
     }
 
     if (type === 'heating') {
       const text = this.languageService.translate('CHART.COMPARISON_NOTE_COUNTRY_HEATING', {
         country: countryName,
-        average: average
+        average: average,
       });
       return text;
     }
@@ -240,7 +240,7 @@ export class ComparisonNoteComponent {
     return this.languageService.translate('CHART.COMPARISON_NOTE_COUNTRY_ELECTRICITY', {
       country: countryName,
       average: average,
-      size: size
+      size: size,
     });
   });
 

@@ -19,7 +19,7 @@ Before creating new components, functions, or code blocks, complete this checkli
 ```text
 Need to implement feature X?
 │
-├─ Does similar code exist? 
+├─ Does similar code exist?
 │  ├─ YES → Can it be reused as-is?
 │  │         ├─ YES → Use it! ✓
 │  │         └─ NO → Can it be extended/modified?
@@ -137,10 +137,10 @@ export class ReusableThingComponent {
   // Inputs for customization
   @Input() config!: SomeConfig;
   @Input() variant: 'primary' | 'secondary' = 'primary';
-  
+
   // Outputs for parent communication
   @Output() actionCompleted = new EventEmitter<void>();
-  
+
   // ... implementation
 }
 ```
@@ -193,7 +193,7 @@ Prefer:
 #### File Size Guidelines
 
 - **Components (TypeScript):** Target < 300 lines, max 500 lines
-- **Templates (HTML):** Target < 200 lines, max 300 lines  
+- **Templates (HTML):** Target < 200 lines, max 300 lines
 - **Stylesheets (SCSS):** Target < 300 lines, max 500 lines
 - **Services:** Target < 400 lines, max 600 lines
 
@@ -289,14 +289,14 @@ async handleAction() {
 
 Consistent naming improves readability and searchability.
 
-| Type | Convention | Example |
-| ---- | ---------- | ------- |
-| Files | kebab-case | `user-profile.component.ts` |
-| Classes/Components | PascalCase | `UserProfileComponent` |
-| Methods/Variables | camelCase | `getUserProfile`, `isLoading` |
-| Constants | SCREAMING_SNAKE_CASE | `MAX_FILE_SIZE`, `API_URL` |
-| Signals | Noun-based | `isLoading`, `userData` |
-| Booleans | Prefix with `is`, `has`, `can`, `should` | `isValid`, `hasChanges` |
+| Type               | Convention                               | Example                       |
+| ------------------ | ---------------------------------------- | ----------------------------- |
+| Files              | kebab-case                               | `user-profile.component.ts`   |
+| Classes/Components | PascalCase                               | `UserProfileComponent`        |
+| Methods/Variables  | camelCase                                | `getUserProfile`, `isLoading` |
+| Constants          | SCREAMING_SNAKE_CASE                     | `MAX_FILE_SIZE`, `API_URL`    |
+| Signals            | Noun-based                               | `isLoading`, `userData`       |
+| Booleans           | Prefix with `is`, `has`, `can`, `should` | `isValid`, `hasChanges`       |
 
 ---
 
@@ -429,7 +429,7 @@ const name = user?.profile?.name ?? 'Anonymous';
 const message = `Hello, ${name}!`;
 
 // ❌ BAD - Legacy patterns
-const name = user && user.profile && user.profile.name || 'Anonymous';
+const name = (user && user.profile && user.profile.name) || 'Anonymous';
 const message = 'Hello, ' + name + '!';
 ```
 
@@ -668,14 +668,14 @@ refactor: extract modal styles to _modal.scss
 
 ```typescript
 // ✅ GOOD - Hierarchical, descriptive
-'WATER.CHART.TITLE'
-'SETTINGS.FAMILY.ADD_MEMBER'
-'ERRORS.IMPORT.INVALID_FORMAT'
+'WATER.CHART.TITLE';
+'SETTINGS.FAMILY.ADD_MEMBER';
+'ERRORS.IMPORT.INVALID_FORMAT';
 
 // ❌ BAD - Flat, cryptic
-'title1'
-'btn_add'
-'err_msg'
+'title1';
+'btn_add';
+'err_msg';
 ```
 
 ### Translation Rules
@@ -723,9 +723,9 @@ This applies to **all** German translation strings where compound words share a 
 ### Log Levels
 
 ```typescript
-console.error('Critical failure:', error);  // Errors that break functionality
-console.warn('Deprecated usage:', detail);  // Warnings, deprecations
-console.info('Data loaded:', summary);      // Important info (dev only)
+console.error('Critical failure:', error); // Errors that break functionality
+console.warn('Deprecated usage:', detail); // Warnings, deprecations
+console.info('Data loaded:', summary); // Important info (dev only)
 // console.log - Remove before commit!
 ```
 
@@ -808,7 +808,7 @@ import * as xlsx from 'xlsx';
 ### Target Browsers
 
 - Chrome (latest 2 versions)
-- Firefox (latest 2 versions)  
+- Firefox (latest 2 versions)
 - Safari (latest 2 versions)
 - Edge (latest 2 versions)
 
@@ -834,12 +834,12 @@ Safari has quirks. Watch out for:
 
 ### When to Use What
 
-| State Type | Solution | Example |
-| ---------- | -------- | ------- |
-| Component UI state | `signal()` | `isLoading`, `isOpen` |
-| Shared across components | Service with signals | `HouseholdService.members()` |
-| User preferences | `LocalStorageService` | Chart view, language |
-| Derived data | `computed()` | Filtered lists, totals |
+| State Type               | Solution              | Example                      |
+| ------------------------ | --------------------- | ---------------------------- |
+| Component UI state       | `signal()`            | `isLoading`, `isOpen`        |
+| Shared across components | Service with signals  | `HouseholdService.members()` |
+| User preferences         | `LocalStorageService` | Chart view, language         |
+| Derived data             | `computed()`          | Filtered lists, totals       |
 
 ### State Management Rules
 
@@ -865,9 +865,9 @@ Always show loading feedback:
 
 ```html
 @if (isLoading()) {
-  <div class="loading-spinner">Loading...</div>
+<div class="loading-spinner">Loading...</div>
 } @else {
-  <div class="content">{{ data() }}</div>
+<div class="content">{{ data() }}</div>
 }
 ```
 
@@ -877,11 +877,11 @@ Never show blank screens:
 
 ```html
 @if (records().length === 0) {
-  <div class="empty-state">
-    <lucide-icon [img]="DropletIcon"></lucide-icon>
-    <p>No water consumption records yet.</p>
-    <button (click)="addFirst()">Add your first record</button>
-  </div>
+<div class="empty-state">
+  <lucide-icon [img]="DropletIcon"></lucide-icon>
+  <p>No water consumption records yet.</p>
+  <button (click)="addFirst()">Add your first record</button>
+</div>
 }
 ```
 

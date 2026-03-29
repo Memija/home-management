@@ -1,5 +1,9 @@
 import { Injectable, inject } from '@angular/core';
-import { ExcelSettingsService, WaterColumnMapping, HeatingColumnMapping } from './excel-settings.service';
+import {
+  ExcelSettingsService,
+  WaterColumnMapping,
+  HeatingColumnMapping,
+} from './excel-settings.service';
 import { LanguageService } from './language.service';
 import { WaterRecord, DynamicHeatingRecord, ElectricityRecord } from '../models/records.model';
 
@@ -7,7 +11,7 @@ import { WaterRecord, DynamicHeatingRecord, ElectricityRecord } from '../models/
 export type { WaterRecord, DynamicHeatingRecord, ElectricityRecord } from '../models/records.model';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class ExcelService {
   private excelSettings = inject(ExcelSettingsService);
@@ -27,16 +31,19 @@ export class ExcelService {
   /**
    * Export water consumption records to Excel
    */
-  async exportWaterToExcel(records: WaterRecord[], filename: string = 'water-consumption.xlsx'): Promise<void> {
+  async exportWaterToExcel(
+    records: WaterRecord[],
+    filename: string = 'water-consumption.xlsx',
+  ): Promise<void> {
     const mapping = this.excelSettings.getWaterMapping();
 
     // Transform records to match column mapping
-    const data: Record<string, string | number>[] = records.map(record => ({
+    const data: Record<string, string | number>[] = records.map((record) => ({
       [mapping.date]: this.formatDate(record.date),
       [mapping.kitchenWarm]: record.kitchenWarm,
       [mapping.kitchenCold]: record.kitchenCold,
       [mapping.bathroomWarm]: record.bathroomWarm,
-      [mapping.bathroomCold]: record.bathroomCold
+      [mapping.bathroomCold]: record.bathroomCold,
     }));
 
     await this.createAndDownloadExcel(data, filename);
@@ -46,18 +53,21 @@ export class ExcelService {
    * Export heating consumption records to Excel
    * Uses dynamic room columns based on room configuration
    */
-  async exportHeatingToExcel(records: DynamicHeatingRecord[], filename: string = 'heating-consumption.xlsx'): Promise<void> {
+  async exportHeatingToExcel(
+    records: DynamicHeatingRecord[],
+    filename: string = 'heating-consumption.xlsx',
+  ): Promise<void> {
     const mapping = this.excelSettings.getHeatingMapping();
     const roomIds = Object.keys(mapping.rooms);
 
     // Transform records to match column mapping
-    const data: Record<string, string | number>[] = records.map(record => {
+    const data: Record<string, string | number>[] = records.map((record) => {
       const row: Record<string, string | number> = {
-        [mapping.date]: this.formatDate(record.date)
+        [mapping.date]: this.formatDate(record.date),
       };
 
       // Add room columns - map room IDs to their configured column names
-      roomIds.forEach(roomId => {
+      roomIds.forEach((roomId) => {
         row[mapping.rooms[roomId]] = record.rooms[roomId] ?? 0;
       });
 
@@ -70,7 +80,9 @@ export class ExcelService {
   /**
    * Import water consumption records from Excel
    */
-  async importWaterFromExcel(file: File): Promise<{ records: WaterRecord[], missingColumns: string[] }> {
+  async importWaterFromExcel(
+    file: File,
+  ): Promise<{ records: WaterRecord[]; missingColumns: string[] }> {
     const mapping = this.excelSettings.getWaterMapping();
     const data = await this.readExcelFile(file);
 
@@ -81,12 +93,21 @@ export class ExcelService {
     // Check that Date column exists in the first row
     const firstRow = data[0];
     if (!(mapping.date in firstRow)) {
-      throw new Error(this.languageService.translate('ERROR.IMPORT_EXCEL_MISSING_DATE_COLUMN').replace('{{column}}', mapping.date));
+      throw new Error(
+        this.languageService
+          .translate('ERROR.IMPORT_EXCEL_MISSING_DATE_COLUMN')
+          .replace('{{column}}', mapping.date),
+      );
     }
 
     // Check for other partial columns
-    const otherColumns = [mapping.kitchenWarm, mapping.kitchenCold, mapping.bathroomWarm, mapping.bathroomCold];
-    const missingColumns = otherColumns.filter(col => !(col in firstRow));
+    const otherColumns = [
+      mapping.kitchenWarm,
+      mapping.kitchenCold,
+      mapping.bathroomWarm,
+      mapping.bathroomCold,
+    ];
+    const missingColumns = otherColumns.filter((col) => !(col in firstRow));
 
     const records: WaterRecord[] = [];
     const validationErrors: string[] = [];
@@ -100,9 +121,10 @@ export class ExcelService {
 
       if (!date) {
         validationErrors.push(
-          this.languageService.translate('ERROR.IMPORT_INVALID_DATE_VALUE')
+          this.languageService
+            .translate('ERROR.IMPORT_INVALID_DATE_VALUE')
             .replace('{{row}}', rowNumber.toString())
-            .replace('{{value}}', String(dateValue))
+            .replace('{{value}}', String(dateValue)),
         );
         continue; // Skip this row but continue checking others
       }
@@ -111,10 +133,11 @@ export class ExcelService {
       const dateKey = this.formatDate(date);
       if (seenDates.has(dateKey)) {
         validationErrors.push(
-          this.languageService.translate('ERROR.IMPORT_DUPLICATE_DATE')
+          this.languageService
+            .translate('ERROR.IMPORT_DUPLICATE_DATE')
             .replace('{{row}}', rowNumber.toString())
             .replace('{{date}}', dateKey)
-            .replace('{{firstRow}}', seenDates.get(dateKey)!.toString())
+            .replace('{{firstRow}}', seenDates.get(dateKey)!.toString()),
         );
         continue; // Skip duplicate
       }
@@ -122,10 +145,30 @@ export class ExcelService {
 
       // Collect number validation errors for this row
       const rowErrors: string[] = [];
-      const kitchenWarm = this.validateNumberCollectError(row[mapping.kitchenWarm], rowNumber, mapping.kitchenWarm, rowErrors);
-      const kitchenCold = this.validateNumberCollectError(row[mapping.kitchenCold], rowNumber, mapping.kitchenCold, rowErrors);
-      const bathroomWarm = this.validateNumberCollectError(row[mapping.bathroomWarm], rowNumber, mapping.bathroomWarm, rowErrors);
-      const bathroomCold = this.validateNumberCollectError(row[mapping.bathroomCold], rowNumber, mapping.bathroomCold, rowErrors);
+      const kitchenWarm = this.validateNumberCollectError(
+        row[mapping.kitchenWarm],
+        rowNumber,
+        mapping.kitchenWarm,
+        rowErrors,
+      );
+      const kitchenCold = this.validateNumberCollectError(
+        row[mapping.kitchenCold],
+        rowNumber,
+        mapping.kitchenCold,
+        rowErrors,
+      );
+      const bathroomWarm = this.validateNumberCollectError(
+        row[mapping.bathroomWarm],
+        rowNumber,
+        mapping.bathroomWarm,
+        rowErrors,
+      );
+      const bathroomCold = this.validateNumberCollectError(
+        row[mapping.bathroomCold],
+        rowNumber,
+        mapping.bathroomCold,
+        rowErrors,
+      );
 
       if (rowErrors.length > 0) {
         validationErrors.push(...rowErrors);
@@ -137,7 +180,7 @@ export class ExcelService {
         kitchenWarm,
         kitchenCold,
         bathroomWarm,
-        bathroomCold
+        bathroomCold,
       });
     }
 
@@ -152,7 +195,9 @@ export class ExcelService {
    * Import heating consumption records from Excel
    * Uses dynamic room columns based on room configuration
    */
-  async importHeatingFromExcel(file: File): Promise<{ records: DynamicHeatingRecord[], missingColumns: string[] }> {
+  async importHeatingFromExcel(
+    file: File,
+  ): Promise<{ records: DynamicHeatingRecord[]; missingColumns: string[] }> {
     const mapping = this.excelSettings.getHeatingMapping();
     const data = await this.readExcelFile(file);
 
@@ -163,13 +208,17 @@ export class ExcelService {
     // Check that Date column exists in the first row
     const firstRow = data[0];
     if (!(mapping.date in firstRow)) {
-      throw new Error(this.languageService.translate('ERROR.IMPORT_EXCEL_MISSING_DATE_COLUMN').replace('{{column}}', mapping.date));
+      throw new Error(
+        this.languageService
+          .translate('ERROR.IMPORT_EXCEL_MISSING_DATE_COLUMN')
+          .replace('{{column}}', mapping.date),
+      );
     }
 
     // Check for room columns - use dynamic mapping
     const roomIds = Object.keys(mapping.rooms);
-    const roomColumnNames = roomIds.map(id => mapping.rooms[id]);
-    const missingColumns = roomColumnNames.filter(col => !(col in firstRow));
+    const roomColumnNames = roomIds.map((id) => mapping.rooms[id]);
+    const missingColumns = roomColumnNames.filter((col) => !(col in firstRow));
 
     const records: DynamicHeatingRecord[] = [];
     const validationErrors: string[] = [];
@@ -183,9 +232,10 @@ export class ExcelService {
 
       if (!date) {
         validationErrors.push(
-          this.languageService.translate('ERROR.IMPORT_INVALID_DATE_VALUE')
+          this.languageService
+            .translate('ERROR.IMPORT_INVALID_DATE_VALUE')
             .replace('{{row}}', rowNumber.toString())
-            .replace('{{value}}', String(dateValue))
+            .replace('{{value}}', String(dateValue)),
         );
         continue; // Skip this row but continue checking others
       }
@@ -194,10 +244,11 @@ export class ExcelService {
       const dateKey = this.formatDate(date);
       if (seenDates.has(dateKey)) {
         validationErrors.push(
-          this.languageService.translate('ERROR.IMPORT_DUPLICATE_DATE')
+          this.languageService
+            .translate('ERROR.IMPORT_DUPLICATE_DATE')
             .replace('{{row}}', rowNumber.toString())
             .replace('{{date}}', dateKey)
-            .replace('{{firstRow}}', seenDates.get(dateKey)!.toString())
+            .replace('{{firstRow}}', seenDates.get(dateKey)!.toString()),
         );
         continue; // Skip duplicate
       }
@@ -207,9 +258,14 @@ export class ExcelService {
       const rowErrors: string[] = [];
       const roomValues: Record<string, number> = {};
 
-      roomIds.forEach(roomId => {
+      roomIds.forEach((roomId) => {
         const columnName = mapping.rooms[roomId];
-        roomValues[roomId] = this.validateNumberCollectError(row[columnName], rowNumber, columnName, rowErrors);
+        roomValues[roomId] = this.validateNumberCollectError(
+          row[columnName],
+          rowNumber,
+          columnName,
+          rowErrors,
+        );
       });
 
       if (rowErrors.length > 0) {
@@ -219,7 +275,7 @@ export class ExcelService {
 
       records.push({
         date,
-        rooms: roomValues
+        rooms: roomValues,
       });
     }
 
@@ -263,7 +319,10 @@ export class ExcelService {
 
           for (const sheetName of workbook.SheetNames) {
             const worksheet = workbook.Sheets[sheetName];
-            const sheetData = XLSX.utils.sheet_to_json(worksheet, { defval: '' }) as Record<string, unknown>[];
+            const sheetData = XLSX.utils.sheet_to_json(worksheet, { defval: '' }) as Record<
+              string,
+              unknown
+            >[];
             allData.push(...sheetData);
           }
 
@@ -293,8 +352,8 @@ export class ExcelService {
   }
 
   /**
- * Parse date from various formats
- */
+   * Parse date from various formats
+   */
   private parseDate(value: unknown): Date | null {
     if (!value) return null;
 
@@ -315,9 +374,7 @@ export class ExcelService {
         const date = new Date(year, month, day);
 
         // Validate the date
-        if (date.getFullYear() === year &&
-          date.getMonth() === month &&
-          date.getDate() === day) {
+        if (date.getFullYear() === year && date.getMonth() === month && date.getDate() === day) {
           return date;
         }
         return null; // Invalid date
@@ -344,7 +401,12 @@ export class ExcelService {
    * Validate number and collect error instead of throwing
    * Returns 0 for empty/invalid values, pushes error message to errors array
    */
-  private validateNumberCollectError(value: unknown, rowIndex: number, columnName: string, errors: string[]): number {
+  private validateNumberCollectError(
+    value: unknown,
+    rowIndex: number,
+    columnName: string,
+    errors: string[],
+  ): number {
     if (value === null || value === undefined || value === '') {
       return 0; // Default to 0 for missing/empty values (partial import)
     }
@@ -355,10 +417,11 @@ export class ExcelService {
     // strict check
     if (isNaN(num)) {
       errors.push(
-        this.languageService.translate('ERROR.IMPORT_INVALID_NUMBER_VALUE')
+        this.languageService
+          .translate('ERROR.IMPORT_INVALID_NUMBER_VALUE')
           .replace('{{row}}', rowIndex.toString())
           .replace('{{value}}', String(value))
-          .replace('{{field}}', columnName)
+          .replace('{{field}}', columnName),
       );
       return 0; // Return 0 as fallback, row will be skipped anyway
     }
@@ -369,13 +432,16 @@ export class ExcelService {
   /**
    * Export electricity consumption records to Excel
    */
-  async exportElectricityToExcel(records: ElectricityRecord[], filename: string = 'electricity-consumption.xlsx'): Promise<void> {
+  async exportElectricityToExcel(
+    records: ElectricityRecord[],
+    filename: string = 'electricity-consumption.xlsx',
+  ): Promise<void> {
     const mapping = this.excelSettings.getElectricityMapping();
 
     // Transform records to match column mapping
-    const data: Record<string, string | number>[] = records.map(record => ({
+    const data: Record<string, string | number>[] = records.map((record) => ({
       [mapping.date]: this.formatDate(record.date),
-      [mapping.value]: Math.round(record.value)
+      [mapping.value]: Math.round(record.value),
     }));
 
     await this.createAndDownloadExcel(data, filename);
@@ -384,7 +450,9 @@ export class ExcelService {
   /**
    * Import electricity consumption records from Excel
    */
-  async importElectricityFromExcel(file: File): Promise<{ records: ElectricityRecord[], missingColumns: string[] }> {
+  async importElectricityFromExcel(
+    file: File,
+  ): Promise<{ records: ElectricityRecord[]; missingColumns: string[] }> {
     const mapping = this.excelSettings.getElectricityMapping();
     const data = await this.readExcelFile(file);
 
@@ -395,7 +463,11 @@ export class ExcelService {
     // Check that Date column exists in the first row
     const firstRow = data[0];
     if (!(mapping.date in firstRow)) {
-      throw new Error(this.languageService.translate('ERROR.IMPORT_EXCEL_MISSING_DATE_COLUMN').replace('{{column}}', mapping.date));
+      throw new Error(
+        this.languageService
+          .translate('ERROR.IMPORT_EXCEL_MISSING_DATE_COLUMN')
+          .replace('{{column}}', mapping.date),
+      );
     }
 
     // Check for value column
@@ -414,9 +486,10 @@ export class ExcelService {
 
       if (!date) {
         validationErrors.push(
-          this.languageService.translate('ERROR.IMPORT_INVALID_DATE_VALUE')
+          this.languageService
+            .translate('ERROR.IMPORT_INVALID_DATE_VALUE')
             .replace('{{row}}', rowNumber.toString())
-            .replace('{{value}}', String(dateValue))
+            .replace('{{value}}', String(dateValue)),
         );
         continue;
       }
@@ -424,17 +497,23 @@ export class ExcelService {
       const dateKey = this.formatDate(date);
       if (seenDates.has(dateKey)) {
         validationErrors.push(
-          this.languageService.translate('ERROR.IMPORT_DUPLICATE_DATE')
+          this.languageService
+            .translate('ERROR.IMPORT_DUPLICATE_DATE')
             .replace('{{row}}', rowNumber.toString())
             .replace('{{date}}', dateKey)
-            .replace('{{firstRow}}', seenDates.get(dateKey)!.toString())
+            .replace('{{firstRow}}', seenDates.get(dateKey)!.toString()),
         );
         continue;
       }
       seenDates.set(dateKey, rowNumber);
 
       const rowErrors: string[] = [];
-      const value = this.validateNumberCollectError(row[mapping.value], rowNumber, mapping.value, rowErrors);
+      const value = this.validateNumberCollectError(
+        row[mapping.value],
+        rowNumber,
+        mapping.value,
+        rowErrors,
+      );
 
       if (rowErrors.length > 0) {
         validationErrors.push(...rowErrors);

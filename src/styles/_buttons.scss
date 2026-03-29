@@ -164,7 +164,6 @@
   }
 }
 
-
 .upload-btn {
   @extend %btn-base;
   background: $info;
@@ -270,7 +269,6 @@
 
 // Responsive behavior: hide text on small screens, show only icon
 @media (max-width: 880px) {
-
   .save-btn,
   .edit-btn,
   .cancel-btn,
@@ -294,7 +292,7 @@
     box-sizing: border-box;
 
     // Ensure hidden input doesn't affect label width
-    input[type="file"] {
+    input[type='file'] {
       position: absolute;
       width: 1px;
       height: 1px;

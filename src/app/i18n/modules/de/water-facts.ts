@@ -25,7 +25,7 @@ export const waterFacts = {
     'Das sind {value}-mal Wasserkocher füllen! 🫖',
     'Das füllt {value} Wischeimer! 🪣',
     '{value}-mal Zähneputzen mit laufendem Wasser! 🦷',
-    'Dieses Wasservolumen wiegt genau {value} kg! 🔬'
+    'Dieses Wasservolumen wiegt genau {value} kg! 🔬',
   ],
 
   // Kitchen-specific facts
@@ -49,7 +49,7 @@ export const waterFacts = {
     'Dein Küchenwasser entspricht {value} Eiswürfelschalen! 🧊',
     'Das sind {value} eingeschenkte Wassergläser! 🥤',
     'Genug für {value} Instant-Nudelschüsseln! 🍜',
-    'Könnte {value} Babyflaschen zubereiten! 🍼'
+    'Könnte {value} Babyflaschen zubereiten! 🍼',
   ],
 
   // Bathroom-specific facts
@@ -73,7 +73,7 @@ export const waterFacts = {
     'Könnte {value} Badezimmerwaschbecken füllen! 🚰',
     'Das sind {value} entspannende Bäder! 🛀',
     'Genug für {value} schnelle Abspülungen! 💦',
-    'Dein Badezimmerwasser entspricht {value} Spiegelreinigungen! 🪞'
+    'Dein Badezimmerwasser entspricht {value} Spiegelreinigungen! 🪞',
   ],
 
   // Warm water-specific facts
@@ -97,7 +97,7 @@ export const waterFacts = {
     'Genug um {value} müde Füße einzuweichen! 🦶',
     'Dein Warmwasser hat {value} verspannte Muskeln entspannt! 💪',
     'Könnte {value} warme Kompressen machen! 🏥',
-    'Das sind {value} sanfte Reinigungen! ✨'
+    'Das sind {value} sanfte Reinigungen! ✨',
   ],
 
   // Cold water-specific facts
@@ -121,6 +121,6 @@ export const waterFacts = {
     'Genug um {value} Vogeltränken zu füllen! 🐦',
     'Dein Kaltwasser hat {value} Wäsche-Spülgänge durchgeführt! 👕',
     'Könnte {value} Kühlpacks machen! 🏒',
-    'Das sind {value} schnelle Handspülungen! 🤲'
-  ]
+    'Das sind {value} schnelle Handspülungen! 🤲',
+  ],
 };

@@ -95,14 +95,14 @@ describe('ConsumptionDataService', () => {
 
   it('should be created and load data', async () => {
     expect(service).toBeTruthy();
-    await new Promise(resolve => setTimeout(resolve, 0)); // Wait for loadData promise
+    await new Promise((resolve) => setTimeout(resolve, 0)); // Wait for loadData promise
     expect(storageServiceMock.load).toHaveBeenCalledWith('water_consumption_records');
     expect(service.records()).toEqual(mockRecords);
   });
 
   describe('Filter Logic', () => {
     it('should filter records by date range', async () => {
-      await new Promise(resolve => setTimeout(resolve, 0)); // ensure initial load finishes
+      await new Promise((resolve) => setTimeout(resolve, 0)); // ensure initial load finishes
       service.updateFilterState({
         year: null,
         month: null,
@@ -116,7 +116,7 @@ describe('ConsumptionDataService', () => {
     });
 
     it('should filter records by year', async () => {
-      await new Promise(resolve => setTimeout(resolve, 0));
+      await new Promise((resolve) => setTimeout(resolve, 0));
       service.updateFilterState({
         year: 2023,
         month: null,
@@ -142,7 +142,7 @@ describe('ConsumptionDataService', () => {
 
   describe('CRUD Operations', () => {
     it('should save a new record', async () => {
-      await new Promise(resolve => setTimeout(resolve, 0));
+      await new Promise((resolve) => setTimeout(resolve, 0));
       const newRecord: ConsumptionRecord = {
         date: new Date('2023-01-15'),
         kitchenWarm: 15,
@@ -160,7 +160,7 @@ describe('ConsumptionDataService', () => {
     });
 
     it('should update an existing record', async () => {
-      await new Promise(resolve => setTimeout(resolve, 0));
+      await new Promise((resolve) => setTimeout(resolve, 0));
       const updatedRecord: ConsumptionRecord = {
         ...mockRecords[0],
         kitchenWarm: 99,
@@ -174,12 +174,12 @@ describe('ConsumptionDataService', () => {
     });
 
     it('should confirm delete record', async () => {
-      await new Promise(resolve => setTimeout(resolve, 0));
+      await new Promise((resolve) => setTimeout(resolve, 0));
       service.recordToDelete.set(mockRecords[0]);
       service.showDeleteModal.set(true);
 
       service.confirmDelete();
-      await new Promise(resolve => setTimeout(resolve, 0));
+      await new Promise((resolve) => setTimeout(resolve, 0));
 
       expect(service.records().length).toBe(1);
       expect(storageServiceMock.save).toHaveBeenCalled();
@@ -187,12 +187,12 @@ describe('ConsumptionDataService', () => {
     });
 
     it('should confirm delete all records', async () => {
-      await new Promise(resolve => setTimeout(resolve, 0));
+      await new Promise((resolve) => setTimeout(resolve, 0));
       service.recordsToDelete.set([mockRecords[0]]);
       service.showDeleteAllModal.set(true);
 
       service.confirmDeleteAll();
-      await new Promise(resolve => setTimeout(resolve, 0));
+      await new Promise((resolve) => setTimeout(resolve, 0));
 
       expect(service.records().length).toBe(1);
       expect(storageServiceMock.save).toHaveBeenCalled();
@@ -224,7 +224,10 @@ describe('ConsumptionDataService', () => {
 
       const importedData = [{ ...mockRecords[0] }];
       fileStorageServiceMock.importFromFile.mockResolvedValue(importedData);
-      importValidationServiceMock.validateWaterJsonImport.mockReturnValue({ validRecords: importedData, errors: [] });
+      importValidationServiceMock.validateWaterJsonImport.mockReturnValue({
+        validRecords: importedData,
+        errors: [],
+      });
 
       await service.confirmImport();
 
@@ -237,7 +240,10 @@ describe('ConsumptionDataService', () => {
       const event = { target: { files: [file], value: '' } } as unknown as Event;
 
       const importedRecords = [{ ...mockRecords[0] }];
-      excelServiceMock.importWaterFromExcel.mockResolvedValue({ records: importedRecords, missingColumns: [] });
+      excelServiceMock.importWaterFromExcel.mockResolvedValue({
+        records: importedRecords,
+        missingColumns: [],
+      });
 
       await service.importFromExcel(event);
 
@@ -247,7 +253,7 @@ describe('ConsumptionDataService', () => {
 
   describe('Success Messages', () => {
     it('should set record saved message on saveRecord', async () => {
-      await new Promise(resolve => setTimeout(resolve, 0));
+      await new Promise((resolve) => setTimeout(resolve, 0));
       const newRecord: ConsumptionRecord = {
         date: new Date('2023-01-15'),
         kitchenWarm: 15,
@@ -268,7 +274,10 @@ describe('ConsumptionDataService', () => {
 
       const importedData = [{ ...mockRecords[0] }];
       fileStorageServiceMock.importFromFile.mockResolvedValue(importedData);
-      importValidationServiceMock.validateWaterJsonImport.mockReturnValue({ validRecords: importedData, errors: [] });
+      importValidationServiceMock.validateWaterJsonImport.mockReturnValue({
+        validRecords: importedData,
+        errors: [],
+      });
 
       await service.confirmImport();
 
@@ -281,7 +290,10 @@ describe('ConsumptionDataService', () => {
       const event = { target: { files: [file], value: '' } } as unknown as Event;
 
       const importedRecords = [{ ...mockRecords[0] }];
-      excelServiceMock.importWaterFromExcel.mockResolvedValue({ records: importedRecords, missingColumns: [] });
+      excelServiceMock.importWaterFromExcel.mockResolvedValue({
+        records: importedRecords,
+        missingColumns: [],
+      });
 
       await service.importFromExcel(event);
 

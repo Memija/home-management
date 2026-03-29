@@ -62,7 +62,7 @@ describe('ConsumptionFormService', () => {
         kitchenWarm: 10,
         kitchenCold: 20,
         bathroomWarm: 30,
-        bathroomCold: 40
+        bathroomCold: 40,
       };
 
       service.startEdit(record);
@@ -102,7 +102,7 @@ describe('ConsumptionFormService', () => {
         kitchenWarm: 10,
         kitchenCold: 20,
         bathroomWarm: 30,
-        bathroomCold: 40
+        bathroomCold: 40,
       };
       service.startEdit(record);
       expect(service.isDateDuplicate([record])).toBe(false);
@@ -114,7 +114,7 @@ describe('ConsumptionFormService', () => {
         kitchenWarm: 10,
         kitchenCold: 20,
         bathroomWarm: 30,
-        bathroomCold: 40
+        bathroomCold: 40,
       };
       service.updateDate('2023-01-01');
       expect(service.isDateDuplicate([existingRecord])).toBe(true);
@@ -126,7 +126,7 @@ describe('ConsumptionFormService', () => {
         kitchenWarm: 10,
         kitchenCold: 20,
         bathroomWarm: 30,
-        bathroomCold: 40
+        bathroomCold: 40,
       };
       service.updateDate('2023-01-02');
       expect(service.isDateDuplicate([existingRecord])).toBe(false);

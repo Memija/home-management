@@ -1,15 +1,47 @@
-import { Component, Input, ViewChild, computed, effect, inject, input, signal, OnInit } from '@angular/core';
+import {
+  Component,
+  Input,
+  ViewChild,
+  computed,
+  effect,
+  inject,
+  input,
+  signal,
+  OnInit,
+} from '@angular/core';
 import { BaseChartDirective } from 'ng2-charts';
-import { Chart, ChartConfiguration, registerables, ChartEvent, LegendItem, LegendElement } from 'chart.js';
+import {
+  Chart,
+  ChartConfiguration,
+  registerables,
+  ChartEvent,
+  LegendItem,
+  LegendElement,
+} from 'chart.js';
 import { TranslatePipe } from '../../pipes/translate.pipe';
 import { LanguageService } from '../../services/language.service';
 import { ChartDataService, ChartView, DisplayMode } from '../../services/chart-data.service';
 import { LocalStorageService } from '../../services/local-storage.service';
-import { LucideAngularModule, BarChart3, DoorOpen, Droplet, Grid3x3, TrendingUp, Activity, Info, HelpCircle, ZoomIn } from 'lucide-angular';
+import {
+  LucideAngularModule,
+  BarChart3,
+  DoorOpen,
+  Droplet,
+  Grid3x3,
+  TrendingUp,
+  Activity,
+  Info,
+  HelpCircle,
+  ZoomIn,
+} from 'lucide-angular';
 import { HelpModalComponent, HelpStep } from '../help-modal/help-modal.component';
 import 'hammerjs';
 import zoomPlugin from 'chartjs-plugin-zoom';
-import { ConsumptionRecord, DynamicHeatingRecord, ElectricityRecord } from '../../models/records.model';
+import {
+  ConsumptionRecord,
+  DynamicHeatingRecord,
+  ElectricityRecord,
+} from '../../models/records.model';
 import { registerChartPlugins } from './chart-plugins';
 import { ChartDataPoint, ChartConfig } from './consumption-chart.models';
 
@@ -25,7 +57,7 @@ registerChartPlugins();
   standalone: true,
   imports: [BaseChartDirective, TranslatePipe, LucideAngularModule, HelpModalComponent],
   templateUrl: './consumption-chart.component.html',
-  styleUrl: './consumption-chart.component.scss'
+  styleUrl: './consumption-chart.component.scss',
 })
 export class ConsumptionChartComponent implements OnInit {
   @ViewChild(BaseChartDirective) chart?: BaseChartDirective;
@@ -40,10 +72,10 @@ export class ConsumptionChartComponent implements OnInit {
   country = input<any>('');
   helpTitleKey = input<string>('HOME.CHART_HELP_TITLE');
   helpSteps = input<HelpStep[]>([]);
-  roomNames = input<string[]>([]);  // For heating chart: actual room names
-  roomIds = input<string[]>([]);    // For heating chart: actual room IDs
-  roomColors = input<Array<{ border: string; bg: string }>>([]);  // For heating chart: room-specific colors
-  ignoredSpikes = input<{ date: string, roomId: string }[]>([]); // For heating chart: confirmed spikes to ignore in incremental mode
+  roomNames = input<string[]>([]); // For heating chart: actual room names
+  roomIds = input<string[]>([]); // For heating chart: actual room IDs
+  roomColors = input<Array<{ border: string; bg: string }>>([]); // For heating chart: room-specific colors
+  ignoredSpikes = input<{ date: string; roomId: string }[]>([]); // For heating chart: confirmed spikes to ignore in incremental mode
 
   private languageService = inject(LanguageService);
   private chartDataService = inject(ChartDataService);
@@ -86,8 +118,8 @@ export class ConsumptionChartComponent implements OnInit {
   private generateSmartLabels(recs: ChartDataPoint[]): string[] {
     if (recs.length === 0) return [];
 
-    const dates = recs.map(r => new Date(r.date));
-    const years = new Set(dates.map(d => d.getFullYear()));
+    const dates = recs.map((r) => new Date(r.date));
+    const years = new Set(dates.map((d) => d.getFullYear()));
     const spansMultipleYears = years.size > 1;
     const dataPointCount = recs.length;
 
@@ -98,7 +130,7 @@ export class ConsumptionChartComponent implements OnInit {
     // Determine label format based on data density
     // Many data points (>20): show just month (Chart.js will auto-skip duplicates)
     // Medium/Few data points (<=20): show month and day
-    return dates.map(date => {
+    return dates.map((date) => {
       const year = date.getFullYear().toString().slice(-2);
 
       if (dataPointCount > 20) {
@@ -130,7 +162,10 @@ export class ConsumptionChartComponent implements OnInit {
     this.showAverageComparison();
 
     // Process data based on display mode
-    const processedData = mode === 'incremental' ? this.chartDataService.calculateIncrementalData(recs, this.ignoredSpikes()) : recs;
+    const processedData =
+      mode === 'incremental'
+        ? this.chartDataService.calculateIncrementalData(recs, this.ignoredSpikes())
+        : recs;
 
     if (this.chartType === 'water') {
       return this.chartDataService.getWaterChartData({
@@ -142,7 +177,7 @@ export class ConsumptionChartComponent implements OnInit {
         showTrendline: this.showTrendline(),
         showAverageComparison: this.showAverageComparison(),
         country: this.country() ?? '',
-        familySize: this.familySize() ?? 0
+        familySize: this.familySize() ?? 0,
       });
     } else if (this.chartType === 'electricity') {
       return this.chartDataService.getElectricityChartData({
@@ -154,7 +189,7 @@ export class ConsumptionChartComponent implements OnInit {
         showTrendline: this.showTrendline(),
         showAverageComparison: this.showAverageComparison(),
         country: this.country() ?? 'DE',
-        familySize: this.familySize() ?? 0
+        familySize: this.familySize() ?? 0,
       });
     } else if (this.chartType === 'home') {
       return this.chartDataService.getWaterChartData({
@@ -166,7 +201,7 @@ export class ConsumptionChartComponent implements OnInit {
         showTrendline: false,
         showAverageComparison: false,
         country: '',
-        familySize: 0
+        familySize: 0,
       });
     } else {
       return this.chartDataService.getHeatingChartData({
@@ -180,7 +215,7 @@ export class ConsumptionChartComponent implements OnInit {
         roomColors: this.roomColors(),
         showTrendline: this.showTrendline(),
         showAverageComparison: this.showAverageComparison(),
-        country: this.country() ?? 'DE'
+        country: this.country() ?? 'DE',
       });
     }
   });
@@ -223,29 +258,47 @@ export class ConsumptionChartComponent implements OnInit {
 
             // Keywords that identify trendlines and averages
             const trendlineKeywords = ['Trendline', 'Trendlinie'];
-            const averageKeywords = ['Average', 'Durchschnitt', 'Landesdurchschnitt', 'Country Average'];
+            const averageKeywords = [
+              'Average',
+              'Durchschnitt',
+              'Landesdurchschnitt',
+              'Country Average',
+            ];
             const suffixKeywords = [...trendlineKeywords, ...averageKeywords];
 
             // Check if clicked label is a main data line (not a trendline or average)
-            const isTrendlineOrAverage = suffixKeywords.some(kw => clickedLabel.includes(kw));
+            const isTrendlineOrAverage = suffixKeywords.some((kw) => clickedLabel.includes(kw));
 
             if (!isTrendlineOrAverage) {
               // Special case for Total view: "Total Weekly Consumption" / "Gesamtverbrauch pro Woche"
               // These have standalone "Trendline" and "Country Average" labels (no shared prefix)
-              const totalViewLabels = ['Total Weekly Consumption', 'Gesamtverbrauch pro Woche', 'Gesamtverbrauch'];
-              const isTotalView = totalViewLabels.some(lbl => clickedLabel.includes(lbl) || clickedLabel.startsWith(lbl.split(' ')[0]));
+              const totalViewLabels = [
+                'Total Weekly Consumption',
+                'Gesamtverbrauch pro Woche',
+                'Gesamtverbrauch',
+              ];
+              const isTotalView = totalViewLabels.some(
+                (lbl) => clickedLabel.includes(lbl) || clickedLabel.startsWith(lbl.split(' ')[0]),
+              );
 
               if (isTotalView) {
                 // In Total view, hide/show all standalone trendline and average datasets
-                chart.data.datasets.forEach((dataset: ChartConfiguration['data']['datasets'][0], index: number) => {
-                  if (index === clickedIndex) return;
-                  const label = dataset.label || '';
-                  // Match standalone "Trendline" or "Country Average" (not prefixed with category)
-                  if (trendlineKeywords.includes(label) ||
-                    averageKeywords.some(kw => label === kw || label.includes('Country') || label.includes('Landes'))) {
-                    chart.setDatasetVisibility(index, isHidden);
-                  }
-                });
+                chart.data.datasets.forEach(
+                  (dataset: ChartConfiguration['data']['datasets'][0], index: number) => {
+                    if (index === clickedIndex) return;
+                    const label = dataset.label || '';
+                    // Match standalone "Trendline" or "Country Average" (not prefixed with category)
+                    if (
+                      trendlineKeywords.includes(label) ||
+                      averageKeywords.some(
+                        (kw) =>
+                          label === kw || label.includes('Country') || label.includes('Landes'),
+                      )
+                    ) {
+                      chart.setDatasetVisibility(index, isHidden);
+                    }
+                  },
+                );
               } else {
                 // For other views, extract category from label
                 const suffixesToRemove = [' Total', ' Gesamt', ' Warm', ' Kalt', ' Cold'];
@@ -258,30 +311,37 @@ export class ConsumptionChartComponent implements OnInit {
                 }
 
                 // For detailed view labels like "Kitchen Warm", keep the full label as category
-                if (clickedLabel.includes(' Warm') || clickedLabel.includes(' Cold') ||
-                  clickedLabel.includes(' Kalt')) {
+                if (
+                  clickedLabel.includes(' Warm') ||
+                  clickedLabel.includes(' Cold') ||
+                  clickedLabel.includes(' Kalt')
+                ) {
                   category = clickedLabel;
                 }
 
                 // Find related trendlines and averages
-                chart.data.datasets.forEach((dataset: ChartConfiguration['data']['datasets'][0], index: number) => {
-                  if (index === clickedIndex) return;
+                chart.data.datasets.forEach(
+                  (dataset: ChartConfiguration['data']['datasets'][0], index: number) => {
+                    if (index === clickedIndex) return;
 
-                  const label = dataset.label || '';
-                  const isRelatedTrendlineOrAverage = suffixKeywords.some(kw => label.includes(kw));
+                    const label = dataset.label || '';
+                    const isRelatedTrendlineOrAverage = suffixKeywords.some((kw) =>
+                      label.includes(kw),
+                    );
 
-                  if (isRelatedTrendlineOrAverage) {
-                    // Check if this dataset belongs to the same category
-                    if (label.startsWith(category)) {
-                      chart.setDatasetVisibility(index, isHidden);
+                    if (isRelatedTrendlineOrAverage) {
+                      // Check if this dataset belongs to the same category
+                      if (label.startsWith(category)) {
+                        chart.setDatasetVisibility(index, isHidden);
+                      }
                     }
-                  }
-                });
+                  },
+                );
               }
             }
 
             chart.update();
-          }
+          },
         },
         tooltip: {
           callbacks: {
@@ -293,12 +353,18 @@ export class ConsumptionChartComponent implements OnInit {
                 const date = new Date(rawDateStr);
                 const lang = this.languageService.currentLang();
                 const locale = lang === 'de' ? 'de-DE' : 'en-US';
-                return date.toLocaleDateString(locale, { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+                return date.toLocaleDateString(locale, {
+                  weekday: 'long',
+                  year: 'numeric',
+                  month: 'long',
+                  day: 'numeric',
+                });
               }
               return '';
             },
             label: (context) => {
-              const unit = (this.chartType === 'heating' || this.chartType === 'electricity') ? 'kWh' : 'L';
+              const unit =
+                this.chartType === 'heating' || this.chartType === 'electricity' ? 'kWh' : 'L';
               let label = `${context.dataset.label}: ${context.parsed.y} ${unit}`;
 
               const normalizedData = (context.dataset as any).normalizedData;
@@ -306,13 +372,15 @@ export class ConsumptionChartComponent implements OnInit {
                 const normInfo = normalizedData[context.dataIndex];
                 if (normInfo && normInfo.days) {
                   const days = Number(normInfo.days).toFixed(1);
-                  const estMsg = this.languageService.translate('CHART.ESTIMATED_MONTHLY', { days });
+                  const estMsg = this.languageService.translate('CHART.ESTIMATED_MONTHLY', {
+                    days,
+                  });
                   label += ` ${estMsg}`;
                 }
               }
               return label;
-            }
-          }
+            },
+          },
         },
         zoom: {
           pan: {
@@ -323,35 +391,36 @@ export class ConsumptionChartComponent implements OnInit {
             wheel: { enabled: true },
             pinch: { enabled: true },
             mode: 'x',
-          }
+          },
         },
         summerSun: {
           enabled: this.chartType === 'heating',
-          records: this.chartType === 'heating' ? this.data() : []
+          records: this.chartType === 'heating' ? this.data() : [],
         },
         newYearMarker: {
           enabled: true, // Enable for all types effectively
-          records: this.data()
-        }
+          records: this.data(),
+        },
       },
       scales: {
         y: {
           beginAtZero: true,
           title: {
             display: true,
-            text: (this.chartType === 'heating' || this.chartType === 'electricity')
-              ? this.languageService.translate('CHART.AXIS_KWH')
-              : this.languageService.translate('CHART.AXIS_LITERS')
-          }
+            text:
+              this.chartType === 'heating' || this.chartType === 'electricity'
+                ? this.languageService.translate('CHART.AXIS_KWH')
+                : this.languageService.translate('CHART.AXIS_LITERS'),
+          },
         },
         x: {
           title: { display: true, text: this.languageService.translate('CHART.AXIS_DATE') },
           ticks: {
             maxRotation: 45,
-            minRotation: 0
-          }
-        }
-      }
+            minRotation: 0,
+          },
+        },
+      },
     };
   });
 
@@ -364,7 +433,7 @@ export class ConsumptionChartComponent implements OnInit {
   }
 
   protected toggleTrendline(): void {
-    this.showTrendline.update(value => !value);
+    this.showTrendline.update((value) => !value);
     this.saveTrendlineVisibility(this.showTrendline());
   }
 
@@ -380,7 +449,7 @@ export class ConsumptionChartComponent implements OnInit {
   }
 
   protected toggleAverageComparison(): void {
-    this.showAverageComparison.update(value => !value);
+    this.showAverageComparison.update((value) => !value);
     this.saveAverageComparisonVisibility(this.showAverageComparison());
   }
 

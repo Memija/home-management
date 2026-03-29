@@ -21,7 +21,7 @@ export interface HouseholdMember {
 }
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class HouseholdService {
   private storage = inject(STORAGE_SERVICE);
@@ -44,7 +44,7 @@ export class HouseholdService {
     '/avatars/thor.jpg',
     '/avatars/hulk.jpg',
     '/avatars/black-widow.jpg',
-    '/avatars/spider-man.jpg'
+    '/avatars/spider-man.jpg',
   ];
 
   constructor() {
@@ -86,20 +86,26 @@ export class HouseholdService {
     }, 0);
   }
 
-  addMember(name: string, surname: string, type: 'adult' | 'kid', gender: 'male' | 'female', avatar?: string) {
+  addMember(
+    name: string,
+    surname: string,
+    type: 'adult' | 'kid',
+    gender: 'male' | 'female',
+    avatar?: string,
+  ) {
     const newMember: HouseholdMember = {
       id: crypto.randomUUID(),
       name,
       surname,
       type,
       gender,
-      avatar: avatar || this.avatars[Math.floor(Math.random() * this.avatars.length)]
+      avatar: avatar || this.avatars[Math.floor(Math.random() * this.avatars.length)],
     };
-    this.members.update(members => [...members, newMember]);
+    this.members.update((members) => [...members, newMember]);
   }
 
   removeMember(id: string) {
-    this.members.update(members => members.filter(m => m.id !== id));
+    this.members.update((members) => members.filter((m) => m.id !== id));
   }
 
   updateAddress(address: Address) {
@@ -125,8 +131,8 @@ export class HouseholdService {
   }
 
   updateMember(id: string, updatedMember: Partial<HouseholdMember>) {
-    this.members.update(members =>
-      members.map(m => m.id === id ? { ...m, ...updatedMember } : m)
+    this.members.update((members) =>
+      members.map((m) => (m.id === id ? { ...m, ...updatedMember } : m)),
     );
   }
 }

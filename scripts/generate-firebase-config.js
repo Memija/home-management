@@ -30,10 +30,10 @@ const requiredVars = [
   'FIREBASE_PROJECT_ID',
   'FIREBASE_STORAGE_BUCKET',
   'FIREBASE_MESSAGING_SENDER_ID',
-  'FIREBASE_APP_ID'
+  'FIREBASE_APP_ID',
 ];
 
-const missing = requiredVars.filter(v => !process.env[v]);
+const missing = requiredVars.filter((v) => !process.env[v]);
 if (missing.length > 0) {
   console.error(`[config] Missing environment variables: ${missing.join(', ')}`);
   console.error('[config] Set these in your CI/CD secrets or create firebase.config.ts manually.');

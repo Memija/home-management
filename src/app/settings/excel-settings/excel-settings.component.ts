@@ -1,9 +1,29 @@
-import { Component, inject, computed, signal, effect, ChangeDetectionStrategy, ChangeDetectorRef, HostListener } from '@angular/core';
+import {
+  Component,
+  inject,
+  computed,
+  signal,
+  effect,
+  ChangeDetectionStrategy,
+  ChangeDetectorRef,
+  HostListener,
+} from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ExcelSettingsService } from '../../services/excel-settings.service';
 import { TranslatePipe } from '../../pipes/translate.pipe';
-import { LucideAngularModule, FileSpreadsheet, RotateCcw, ChevronDown, ChevronUp, HelpCircle, Download, Upload, Pencil, TriangleAlert } from 'lucide-angular';
+import {
+  LucideAngularModule,
+  FileSpreadsheet,
+  RotateCcw,
+  ChevronDown,
+  ChevronUp,
+  HelpCircle,
+  Download,
+  Upload,
+  Pencil,
+  TriangleAlert,
+} from 'lucide-angular';
 import { LanguageService } from '../../services/language.service';
 import { LocalStorageService } from '../../services/local-storage.service';
 import { FileStorageService } from '../../services/file-storage.service';
@@ -19,10 +39,19 @@ import { HeatingRoomsService } from '../../services/heating-rooms.service';
 @Component({
   selector: 'app-excel-settings',
   standalone: true,
-  imports: [CommonModule, FormsModule, TranslatePipe, LucideAngularModule, HelpModalComponent, ConfirmationModalComponent, DeleteConfirmationModalComponent, ErrorModalComponent],
+  imports: [
+    CommonModule,
+    FormsModule,
+    TranslatePipe,
+    LucideAngularModule,
+    HelpModalComponent,
+    ConfirmationModalComponent,
+    DeleteConfirmationModalComponent,
+    ErrorModalComponent,
+  ],
   templateUrl: './excel-settings.component.html',
   styleUrl: './excel-settings.component.scss',
-  changeDetection: ChangeDetectionStrategy.OnPush
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ExcelSettingsComponent {
   private localStorageService = inject(LocalStorageService);
@@ -46,10 +75,22 @@ export class ExcelSettingsComponent {
   // Help modal
   protected showHelpModal = signal(false);
   protected readonly helpSteps: HelpStep[] = [
-    { titleKey: 'SETTINGS.EXCEL_HELP_STEP_1_TITLE', descriptionKey: 'SETTINGS.EXCEL_HELP_STEP_1_DESC' },
-    { titleKey: 'SETTINGS.EXCEL_HELP_STEP_2_TITLE', descriptionKey: 'SETTINGS.EXCEL_HELP_STEP_2_DESC' },
-    { titleKey: 'SETTINGS.EXCEL_HELP_STEP_3_TITLE', descriptionKey: 'SETTINGS.EXCEL_HELP_STEP_3_DESC' },
-    { titleKey: 'SETTINGS.EXCEL_HELP_STEP_4_TITLE', descriptionKey: 'SETTINGS.EXCEL_HELP_STEP_4_DESC' }
+    {
+      titleKey: 'SETTINGS.EXCEL_HELP_STEP_1_TITLE',
+      descriptionKey: 'SETTINGS.EXCEL_HELP_STEP_1_DESC',
+    },
+    {
+      titleKey: 'SETTINGS.EXCEL_HELP_STEP_2_TITLE',
+      descriptionKey: 'SETTINGS.EXCEL_HELP_STEP_2_DESC',
+    },
+    {
+      titleKey: 'SETTINGS.EXCEL_HELP_STEP_3_TITLE',
+      descriptionKey: 'SETTINGS.EXCEL_HELP_STEP_3_DESC',
+    },
+    {
+      titleKey: 'SETTINGS.EXCEL_HELP_STEP_4_TITLE',
+      descriptionKey: 'SETTINGS.EXCEL_HELP_STEP_4_DESC',
+    },
   ];
 
   protected showModal = signal(false);
@@ -85,8 +126,11 @@ export class ExcelSettingsComponent {
 
   // Computed column arrays for validation
   protected waterColumns = computed(() => [
-    this.waterDateCol(), this.waterKitchenWarmCol(), this.waterKitchenColdCol(),
-    this.waterBathroomWarmCol(), this.waterBathroomColdCol()
+    this.waterDateCol(),
+    this.waterKitchenWarmCol(),
+    this.waterKitchenColdCol(),
+    this.waterBathroomWarmCol(),
+    this.waterBathroomColdCol(),
   ]);
 
   protected heatingColumns = computed(() => {
@@ -103,7 +147,8 @@ export class ExcelSettingsComponent {
   });
 
   protected electricityColumns = computed(() => [
-    this.electricityDateCol(), this.electricityValueCol()
+    this.electricityDateCol(),
+    this.electricityValueCol(),
   ]);
 
   // Helper for template to check configured rooms count
@@ -113,7 +158,7 @@ export class ExcelSettingsComponent {
 
   // Helper to update a single room column
   protected updateRoomCol(roomId: string, value: string): void {
-    this.heatingRoomCols.update(cols => ({ ...cols, [roomId]: value }));
+    this.heatingRoomCols.update((cols) => ({ ...cols, [roomId]: value }));
   }
 
   // Helper to get a room column value
@@ -123,8 +168,10 @@ export class ExcelSettingsComponent {
 
   // Validation: check if form is valid
   protected isFormValid = computed(() => {
-    return this.validationService.validateMappings(this.waterColumns(), this.heatingColumns()).isValid &&
-      this.validationService.validateMappings(this.electricityColumns(), []).isValid; // Simple check for now, ideally validate all groups
+    return (
+      this.validationService.validateMappings(this.waterColumns(), this.heatingColumns()).isValid &&
+      this.validationService.validateMappings(this.electricityColumns(), []).isValid
+    ); // Simple check for now, ideally validate all groups
   });
 
   /**
@@ -164,7 +211,9 @@ export class ExcelSettingsComponent {
     });
 
     // Load collapsed state from localStorage
-    const savedCollapsedState = this.localStorageService.getPreference('excel_preview_is_collapsed');
+    const savedCollapsedState = this.localStorageService.getPreference(
+      'excel_preview_is_collapsed',
+    );
     if (savedCollapsedState !== null) {
       this.isPreviewCollapsed.set(savedCollapsedState === 'true');
     } else {
@@ -174,12 +223,13 @@ export class ExcelSettingsComponent {
   }
 
   protected togglePreview() {
-    this.isPreviewCollapsed.update(val => !val);
+    this.isPreviewCollapsed.update((val) => !val);
     // Save to localStorage
-    this.localStorageService.setPreference('excel_preview_is_collapsed', this.isPreviewCollapsed().toString());
+    this.localStorageService.setPreference(
+      'excel_preview_is_collapsed',
+      this.isPreviewCollapsed().toString(),
+    );
   }
-
-
 
   // Check for unsaved changes
   public hasUnsavedChanges = computed(() => {
@@ -187,7 +237,8 @@ export class ExcelSettingsComponent {
     if (!this.showModal()) return false;
 
     const saved = this.excelSettingsService.settings();
-    return this.waterDateCol().trim() !== saved.waterMapping.date ||
+    return (
+      this.waterDateCol().trim() !== saved.waterMapping.date ||
       this.waterKitchenWarmCol().trim() !== saved.waterMapping.kitchenWarm ||
       this.waterKitchenColdCol().trim() !== saved.waterMapping.kitchenCold ||
       this.waterBathroomWarmCol().trim() !== saved.waterMapping.bathroomWarm ||
@@ -196,11 +247,14 @@ export class ExcelSettingsComponent {
       this.heatingDateCol().trim() !== saved.heatingMapping.date ||
       this.electricityDateCol().trim() !== saved.electricityMapping.date ||
       this.electricityValueCol().trim() !== saved.electricityMapping.value ||
-      this.hasHeatingRoomChanges(saved);
+      this.hasHeatingRoomChanges(saved)
+    );
   });
 
   // Check if any heating room columns have changed
-  private hasHeatingRoomChanges(saved: { heatingMapping: { rooms?: Record<string, string> } }): boolean {
+  private hasHeatingRoomChanges(saved: {
+    heatingMapping: { rooms?: Record<string, string> };
+  }): boolean {
     const currentRoomCols = this.heatingRoomCols();
     const savedRooms = saved.heatingMapping.rooms || {};
 
@@ -246,7 +300,7 @@ export class ExcelSettingsComponent {
       enabled: this.enabled(),
       waterMapping: this.excelSettingsService.settings().waterMapping,
       heatingMapping: this.excelSettingsService.settings().heatingMapping,
-      electricityMapping: this.excelSettingsService.settings().electricityMapping
+      electricityMapping: this.excelSettingsService.settings().electricityMapping,
     });
   }
 
@@ -313,10 +367,15 @@ export class ExcelSettingsComponent {
 
   protected saveSettings() {
     // Validate all fields and check for duplicates
-    const validation = this.validationService.validateMappings(this.waterColumns(), this.heatingColumns());
+    const validation = this.validationService.validateMappings(
+      this.waterColumns(),
+      this.heatingColumns(),
+    );
     if (!validation.isValid) {
       // Use the returned error key or default
-      this.validationError.set(this.languageService.translate(validation.errorKey || 'EXCEL.VALIDATION_FORM_INVALID'));
+      this.validationError.set(
+        this.languageService.translate(validation.errorKey || 'EXCEL.VALIDATION_FORM_INVALID'),
+      );
       return;
     }
 
@@ -336,16 +395,16 @@ export class ExcelSettingsComponent {
         kitchenWarm: this.waterKitchenWarmCol().trim(),
         kitchenCold: this.waterKitchenColdCol().trim(),
         bathroomWarm: this.waterBathroomWarmCol().trim(),
-        bathroomCold: this.waterBathroomColdCol().trim()
+        bathroomCold: this.waterBathroomColdCol().trim(),
       },
       heatingMapping: {
         date: this.heatingDateCol().trim(),
-        rooms: heatingMappingRooms
+        rooms: heatingMappingRooms,
       },
       electricityMapping: {
         date: this.electricityDateCol().trim(),
-        value: this.electricityValueCol().trim()
-      }
+        value: this.electricityValueCol().trim(),
+      },
     });
 
     this.validationError.set('');
@@ -388,10 +447,12 @@ export class ExcelSettingsComponent {
     if (file) {
       // Validate file extension
       if (!file.name.toLowerCase().endsWith('.json')) {
-        this.importErrorMessage.set(this.languageService.translate('SETTINGS.IMPORT_EXCEL_SETTINGS_INVALID_FILE_TYPE'));
+        this.importErrorMessage.set(
+          this.languageService.translate('SETTINGS.IMPORT_EXCEL_SETTINGS_INVALID_FILE_TYPE'),
+        );
         this.importErrorInstructions.set([
           'SETTINGS.IMPORT_EXCEL_SETTINGS_INVALID_FILE_TYPE_INSTRUCTION_1',
-          'SETTINGS.IMPORT_EXCEL_SETTINGS_INVALID_FILE_TYPE_INSTRUCTION_2'
+          'SETTINGS.IMPORT_EXCEL_SETTINGS_INVALID_FILE_TYPE_INSTRUCTION_2',
         ]);
         this.showImportErrorModal.set(true);
         this.showImportConfirmModal.set(false);
@@ -408,7 +469,6 @@ export class ExcelSettingsComponent {
 
         this.showImportSuccess.set(true);
         setTimeout(() => this.showImportSuccess.set(false), 3000);
-
       } catch (err: unknown) {
         console.error('Failed to import settings:', err);
 
@@ -424,8 +484,6 @@ export class ExcelSettingsComponent {
     this.showImportConfirmModal.set(false);
     this.pendingImportFile.set(null);
   }
-
-
 
   protected cancelImportSettings() {
     this.showImportConfirmModal.set(false);

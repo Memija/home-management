@@ -1,6 +1,9 @@
 import { Injectable, inject } from '@angular/core';
 import { LanguageService } from './language.service';
-import { heatingCountryFacts as enHeatingFacts, availableHeatingCountries } from '../i18n/modules/en/heating-country-facts';
+import {
+  heatingCountryFacts as enHeatingFacts,
+  availableHeatingCountries,
+} from '../i18n/modules/en/heating-country-facts';
 import { heatingCountryFacts as deHeatingFacts } from '../i18n/modules/de/heating-country-facts';
 import { en } from '../i18n/en';
 import { de } from '../i18n/de';
@@ -18,7 +21,7 @@ export type HeatingFactMode = 'historical' | 'country';
  * - Country facts: country-specific energy information (for incremental mode)
  */
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class HeatingFactsService {
   private languageService = inject(LanguageService);
@@ -37,7 +40,12 @@ export class HeatingFactsService {
    * @param mode - 'historical' for total mode, 'country' for incremental mode
    * @param countryCode - Optional country code for country-specific facts
    */
-  getFactByIndex(kWh: number, index: number, mode: HeatingFactMode, countryCode?: string): HeatingFact | null {
+  getFactByIndex(
+    kWh: number,
+    index: number,
+    mode: HeatingFactMode,
+    countryCode?: string,
+  ): HeatingFact | null {
     const lang = this.languageService.currentLang();
     const translations = lang === 'de' ? de : en;
     const countryFacts = lang === 'de' ? deHeatingFacts : enHeatingFacts;
@@ -50,24 +58,33 @@ export class HeatingFactsService {
     }
   }
 
-  private getHistoricalFact(title: string, index: number, countryFacts: Record<string, string[]>): HeatingFact {
+  private getHistoricalFact(
+    title: string,
+    index: number,
+    countryFacts: Record<string, string[]>,
+  ): HeatingFact {
     // Use WORLD historical facts
     const facts = countryFacts['WORLD'] || countryFacts['DEFAULT'] || [];
     if (facts.length === 0) {
       return {
         title,
-        message: 'Heating technology has evolved significantly over thousands of years.'
+        message: 'Heating technology has evolved significantly over thousands of years.',
       };
     }
 
     const safeIndex = Math.abs(index) % facts.length;
     return {
       title,
-      message: facts[safeIndex]
+      message: facts[safeIndex],
     };
   }
 
-  private getCountryFact(title: string, index: number, countryCode: string | undefined, countryFacts: Record<string, string[]>): HeatingFact | null {
+  private getCountryFact(
+    title: string,
+    index: number,
+    countryCode: string | undefined,
+    countryFacts: Record<string, string[]>,
+  ): HeatingFact | null {
     // Try to get country-specific fact
     if (countryCode) {
       const facts = countryFacts[countryCode.toUpperCase()];
@@ -75,7 +92,7 @@ export class HeatingFactsService {
         const safeIndex = Math.abs(index) % facts.length;
         return {
           title,
-          message: facts[safeIndex]
+          message: facts[safeIndex],
         };
       }
     }
@@ -86,7 +103,7 @@ export class HeatingFactsService {
       const safeIndex = Math.abs(index) % defaultFacts.length;
       return {
         title,
-        message: defaultFacts[safeIndex]
+        message: defaultFacts[safeIndex],
       };
     }
 

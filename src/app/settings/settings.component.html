@@ -1,8 +1,20 @@
 <div class="page-container">
-  <div class="header">
+  <div class="tracker-header">
     <h1>{{ 'SETTINGS.TITLE' | translate }}</h1>
     <!-- Force dependency on language signal -->
     <span class="visually-hidden">{{ languageService.currentLang() }}</span>
+    <button
+      type="button"
+      class="demo-tour-btn demo-tour-btn--settings"
+      (click)="openRelevantDemoGuide()"
+      title="{{ 'DEMO.WIZARD_BUTTON' | translate }}"
+      aria-label="Start demo tour"
+    >
+      <span class="cat-btn-icon">
+        <lucide-icon [img]="LightbulbIcon" class="cat-icon"></lucide-icon>
+      </span>
+      {{ 'DEMO.WIZARD_BUTTON' | translate }}
+    </button>
   </div>
 
   <app-storage-settings></app-storage-settings>
@@ -10,3 +22,20 @@
   <app-family></app-family>
   <app-excel-settings></app-excel-settings>
 </div>
+
+<app-demo-wizard
+  [show]="showDemoWizard()"
+  [steps]="demoWizardSteps"
+  [theme]="'settings'"
+  [titleKey]="'DEMO.WIZARD_TITLE'"
+  (close)="showDemoWizard.set(false)"
+>
+</app-demo-wizard>
+
+<app-demo-tour
+  [show]="showDemoTour()"
+  [steps]="demoTourSteps"
+  [theme]="'settings'"
+  (close)="showDemoTour.set(false)"
+>
+</app-demo-tour>

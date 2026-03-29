@@ -29,34 +29,34 @@ describe('HeatingDataService', () => {
       load: vi.fn().mockResolvedValue(null),
       save: vi.fn().mockResolvedValue(undefined),
       exportRecords: vi.fn().mockResolvedValue('[]'),
-      importRecords: vi.fn().mockResolvedValue(undefined)
+      importRecords: vi.fn().mockResolvedValue(undefined),
     };
   }
 
   function createMockFileStorageService() {
     return {
       exportToFile: vi.fn(),
-      importFromFile: vi.fn().mockResolvedValue([])
+      importFromFile: vi.fn().mockResolvedValue([]),
     };
   }
 
   function createMockLanguageService() {
     return {
       currentLang: signal('en'),
-      translate: vi.fn((key: string) => key)
+      translate: vi.fn((key: string) => key),
     };
   }
 
   function createMockExcelService() {
     return {
       exportHeatingToExcel: vi.fn(),
-      importHeatingFromExcel: vi.fn().mockResolvedValue({ records: [], missingColumns: [] })
+      importHeatingFromExcel: vi.fn().mockResolvedValue({ records: [], missingColumns: [] }),
     };
   }
 
   function createMockPdfService() {
     return {
-      exportHeatingToPdf: vi.fn().mockResolvedValue(undefined)
+      exportHeatingToPdf: vi.fn().mockResolvedValue(undefined),
     };
   }
 
@@ -65,13 +65,13 @@ describe('HeatingDataService', () => {
       validateDataArray: vi.fn().mockReturnValue(null),
       validateHeatingJsonImport: vi.fn().mockReturnValue({ validRecords: [], errors: [] }),
       getJsonErrorInstructions: vi.fn().mockReturnValue([]),
-      getExcelErrorInstructions: vi.fn().mockReturnValue([])
+      getExcelErrorInstructions: vi.fn().mockReturnValue([]),
     };
   }
 
   function createMockNotificationService() {
     return {
-      setHeatingRecords: vi.fn()
+      setHeatingRecords: vi.fn(),
     };
   }
 
@@ -79,12 +79,15 @@ describe('HeatingDataService', () => {
     return {
       rooms: signal([
         { id: 'room_1', name: 'Living Room' },
-        { id: 'room_2', name: 'Bedroom' }
-      ])
+        { id: 'room_2', name: 'Bedroom' },
+      ]),
     };
   }
 
-  function createTestRecord(date: Date, rooms: Record<string, number> = { room_1: 100 }): DynamicHeatingRecord {
+  function createTestRecord(
+    date: Date,
+    rooms: Record<string, number> = { room_1: 100 },
+  ): DynamicHeatingRecord {
     return { date, rooms };
   }
 
@@ -108,8 +111,8 @@ describe('HeatingDataService', () => {
         { provide: PdfService, useValue: mockPdfService },
         { provide: ImportValidationService, useValue: mockImportValidationService },
         { provide: NotificationService, useValue: mockNotificationService },
-        { provide: HeatingRoomsService, useValue: mockRoomsService }
-      ]
+        { provide: HeatingRoomsService, useValue: mockRoomsService },
+      ],
     });
     service = TestBed.inject(HeatingDataService);
   });
@@ -155,7 +158,7 @@ describe('HeatingDataService', () => {
   describe('loadData', () => {
     it('should load records from storage', async () => {
       const storedRecords = [
-        { date: '2024-01-15T00:00:00.000Z', rooms: { room_1: 100, room_2: 50 } }
+        { date: '2024-01-15T00:00:00.000Z', rooms: { room_1: 100, room_2: 50 } },
       ];
       mockStorageService.load.mockResolvedValue(storedRecords);
 
@@ -165,8 +168,6 @@ describe('HeatingDataService', () => {
       expect(service.records().length).toBe(1);
       expect(service.records()[0].rooms['room_1']).toBe(100);
     });
-
-
 
     it('should update notification service after loading', async () => {
       const storedRecords = [{ date: '2024-01-15T00:00:00.000Z', rooms: { room_1: 100 } }];
@@ -186,9 +187,7 @@ describe('HeatingDataService', () => {
     });
 
     it('should parse date strings to Date objects', async () => {
-      const storedRecords = [
-        { date: '2024-01-15T00:00:00.000Z', rooms: { room_1: 100 } }
-      ];
+      const storedRecords = [{ date: '2024-01-15T00:00:00.000Z', rooms: { room_1: 100 } }];
       mockStorageService.load.mockResolvedValue(storedRecords);
 
       await service.loadData();
@@ -227,7 +226,10 @@ describe('HeatingDataService', () => {
 
       await service.saveRecord(newRecord, null);
 
-      expect(mockStorageService.save).toHaveBeenCalledWith('heating_consumption_records', expect.any(Array));
+      expect(mockStorageService.save).toHaveBeenCalledWith(
+        'heating_consumption_records',
+        expect.any(Array),
+      );
     });
 
     it('should update notification service after saving', async () => {
@@ -323,7 +325,10 @@ describe('HeatingDataService', () => {
 
       await service.exportData();
 
-      expect(mockFileStorageService.exportToFile).toHaveBeenCalledWith('{"test": true}', 'heating-consumption.json');
+      expect(mockFileStorageService.exportToFile).toHaveBeenCalledWith(
+        '{"test": true}',
+        'heating-consumption.json',
+      );
     });
 
     it('should reset isExporting even on error', async () => {
@@ -344,7 +349,7 @@ describe('HeatingDataService', () => {
 
       expect(mockExcelService.exportHeatingToExcel).toHaveBeenCalledWith(
         expect.any(Array),
-        'heating-consumption.xlsx'
+        'heating-consumption.xlsx',
       );
     });
 
@@ -376,7 +381,7 @@ describe('HeatingDataService', () => {
       expect(mockPdfService.exportHeatingToPdf).toHaveBeenCalledWith(
         expect.any(Array),
         ['Living Room', 'Bedroom'],
-        'heating-consumption.pdf'
+        'heating-consumption.pdf',
       );
     });
 
@@ -455,12 +460,12 @@ describe('HeatingDataService', () => {
     it('should validate heating JSON import', async () => {
       setupPendingImport();
       mockFileStorageService.importFromFile.mockResolvedValue([
-        { date: '2024-01-15', rooms: { room_1: 100 } }
+        { date: '2024-01-15', rooms: { room_1: 100 } },
       ]);
       mockImportValidationService.validateDataArray.mockReturnValue(null);
       mockImportValidationService.validateHeatingJsonImport.mockReturnValue({
         validRecords: [],
-        errors: []
+        errors: [],
       });
 
       await service.confirmImport();
@@ -474,7 +479,7 @@ describe('HeatingDataService', () => {
       mockImportValidationService.validateDataArray.mockReturnValue(null);
       mockImportValidationService.validateHeatingJsonImport.mockReturnValue({
         validRecords: [],
-        errors: ['Invalid record format']
+        errors: ['Invalid record format'],
       });
 
       await service.confirmImport();
@@ -484,14 +489,12 @@ describe('HeatingDataService', () => {
 
     it('should show success modal on successful import', async () => {
       setupPendingImport();
-      const importedRecords = [
-        { date: new Date(2024, 0, 15), rooms: { room_1: 100 } }
-      ];
+      const importedRecords = [{ date: new Date(2024, 0, 15), rooms: { room_1: 100 } }];
       mockFileStorageService.importFromFile.mockResolvedValue(importedRecords);
       mockImportValidationService.validateDataArray.mockReturnValue(null);
       mockImportValidationService.validateHeatingJsonImport.mockReturnValue({
         validRecords: importedRecords,
-        errors: []
+        errors: [],
       });
 
       await service.confirmImport();
@@ -503,13 +506,13 @@ describe('HeatingDataService', () => {
       setupPendingImport();
       const recordsWithZeros = [
         { date: new Date(2024, 0, 15), rooms: { room_1: 0 } }, // All zero - skipped
-        { date: new Date(2024, 0, 16), rooms: { room_1: 100 } } // Valid
+        { date: new Date(2024, 0, 16), rooms: { room_1: 100 } }, // Valid
       ];
       mockFileStorageService.importFromFile.mockResolvedValue(recordsWithZeros);
       mockImportValidationService.validateDataArray.mockReturnValue(null);
       mockImportValidationService.validateHeatingJsonImport.mockReturnValue({
         validRecords: recordsWithZeros,
-        errors: []
+        errors: [],
       });
 
       await service.confirmImport();
@@ -564,9 +567,14 @@ describe('HeatingDataService', () => {
     });
 
     it('should accept xlsx files', async () => {
-      const mockFile = new File(['test'], 'test.xlsx', { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+      const mockFile = new File(['test'], 'test.xlsx', {
+        type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+      });
       const event = createFileInputEvent(mockFile);
-      mockExcelService.importHeatingFromExcel.mockResolvedValue({ records: [], missingColumns: [] });
+      mockExcelService.importHeatingFromExcel.mockResolvedValue({
+        records: [],
+        missingColumns: [],
+      });
 
       await service.importFromExcel(event);
 
@@ -576,7 +584,10 @@ describe('HeatingDataService', () => {
     it('should accept xls files', async () => {
       const mockFile = new File(['test'], 'test.xls', { type: 'application/vnd.ms-excel' });
       const event = createFileInputEvent(mockFile);
-      mockExcelService.importHeatingFromExcel.mockResolvedValue({ records: [], missingColumns: [] });
+      mockExcelService.importHeatingFromExcel.mockResolvedValue({
+        records: [],
+        missingColumns: [],
+      });
 
       await service.importFromExcel(event);
 
@@ -586,7 +597,10 @@ describe('HeatingDataService', () => {
     it('should accept csv files', async () => {
       const mockFile = new File(['test'], 'test.csv', { type: 'text/csv' });
       const event = createFileInputEvent(mockFile);
-      mockExcelService.importHeatingFromExcel.mockResolvedValue({ records: [], missingColumns: [] });
+      mockExcelService.importHeatingFromExcel.mockResolvedValue({
+        records: [],
+        missingColumns: [],
+      });
 
       await service.importFromExcel(event);
 
@@ -597,10 +611,15 @@ describe('HeatingDataService', () => {
       const existingRecord = createTestRecord(new Date(2024, 0, 15), { room_1: 100 });
       await service.saveRecord(existingRecord, null);
 
-      const mockFile = new File(['test'], 'test.xlsx', { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+      const mockFile = new File(['test'], 'test.xlsx', {
+        type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+      });
       const event = createFileInputEvent(mockFile);
       const importedRecords = [createTestRecord(new Date(2024, 0, 16), { room_1: 200 })];
-      mockExcelService.importHeatingFromExcel.mockResolvedValue({ records: importedRecords, missingColumns: [] });
+      mockExcelService.importHeatingFromExcel.mockResolvedValue({
+        records: importedRecords,
+        missingColumns: [],
+      });
 
       await service.importFromExcel(event);
 
@@ -611,11 +630,16 @@ describe('HeatingDataService', () => {
       const existingRecord = createTestRecord(new Date(2024, 0, 15), { room_1: 100 });
       await service.saveRecord(existingRecord, null);
 
-      const mockFile = new File(['test'], 'test.xlsx', { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+      const mockFile = new File(['test'], 'test.xlsx', {
+        type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+      });
       const event = createFileInputEvent(mockFile);
       // Same date, different value
       const importedRecords = [createTestRecord(new Date(2024, 0, 15), { room_1: 200 })];
-      mockExcelService.importHeatingFromExcel.mockResolvedValue({ records: importedRecords, missingColumns: [] });
+      mockExcelService.importHeatingFromExcel.mockResolvedValue({
+        records: importedRecords,
+        missingColumns: [],
+      });
 
       await service.importFromExcel(event);
 
@@ -624,11 +648,13 @@ describe('HeatingDataService', () => {
     });
 
     it('should show warning for missing columns', async () => {
-      const mockFile = new File(['test'], 'test.xlsx', { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+      const mockFile = new File(['test'], 'test.xlsx', {
+        type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+      });
       const event = createFileInputEvent(mockFile);
       mockExcelService.importHeatingFromExcel.mockResolvedValue({
         records: [createTestRecord(new Date(2024, 0, 15))],
-        missingColumns: ['Bedroom', 'Kitchen']
+        missingColumns: ['Bedroom', 'Kitchen'],
       });
 
       await service.importFromExcel(event);
@@ -638,11 +664,13 @@ describe('HeatingDataService', () => {
     });
 
     it('should show success on clean import', async () => {
-      const mockFile = new File(['test'], 'test.xlsx', { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+      const mockFile = new File(['test'], 'test.xlsx', {
+        type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+      });
       const event = createFileInputEvent(mockFile);
       mockExcelService.importHeatingFromExcel.mockResolvedValue({
         records: [createTestRecord(new Date(2024, 0, 15))],
-        missingColumns: []
+        missingColumns: [],
       });
 
       await service.importFromExcel(event);
@@ -651,7 +679,9 @@ describe('HeatingDataService', () => {
     });
 
     it('should reset isImporting after completion', async () => {
-      const mockFile = new File(['test'], 'test.xlsx', { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+      const mockFile = new File(['test'], 'test.xlsx', {
+        type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+      });
       const event = createFileInputEvent(mockFile);
 
       await service.importFromExcel(event);
@@ -660,10 +690,15 @@ describe('HeatingDataService', () => {
     });
 
     it('should clear input value after import', async () => {
-      const mockFile = new File(['test'], 'test.xlsx', { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+      const mockFile = new File(['test'], 'test.xlsx', {
+        type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+      });
       const event = createFileInputEvent(mockFile);
       const input = event.target as HTMLInputElement;
-      mockExcelService.importHeatingFromExcel.mockResolvedValue({ records: [], missingColumns: [] });
+      mockExcelService.importHeatingFromExcel.mockResolvedValue({
+        records: [],
+        missingColumns: [],
+      });
 
       await service.importFromExcel(event);
 
@@ -702,7 +737,7 @@ describe('HeatingDataService', () => {
   function createFileInputEvent(file: File | null): Event {
     const input = {
       files: file ? [file] : null,
-      value: file ? file.name : ''
+      value: file ? file.name : '',
     } as unknown as HTMLInputElement;
     return { target: input } as unknown as Event;
   }

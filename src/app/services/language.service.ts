@@ -1,6 +1,5 @@
 import { Injectable, signal, inject, ApplicationRef } from '@angular/core';
 
-
 export type Language = 'en' | 'de';
 
 /** All supported languages - update this when adding a new language */
@@ -10,7 +9,7 @@ export const SUPPORTED_LANGUAGES: readonly Language[] = ['en', 'de'] as const;
 const LANGUAGE_STORAGE_KEY = 'hm_preferred_language';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class LanguageService {
   private appRef = inject(ApplicationRef);
@@ -20,7 +19,7 @@ export class LanguageService {
   // Store loaded translations
   private translations: Record<string, Record<string, unknown>> = {
     en: {},
-    de: {}
+    de: {},
   };
 
   // Signal to notify when translations are loaded/updated
@@ -89,7 +88,7 @@ export class LanguageService {
       }
 
       // Notify signals that translations have changed
-      this.translationChanged.update(v => v + 1);
+      this.translationChanged.update((v) => v + 1);
     } catch (error) {
       console.error(`Failed to load language ${lang}:`, error);
     } finally {
@@ -105,7 +104,7 @@ export class LanguageService {
 
     // Replace parameters in the translation if provided
     if (params) {
-      Object.keys(params).forEach(param => {
+      Object.keys(params).forEach((param) => {
         translation = translation.replace(`{{${param}}}`, String(params[param]));
       });
     }

@@ -122,3 +122,62 @@
     }
   }
 }
+
+// ============================================
+// Demo tour button - used in page headers
+// ============================================
+.demo-tour-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.45rem 1rem;
+  border-radius: 20px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  border: none;
+  color: white;
+  transition: all 0.25s ease;
+  white-space: nowrap;
+  animation: demoTourPulse 3s ease-in-out infinite;
+
+  &:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  }
+
+  &:active {
+    transform: translateY(0);
+  }
+
+  // Per-page theme variants
+  &--water {
+    background: linear-gradient(135deg, #0ea5e9, #38bdf8);
+    box-shadow: 0 2px 8px rgba(14, 165, 233, 0.3);
+  }
+
+  &--heating {
+    background: linear-gradient(135deg, #f97316, #fb923c);
+    box-shadow: 0 2px 8px rgba(249, 115, 22, 0.3);
+  }
+
+  &--electricity {
+    background: linear-gradient(135deg, #ca8a04, #eab308);
+    box-shadow: 0 2px 8px rgba(234, 179, 8, 0.3);
+  }
+
+  &--settings {
+    background: linear-gradient(135deg, #8b5cf6, #a78bfa);
+    box-shadow: 0 2px 8px rgba(139, 92, 246, 0.3);
+  }
+}
+
+@keyframes demoTourPulse {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.85;
+  }
+}

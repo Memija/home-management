@@ -1,5 +1,5 @@
 import { TestBed } from '@angular/core/testing';
-import { ElectricityCountryFactsService, ElectricityFactMode } from './electricity-country-facts.service';
+import { ElectricityCountryFactsService } from './electricity-country-facts.service';
 import { LanguageService } from './language.service';
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { signal } from '@angular/core';
@@ -18,14 +18,14 @@ describe('ElectricityCountryFactsService', () => {
           return 'Electricity has revolutionized modern life.';
         }
         return key;
-      })
+      }),
     };
 
     TestBed.configureTestingModule({
       providers: [
         ElectricityCountryFactsService,
-        { provide: LanguageService, useValue: mockLanguageService }
-      ]
+        { provide: LanguageService, useValue: mockLanguageService },
+      ],
     });
     service = TestBed.inject(ElectricityCountryFactsService);
   });
@@ -43,7 +43,7 @@ describe('ElectricityCountryFactsService', () => {
 
     it('should include common countries like DE and US', () => {
       const countries = service.getAvailableCountries();
-      const codes = countries.map(c => c.code);
+      const codes = countries.map((c) => c.code);
       expect(codes).toContain('DE');
       expect(codes).toContain('US');
       expect(codes).toContain('WORLD');
@@ -51,7 +51,7 @@ describe('ElectricityCountryFactsService', () => {
 
     it('should have nameKey property for each country', () => {
       const countries = service.getAvailableCountries();
-      countries.forEach(country => {
+      countries.forEach((country) => {
         expect(country).toHaveProperty('code');
         expect(country).toHaveProperty('nameKey');
         expect(country.nameKey).toMatch(/^COUNTRIES\./);
@@ -242,8 +242,9 @@ describe('ElectricityCountryFactsService', () => {
     it('should use translation service for fallback message', () => {
       // This tests that when no facts exist, the fallback uses translation
       // We can't easily force empty facts, but we can verify the mock is set up
-      expect(mockLanguageService.translate('FACTS.ELECTRICITY_FALLBACK'))
-        .toBe('Electricity has revolutionized modern life.');
+      expect(mockLanguageService.translate('FACTS.ELECTRICITY_FALLBACK')).toBe(
+        'Electricity has revolutionized modern life.',
+      );
     });
   });
 });

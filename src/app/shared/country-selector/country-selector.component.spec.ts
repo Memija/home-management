@@ -9,7 +9,9 @@ import { By } from '@angular/platform-browser';
 
 @Pipe({ name: 'translate', standalone: true })
 class MockTranslatePipe implements PipeTransform {
-  transform(key: string): string { return key; }
+  transform(key: string): string {
+    return key;
+  }
 }
 
 describe('CountrySelectorComponent', () => {
@@ -24,7 +26,7 @@ describe('CountrySelectorComponent', () => {
     { code: 'ch', translationKey: 'COUNTRIES.SWITZERLAND' },
     { code: 'fr', translationKey: 'COUNTRIES.FRANCE' },
     { code: 'us', translationKey: 'COUNTRIES.USA' },
-    { code: 'gb', translationKey: 'COUNTRIES.UNITED_KINGDOM' }
+    { code: 'gb', translationKey: 'COUNTRIES.UNITED_KINGDOM' },
   ];
 
   const translationMap: Record<string, string> = {
@@ -33,37 +35,39 @@ describe('CountrySelectorComponent', () => {
     'COUNTRIES.SWITZERLAND': 'Switzerland',
     'COUNTRIES.FRANCE': 'France',
     'COUNTRIES.USA': 'United States',
-    'COUNTRIES.UNITED_KINGDOM': 'United Kingdom'
+    'COUNTRIES.UNITED_KINGDOM': 'United Kingdom',
   };
 
   beforeEach(async () => {
     languageServiceMock = {
       currentLang: signal('en'),
-      translate: vi.fn().mockImplementation((key: string) => translationMap[key] || key)
+      translate: vi.fn().mockImplementation((key: string) => translationMap[key] || key),
     };
 
     countryServiceMock = {
-      getCountries: vi.fn().mockReturnValue(
-        mockCountries.map(c => translationMap[c.translationKey]).sort()
-      ),
-      getCountryInfoByCode: vi.fn().mockImplementation((code: string) =>
-        mockCountries.find(c => c.code === code.toLowerCase())
-      ),
+      getCountries: vi
+        .fn()
+        .mockReturnValue(mockCountries.map((c) => translationMap[c.translationKey]).sort()),
+      getCountryInfoByCode: vi
+        .fn()
+        .mockImplementation((code: string) =>
+          mockCountries.find((c) => c.code === code.toLowerCase()),
+        ),
       getCountryInfoByName: vi.fn().mockImplementation((name: string) => {
         const normalized = name.toLowerCase().trim();
-        return mockCountries.find(c =>
-          translationMap[c.translationKey].toLowerCase() === normalized
+        return mockCountries.find(
+          (c) => translationMap[c.translationKey].toLowerCase() === normalized,
         );
       }),
-      getAllCountryData: vi.fn().mockReturnValue(mockCountries)
+      getAllCountryData: vi.fn().mockReturnValue(mockCountries),
     };
 
     await TestBed.configureTestingModule({
-      imports: [CountrySelectorComponent]
+      imports: [CountrySelectorComponent],
     })
       .overrideComponent(CountrySelectorComponent, {
         remove: { imports: [TranslatePipe] },
-        add: { imports: [MockTranslatePipe] }
+        add: { imports: [MockTranslatePipe] },
       })
       .overrideProvider(LanguageService, { useValue: languageServiceMock })
       .overrideProvider(CountryService, { useValue: countryServiceMock })
@@ -284,7 +288,7 @@ describe('CountrySelectorComponent', () => {
     it('should limit results to 10 entries', () => {
       // Create a mock that returns many matching countries
       countryServiceMock.getCountries.mockReturnValue(
-        Array.from({ length: 20 }, (_, i) => `Country ${i}`)
+        Array.from({ length: 20 }, (_, i) => `Country ${i}`),
       );
       (component as any)._countrySearch.set('Country');
       const results = (component as any).filteredCountries();
@@ -424,7 +428,7 @@ describe('CountrySelectorComponent', () => {
 
     it('should handle country code case insensitivity via getter', () => {
       countryServiceMock.getCountryInfoByCode.mockImplementation((code: string) =>
-        mockCountries.find(c => c.code === code.toLowerCase())
+        mockCountries.find((c) => c.code === code.toLowerCase()),
       );
       component.countryCode = 'DE';
       // Should find Germany via case-insensitive lookup in the mock

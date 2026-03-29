@@ -25,7 +25,7 @@ export type WaterRecord = ConsumptionRecord;
  */
 export interface DynamicHeatingRecord {
   date: Date;
-  rooms: Record<string, number>;  // key: room ID, value: kWh
+  rooms: Record<string, number>; // key: room ID, value: kWh
 }
 
 /**
@@ -35,7 +35,7 @@ export type CombinedRecord = ConsumptionRecord | DynamicHeatingRecord;
 
 export interface CombinedData extends Partial<ConsumptionRecord> {
   date: Date;
-  normalized?: { days: number, raw?: number, [key: string]: number | undefined };
+  normalized?: { days: number; raw?: number; [key: string]: number | undefined };
   [key: string]: number | Date | object | undefined; // Allow indexing and nested objects
 }
 
@@ -85,9 +85,6 @@ export function calculateElectricityTotal(record: ElectricityRecord): number {
   return record.value;
 }
 
-
-
-
 /**
  * Calculate total heating consumption for dynamic room records
  */
@@ -106,11 +103,11 @@ export function getDateKey(date: Date): string {
  */
 export function parseSafeDate(dateRaw: any): Date {
   if (!dateRaw) return new Date(NaN);
-  
+
   if (dateRaw instanceof Date) {
     return dateRaw;
   }
-  
+
   // Check for Firebase Timestamp-like objects
   if (typeof dateRaw === 'object') {
     if (typeof dateRaw.toDate === 'function') {
@@ -120,7 +117,7 @@ export function parseSafeDate(dateRaw: any): Date {
       return new Date(dateRaw.seconds * 1000);
     }
   }
-  
+
   // Fallback for strings/numbers
   return new Date(dateRaw);
 }
@@ -129,8 +126,12 @@ export function parseSafeDate(dateRaw: any): Date {
  * Check if a water record has all consumption values set to zero
  */
 export function isWaterRecordAllZero(record: ConsumptionRecord): boolean {
-  return record.kitchenWarm === 0 && record.kitchenCold === 0 &&
-    record.bathroomWarm === 0 && record.bathroomCold === 0;
+  return (
+    record.kitchenWarm === 0 &&
+    record.kitchenCold === 0 &&
+    record.bathroomWarm === 0 &&
+    record.bathroomCold === 0
+  );
 }
 
 /**
@@ -140,17 +141,12 @@ export function isElectricityRecordAllZero(record: ElectricityRecord): boolean {
   return record.value === 0;
 }
 
-
-
-
 /**
  * Check if a dynamic heating record has all consumption values set to zero
  */
 export function isDynamicHeatingRecordAllZero(record: DynamicHeatingRecord): boolean {
-  return Object.values(record.rooms).every(val => val === 0 || val === undefined);
+  return Object.values(record.rooms).every((val) => val === 0 || val === undefined);
 }
-
-
 
 /**
  * Filter out records that have all-zero or empty values.
@@ -163,14 +159,14 @@ export function isDynamicHeatingRecordAllZero(record: DynamicHeatingRecord): boo
  */
 export function filterZeroPlaceholders<T extends { date: Date }>(
   records: T[],
-  isAllZero: (record: T) => boolean
-): { filtered: T[], skippedCount: number } {
+  isAllZero: (record: T) => boolean,
+): { filtered: T[]; skippedCount: number } {
   if (records.length === 0) {
     return { filtered: [], skippedCount: 0 };
   }
 
   let skippedCount = 0;
-  const filtered = records.filter(r => {
+  const filtered = records.filter((r) => {
     if (isAllZero(r)) {
       skippedCount++;
       return false;
@@ -194,7 +190,8 @@ export function mergeRecords<T extends { date: Date }>(existing: T[], incoming: 
   const merged = [...existing, ...incoming];
   const uniqueMap = new Map<string, T>();
   // Use date string as key to ignore time component differences
-  merged.forEach(r => uniqueMap.set(getDateKey(r.date), r));
-  return Array.from(uniqueMap.values())
-    .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
+  merged.forEach((r) => uniqueMap.set(getDateKey(r.date), r));
+  return Array.from(uniqueMap.values()).sort(
+    (a, b) => new Date(a.date).getTime() - new Date(b.date).getTime(),
+  );
 }

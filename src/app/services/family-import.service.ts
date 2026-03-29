@@ -21,7 +21,7 @@ export interface FamilyImportResult {
  * Extracted from FamilyComponent for reusability.
  */
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class FamilyImportService {
   private householdService = inject(HouseholdService);
@@ -48,8 +48,8 @@ export class FamilyImportService {
           errorMessage: this.languageService.translate('SETTINGS.IMPORT_FAMILY_INVALID_FILE_TYPE'),
           errorInstructions: [
             'SETTINGS.IMPORT_FAMILY_INVALID_FILE_TYPE_INSTRUCTION_1',
-            'SETTINGS.IMPORT_FAMILY_INVALID_FILE_TYPE_INSTRUCTION_2'
-          ]
+            'SETTINGS.IMPORT_FAMILY_INVALID_FILE_TYPE_INSTRUCTION_2',
+          ],
         };
       } else {
         return {
@@ -58,8 +58,8 @@ export class FamilyImportService {
           errorInstructions: [
             'HOME.IMPORT_ERROR_INSTRUCTION_1',
             'HOME.IMPORT_ERROR_INSTRUCTION_2',
-            'HOME.IMPORT_ERROR_INSTRUCTION_3'
-          ]
+            'HOME.IMPORT_ERROR_INSTRUCTION_3',
+          ],
         };
       }
     }
@@ -72,8 +72,8 @@ export class FamilyImportService {
         errorInstructions: [
           'HOME.IMPORT_ERROR_INSTRUCTION_1',
           'HOME.IMPORT_ERROR_INSTRUCTION_2',
-          'HOME.IMPORT_ERROR_INSTRUCTION_3'
-        ]
+          'HOME.IMPORT_ERROR_INSTRUCTION_3',
+        ],
       };
     }
 
@@ -83,7 +83,7 @@ export class FamilyImportService {
       return {
         success: false,
         errorMessage: this.languageService.translate('SETTINGS.IMPORT_FAMILY_INVALID_DATA'),
-        errorInstructions: validationResult.errors
+        errorInstructions: validationResult.errors,
       };
     }
 
@@ -151,21 +151,27 @@ export class FamilyImportService {
       if (item.avatar && typeof item.avatar === 'string') {
         const isKnownAvatar = this.householdService.avatars.includes(item.avatar);
         const isDataUrl = item.avatar.startsWith('data:image/');
-        validAvatar = (isKnownAvatar || isDataUrl)
-          ? item.avatar
-          : this.householdService.avatars[Math.floor(Math.random() * this.householdService.avatars.length)];
+        validAvatar =
+          isKnownAvatar || isDataUrl
+            ? item.avatar
+            : this.householdService.avatars[
+                Math.floor(Math.random() * this.householdService.avatars.length)
+              ];
       } else {
-        validAvatar = this.householdService.avatars[Math.floor(Math.random() * this.householdService.avatars.length)];
+        validAvatar =
+          this.householdService.avatars[
+            Math.floor(Math.random() * this.householdService.avatars.length)
+          ];
       }
 
       // Create validated member with generated ID if missing
       validatedMembers.push({
-        id: (item.id && typeof item.id === 'string') ? item.id : crypto.randomUUID(),
+        id: item.id && typeof item.id === 'string' ? item.id : crypto.randomUUID(),
         name: (item.name as string).trim(),
         surname: (item.surname as string).trim(),
         type: type as 'adult' | 'kid' | 'other',
         gender: gender as 'male' | 'female' | 'other',
-        avatar: validAvatar
+        avatar: validAvatar,
       });
     }
 
@@ -188,10 +194,10 @@ export class FamilyImportService {
    */
   async exportMembers(members: HouseholdMember[]): Promise<void> {
     // Ensure type and gender are always set (use 'other' as default for undefined)
-    const exportMembers = members.map(m => ({
+    const exportMembers = members.map((m) => ({
       ...m,
       type: m.type || 'other',
-      gender: m.gender || 'other'
+      gender: m.gender || 'other',
     }));
     await this.fileStorage.exportData(exportMembers, 'family.json');
   }

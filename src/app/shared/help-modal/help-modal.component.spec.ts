@@ -6,7 +6,7 @@ import { vi } from 'vitest';
 
 @Pipe({
   name: 'translate',
-  standalone: true
+  standalone: true,
 })
 class MockTranslatePipe implements PipeTransform {
   transform(key: string): string {
@@ -20,11 +20,11 @@ describe('HelpModalComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [HelpModalComponent]
+      imports: [HelpModalComponent],
     })
       .overrideComponent(HelpModalComponent, {
         remove: { imports: [TranslatePipe] },
-        add: { imports: [MockTranslatePipe] }
+        add: { imports: [MockTranslatePipe] },
       })
       .compileComponents();
 
@@ -36,7 +36,7 @@ describe('HelpModalComponent', () => {
     fixture.componentRef.setInput('titleKey', 'TEST.TITLE');
     fixture.componentRef.setInput('steps', [
       { titleKey: 'STEP.1', descriptionKey: 'DESC.1' },
-      { titleKey: 'STEP.2', descriptionKey: 'DESC.2', imageUrl: 'img.png' }
+      { titleKey: 'STEP.2', descriptionKey: 'DESC.2', imageUrl: 'img.png' },
     ]);
 
     fixture.detectChanges();
@@ -66,7 +66,11 @@ describe('HelpModalComponent', () => {
       expect(compAsAny.currentStep()).toBe(1);
       expect(compAsAny.isFirstStep()).toBe(false);
       expect(compAsAny.isLastStep()).toBe(true);
-      expect(compAsAny.currentStepData()).toEqual({ titleKey: 'STEP.2', descriptionKey: 'DESC.2', imageUrl: 'img.png' });
+      expect(compAsAny.currentStepData()).toEqual({
+        titleKey: 'STEP.2',
+        descriptionKey: 'DESC.2',
+        imageUrl: 'img.png',
+      });
     });
 
     it('should not navigate past last step', () => {

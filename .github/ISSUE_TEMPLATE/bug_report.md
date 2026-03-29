@@ -1,10 +1,9 @@
 ---
-name: "🐛 Bug Report"
-about: "Report a bug or unexpected behavior in Home Management"
-title: "[BUG] "
-labels: ["bug 🐛"]
+name: '🐛 Bug Report'
+about: 'Report a bug or unexpected behavior in Home Management'
+title: '[BUG] '
+labels: ['bug 🐛']
 assignees: []
-
 ---
 
 ## 🔎 Description
@@ -16,6 +15,7 @@ Provide a clear and concise description of the bug.
 ## 🚀 Steps to Reproduce
 
 Please describe steps to reproduce the behavior:
+
 1. Go to '...'
 2. Click on '....'
 3. Scroll down to '....'

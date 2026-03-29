@@ -19,7 +19,7 @@ describe('ThemeService', () => {
 
     Object.defineProperty(window, 'localStorage', {
       value: mockLocalStorage,
-      writable: true
+      writable: true,
     });
 
     // Mock matchMedia
@@ -32,7 +32,7 @@ describe('ThemeService', () => {
     mockMatchMedia = vi.fn().mockReturnValue(mockMediaQueryList);
     Object.defineProperty(window, 'matchMedia', {
       value: mockMatchMedia,
-      writable: true
+      writable: true,
     });
 
     // Mock document attributes
@@ -45,10 +45,7 @@ describe('ThemeService', () => {
 
   const setupService = (platformId: any = 'browser') => {
     TestBed.configureTestingModule({
-      providers: [
-        ThemeService,
-        { provide: PLATFORM_ID, useValue: platformId }
-      ]
+      providers: [ThemeService, { provide: PLATFORM_ID, useValue: platformId }],
     });
     return TestBed.inject(ThemeService);
   };

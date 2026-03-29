@@ -121,9 +121,11 @@
 
     // Premium gradient header variant
     &.modal-header-premium {
-      background: linear-gradient(135deg,
-          rgba(var(--theme-primary-rgb, 59, 130, 246), 0.08) 0%,
-          transparent 100%);
+      background: linear-gradient(
+        135deg,
+        rgba(var(--theme-primary-rgb, 59, 130, 246), 0.08) 0%,
+        transparent 100%
+      );
       justify-content: flex-start;
     }
 
@@ -140,9 +142,11 @@
     // Premium header icon styling
     .header-icon {
       color: var(--theme-primary, $primary);
-      background: linear-gradient(135deg,
-          rgba(var(--theme-primary-rgb, 59, 130, 246), 0.15) 0%,
-          rgba(var(--theme-primary-rgb, 59, 130, 246), 0.05) 100%);
+      background: linear-gradient(
+        135deg,
+        rgba(var(--theme-primary-rgb, 59, 130, 246), 0.15) 0%,
+        rgba(var(--theme-primary-rgb, 59, 130, 246), 0.05) 100%
+      );
       padding: 0.5rem;
       border-radius: 10px;
     }

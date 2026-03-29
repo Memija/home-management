@@ -9,7 +9,9 @@ import { Info } from 'lucide-angular';
 
 @Pipe({ name: 'translate', standalone: true })
 class MockTranslatePipe implements PipeTransform {
-  transform(key: string): string { return key; }
+  transform(key: string): string {
+    return key;
+  }
 }
 
 describe('ConfirmationModalComponent', () => {
@@ -20,15 +22,15 @@ describe('ConfirmationModalComponent', () => {
   beforeEach(async () => {
     languageServiceMock = {
       currentLang: signal('en'),
-      translate: vi.fn().mockImplementation((key: string) => key)
+      translate: vi.fn().mockImplementation((key: string) => key),
     };
 
     await TestBed.configureTestingModule({
-      imports: [ConfirmationModalComponent]
+      imports: [ConfirmationModalComponent],
     })
       .overrideComponent(ConfirmationModalComponent, {
         remove: { imports: [TranslatePipe] },
-        add: { imports: [MockTranslatePipe] }
+        add: { imports: [MockTranslatePipe] },
       })
       .overrideProvider(LanguageService, { useValue: languageServiceMock })
       .compileComponents();

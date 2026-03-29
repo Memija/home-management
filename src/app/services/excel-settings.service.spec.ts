@@ -18,7 +18,7 @@ describe('ExcelSettingsService', () => {
       providers: [
         ExcelSettingsService,
         { provide: STORAGE_SERVICE, useValue: mockStorageService },
-        { provide: HeatingRoomsService, useValue: { rooms: vi.fn().mockReturnValue([]) } }
+        { provide: HeatingRoomsService, useValue: { rooms: vi.fn().mockReturnValue([]) } },
       ],
     });
 
@@ -31,7 +31,7 @@ describe('ExcelSettingsService', () => {
 
   it('should be created and load defaults', async () => {
     expect(service).toBeTruthy();
-    await new Promise(resolve => setTimeout(resolve, 50));
+    await new Promise((resolve) => setTimeout(resolve, 50));
     expect(service.isEnabled()).toBe(false);
     expect(service.getWaterMapping().date).toBe('Date');
   });
@@ -40,7 +40,7 @@ describe('ExcelSettingsService', () => {
     // Mock storage response
     mockStorageService.load.mockResolvedValue({
       enabled: true,
-      waterMapping: { date: 'Custom Date' }
+      waterMapping: { date: 'Custom Date' },
     });
 
     // Re-create service to trigger load
@@ -49,12 +49,12 @@ describe('ExcelSettingsService', () => {
       providers: [
         ExcelSettingsService,
         { provide: STORAGE_SERVICE, useValue: mockStorageService },
-        { provide: HeatingRoomsService, useValue: { rooms: vi.fn().mockReturnValue([]) } }
+        { provide: HeatingRoomsService, useValue: { rooms: vi.fn().mockReturnValue([]) } },
       ],
     });
     service = TestBed.inject(ExcelSettingsService);
 
-    await new Promise(resolve => setTimeout(resolve, 50));
+    await new Promise((resolve) => setTimeout(resolve, 50));
 
     expect(service.isEnabled()).toBe(true);
     expect(service.getWaterMapping().date).toBe('Custom Date');
@@ -63,20 +63,20 @@ describe('ExcelSettingsService', () => {
   });
 
   it('should update settings and save', async () => {
-    await new Promise(resolve => setTimeout(resolve, 50)); // wait for load and initialization
+    await new Promise((resolve) => setTimeout(resolve, 50)); // wait for load and initialization
 
     // Create a NEW object reference to ensure signal updates
     const newSettings = { ...service.settings(), enabled: true };
     service.updateSettings(newSettings);
 
-    await new Promise(resolve => setTimeout(resolve, 50)); // wait for effect
+    await new Promise((resolve) => setTimeout(resolve, 50)); // wait for effect
 
     expect(service.isEnabled()).toBe(true);
     expect(mockStorageService.save).toHaveBeenCalledWith('excel_settings', newSettings);
   });
 
   it('should reset to defaults', async () => {
-    await new Promise(resolve => setTimeout(resolve, 50));
+    await new Promise((resolve) => setTimeout(resolve, 50));
     service.updateSettings({ ...service.settings(), enabled: true });
     expect(service.isEnabled()).toBe(true);
 
@@ -86,7 +86,7 @@ describe('ExcelSettingsService', () => {
   });
 
   it('should not save on initial load', async () => {
-    await new Promise(resolve => setTimeout(resolve, 50));
+    await new Promise((resolve) => setTimeout(resolve, 50));
     expect(mockStorageService.save).not.toHaveBeenCalled();
 
     // Now let's try with data in storage
@@ -97,12 +97,12 @@ describe('ExcelSettingsService', () => {
       providers: [
         ExcelSettingsService,
         { provide: STORAGE_SERVICE, useValue: mockStorageService },
-        { provide: HeatingRoomsService, useValue: { rooms: vi.fn().mockReturnValue([]) } }
+        { provide: HeatingRoomsService, useValue: { rooms: vi.fn().mockReturnValue([]) } },
       ],
     });
     service = TestBed.inject(ExcelSettingsService);
 
-    await new Promise(resolve => setTimeout(resolve, 50));
+    await new Promise((resolve) => setTimeout(resolve, 50));
 
     expect(mockStorageService.save).not.toHaveBeenCalled();
   });
@@ -115,12 +115,12 @@ describe('ExcelSettingsService', () => {
       providers: [
         ExcelSettingsService,
         { provide: STORAGE_SERVICE, useValue: mockStorageService },
-        { provide: HeatingRoomsService, useValue: { rooms: vi.fn().mockReturnValue([]) } }
+        { provide: HeatingRoomsService, useValue: { rooms: vi.fn().mockReturnValue([]) } },
       ],
     });
     service = TestBed.inject(ExcelSettingsService);
 
-    await new Promise(resolve => setTimeout(resolve, 50));
+    await new Promise((resolve) => setTimeout(resolve, 50));
 
     expect(mockStorageService.save).not.toHaveBeenCalled();
   });

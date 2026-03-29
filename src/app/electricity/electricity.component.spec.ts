@@ -86,7 +86,10 @@ describe('ElectricityComponent', () => {
     } as any;
 
     mockHouseholdService = {
-      members: signal([{ id: '1', name: 'Member 1' }, { id: '2', name: 'Member 2' }]),
+      members: signal([
+        { id: '1', name: 'Member 1' },
+        { id: '2', name: 'Member 2' },
+      ]),
     } as any;
 
     mockFactsService = {
@@ -213,7 +216,10 @@ describe('ElectricityComponent', () => {
     });
 
     it('should detect meter changes', () => {
-      (mockDataService.records as WritableSignal<any>).set([createMockRecord(), createMockRecord()]);
+      (mockDataService.records as WritableSignal<any>).set([
+        createMockRecord(),
+        createMockRecord(),
+      ]);
       (mockMeterService.detectMeterChanges as any).mockReturnValue(['2025-01-01']);
       (mockMeterService.filterUnconfirmed as any).mockReturnValue(['2025-01-01']);
 
@@ -221,7 +227,10 @@ describe('ElectricityComponent', () => {
     });
 
     it('should format first meter change date', () => {
-      (mockDataService.records as WritableSignal<any>).set([createMockRecord(), createMockRecord()]);
+      (mockDataService.records as WritableSignal<any>).set([
+        createMockRecord(),
+        createMockRecord(),
+      ]);
       (mockMeterService.detectMeterChanges as any).mockReturnValue(['2025-01-01']);
       (mockMeterService.filterUnconfirmed as any).mockReturnValue(['2025-01-01']);
 
@@ -269,7 +278,9 @@ describe('ElectricityComponent', () => {
 
     it('should call startEdit and scroll when editRecord is triggered', () => {
       const mockScrollIntoView = vi.fn();
-      const documentSpy = vi.spyOn(document, 'querySelector').mockReturnValue({ scrollIntoView: mockScrollIntoView } as any);
+      const documentSpy = vi
+        .spyOn(document, 'querySelector')
+        .mockReturnValue({ scrollIntoView: mockScrollIntoView } as any);
 
       const record = createMockRecord();
       (component as any).editRecord(record);
@@ -371,7 +382,10 @@ describe('ElectricityComponent', () => {
     });
 
     it('should perform smart import and save records', () => {
-      const records = [{ date: new Date('2025-01-01'), value: 100 }, { date: new Date('2025-02-01'), value: 200 }];
+      const records = [
+        { date: new Date('2025-01-01'), value: 100 },
+        { date: new Date('2025-02-01'), value: 200 },
+      ];
       (component as any).showSuccessModal.set(false);
       (component as any).onSmartImport(records);
 

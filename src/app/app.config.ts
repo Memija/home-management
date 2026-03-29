@@ -13,43 +13,47 @@ const canDeactivateSettings: CanDeactivateFn<any> = (component) => {
 const routes: Routes = [
   {
     path: '',
-    loadComponent: () => import('./landing/landing.component').then(m => m.LandingComponent)
+    loadComponent: () => import('./landing/landing.component').then((m) => m.LandingComponent),
   },
   {
     path: 'dashboard',
-    loadComponent: () => import('./layout/app-layout.component').then(m => m.AppLayoutComponent),
+    loadComponent: () => import('./layout/app-layout.component').then((m) => m.AppLayoutComponent),
     children: [
       {
         path: '',
-        loadComponent: () => import('./dashboard/dashboard.component').then(m => m.DashboardComponent)
+        loadComponent: () =>
+          import('./dashboard/dashboard.component').then((m) => m.DashboardComponent),
       },
       {
         path: 'water',
-        loadComponent: () => import('./water/water.component').then(m => m.WaterComponent)
+        loadComponent: () => import('./water/water.component').then((m) => m.WaterComponent),
       },
       {
         path: 'heating',
-        loadComponent: () => import('./heating/heating.component').then(m => m.HeatingComponent)
+        loadComponent: () => import('./heating/heating.component').then((m) => m.HeatingComponent),
       },
       {
         path: 'electricity',
-        loadComponent: () => import('./electricity/electricity.component').then(m => m.ElectricityComponent)
+        loadComponent: () =>
+          import('./electricity/electricity.component').then((m) => m.ElectricityComponent),
       },
       {
         path: 'release-plan',
-        loadComponent: () => import('./release-plan/release-plan.component').then(m => m.ReleasePlanComponent)
+        loadComponent: () =>
+          import('./release-plan/release-plan.component').then((m) => m.ReleasePlanComponent),
       },
       {
         path: 'privacy',
-        loadComponent: () => import('./privacy/privacy.component').then(m => m.PrivacyComponent)
+        loadComponent: () => import('./privacy/privacy.component').then((m) => m.PrivacyComponent),
       },
       {
         path: 'settings',
-        loadComponent: () => import('./settings/settings.component').then(m => m.SettingsComponent),
-        canDeactivate: [canDeactivateSettings]
-      }
-    ]
-  }
+        loadComponent: () =>
+          import('./settings/settings.component').then((m) => m.SettingsComponent),
+        canDeactivate: [canDeactivateSettings],
+      },
+    ],
+  },
 ];
 
 export const appConfig: ApplicationConfig = {
@@ -59,6 +63,6 @@ export const appConfig: ApplicationConfig = {
     provideRouter(routes),
     // Firebase SDK will be lazy-loaded on demand
     // Use hybrid storage (cache-first with optional cloud sync)
-    { provide: STORAGE_SERVICE, useExisting: HybridStorageService }
-  ]
+    { provide: STORAGE_SERVICE, useExisting: HybridStorageService },
+  ],
 };

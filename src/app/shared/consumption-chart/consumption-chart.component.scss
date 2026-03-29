@@ -93,7 +93,7 @@
   cursor: pointer;
   transition: all 0.2s;
 
-  input[type="checkbox"] {
+  input[type='checkbox'] {
     margin: 0;
     cursor: pointer;
   }
@@ -112,7 +112,7 @@
     opacity: 0.6;
     cursor: not-allowed;
 
-    input[type="checkbox"] {
+    input[type='checkbox'] {
       cursor: not-allowed;
     }
 

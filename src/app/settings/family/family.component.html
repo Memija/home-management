@@ -1,274 +1,428 @@
 <div class="section family-section">
   <div class="title-with-help">
     <h2>{{ 'SETTINGS.FAMILY_TITLE' | translate }}</h2>
-    <button type="button" class="help-btn" (click)="showHelp()" title="{{ 'SETTINGS.FAMILY_HELP_TITLE' | translate }}">
+    <button
+      type="button"
+      class="help-btn"
+      (click)="showHelp()"
+      title="{{ 'SETTINGS.FAMILY_HELP_TITLE' | translate }}"
+    >
       <lucide-icon [img]="HelpIcon" size="20"></lucide-icon>
     </button>
   </div>
 
   @if (showSaveConfirmation()) {
-  <div class="success-message">
-    ✓ {{ 'SETTINGS.FAMILY_SAVED' | translate }}
-  </div>
+    <div class="success-message">✓ {{ 'SETTINGS.FAMILY_SAVED' | translate }}</div>
   }
 
   @if (!isEditing()) {
-  <!-- ============================================ -->
-  <!-- READ-ONLY VIEW -->
-  <!-- ============================================ -->
-  <div class="members-list">
-    @if (safeMembers().length === 0) {
-    <p class="empty-state">{{ 'SETTINGS.NO_MEMBERS' | translate }}</p>
-    } @else {
-    <ul>
-      @for (member of safeMembers(); track member.id) {
-      <li>
-        <div class="member-info">
-          <img [src]="member.avatar" [alt]="member.name" title="{{ member.name }}">
-          <div class="details">
-            <span class="name">{{ member.name }} {{ member.surname }}</span>
-            <div class="badges">
-              @if (member.type && member.type !== 'other') {
-              <span class="badge" [class.kid]="member.type === 'kid'">
-                <lucide-icon [img]="member.type === 'kid' ? KidIcon : AdultIcon" size="14"></lucide-icon>
-                <span class="badge-text">{{ 'SETTINGS.TYPES.' + (member.type | uppercase) | translate }}</span>
-              </span>
-              }
-              @if (member.gender && member.gender !== 'other') {
-              <span class="badge gender" [class.female]="member.gender === 'female'">
-                <lucide-icon [img]="member.gender === 'female' ? FemaleIcon : MaleIcon" size="14"></lucide-icon>
-                <span class="badge-text">{{ 'SETTINGS.GENDERS.' + (member.gender | uppercase) | translate }}</span>
-              </span>
-              }
-            </div>
-          </div>
-        </div>
-      </li>
+    <!-- ============================================ -->
+    <!-- READ-ONLY VIEW -->
+    <!-- ============================================ -->
+    <div class="members-list">
+      @if (safeMembers().length === 0) {
+        <p class="empty-state">{{ 'SETTINGS.NO_MEMBERS' | translate }}</p>
+      } @else {
+        <ul>
+          @for (member of safeMembers(); track member.id) {
+            <li>
+              <div class="member-info">
+                <img [src]="member.avatar" [alt]="member.name" title="{{ member.name }}" />
+                <div class="details">
+                  <span class="name">{{ member.name }} {{ member.surname }}</span>
+                  <div class="badges">
+                    @if (member.type && member.type !== 'other') {
+                      <span class="badge" [class.kid]="member.type === 'kid'">
+                        <lucide-icon
+                          [img]="member.type === 'kid' ? KidIcon : AdultIcon"
+                          size="14"
+                        ></lucide-icon>
+                        <span class="badge-text">{{
+                          'SETTINGS.TYPES.' + (member.type | uppercase) | translate
+                        }}</span>
+                      </span>
+                    }
+                    @if (member.gender && member.gender !== 'other') {
+                      <span class="badge gender" [class.female]="member.gender === 'female'">
+                        <lucide-icon
+                          [img]="member.gender === 'female' ? FemaleIcon : MaleIcon"
+                          size="14"
+                        ></lucide-icon>
+                        <span class="badge-text">{{
+                          'SETTINGS.GENDERS.' + (member.gender | uppercase) | translate
+                        }}</span>
+                      </span>
+                    }
+                  </div>
+                </div>
+              </div>
+            </li>
+          }
+        </ul>
       }
-    </ul>
-    }
-  </div>
-
-  <!-- Action buttons for read-only view -->
-  <div class="button-group">
-    <button type="button" class="edit-btn" (click)="editFamily()" title="{{ 'SETTINGS.EDIT_FAMILY' | translate }}">
-      <lucide-icon [img]="EditIcon" size="16"></lucide-icon>
-      <span class="btn-text">{{ 'SETTINGS.EDIT_FAMILY' | translate }}</span>
-    </button>
-    <button type="button" class="export-btn" (click)="exportFamily()" [disabled]="safeMembers().length === 0"
-      title="{{ 'SETTINGS.EXPORT_FAMILY' | translate }}">
-      <lucide-icon [img]="ExportIcon" size="16"></lucide-icon>
-      <span class="btn-text">{{ 'SETTINGS.EXPORT_FAMILY' | translate }}</span>
-    </button>
-    <button type="button" class="import-btn" (click)="importFamily()"
-      title="{{ 'SETTINGS.IMPORT_FAMILY' | translate }}">
-      <lucide-icon [img]="ImportIcon" size="16"></lucide-icon>
-      <span class="btn-text">{{ 'SETTINGS.IMPORT_FAMILY' | translate }}</span>
-    </button>
-  </div>
-
-  } @else {
-  <!-- ============================================ -->
-  <!-- BULK EDIT VIEW -->
-  <!-- ============================================ -->
-  <div class="members-list editing">
-    <h3>{{ 'SETTINGS.CURRENT_MEMBERS' | translate }}</h3>
-    @if (draftMembers().length === 0) {
-    <p class="empty-state">{{ 'SETTINGS.NO_MEMBERS' | translate }}</p>
-    } @else {
-    <ul>
-      @for (member of draftMembers(); track member.id) {
-      <li>
-        @if (editingMemberId() === member.id) {
-        <!-- Inline edit form using reusable component -->
-        <app-member-editor [member]="member" [avatars]="householdService.avatars" (save)="onMemberEditorSave($event)"
-          (cancel)="cancelEditMember()">
-        </app-member-editor>
-        } @else {
-        <!-- Normal member display with edit and remove buttons -->
-        <div class="member-info">
-          <img [src]="member.avatar" [alt]="member.name" title="{{ member.name }}">
-          <div class="details">
-            <span class="name">{{ member.name }} {{ member.surname }}</span>
-            <div class="badges">
-              @if (member.type && member.type !== 'other') {
-              <span class="badge" [class.kid]="member.type === 'kid'">
-                <lucide-icon [img]="member.type === 'kid' ? KidIcon : AdultIcon" size="14"></lucide-icon>
-                <span class="badge-text">{{ 'SETTINGS.TYPES.' + (member.type | uppercase) | translate }}</span>
-              </span>
-              }
-              @if (member.gender && member.gender !== 'other') {
-              <span class="badge gender" [class.female]="member.gender === 'female'">
-                <lucide-icon [img]="member.gender === 'female' ? FemaleIcon : MaleIcon" size="14"></lucide-icon>
-                <span class="badge-text">{{ 'SETTINGS.GENDERS.' + (member.gender | uppercase) | translate }}</span>
-              </span>
-              }
-            </div>
-          </div>
-        </div>
-        <div class="member-actions">
-          <button class="edit-btn" (click)="startEditMember(member)" title="{{ 'SETTINGS.EDIT_MEMBER' | translate }}">
-            <lucide-icon [img]="EditIcon" size="16"></lucide-icon>
-          </button>
-          <button class="remove-btn" (click)="removeMember(member.id)" title="{{ 'SETTINGS.REMOVE' | translate }}">
-            <lucide-icon [img]="DeleteIcon" size="16"></lucide-icon>
-          </button>
-        </div>
-        }
-      </li>
-      }
-    </ul>
-    }
-  </div>
-
-  <!-- Add member form (conditional) -->
-  @if (showAddMemberForm()) {
-  <div class="add-member-form">
-    <h3>{{ 'SETTINGS.ADD_MEMBER_TITLE' | translate }}</h3>
-    <div class="form-grid">
-      <div class="form-group">
-        <label for="new-member-name">{{ 'SETTINGS.NAME' | translate }}</label>
-        <input type="text" id="new-member-name" name="new-member-name" autocomplete="given-name"
-          [ngModel]="newMemberName()" (ngModelChange)="onNameChange($event)" placeholder="John"
-          [class.error]="newMemberNameError()">
-        @if (newMemberNameError()) {
-        <div class="warning-message">
-          <lucide-icon [img]="TriangleAlertIcon" size="20" class="warning-icon"></lucide-icon>
-          <span>{{ newMemberNameError() | translate }}</span>
-        </div>
-        }
-      </div>
-      <div class="form-group">
-        <label for="new-member-surname">{{ 'SETTINGS.SURNAME' | translate }}</label>
-        <input type="text" id="new-member-surname" name="new-member-surname" autocomplete="family-name"
-          [ngModel]="newMemberSurname()" (ngModelChange)="onSurnameChange($event)" placeholder="Doe"
-          [class.error]="newMemberSurnameError()">
-        @if (newMemberSurnameError()) {
-        <div class="warning-message">
-          <lucide-icon [img]="TriangleAlertIcon" size="20" class="warning-icon"></lucide-icon>
-          <span>{{ newMemberSurnameError() | translate }}</span>
-        </div>
-        }
-      </div>
     </div>
-    <div class="form-grid">
-      <div class="form-group">
-        <span class="form-label">{{ 'SETTINGS.TYPE' | translate }}</span>
-        <div class="toggle-group">
-          <button [class.active]="newMemberType() === 'adult'" (click)="newMemberType.set('adult')">
-            <lucide-icon [img]="AdultIcon" size="16"></lucide-icon>
-            {{ 'SETTINGS.TYPES.ADULT' | translate }}
-          </button>
-          <button [class.active]="newMemberType() === 'kid'" (click)="newMemberType.set('kid')">
-            <lucide-icon [img]="KidIcon" size="16"></lucide-icon>
-            {{ 'SETTINGS.TYPES.KID' | translate }}
-          </button>
-        </div>
-      </div>
-      <div class="form-group">
-        <span class="form-label">{{ 'SETTINGS.GENDER' | translate }}</span>
-        <div class="toggle-group">
-          <button [class.active]="newMemberGender() === 'male'" (click)="newMemberGender.set('male')">
-            <lucide-icon [img]="MaleIcon" size="16"></lucide-icon>
-            {{ 'SETTINGS.GENDERS.MALE' | translate }}
-          </button>
-          <button [class.active]="newMemberGender() === 'female'" (click)="newMemberGender.set('female')">
-            <lucide-icon [img]="FemaleIcon" size="16"></lucide-icon>
-            {{ 'SETTINGS.GENDERS.FEMALE' | translate }}
-          </button>
-        </div>
-      </div>
-    </div>
-    <div class="form-group">
-      <span class="form-label">{{ 'SETTINGS.UPLOAD_PICTURE' | translate }}</span>
-      <label class="upload-btn">
+
+    <!-- Action buttons for read-only view -->
+    <div class="button-group">
+      <button
+        type="button"
+        class="edit-btn"
+        (click)="editFamily()"
+        title="{{ 'SETTINGS.EDIT_FAMILY' | translate }}"
+      >
+        <lucide-icon [img]="EditIcon" size="16"></lucide-icon>
+        <span class="btn-text">{{ 'SETTINGS.EDIT_FAMILY' | translate }}</span>
+      </button>
+      <button
+        type="button"
+        class="export-btn"
+        (click)="exportFamily()"
+        [disabled]="safeMembers().length === 0"
+        title="{{ 'SETTINGS.EXPORT_FAMILY' | translate }}"
+      >
+        <lucide-icon [img]="ExportIcon" size="16"></lucide-icon>
+        <span class="btn-text">{{ 'SETTINGS.EXPORT_FAMILY' | translate }}</span>
+      </button>
+      <button
+        type="button"
+        class="import-btn"
+        (click)="importFamily()"
+        title="{{ 'SETTINGS.IMPORT_FAMILY' | translate }}"
+      >
         <lucide-icon [img]="ImportIcon" size="16"></lucide-icon>
-        {{ 'SETTINGS.UPLOAD_PICTURE' | translate }}
-        <input type="file" id="new-member-file" name="new-member-file" accept="image/*"
-          (change)="handleNewMemberFileUpload($event)" class="hidden-input">
-      </label>
-      @if (newMemberPicturePreview()) {
-      <div class="picture-preview">
-        <img [src]="newMemberPicturePreview()" alt="New member avatar preview">
-      </div>
+        <span class="btn-text">{{ 'SETTINGS.IMPORT_FAMILY' | translate }}</span>
+      </button>
+    </div>
+  } @else {
+    <!-- ============================================ -->
+    <!-- BULK EDIT VIEW -->
+    <!-- ============================================ -->
+    <div class="members-list editing">
+      <h3>{{ 'SETTINGS.CURRENT_MEMBERS' | translate }}</h3>
+      @if (draftMembers().length === 0) {
+        <p class="empty-state">{{ 'SETTINGS.NO_MEMBERS' | translate }}</p>
+      } @else {
+        <ul>
+          @for (member of draftMembers(); track member.id) {
+            <li>
+              @if (editingMemberId() === member.id) {
+                <!-- Inline edit form using reusable component -->
+                <app-member-editor
+                  [member]="member"
+                  [avatars]="householdService.avatars"
+                  (save)="onMemberEditorSave($event)"
+                  (cancel)="cancelEditMember()"
+                >
+                </app-member-editor>
+              } @else {
+                <!-- Normal member display with edit and remove buttons -->
+                <div class="member-info">
+                  <img [src]="member.avatar" [alt]="member.name" title="{{ member.name }}" />
+                  <div class="details">
+                    <span class="name">{{ member.name }} {{ member.surname }}</span>
+                    <div class="badges">
+                      @if (member.type && member.type !== 'other') {
+                        <span class="badge" [class.kid]="member.type === 'kid'">
+                          <lucide-icon
+                            [img]="member.type === 'kid' ? KidIcon : AdultIcon"
+                            size="14"
+                          ></lucide-icon>
+                          <span class="badge-text">{{
+                            'SETTINGS.TYPES.' + (member.type | uppercase) | translate
+                          }}</span>
+                        </span>
+                      }
+                      @if (member.gender && member.gender !== 'other') {
+                        <span class="badge gender" [class.female]="member.gender === 'female'">
+                          <lucide-icon
+                            [img]="member.gender === 'female' ? FemaleIcon : MaleIcon"
+                            size="14"
+                          ></lucide-icon>
+                          <span class="badge-text">{{
+                            'SETTINGS.GENDERS.' + (member.gender | uppercase) | translate
+                          }}</span>
+                        </span>
+                      }
+                    </div>
+                  </div>
+                </div>
+                <div class="member-actions">
+                  <button
+                    class="edit-btn"
+                    (click)="startEditMember(member)"
+                    title="{{ 'SETTINGS.EDIT_MEMBER' | translate }}"
+                  >
+                    <lucide-icon [img]="EditIcon" size="16"></lucide-icon>
+                  </button>
+                  <button
+                    class="remove-btn"
+                    (click)="removeMember(member.id)"
+                    title="{{ 'SETTINGS.REMOVE' | translate }}"
+                  >
+                    <lucide-icon [img]="DeleteIcon" size="16"></lucide-icon>
+                  </button>
+                </div>
+              }
+            </li>
+          }
+        </ul>
       }
     </div>
-    <div class="form-group">
-      <span class="form-label">{{ 'SETTINGS.SELECT_AVATAR' | translate }}</span>
-      <div class="avatar-grid">
-        @for (avatar of householdService.avatars; track avatar) {
-        <img [src]="avatar" [class.selected]="selectedAvatar() === avatar" (click)="selectAvatar(avatar)"
-          alt="Avatar option" alt="Hero Avatar" title="{{ 'SETTINGS.SELECT_AVATAR' | translate }}">
-        }
-      </div>
-    </div>
-    <button class="add-btn" (click)="addMember()"
-      [disabled]="!newMemberName() || !newMemberSurname() || newMemberNameError() || newMemberSurnameError()"
-      title="{{ 'SETTINGS.ADD_MEMBER' | translate }}">
-      <lucide-icon [img]="AddIcon" size="16"></lucide-icon>
-      <span class="btn-text">{{ 'SETTINGS.ADD_MEMBER' | translate }}</span>
-    </button>
-  </div>
-  }
 
-  <!-- Action buttons for bulk edit view -->
-  <div class="button-group">
-    @if (!showAddMemberForm()) {
-    <button type="button" class="add-btn"
-      (click)="isAtMaxMembers() ? showMaxMembersError.set(true) : toggleAddMemberForm()"
-      [class.disabled]="isAtMaxMembers()"
-      title="{{ isAtMaxMembers() ? ('SETTINGS.MAX_MEMBERS_ERROR' | translate) : ('SETTINGS.SHOW_ADD_MEMBER_FORM' | translate) }}">
-      <lucide-icon [img]="AddIcon" size="16"></lucide-icon>
-      <span class="btn-text">{{ 'SETTINGS.SHOW_ADD_MEMBER_FORM' | translate }}</span>
-    </button>
+    <!-- Add member form (conditional) -->
+    @if (showAddMemberForm()) {
+      <div class="add-member-form">
+        <h3>{{ 'SETTINGS.ADD_MEMBER_TITLE' | translate }}</h3>
+        <div class="form-grid">
+          <div class="form-group">
+            <label for="new-member-name">{{ 'SETTINGS.NAME' | translate }}</label>
+            <input
+              type="text"
+              id="new-member-name"
+              name="new-member-name"
+              autocomplete="given-name"
+              [ngModel]="newMemberName()"
+              (ngModelChange)="onNameChange($event)"
+              placeholder="John"
+              [class.error]="newMemberNameError()"
+            />
+            @if (newMemberNameError()) {
+              <div class="warning-message">
+                <lucide-icon [img]="TriangleAlertIcon" size="20" class="warning-icon"></lucide-icon>
+                <span>{{ newMemberNameError() | translate }}</span>
+              </div>
+            }
+          </div>
+          <div class="form-group">
+            <label for="new-member-surname">{{ 'SETTINGS.SURNAME' | translate }}</label>
+            <input
+              type="text"
+              id="new-member-surname"
+              name="new-member-surname"
+              autocomplete="family-name"
+              [ngModel]="newMemberSurname()"
+              (ngModelChange)="onSurnameChange($event)"
+              placeholder="Doe"
+              [class.error]="newMemberSurnameError()"
+            />
+            @if (newMemberSurnameError()) {
+              <div class="warning-message">
+                <lucide-icon [img]="TriangleAlertIcon" size="20" class="warning-icon"></lucide-icon>
+                <span>{{ newMemberSurnameError() | translate }}</span>
+              </div>
+            }
+          </div>
+        </div>
+        <div class="form-grid">
+          <div class="form-group">
+            <span class="form-label">{{ 'SETTINGS.TYPE' | translate }}</span>
+            <div class="toggle-group">
+              <button
+                [class.active]="newMemberType() === 'adult'"
+                (click)="newMemberType.set('adult')"
+              >
+                <lucide-icon [img]="AdultIcon" size="16"></lucide-icon>
+                {{ 'SETTINGS.TYPES.ADULT' | translate }}
+              </button>
+              <button [class.active]="newMemberType() === 'kid'" (click)="newMemberType.set('kid')">
+                <lucide-icon [img]="KidIcon" size="16"></lucide-icon>
+                {{ 'SETTINGS.TYPES.KID' | translate }}
+              </button>
+            </div>
+          </div>
+          <div class="form-group">
+            <span class="form-label">{{ 'SETTINGS.GENDER' | translate }}</span>
+            <div class="toggle-group">
+              <button
+                [class.active]="newMemberGender() === 'male'"
+                (click)="newMemberGender.set('male')"
+              >
+                <lucide-icon [img]="MaleIcon" size="16"></lucide-icon>
+                {{ 'SETTINGS.GENDERS.MALE' | translate }}
+              </button>
+              <button
+                [class.active]="newMemberGender() === 'female'"
+                (click)="newMemberGender.set('female')"
+              >
+                <lucide-icon [img]="FemaleIcon" size="16"></lucide-icon>
+                {{ 'SETTINGS.GENDERS.FEMALE' | translate }}
+              </button>
+            </div>
+          </div>
+        </div>
+        <div class="form-group">
+          <span class="form-label">{{ 'SETTINGS.UPLOAD_PICTURE' | translate }}</span>
+          <label class="upload-btn">
+            <lucide-icon [img]="ImportIcon" size="16"></lucide-icon>
+            {{ 'SETTINGS.UPLOAD_PICTURE' | translate }}
+            <input
+              type="file"
+              id="new-member-file"
+              name="new-member-file"
+              accept="image/*"
+              (change)="handleNewMemberFileUpload($event)"
+              class="hidden-input"
+            />
+          </label>
+          @if (newMemberPicturePreview()) {
+            <div class="picture-preview">
+              <img [src]="newMemberPicturePreview()" alt="New member avatar preview" />
+            </div>
+          }
+        </div>
+        <div class="form-group">
+          <span class="form-label">{{ 'SETTINGS.SELECT_AVATAR' | translate }}</span>
+          <div class="avatar-grid">
+            @for (avatar of householdService.avatars; track avatar) {
+              <img
+                [src]="avatar"
+                [class.selected]="selectedAvatar() === avatar"
+                (click)="selectAvatar(avatar)"
+                alt="Avatar option"
+                alt="Hero Avatar"
+                title="{{ 'SETTINGS.SELECT_AVATAR' | translate }}"
+              />
+            }
+          </div>
+        </div>
+        <button
+          class="add-btn"
+          (click)="addMember()"
+          [disabled]="
+            !newMemberName() ||
+            !newMemberSurname() ||
+            newMemberNameError() ||
+            newMemberSurnameError()
+          "
+          title="{{ 'SETTINGS.ADD_MEMBER' | translate }}"
+        >
+          <lucide-icon [img]="AddIcon" size="16"></lucide-icon>
+          <span class="btn-text">{{ 'SETTINGS.ADD_MEMBER' | translate }}</span>
+        </button>
+      </div>
     }
-    <button type="button" class="save-btn" (click)="saveFamily()" title="{{ 'SETTINGS.SAVE_FAMILY' | translate }}">
-      <lucide-icon [img]="SaveIcon" size="16"></lucide-icon>
-      <span class="btn-text">{{ 'SETTINGS.SAVE_FAMILY' | translate }}</span>
-    </button>
-    <button type="button" class="cancel-btn" (click)="cancelEdit()" title="{{ 'SETTINGS.CANCEL' | translate }}">
-      <lucide-icon [img]="CancelIcon" size="16"></lucide-icon>
-      <span class="btn-text">{{ 'SETTINGS.CANCEL' | translate }}</span>
-    </button>
-  </div>
+
+    <!-- Action buttons for bulk edit view -->
+    <div class="button-group">
+      @if (!showAddMemberForm()) {
+        <button
+          type="button"
+          class="add-btn"
+          (click)="isAtMaxMembers() ? showMaxMembersError.set(true) : toggleAddMemberForm()"
+          [class.disabled]="isAtMaxMembers()"
+          title="{{
+            isAtMaxMembers()
+              ? ('SETTINGS.MAX_MEMBERS_ERROR' | translate)
+              : ('SETTINGS.SHOW_ADD_MEMBER_FORM' | translate)
+          }}"
+        >
+          <lucide-icon [img]="AddIcon" size="16"></lucide-icon>
+          <span class="btn-text">{{ 'SETTINGS.SHOW_ADD_MEMBER_FORM' | translate }}</span>
+        </button>
+      }
+      <button
+        type="button"
+        class="save-btn"
+        (click)="saveFamily()"
+        title="{{ 'SETTINGS.SAVE_FAMILY' | translate }}"
+      >
+        <lucide-icon [img]="SaveIcon" size="16"></lucide-icon>
+        <span class="btn-text">{{ 'SETTINGS.SAVE_FAMILY' | translate }}</span>
+      </button>
+      <button
+        type="button"
+        class="cancel-btn"
+        (click)="cancelEdit()"
+        title="{{ 'SETTINGS.CANCEL' | translate }}"
+      >
+        <lucide-icon [img]="CancelIcon" size="16"></lucide-icon>
+        <span class="btn-text">{{ 'SETTINGS.CANCEL' | translate }}</span>
+      </button>
+    </div>
   }
 </div>
 
-<app-delete-confirmation-modal [show]="showDeleteModal()" [titleKey]="'SETTINGS.DELETE_MEMBER_CONFIRM_TITLE'"
-  [messageKey]="'SETTINGS.DELETE_MEMBER_CONFIRM_MESSAGE'" [cancelKey]="'SETTINGS.CANCEL'"
-  [deleteKey]="'SETTINGS.DELETE_MEMBER_BUTTON'" [icon]="DeleteIcon" (confirm)="confirmDelete()"
-  (cancel)="cancelDelete()">
+<app-delete-confirmation-modal
+  [show]="showDeleteModal()"
+  [titleKey]="'SETTINGS.DELETE_MEMBER_CONFIRM_TITLE'"
+  [messageKey]="'SETTINGS.DELETE_MEMBER_CONFIRM_MESSAGE'"
+  [cancelKey]="'SETTINGS.CANCEL'"
+  [deleteKey]="'SETTINGS.DELETE_MEMBER_BUTTON'"
+  [icon]="DeleteIcon"
+  (confirm)="confirmDelete()"
+  (cancel)="cancelDelete()"
+>
 </app-delete-confirmation-modal>
 
 <!-- Unsaved changes warning modal -->
-<app-delete-confirmation-modal [show]="showUnsavedChangesModal()" [titleKey]="'SETTINGS.UNSAVED_CHANGES_TITLE'"
-  [messageKey]="'SETTINGS.UNSAVED_CHANGES_MESSAGE'" [cancelKey]="'SETTINGS.UNSAVED_CHANGES_STAY'"
-  [deleteKey]="'SETTINGS.UNSAVED_CHANGES_LEAVE'" [icon]="WarningIcon" (confirm)="confirmLeaveWithoutSaving()"
-  (cancel)="stayAndSave()">
+<app-delete-confirmation-modal
+  [show]="showUnsavedChangesModal()"
+  [titleKey]="'SETTINGS.UNSAVED_CHANGES_TITLE'"
+  [messageKey]="'SETTINGS.UNSAVED_CHANGES_MESSAGE'"
+  [cancelKey]="'SETTINGS.UNSAVED_CHANGES_STAY'"
+  [deleteKey]="'SETTINGS.UNSAVED_CHANGES_LEAVE'"
+  [icon]="WarningIcon"
+  (confirm)="confirmLeaveWithoutSaving()"
+  (cancel)="stayAndSave()"
+>
 </app-delete-confirmation-modal>
 
-<app-confirmation-modal [show]="showImportConfirmModal()" [titleKey]="'SETTINGS.IMPORT_FAMILY_CONFIRM_TITLE'"
-  [messageKey]="'SETTINGS.IMPORT_FAMILY_CONFIRM_MESSAGE'" [cancelKey]="'SETTINGS.CANCEL'"
-  [confirmKey]="'HOME.IMPORT_BUTTON'" [icon]="ImportIcon" (confirm)="confirmImportFamily()"
-  (cancel)="cancelImportFamily()">
+<app-confirmation-modal
+  [show]="showImportConfirmModal()"
+  [titleKey]="'SETTINGS.IMPORT_FAMILY_CONFIRM_TITLE'"
+  [messageKey]="'SETTINGS.IMPORT_FAMILY_CONFIRM_MESSAGE'"
+  [cancelKey]="'SETTINGS.CANCEL'"
+  [confirmKey]="'HOME.IMPORT_BUTTON'"
+  [icon]="ImportIcon"
+  (confirm)="confirmImportFamily()"
+  (cancel)="cancelImportFamily()"
+>
 </app-confirmation-modal>
 
-<app-error-modal [show]="showImportErrorModal()" [title]="'SETTINGS.IMPORT_FAMILY_ERROR_TITLE'"
-  [message]="importErrorMessage()" [instructions]="importErrorInstructions()" (cancel)="closeImportErrorModal()">
+<app-error-modal
+  [show]="showImportErrorModal()"
+  [title]="'SETTINGS.IMPORT_FAMILY_ERROR_TITLE'"
+  [message]="importErrorMessage()"
+  [instructions]="importErrorInstructions()"
+  (cancel)="closeImportErrorModal()"
+>
 </app-error-modal>
 
-<app-error-modal [show]="showDuplicateMemberError()" [title]="'SETTINGS.DUPLICATE_MEMBER_ERROR'"
-  [message]="(languageService.translate('SETTINGS.DUPLICATE_MEMBER_NAME')).replace('{name}', duplicateMemberName().split(' ')[0] || '').replace('{surname}', duplicateMemberName().split(' ')[1] || '')"
-  [instructions]="['SETTINGS.DUPLICATE_MEMBER_INSTRUCTION_1', 'SETTINGS.DUPLICATE_MEMBER_INSTRUCTION_2', 'SETTINGS.DUPLICATE_MEMBER_INSTRUCTION_3']"
-  (cancel)="closeDuplicateMemberError()">
+<app-error-modal
+  [show]="showDuplicateMemberError()"
+  [title]="'SETTINGS.DUPLICATE_MEMBER_ERROR'"
+  [message]="
+    languageService
+      .translate('SETTINGS.DUPLICATE_MEMBER_NAME')
+      .replace('{name}', duplicateMemberName().split(' ')[0] || '')
+      .replace('{surname}', duplicateMemberName().split(' ')[1] || '')
+  "
+  [instructions]="[
+    'SETTINGS.DUPLICATE_MEMBER_INSTRUCTION_1',
+    'SETTINGS.DUPLICATE_MEMBER_INSTRUCTION_2',
+    'SETTINGS.DUPLICATE_MEMBER_INSTRUCTION_3',
+  ]"
+  (cancel)="closeDuplicateMemberError()"
+>
 </app-error-modal>
 
-<app-error-modal [show]="showMaxMembersError()" [title]="'SETTINGS.MAX_MEMBERS_ERROR'"
-  [message]="(languageService.translate('SETTINGS.MAX_MEMBERS_MESSAGE')).replace('{max}', MAX_FAMILY_MEMBERS.toString())"
+<app-error-modal
+  [show]="showMaxMembersError()"
+  [title]="'SETTINGS.MAX_MEMBERS_ERROR'"
+  [message]="
+    languageService
+      .translate('SETTINGS.MAX_MEMBERS_MESSAGE')
+      .replace('{max}', MAX_FAMILY_MEMBERS.toString())
+  "
   [instructions]="['SETTINGS.MAX_MEMBERS_INSTRUCTION_1', 'SETTINGS.MAX_MEMBERS_INSTRUCTION_2']"
-  (cancel)="showMaxMembersError.set(false)">
+  (cancel)="showMaxMembersError.set(false)"
+>
 </app-error-modal>
 
-<app-help-modal [show]="showHelpModal()" [titleKey]="'SETTINGS.FAMILY_HELP_TITLE'" [steps]="helpSteps"
-  (close)="closeHelp()">
+<app-help-modal
+  [show]="showHelpModal()"
+  [titleKey]="'SETTINGS.FAMILY_HELP_TITLE'"
+  [steps]="helpSteps"
+  (close)="closeHelp()"
+>
 </app-help-modal>

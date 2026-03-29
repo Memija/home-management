@@ -1,5 +1,10 @@
 import { Injectable, inject } from '@angular/core';
-import { ConsumptionRecord, calculateWaterTotal, ElectricityRecord, calculateElectricityTotal } from '../models/records.model';
+import {
+  ConsumptionRecord,
+  calculateWaterTotal,
+  ElectricityRecord,
+  calculateElectricityTotal,
+} from '../models/records.model';
 import { LanguageService } from './language.service';
 
 /**
@@ -45,7 +50,10 @@ export class PdfService {
   /**
    * Export water consumption records to PDF
    */
-  async exportWaterToPdf(records: ConsumptionRecord[], filename: string = 'water-consumption.pdf'): Promise<void> {
+  async exportWaterToPdf(
+    records: ConsumptionRecord[],
+    filename: string = 'water-consumption.pdf',
+  ): Promise<void> {
     // Dynamically import jsPDF and autoTable
     const { jsPDF } = await import('jspdf');
     const autoTable = (await import('jspdf-autotable')).default;
@@ -85,12 +93,13 @@ export class PdfService {
     doc.setTextColor(0);
 
     // Sort records by date for proper difference calculation
-    const sortedRecords = [...records].sort((a, b) =>
-      new Date(a.date).getTime() - new Date(b.date).getTime()
+    const sortedRecords = [...records].sort(
+      (a, b) => new Date(a.date).getTime() - new Date(b.date).getTime(),
     );
 
     // Table headers - added Difference column
-    const differenceLabel = this.languageService.currentLang() === 'de' ? 'Differenz' : 'Difference';
+    const differenceLabel =
+      this.languageService.currentLang() === 'de' ? 'Differenz' : 'Difference';
     const headers = [
       this.languageService.translate('HOME.SELECT_DATE') || 'Date',
       `${this.languageService.translate('WATER.KITCHEN')} ${this.languageService.translate('WATER.WARM')}`,
@@ -98,7 +107,7 @@ export class PdfService {
       `${this.languageService.translate('WATER.BATHROOM')} ${this.languageService.translate('WATER.WARM')}`,
       `${this.languageService.translate('WATER.BATHROOM')} ${this.languageService.translate('WATER.COLD')}`,
       this.languageService.translate('HOME.TOTAL'),
-      differenceLabel
+      differenceLabel,
     ];
 
     // Table data with difference calculation
@@ -150,7 +159,7 @@ export class PdfService {
         record.bathroomWarm.toFixed(2),
         record.bathroomCold.toFixed(2),
         total.toFixed(2),
-        difference
+        difference,
       ];
     });
 
@@ -163,11 +172,11 @@ export class PdfService {
       headStyles: {
         fillColor: [59, 130, 246], // Blue color matching app theme
         textColor: 255,
-        fontStyle: 'bold'
+        fontStyle: 'bold',
       },
       styles: {
         fontSize: 9,
-        cellPadding: 3
+        cellPadding: 3,
       },
       columnStyles: {
         0: { cellWidth: 'auto' }, // Date
@@ -176,8 +185,8 @@ export class PdfService {
         3: { cellWidth: 'auto', halign: 'right' },
         4: { cellWidth: 'auto', halign: 'right' },
         5: { cellWidth: 'auto', halign: 'right', fontStyle: 'bold' },
-        6: { cellWidth: 'auto', halign: 'right' }
-      }
+        6: { cellWidth: 'auto', halign: 'right' },
+      },
     });
 
     // Add page numbers after table is complete - this ensures correct total page count
@@ -190,7 +199,7 @@ export class PdfService {
         `${i} / ${pageCount}`,
         doc.internal.pageSize.width / 2,
         doc.internal.pageSize.height - 10,
-        { align: 'center' }
+        { align: 'center' },
       );
     }
 
@@ -204,7 +213,7 @@ export class PdfService {
   async exportHeatingToPdf(
     records: Array<{ date: Date; rooms: Record<string, number> }>,
     roomNames: string[],
-    filename: string = 'heating-consumption.pdf'
+    filename: string = 'heating-consumption.pdf',
   ): Promise<void> {
     // Dynamically import jsPDF and autoTable
     const { jsPDF } = await import('jspdf');
@@ -245,17 +254,18 @@ export class PdfService {
     doc.setTextColor(0);
 
     // Sort records by date
-    const sortedRecords = [...records].sort((a, b) =>
-      new Date(a.date).getTime() - new Date(b.date).getTime()
+    const sortedRecords = [...records].sort(
+      (a, b) => new Date(a.date).getTime() - new Date(b.date).getTime(),
     );
 
     // Table headers - Date, dynamic rooms, Total, Difference
-    const differenceLabel = this.languageService.currentLang() === 'de' ? 'Differenz' : 'Difference';
+    const differenceLabel =
+      this.languageService.currentLang() === 'de' ? 'Differenz' : 'Difference';
     const headers = [
       this.languageService.translate('HOME.SELECT_DATE') || 'Date',
       ...roomNames,
       this.languageService.translate('HOME.TOTAL'),
-      differenceLabel
+      differenceLabel,
     ];
 
     // Calculate total for a record
@@ -278,10 +288,10 @@ export class PdfService {
         // Calculate difference per room to properly handle resets
         const allRoomIds = new Set([
           ...Object.keys(record.rooms),
-          ...Object.keys(prevRecord.rooms)
+          ...Object.keys(prevRecord.rooms),
         ]);
 
-        allRoomIds.forEach(roomId => {
+        allRoomIds.forEach((roomId) => {
           const currVal = record.rooms[roomId] || 0;
           const prevVal = prevRecord.rooms[roomId] || 0;
 
@@ -296,24 +306,29 @@ export class PdfService {
         difference = (totalDiff >= 0 ? '+' : '') + totalDiff.toFixed(2);
       }
 
-      return [
-        this.formatDate(record.date),
-        ...roomValues,
-        total.toFixed(2),
-        difference
-      ];
+      return [this.formatDate(record.date), ...roomValues, total.toFixed(2), difference];
     });
 
     // Dynamic column styles - use auto width to fit page properly
-    const columnStyles: { [key: string]: { cellWidth?: 'auto' | number; halign?: 'right' | 'left' | 'center'; fontStyle?: 'normal' | 'bold' | 'italic' | 'bolditalic' } } = {
-      '0': { cellWidth: 'auto' } // Date column
+    const columnStyles: {
+      [key: string]: {
+        cellWidth?: 'auto' | number;
+        halign?: 'right' | 'left' | 'center';
+        fontStyle?: 'normal' | 'bold' | 'italic' | 'bolditalic';
+      };
+    } = {
+      '0': { cellWidth: 'auto' }, // Date column
     };
     // Room columns with right alignment
     roomNames.forEach((_, i) => {
       columnStyles[String(i + 1)] = { cellWidth: 'auto', halign: 'right' };
     });
     // Total column with bold styling
-    columnStyles[String(roomNames.length + 1)] = { cellWidth: 'auto', halign: 'right', fontStyle: 'bold' };
+    columnStyles[String(roomNames.length + 1)] = {
+      cellWidth: 'auto',
+      halign: 'right',
+      fontStyle: 'bold',
+    };
     // Difference column
     columnStyles[String(roomNames.length + 2)] = { cellWidth: 'auto', halign: 'right' };
 
@@ -326,11 +341,11 @@ export class PdfService {
       headStyles: {
         fillColor: [245, 124, 0], // Orange color matching heating theme
         textColor: 255,
-        fontStyle: 'bold'
+        fontStyle: 'bold',
       },
       styles: {
         fontSize: 9,
-        cellPadding: 3
+        cellPadding: 3,
       },
       columnStyles,
       // Add horizontal line when year changes
@@ -355,7 +370,7 @@ export class PdfService {
             doc.line(14, data.cell.y, doc.internal.pageSize.width - 14, data.cell.y);
           }
         }
-      }
+      },
     });
 
     // Add page numbers after table is complete - this ensures correct total page count
@@ -368,7 +383,7 @@ export class PdfService {
         `${i} / ${pageCount}`,
         doc.internal.pageSize.width / 2,
         doc.internal.pageSize.height - 10,
-        { align: 'center' }
+        { align: 'center' },
       );
     }
 
@@ -379,7 +394,10 @@ export class PdfService {
   /**
    * Export electricity consumption records to PDF
    */
-  async exportElectricityToPdf(records: ElectricityRecord[], filename: string = 'electricity-consumption.pdf'): Promise<void> {
+  async exportElectricityToPdf(
+    records: ElectricityRecord[],
+    filename: string = 'electricity-consumption.pdf',
+  ): Promise<void> {
     const { jsPDF } = await import('jspdf');
     const autoTable = (await import('jspdf-autotable')).default;
 
@@ -411,15 +429,16 @@ export class PdfService {
 
     doc.setTextColor(0);
 
-    const sortedRecords = [...records].sort((a, b) =>
-      new Date(a.date).getTime() - new Date(b.date).getTime()
+    const sortedRecords = [...records].sort(
+      (a, b) => new Date(a.date).getTime() - new Date(b.date).getTime(),
     );
 
-    const differenceLabel = this.languageService.currentLang() === 'de' ? 'Differenz' : 'Difference';
+    const differenceLabel =
+      this.languageService.currentLang() === 'de' ? 'Differenz' : 'Difference';
     const headers = [
       this.languageService.translate('HOME.SELECT_DATE') || 'Date',
       this.languageService.translate('ELECTRICITY.VALUE') || 'Value (kWh)',
-      differenceLabel
+      differenceLabel,
     ];
 
     const data = sortedRecords.map((record, index) => {
@@ -432,11 +451,7 @@ export class PdfService {
         difference = (diff >= 0 ? '+' : '') + diff.toFixed(2);
       }
 
-      return [
-        this.formatDate(record.date),
-        total.toFixed(2),
-        difference
-      ];
+      return [this.formatDate(record.date), total.toFixed(2), difference];
     });
 
     autoTable(doc, {
@@ -447,17 +462,17 @@ export class PdfService {
       headStyles: {
         fillColor: [255, 193, 7], // Amber
         textColor: 0, // Black text on amber
-        fontStyle: 'bold'
+        fontStyle: 'bold',
       },
       styles: {
         fontSize: 9,
-        cellPadding: 3
+        cellPadding: 3,
       },
       columnStyles: {
         0: { cellWidth: 'auto' },
         1: { cellWidth: 'auto', halign: 'right', fontStyle: 'bold' },
-        2: { cellWidth: 'auto', halign: 'right' }
-      }
+        2: { cellWidth: 'auto', halign: 'right' },
+      },
     });
 
     const pageCount = doc.getNumberOfPages();
@@ -469,7 +484,7 @@ export class PdfService {
         `${i} / ${pageCount}`,
         doc.internal.pageSize.width / 2,
         doc.internal.pageSize.height - 10,
-        { align: 'center' }
+        { align: 'center' },
       );
     }
 

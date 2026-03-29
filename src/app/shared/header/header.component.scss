@@ -15,7 +15,9 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  transition: background 0.3s, box-shadow 0.3s;
+  transition:
+    background 0.3s,
+    box-shadow 0.3s;
 
   @media (max-width: 768px) {
     padding: 0.5rem 1rem;

@@ -5,7 +5,7 @@ import { LanguageService, Language } from '../../services/language.service';
   selector: 'app-language-switcher',
   standalone: true,
   templateUrl: './language-switcher.component.html',
-  styleUrl: './language-switcher.component.scss'
+  styleUrl: './language-switcher.component.scss',
 })
 export class LanguageSwitcherComponent {
   protected languageService = inject(LanguageService);

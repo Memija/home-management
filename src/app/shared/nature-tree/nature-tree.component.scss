@@ -101,7 +101,7 @@
   }
 }
 
-:host-context([data-theme="dark"]) .detailed-tree-svg {
+:host-context([data-theme='dark']) .detailed-tree-svg {
   .branch-path {
     stroke: #94a3b8;
   }
@@ -115,16 +115,15 @@
   }
 }
 
-:host-context([data-theme="light"]) {
+:host-context([data-theme='light']) {
   opacity: 0.3;
 }
 
-:host-context([data-theme="dark"]) {
+:host-context([data-theme='dark']) {
   opacity: 0.25;
 }
 
 @keyframes flicker {
-
   0%,
   100% {
     opacity: 0.8;

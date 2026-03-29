@@ -1,10 +1,9 @@
 ---
-name: "✨ Feature Request"
-about: "Suggest an improvement or a new feature for Home Management"
-title: "[FEAT] "
-labels: ["enhancement ✨"]
+name: '✨ Feature Request'
+about: 'Suggest an improvement or a new feature for Home Management'
+title: '[FEAT] '
+labels: ['enhancement ✨']
 assignees: []
-
 ---
 
 ## 🚀 Requirement

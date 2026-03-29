@@ -13,7 +13,7 @@ export const middleEastElectricityFacts = {
     'Desalination requires huge amounts of power.',
     'Smart meters have been rolled out rapidly.',
     'Grid interconnections with neighbors are expanding.',
-    'Green hydrogen is a key part of Vision 2030.'
+    'Green hydrogen is a key part of Vision 2030.',
   ],
 
   // UAE
@@ -29,7 +29,7 @@ export const middleEastElectricityFacts = {
     'Demand response programs are being tested.',
     'District cooling scales back peak electricity demand.',
     'Green hydrogen pilot projects are running.',
-    'The UAE exports power to the GCC grid.'
+    'The UAE exports power to the GCC grid.',
   ],
 
   // Israel
@@ -45,7 +45,7 @@ export const middleEastElectricityFacts = {
     'Grid interconnection with Europe is proposed.',
     'Electric vehicle adoption is accelerating.',
     'Startups are innovating in grid technology.',
-    'Coal usage is set to end by 2026.'
+    'Coal usage is set to end by 2026.',
   ],
 
   // Turkey
@@ -55,12 +55,12 @@ export const middleEastElectricityFacts = {
     'Wind and solar capacity is growing fast.',
     'Turkey is building its first nuclear plant.',
     'Geothermal capacity is among the highest in the world.',
-    'Turkey\'s demand for electricity is growing steadily.',
+    "Turkey's demand for electricity is growing steadily.",
     'Coal is still supported to use local lignite resources.',
     'Turkey acts as an energy bridge between East and West.',
     'Rooftop solar rules have been simplified.',
     'Turkey manufactures solar panels and wind turbines.',
     'Electricity markets are partially liberalized.',
-    'Efficiency programs target industry and buildings.'
-  ]
+    'Efficiency programs target industry and buildings.',
+  ],
 };

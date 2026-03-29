@@ -13,7 +13,7 @@ const SEASON_SYNC_KEY = 'season_sync';
 const SEASON_ORDER: Season[] = ['spring', 'summer', 'autumn', 'winter'];
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class SeasonService {
   private platformId = inject(PLATFORM_ID);

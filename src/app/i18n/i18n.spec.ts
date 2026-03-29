@@ -23,13 +23,13 @@ describe('i18n translations', () => {
     const deKeys = getKeys(de).sort();
 
     // Check for keys in EN but missing in DE
-    const missingInDe = enKeys.filter(key => !deKeys.includes(key));
+    const missingInDe = enKeys.filter((key) => !deKeys.includes(key));
     if (missingInDe.length > 0) {
       console.error('Missing keys in DE:', missingInDe);
     }
 
     // Check for keys in DE but missing in EN
-    const missingInEn = deKeys.filter(key => !enKeys.includes(key));
+    const missingInEn = deKeys.filter((key) => !enKeys.includes(key));
     if (missingInEn.length > 0) {
       console.error('Missing keys in EN:', missingInEn);
     }

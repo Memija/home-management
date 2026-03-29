@@ -9,18 +9,21 @@ export const water = {
     EXPORT_PDF: 'Export to PDF',
     IMPORT_EXCEL: 'Import from Excel',
     EXCEL_IMPORT_ERROR_TITLE: 'Excel Import Failed',
-    EXCEL_IMPORT_ERROR: 'Failed to import Excel data. Please check the details below and follow the instructions to fix the issue.',
+    EXCEL_IMPORT_ERROR:
+      'Failed to import Excel data. Please check the details below and follow the instructions to fix the issue.',
     JSON_IMPORT_ERROR_TITLE: 'JSON Import Failed',
-    JSON_IMPORT_ERROR: 'Failed to import JSON data. Please check the details below and follow the instructions to fix the issue.',
+    JSON_IMPORT_ERROR:
+      'Failed to import JSON data. Please check the details below and follow the instructions to fix the issue.',
     IMPORT_FILTER_WARNING_TITLE: 'Data Outside Current Filter',
-    IMPORT_FILTER_WARNING_MESSAGE: "Some records in this file are outside your current filter range. They will be imported but won't be visible until you clear or adjust the filter.",
+    IMPORT_FILTER_WARNING_MESSAGE:
+      "Some records in this file are outside your current filter range. They will be imported but won't be visible until you clear or adjust the filter.",
     IMPORT_FILTER_WARNING_COUNT: '{{count}} record(s) outside filter',
     IMPORT_CONTINUE: 'Import Anyway',
     IMPORT_CANCEL: 'Cancel',
     KITCHEN: 'Kitchen',
     BATHROOM: 'Bathroom',
     WARM: 'Warm',
-    COLD: 'Cold'
+    COLD: 'Cold',
   },
   HOME: {
     HISTORY_TITLE: 'Consumption History',
@@ -28,7 +31,7 @@ export const water = {
       TOTAL: 'Total',
       BY_ROOM: 'By Room',
       BY_TYPE: 'By Water Type',
-      DETAILED: 'Detailed'
+      DETAILED: 'Detailed',
     },
     NO_RECORDS: 'No records yet.',
     DETAILED_RECORDS: 'Detailed Records',
@@ -38,31 +41,41 @@ export const water = {
     RECORD_CONSUMPTION: 'Record Consumption',
     RECORD_HELP_TITLE: 'Recording Water Consumption',
     RECORD_HELP_STEP_1_TITLE: 'Why Record Consumption?',
-    RECORD_HELP_STEP_1_DESC: 'Tracking your water consumption helps you understand your usage patterns, identify savings opportunities, and compare with average consumption in your area or around the world.',
+    RECORD_HELP_STEP_1_DESC:
+      'Tracking your water consumption helps you understand your usage patterns, identify savings opportunities, and compare with average consumption in your area or around the world.',
     RECORD_HELP_STEP_2_TITLE: 'Select Date',
     RECORD_HELP_STEP_2_DESC: 'Choose the date when you took the water meter readings.',
     RECORD_HELP_STEP_3_TITLE: 'Enter Readings',
-    RECORD_HELP_STEP_3_DESC: 'Enter the meter values for warm and cold water in each room. You can enter values for one or both rooms.',
+    RECORD_HELP_STEP_3_DESC:
+      'Enter the meter values for warm and cold water in each room. You can enter values for one or both rooms.',
     RECORD_HELP_STEP_4_TITLE: 'Save Record',
     RECORD_HELP_STEP_4_DESC: 'Click the Save button to store your consumption record.',
     CHART_HELP_TITLE: 'Understanding the Chart',
     CHART_HELP_STEP_1_TITLE: 'What the Chart Shows',
-    CHART_HELP_STEP_1_DESC: 'The chart visualizes your water consumption over time, helping you identify patterns and trends.',
+    CHART_HELP_STEP_1_DESC:
+      'The chart visualizes your water consumption over time, helping you identify patterns and trends.',
     CHART_HELP_STEP_2_TITLE: 'Display Modes & Views',
-    CHART_HELP_STEP_2_DESC: 'Switch between Total (cumulative readings) and Incremental (daily consumption) modes. Use filter buttons to view Total, By Room (Kitchen/Bathroom), By Type (Warm/Cold), or Detailed breakdown.',
+    CHART_HELP_STEP_2_DESC:
+      'Switch between Total (cumulative readings) and Incremental (daily consumption) modes. Use filter buttons to view Total, By Room (Kitchen/Bathroom), By Type (Warm/Cold), or Detailed breakdown.',
     CHART_HELP_STEP_3_TITLE: 'Country Comparison',
-    CHART_HELP_STEP_3_DESC: 'In Incremental mode with 3+ records, compare your usage against 64 countries worldwide. Select a country from the dropdown above the chart to see how your family compares. A blue country fact card appears showing interesting water statistics about the selected country.',
+    CHART_HELP_STEP_3_DESC:
+      'In Incremental mode with 3+ records, compare your usage against 64 countries worldwide. Select a country from the dropdown above the chart to see how your family compares. A blue country fact card appears showing interesting water statistics about the selected country.',
     CHART_HELP_STEP_4_TITLE: 'Country Facts & Refresh',
-    CHART_HELP_STEP_4_DESC: 'The country fact card displays contextual information specific to your selected country and current chart view. Click the refresh button (↻) or switch chart views to see different facts. Enable trendline to visualize consumption trends over time.',
+    CHART_HELP_STEP_4_DESC:
+      'The country fact card displays contextual information specific to your selected country and current chart view. Click the refresh button (↻) or switch chart views to see different facts. Enable trendline to visualize consumption trends over time.',
     RECORDS_HELP_TITLE: 'Managing Records',
     RECORDS_HELP_STEP_1_TITLE: 'Overview',
-    RECORDS_HELP_STEP_1_DESC: 'This section shows all your saved water consumption records with detailed breakdowns by room and water type.',
+    RECORDS_HELP_STEP_1_DESC:
+      'This section shows all your saved water consumption records with detailed breakdowns by room and water type.',
     RECORDS_HELP_STEP_2_TITLE: 'Filtering Records',
-    RECORDS_HELP_STEP_2_DESC: 'Use the date picker, year, and month filters to find specific records. Use the Reset Filters button to clear all filters at once. You can also sort records by date or consumption values.',
+    RECORDS_HELP_STEP_2_DESC:
+      'Use the date picker, year, and month filters to find specific records. Use the Reset Filters button to clear all filters at once. You can also sort records by date or consumption values.',
     RECORDS_HELP_STEP_3_TITLE: 'Editing and Deleting',
-    RECORDS_HELP_STEP_3_DESC: 'Click the edit icon to modify a record, or the trash icon to delete it. Use "Delete All" to remove all filtered records.',
+    RECORDS_HELP_STEP_3_DESC:
+      'Click the edit icon to modify a record, or the trash icon to delete it. Use "Delete All" to remove all filtered records.',
     RECORDS_HELP_STEP_4_TITLE: 'Import and Export',
-    RECORDS_HELP_STEP_4_DESC: 'Export your data in multiple formats: JSON, Excel, or PDF. Import from JSON or Excel files using the corresponding buttons.',
+    RECORDS_HELP_STEP_4_DESC:
+      'Export your data in multiple formats: JSON, Excel, or PDF. Import from JSON or Excel files using the corresponding buttons.',
     READINGS_FOR: 'Readings for',
     KITCHEN: 'Kitchen',
     BATHROOM: 'Bathroom',
@@ -73,7 +86,8 @@ export const water = {
     TOTAL: 'Total',
     SUCCESS_TITLE: 'Success',
     RECORD_SAVED: 'Water consumption record saved successfully!',
-    DATE_EXISTS_WARNING: 'A record for this date already exists. Please edit the existing record or choose another date.',
+    DATE_EXISTS_WARNING:
+      'A record for this date already exists. Please edit the existing record or choose another date.',
     EDIT_RECORD: 'Edit Record',
     UPDATE_RECORD: 'Update Record',
     CANCEL: 'Cancel',
@@ -81,7 +95,8 @@ export const water = {
     SELECT_DATE: 'Select date',
     SELECT_DATE_ERROR: 'Please select a date.',
     PARTIAL_INPUT_ERROR: 'Please enter both Warm and Cold water values for at least one room.',
-    INCOMPLETE_ROOM_ERROR: 'Please complete both Warm and Cold water entries for all started rooms.',
+    INCOMPLETE_ROOM_ERROR:
+      'Please complete both Warm and Cold water entries for all started rooms.',
     LOAD_MORE_RECORDS: 'Load More Records',
     SHOWING_RECORDS: 'Showing {{current}} of {{total}} records',
     PAGINATION_SIZE: 'Records per page',
@@ -97,17 +112,23 @@ export const water = {
     DELETE_ALL_TOOLTIP: 'Delete all records',
     RESET_FILTERS: 'Reset Filters',
     DELETE_CONFIRM_TITLE: 'Confirm Deletion',
-    DELETE_CONFIRM_MESSAGE: 'Are you sure you want to delete this record? This action cannot be undone.',
+    DELETE_CONFIRM_MESSAGE:
+      'Are you sure you want to delete this record? This action cannot be undone.',
     DELETE_BUTTON: 'Delete',
     DELETE_ALL_CONFIRM_TITLE: 'Delete All Records',
-    DELETE_ALL_CONFIRM_MESSAGE_SINGULAR: 'Are you sure you want to delete this filtered record? This action cannot be undone.',
-    DELETE_ALL_CONFIRM_MESSAGE_PLURAL: 'Are you sure you want to delete all {{count}} filtered records? This action cannot be undone.',
+    DELETE_ALL_CONFIRM_MESSAGE_SINGULAR:
+      'Are you sure you want to delete this filtered record? This action cannot be undone.',
+    DELETE_ALL_CONFIRM_MESSAGE_PLURAL:
+      'Are you sure you want to delete all {{count}} filtered records? This action cannot be undone.',
     DELETE_ALL_BUTTON: 'Delete All',
     IMPORT_CONFIRM_TITLE: 'Confirm Import',
-    IMPORT_CONFIRM_MESSAGE: 'Importing data will merge with your existing records. Are you sure you want to continue?',
+    IMPORT_CONFIRM_MESSAGE:
+      'Importing data will merge with your existing records. Are you sure you want to continue?',
     IMPORT_BUTTON: 'Import',
-    IMPORT_INVALID_DATA: 'The selected file does not contain valid data for this section. Please make sure you are importing the correct file type.',
-    IMPORT_INVALID_FORMAT: 'Failed to import data. The file may be corrupted or in an incorrect format. Please export a fresh copy from the source and try again.',
+    IMPORT_INVALID_DATA:
+      'The selected file does not contain valid data for this section. Please make sure you are importing the correct file type.',
+    IMPORT_INVALID_FORMAT:
+      'Failed to import data. The file may be corrupted or in an incorrect format. Please export a fresh copy from the source and try again.',
     IMPORT_ERROR_INSTRUCTION_1: 'Make sure you are importing the correct file for this section',
     IMPORT_ERROR_INSTRUCTION_2: 'Verify the file was exported from this application',
     IMPORT_ERROR_INSTRUCTION_3: 'Try exporting a fresh backup and importing again',
@@ -123,7 +144,7 @@ export const water = {
       BATHROOM_DESC: 'Bathroom Total (High to Low)',
       BATHROOM_ASC: 'Bathroom Total (Low to High)',
       LIVING_ROOM_DESC: 'Living Room (High to Low)',
-      BEDROOM_DESC: 'Bedroom (High to Low)'
+      BEDROOM_DESC: 'Bedroom (High to Low)',
     },
     MONTHS: {
       JANUARY: 'January',
@@ -137,12 +158,13 @@ export const water = {
       SEPTEMBER: 'September',
       OCTOBER: 'October',
       NOVEMBER: 'November',
-      DECEMBER: 'December'
+      DECEMBER: 'December',
     },
     IMPORT_WARNING_TITLE: 'Column Mismatch',
-    IMPORT_WARNING_MESSAGE: 'Data imported successfully, but some columns configured in Settings were not found in your Excel file. Values for missing columns were set to 0.',
+    IMPORT_WARNING_MESSAGE:
+      'Data imported successfully, but some columns configured in Settings were not found in your Excel file. Values for missing columns were set to 0.',
     MISSING_COLUMNS: 'Columns not found in file',
     IMPORT_PLACEHOLDER_SKIPPED_SINGULAR: '1 empty record with no values was skipped.',
-    IMPORT_PLACEHOLDER_SKIPPED_PLURAL: '{{count}} empty records with no values were skipped.'
-  }
+    IMPORT_PLACEHOLDER_SKIPPED_PLURAL: '{{count}} empty records with no values were skipped.',
+  },
 };

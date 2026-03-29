@@ -1,7 +1,17 @@
 import { Component, inject, signal, computed, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { TranslatePipe } from '../../pipes/translate.pipe';
-import { LucideAngularModule, Cloud, CloudOff, RefreshCw, Upload, Download, Check, AlertTriangle, HelpCircle } from 'lucide-angular';
+import {
+  LucideAngularModule,
+  Cloud,
+  CloudOff,
+  RefreshCw,
+  Upload,
+  Download,
+  Check,
+  AlertTriangle,
+  HelpCircle,
+} from 'lucide-angular';
 import { HybridStorageService } from '../../services/hybrid-storage.service';
 import { AuthService } from '../../services/auth.service';
 import { DemoService } from '../../services/demo.service';
@@ -13,9 +23,16 @@ import { HelpModalComponent, HelpStep } from '../../shared/help-modal/help-modal
 @Component({
   selector: 'app-storage-settings',
   standalone: true,
-  imports: [CommonModule, TranslatePipe, LucideAngularModule, DeleteConfirmationModalComponent, ConfirmationModalComponent, HelpModalComponent],
+  imports: [
+    CommonModule,
+    TranslatePipe,
+    LucideAngularModule,
+    DeleteConfirmationModalComponent,
+    ConfirmationModalComponent,
+    HelpModalComponent,
+  ],
   templateUrl: './storage-settings.component.html',
-  styleUrl: './storage-settings.component.scss'
+  styleUrl: './storage-settings.component.scss',
 })
 export class StorageSettingsComponent implements OnInit {
   private storage = inject(HybridStorageService);
@@ -48,7 +65,7 @@ export class StorageSettingsComponent implements OnInit {
   readonly hasUserContent = this.storage.hasUserContent;
 
   // Local state
-  readonly actionStatus = signal<{ type: 'success' | 'error', message: string } | null>(null);
+  readonly actionStatus = signal<{ type: 'success' | 'error'; message: string } | null>(null);
   readonly isDeleteModalOpen = signal(false);
   readonly isDownloadModalOpen = signal(false);
   readonly isClearLocalModalOpen = signal(false);
@@ -58,7 +75,7 @@ export class StorageSettingsComponent implements OnInit {
   readonly helpSteps: HelpStep[] = [
     { titleKey: 'STORAGE.HELP_STEP1_TITLE', descriptionKey: 'STORAGE.HELP_STEP1_DESC' },
     { titleKey: 'STORAGE.HELP_STEP2_TITLE', descriptionKey: 'STORAGE.HELP_STEP2_DESC' },
-    { titleKey: 'STORAGE.HELP_STEP3_TITLE', descriptionKey: 'STORAGE.HELP_STEP3_DESC' }
+    { titleKey: 'STORAGE.HELP_STEP3_TITLE', descriptionKey: 'STORAGE.HELP_STEP3_DESC' },
   ];
 
   ngOnInit(): void {
@@ -89,7 +106,7 @@ export class StorageSettingsComponent implements OnInit {
     } else {
       // Enabling cloud sync
       this.storage.setMode('cloud');
-      
+
       // Initial automatic sync
       try {
         if (this.hasUserContent()) {

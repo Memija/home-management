@@ -10,7 +10,7 @@ import { LucideAngularModule, LogIn, LogOut, User } from 'lucide-angular';
 
 @Pipe({
   name: 'translate',
-  standalone: true
+  standalone: true,
 })
 class MockTranslatePipe implements PipeTransform {
   transform(key: string): string {
@@ -35,22 +35,20 @@ describe('AuthButtonComponent', () => {
       isAuthenticated: computed(() => userSignal() !== null),
       isAuthSupported: signal(true),
       signInWithGoogle: vi.fn().mockResolvedValue(undefined),
-      signOut: vi.fn().mockResolvedValue(undefined)
+      signOut: vi.fn().mockResolvedValue(undefined),
     };
 
     await TestBed.configureTestingModule({
       imports: [
         AuthButtonComponent,
         LucideAngularModule.pick({ LogIn, LogOut, User }),
-        MockTranslatePipe
+        MockTranslatePipe,
       ],
-      providers: [
-        { provide: AuthService, useValue: mockAuthService }
-      ]
+      providers: [{ provide: AuthService, useValue: mockAuthService }],
     })
       .overrideComponent(AuthButtonComponent, {
         remove: { imports: [TranslatePipe] },
-        add: { imports: [MockTranslatePipe] }
+        add: { imports: [MockTranslatePipe] },
       })
       .compileComponents();
 
@@ -117,7 +115,7 @@ describe('AuthButtonComponent', () => {
     });
 
     it('should handle sign in error and reset isSigningIn', async () => {
-      const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => { });
+      const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
       mockAuthService.signInWithGoogle.mockRejectedValue('Auth Error');
 
       const signInBtn = fixture.debugElement.query(By.css('.auth-button.sign-in'));
@@ -137,7 +135,7 @@ describe('AuthButtonComponent', () => {
       uid: '123',
       email: 'test@example.com',
       displayName: 'Test User',
-      photoURL: 'http://example.com/photo.jpg'
+      photoURL: 'http://example.com/photo.jpg',
     };
 
     beforeEach(() => {
@@ -195,7 +193,7 @@ describe('AuthButtonComponent', () => {
     });
 
     it('should handle signOut error', async () => {
-      const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => { });
+      const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
       mockAuthService.signOut.mockRejectedValue('Signout Error');
 
       const logoutBtn = fixture.debugElement.query(By.css('.btn-logout'));

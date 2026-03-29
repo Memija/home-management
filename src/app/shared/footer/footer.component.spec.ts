@@ -89,7 +89,12 @@ describe('FooterComponent', () => {
     });
 
     it('should have all icons as non-null, non-undefined values', () => {
-      const icons = [component.HeartIcon, component.RocketIcon, component.GithubIcon, component.ShieldIcon];
+      const icons = [
+        component.HeartIcon,
+        component.RocketIcon,
+        component.GithubIcon,
+        component.ShieldIcon,
+      ];
       for (const icon of icons) {
         expect(icon).not.toBeNull();
         expect(icon).not.toBeUndefined();
@@ -107,11 +112,11 @@ describe('FooterComponent', () => {
 
     it('should have exactly four icon properties', () => {
       const iconKeys = ['HeartIcon', 'RocketIcon', 'GithubIcon', 'ShieldIcon'] as const;
-      iconKeys.forEach(key => {
+      iconKeys.forEach((key) => {
         expect(component[key]).toBeDefined();
       });
       // Verify count
-      const keys = Object.keys(component).filter(k => k.endsWith('Icon'));
+      const keys = Object.keys(component).filter((k) => k.endsWith('Icon'));
       expect(keys.length).toBe(4);
     });
   });
@@ -147,7 +152,7 @@ describe('FooterComponent', () => {
     it('should have version parts as valid non-negative integers', () => {
       const parts = component.appVersion.split('.').map(Number);
       expect(parts.length).toBe(3);
-      parts.forEach(part => {
+      parts.forEach((part) => {
         expect(Number.isInteger(part)).toBe(true);
         expect(part).toBeGreaterThanOrEqual(0);
       });
@@ -278,10 +283,17 @@ describe('FooterComponent', () => {
     });
 
     it('should not have unexpected enumerable properties beyond the public API', () => {
-      const expectedKeys = ['HeartIcon', 'RocketIcon', 'GithubIcon', 'ShieldIcon', 'appVersion', 'showSupportModal'];
+      const expectedKeys = [
+        'HeartIcon',
+        'RocketIcon',
+        'GithubIcon',
+        'ShieldIcon',
+        'appVersion',
+        'showSupportModal',
+      ];
       const actualKeys = Object.keys(component);
       // All actual keys should be a subset of expected keys
-      actualKeys.forEach(key => {
+      actualKeys.forEach((key) => {
         expect(expectedKeys).toContain(key);
       });
     });
@@ -339,7 +351,7 @@ describe('FooterComponent', () => {
       }
 
       // All should start as false
-      instances.forEach(inst => {
+      instances.forEach((inst) => {
         expect(inst.showSupportModal).toBe(false);
       });
 
@@ -364,7 +376,7 @@ describe('FooterComponent', () => {
       }
 
       expect(components.length).toBe(50);
-      components.forEach(c => {
+      components.forEach((c) => {
         expect(c).toBeInstanceOf(FooterComponent);
         expect(c.showSupportModal).toBe(false);
         expect(c.appVersion).toBe(APP_VERSION);
@@ -376,7 +388,7 @@ describe('FooterComponent', () => {
         heart: component.HeartIcon,
         rocket: component.RocketIcon,
         github: component.GithubIcon,
-        shield: component.ShieldIcon
+        shield: component.ShieldIcon,
       };
 
       // Toggle modal many times

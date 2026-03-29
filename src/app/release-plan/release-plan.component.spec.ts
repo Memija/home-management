@@ -5,7 +5,7 @@ import { Pipe, PipeTransform } from '@angular/core';
 
 @Pipe({
   name: 'translate',
-  standalone: true
+  standalone: true,
 })
 class MockTranslatePipe implements PipeTransform {
   transform(value: string): string {
@@ -19,11 +19,11 @@ describe('ReleasePlanComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [ReleasePlanComponent]
+      imports: [ReleasePlanComponent],
     })
       .overrideComponent(ReleasePlanComponent, {
         remove: { imports: [TranslatePipe] },
-        add: { imports: [MockTranslatePipe] }
+        add: { imports: [MockTranslatePipe] },
       })
       .compileComponents();
 
@@ -56,7 +56,7 @@ describe('ReleasePlanComponent', () => {
     component.setFilter('enhancement');
     const filtered = component.filteredFeatures();
     expect(filtered.length).toBe(4);
-    filtered.forEach(feature => {
+    filtered.forEach((feature) => {
       expect(feature.tag).toBe('enhancement');
     });
   });

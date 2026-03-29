@@ -30,7 +30,9 @@ describe('HeatingComponent', () => {
   let mockLanguageService: Partial<LanguageService>;
   let mockExcelSettingsService: Partial<ExcelSettingsService>;
 
-  const createMockRecord = (overrides: Partial<DynamicHeatingRecord> = {}): DynamicHeatingRecord => ({
+  const createMockRecord = (
+    overrides: Partial<DynamicHeatingRecord> = {},
+  ): DynamicHeatingRecord => ({
     date: new Date('2025-01-15T00:00:00.000Z'),
     rooms: { 'room-1': 100, 'room-2': 50 },
     ...overrides,
@@ -39,7 +41,7 @@ describe('HeatingComponent', () => {
   const createMockRoom = (id: string, name: string): HeatingRoomConfig => ({
     id,
     name,
-    type: 'LIVING_ROOM'
+    type: 'LIVING_ROOM',
   });
 
   beforeEach(() => {
@@ -92,7 +94,10 @@ describe('HeatingComponent', () => {
 
     // Fix: Add mode ('historical' | 'country') as 3rd parameter, country as 4th
     mockFactsService = {
-      getAvailableCountries: vi.fn().mockReturnValue([{ code: 'DE', nameKey: 'COUNTRY.DE' }, { code: 'US', nameKey: 'COUNTRY.US' }]),
+      getAvailableCountries: vi.fn().mockReturnValue([
+        { code: 'DE', nameKey: 'COUNTRY.DE' },
+        { code: 'US', nameKey: 'COUNTRY.US' },
+      ]),
       getFactByIndex: vi.fn().mockReturnValue({ title: 'Fact', message: 'Message' }),
     } as any;
 
@@ -228,52 +233,85 @@ describe('HeatingComponent', () => {
   describe('Spike Detection', () => {
     it('should load confirmed/dismissed spikes from local storage', () => {
       (mockLocalStorageService.getPreference as any).mockImplementation((key: string) => {
-        if (key === 'heating_confirmed_spikes') return JSON.stringify([{ date: '2025-01-01', roomId: 'r1' }]);
-        if (key === 'heating_dismissed_spikes') return JSON.stringify([{ date: '2025-02-01', roomId: 'r2' }]);
+        if (key === 'heating_confirmed_spikes')
+          return JSON.stringify([{ date: '2025-01-01', roomId: 'r1' }]);
+        if (key === 'heating_dismissed_spikes')
+          return JSON.stringify([{ date: '2025-02-01', roomId: 'r2' }]);
         return null;
       });
       const newComponent = TestBed.runInInjectionContext(() => new HeatingComponent());
-      expect((newComponent as any).confirmedSpikes()).toEqual([{ date: '2025-01-01', roomId: 'r1' }]);
-      expect((newComponent as any).dismissedSpikes()).toEqual([{ date: '2025-02-01', roomId: 'r2' }]);
+      expect((newComponent as any).confirmedSpikes()).toEqual([
+        { date: '2025-01-01', roomId: 'r1' },
+      ]);
+      expect((newComponent as any).dismissedSpikes()).toEqual([
+        { date: '2025-02-01', roomId: 'r2' },
+      ]);
     });
 
     it('should detect unconfirmed spikes from calculation service', () => {
-      (mockChartCalculationService.detectNewRoomSpikes as any).mockReturnValue([{ date: '2025-01-01', roomId: 'room-1' }]);
-      expect((component as any).unconfirmedSpike()).toEqual({ date: '2025-01-01', roomId: 'room-1' });
+      (mockChartCalculationService.detectNewRoomSpikes as any).mockReturnValue([
+        { date: '2025-01-01', roomId: 'room-1' },
+      ]);
+      expect((component as any).unconfirmedSpike()).toEqual({
+        date: '2025-01-01',
+        roomId: 'room-1',
+      });
     });
 
     it('should exclude confirmed and dismissed spikes from unconfirmedSpike', () => {
-      (mockChartCalculationService.detectNewRoomSpikes as any).mockReturnValue([{ date: '2025-01-01', roomId: 'r1' }]);
+      (mockChartCalculationService.detectNewRoomSpikes as any).mockReturnValue([
+        { date: '2025-01-01', roomId: 'r1' },
+      ]);
       (component as any).confirmedSpikes.set([{ date: '2025-01-01', roomId: 'r1' }]);
       expect((component as any).unconfirmedSpike()).toBeUndefined();
     });
 
     it('should compute unconfirmedSpikeRoomName using translated type', () => {
-      (mockChartCalculationService.detectNewRoomSpikes as any).mockReturnValue([{ date: '2025-01-01', roomId: 'room-1' }]);
+      (mockChartCalculationService.detectNewRoomSpikes as any).mockReturnValue([
+        { date: '2025-01-01', roomId: 'room-1' },
+      ]);
       expect((component as any).unconfirmedSpikeRoomName()).toBe('LIVING_ROOM');
     });
 
     it('should fallback to roomId if unconfirmedSpikeRoomName not found', () => {
-      (mockChartCalculationService.detectNewRoomSpikes as any).mockReturnValue([{ date: '2025-01-01', roomId: 'non-existent' }]);
+      (mockChartCalculationService.detectNewRoomSpikes as any).mockReturnValue([
+        { date: '2025-01-01', roomId: 'non-existent' },
+      ]);
       expect((component as any).unconfirmedSpikeRoomName()).toBe('non-existent');
     });
 
     it('should fallback to room.name if room has no type', () => {
-      (mockRoomsService.rooms as WritableSignal<HeatingRoomConfig[]>).set([{ id: 'room-1', name: 'Custom Room' }]);
-      (mockChartCalculationService.detectNewRoomSpikes as any).mockReturnValue([{ date: '2025-01-01', roomId: 'room-1' }]);
+      (mockRoomsService.rooms as WritableSignal<HeatingRoomConfig[]>).set([
+        { id: 'room-1', name: 'Custom Room' },
+      ]);
+      (mockChartCalculationService.detectNewRoomSpikes as any).mockReturnValue([
+        { date: '2025-01-01', roomId: 'room-1' },
+      ]);
       expect((component as any).unconfirmedSpikeRoomName()).toBe('Custom Room');
     });
 
     it('should dismiss spike and save to local storage', () => {
       (component as any).dismissSpike({ date: '2025-01-01', roomId: 'r1' });
-      expect((component as any).dismissedSpikes()).toContainEqual({ date: '2025-01-01', roomId: 'r1' });
-      expect(mockLocalStorageService.setPreference).toHaveBeenCalledWith('heating_dismissed_spikes', JSON.stringify([{ date: '2025-01-01', roomId: 'r1' }]));
+      expect((component as any).dismissedSpikes()).toContainEqual({
+        date: '2025-01-01',
+        roomId: 'r1',
+      });
+      expect(mockLocalStorageService.setPreference).toHaveBeenCalledWith(
+        'heating_dismissed_spikes',
+        JSON.stringify([{ date: '2025-01-01', roomId: 'r1' }]),
+      );
     });
 
     it('should confirm spike and save to local storage', () => {
       (component as any).confirmSpike({ date: '2025-01-01', roomId: 'r1' });
-      expect((component as any).confirmedSpikes()).toContainEqual({ date: '2025-01-01', roomId: 'r1' });
-      expect(mockLocalStorageService.setPreference).toHaveBeenCalledWith('heating_confirmed_spikes', JSON.stringify([{ date: '2025-01-01', roomId: 'r1' }]));
+      expect((component as any).confirmedSpikes()).toContainEqual({
+        date: '2025-01-01',
+        roomId: 'r1',
+      });
+      expect(mockLocalStorageService.setPreference).toHaveBeenCalledWith(
+        'heating_confirmed_spikes',
+        JSON.stringify([{ date: '2025-01-01', roomId: 'r1' }]),
+      );
     });
   });
 
@@ -298,7 +336,9 @@ describe('HeatingComponent', () => {
 
     it('should call startEdit and scroll when onEditRecord is triggered', () => {
       const mockScrollIntoView = vi.fn();
-      const documentSpy = vi.spyOn(document, 'querySelector').mockReturnValue({ scrollIntoView: mockScrollIntoView } as any);
+      const documentSpy = vi
+        .spyOn(document, 'querySelector')
+        .mockReturnValue({ scrollIntoView: mockScrollIntoView } as any);
 
       const record = createMockRecord();
       (component as any).onEditRecord(record);
@@ -373,10 +413,14 @@ describe('HeatingComponent', () => {
 
     it('should compute delete all message key correctly', () => {
       (component as any).recordsToDeleteAll.set([createMockRecord()]);
-      expect((component as any).deleteAllMessageKey()).toBe('HOME.DELETE_ALL_CONFIRM_MESSAGE_SINGULAR');
+      expect((component as any).deleteAllMessageKey()).toBe(
+        'HOME.DELETE_ALL_CONFIRM_MESSAGE_SINGULAR',
+      );
 
       (component as any).recordsToDeleteAll.set([createMockRecord(), createMockRecord()]);
-      expect((component as any).deleteAllMessageKey()).toBe('HOME.DELETE_ALL_CONFIRM_MESSAGE_PLURAL');
+      expect((component as any).deleteAllMessageKey()).toBe(
+        'HOME.DELETE_ALL_CONFIRM_MESSAGE_PLURAL',
+      );
     });
 
     it('should compute delete all message params', () => {

@@ -1,4 +1,12 @@
-import { Injectable, inject, signal, computed, PLATFORM_ID, effect, untracked } from '@angular/core';
+import {
+  Injectable,
+  inject,
+  signal,
+  computed,
+  PLATFORM_ID,
+  effect,
+  untracked,
+} from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
 import { StorageService } from './storage.service';
 import { LocalStorageService } from './local-storage.service';
@@ -23,18 +31,30 @@ const SETTINGS_KEYS = [
   'theme',
   'preferred_language',
   // Chart Views & Display Modes
-  'water_chart_view', 'water_display_mode',
-  'heating_chart_view', 'heating_display_mode',
-  'electricity_chart_view', 'electricity_display_mode',
+  'water_chart_view',
+  'water_display_mode',
+  'heating_chart_view',
+  'heating_display_mode',
+  'electricity_chart_view',
+  'electricity_display_mode',
   // Specific Feature Preferences & Visibility
-  'water_confirmed_meter_changes', 'water_dismissed_meter_changes',
-  'electricity_confirmed_meter_changes', 'electricity_dismissed_meter_changes',
-  'heating_confirmed_spikes', 'heating_dismissed_spikes',
-  'water_chart_trendline_visible', 'heating_chart_trendline_visible', 'electricity_chart_trendline_visible',
-  'water_chart_average_visible', 'heating_chart_average_visible', 'electricity_chart_average_visible',
+  'water_confirmed_meter_changes',
+  'water_dismissed_meter_changes',
+  'electricity_confirmed_meter_changes',
+  'electricity_dismissed_meter_changes',
+  'heating_confirmed_spikes',
+  'heating_dismissed_spikes',
+  'water_chart_trendline_visible',
+  'heating_chart_trendline_visible',
+  'electricity_chart_trendline_visible',
+  'water_chart_average_visible',
+  'heating_chart_average_visible',
+  'electricity_chart_average_visible',
   'excel_preview_is_collapsed',
-  'detailed_records_for_water_are_collapsed', 'detailed_records_for_heating_are_collapsed',
-  'detailed_records_for_electricity_are_collapsed', 'detailed_records_for_home_are_collapsed'
+  'detailed_records_for_water_are_collapsed',
+  'detailed_records_for_heating_are_collapsed',
+  'detailed_records_for_electricity_are_collapsed',
+  'detailed_records_for_home_are_collapsed',
 ];
 
 /**
@@ -46,7 +66,7 @@ const SETTINGS_KEYS = [
  * - Provides offline-first experience with optional cloud backup
  */
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class HybridStorageService extends StorageService {
   private localStorage = inject(LocalStorageService);
@@ -71,7 +91,9 @@ export class HybridStorageService extends StorageService {
   readonly isDeletingCloud = signal<boolean>(false);
 
   /** Whether any sync activity is currently in progress */
-  readonly isSyncing = computed(() => this.isUploading() || this.isDownloading() || this.isDeletingCloud());
+  readonly isSyncing = computed(
+    () => this.isUploading() || this.isDownloading() || this.isDeletingCloud(),
+  );
 
   /** Whether there is any local user data beyond system keys */
   readonly hasUserContent = signal<boolean>(false);
@@ -98,19 +120,23 @@ export class HybridStorageService extends StorageService {
       effect(() => {
         const authenticated = this.authService.isAuthenticated();
         const noLocalContent = !this.hasUserContent();
-        
+
         if (authenticated && noLocalContent) {
           // Check other conditions untracked to avoid unnecessary dependencies
           const currentMode = untracked(() => this.mode());
           const isDemo = untracked(() => this.demoService.isDemoMode());
 
           if (currentMode === 'local' && !isDemo) {
-            console.info('[HybridStorage] Auto-enabling cloud mode (User signed in + No local data)');
+            console.info(
+              '[HybridStorage] Auto-enabling cloud mode (User signed in + No local data)',
+            );
             untracked(() => {
               this.setMode('cloud');
-              // If we just enabled cloud mode because there was no data, 
+              // If we just enabled cloud mode because there was no data,
               // we should pull whatever is in the cloud to this device
-              this.pullFromCloud().catch(err => console.error('[HybridStorage] Auto-pull failed:', err));
+              this.pullFromCloud().catch((err) =>
+                console.error('[HybridStorage] Auto-pull failed:', err),
+              );
             });
           }
         }
@@ -171,11 +197,11 @@ export class HybridStorageService extends StorageService {
     // If cloud mode is active, sync in background
     if (this.isCloudMode()) {
       if (SETTINGS_KEYS.includes(key)) {
-        this.firebaseStorage.updateSettings({ [key]: data }).catch(error => {
+        this.firebaseStorage.updateSettings({ [key]: data }).catch((error) => {
           console.error(`Background settings sync failed for key ${key}:`, error);
         });
       } else {
-        this.syncToCloud(key, data).catch(error => {
+        this.syncToCloud(key, data).catch((error) => {
           console.error(`Background sync failed for key ${key}:`, error);
         });
       }
@@ -199,11 +225,11 @@ export class HybridStorageService extends StorageService {
 
     if (this.isCloudMode()) {
       if (SETTINGS_KEYS.includes(key)) {
-        this.firebaseStorage.deleteSetting(key).catch(error => {
+        this.firebaseStorage.deleteSetting(key).catch((error) => {
           console.error(`Background cloud setting delete failed for key ${key}:`, error);
         });
       } else {
-        this.firebaseStorage.delete(key).catch(error => {
+        this.firebaseStorage.delete(key).catch((error) => {
           console.error(`Background cloud delete failed for key ${key}:`, error);
         });
       }
@@ -233,7 +259,7 @@ export class HybridStorageService extends StorageService {
     await this.localStorage.importAll(data);
 
     if (this.isCloudMode()) {
-      this.firebaseStorage.importAll(data).catch(error => {
+      this.firebaseStorage.importAll(data).catch((error) => {
         console.error('Background cloud import failed:', error);
       });
     }
@@ -255,7 +281,7 @@ export class HybridStorageService extends StorageService {
     await this.localStorage.importRecords(recordKey, records);
 
     if (this.isCloudMode()) {
-      this.firebaseStorage.importRecords(recordKey, records).catch(error => {
+      this.firebaseStorage.importRecords(recordKey, records).catch((error) => {
         console.error(`Background cloud record import failed for ${recordKey}:`, error);
       });
     }
@@ -309,7 +335,11 @@ export class HybridStorageService extends StorageService {
 
       const settingsGroup: Record<string, unknown> = {};
       const recordKeys: string[] = [];
-      const VALID_RECORD_KEYS = ['water_consumption_records', 'electricity_consumption_records', 'heating_consumption_records'];
+      const VALID_RECORD_KEYS = [
+        'water_consumption_records',
+        'electricity_consumption_records',
+        'heating_consumption_records',
+      ];
 
       // Group keys into settings or records, skip unknown keys
       for (const key of keys) {
@@ -318,7 +348,9 @@ export class HybridStorageService extends StorageService {
         } else if (SETTINGS_KEYS.includes(key)) {
           settingsGroup[key] = allData[key];
         } else {
-          console.warn(`[CloudSync] Skipping unknown key "${key}" — not in settings or records whitelist`);
+          console.warn(
+            `[CloudSync] Skipping unknown key "${key}" — not in settings or records whitelist`,
+          );
         }
       }
 
@@ -472,7 +504,7 @@ export class HybridStorageService extends StorageService {
       'hm_storage_mode',
       'hm_last_sync_timestamp',
       'hm_theme',
-      'hm_preferred_language'
+      'hm_preferred_language',
     ];
 
     let hasData = false;
@@ -481,12 +513,20 @@ export class HybridStorageService extends StorageService {
       if (key?.startsWith('hm_') && !IGNORED_KEYS.includes(key)) {
         // Only count as user data if it's not default/empty values
         const value = localStorage.getItem(key);
-        
+
         // Skip empty/default values for core settings (JSON stringified)
-        if (key === 'hm_household_members' && (value === '[]' || value === 'null' || value === null)) continue;
+        if (
+          key === 'hm_household_members' &&
+          (value === '[]' || value === 'null' || value === null)
+        )
+          continue;
         if (key === 'hm_household_address' && (value === 'null' || value === null)) continue;
-        if (key === 'hm_dismissed_notifications' && (value === '[]' || value === 'null' || value === null)) continue;
-        
+        if (
+          key === 'hm_dismissed_notifications' &&
+          (value === '[]' || value === 'null' || value === null)
+        )
+          continue;
+
         // Skip chart views, display modes, and UI state which have defaults
         if (key.endsWith('_chart_view') || key.endsWith('_display_mode')) continue;
         if (key.endsWith('_trendline_visible') || key.endsWith('_average_visible')) continue;

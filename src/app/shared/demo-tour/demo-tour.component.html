@@ -1,0 +1,108 @@
+@if (show() && isActive()) {
+  <!-- Click-blocking backdrop -->
+  <div
+    class="tour-backdrop"
+    [class.transitioning]="isTransitioning()"
+    (click)="onOverlayClick()"
+  ></div>
+
+  <!-- Spotlight cutout -->
+  <div
+    class="tour-spotlight"
+    [class]="'theme-' + theme()"
+    [class.transitioning]="isTransitioning()"
+    [style.top.px]="spotTop()"
+    [style.left.px]="spotLeft()"
+    [style.width.px]="spotWidth()"
+    [style.height.px]="spotHeight()"
+  ></div>
+
+  <!-- Progress bar -->
+  <div class="tour-progress-bar">
+    <div class="tour-progress-fill" [class]="'theme-' + theme()" [style.width.%]="progress()"></div>
+  </div>
+
+  <!-- Tooltip bubble -->
+  <div
+    class="tour-tooltip"
+    [class]="'position-' + tipPosition() + ' theme-' + theme()"
+    [class.transitioning]="isTransitioning()"
+    [style.top.px]="tipTop()"
+    [style.left.px]="tipLeft()"
+  >
+    <!-- Arrow pointer -->
+    <div class="tooltip-arrow"></div>
+
+    <!-- Close button -->
+    <button
+      type="button"
+      class="tooltip-close"
+      (click)="onClose()"
+      title="{{ 'ACTIONS.CLOSE' | translate }}"
+      aria-label="Close tour"
+    >
+      <lucide-icon [img]="CloseIcon" size="14"></lucide-icon>
+    </button>
+
+    <!-- Content -->
+    <div class="tooltip-body">
+      @if (currentStepData(); as step) {
+        <div class="tooltip-step-badge">
+          <lucide-icon [img]="SparklesIcon" size="12"></lucide-icon>
+          <span>{{ currentStep() + 1 }} / {{ totalSteps() }}</span>
+        </div>
+        <h4 class="tooltip-title">{{ step.titleKey | translate }}</h4>
+        <p class="tooltip-desc">{{ step.descriptionKey | translate }}</p>
+      }
+    </div>
+
+    <!-- Navigation -->
+    <div class="tooltip-nav">
+      @if (!isFirstStep()) {
+        <button
+          type="button"
+          class="tour-nav-btn tour-nav-btn--secondary"
+          (click)="previousStep()"
+          title="{{ 'SETTINGS.FAMILY_HELP_PREVIOUS' | translate }}"
+          aria-label="Previous step"
+        >
+          <lucide-icon [img]="PrevIcon" size="14"></lucide-icon>
+          {{ 'SETTINGS.FAMILY_HELP_PREVIOUS' | translate }}
+        </button>
+      } @else {
+        <button
+          type="button"
+          class="tour-nav-btn tour-nav-btn--secondary"
+          (click)="onClose()"
+          title="{{ 'DEMO.TOUR_SKIP' | translate }}"
+          aria-label="Skip tour"
+        >
+          {{ 'DEMO.TOUR_SKIP' | translate }}
+        </button>
+      }
+
+      @if (isLastStep()) {
+        <button
+          type="button"
+          class="tour-nav-btn tour-nav-btn--primary"
+          (click)="onClose()"
+          title="{{ 'DEMO.WIZARD_GOT_IT' | translate }}"
+          aria-label="Finish tour"
+        >
+          {{ 'DEMO.WIZARD_GOT_IT' | translate }}
+        </button>
+      } @else {
+        <button
+          type="button"
+          class="tour-nav-btn tour-nav-btn--primary"
+          (click)="nextStep()"
+          title="{{ 'SETTINGS.FAMILY_HELP_NEXT' | translate }}"
+          aria-label="Next step"
+        >
+          {{ 'SETTINGS.FAMILY_HELP_NEXT' | translate }}
+          <lucide-icon [img]="NextIcon" size="14"></lucide-icon>
+        </button>
+      }
+    </div>
+  </div>
+}

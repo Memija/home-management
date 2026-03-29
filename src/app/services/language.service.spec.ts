@@ -18,12 +18,12 @@ describe('LanguageService', () => {
 
     Object.defineProperty(window, 'localStorage', {
       value: mockLocalStorage,
-      writable: true
+      writable: true,
     });
 
     Object.defineProperty(window, 'navigator', {
       value: { language: 'en-US' },
-      writable: true
+      writable: true,
     });
 
     // Mock document
@@ -32,10 +32,7 @@ describe('LanguageService', () => {
     mockApplicationRef = {};
 
     TestBed.configureTestingModule({
-      providers: [
-        LanguageService,
-        { provide: ApplicationRef, useValue: mockApplicationRef }
-      ]
+      providers: [LanguageService, { provide: ApplicationRef, useValue: mockApplicationRef }],
     });
   });
 
@@ -60,7 +57,7 @@ describe('LanguageService', () => {
     mockLocalStorage.getItem.mockReturnValue(null);
     Object.defineProperty(window, 'navigator', {
       value: { language: 'de-DE' },
-      writable: true
+      writable: true,
     });
     service = TestBed.inject(LanguageService);
     expect(service.currentLang()).toBe('de');
@@ -110,7 +107,7 @@ describe('LanguageService', () => {
 
     // Manually inject translations
     (service as any).translations['en'] = {
-      TEST: { KEY: 'Test Value' }
+      TEST: { KEY: 'Test Value' },
     };
 
     expect(service.translate('TEST.KEY')).toBe('Test Value');
@@ -119,7 +116,7 @@ describe('LanguageService', () => {
   it('should translate with params', () => {
     service = TestBed.inject(LanguageService);
     (service as any).translations['en'] = {
-      TEST: { PARAM: 'Value: {{value}}' }
+      TEST: { PARAM: 'Value: {{value}}' },
     };
 
     expect(service.translate('TEST.PARAM', { value: 123 })).toBe('Value: 123');

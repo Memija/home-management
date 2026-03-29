@@ -9,7 +9,7 @@ import { DemoService } from '../services/demo.service';
   standalone: true,
   imports: [RouterLink, TranslatePipe, LucideAngularModule],
   templateUrl: './dashboard.component.html',
-  styleUrl: './dashboard.component.scss'
+  styleUrl: './dashboard.component.scss',
 })
 export class DashboardComponent {
   protected readonly demoService = inject(DemoService);

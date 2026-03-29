@@ -18,14 +18,14 @@ describe('PrivacyComponent', () => {
   beforeEach(() => {
     languageServiceMock = {
       translate: vi.fn().mockImplementation((key: string) => `translated_${key}`),
-      currentLang: signal('en')
+      currentLang: signal('en'),
     };
 
     TestBed.configureTestingModule({
       providers: [
         { provide: LanguageService, useValue: languageServiceMock },
-        { provide: PLATFORM_ID, useValue: 'browser' }
-      ]
+        { provide: PLATFORM_ID, useValue: 'browser' },
+      ],
     });
 
     component = TestBed.runInInjectionContext(() => {
@@ -67,9 +67,9 @@ describe('PrivacyComponent', () => {
         component.ShieldIcon,
         component.DatabaseIcon,
         component.LockIcon,
-        component.CookieIcon
+        component.CookieIcon,
       ];
-      icons.forEach(icon => {
+      icons.forEach((icon) => {
         expect(icon).toBeDefined();
         expect(icon).not.toBeNull();
       });
@@ -98,8 +98,8 @@ describe('PrivacyComponent', () => {
       TestBed.configureTestingModule({
         providers: [
           { provide: LanguageService, useValue: languageServiceMock },
-          { provide: PLATFORM_ID, useValue: 'server' }
-        ]
+          { provide: PLATFORM_ID, useValue: 'server' },
+        ],
       });
 
       const ssrComponent = TestBed.runInInjectionContext(() => new PrivacyComponent());

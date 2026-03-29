@@ -40,8 +40,8 @@ describe('App', () => {
       providers: [
         provideRouter([]),
         { provide: STORAGE_SERVICE, useValue: mockStorageService },
-        { provide: Auth, useValue: mockAuth }
-      ]
+        { provide: Auth, useValue: mockAuth },
+      ],
     });
   });
 

@@ -6,7 +6,7 @@ import { vi } from 'vitest';
 
 @Pipe({
   name: 'translate',
-  standalone: true
+  standalone: true,
 })
 class MockTranslatePipe implements PipeTransform {
   transform(key: string, args?: any): string {
@@ -27,7 +27,7 @@ describe('ErrorModalComponent', () => {
     })
       .overrideComponent(ErrorModalComponent, {
         remove: { imports: [TranslatePipe] },
-        add: { imports: [MockTranslatePipe] }
+        add: { imports: [MockTranslatePipe] },
       })
       .compileComponents();
 
@@ -59,7 +59,9 @@ describe('ErrorModalComponent', () => {
 
       expect(overlay).toBeTruthy();
       expect(content).toBeTruthy();
-      expect(fixture.nativeElement.querySelector('.error-message').textContent).toContain('Default Error Message');
+      expect(fixture.nativeElement.querySelector('.error-message').textContent).toContain(
+        'Default Error Message',
+      );
     });
 
     it('should apply correct CSS classes based on modal type', () => {
@@ -117,7 +119,7 @@ describe('ErrorModalComponent', () => {
     it('should render string and object instructions correctly', () => {
       const testInstructions: (string | ErrorInstruction)[] = [
         'STRING_INSTRUCTION',
-        { key: 'OBJECT_INSTRUCTION', params: { code: 123, word: 'fail' } }
+        { key: 'OBJECT_INSTRUCTION', params: { code: 123, word: 'fail' } },
       ];
 
       fixture.componentRef.setInput('instructions', testInstructions);
@@ -127,7 +129,9 @@ describe('ErrorModalComponent', () => {
       expect(instructionElements.length).toBe(2);
 
       expect(instructionElements[0].textContent.trim()).toBe('STRING_INSTRUCTION');
-      expect(instructionElements[1].textContent.trim()).toContain('OBJECT_INSTRUCTION {"code":123,"word":"fail"}');
+      expect(instructionElements[1].textContent.trim()).toContain(
+        'OBJECT_INSTRUCTION {"code":123,"word":"fail"}',
+      );
     });
 
     it('should not render instructions section if the array is empty', () => {

@@ -21,12 +21,14 @@ describe('FileStorageService', () => {
       onload: any;
       onerror: any;
     } as any;
-    return () => { window.FileReader = originalFileReader; };
+    return () => {
+      window.FileReader = originalFileReader;
+    };
   };
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      providers: [FileStorageService]
+      providers: [FileStorageService],
     });
     service = TestBed.inject(FileStorageService);
 
@@ -37,7 +39,7 @@ describe('FileStorageService', () => {
       Object.defineProperty(window.URL, 'revokeObjectURL', { value: vi.fn(), writable: true });
     } else {
       vi.spyOn(window.URL, 'createObjectURL').mockReturnValue('mock-url');
-      vi.spyOn(window.URL, 'revokeObjectURL').mockImplementation(() => { });
+      vi.spyOn(window.URL, 'revokeObjectURL').mockImplementation(() => {});
     }
   });
 
@@ -57,7 +59,7 @@ describe('FileStorageService', () => {
       createElementSpy.mockReturnValue({
         click: clickSpy,
         href: '',
-        download: ''
+        download: '',
       } as any);
 
       service.exportToFile({ test: 'data' }, 'test.json');
@@ -72,7 +74,9 @@ describe('FileStorageService', () => {
   describe('importFromFile', () => {
     it('should parse valid JSON file', async () => {
       const cleanup = mockFileReader(JSON.stringify({ test: 'data' }));
-      const file = new File([JSON.stringify({ test: 'data' })], 'test.json', { type: 'application/json' });
+      const file = new File([JSON.stringify({ test: 'data' })], 'test.json', {
+        type: 'application/json',
+      });
       const result = await service.importFromFile(file);
       expect(result).toEqual({ test: 'data' });
       cleanup();
@@ -97,7 +101,7 @@ describe('FileStorageService', () => {
     it('should call exportToFile', async () => {
       const spy = vi.spyOn(service, 'exportToFile');
       // Mock implementation to avoid errors in exportToFile during this test if mocks aren't perfect
-      spy.mockImplementation(() => { });
+      spy.mockImplementation(() => {});
 
       await service.exportData({ test: 'data' }, 'test.json');
       expect(spy).toHaveBeenCalledWith({ test: 'data' }, 'test.json');
@@ -107,14 +111,16 @@ describe('FileStorageService', () => {
   describe('importData', () => {
     it('should resolve with data for valid JSON', async () => {
       const cleanup = mockFileReader(JSON.stringify({ test: 'data' }));
-      const file = new File([JSON.stringify({ test: 'data' })], 'test.json', { type: 'application/json' });
+      const file = new File([JSON.stringify({ test: 'data' })], 'test.json', {
+        type: 'application/json',
+      });
 
       const createElementSpy = vi.spyOn(document, 'createElement');
       const input = {
         click: vi.fn(),
         onchange: null as any,
         type: 'file',
-        accept: ''
+        accept: '',
       };
       createElementSpy.mockReturnValue(input as any);
 
@@ -135,7 +141,7 @@ describe('FileStorageService', () => {
       const createElementSpy = vi.spyOn(document, 'createElement');
       const input = {
         click: vi.fn(),
-        onchange: null as any
+        onchange: null as any,
       };
       createElementSpy.mockReturnValue(input as any);
 
@@ -152,7 +158,7 @@ describe('FileStorageService', () => {
       const createElementSpy = vi.spyOn(document, 'createElement');
       const input = {
         click: vi.fn(),
-        onchange: null as any
+        onchange: null as any,
       };
       createElementSpy.mockReturnValue(input as any);
 
@@ -167,7 +173,7 @@ describe('FileStorageService', () => {
       const createElementSpy = vi.spyOn(document, 'createElement');
       const input = {
         click: vi.fn(),
-        onchange: null as any
+        onchange: null as any,
       };
       createElementSpy.mockReturnValue(input as any);
 

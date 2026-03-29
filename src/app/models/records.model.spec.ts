@@ -13,31 +13,30 @@ import {
   mergeRecords,
   ConsumptionRecord,
   ElectricityRecord,
-  DynamicHeatingRecord
+  DynamicHeatingRecord,
 } from './records.model';
 
 describe('Records Model Utils', () => {
-
   describe('Calculation Functions', () => {
     const waterRecord: ConsumptionRecord = {
       date: new Date('2023-01-01'),
       kitchenWarm: 10,
       kitchenCold: 20,
       bathroomWarm: 30,
-      bathroomCold: 40
+      bathroomCold: 40,
     };
 
     const dynamicHeatingRecord: DynamicHeatingRecord = {
       date: new Date('2023-01-01'),
       rooms: {
-        'room1': 10,
-        'room2': 20
-      }
+        room1: 10,
+        room2: 20,
+      },
     };
 
     const electricityRecord: ElectricityRecord = {
       date: new Date('2023-01-01'),
-      value: 150
+      value: 150,
     };
 
     it('should calculate water total correctly', () => {
@@ -57,7 +56,10 @@ describe('Records Model Utils', () => {
     });
 
     it('should handle dynamic heating total with undefined values', () => {
-      const record = { ...dynamicHeatingRecord, rooms: { 'room1': 10, 'room2': undefined } } as unknown as DynamicHeatingRecord;
+      const record = {
+        ...dynamicHeatingRecord,
+        rooms: { room1: 10, room2: undefined },
+      } as unknown as DynamicHeatingRecord;
       expect(calculateDynamicHeatingTotal(record)).toBe(10);
     });
 
@@ -97,7 +99,7 @@ describe('Records Model Utils', () => {
         kitchenWarm: 0,
         kitchenCold: 0,
         bathroomWarm: 0,
-        bathroomCold: 0
+        bathroomCold: 0,
       };
       expect(isWaterRecordAllZero(record)).toBe(true);
     });
@@ -108,7 +110,7 @@ describe('Records Model Utils', () => {
         kitchenWarm: 0,
         kitchenCold: 1,
         bathroomWarm: 0,
-        bathroomCold: 0
+        bathroomCold: 0,
       };
       expect(isWaterRecordAllZero(record)).toBe(false);
     });
@@ -116,7 +118,7 @@ describe('Records Model Utils', () => {
     it('should identify all-zero dynamic heating record', () => {
       const record: DynamicHeatingRecord = {
         date: new Date(),
-        rooms: { 'room1': 0, 'room2': 0 }
+        rooms: { room1: 0, room2: 0 },
       };
       expect(isDynamicHeatingRecordAllZero(record)).toBe(true);
     });
@@ -124,7 +126,7 @@ describe('Records Model Utils', () => {
     it('should identify non-zero dynamic heating record', () => {
       const record: DynamicHeatingRecord = {
         date: new Date(),
-        rooms: { 'room1': 0, 'room2': 1 }
+        rooms: { room1: 0, room2: 1 },
       };
       expect(isDynamicHeatingRecordAllZero(record)).toBe(false);
     });
@@ -132,7 +134,7 @@ describe('Records Model Utils', () => {
     it('should identify all-zero electricity record', () => {
       const record: ElectricityRecord = {
         date: new Date(),
-        value: 0
+        value: 0,
       };
       expect(isElectricityRecordAllZero(record)).toBe(true);
     });
@@ -140,13 +142,11 @@ describe('Records Model Utils', () => {
     it('should identify non-zero electricity record', () => {
       const record: ElectricityRecord = {
         date: new Date(),
-        value: 100
+        value: 100,
       };
       expect(isElectricityRecordAllZero(record)).toBe(false);
     });
   });
-
-
 
   describe('Filtering and Merging', () => {
     it('should filter all zero records regardless of date', () => {
@@ -154,7 +154,7 @@ describe('Records Model Utils', () => {
         { date: new Date('2023-01-01'), val: 10 },
         { date: new Date('2023-01-02'), val: 0 }, // Zero - filtered
         { date: new Date('2023-01-03'), val: 5 },
-        { date: new Date('2023-01-04'), val: 0 }  // Zero - filtered
+        { date: new Date('2023-01-04'), val: 0 }, // Zero - filtered
       ];
       const isAllZero = (r: any) => r.val === 0;
 
@@ -169,7 +169,7 @@ describe('Records Model Utils', () => {
     it('should not filter non-zero records', () => {
       const records = [
         { date: new Date('2023-01-01'), val: 10 },
-        { date: new Date('2023-01-02'), val: 5 }
+        { date: new Date('2023-01-02'), val: 5 },
       ];
       const isAllZero = (r: any) => r.val === 0;
 
@@ -206,7 +206,10 @@ describe('Records Model Utils', () => {
 
     it('should sort merged records by date', () => {
       const existing = [{ date: new Date('2023-01-03'), val: 3 }];
-      const incoming = [{ date: new Date('2023-01-01'), val: 1 }, { date: new Date('2023-01-02'), val: 2 }];
+      const incoming = [
+        { date: new Date('2023-01-01'), val: 1 },
+        { date: new Date('2023-01-02'), val: 2 },
+      ];
 
       const result = mergeRecords(existing, incoming);
       expect(result.length).toBe(3);

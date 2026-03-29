@@ -11,9 +11,16 @@ import { SeasonSwitcherComponent } from '../shared/season-switcher/season-switch
 @Component({
   selector: 'app-layout',
   standalone: true,
-  imports: [RouterOutlet, HeaderComponent, FooterComponent, MenuBarComponent, NatureTreeComponent, SeasonSwitcherComponent],
+  imports: [
+    RouterOutlet,
+    HeaderComponent,
+    FooterComponent,
+    MenuBarComponent,
+    NatureTreeComponent,
+    SeasonSwitcherComponent,
+  ],
   templateUrl: './app-layout.component.html',
-  styleUrl: './app-layout.component.scss'
+  styleUrl: './app-layout.component.scss',
 })
 export class AppLayoutComponent {
   // Inject ThemeService to ensure it initializes when entering the app

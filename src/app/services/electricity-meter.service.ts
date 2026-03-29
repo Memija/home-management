@@ -3,7 +3,7 @@ import { LocalStorageService } from './local-storage.service';
 import { ElectricityRecord } from '../models/records.model';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class ElectricityMeterService {
   private localStorageService = inject(LocalStorageService);
@@ -34,16 +34,16 @@ export class ElectricityMeterService {
   filterUnconfirmed(detectedChanges: string[]): string[] {
     const confirmed = this.confirmedMeterChanges();
     const dismissed = this.dismissedMeterChanges();
-    return detectedChanges.filter(d => !confirmed.includes(d) && !dismissed.includes(d));
+    return detectedChanges.filter((d) => !confirmed.includes(d) && !dismissed.includes(d));
   }
 
   confirmMeterChange(date: string): void {
-    this.confirmedMeterChanges.update(changes => [...changes, date]);
+    this.confirmedMeterChanges.update((changes) => [...changes, date]);
     this.saveMeterChanges();
   }
 
   dismissMeterChange(date: string): void {
-    this.dismissedMeterChanges.update(changes => [...changes, date]);
+    this.dismissedMeterChanges.update((changes) => [...changes, date]);
     this.saveMeterChanges();
   }
 
@@ -70,11 +70,11 @@ export class ElectricityMeterService {
   private saveMeterChanges(): void {
     this.localStorageService.setPreference(
       'electricity_confirmed_meter_changes',
-      JSON.stringify(this.confirmedMeterChanges())
+      JSON.stringify(this.confirmedMeterChanges()),
     );
     this.localStorageService.setPreference(
       'electricity_dismissed_meter_changes',
-      JSON.stringify(this.dismissedMeterChanges())
+      JSON.stringify(this.dismissedMeterChanges()),
     );
   }
 }

@@ -23,7 +23,7 @@ describe('HouseholdService', () => {
     // Mock crypto.randomUUID
     Object.defineProperty(window, 'crypto', {
       value: { randomUUID: vi.fn().mockReturnValue('mock-uuid') },
-      writable: true
+      writable: true,
     });
 
     TestBed.configureTestingModule({
@@ -43,7 +43,7 @@ describe('HouseholdService', () => {
 
   it('should be created and load data', async () => {
     expect(service).toBeTruthy();
-    await new Promise(resolve => setTimeout(resolve, 0));
+    await new Promise((resolve) => setTimeout(resolve, 0));
     expect(mockStorageService.load).toHaveBeenCalledWith('household_members');
     expect(mockStorageService.load).toHaveBeenCalledWith('household_address');
   });
@@ -51,19 +51,26 @@ describe('HouseholdService', () => {
   it('should add member', () => {
     service.addMember('John', 'Doe', 'adult', 'male');
     expect(service.members().length).toBe(1);
-    expect(service.members()[0]).toEqual(expect.objectContaining({
-      id: 'mock-uuid',
-      name: 'John',
-      surname: 'Doe',
-      type: 'adult',
-      gender: 'male'
-    }));
+    expect(service.members()[0]).toEqual(
+      expect.objectContaining({
+        id: 'mock-uuid',
+        name: 'John',
+        surname: 'Doe',
+        type: 'adult',
+        gender: 'male',
+      }),
+    );
   });
 
   it('should remove member', () => {
     // Manually set initial members to avoid relying on addMember logic implicitly or randomness
     const member = {
-      id: '1', name: 'John', surname: 'Doe', type: 'adult' as const, gender: 'male' as const, avatar: 'img.jpg'
+      id: '1',
+      name: 'John',
+      surname: 'Doe',
+      type: 'adult' as const,
+      gender: 'male' as const,
+      avatar: 'img.jpg',
     };
     service.updateMembers([member]);
 
@@ -72,14 +79,25 @@ describe('HouseholdService', () => {
   });
 
   it('should update address', () => {
-    const address = { streetName: 'Main St', streetNumber: '1', city: 'City', zipCode: '12345', country: 'Country' };
+    const address = {
+      streetName: 'Main St',
+      streetNumber: '1',
+      city: 'City',
+      zipCode: '12345',
+      country: 'Country',
+    };
     service.updateAddress(address);
     expect(service.address()).toEqual({ ...address, country: 'country' });
   });
 
   it('should update specific member', () => {
     const member = {
-      id: '1', name: 'John', surname: 'Doe', type: 'adult' as const, gender: 'male' as const, avatar: 'img.jpg'
+      id: '1',
+      name: 'John',
+      surname: 'Doe',
+      type: 'adult' as const,
+      gender: 'male' as const,
+      avatar: 'img.jpg',
     };
     service.updateMembers([member]);
 
@@ -89,21 +107,33 @@ describe('HouseholdService', () => {
   });
 
   it('should save data when updated (effects)', async () => {
-    await new Promise(resolve => setTimeout(resolve, 50)); // wait for load
+    await new Promise((resolve) => setTimeout(resolve, 50)); // wait for load
     // Initialization sets isInitialized = true
 
     service.updateMembers([]);
-    await new Promise(resolve => setTimeout(resolve, 50)); // wait for effect
+    await new Promise((resolve) => setTimeout(resolve, 50)); // wait for effect
 
     expect(mockStorageService.save).toHaveBeenCalledWith('household_members', []);
     expect(mockNotificationService.setHouseholdMembers).toHaveBeenCalledWith([]);
 
-    const address = { streetName: 'Main St', streetNumber: '1', city: 'City', zipCode: '12345', country: 'Country' };
+    const address = {
+      streetName: 'Main St',
+      streetNumber: '1',
+      city: 'City',
+      zipCode: '12345',
+      country: 'Country',
+    };
     service.updateAddress(address);
-    await new Promise(resolve => setTimeout(resolve, 50));
+    await new Promise((resolve) => setTimeout(resolve, 50));
 
-    expect(mockStorageService.save).toHaveBeenCalledWith('household_address', { ...address, country: 'country' });
-    expect(mockNotificationService.setAddress).toHaveBeenCalledWith({ ...address, country: 'country' });
+    expect(mockStorageService.save).toHaveBeenCalledWith('household_address', {
+      ...address,
+      country: 'country',
+    });
+    expect(mockNotificationService.setAddress).toHaveBeenCalledWith({
+      ...address,
+      country: 'country',
+    });
   });
 
   it('should not save during initialization load', async () => {
@@ -127,14 +157,14 @@ describe('HouseholdService', () => {
     service = TestBed.inject(HouseholdService);
 
     // Wait for loadData
-    await new Promise(resolve => setTimeout(resolve, 50));
+    await new Promise((resolve) => setTimeout(resolve, 50));
 
     // We expect save NOT to be called because it's the initial load.
     expect(mockStorageService.save).not.toHaveBeenCalled();
 
     // Now update
     service.addMember('A', 'B', 'adult', 'male');
-    await new Promise(resolve => setTimeout(resolve, 50));
+    await new Promise((resolve) => setTimeout(resolve, 50));
 
     expect(mockStorageService.save).toHaveBeenCalled();
   });

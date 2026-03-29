@@ -13,7 +13,7 @@ export interface AuthUser {
 }
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class AuthService {
   private platformId = inject(PLATFORM_ID);
@@ -39,11 +39,12 @@ export class AuthService {
     if (isPlatformBrowser(this.platformId)) {
       const hostname = window.location.hostname;
       // Define authorized domains (matching Firebase Console settings)
-      const isAuthorized = hostname === 'home-management.dev' || 
-                           hostname.endsWith('.firebaseapp.com') || 
-                           hostname.endsWith('.web.app') ||
-                           (hostname === 'localhost' && environment.allowLocalAuth);
-      
+      const isAuthorized =
+        hostname === 'home-management.dev' ||
+        hostname.endsWith('.firebaseapp.com') ||
+        hostname.endsWith('.web.app') ||
+        (hostname === 'localhost' && environment.allowLocalAuth);
+
       this.isAuthSupported.set(isAuthorized);
       this.initAuthListener();
     } else {
@@ -75,7 +76,7 @@ export class AuthService {
           uid: firebaseUser.uid,
           email: firebaseUser.email,
           displayName: firebaseUser.displayName,
-          photoURL: firebaseUser.photoURL
+          photoURL: firebaseUser.photoURL,
         };
         this.user.set(authUser);
         this.userSubject.next(authUser);
@@ -103,7 +104,7 @@ export class AuthService {
         uid: result.user.uid,
         email: result.user.email,
         displayName: result.user.displayName,
-        photoURL: result.user.photoURL
+        photoURL: result.user.photoURL,
       };
 
       return authUser;

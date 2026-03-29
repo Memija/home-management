@@ -1,6 +1,9 @@
 import { Injectable, inject } from '@angular/core';
 import { LanguageService } from './language.service';
-import { electricityCountryFacts as enElectricityFacts, availableElectricityCountries } from '../i18n/modules/en/electricity-country-facts';
+import {
+  electricityCountryFacts as enElectricityFacts,
+  availableElectricityCountries,
+} from '../i18n/modules/en/electricity-country-facts';
 import { electricityCountryFacts as deElectricityFacts } from '../i18n/modules/de/electricity-country-facts';
 
 import { en } from '../i18n/en';
@@ -19,7 +22,7 @@ export type ElectricityFactMode = 'historical' | 'country';
  * - Country facts: country-specific energy information (for incremental mode)
  */
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class ElectricityCountryFactsService {
   private languageService = inject(LanguageService);
@@ -38,7 +41,12 @@ export class ElectricityCountryFactsService {
    * @param mode - 'historical' for total mode, 'country' for incremental mode
    * @param countryCode - Optional country code for country-specific facts
    */
-  getFactByIndex(kWh: number, index: number, mode: ElectricityFactMode, countryCode?: string): ElectricityFact | null {
+  getFactByIndex(
+    kWh: number,
+    index: number,
+    mode: ElectricityFactMode,
+    countryCode?: string,
+  ): ElectricityFact | null {
     const lang = this.languageService.currentLang();
     const translations = lang === 'de' ? de : en;
     const countryFacts = lang === 'de' ? deElectricityFacts : enElectricityFacts;
@@ -52,24 +60,33 @@ export class ElectricityCountryFactsService {
     }
   }
 
-  private getHistoricalFact(title: string, index: number, countryFacts: Record<string, string[]>): ElectricityFact {
+  private getHistoricalFact(
+    title: string,
+    index: number,
+    countryFacts: Record<string, string[]>,
+  ): ElectricityFact {
     // Use WORLD historical facts
     const facts = countryFacts['WORLD'] || countryFacts['DEFAULT'] || [];
     if (facts.length === 0) {
       return {
         title,
-        message: this.languageService.translate('FACTS.ELECTRICITY_FALLBACK')
+        message: this.languageService.translate('FACTS.ELECTRICITY_FALLBACK'),
       };
     }
 
     const safeIndex = Math.abs(index) % facts.length;
     return {
       title,
-      message: facts[safeIndex]
+      message: facts[safeIndex],
     };
   }
 
-  private getCountryFact(title: string, index: number, countryCode: string | undefined, countryFacts: Record<string, string[]>): ElectricityFact | null {
+  private getCountryFact(
+    title: string,
+    index: number,
+    countryCode: string | undefined,
+    countryFacts: Record<string, string[]>,
+  ): ElectricityFact | null {
     // Try to get country-specific fact
     if (countryCode) {
       const facts = countryFacts[countryCode.toUpperCase()];
@@ -77,7 +94,7 @@ export class ElectricityCountryFactsService {
         const safeIndex = Math.abs(index) % facts.length;
         return {
           title,
-          message: facts[safeIndex]
+          message: facts[safeIndex],
         };
       }
     }
@@ -88,7 +105,7 @@ export class ElectricityCountryFactsService {
       const safeIndex = Math.abs(index) % defaultFacts.length;
       return {
         title,
-        message: defaultFacts[safeIndex]
+        message: defaultFacts[safeIndex],
       };
     }
 

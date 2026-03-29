@@ -1,24 +1,32 @@
 <!doctype html>
 <html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>Home Management</title>
+    <meta
+      name="description"
+      content="Your all-in-one household management app. Manage family members, track consumption, monitor expenses, and optimize your home's efficiency with powerful insights and visualizations."
+    />
+    <base href="/" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="icon" type="image/png" href="assets/logo-128.png" />
+    <script>
+      // Redirect default Firebase domains to the custom domain
+      if (
+        window.location.hostname === 'home-management-be965.web.app' ||
+        window.location.hostname === 'home-management-be965.firebaseapp.com'
+      ) {
+        window.location.replace(
+          'https://home-management.dev' +
+            window.location.pathname +
+            window.location.search +
+            window.location.hash,
+        );
+      }
+    </script>
+  </head>
 
-<head>
-  <meta charset="utf-8">
-  <title>Home Management</title>
-  <meta name="description"
-    content="Your all-in-one household management app. Manage family members, track consumption, monitor expenses, and optimize your home's efficiency with powerful insights and visualizations.">
-  <base href="/">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <link rel="icon" type="image/png" href="assets/logo-128.png">
-  <script>
-    // Redirect default Firebase domains to the custom domain
-    if (window.location.hostname === 'home-management-be965.web.app' || window.location.hostname === 'home-management-be965.firebaseapp.com') {
-      window.location.replace('https://home-management.dev' + window.location.pathname + window.location.search + window.location.hash);
-    }
-  </script>
-</head>
-
-<body>
-  <app-root></app-root>
-</body>
-
+  <body>
+    <app-root></app-root>
+  </body>
 </html>

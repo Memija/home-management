@@ -2,7 +2,7 @@ import { Injectable, inject } from '@angular/core';
 import { LanguageService } from './language.service';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class ExcelValidationService {
   private languageService = inject(LanguageService);
@@ -56,28 +56,33 @@ export class ExcelValidationService {
   isDuplicate(value: string, allValues: string[]): boolean {
     if (!value || value.trim() === '') return false;
     const trimmed = value.trim();
-    return allValues.map(c => c.trim()).filter(c => c === trimmed).length > 1;
+    return allValues.map((c) => c.trim()).filter((c) => c === trimmed).length > 1;
   }
 
   /**
    * Validate all mappings for validity and duplicates
    */
-  validateMappings(waterColumns: string[], heatingColumns: string[]): { isValid: boolean, errorKey?: string } {
+  validateMappings(
+    waterColumns: string[],
+    heatingColumns: string[],
+  ): { isValid: boolean; errorKey?: string } {
     const allFields = [...waterColumns, ...heatingColumns];
 
     // Check if all fields are filled
-    if (allFields.some(field => !field || field.trim() === '')) {
+    if (allFields.some((field) => !field || field.trim() === '')) {
       return { isValid: false, errorKey: 'EXCEL.VALIDATION_FORM_INVALID' }; // Assuming generic invalid form message relates to empty/invalid fields
     }
 
     // Check if all fields pass format validation
-    if (!allFields.every(field => this.isValidColumnName(field))) {
+    if (!allFields.every((field) => this.isValidColumnName(field))) {
       return { isValid: false, errorKey: 'EXCEL.VALIDATION_FORM_INVALID' };
     }
 
     // Check for duplicates
-    if (new Set(waterColumns.map(c => c.trim())).size !== waterColumns.length ||
-      new Set(heatingColumns.map(c => c.trim())).size !== heatingColumns.length) {
+    if (
+      new Set(waterColumns.map((c) => c.trim())).size !== waterColumns.length ||
+      new Set(heatingColumns.map((c) => c.trim())).size !== heatingColumns.length
+    ) {
       return { isValid: false, errorKey: 'EXCEL.VALIDATION_DUPLICATES' };
     }
 

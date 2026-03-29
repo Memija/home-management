@@ -2,23 +2,61 @@ import { Component, signal, computed, inject, effect } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { TranslatePipe } from '../pipes/translate.pipe';
+import { DemoService } from '../services/demo.service';
+import { DemoWizardComponent } from '../shared/demo-wizard/demo-wizard.component';
 import { HeatingFormService } from '../services/heating-form.service';
 import { HeatingRoomsService, HeatingRoomConfig } from '../services/heating-rooms.service';
 import { HeatingDataService } from '../services/heating-data.service';
-import { LucideAngularModule, ArrowLeft, ChevronDown, ChevronLeft, ChevronRight, Download, Upload, FileSpreadsheet, Settings, CheckCircle, Lightbulb, Info, Trash2, FileText, AlertTriangle, RefreshCw } from 'lucide-angular';
+import {
+  LucideAngularModule,
+  ArrowLeft,
+  ChevronDown,
+  ChevronLeft,
+  ChevronRight,
+  Download,
+  Upload,
+  FileSpreadsheet,
+  Settings,
+  CheckCircle,
+  Info,
+  Trash2,
+  FileText,
+  AlertTriangle,
+  RefreshCw,
+  Lightbulb,
+} from 'lucide-angular';
 
-import { ConsumptionChartComponent, type ChartView, type DisplayMode } from '../shared/consumption-chart/consumption-chart.component';
-import { ConsumptionInputComponent, type ConsumptionData, type ConsumptionGroup } from '../shared/consumption-input/consumption-input.component';
+import {
+  ConsumptionChartComponent,
+  type ChartView,
+  type DisplayMode,
+} from '../shared/consumption-chart/consumption-chart.component';
+import {
+  ConsumptionInputComponent,
+  type ConsumptionData,
+  type ConsumptionGroup,
+} from '../shared/consumption-input/consumption-input.component';
 import { ErrorModalComponent } from '../shared/error-modal/error-modal.component';
 import { HouseholdService } from '../services/household.service';
 import { ConfirmationModalComponent } from '../shared/confirmation-modal/confirmation-modal.component';
 import { HeatingRoomsModalComponent } from '../shared/heating-rooms-modal/heating-rooms-modal.component';
-import { DetailedRecordsComponent, SortOptionConfig, GenericRecord } from '../shared/detailed-records/detailed-records.component';
+import {
+  DetailedRecordsComponent,
+  SortOptionConfig,
+  GenericRecord,
+} from '../shared/detailed-records/detailed-records.component';
 import { DeleteConfirmationModalComponent } from '../shared/delete-confirmation-modal/delete-confirmation-modal.component';
 import { ComparisonNoteComponent } from '../shared/comparison-note/comparison-note.component';
 import { DynamicHeatingRecord, calculateDynamicHeatingTotal } from '../models/records.model';
 import { HeatingFactsService } from '../services/heating-facts.service';
-import { HEATING_RECORD_HELP_STEPS, RECORDS_LIST_HELP_STEPS, CHART_HELP_STEPS } from './heating.constants';
+import {
+  HEATING_RECORD_HELP_STEPS,
+  RECORDS_LIST_HELP_STEPS,
+  CHART_HELP_STEPS,
+  DEMO_WIZARD_STEPS,
+  DEMO_TOUR_STEPS,
+} from './heating.constants';
+import { DemoTourComponent } from '../shared/demo-tour/demo-tour.component';
 import { ConsumptionPreferencesService } from '../services/consumption-preferences.service';
 import { ChartCalculationService } from '../services/chart-calculation.service';
 import { LocalStorageService } from '../services/local-storage.service';
@@ -29,9 +67,24 @@ import { ExcelSettingsService } from '../services/excel-settings.service';
 @Component({
   selector: 'app-heating',
   standalone: true,
-  imports: [CommonModule, FormsModule, TranslatePipe, LucideAngularModule, ConsumptionChartComponent, ConsumptionInputComponent, ErrorModalComponent, ConfirmationModalComponent, HeatingRoomsModalComponent, DetailedRecordsComponent, ComparisonNoteComponent, DeleteConfirmationModalComponent],
+  imports: [
+    CommonModule,
+    FormsModule,
+    TranslatePipe,
+    LucideAngularModule,
+    ConsumptionChartComponent,
+    ConsumptionInputComponent,
+    ErrorModalComponent,
+    ConfirmationModalComponent,
+    HeatingRoomsModalComponent,
+    DetailedRecordsComponent,
+    ComparisonNoteComponent,
+    DeleteConfirmationModalComponent,
+    DemoWizardComponent,
+    DemoTourComponent,
+  ],
   templateUrl: './heating.component.html',
-  styleUrl: './heating.component.scss'
+  styleUrl: './heating.component.scss',
 })
 export class HeatingComponent {
   // Services
@@ -39,6 +92,7 @@ export class HeatingComponent {
   protected formService = inject(HeatingFormService);
   protected roomsService = inject(HeatingRoomsService);
   protected excelSettings = inject(ExcelSettingsService);
+  protected demoService = inject(DemoService);
   private heatingFactsService = inject(HeatingFactsService);
   private preferencesService = inject(ConsumptionPreferencesService);
   private chartCalculationService = inject(ChartCalculationService);
@@ -57,12 +111,12 @@ export class HeatingComponent {
   protected readonly FileSpreadsheetIcon = FileSpreadsheet;
   protected readonly SettingsIcon = Settings;
   protected readonly CheckCircleIcon = CheckCircle;
-  protected readonly LightbulbIcon = Lightbulb;
   protected readonly InfoIcon = Info;
   protected readonly TrashIcon = Trash2;
   protected readonly FileTextIcon = FileText;
   protected readonly AlertTriangleIcon = AlertTriangle;
   protected readonly RefreshCwIcon = RefreshCw;
+  protected readonly LightbulbIcon = Lightbulb;
 
   // State delegation to HeatingDataService
   protected records = this.dataService.records;
@@ -91,7 +145,9 @@ export class HeatingComponent {
     const address = this.householdService.address();
     if (address?.country) {
       // Find if this country is valid for heating facts
-      const isValid = this.availableCountries.some(c => c.code.toLowerCase() === address.country.toLowerCase());
+      const isValid = this.availableCountries.some(
+        (c) => c.code.toLowerCase() === address.country.toLowerCase(),
+      );
       if (isValid) {
         this.selectedCountryCode.set(address.country.toUpperCase());
       }
@@ -99,7 +155,7 @@ export class HeatingComponent {
   });
   protected selectedCountryName = computed(() => {
     const code = this.selectedCountryCode();
-    const country = this.availableCountries.find(c => c.code === code);
+    const country = this.availableCountries.find((c) => c.code === code);
     return country ? this.languageService.translate(country.nameKey) : code;
   });
 
@@ -113,15 +169,30 @@ export class HeatingComponent {
   protected readonly chartHelpSteps = CHART_HELP_STEPS;
   protected readonly recordsHelpSteps = RECORDS_LIST_HELP_STEPS;
 
+  // Demo wizard & tour
+  protected demoWizardSteps = DEMO_WIZARD_STEPS;
+  protected demoTourSteps = DEMO_TOUR_STEPS;
+  protected showDemoWizard = signal(false);
+  protected showDemoTour = signal(false);
+
+  protected openRelevantDemoGuide(): void {
+    if (this.demoService.isDemoMode()) {
+      this.showDemoTour.set(true);
+    } else {
+      this.showDemoWizard.set(true);
+    }
+  }
+
   // Sort options
   protected readonly heatingSortOptions: SortOptionConfig[] = [
     { value: 'date-desc', labelKey: 'HOME.SORT.DATE_DESC', direction: '↓' },
     { value: 'date-asc', labelKey: 'HOME.SORT.DATE_ASC', direction: '↑' },
     { value: 'total-desc', labelKey: 'HOME.SORT.TOTAL_DESC', direction: '↓' },
-    { value: 'total-asc', labelKey: 'HOME.SORT.TOTAL_ASC', direction: '↑' }
+    { value: 'total-asc', labelKey: 'HOME.SORT.TOTAL_ASC', direction: '↑' },
   ];
 
-  protected readonly calculateTotal = (record: GenericRecord): number => calculateDynamicHeatingTotal(record as DynamicHeatingRecord);
+  protected readonly calculateTotal = (record: GenericRecord): number =>
+    calculateDynamicHeatingTotal(record as DynamicHeatingRecord);
 
   // Facts
   private factRandomSeed = signal(Math.random());
@@ -150,25 +221,32 @@ export class HeatingComponent {
   protected recordsToDeleteAll = signal<DynamicHeatingRecord[]>([]);
 
   // Spike detection
-  protected confirmedSpikes = signal<{ date: string, roomId: string }[]>(this.getStoredSpikes('confirmed'));
-  protected dismissedSpikes = signal<{ date: string, roomId: string }[]>(this.getStoredSpikes('dismissed'));
+  protected confirmedSpikes = signal<{ date: string; roomId: string }[]>(
+    this.getStoredSpikes('confirmed'),
+  );
+  protected dismissedSpikes = signal<{ date: string; roomId: string }[]>(
+    this.getStoredSpikes('dismissed'),
+  );
 
-  protected detectedSpikes = computed(() => this.chartCalculationService.detectNewRoomSpikes(this.records()));
+  protected detectedSpikes = computed(() =>
+    this.chartCalculationService.detectNewRoomSpikes(this.records()),
+  );
 
   protected unconfirmedSpike = computed(() => {
     const detected = this.detectedSpikes();
     const confirmed = this.confirmedSpikes();
     const dismissed = this.dismissedSpikes();
-    return detected.find(s =>
-      !confirmed.some(c => c.date === s.date && c.roomId === s.roomId) &&
-      !dismissed.some(d => d.date === s.date && d.roomId === s.roomId)
+    return detected.find(
+      (s) =>
+        !confirmed.some((c) => c.date === s.date && c.roomId === s.roomId) &&
+        !dismissed.some((d) => d.date === s.date && d.roomId === s.roomId),
     );
   });
 
   protected unconfirmedSpikeRoomName = computed(() => {
     const spike = this.unconfirmedSpike();
     if (!spike) return '';
-    const room = this.roomsService.rooms().find(r => r.id === spike.roomId);
+    const room = this.roomsService.rooms().find((r) => r.id === spike.roomId);
     if (!room) return spike.roomId;
     return room.type ? this.languageService.translate(room.type) : room.name;
   });
@@ -192,32 +270,40 @@ export class HeatingComponent {
     return this.displayMode() === 'incremental' ? this.records() : this.adjustedRecords();
   });
 
-  private getStoredSpikes(type: 'confirmed' | 'dismissed'): { date: string, roomId: string }[] {
+  private getStoredSpikes(type: 'confirmed' | 'dismissed'): { date: string; roomId: string }[] {
     const key = `heating_${type}_spikes`;
     const stored = this.localStorageService.getPreference(key);
-    try { return stored ? JSON.parse(stored) : []; } catch { return []; }
+    try {
+      return stored ? JSON.parse(stored) : [];
+    } catch {
+      return [];
+    }
   }
 
-  private saveSpikes(type: 'confirmed' | 'dismissed', spikes: { date: string, roomId: string }[]) {
+  private saveSpikes(type: 'confirmed' | 'dismissed', spikes: { date: string; roomId: string }[]) {
     this.localStorageService.setPreference(`heating_${type}_spikes`, JSON.stringify(spikes));
   }
 
-  protected confirmSpike(spike: { date: string, roomId: string }) {
-    this.confirmedSpikes.update(s => [...s, { date: spike.date, roomId: spike.roomId }]);
+  protected confirmSpike(spike: { date: string; roomId: string }) {
+    this.confirmedSpikes.update((s) => [...s, { date: spike.date, roomId: spike.roomId }]);
     this.saveSpikes('confirmed', this.confirmedSpikes());
   }
 
-  protected dismissSpike(spike: { date: string, roomId: string }) {
-    this.dismissedSpikes.update(s => [...s, { date: spike.date, roomId: spike.roomId }]);
+  protected dismissSpike(spike: { date: string; roomId: string }) {
+    this.dismissedSpikes.update((s) => [...s, { date: spike.date, roomId: spike.roomId }]);
     this.saveSpikes('dismissed', this.dismissedSpikes());
   }
 
   // Chart room data
-  protected chartRoomNames = computed(() => this.roomsService.rooms().map(r => {
-    return r.type ? this.languageService.translate(r.type) : r.name;
-  }));
-  protected chartRoomIds = computed(() => this.roomsService.rooms().map(r => r.id));
-  protected chartRoomColors = computed(() => this.roomsService.rooms().map(r => this.roomUtilsService.getRoomColor(r)));
+  protected chartRoomNames = computed(() =>
+    this.roomsService.rooms().map((r) => {
+      return r.type ? this.languageService.translate(r.type) : r.name;
+    }),
+  );
+  protected chartRoomIds = computed(() => this.roomsService.rooms().map((r) => r.id));
+  protected chartRoomColors = computed(() =>
+    this.roomsService.rooms().map((r) => this.roomUtilsService.getRoomColor(r)),
+  );
 
   // Room IDs that have data in existing records - used to warn when deleting rooms
   protected roomsWithData = computed(() => {
@@ -240,15 +326,17 @@ export class HeatingComponent {
 
   protected consumptionGroups = computed<ConsumptionGroup[]>(() => {
     const rooms = this.roomsService.rooms();
-    return [{
-      title: 'HEATING.ROOMS_SETTINGS_TITLE',
-      fields: rooms.map(room => ({
-        key: room.id,
-        label: room.name,
-        value: this.formService.getRoomValue(room.id),
-        icon: this.roomUtilsService.getRoomIcon(room)
-      }))
-    }];
+    return [
+      {
+        title: 'HEATING.ROOMS_SETTINGS_TITLE',
+        fields: rooms.map((room) => ({
+          key: room.id,
+          label: room.name,
+          value: this.formService.getRoomValue(room.id),
+          icon: this.roomUtilsService.getRoomIcon(room),
+        })),
+      },
+    ];
   });
 
   protected getRoomValue(record: DynamicHeatingRecord, roomId: string): number {
@@ -271,15 +359,33 @@ export class HeatingComponent {
   }
 
   // ===== Delegations to DataService =====
-  protected importData(event: Event) { this.dataService.importData(event); }
-  protected confirmImport() { this.dataService.confirmImport(); }
-  protected cancelImport() { this.dataService.cancelImport(); }
-  protected importFromExcel(event: Event) { this.dataService.importFromExcel(event); }
-  protected exportData() { this.dataService.exportData(); }
-  protected exportToExcel() { this.dataService.exportToExcel(); }
-  protected exportToPdf() { this.dataService.exportToPdf(); }
-  protected closeSuccessModal() { this.dataService.closeSuccessModal(); }
-  protected closeErrorModal() { this.dataService.closeErrorModal(); }
+  protected importData(event: Event) {
+    this.dataService.importData(event);
+  }
+  protected confirmImport() {
+    this.dataService.confirmImport();
+  }
+  protected cancelImport() {
+    this.dataService.cancelImport();
+  }
+  protected importFromExcel(event: Event) {
+    this.dataService.importFromExcel(event);
+  }
+  protected exportData() {
+    this.dataService.exportData();
+  }
+  protected exportToExcel() {
+    this.dataService.exportToExcel();
+  }
+  protected exportToPdf() {
+    this.dataService.exportToPdf();
+  }
+  protected closeSuccessModal() {
+    this.dataService.closeSuccessModal();
+  }
+  protected closeErrorModal() {
+    this.dataService.closeErrorModal();
+  }
 
   // Form handlers
   protected onConsumptionSave(data: ConsumptionData) {
@@ -358,10 +464,12 @@ export class HeatingComponent {
 
   protected deleteAllMessageKey = computed(() => {
     const count = this.recordsToDeleteAll().length;
-    return count === 1 ? 'HOME.DELETE_ALL_CONFIRM_MESSAGE_SINGULAR' : 'HOME.DELETE_ALL_CONFIRM_MESSAGE_PLURAL';
+    return count === 1
+      ? 'HOME.DELETE_ALL_CONFIRM_MESSAGE_SINGULAR'
+      : 'HOME.DELETE_ALL_CONFIRM_MESSAGE_PLURAL';
   });
 
   protected deleteAllMessageParams = computed(() => ({
-    count: this.recordsToDeleteAll().length.toString()
+    count: this.recordsToDeleteAll().length.toString(),
   }));
 }

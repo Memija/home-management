@@ -17,7 +17,7 @@ const mockDeleteField = vi.fn();
 let globalFirestoreMock: any = {};
 
 vi.mock('firebase/firestore', () => ({
-  Firestore: class { },
+  Firestore: class {},
   getFirestore: () => globalFirestoreMock,
   doc: (...args: any[]) => mockDoc(...args),
   setDoc: (...args: any[]) => mockSetDoc(...args),
@@ -25,7 +25,7 @@ vi.mock('firebase/firestore', () => ({
   deleteDoc: (...args: any[]) => mockDeleteDoc(...args),
   collection: (...args: any[]) => mockCollection(...args),
   getDocs: (...args: any[]) => mockGetDocs(...args),
-  deleteField: () => mockDeleteField()
+  deleteField: () => mockDeleteField(),
 }));
 
 vi.mock('firebase/app', () => ({
@@ -41,7 +41,7 @@ describe('FirebaseStorageService', () => {
 
   beforeEach(() => {
     authServiceMock = {
-      getCurrentUid: vi.fn().mockReturnValue('test-uid')
+      getCurrentUid: vi.fn().mockReturnValue('test-uid'),
     };
 
     firestoreMock = {};
@@ -52,8 +52,8 @@ describe('FirebaseStorageService', () => {
         FirebaseStorageService,
         { provide: Firestore, useValue: firestoreMock },
         { provide: AuthService, useValue: authServiceMock },
-        { provide: PLATFORM_ID, useValue: 'browser' }
-      ]
+        { provide: PLATFORM_ID, useValue: 'browser' },
+      ],
     });
 
     service = TestBed.inject(FirebaseStorageService);
@@ -80,10 +80,13 @@ describe('FirebaseStorageService', () => {
       await service.save(key, data);
 
       expect(mockDoc).toHaveBeenCalledWith(firestoreMock, 'users/test-uid/data/test-key');
-      expect(mockSetDoc).toHaveBeenCalledWith('doc-ref', expect.objectContaining({
-        value: data,
-        updatedAt: expect.any(String)
-      }));
+      expect(mockSetDoc).toHaveBeenCalledWith(
+        'doc-ref',
+        expect.objectContaining({
+          value: data,
+          updatedAt: expect.any(String),
+        }),
+      );
     });
 
     it('should not save if not browser', async () => {
@@ -93,8 +96,8 @@ describe('FirebaseStorageService', () => {
           FirebaseStorageService,
           { provide: Firestore, useValue: firestoreMock },
           { provide: AuthService, useValue: authServiceMock },
-          { provide: PLATFORM_ID, useValue: 'server' }
-        ]
+          { provide: PLATFORM_ID, useValue: 'server' },
+        ],
       });
       const serverService = TestBed.inject(FirebaseStorageService);
 
@@ -117,7 +120,7 @@ describe('FirebaseStorageService', () => {
       mockDoc.mockReturnValue('doc-ref');
       mockGetDoc.mockResolvedValue({
         exists: () => true,
-        data: () => ({ value: data })
+        data: () => ({ value: data }),
       });
 
       const result = await service.load(key);
@@ -130,7 +133,7 @@ describe('FirebaseStorageService', () => {
     it('should return null if doc does not exist', async () => {
       mockDoc.mockReturnValue('doc-ref');
       mockGetDoc.mockResolvedValue({
-        exists: () => false
+        exists: () => false,
       });
 
       const result = await service.load('key');
@@ -182,7 +185,7 @@ describe('FirebaseStorageService', () => {
         forEach: (callback: any) => {
           callback({ id: 'key1', data: () => ({ value: 'val1' }) });
           callback({ id: 'user_settings', data: () => ({ theme: 'dark' }) });
-        }
+        },
       });
 
       const result = await service.exportAll();
@@ -190,7 +193,7 @@ describe('FirebaseStorageService', () => {
       expect(mockCollection).toHaveBeenCalledWith(firestoreMock, 'users/test-uid/data');
       expect(result).toEqual({
         key1: 'val1',
-        user_settings: { theme: 'dark' }
+        user_settings: { theme: 'dark' },
       });
     });
   });
@@ -222,7 +225,7 @@ describe('FirebaseStorageService', () => {
       mockDoc.mockReturnValue('doc-ref');
       mockGetDoc.mockResolvedValue({
         exists: () => true,
-        data: () => ({ theme: 'dark' })
+        data: () => ({ theme: 'dark' }),
       });
 
       const result = await service.getSettings();
@@ -235,7 +238,11 @@ describe('FirebaseStorageService', () => {
 
       await service.deleteSetting('theme');
 
-      expect(mockSetDoc).toHaveBeenCalledWith('doc-ref', { theme: 'delete-field-marker' }, { merge: true });
+      expect(mockSetDoc).toHaveBeenCalledWith(
+        'doc-ref',
+        { theme: 'delete-field-marker' },
+        { merge: true },
+      );
     });
   });
 
@@ -249,7 +256,7 @@ describe('FirebaseStorageService', () => {
         forEach: (callback: any) => {
           callback(doc1);
           callback(doc2);
-        }
+        },
       });
 
       await service.deleteAllUserData();

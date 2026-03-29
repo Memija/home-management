@@ -1,4 +1,13 @@
-import { Component, Input, Output, EventEmitter, signal, computed, inject, effect } from '@angular/core';
+import {
+  Component,
+  Input,
+  Output,
+  EventEmitter,
+  signal,
+  computed,
+  inject,
+  effect,
+} from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { CountryService } from '../../services/country.service';
@@ -14,7 +23,7 @@ import { TranslatePipe } from '../../pipes/translate.pipe';
   standalone: true,
   imports: [CommonModule, FormsModule, TranslatePipe],
   templateUrl: './country-selector.component.html',
-  styleUrl: './country-selector.component.scss'
+  styleUrl: './country-selector.component.scss',
 })
 export class CountrySelectorComponent {
   private countryService = inject(CountryService);
@@ -65,13 +74,13 @@ export class CountrySelectorComponent {
     const countries = this.countryService.getCountries();
 
     // If search exactly matches a country, don't show dropdown (already selected)
-    const exactMatch = countries.some(c => c.toLowerCase() === search);
+    const exactMatch = countries.some((c) => c.toLowerCase() === search);
     if (exactMatch) return [];
 
     // Filter and exclude current selection if it partially matches
     const currentDisplay = this.displayName().toLowerCase();
     return countries
-      .filter(c => c.toLowerCase().includes(search) && c.toLowerCase() !== currentDisplay)
+      .filter((c) => c.toLowerCase().includes(search) && c.toLowerCase() !== currentDisplay)
       .slice(0, 10); // Limit to 10 results
   });
 

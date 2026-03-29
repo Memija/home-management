@@ -21,7 +21,9 @@ import { vi, afterEach } from 'vitest';
 
 @Pipe({ name: 'translate', standalone: true })
 class MockTranslatePipe implements PipeTransform {
-  transform(key: string): string { return key; }
+  transform(key: string): string {
+    return key;
+  }
 }
 
 @Component({ selector: 'app-delete-confirmation-modal', standalone: true, template: '' })
@@ -75,16 +77,16 @@ const DEFAULT_SETTINGS: ExcelSettings = {
     kitchenWarm: 'Kitchen Warm Water',
     kitchenCold: 'Kitchen Cold Water',
     bathroomWarm: 'Bathroom Warm Water',
-    bathroomCold: 'Bathroom Cold Water'
+    bathroomCold: 'Bathroom Cold Water',
   },
   heatingMapping: {
     date: 'Date',
-    rooms: {}
+    rooms: {},
   },
   electricityMapping: {
     date: 'Date',
-    value: 'Electricity Consumption (kWh)'
-  }
+    value: 'Electricity Consumption (kWh)',
+  },
 };
 
 const makeSettings = (overrides: Partial<ExcelSettings> = {}): ExcelSettings => ({
@@ -92,7 +94,7 @@ const makeSettings = (overrides: Partial<ExcelSettings> = {}): ExcelSettings => 
   ...overrides,
   waterMapping: { ...DEFAULT_SETTINGS.waterMapping, ...overrides.waterMapping },
   heatingMapping: { ...DEFAULT_SETTINGS.heatingMapping, ...overrides.heatingMapping },
-  electricityMapping: { ...DEFAULT_SETTINGS.electricityMapping, ...overrides.electricityMapping }
+  electricityMapping: { ...DEFAULT_SETTINGS.electricityMapping, ...overrides.electricityMapping },
 });
 
 describe('ExcelSettingsComponent', () => {
@@ -116,14 +118,14 @@ describe('ExcelSettingsComponent', () => {
     excelSettingsServiceMock = {
       settings: settingsSignal,
       updateSettings: vi.fn(),
-      resetToDefaults: vi.fn()
+      resetToDefaults: vi.fn(),
     };
 
     validationServiceMock = {
       validateMappings: vi.fn().mockReturnValue({ isValid: true }),
       isDuplicate: vi.fn().mockReturnValue(false),
       isValidColumnName: vi.fn().mockReturnValue(true),
-      getValidationError: vi.fn().mockReturnValue('')
+      getValidationError: vi.fn().mockReturnValue(''),
     };
 
     importServiceMock = {
@@ -131,31 +133,31 @@ describe('ExcelSettingsComponent', () => {
       mapImportError: vi.fn().mockReturnValue({
         message: 'SETTINGS.IMPORT_ERROR',
         details: 'Details',
-        instructions: ['INSTRUCTION_1']
-      })
+        instructions: ['INSTRUCTION_1'],
+      }),
     };
 
     languageServiceMock = {
       currentLang: signal('en'),
-      translate: vi.fn().mockImplementation((key: string) => key)
+      translate: vi.fn().mockImplementation((key: string) => key),
     };
 
     localStorageServiceMock = {
       getPreference: vi.fn().mockReturnValue(null),
-      setPreference: vi.fn()
+      setPreference: vi.fn(),
     };
 
     fileStorageServiceMock = {
       exportData: vi.fn().mockResolvedValue(undefined),
-      importFromFile: vi.fn().mockResolvedValue(makeSettings())
+      importFromFile: vi.fn().mockResolvedValue(makeSettings()),
     };
 
     heatingRoomsServiceMock = {
-      rooms: roomsSignal
+      rooms: roomsSignal,
     };
 
     await TestBed.configureTestingModule({
-      imports: [ExcelSettingsComponent]
+      imports: [ExcelSettingsComponent],
     })
       .overrideComponent(ExcelSettingsComponent, {
         remove: {
@@ -164,8 +166,8 @@ describe('ExcelSettingsComponent', () => {
             DeleteConfirmationModalComponent,
             ConfirmationModalComponent,
             ErrorModalComponent,
-            HelpModalComponent
-          ]
+            HelpModalComponent,
+          ],
         },
         add: {
           imports: [
@@ -173,9 +175,9 @@ describe('ExcelSettingsComponent', () => {
             MockDeleteConfirmationModalComponent,
             MockConfirmationModalComponent,
             MockErrorModalComponent,
-            MockHelpModalComponent
-          ]
-        }
+            MockHelpModalComponent,
+          ],
+        },
       })
       .overrideProvider(ExcelSettingsService, { useValue: excelSettingsServiceMock })
       .overrideProvider(ExcelValidationService, { useValue: validationServiceMock })
@@ -288,7 +290,10 @@ describe('ExcelSettingsComponent', () => {
     });
 
     it('should save default collapsed state to localStorage when no preference exists', () => {
-      expect(localStorageServiceMock.setPreference).toHaveBeenCalledWith('excel_preview_is_collapsed', 'false');
+      expect(localStorageServiceMock.setPreference).toHaveBeenCalledWith(
+        'excel_preview_is_collapsed',
+        'false',
+      );
     });
 
     it('should load collapsed state as true from localStorage', async () => {
@@ -330,13 +335,19 @@ describe('ExcelSettingsComponent', () => {
 
     it('should save collapsed state to localStorage', () => {
       (component as any).togglePreview();
-      expect(localStorageServiceMock.setPreference).toHaveBeenCalledWith('excel_preview_is_collapsed', 'true');
+      expect(localStorageServiceMock.setPreference).toHaveBeenCalledWith(
+        'excel_preview_is_collapsed',
+        'true',
+      );
     });
 
     it('should save expanded state to localStorage', () => {
       (component as any).isPreviewCollapsed.set(true);
       (component as any).togglePreview();
-      expect(localStorageServiceMock.setPreference).toHaveBeenCalledWith('excel_preview_is_collapsed', 'false');
+      expect(localStorageServiceMock.setPreference).toHaveBeenCalledWith(
+        'excel_preview_is_collapsed',
+        'false',
+      );
     });
   });
 
@@ -364,7 +375,7 @@ describe('ExcelSettingsComponent', () => {
     it('should compute heatingColumns with date and room columns', () => {
       roomsSignal.set([
         { id: 'room_1', name: 'Living Room' },
-        { id: 'room_2', name: 'Bedroom' }
+        { id: 'room_2', name: 'Bedroom' },
       ]);
       (component as any).heatingDateCol.set('Date');
       (component as any).heatingRoomCols.set({ room_1: 'LR Col', room_2: 'BR Col' });
@@ -386,7 +397,7 @@ describe('ExcelSettingsComponent', () => {
       roomsSignal.set([
         { id: 'room_1', name: 'R1' },
         { id: 'room_2', name: 'R2' },
-        { id: 'room_3', name: 'R3' }
+        { id: 'room_3', name: 'R3' },
       ]);
       expect((component as any).heatingRoomCount()).toBe(3);
     });
@@ -480,7 +491,13 @@ describe('ExcelSettingsComponent', () => {
       (component as any).waterBathroomColdCol.set('E');
 
       (component as any).isDuplicateWater('A');
-      expect(validationServiceMock.isDuplicate).toHaveBeenCalledWith('A', ['A', 'B', 'C', 'D', 'E']);
+      expect(validationServiceMock.isDuplicate).toHaveBeenCalledWith('A', [
+        'A',
+        'B',
+        'C',
+        'D',
+        'E',
+      ]);
     });
 
     it('isDuplicateElectricity should pass electricity columns to validation service', () => {
@@ -567,7 +584,9 @@ describe('ExcelSettingsComponent', () => {
     });
 
     it('should reset local state to saved settings when closing without changes', () => {
-      settingsSignal.set(makeSettings({ waterMapping: { ...DEFAULT_SETTINGS.waterMapping, date: 'CustomDate' } }));
+      settingsSignal.set(
+        makeSettings({ waterMapping: { ...DEFAULT_SETTINGS.waterMapping, date: 'CustomDate' } }),
+      );
       fixture.detectChanges();
 
       (component as any).showModal.set(true);
@@ -661,9 +680,11 @@ describe('ExcelSettingsComponent', () => {
 
     it('should return true when heating room columns have changed', () => {
       roomsSignal.set([{ id: 'room_1', name: 'Living Room' }]);
-      settingsSignal.set(makeSettings({
-        heatingMapping: { date: 'Date', rooms: { room_1: 'LR' } }
-      }));
+      settingsSignal.set(
+        makeSettings({
+          heatingMapping: { date: 'Date', rooms: { room_1: 'LR' } },
+        }),
+      );
       fixture.detectChanges();
 
       (component as any).showModal.set(true);
@@ -673,9 +694,11 @@ describe('ExcelSettingsComponent', () => {
 
     it('should return false when heating room columns match saved (empty)', () => {
       roomsSignal.set([{ id: 'room_1', name: 'Living Room' }]);
-      settingsSignal.set(makeSettings({
-        heatingMapping: { date: 'Date', rooms: {} }
-      }));
+      settingsSignal.set(
+        makeSettings({
+          heatingMapping: { date: 'Date', rooms: {} },
+        }),
+      );
       fixture.detectChanges();
 
       (component as any).showModal.set(true);
@@ -804,7 +827,7 @@ describe('ExcelSettingsComponent', () => {
     it('should not save when validation fails', () => {
       validationServiceMock.validateMappings.mockReturnValue({
         isValid: false,
-        errorKey: 'EXCEL.VALIDATION_FORM_INVALID'
+        errorKey: 'EXCEL.VALIDATION_FORM_INVALID',
       });
 
       (component as any).saveSettings();
@@ -814,7 +837,7 @@ describe('ExcelSettingsComponent', () => {
     it('should set validation error when validation fails', () => {
       validationServiceMock.validateMappings.mockReturnValue({
         isValid: false,
-        errorKey: 'EXCEL.VALIDATION_FORM_INVALID'
+        errorKey: 'EXCEL.VALIDATION_FORM_INVALID',
       });
 
       (component as any).saveSettings();
@@ -862,7 +885,7 @@ describe('ExcelSettingsComponent', () => {
     it('should include room column mappings trimmed', () => {
       roomsSignal.set([
         { id: 'room_1', name: 'Living Room' },
-        { id: 'room_2', name: 'Bedroom' }
+        { id: 'room_2', name: 'Bedroom' },
       ]);
       (component as any).heatingRoomCols.set({ room_1: '  LR  ', room_2: '  BR  ' });
 
@@ -915,7 +938,7 @@ describe('ExcelSettingsComponent', () => {
       await (component as any).exportSettings();
       expect(fileStorageServiceMock.exportData).toHaveBeenCalledWith(
         DEFAULT_SETTINGS,
-        'excel-settings.json'
+        'excel-settings.json',
       );
     });
 
@@ -925,7 +948,7 @@ describe('ExcelSettingsComponent', () => {
     });
 
     it('should log error when export fails', async () => {
-      const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => { });
+      const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
       fileStorageServiceMock.exportData.mockRejectedValue(new Error('Export failed'));
 
       await (component as any).exportSettings();
@@ -992,10 +1015,12 @@ describe('ExcelSettingsComponent', () => {
       await (component as any).confirmImportSettings();
 
       expect((component as any).showImportErrorModal()).toBe(true);
-      expect(languageServiceMock.translate).toHaveBeenCalledWith('SETTINGS.IMPORT_EXCEL_SETTINGS_INVALID_FILE_TYPE');
+      expect(languageServiceMock.translate).toHaveBeenCalledWith(
+        'SETTINGS.IMPORT_EXCEL_SETTINGS_INVALID_FILE_TYPE',
+      );
       expect((component as any).importErrorInstructions()).toEqual([
         'SETTINGS.IMPORT_EXCEL_SETTINGS_INVALID_FILE_TYPE_INSTRUCTION_1',
-        'SETTINGS.IMPORT_EXCEL_SETTINGS_INVALID_FILE_TYPE_INSTRUCTION_2'
+        'SETTINGS.IMPORT_EXCEL_SETTINGS_INVALID_FILE_TYPE_INSTRUCTION_2',
       ]);
     });
 
@@ -1058,7 +1083,7 @@ describe('ExcelSettingsComponent', () => {
       importServiceMock.mapImportError.mockReturnValue({
         message: 'SETTINGS.IMPORT_ERROR',
         details: 'Some detail',
-        instructions: ['I1', 'I2']
+        instructions: ['I1', 'I2'],
       });
 
       const file = new File(['bad'], 'settings.json', { type: 'application/json' });
@@ -1077,13 +1102,15 @@ describe('ExcelSettingsComponent', () => {
         message: 'SETTINGS.IMPORT_VALIDATION_ERROR',
         details: 'Missing fields',
         fieldKeys: ['field1'],
-        hintKeys: ['hint1']
+        hintKeys: ['hint1'],
       };
-      importServiceMock.validateImportedSettings.mockImplementation(() => { throw importError; });
+      importServiceMock.validateImportedSettings.mockImplementation(() => {
+        throw importError;
+      });
       importServiceMock.mapImportError.mockReturnValue({
         message: 'SETTINGS.IMPORT_VALIDATION_ERROR',
         details: 'Missing fields',
-        instructions: ['Fix the fields']
+        instructions: ['Fix the fields'],
       });
 
       const file = new File(['{}'], 'settings.json', { type: 'application/json' });
@@ -1177,10 +1204,10 @@ describe('ExcelSettingsComponent', () => {
           kitchenWarm: 'Küche Warm',
           kitchenCold: 'Küche Kalt',
           bathroomWarm: 'Bad Warm',
-          bathroomCold: 'Bad Kalt'
+          bathroomCold: 'Bad Kalt',
         },
         heatingMapping: { date: 'HD', rooms: {} },
-        electricityMapping: { date: 'ED', value: 'EV' }
+        electricityMapping: { date: 'ED', value: 'EV' },
       });
 
       settingsSignal.set(customSettings);
@@ -1200,11 +1227,13 @@ describe('ExcelSettingsComponent', () => {
     it('should update heating room columns when settings include rooms', () => {
       roomsSignal.set([
         { id: 'room_1', name: 'Living Room' },
-        { id: 'room_2', name: 'Bedroom' }
+        { id: 'room_2', name: 'Bedroom' },
       ]);
-      settingsSignal.set(makeSettings({
-        heatingMapping: { date: 'Date', rooms: { room_1: 'LR Col', room_2: 'BR Col' } }
-      }));
+      settingsSignal.set(
+        makeSettings({
+          heatingMapping: { date: 'Date', rooms: { room_1: 'LR Col', room_2: 'BR Col' } },
+        }),
+      );
       fixture.detectChanges();
 
       expect((component as any).heatingRoomCols()['room_1']).toBe('LR Col');
@@ -1213,9 +1242,11 @@ describe('ExcelSettingsComponent', () => {
 
     it('should default to empty string for rooms not in settings', () => {
       roomsSignal.set([{ id: 'room_1', name: 'Living Room' }]);
-      settingsSignal.set(makeSettings({
-        heatingMapping: { date: 'Date', rooms: {} }
-      }));
+      settingsSignal.set(
+        makeSettings({
+          heatingMapping: { date: 'Date', rooms: {} },
+        }),
+      );
       fixture.detectChanges();
 
       expect((component as any).heatingRoomCols()['room_1']).toBe('');
@@ -1232,7 +1263,7 @@ describe('ExcelSettingsComponent', () => {
         enabled: false,
         waterMapping: DEFAULT_SETTINGS.waterMapping,
         heatingMapping: { date: 'Date', rooms: undefined as any },
-        electricityMapping: DEFAULT_SETTINGS.electricityMapping
+        electricityMapping: DEFAULT_SETTINGS.electricityMapping,
       });
       fixture.detectChanges();
 
@@ -1278,12 +1309,14 @@ describe('ExcelSettingsComponent', () => {
     it('should handle saving with many rooms', () => {
       const rooms = Array.from({ length: 10 }, (_, i) => ({
         id: `room_${i + 1}`,
-        name: `Room ${i + 1}`
+        name: `Room ${i + 1}`,
       }));
       roomsSignal.set(rooms);
 
       const roomCols: Record<string, string> = {};
-      rooms.forEach(r => { roomCols[r.id] = `Col ${r.name}`; });
+      rooms.forEach((r) => {
+        roomCols[r.id] = `Col ${r.name}`;
+      });
       (component as any).heatingRoomCols.set(roomCols);
 
       validationServiceMock.validateMappings.mockReturnValue({ isValid: true });
@@ -1307,9 +1340,11 @@ describe('ExcelSettingsComponent', () => {
 
     it('should handle close modal resetting room columns from saved settings', () => {
       roomsSignal.set([{ id: 'room_1', name: 'Living Room' }]);
-      settingsSignal.set(makeSettings({
-        heatingMapping: { date: 'Date', rooms: { room_1: 'SavedCol' } }
-      }));
+      settingsSignal.set(
+        makeSettings({
+          heatingMapping: { date: 'Date', rooms: { room_1: 'SavedCol' } },
+        }),
+      );
       fixture.detectChanges();
 
       (component as any).showModal.set(true);
@@ -1338,7 +1373,7 @@ describe('ExcelSettingsComponent', () => {
       importServiceMock.mapImportError.mockReturnValue({
         message: 'PARSE_ERROR',
         details: 'Invalid JSON',
-        instructions: []
+        instructions: [],
       });
 
       const file = new File(['not json'], 'settings.json', { type: 'application/json' });

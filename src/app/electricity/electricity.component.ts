@@ -3,14 +3,43 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 
 import { TranslatePipe } from '../pipes/translate.pipe';
-import { LucideAngularModule, Clipboard as ClipboardIcon, Download, Upload, CircleCheck, Trash2, FileSpreadsheet, FileText, FileInput, FileOutput, Info, AlertTriangle, Lightbulb, Zap, RefreshCw } from 'lucide-angular';
-import { ConsumptionInputComponent, type ConsumptionData, type ConsumptionGroup } from '../shared/consumption-input/consumption-input.component';
+import { DemoService } from '../services/demo.service';
+import { DemoWizardComponent } from '../shared/demo-wizard/demo-wizard.component';
+import {
+  LucideAngularModule,
+  Clipboard as ClipboardIcon,
+  Download,
+  Upload,
+  CircleCheck,
+  Trash2,
+  FileSpreadsheet,
+  FileText,
+  FileInput,
+  FileOutput,
+  Info,
+  AlertTriangle,
+  Zap,
+  RefreshCw,
+  Lightbulb,
+} from 'lucide-angular';
+import {
+  ConsumptionInputComponent,
+  type ConsumptionData,
+  type ConsumptionGroup,
+} from '../shared/consumption-input/consumption-input.component';
 import { DeleteConfirmationModalComponent } from '../shared/delete-confirmation-modal/delete-confirmation-modal.component';
 import { ConfirmationModalComponent } from '../shared/confirmation-modal/confirmation-modal.component';
-import { DetailedRecordsComponent, SortOptionConfig } from '../shared/detailed-records/detailed-records.component';
+import {
+  DetailedRecordsComponent,
+  SortOptionConfig,
+} from '../shared/detailed-records/detailed-records.component';
 import { ElectricityRecord } from '../models/records.model';
 import { ComparisonNoteComponent } from '../shared/comparison-note/comparison-note.component';
-import { ConsumptionChartComponent, type ChartView, type DisplayMode } from '../shared/consumption-chart/consumption-chart.component';
+import {
+  ConsumptionChartComponent,
+  type ChartView,
+  type DisplayMode,
+} from '../shared/consumption-chart/consumption-chart.component';
 import { ErrorModalComponent } from '../shared/error-modal/error-modal.component';
 import { HouseholdService } from '../services/household.service';
 import { ConsumptionPreferencesService } from '../services/consumption-preferences.service';
@@ -22,21 +51,43 @@ import { LanguageService } from '../services/language.service';
 import { ElectricityMeterService } from '../services/electricity-meter.service';
 import { ElectricityCountryFactsService } from '../services/electricity-country-facts.service';
 import { availableElectricityCountries } from '../i18n/modules/en/electricity-country-facts';
-import { CHART_HELP_STEPS, RECORD_HELP_STEPS, RECORDS_LIST_HELP_STEPS } from './electricity.constants';
+import {
+  CHART_HELP_STEPS,
+  RECORD_HELP_STEPS,
+  RECORDS_LIST_HELP_STEPS,
+  DEMO_WIZARD_STEPS,
+  DEMO_TOUR_STEPS,
+} from './electricity.constants';
+import { DemoTourComponent } from '../shared/demo-tour/demo-tour.component';
 
 import { SmartImportModalComponent } from '../shared/smart-import-modal/smart-import-modal.component';
 
 @Component({
   selector: 'app-electricity',
   standalone: true,
-  imports: [CommonModule, FormsModule, TranslatePipe, LucideAngularModule, ConsumptionInputComponent, DeleteConfirmationModalComponent, ConfirmationModalComponent, DetailedRecordsComponent, ConsumptionChartComponent, ComparisonNoteComponent, ErrorModalComponent, SmartImportModalComponent],
+  imports: [
+    CommonModule,
+    FormsModule,
+    TranslatePipe,
+    LucideAngularModule,
+    ConsumptionInputComponent,
+    DeleteConfirmationModalComponent,
+    ConfirmationModalComponent,
+    DetailedRecordsComponent,
+    ConsumptionChartComponent,
+    ComparisonNoteComponent,
+    ErrorModalComponent,
+    SmartImportModalComponent,
+    DemoWizardComponent,
+    DemoTourComponent,
+  ],
   templateUrl: './electricity.component.html',
   styleUrl: './electricity.component.scss',
-
 })
 export class ElectricityComponent {
   // Services
   protected excelSettings = inject(ExcelSettingsService);
+  protected demoService = inject(DemoService);
   private householdService = inject(HouseholdService);
   private chartCalculationService = inject(ChartCalculationService);
   private languageService = inject(LanguageService);
@@ -56,7 +107,9 @@ export class ElectricityComponent {
     const address = this.householdService.address();
     if (address?.country) {
       // Find if this country is valid for electricity facts
-      const isValid = availableElectricityCountries.some(c => c.code.toLowerCase() === address.country.toLowerCase());
+      const isValid = availableElectricityCountries.some(
+        (c) => c.code.toLowerCase() === address.country.toLowerCase(),
+      );
       if (isValid) {
         this.effectiveComparisonCountryCode.set(address.country.toUpperCase());
       }
@@ -74,7 +127,9 @@ export class ElectricityComponent {
   protected successTitle = this.dataService.successTitle;
 
   protected deleteAllMessageKey = computed(() => 'ELECTRICITY.DELETE_ALL_CONFIRM_MESSAGE');
-  protected deleteAllMessageParams = computed<Record<string, string>>(() => ({ count: this.dataService.recordsToDelete().length.toString() }));
+  protected deleteAllMessageParams = computed<Record<string, string>>(() => ({
+    count: this.dataService.recordsToDelete().length.toString(),
+  }));
 
   protected showImportConfirmModal = this.dataService.showImportConfirmModal;
   protected showFilterWarningModal = this.dataService.showFilterWarningModal;
@@ -95,6 +150,20 @@ export class ElectricityComponent {
   protected chartHelpSteps = CHART_HELP_STEPS;
   protected recordsHelpSteps = RECORDS_LIST_HELP_STEPS;
 
+  // Demo wizard & tour
+  protected demoWizardSteps = DEMO_WIZARD_STEPS;
+  protected demoTourSteps = DEMO_TOUR_STEPS;
+  protected showDemoWizard = signal(false);
+  protected showDemoTour = signal(false);
+
+  protected openRelevantDemoGuide(): void {
+    if (this.demoService.isDemoMode()) {
+      this.showDemoTour.set(true);
+    } else {
+      this.showDemoWizard.set(true);
+    }
+  }
+
   protected selectedDate = this.formService.selectedDate;
   protected editingRecord = this.formService.editingRecord;
   protected maxDate = new Date().toISOString().split('T')[0];
@@ -112,7 +181,7 @@ export class ElectricityComponent {
     { value: 'date-desc', labelKey: 'HOME.SORT.DATE_DESC', direction: '↓' },
     { value: 'date-asc', labelKey: 'HOME.SORT.DATE_ASC', direction: '↑' },
     { value: 'value-desc', labelKey: 'HOME.SORT.TOTAL_DESC', direction: '↓' },
-    { value: 'value-asc', labelKey: 'HOME.SORT.TOTAL_ASC', direction: '↑' }
+    { value: 'value-asc', labelKey: 'HOME.SORT.TOTAL_ASC', direction: '↑' },
   ]);
 
   protected consumptionGroups = computed<ConsumptionGroup[]>(() => [
@@ -123,10 +192,10 @@ export class ElectricityComponent {
           key: 'value',
           label: 'ELECTRICITY.VALUE',
           icon: Zap,
-          value: this.formService.value()
-        }
-      ]
-    }
+          value: this.formService.value(),
+        },
+      ],
+    },
   ]);
 
   protected unconfirmedMeterChanges = computed(() => {
@@ -141,7 +210,6 @@ export class ElectricityComponent {
     return new Date(dates[0]).toLocaleDateString(this.languageService.currentLang());
   });
 
-
   // Icons
   protected readonly DownloadIcon = Download;
   protected readonly UploadIcon = Upload;
@@ -154,9 +222,9 @@ export class ElectricityComponent {
   protected readonly FileTextIcon = FileText;
   protected readonly InfoIcon = Info;
   protected readonly AlertTriangleIcon = AlertTriangle;
-  protected readonly LightbulbIcon = Lightbulb;
   protected readonly ZapIcon = Zap;
   protected readonly RefreshCwIcon = RefreshCw;
+  protected readonly LightbulbIcon = Lightbulb;
 
   protected availableElectricityCountries = availableElectricityCountries;
 
@@ -193,34 +261,56 @@ export class ElectricityComponent {
     this.preferencesService.setChartView(view, 'electricity');
     this.refreshFact();
   };
-  protected onDisplayModeChange = (mode: DisplayMode) => this.preferencesService.setDisplayMode(mode, 'electricity');
-
+  protected onDisplayModeChange = (mode: DisplayMode) =>
+    this.preferencesService.setDisplayMode(mode, 'electricity');
 
   protected onFilteredRecordsChange(records: unknown[]) {
     // Optional
   }
 
   // Delegations
-  protected importData(event: Event) { this.dataService.importData(event); }
-  protected importFromExcel(event: Event) { this.dataService.importFromExcel(event); }
+  protected importData(event: Event) {
+    this.dataService.importData(event);
+  }
+  protected importFromExcel(event: Event) {
+    this.dataService.importFromExcel(event);
+  }
 
-  protected confirmImport() { this.dataService.confirmImport(); }
-  protected cancelImport() { this.dataService.cancelImport(); }
+  protected confirmImport() {
+    this.dataService.confirmImport();
+  }
+  protected cancelImport() {
+    this.dataService.cancelImport();
+  }
 
-  protected confirmFilterWarningImport() { this.dataService.confirmFilterWarningImport(); }
-  protected cancelFilterWarningImport() { this.dataService.cancelFilterWarningImport(); }
+  protected confirmFilterWarningImport() {
+    this.dataService.confirmFilterWarningImport();
+  }
+  protected cancelFilterWarningImport() {
+    this.dataService.cancelFilterWarningImport();
+  }
 
-  protected exportData() { this.dataService.exportData(); }
-  protected exportToExcel() { this.dataService.exportToExcel(); }
-  protected exportToPdf() { this.dataService.exportToPdf(); }
+  protected exportData() {
+    this.dataService.exportData();
+  }
+  protected exportToExcel() {
+    this.dataService.exportToExcel();
+  }
+  protected exportToPdf() {
+    this.dataService.exportToPdf();
+  }
 
-  protected confirmDelete() { this.dataService.confirmDelete(); }
+  protected confirmDelete() {
+    this.dataService.confirmDelete();
+  }
   protected cancelDelete() {
     this.dataService.showDeleteModal.set(false);
     this.dataService.recordToDelete.set(null);
   }
 
-  protected confirmDeleteAll() { this.dataService.confirmDeleteAll(); }
+  protected confirmDeleteAll() {
+    this.dataService.confirmDeleteAll();
+  }
   protected cancelDeleteAll() {
     this.dataService.showDeleteAllModal.set(false);
     this.dataService.recordsToDelete.set([]);
@@ -231,13 +321,21 @@ export class ElectricityComponent {
     this.dataService.showDeleteAllModal.set(true);
   }
 
-  protected onFilterStateChange(state: { year: number | null; month: number | null; startDate: string | null; endDate: string | null }) {
+  protected onFilterStateChange(state: {
+    year: number | null;
+    month: number | null;
+    startDate: string | null;
+    endDate: string | null;
+  }) {
     this.dataService.updateFilterState(state);
   }
 
-  protected closeSuccessModal() { this.dataService.showSuccessModal.set(false); }
-  protected closeErrorModal() { this.dataService.showErrorModal.set(false); }
-
+  protected closeSuccessModal() {
+    this.dataService.showSuccessModal.set(false);
+  }
+  protected closeErrorModal() {
+    this.dataService.showErrorModal.set(false);
+  }
 
   // Edit/Delete Interactions
   protected editRecord(record: unknown) {
@@ -297,16 +395,16 @@ export class ElectricityComponent {
     this.showSmartImportModal.set(true);
   }
 
-  protected onSmartImport(records: { date: Date, value: number }[]) {
+  protected onSmartImport(records: { date: Date; value: number }[]) {
     if (records.length === 0) return;
 
     // Convert parsed records to ElectricityRecords and save
     let importedCount = 0;
 
-    records.forEach(record => {
+    records.forEach((record) => {
       const newRecord: ElectricityRecord = {
         date: record.date,
-        value: record.value
+        value: record.value,
       };
 
       this.dataService.saveRecord(newRecord);

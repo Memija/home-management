@@ -13,7 +13,7 @@ export const africaElectricityFacts = {
     'Grüner Wasserstoff könnte ein wichtiges Exportgut werden.',
     'Der Bergbau verbraucht riesige Strommengen.',
     'Illegale Anschlüsse plagen das Verteilnetz.',
-    'Batteriespeicher werden zur Stabilisierung des Netzes eingesetzt.'
+    'Batteriespeicher werden zur Stabilisierung des Netzes eingesetzt.',
   ],
 
   // Egypt
@@ -29,7 +29,7 @@ export const africaElectricityFacts = {
     'Stromsubventionen wurden schrittweise abgebaut.',
     'Ägypten strebt bis 2035 42% erneuerbare Energie an.',
     'Projekte für grünen Wasserstoff vervielfachen sich in der Suez-Zone.',
-    'Entsalzungsanlagen sind große Stromverbraucher.'
+    'Entsalzungsanlagen sind große Stromverbraucher.',
   ],
 
   // Nigeria
@@ -45,7 +45,7 @@ export const africaElectricityFacts = {
     'Die Übertragungsverluste sind sehr hoch.',
     'Pay-as-you-go-Solar ist bei netzfernen Haushalten beliebt.',
     'Nigeria hat riesige Gasreserven zur Stromerzeugung.',
-    'Die Politik für erneuerbare Energien strebt 30% bis 2030 an.'
+    'Die Politik für erneuerbare Energien strebt 30% bis 2030 an.',
   ],
 
   // Kenya
@@ -61,7 +61,7 @@ export const africaElectricityFacts = {
     'Das Netz ist relativ grün, aber teuer.',
     'Thermische Kraftwerke werden nur als Backup genutzt.',
     'Die ländliche Elektrifizierung ist eine Regierungspriorität.',
-    'Netzferne Solaranlagen schaffen Tausende von Arbeitsplätzen.'
+    'Netzferne Solaranlagen schaffen Tausende von Arbeitsplätzen.',
   ],
 
   // Morocco
@@ -77,6 +77,6 @@ export const africaElectricityFacts = {
     'Die Produktion von grünem Ammoniak für Düngemittel ist geplant.',
     'Pumpspeicherwerke werden ausgebaut.',
     'Entsalzung für die Landwirtschaft wird Windkraft nutzen.',
-    'Marokko ist führend in Afrika beim Klimaschutz.'
-  ]
+    'Marokko ist führend in Afrika beim Klimaschutz.',
+  ],
 };

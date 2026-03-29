@@ -13,5 +13,5 @@ export const environment = {
    *
    * Note: Changes in Google Cloud Console can take 5-10 minutes to propagate.
    */
-  allowLocalAuth: true
+  allowLocalAuth: false,
 };

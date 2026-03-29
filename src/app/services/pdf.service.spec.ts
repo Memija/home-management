@@ -13,11 +13,11 @@ vi.mock('jspdf', () => ({
     constructor(...args: any[]) {
       return mockJsPDFConstructor(...args);
     }
-  }
+  },
 }));
 
 vi.mock('jspdf-autotable', () => ({
-  default: mockAutoTable
+  default: mockAutoTable,
 }));
 
 describe('PdfService', () => {
@@ -28,7 +28,7 @@ describe('PdfService', () => {
   beforeEach(() => {
     mockLanguageService = {
       translate: vi.fn().mockImplementation((key) => key),
-      currentLang: vi.fn().mockReturnValue('en')
+      currentLang: vi.fn().mockReturnValue('en'),
     };
 
     // Reset mocks
@@ -63,22 +63,19 @@ describe('PdfService', () => {
       setLineWidth: vi.fn(),
       line: vi.fn(),
       internal: {
-        pageSize: { width: 297, height: 210 }
-      }
+        pageSize: { width: 297, height: 210 },
+      },
     };
 
     mockJsPDFConstructor.mockImplementation(() => mockDoc);
 
     TestBed.configureTestingModule({
-      providers: [
-        PdfService,
-        { provide: LanguageService, useValue: mockLanguageService }
-      ]
+      providers: [PdfService, { provide: LanguageService, useValue: mockLanguageService }],
     });
     service = TestBed.inject(PdfService);
 
     // Spy on console.warn to suppress expected warnings
-    vi.spyOn(console, 'warn').mockImplementation(() => { });
+    vi.spyOn(console, 'warn').mockImplementation(() => {});
   });
 
   afterEach(() => {
@@ -94,9 +91,11 @@ describe('PdfService', () => {
       const records = [
         {
           date: new Date('2023-01-01'),
-          kitchenWarm: 10, kitchenCold: 20,
-          bathroomWarm: 30, bathroomCold: 40
-        }
+          kitchenWarm: 10,
+          kitchenCold: 20,
+          bathroomWarm: 30,
+          bathroomCold: 40,
+        },
       ];
 
       await service.exportWaterToPdf(records, 'test.pdf');
@@ -118,14 +117,18 @@ describe('PdfService', () => {
       const records = [
         {
           date: new Date('2023-01-01'),
-          kitchenWarm: 10, kitchenCold: 10,
-          bathroomWarm: 10, bathroomCold: 10
+          kitchenWarm: 10,
+          kitchenCold: 10,
+          bathroomWarm: 10,
+          bathroomCold: 10,
         }, // Total 40
         {
           date: new Date('2023-01-02'),
-          kitchenWarm: 11, kitchenCold: 11,
-          bathroomWarm: 11, bathroomCold: 11
-        } // Total 44
+          kitchenWarm: 11,
+          kitchenCold: 11,
+          bathroomWarm: 11,
+          bathroomCold: 11,
+        }, // Total 44
       ];
 
       await service.exportWaterToPdf(records, 'test.pdf');
@@ -144,14 +147,18 @@ describe('PdfService', () => {
       const records = [
         {
           date: new Date('2023-01-01'),
-          kitchenWarm: 100, kitchenCold: 100,
-          bathroomWarm: 100, bathroomCold: 100
+          kitchenWarm: 100,
+          kitchenCold: 100,
+          bathroomWarm: 100,
+          bathroomCold: 100,
         }, // Total 400
         {
           date: new Date('2023-01-02'),
-          kitchenWarm: 5, kitchenCold: 105, // kitchenWarm reset (100 -> 5)
-          bathroomWarm: 105, bathroomCold: 105
-        } // Total 320.
+          kitchenWarm: 5,
+          kitchenCold: 105, // kitchenWarm reset (100 -> 5)
+          bathroomWarm: 105,
+          bathroomCold: 105,
+        }, // Total 320.
         // Real consumption:
         // kW: 5 (reset), kC: 5
         // bW: 5, bC: 5
@@ -175,9 +182,11 @@ describe('PdfService', () => {
       const records = [
         {
           date: new Date('2023-12-31'),
-          kitchenWarm: 0, kitchenCold: 0,
-          bathroomWarm: 0, bathroomCold: 0
-        }
+          kitchenWarm: 0,
+          kitchenCold: 0,
+          bathroomWarm: 0,
+          bathroomCold: 0,
+        },
       ];
 
       await service.exportWaterToPdf(records, 'test.pdf');
@@ -192,7 +201,9 @@ describe('PdfService', () => {
       // Let's assume the implementation uses the service result.
       // We can check if 'Erstellt am' is used in text.
       const textCalls = mockDoc.text.mock.calls;
-      const generatedText = textCalls.find((args: any) => typeof args[0] === 'string' && args[0].startsWith('Erstellt am'));
+      const generatedText = textCalls.find(
+        (args: any) => typeof args[0] === 'string' && args[0].startsWith('Erstellt am'),
+      );
       expect(generatedText).toBeDefined();
     });
 
@@ -222,9 +233,9 @@ describe('PdfService', () => {
           date: new Date('2023-01-01'),
           rooms: {
             room_1: 10,
-            room_2: 20
-          }
-        }
+            room_2: 20,
+          },
+        },
       ];
       const roomNames = ['Living Room', 'Bedroom'];
 
@@ -240,12 +251,12 @@ describe('PdfService', () => {
       const records = [
         {
           date: new Date('2023-01-01'),
-          rooms: { room_1: 10, room_2: 20 } // Total 30
+          rooms: { room_1: 10, room_2: 20 }, // Total 30
         },
         {
           date: new Date('2023-01-02'),
-          rooms: { room_1: 15, room_2: 25 } // Total 40
-        }
+          rooms: { room_1: 15, room_2: 25 }, // Total 40
+        },
       ];
       const roomNames = ['Living Room', 'Bedroom'];
 
@@ -270,8 +281,8 @@ describe('PdfService', () => {
       const records = [
         {
           date: new Date('2023-01-01'),
-          rooms: { room_1: 10, room_2: 20, room_3: 30 }
-        }
+          rooms: { room_1: 10, room_2: 20, room_3: 30 },
+        },
       ];
       const roomNames = ['Kitchen', 'Bathroom', 'Office'];
 
@@ -288,12 +299,12 @@ describe('PdfService', () => {
       const records = [
         {
           date: new Date('2023-01-01'),
-          rooms: { room_1: 100 }
+          rooms: { room_1: 100 },
         },
         {
           date: new Date('2023-01-02'),
-          rooms: { room_1: 5 } // Reset 100 -> 5
-        }
+          rooms: { room_1: 5 }, // Reset 100 -> 5
+        },
       ];
       const roomNames = ['Room 1'];
 
@@ -310,12 +321,12 @@ describe('PdfService', () => {
       const records = [
         {
           date: new Date('2022-12-31'),
-          rooms: { room_1: 10 }
+          rooms: { room_1: 10 },
         },
         {
           date: new Date('2023-01-01'), // New year
-          rooms: { room_1: 20 }
-        }
+          rooms: { room_1: 20 },
+        },
       ];
       const roomNames = ['Room 1'];
 
@@ -333,7 +344,7 @@ describe('PdfService', () => {
         column: { index: 0 },
         doc: mockDoc,
         cell: { y: 50 },
-        table: {}
+        table: {},
       };
 
       options.willDrawCell(mockHookData);
@@ -348,8 +359,8 @@ describe('PdfService', () => {
       const records = [
         {
           date: new Date('2023-01-01'),
-          value: 12500
-        }
+          value: 12500,
+        },
       ];
 
       await service.exportElectricityToPdf(records, 'electricity-test.pdf');
@@ -368,8 +379,8 @@ describe('PdfService', () => {
       const records = [
         {
           date: new Date('2023-01-01'),
-          value: 12500
-        }
+          value: 12500,
+        },
       ];
 
       await service.exportElectricityToPdf(records);
@@ -381,12 +392,12 @@ describe('PdfService', () => {
       const records = [
         {
           date: new Date('2023-01-01'),
-          value: 12500
+          value: 12500,
         },
         {
           date: new Date('2023-01-02'),
-          value: 12600
-        }
+          value: 12600,
+        },
       ];
 
       await service.exportElectricityToPdf(records, 'test.pdf');
@@ -405,12 +416,12 @@ describe('PdfService', () => {
       const records = [
         {
           date: new Date('2023-01-01'),
-          value: 12600
+          value: 12600,
         },
         {
           date: new Date('2023-01-02'),
-          value: 12500
-        }
+          value: 12500,
+        },
       ];
 
       await service.exportElectricityToPdf(records, 'test.pdf');
@@ -428,14 +439,16 @@ describe('PdfService', () => {
       const records = [
         {
           date: new Date('2023-12-31'),
-          value: 12500
-        }
+          value: 12500,
+        },
       ];
 
       await service.exportElectricityToPdf(records, 'test.pdf');
 
       const textCalls = mockDoc.text.mock.calls;
-      const generatedText = textCalls.find((args: any) => typeof args[0] === 'string' && args[0].startsWith('Erstellt am'));
+      const generatedText = textCalls.find(
+        (args: any) => typeof args[0] === 'string' && args[0].startsWith('Erstellt am'),
+      );
       expect(generatedText).toBeDefined();
     });
 
@@ -445,14 +458,16 @@ describe('PdfService', () => {
       const records = [
         {
           date: new Date('2023-12-31'),
-          value: 12500
-        }
+          value: 12500,
+        },
       ];
 
       await service.exportElectricityToPdf(records, 'test.pdf');
 
       const textCalls = mockDoc.text.mock.calls;
-      const generatedText = textCalls.find((args: any) => typeof args[0] === 'string' && args[0].startsWith('Generated on'));
+      const generatedText = textCalls.find(
+        (args: any) => typeof args[0] === 'string' && args[0].startsWith('Generated on'),
+      );
       expect(generatedText).toBeDefined();
     });
 
@@ -470,16 +485,16 @@ describe('PdfService', () => {
       const records = [
         {
           date: new Date('2023-01-15'),
-          value: 12600
+          value: 12600,
         },
         {
           date: new Date('2023-01-01'),
-          value: 12500
+          value: 12500,
         },
         {
           date: new Date('2023-01-10'),
-          value: 12550
-        }
+          value: 12550,
+        },
       ];
 
       await service.exportElectricityToPdf(records, 'test.pdf');
@@ -497,8 +512,8 @@ describe('PdfService', () => {
       const records = [
         {
           date: new Date('2023-01-01'),
-          value: 12500
-        }
+          value: 12500,
+        },
       ];
 
       await service.exportElectricityToPdf(records, 'test.pdf');
@@ -514,8 +529,8 @@ describe('PdfService', () => {
       const records = [
         {
           date: new Date('2023-01-01'),
-          value: 12500
-        }
+          value: 12500,
+        },
       ];
 
       await service.exportElectricityToPdf(records, 'test.pdf');
@@ -533,8 +548,8 @@ describe('PdfService', () => {
       const records = [
         {
           date: new Date('2023-01-01'),
-          value: 12500
-        }
+          value: 12500,
+        },
       ];
 
       // Image mock is set to fail by default
@@ -550,8 +565,8 @@ describe('PdfService', () => {
       const records = [
         {
           date: new Date('2023-01-01'),
-          value: 12500
-        }
+          value: 12500,
+        },
       ];
 
       await service.exportElectricityToPdf(records, 'test.pdf');
@@ -566,12 +581,12 @@ describe('PdfService', () => {
       const records = [
         {
           date: new Date('2023-01-01'),
-          value: 12500
+          value: 12500,
         },
         {
           date: new Date('2023-01-02'),
-          value: 12500
-        }
+          value: 12500,
+        },
       ];
 
       await service.exportElectricityToPdf(records, 'test.pdf');
@@ -587,8 +602,8 @@ describe('PdfService', () => {
       const records = [
         {
           date: new Date('2023-01-01'),
-          value: 1000
-        }
+          value: 1000,
+        },
       ];
 
       await service.exportElectricityToPdf(records, 'test.pdf');
@@ -605,8 +620,8 @@ describe('PdfService', () => {
       const records = [
         {
           date: new Date('2023-01-01'),
-          value: 99999999.99
-        }
+          value: 99999999.99,
+        },
       ];
 
       await service.exportElectricityToPdf(records, 'test.pdf');
@@ -621,8 +636,8 @@ describe('PdfService', () => {
       const records = [
         {
           date: new Date('2023-01-01'),
-          value: 0
-        }
+          value: 0,
+        },
       ];
 
       await service.exportElectricityToPdf(records, 'test.pdf');
@@ -639,9 +654,11 @@ describe('PdfService', () => {
       const records = [
         {
           date: new Date('2023-01-01'),
-          kitchenWarm: 10, kitchenCold: 20,
-          bathroomWarm: 30, bathroomCold: 40
-        }
+          kitchenWarm: 10,
+          kitchenCold: 20,
+          bathroomWarm: 30,
+          bathroomCold: 40,
+        },
       ];
 
       await service.exportWaterToPdf(records);
@@ -653,9 +670,11 @@ describe('PdfService', () => {
       const records = [
         {
           date: new Date('2023-01-01'),
-          kitchenWarm: 0, kitchenCold: 0,
-          bathroomWarm: 0, bathroomCold: 0
-        }
+          kitchenWarm: 0,
+          kitchenCold: 0,
+          bathroomWarm: 0,
+          bathroomCold: 0,
+        },
       ];
 
       await service.exportWaterToPdf(records, 'test.pdf');
@@ -670,14 +689,18 @@ describe('PdfService', () => {
       const records = [
         {
           date: new Date('2023-01-01'),
-          kitchenWarm: 10, kitchenCold: 10,
-          bathroomWarm: 10, bathroomCold: 10
+          kitchenWarm: 10,
+          kitchenCold: 10,
+          bathroomWarm: 10,
+          bathroomCold: 10,
         },
         {
           date: new Date('2023-01-02'),
-          kitchenWarm: 10, kitchenCold: 10,
-          bathroomWarm: 10, bathroomCold: 10
-        }
+          kitchenWarm: 10,
+          kitchenCold: 10,
+          bathroomWarm: 10,
+          bathroomCold: 10,
+        },
       ];
 
       await service.exportWaterToPdf(records, 'test.pdf');
@@ -693,14 +716,18 @@ describe('PdfService', () => {
       const records = [
         {
           date: new Date('2023-01-01'),
-          kitchenWarm: 100, kitchenCold: 200,
-          bathroomWarm: 300, bathroomCold: 400
+          kitchenWarm: 100,
+          kitchenCold: 200,
+          bathroomWarm: 300,
+          bathroomCold: 400,
         },
         {
           date: new Date('2023-01-02'),
-          kitchenWarm: 5, kitchenCold: 10, // Both kitchen meters reset
-          bathroomWarm: 15, bathroomCold: 20 // Both bathroom meters reset
-        }
+          kitchenWarm: 5,
+          kitchenCold: 10, // Both kitchen meters reset
+          bathroomWarm: 15,
+          bathroomCold: 20, // Both bathroom meters reset
+        },
       ];
 
       await service.exportWaterToPdf(records, 'test.pdf');
@@ -716,19 +743,25 @@ describe('PdfService', () => {
       const records = [
         {
           date: new Date('2023-01-15'),
-          kitchenWarm: 15, kitchenCold: 15,
-          bathroomWarm: 15, bathroomCold: 15
+          kitchenWarm: 15,
+          kitchenCold: 15,
+          bathroomWarm: 15,
+          bathroomCold: 15,
         }, // Total 60
         {
           date: new Date('2023-01-01'),
-          kitchenWarm: 10, kitchenCold: 10,
-          bathroomWarm: 10, bathroomCold: 10
+          kitchenWarm: 10,
+          kitchenCold: 10,
+          bathroomWarm: 10,
+          bathroomCold: 10,
         }, // Total 40
         {
           date: new Date('2023-01-10'),
-          kitchenWarm: 12, kitchenCold: 12,
-          bathroomWarm: 12, bathroomCold: 12
-        } // Total 48
+          kitchenWarm: 12,
+          kitchenCold: 12,
+          bathroomWarm: 12,
+          bathroomCold: 12,
+        }, // Total 48
       ];
 
       await service.exportWaterToPdf(records, 'test.pdf');
@@ -751,9 +784,11 @@ describe('PdfService', () => {
       const records = [
         {
           date: new Date('2023-01-01'),
-          kitchenWarm: 10, kitchenCold: 20,
-          bathroomWarm: 30, bathroomCold: 40
-        }
+          kitchenWarm: 10,
+          kitchenCold: 20,
+          bathroomWarm: 30,
+          bathroomCold: 40,
+        },
       ];
 
       await service.exportWaterToPdf(records, 'test.pdf');
@@ -770,9 +805,11 @@ describe('PdfService', () => {
       const records = [
         {
           date: new Date('2023-01-01'),
-          kitchenWarm: 9999999, kitchenCold: 9999999,
-          bathroomWarm: 9999999, bathroomCold: 9999999
-        }
+          kitchenWarm: 9999999,
+          kitchenCold: 9999999,
+          bathroomWarm: 9999999,
+          bathroomCold: 9999999,
+        },
       ];
 
       await service.exportWaterToPdf(records, 'test.pdf');
@@ -789,9 +826,11 @@ describe('PdfService', () => {
       const records = [
         {
           date: new Date('2023-01-01'),
-          kitchenWarm: 10, kitchenCold: 20,
-          bathroomWarm: 30, bathroomCold: 40
-        }
+          kitchenWarm: 10,
+          kitchenCold: 20,
+          bathroomWarm: 30,
+          bathroomCold: 40,
+        },
       ];
 
       await service.exportWaterToPdf(records, 'test.pdf');
@@ -807,9 +846,11 @@ describe('PdfService', () => {
       const records = [
         {
           date: new Date('2023-01-01'),
-          kitchenWarm: 10, kitchenCold: 10,
-          bathroomWarm: 10, bathroomCold: 10
-        }
+          kitchenWarm: 10,
+          kitchenCold: 10,
+          bathroomWarm: 10,
+          bathroomCold: 10,
+        },
       ];
 
       await service.exportWaterToPdf(records, 'test.pdf');
@@ -827,9 +868,11 @@ describe('PdfService', () => {
       const records = [
         {
           date: new Date('2023-01-01'),
-          kitchenWarm: 10, kitchenCold: 10,
-          bathroomWarm: 10, bathroomCold: 10
-        }
+          kitchenWarm: 10,
+          kitchenCold: 10,
+          bathroomWarm: 10,
+          bathroomCold: 10,
+        },
       ];
 
       await service.exportWaterToPdf(records, 'test.pdf');
@@ -847,8 +890,8 @@ describe('PdfService', () => {
       const records = [
         {
           date: new Date('2023-01-01'),
-          rooms: { room_1: 10 }
-        }
+          rooms: { room_1: 10 },
+        },
       ];
       const roomNames = ['Room 1'];
 
@@ -861,8 +904,8 @@ describe('PdfService', () => {
       const records = [
         {
           date: new Date('2023-01-01'),
-          rooms: { room_1: 50, room_2: 50 }
-        }
+          rooms: { room_1: 50, room_2: 50 },
+        },
       ];
       const roomNames = ['Room 1', 'Room 2'];
 
@@ -882,15 +925,17 @@ describe('PdfService', () => {
       const records = [
         {
           date: new Date('2023-12-31'),
-          rooms: { room_1: 10 }
-        }
+          rooms: { room_1: 10 },
+        },
       ];
       const roomNames = ['Room 1'];
 
       await service.exportHeatingToPdf(records, roomNames, 'test.pdf');
 
       const textCalls = mockDoc.text.mock.calls;
-      const generatedText = textCalls.find((args: any) => typeof args[0] === 'string' && args[0].startsWith('Erstellt am'));
+      const generatedText = textCalls.find(
+        (args: any) => typeof args[0] === 'string' && args[0].startsWith('Erstellt am'),
+      );
       expect(generatedText).toBeDefined();
     });
 
@@ -898,12 +943,12 @@ describe('PdfService', () => {
       const records = [
         {
           date: new Date('2023-01-01'),
-          rooms: { room_1: 100 }
+          rooms: { room_1: 100 },
         },
         {
           date: new Date('2023-01-02'),
-          rooms: { room_1: 100 }
-        }
+          rooms: { room_1: 100 },
+        },
       ];
       const roomNames = ['Room 1'];
 
@@ -920,8 +965,8 @@ describe('PdfService', () => {
       const records = [
         {
           date: new Date('2023-01-01'),
-          rooms: {}
-        }
+          rooms: {},
+        },
       ];
       const roomNames: string[] = [];
 
@@ -938,12 +983,12 @@ describe('PdfService', () => {
       const records: Array<{ date: Date; rooms: Record<string, number> }> = [
         {
           date: new Date('2023-01-01'),
-          rooms: { room_1: 100 }
+          rooms: { room_1: 100 },
         },
         {
           date: new Date('2023-01-02'),
-          rooms: { room_1: 110, room_2: 50 } // room_2 is new
-        }
+          rooms: { room_1: 110, room_2: 50 }, // room_2 is new
+        },
       ];
       const roomNames = ['Room 1', 'Room 2'];
 
@@ -960,8 +1005,8 @@ describe('PdfService', () => {
       const records = [
         {
           date: new Date('2023-01-01'),
-          rooms: { room_1: 0, room_2: 0, room_3: 0 }
-        }
+          rooms: { room_1: 0, room_2: 0, room_3: 0 },
+        },
       ];
       const roomNames = ['Room 1', 'Room 2', 'Room 3'];
 
@@ -978,12 +1023,12 @@ describe('PdfService', () => {
       const records = [
         {
           date: new Date('2023-01-01'),
-          rooms: { room_1: 100, room_2: 200 }
+          rooms: { room_1: 100, room_2: 200 },
         },
         {
           date: new Date('2023-01-02'),
-          rooms: { room_1: 5, room_2: 10 } // Both reset
-        }
+          rooms: { room_1: 5, room_2: 10 }, // Both reset
+        },
       ];
       const roomNames = ['Room 1', 'Room 2'];
 
@@ -1000,16 +1045,16 @@ describe('PdfService', () => {
       const records = [
         {
           date: new Date('2023-01-15'),
-          rooms: { room_1: 150 }
+          rooms: { room_1: 150 },
         },
         {
           date: new Date('2023-01-01'),
-          rooms: { room_1: 100 }
+          rooms: { room_1: 100 },
         },
         {
           date: new Date('2023-01-10'),
-          rooms: { room_1: 120 }
-        }
+          rooms: { room_1: 120 },
+        },
       ];
       const roomNames = ['Room 1'];
 
@@ -1030,8 +1075,8 @@ describe('PdfService', () => {
       const records = [
         {
           date: new Date('2023-01-01'),
-          rooms: { room_1: 10 }
-        }
+          rooms: { room_1: 10 },
+        },
       ];
       const roomNames = ['Room 1'];
 
@@ -1046,8 +1091,8 @@ describe('PdfService', () => {
       const records = [
         {
           date: new Date('2023-01-01'),
-          rooms: { room_1: 100 } // room_2 missing
-        }
+          rooms: { room_1: 100 }, // room_2 missing
+        },
       ];
       const roomNames = ['Room 1', 'Room 2'];
 
@@ -1068,8 +1113,8 @@ describe('PdfService', () => {
       const records = [
         {
           date: new Date('2023-01-01'),
-          rooms: { room_1: 10 }
-        }
+          rooms: { room_1: 10 },
+        },
       ];
       const roomNames = ['Room 1'];
 
@@ -1086,8 +1131,8 @@ describe('PdfService', () => {
       const records = [
         {
           date: new Date('2023-01-01'),
-          rooms: { room_1: 10 }
-        }
+          rooms: { room_1: 10 },
+        },
       ];
       const roomNames = ['Room 1'];
 
@@ -1106,8 +1151,8 @@ describe('PdfService', () => {
       const records = [
         {
           date: new Date('2023-01-01'),
-          rooms: { room_1: 10 }
-        }
+          rooms: { room_1: 10 },
+        },
       ];
       const roomNames = ['Room 1'];
 
@@ -1126,7 +1171,7 @@ describe('PdfService', () => {
         column: { index: 0 },
         doc: mockDoc,
         cell: { y: 50 },
-        table: {}
+        table: {},
       };
 
       options.willDrawCell(mockHookData);
@@ -1139,12 +1184,12 @@ describe('PdfService', () => {
       const records = [
         {
           date: new Date('2023-01-01'),
-          rooms: { room_1: 10 }
+          rooms: { room_1: 10 },
         },
         {
           date: new Date('2023-06-15'),
-          rooms: { room_1: 20 }
-        }
+          rooms: { room_1: 20 },
+        },
       ];
       const roomNames = ['Room 1'];
 
@@ -1163,7 +1208,7 @@ describe('PdfService', () => {
         column: { index: 0 },
         doc: mockDoc,
         cell: { y: 60 },
-        table: {}
+        table: {},
       };
 
       options.willDrawCell(mockHookData);
@@ -1176,12 +1221,12 @@ describe('PdfService', () => {
       const records = [
         {
           date: new Date('2022-12-31'),
-          rooms: { room_1: 10 }
+          rooms: { room_1: 10 },
         },
         {
           date: new Date('2023-01-01'),
-          rooms: { room_1: 20 }
-        }
+          rooms: { room_1: 20 },
+        },
       ];
       const roomNames = ['Room 1'];
 
@@ -1200,7 +1245,7 @@ describe('PdfService', () => {
         column: { index: 0 },
         doc: mockDoc,
         cell: { y: 50 },
-        table: {}
+        table: {},
       };
 
       options.willDrawCell(mockHookData);

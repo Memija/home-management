@@ -17,7 +17,7 @@ interface DemoData {
  * Allows users to experience the app with sample data.
  */
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class DemoService {
   private platformId = inject(PLATFORM_ID);
@@ -44,7 +44,7 @@ export class DemoService {
     'heating_chart_view',
     'heating_display_mode',
     'electricity_chart_view',
-    'electricity_display_mode'
+    'electricity_display_mode',
   ];
 
   // Preference keys used by the app (stored via setPreference with hm_ prefix)
@@ -60,7 +60,7 @@ export class DemoService {
     'electricity_chart_average_visible',
     'water_chart_trendline_visible',
     'heating_chart_trendline_visible',
-    'electricity_chart_trendline_visible'
+    'electricity_chart_trendline_visible',
   ];
 
   constructor() {
@@ -159,28 +159,44 @@ export class DemoService {
     this.isLoading.set(true);
 
     try {
-      // Clear demo data from all known storage keys
-      for (const key of this.storageKeys) {
-        await this.storage.delete(key);
-      }
+      // 1. Read backups to memory BEFORE clearing
+      const rawBackupJson = localStorage.getItem('hm_user_backup_raw');
+      const oldBackupJson = localStorage.getItem('hm_user_backup');
 
-      // Clear demo preferences
-      for (const key of this.preferenceKeys) {
-        this.storage.removePreference(key);
-      }
+      // 2. Wipe everything starting with hm_ (purges ALL demo data safely)
+      await this.storage.clearAll();
 
-      // Restore user's backed up data if available
-      const backupJson = localStorage.getItem('hm_user_backup');
-      if (backupJson) {
+      // 3. Restore the user's exactly previous data
+      if (rawBackupJson) {
+        // New exact restore method
         try {
-          const backup = JSON.parse(backupJson) as {
+          const rawBackup = JSON.parse(rawBackupJson) as Record<string, string>;
+          for (const [key, value] of Object.entries(rawBackup)) {
+            localStorage.setItem(key, value);
+          }
+        } catch (e) {
+          console.error('Failed to parse raw user backup', e);
+        }
+      } else if (oldBackupJson) {
+        // Fallback for users who entered demo mode before this update
+        try {
+          const backup = JSON.parse(oldBackupJson) as {
             storage?: Record<string, unknown>;
             preferences?: Record<string, string>;
           };
 
           // Restore storage data
           if (backup.storage) {
-            await this.storage.importAll(backup.storage);
+            // Protect preference strings from being double-JSONified
+            const stringPrefKeys = ['theme', 'preferred_language', 'storage_mode', 'last_sync_timestamp'];
+            
+            for (const [key, value] of Object.entries(backup.storage)) {
+              if (stringPrefKeys.includes(key) && typeof value === 'string') {
+                this.storage.setPreference(key, value);
+              } else {
+                await this.storage.save(key, value);
+              }
+            }
           }
 
           // Restore preferences (like meter change confirmations)
@@ -189,13 +205,14 @@ export class DemoService {
               this.storage.setPreference(key, value);
             }
           }
-        } catch {
-          // Backup corrupted, user starts fresh
+        } catch (e) {
+          console.error('Failed to restore legacy user backup', e);
         }
-        localStorage.removeItem('hm_user_backup');
       }
 
-      // Clear demo mode flag
+      // Ensure flags and backups are definitely removed
+      localStorage.removeItem('hm_user_backup');
+      localStorage.removeItem('hm_user_backup_raw');
       localStorage.removeItem('hm_demo_mode_is_active');
       this.isDemoMode.set(false);
 
@@ -214,35 +231,41 @@ export class DemoService {
   private async loadDemoData(): Promise<DemoData> {
     const baseUrl = '/demo';
 
-    // Backup user data before loading demo
-    const currentData = await this.storage.exportAll();
-
-    // Also backup preferences (like meter change confirmations)
-    const preferencesBackup: Record<string, string> = {};
-    for (const key of this.preferenceKeys) {
-      const value = this.storage.getPreference(key);
-      if (value !== null) {
-        preferencesBackup[key] = value;
+    // EXACT BACKUP: Backup all hm_ keys verbatim as strings
+    // This perfectly captures the user environment without JSON parsing bugs
+    const rawBackup: Record<string, string> = {};
+    for (let i = 0; i < localStorage.length; i++) {
+      const key = localStorage.key(i);
+      if (
+        key?.startsWith('hm_') &&
+        key !== 'hm_demo_mode_is_active' &&
+        key !== 'hm_user_backup' &&
+        key !== 'hm_user_backup_raw'
+      ) {
+        rawBackup[key] = localStorage.getItem(key)!;
       }
     }
 
-    // Store combined backup
-    const fullBackup = {
-      storage: currentData,
-      preferences: preferencesBackup
-    };
-    if (Object.keys(currentData).length > 0 || Object.keys(preferencesBackup).length > 0) {
-      localStorage.setItem('hm_user_backup', JSON.stringify(fullBackup));
+    if (Object.keys(rawBackup).length > 0) {
+      localStorage.setItem('hm_user_backup_raw', JSON.stringify(rawBackup));
     }
 
-    const [waterRecords, heatingRecords, heatingSettings, electricityRecords, family, address, excelSettings] = await Promise.all([
+    const [
+      waterRecords,
+      heatingRecords,
+      heatingSettings,
+      electricityRecords,
+      family,
+      address,
+      excelSettings,
+    ] = await Promise.all([
       this.fetchJson(`${baseUrl}/water-consumption.json`),
       this.fetchJson(`${baseUrl}/heating-consumption.json`),
       this.fetchJson(`${baseUrl}/heating-settings.json`),
       this.fetchJson(`${baseUrl}/electricity-consumption.json`),
       this.fetchJson(`${baseUrl}/family.json`),
       this.fetchJson(`${baseUrl}/address.json`),
-      this.fetchJson(`${baseUrl}/excel-settings.json`)
+      this.fetchJson(`${baseUrl}/excel-settings.json`),
     ]);
 
     return {
@@ -252,7 +275,7 @@ export class DemoService {
       electricityRecords: (electricityRecords as unknown[] | null) ?? [],
       family: (family as unknown[] | null) ?? [],
       address: address ?? null,
-      excelSettings: excelSettings ?? null
+      excelSettings: excelSettings ?? null,
     };
   }
 

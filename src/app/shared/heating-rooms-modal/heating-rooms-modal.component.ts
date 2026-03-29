@@ -1,7 +1,19 @@
 import { Component, input, output, signal, computed, inject, effect } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { LucideAngularModule, X, Plus, Trash2, Settings, TriangleAlert, Lock, LockOpen, Download, Upload, HelpCircle } from 'lucide-angular';
+import {
+  LucideAngularModule,
+  X,
+  Plus,
+  Trash2,
+  Settings,
+  TriangleAlert,
+  Lock,
+  LockOpen,
+  Download,
+  Upload,
+  HelpCircle,
+} from 'lucide-angular';
 import { TranslatePipe } from '../../pipes/translate.pipe';
 import { HelpModalComponent, HelpStep } from '../help-modal/help-modal.component';
 import { HeatingRoomConfig, HeatingRoomsService } from '../../services/heating-rooms.service';
@@ -12,7 +24,7 @@ import { LanguageService } from '../../services/language.service';
   standalone: true,
   imports: [CommonModule, FormsModule, LucideAngularModule, TranslatePipe, HelpModalComponent],
   templateUrl: './heating-rooms-modal.component.html',
-  styleUrl: './heating-rooms-modal.component.scss'
+  styleUrl: './heating-rooms-modal.component.scss',
 })
 export class HeatingRoomsModalComponent {
   private languageService = inject(LanguageService);
@@ -60,16 +72,16 @@ export class HeatingRoomsModalComponent {
   protected readonly helpSteps: HelpStep[] = [
     {
       titleKey: 'HEATING.HELP.ROOM_MANAGEMENT_TITLE',
-      descriptionKey: 'HEATING.HELP.ROOM_MANAGEMENT_DESC'
+      descriptionKey: 'HEATING.HELP.ROOM_MANAGEMENT_DESC',
     },
     {
       titleKey: 'HEATING.HELP.LOCKED_ROOMS_TITLE',
-      descriptionKey: 'HEATING.HELP.LOCKED_ROOMS_DESC'
+      descriptionKey: 'HEATING.HELP.LOCKED_ROOMS_DESC',
     },
     {
       titleKey: 'HEATING.HELP.IMPORT_EXPORT_TITLE',
-      descriptionKey: 'HEATING.HELP.IMPORT_EXPORT_DESC'
-    }
+      descriptionKey: 'HEATING.HELP.IMPORT_EXPORT_DESC',
+    },
   ];
 
   // Computed
@@ -78,7 +90,9 @@ export class HeatingRoomsModalComponent {
   protected canRemoveRoom = computed(() => this.editingRooms().length > 0);
 
   protected hasErrors = computed(() => {
-    return this.editingRooms().length === 0 || this.editingRooms().some(r => this.getRoomError(r.name));
+    return (
+      this.editingRooms().length === 0 || this.editingRooms().some((r) => this.getRoomError(r.name))
+    );
   });
 
   protected trackByRoom = (_index: number, room: HeatingRoomConfig) => room.id;
@@ -102,7 +116,7 @@ export class HeatingRoomsModalComponent {
   protected confirmUnlock(): void {
     const roomId = this.pendingUnlockRoomId();
     if (roomId) {
-      this.unlockedRooms.update(set => {
+      this.unlockedRooms.update((set) => {
         const newSet = new Set(set);
         newSet.add(roomId);
         return newSet;
@@ -118,7 +132,7 @@ export class HeatingRoomsModalComponent {
 
   // Lock a room again
   protected lockRoom(id: string): void {
-    this.unlockedRooms.update(set => {
+    this.unlockedRooms.update((set) => {
       const newSet = new Set(set);
       newSet.delete(id);
       return newSet;
@@ -136,9 +150,16 @@ export class HeatingRoomsModalComponent {
 
   // Predefined room name translation keys
   private readonly PREDEFINED_ROOM_KEYS = [
-    'HEATING.ROOM_LIVING_ROOM', 'HEATING.ROOM_BEDROOM', 'HEATING.ROOM_KIDS_ROOM', 'HEATING.ROOM_KITCHEN',
-    'HEATING.ROOM_BATHROOM', 'HEATING.ROOM_OFFICE', 'HEATING.ROOM_GUEST_ROOM', 'HEATING.ROOM_DINING_ROOM',
-    'HEATING.ROOM_HALLWAY', 'HEATING.ROOM_ATTIC'
+    'HEATING.ROOM_LIVING_ROOM',
+    'HEATING.ROOM_BEDROOM',
+    'HEATING.ROOM_KIDS_ROOM',
+    'HEATING.ROOM_KITCHEN',
+    'HEATING.ROOM_BATHROOM',
+    'HEATING.ROOM_OFFICE',
+    'HEATING.ROOM_GUEST_ROOM',
+    'HEATING.ROOM_DINING_ROOM',
+    'HEATING.ROOM_HALLWAY',
+    'HEATING.ROOM_ATTIC',
   ];
 
   // Reset editing state when modal opens
@@ -147,7 +168,7 @@ export class HeatingRoomsModalComponent {
     const dataArray = this.roomsWithDataArray();
     this.cachedRoomsWithData.set(new Set(dataArray));
 
-    this.editingRooms.set([...this.rooms().map(r => ({ ...r }))]);
+    this.editingRooms.set([...this.rooms().map((r) => ({ ...r }))]);
     this.hasChanges.set(false);
     this.unlockedRooms.set(new Set()); // Reset unlock state when modal opens
     this.pendingUnlockRoomId.set(null);
@@ -155,12 +176,13 @@ export class HeatingRoomsModalComponent {
 
   // Tooltip message for disabled add button
   protected maxRoomsMessage = computed(() =>
-    this.languageService.translate('HEATING.MAX_ROOMS_REACHED', { max: this.maxRooms() }));
+    this.languageService.translate('HEATING.MAX_ROOMS_REACHED', { max: this.maxRooms() }),
+  );
 
   protected addRoom(): void {
     if (!this.canAddRoom()) return;
 
-    const existingIds = this.editingRooms().map(r => r.id);
+    const existingIds = this.editingRooms().map((r) => r.id);
     let newId = '';
     let counter = 1;
     do {
@@ -170,27 +192,29 @@ export class HeatingRoomsModalComponent {
 
     // Get next predefined name from translation, or fallback to Room N
     const roomIndex = this.editingRooms().length;
-    const roomName = roomIndex < this.PREDEFINED_ROOM_KEYS.length
-      ? this.languageService.translate(this.PREDEFINED_ROOM_KEYS[roomIndex])
-      : `Room ${roomIndex + 1}`;
+    const roomName =
+      roomIndex < this.PREDEFINED_ROOM_KEYS.length
+        ? this.languageService.translate(this.PREDEFINED_ROOM_KEYS[roomIndex])
+        : `Room ${roomIndex + 1}`;
 
-    this.editingRooms.update(rooms => [...rooms, {
-      id: newId,
-      name: roomName
-    }]);
+    this.editingRooms.update((rooms) => [
+      ...rooms,
+      {
+        id: newId,
+        name: roomName,
+      },
+    ]);
     this.hasChanges.set(true);
   }
 
   protected removeRoom(id: string): void {
     if (!this.canRemoveRoom()) return;
-    this.editingRooms.update(rooms => rooms.filter(r => r.id !== id));
+    this.editingRooms.update((rooms) => rooms.filter((r) => r.id !== id));
     this.hasChanges.set(true);
   }
 
   protected updateRoomName(id: string, name: string): void {
-    this.editingRooms.update(rooms =>
-      rooms.map(r => r.id === id ? { ...r, name } : r)
-    );
+    this.editingRooms.update((rooms) => rooms.map((r) => (r.id === id ? { ...r, name } : r)));
     this.hasChanges.set(true);
   }
 
@@ -213,9 +237,9 @@ export class HeatingRoomsModalComponent {
     // Validate - trim names and ensure non-empty
     if (this.hasErrors()) return;
 
-    const validated = this.editingRooms().map(r => ({
+    const validated = this.editingRooms().map((r) => ({
       ...r,
-      name: r.name.trim()
+      name: r.name.trim(),
     }));
     this.save.emit(validated);
   }
@@ -251,7 +275,7 @@ export class HeatingRoomsModalComponent {
     const result = await this.roomsService.importRooms(file);
     if (result.success) {
       // Refresh local state with imported data
-      this.editingRooms.set([...this.roomsService.rooms().map(r => ({ ...r }))]);
+      this.editingRooms.set([...this.roomsService.rooms().map((r) => ({ ...r }))]);
       this.hasChanges.set(true);
     } else {
       alert(result.error); // Simple error display for now

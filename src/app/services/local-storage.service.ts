@@ -3,7 +3,7 @@ import { isPlatformBrowser } from '@angular/common';
 import { StorageService } from './storage.service';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class LocalStorageService extends StorageService {
   /** Prefix for all localStorage keys (hm = homemanagement) */

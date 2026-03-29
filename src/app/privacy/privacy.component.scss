@@ -43,7 +43,7 @@
   }
 
   h1 {
-    margin: 0 0 .75rem;
+    margin: 0 0 0.75rem;
     font-size: clamp(2.5rem, 8vw, 3.5rem); // Responsive title
     font-weight: 500; // Thinner Letters
     color: var(--text-primary);
@@ -132,7 +132,9 @@
 
   &:hover {
     transform: translateY(-6px);
-    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+    box-shadow:
+      0 20px 25px -5px rgba(0, 0, 0, 0.1),
+      0 10px 10px -5px rgba(0, 0, 0, 0.04);
     border-color: var(--accent-color);
   }
 

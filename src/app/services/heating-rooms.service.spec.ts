@@ -12,7 +12,7 @@ describe('HeatingRoomsService', () => {
 
   // Helper to wait for the async loadRooms to complete
   const waitForInit = async () => {
-    await new Promise(resolve => setTimeout(resolve, 0));
+    await new Promise((resolve) => setTimeout(resolve, 0));
   };
 
   beforeEach(() => {
@@ -23,15 +23,15 @@ describe('HeatingRoomsService', () => {
 
     mockLanguageService = {
       translate: vi.fn().mockImplementation((key) => key),
-      currentLang: signal('en')
+      currentLang: signal('en'),
     };
 
     TestBed.configureTestingModule({
       providers: [
         HeatingRoomsService,
         { provide: STORAGE_SERVICE, useValue: mockStorageService },
-        { provide: LanguageService, useValue: mockLanguageService }
-      ]
+        { provide: LanguageService, useValue: mockLanguageService },
+      ],
     });
     service = TestBed.inject(HeatingRoomsService);
   });
@@ -51,8 +51,8 @@ describe('HeatingRoomsService', () => {
         providers: [
           HeatingRoomsService,
           { provide: STORAGE_SERVICE, useValue: mockStorageService },
-          { provide: LanguageService, useValue: mockLanguageService }
-        ]
+          { provide: LanguageService, useValue: mockLanguageService },
+        ],
       });
 
       const newService = TestBed.inject(HeatingRoomsService);
@@ -146,16 +146,20 @@ describe('HeatingRoomsService', () => {
     it('should export rooms to JSON file', () => {
       // Setup mock DOM methods
       const mockCreateElement = vi.spyOn(document, 'createElement');
-      const mockAppendChild = vi.spyOn(document.body, 'appendChild').mockImplementation(() => document.body);
-      const mockRemoveChild = vi.spyOn(document.body, 'removeChild').mockImplementation(() => document.body);
+      const mockAppendChild = vi
+        .spyOn(document.body, 'appendChild')
+        .mockImplementation(() => document.body);
+      const mockRemoveChild = vi
+        .spyOn(document.body, 'removeChild')
+        .mockImplementation(() => document.body);
       const mockClick = vi.fn();
-      const mockRevokeObjectURL = vi.spyOn(URL, 'revokeObjectURL').mockImplementation(() => { });
+      const mockRevokeObjectURL = vi.spyOn(URL, 'revokeObjectURL').mockImplementation(() => {});
       const mockCreateObjectURL = vi.spyOn(URL, 'createObjectURL').mockReturnValue('blob:test');
 
       mockCreateElement.mockReturnValue({
         href: '',
         download: '',
-        click: mockClick
+        click: mockClick,
       } as unknown as HTMLAnchorElement);
 
       service.addRoom();
@@ -176,11 +180,11 @@ describe('HeatingRoomsService', () => {
     it('should import valid room configuration', async () => {
       const validData = [
         { id: 'room_1', name: 'Kitchen' },
-        { id: 'room_2', name: 'Bedroom' }
+        { id: 'room_2', name: 'Bedroom' },
       ];
       // Create mock file with text() method
       const mockFile = {
-        text: vi.fn().mockResolvedValue(JSON.stringify(validData))
+        text: vi.fn().mockResolvedValue(JSON.stringify(validData)),
       } as unknown as File;
 
       const result = await service.importRooms(mockFile);
@@ -194,7 +198,7 @@ describe('HeatingRoomsService', () => {
     it('should reject non-array data', async () => {
       const invalidData = { id: 'room_1', name: 'Test' };
       const mockFile = {
-        text: vi.fn().mockResolvedValue(JSON.stringify(invalidData))
+        text: vi.fn().mockResolvedValue(JSON.stringify(invalidData)),
       } as unknown as File;
 
       const result = await service.importRooms(mockFile);
@@ -206,7 +210,7 @@ describe('HeatingRoomsService', () => {
     it('should reject room without id', async () => {
       const invalidData = [{ name: 'Test Room' }];
       const mockFile = {
-        text: vi.fn().mockResolvedValue(JSON.stringify(invalidData))
+        text: vi.fn().mockResolvedValue(JSON.stringify(invalidData)),
       } as unknown as File;
 
       const result = await service.importRooms(mockFile);
@@ -218,7 +222,7 @@ describe('HeatingRoomsService', () => {
     it('should reject room without name', async () => {
       const invalidData = [{ id: 'room_1' }];
       const mockFile = {
-        text: vi.fn().mockResolvedValue(JSON.stringify(invalidData))
+        text: vi.fn().mockResolvedValue(JSON.stringify(invalidData)),
       } as unknown as File;
 
       const result = await service.importRooms(mockFile);
@@ -229,7 +233,7 @@ describe('HeatingRoomsService', () => {
 
     it('should handle invalid JSON', async () => {
       const mockFile = {
-        text: vi.fn().mockResolvedValue('not valid json')
+        text: vi.fn().mockResolvedValue('not valid json'),
       } as unknown as File;
 
       const result = await service.importRooms(mockFile);

@@ -58,7 +58,11 @@
       &:hover {
         color: var(--text-primary);
         transform: translateY(-1px);
-        background: linear-gradient(135deg, rgba(var(--link-rgb), 0.2), rgba(var(--link-rgb-2), 0.2));
+        background: linear-gradient(
+          135deg,
+          rgba(var(--link-rgb), 0.2),
+          rgba(var(--link-rgb-2), 0.2)
+        );
         border-color: rgba(var(--link-rgb), 0.4);
       }
     }
@@ -149,7 +153,6 @@
 }
 
 @keyframes heartbeat {
-
   0%,
   100% {
     transform: scale(1.2);

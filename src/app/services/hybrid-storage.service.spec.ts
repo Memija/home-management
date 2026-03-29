@@ -47,7 +47,7 @@ describe('HybridStorageService', () => {
       exportAll: vi.fn(),
       importAll: vi.fn(),
       exportRecords: vi.fn(),
-      importRecords: vi.fn()
+      importRecords: vi.fn(),
     };
     firebaseStorageSpy = {
       updateSettings: vi.fn(),
@@ -57,7 +57,7 @@ describe('HybridStorageService', () => {
       deleteAllUserData: vi.fn(),
       exportAll: vi.fn(),
       importAll: vi.fn(),
-      importRecords: vi.fn()
+      importRecords: vi.fn(),
     };
     authServiceSpy = { isAuthenticated: vi.fn() };
     demoServiceSpy = { isDemoMode: vi.fn() };
@@ -69,8 +69,8 @@ describe('HybridStorageService', () => {
         { provide: FirebaseStorageService, useValue: firebaseStorageSpy },
         { provide: AuthService, useValue: authServiceSpy },
         { provide: DemoService, useValue: demoServiceSpy },
-        { provide: PLATFORM_ID, useValue: 'browser' }
-      ]
+        { provide: PLATFORM_ID, useValue: 'browser' },
+      ],
     });
 
     service = TestBed.inject(HybridStorageService);
@@ -94,8 +94,8 @@ describe('HybridStorageService', () => {
           { provide: FirebaseStorageService, useValue: firebaseStorageSpy },
           { provide: AuthService, useValue: authServiceSpy },
           { provide: DemoService, useValue: demoServiceSpy },
-          { provide: PLATFORM_ID, useValue: 'browser' }
-        ]
+          { provide: PLATFORM_ID, useValue: 'browser' },
+        ],
       });
       service = TestBed.inject(HybridStorageService);
 
@@ -117,8 +117,8 @@ describe('HybridStorageService', () => {
           { provide: FirebaseStorageService, useValue: firebaseStorageSpy },
           { provide: AuthService, useValue: authServiceSpy },
           { provide: DemoService, useValue: demoServiceSpy },
-          { provide: PLATFORM_ID, useValue: 'browser' }
-        ]
+          { provide: PLATFORM_ID, useValue: 'browser' },
+        ],
       });
       service = TestBed.inject(HybridStorageService);
 
@@ -240,9 +240,9 @@ describe('HybridStorageService', () => {
       service.mode.set('cloud');
       authServiceSpy.isAuthenticated.mockReturnValue(true);
       const mockData = {
-        'water_consumption_records': [1, 2, 3],
-        'theme': 'dark',
-        'unknown_key': 'ignored'
+        water_consumption_records: [1, 2, 3],
+        theme: 'dark',
+        unknown_key: 'ignored',
       };
       localStorageSpy.exportAll.mockResolvedValue(mockData);
       firebaseStorageSpy.save.mockResolvedValue(undefined);
@@ -251,8 +251,13 @@ describe('HybridStorageService', () => {
       await service.migrateLocalToCloud();
 
       expect(localStorageSpy.exportAll).toHaveBeenCalled();
-      expect(firebaseStorageSpy.save).toHaveBeenCalledWith('water_consumption_records', mockData['water_consumption_records']);
-      expect(firebaseStorageSpy.updateSettings).toHaveBeenCalledWith(expect.objectContaining({ 'theme': 'dark' }));
+      expect(firebaseStorageSpy.save).toHaveBeenCalledWith(
+        'water_consumption_records',
+        mockData['water_consumption_records'],
+      );
+      expect(firebaseStorageSpy.updateSettings).toHaveBeenCalledWith(
+        expect.objectContaining({ theme: 'dark' }),
+      );
 
       expect(firebaseStorageSpy.save).not.toHaveBeenCalledWith('unknown_key', expect.any(Object));
     });
@@ -260,9 +265,9 @@ describe('HybridStorageService', () => {
     it('pullFromCloud() should export from firebase and import to local', async () => {
       authServiceSpy.isAuthenticated.mockReturnValue(true);
       const cloudData: any = {
-        'user_settings': { 'theme': 'dark', 'water_chart_view': 'weekly' },
-        'water_consumption_records': [1, 2, 3],
-        'storage_mode': 'cloud'
+        user_settings: { theme: 'dark', water_chart_view: 'weekly' },
+        water_consumption_records: [1, 2, 3],
+        storage_mode: 'cloud',
       };
 
       firebaseStorageSpy.exportAll.mockResolvedValue(cloudData);
@@ -333,8 +338,8 @@ describe('HybridStorageService', () => {
           { provide: FirebaseStorageService, useValue: firebaseStorageSpy },
           { provide: AuthService, useValue: authServiceSpy },
           { provide: DemoService, useValue: demoServiceSpy },
-          { provide: PLATFORM_ID, useValue: 'browser' }
-        ]
+          { provide: PLATFORM_ID, useValue: 'browser' },
+        ],
       });
       service = TestBed.inject(HybridStorageService);
 
@@ -369,7 +374,7 @@ describe('HybridStorageService', () => {
 
       // The promise returned by save should resolve successfully because background sync is validly background
       let error: any;
-      await service.save(key, { foo: 'bar' }).catch(e => error = e);
+      await service.save(key, { foo: 'bar' }).catch((e) => (error = e));
 
       expect(error).toBeUndefined();
       expect(localStorageSpy.save).toHaveBeenCalled();

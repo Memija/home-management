@@ -4,12 +4,12 @@ import { Auth } from '@angular/fire/auth';
 import { PLATFORM_ID } from '@angular/core';
 import { describe, it, expect, beforeEach, vi, afterEach } from 'vitest';
 
-const flushPromises = () => new Promise(resolve => setTimeout(resolve, 0));
+const flushPromises = () => new Promise((resolve) => setTimeout(resolve, 0));
 
 const waitFor = async (fn: () => boolean, timeout = 1000) => {
   const start = Date.now();
   while (!fn() && Date.now() - start < timeout) {
-    await new Promise(r => setTimeout(r, 5));
+    await new Promise((r) => setTimeout(r, 5));
   }
 };
 
@@ -20,8 +20,8 @@ const mockOnAuthStateChanged = vi.fn();
 let globalAuthMock: any = {};
 
 vi.mock('firebase/auth', () => ({
-  Auth: class { },
-  GoogleAuthProvider: class { },
+  Auth: class {},
+  GoogleAuthProvider: class {},
   getAuth: () => globalAuthMock,
   signInWithPopup: (...args: any[]) => mockSignInWithPopup(...args),
   signOut: (...args: any[]) => mockSignOut(...args),
@@ -29,8 +29,8 @@ vi.mock('firebase/auth', () => ({
 }));
 
 vi.mock('@firebase/auth', () => ({
-  Auth: class { },
-  GoogleAuthProvider: class { },
+  Auth: class {},
+  GoogleAuthProvider: class {},
   getAuth: () => globalAuthMock,
   signInWithPopup: (...args: any[]) => mockSignInWithPopup(...args),
   signOut: (...args: any[]) => mockSignOut(...args),
@@ -69,8 +69,8 @@ describe('AuthService', () => {
       providers: [
         AuthService,
         { provide: Auth, useValue: authMock },
-        { provide: PLATFORM_ID, useValue: platformId }
-      ]
+        { provide: PLATFORM_ID, useValue: platformId },
+      ],
     });
     service = TestBed.inject(AuthService);
   };
@@ -102,7 +102,7 @@ describe('AuthService', () => {
         uid: 'test-uid',
         email: 'test@example.com',
         displayName: 'Test User',
-        photoURL: 'mock-photo-url.jpg'
+        photoURL: 'mock-photo-url.jpg',
       };
 
       mockOnAuthStateChanged.mockImplementation((auth, callback) => {
@@ -117,7 +117,7 @@ describe('AuthService', () => {
         uid: 'test-uid',
         email: 'test@example.com',
         displayName: 'Test User',
-        photoURL: 'mock-photo-url.jpg'
+        photoURL: 'mock-photo-url.jpg',
       });
       expect(service.isAuthenticated()).toBe(true);
       expect(service.isLoading()).toBe(false);
@@ -151,8 +151,8 @@ describe('AuthService', () => {
           uid: 'new-uid',
           email: 'new@example.com',
           displayName: 'New User',
-          photoURL: 'mock-new-photo-url.jpg'
-        }
+          photoURL: 'mock-new-photo-url.jpg',
+        },
       });
 
       const result = await service.signInWithGoogle();
@@ -162,14 +162,14 @@ describe('AuthService', () => {
         uid: 'new-uid',
         email: 'new@example.com',
         displayName: 'New User',
-        photoURL: 'mock-new-photo-url.jpg'
+        photoURL: 'mock-new-photo-url.jpg',
       });
     });
 
     it('should throw and console.error on sign in failure', async () => {
       const error = new Error('Sign in failed');
       mockSignInWithPopup.mockRejectedValue(error);
-      const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => { });
+      const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
 
       await expect(service.signInWithGoogle()).rejects.toThrow('Sign in failed');
       expect(consoleSpy).toHaveBeenCalledWith('Google sign-in failed:', error);
@@ -193,7 +193,7 @@ describe('AuthService', () => {
     it('should throw and console.error on sign out failure', async () => {
       const error = new Error('Sign out failed');
       mockSignOut.mockRejectedValue(error);
-      const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => { });
+      const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
 
       await expect(service.signOut()).rejects.toThrow('Sign out failed');
       expect(consoleSpy).toHaveBeenCalledWith('Sign out failed:', error);

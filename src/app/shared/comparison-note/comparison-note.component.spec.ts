@@ -18,15 +18,15 @@ describe('ComparisonNoteComponent', () => {
   // Mocks
   const mockHouseholdService = {
     members: signal(['John', 'Jane']),
-    address: signal({ country: 'DE' })
+    address: signal({ country: 'DE' }),
   };
 
   const mockWaterAveragesService = {
     getAvailableCountries: vi.fn().mockReturnValue([
       { code: 'DE', translationKey: 'COUNTRY.DE', average: 120 },
-      { code: 'US', translationKey: 'COUNTRY.US', average: 300 }
+      { code: 'US', translationKey: 'COUNTRY.US', average: 300 },
     ]),
-    getFlagUrl: vi.fn().mockReturnValue('flag-url.png')
+    getFlagUrl: vi.fn().mockReturnValue('flag-url.png'),
   };
 
   const mockLanguageService = {
@@ -36,35 +36,35 @@ describe('ComparisonNoteComponent', () => {
       if (params) return `${key}:${JSON.stringify(params)}`;
       return key;
     }),
-    currentLang: signal('en')
+    currentLang: signal('en'),
   };
 
   const mockCountryFactsService = {
-    getFactByIndex: vi.fn().mockReturnValue({ message: 'Water fact', title: 'Did you know?' })
+    getFactByIndex: vi.fn().mockReturnValue({ message: 'Water fact', title: 'Did you know?' }),
   };
 
   const mockHeatingFactsService = {
     getFactByIndex: vi.fn().mockReturnValue({ message: 'Heating fact', title: 'Heating Tip' }),
     getAvailableCountries: vi.fn().mockReturnValue([
       { code: 'DE', nameKey: 'COUNTRY.DE' },
-      { code: 'US', nameKey: 'COUNTRY.US' }
-    ])
+      { code: 'US', nameKey: 'COUNTRY.US' },
+    ]),
   };
 
   const mockHeatingAveragesService = {
-    getAverageKwhPerYear: vi.fn().mockReturnValue(15000)
+    getAverageKwhPerYear: vi.fn().mockReturnValue(15000),
   };
 
   const mockElectricityFactsService = {
     getFactByIndex: vi.fn().mockReturnValue({ message: 'Electricity fact', title: 'Power Tip' }),
     getAvailableCountries: vi.fn().mockReturnValue([
       { code: 'DE', nameKey: 'COUNTRY.DE' },
-      { code: 'US', nameKey: 'COUNTRY.US' }
-    ])
+      { code: 'US', nameKey: 'COUNTRY.US' },
+    ]),
   };
 
   const mockElectricityAveragesService = {
-    getAverageKwhPerPersonPerYear: vi.fn().mockReturnValue(2500)
+    getAverageKwhPerPersonPerYear: vi.fn().mockReturnValue(2500),
   };
 
   beforeEach(() => {
@@ -80,17 +80,20 @@ describe('ComparisonNoteComponent', () => {
         { provide: HeatingAveragesService, useValue: mockHeatingAveragesService },
         { provide: ElectricityCountryFactsService, useValue: mockElectricityFactsService },
         { provide: ElectricityAveragesService, useValue: mockElectricityAveragesService },
-      ]
-    })
-      .overrideComponent(ComparisonNoteComponent, {
-        set: { templateUrl: '', styleUrl: '', template: '' }
-      });
+      ],
+    }).overrideComponent(ComparisonNoteComponent, {
+      set: { templateUrl: '', styleUrl: '', template: '' },
+    });
 
     fixture = TestBed.createComponent(ComparisonNoteComponent);
     component = fixture.componentInstance;
 
     // Set required inputs using componentRef.setInput()
-    fixture.componentRef.setInput('records', [{ date: new Date() }, { date: new Date() }, { date: new Date() }]);
+    fixture.componentRef.setInput('records', [
+      { date: new Date() },
+      { date: new Date() },
+      { date: new Date() },
+    ]);
 
     // Default type
     fixture.componentRef.setInput('type', 'water');

@@ -9,7 +9,7 @@ import { TranslatePipe } from '../../pipes/translate.pipe';
   standalone: true,
   imports: [CommonModule, LucideAngularModule, TranslatePipe],
   templateUrl: './auth-button.component.html',
-  styleUrl: './auth-button.component.scss'
+  styleUrl: './auth-button.component.scss',
 })
 export class AuthButtonComponent {
   private authService = inject(AuthService);

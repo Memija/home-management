@@ -14,16 +14,16 @@ import { AuthButtonComponent } from '../../components/auth-button/auth-button.co
 @Component({
   selector: 'app-language-switcher',
   standalone: true,
-  template: ''
+  template: '',
 })
-class MockLanguageSwitcherComponent { }
+class MockLanguageSwitcherComponent {}
 
 @Component({
   selector: 'app-auth-button',
   standalone: true,
-  template: ''
+  template: '',
 })
-class MockAuthButtonComponent { }
+class MockAuthButtonComponent {}
 
 describe('HeaderComponent', () => {
   let component: HeaderComponent;
@@ -48,14 +48,14 @@ describe('HeaderComponent', () => {
     // NotificationService mock
     const notificationSpy = {
       dismissNotification: vi.fn(),
-      notifications: computed(() => notificationsSignal())
+      notifications: computed(() => notificationsSignal()),
     };
 
     // ThemeService mock
     const themeSpy = {
       setTheme: vi.fn(),
       currentTheme: currentThemeSignal,
-      resolvedTheme: resolvedThemeSignal
+      resolvedTheme: resolvedThemeSignal,
     };
 
     // LanguageService mock
@@ -67,7 +67,7 @@ describe('HeaderComponent', () => {
         return key;
       }),
       currentLang: currentLangSignal,
-      setLanguage: vi.fn()
+      setLanguage: vi.fn(),
     };
 
     await TestBed.configureTestingModule({
@@ -78,12 +78,12 @@ describe('HeaderComponent', () => {
         { provide: DemoService, useValue: demoSpy },
         { provide: NotificationService, useValue: notificationSpy },
         { provide: ThemeService, useValue: themeSpy },
-        { provide: LanguageService, useValue: languageSpy }
-      ]
+        { provide: LanguageService, useValue: languageSpy },
+      ],
     })
       .overrideComponent(HeaderComponent, {
         remove: { imports: [LanguageSwitcherComponent, AuthButtonComponent] },
-        add: { imports: [MockLanguageSwitcherComponent, MockAuthButtonComponent] }
+        add: { imports: [MockLanguageSwitcherComponent, MockAuthButtonComponent] },
       })
       .overrideTemplate(HeaderComponent, '')
       .compileComponents();
@@ -172,12 +172,12 @@ describe('HeaderComponent', () => {
         priority: 'low',
         dismissible: true,
         route: '/target-route',
-        fragment: 'target-fragment'
+        fragment: 'target-fragment',
       };
 
       // Mock document.getElementById and scrollIntoView
       const mockElement = document.createElement('div');
-      mockElement.scrollIntoView = () => { };
+      mockElement.scrollIntoView = () => {};
       vi.spyOn(mockElement, 'scrollIntoView');
       vi.spyOn(document, 'getElementById').mockReturnValue(mockElement);
 
@@ -189,7 +189,9 @@ describe('HeaderComponent', () => {
       expect((component as any).isNotificationPanelOpen()).toBe(false);
 
       // Should navigate
-      expect(router.navigate).toHaveBeenCalledWith(['/target-route'], { fragment: 'target-fragment' });
+      expect(router.navigate).toHaveBeenCalledWith(['/target-route'], {
+        fragment: 'target-fragment',
+      });
 
       // Run pending promises (router.navigate.then)
       await Promise.resolve();
@@ -198,7 +200,10 @@ describe('HeaderComponent', () => {
       vi.advanceTimersByTime(200);
 
       expect(document.getElementById).toHaveBeenCalledWith('target-fragment');
-      expect(mockElement.scrollIntoView).toHaveBeenCalledWith({ behavior: 'smooth', block: 'center' });
+      expect(mockElement.scrollIntoView).toHaveBeenCalledWith({
+        behavior: 'smooth',
+        block: 'center',
+      });
 
       vi.useRealTimers();
     });
@@ -210,7 +215,7 @@ describe('HeaderComponent', () => {
         titleKey: 'Title',
         messageKey: 'Message',
         priority: 'low',
-        dismissible: true
+        dismissible: true,
       };
 
       (component as any).navigateToNotification(notification);

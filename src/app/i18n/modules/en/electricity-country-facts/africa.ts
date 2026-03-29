@@ -3,24 +3,24 @@ export const africaElectricityFacts = {
   // South Africa
   ZA: [
     'South Africa relies heavily on coal for electricity.',
-    'Eskom provides most of the country\'s power.',
+    "Eskom provides most of the country's power.",
     'Load shedding (rolling blackouts) is a frequent challenge.',
     'South Africa has excellent solar and wind resources.',
     'The REIPPP program has attracted renewable investment.',
     'Rooftop solar is booming to avoid blackouts.',
-    'South Africa has the continent\'s only nuclear plant.',
+    "South Africa has the continent's only nuclear plant.",
     'Just Energy Transition deals are funding the shift from coal.',
     'Green hydrogen could be a major export.',
     'Mining consumes a huge amount of electricity.',
     'Illegal connections plague the distribution grid.',
-    'Battery storage is being deployed to stabilize the grid.'
+    'Battery storage is being deployed to stabilize the grid.',
   ],
 
   // Egypt
   EG: [
     'Egypt has a surplus of electricity generation capacity.',
-    'Natural gas powers most of Egypt\'s grid.',
-    'The Benban Solar Park is one of the world\'s largest.',
+    "Natural gas powers most of Egypt's grid.",
+    "The Benban Solar Park is one of the world's largest.",
     'Egypt plans to become a regional energy hub.',
     'Wind power is strong along the Red Sea coast.',
     'The Aswan High Dam provides steady hydropower.',
@@ -29,7 +29,7 @@ export const africaElectricityFacts = {
     'Electricity subsidies have been gradually removed.',
     'Egypt aims for 42% renewable energy by 2035.',
     'Green hydrogen projects are multiplying in the Suez zone.',
-    'Desalination plants are major electricity consumers.'
+    'Desalination plants are major electricity consumers.',
   ],
 
   // Nigeria
@@ -45,23 +45,23 @@ export const africaElectricityFacts = {
     'Transmission losses are very high.',
     'Pay-as-you-go solar is popular for off-grid homes.',
     'Nigeria has huge gas reserves for power generation.',
-    'Renewable energy policy aims for 30% by 2030.'
+    'Renewable energy policy aims for 30% by 2030.',
   ],
 
   // Kenya
   KE: [
     'Kenya generates over 90% of its electricity from renewables.',
     'Geothermal energy is the largest source of power.',
-    'Kenya is Africa\'s leader in geothermal capacity.',
+    "Kenya is Africa's leader in geothermal capacity.",
     'Hydropower is significant but vulnerable to drought.',
-    'Lake Turkana Wind Power is Africa\'s largest wind farm.',
+    "Lake Turkana Wind Power is Africa's largest wind farm.",
     'Kenya has rapidly increased electrification rates.',
     'Solar home systems reach millions of off-grid households.',
     'Kenya exports power to neighbors.',
     'The grid is relatively green but expensive.',
     'Thermal plants are used only for backup.',
     'Rural electrification is a government priority.',
-    'Off-grid solar creates thousands of jobs.'
+    'Off-grid solar creates thousands of jobs.',
   ],
 
   // Morocco
@@ -77,6 +77,6 @@ export const africaElectricityFacts = {
     'Green ammonia production is planned for fertilizer.',
     'Pumped hydro storage is being expanded.',
     'Desalination for agriculture will use wind power.',
-    'Morocco leads Africa in climate action.'
-  ]
+    'Morocco leads Africa in climate action.',
+  ],
 };

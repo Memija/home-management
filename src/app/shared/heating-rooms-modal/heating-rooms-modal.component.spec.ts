@@ -9,7 +9,7 @@ import { signal } from '@angular/core';
 
 @Pipe({
   name: 'translate',
-  standalone: true
+  standalone: true,
 })
 class MockTranslatePipe implements PipeTransform {
   transform(key: string, args?: any): string {
@@ -27,25 +27,25 @@ describe('HeatingRoomsModalComponent', () => {
     // Setup Service Mocks
     mockLanguageService = {
       translate: vi.fn((key: string) => key),
-      currentLang: signal('en')
+      currentLang: signal('en'),
     };
 
     mockRoomsService = {
       exportRooms: vi.fn(),
       importRooms: vi.fn(),
-      rooms: signal([])
+      rooms: signal([]),
     };
 
     await TestBed.configureTestingModule({
       imports: [HeatingRoomsModalComponent],
       providers: [
         { provide: LanguageService, useValue: mockLanguageService },
-        { provide: HeatingRoomsService, useValue: mockRoomsService }
-      ]
+        { provide: HeatingRoomsService, useValue: mockRoomsService },
+      ],
     })
       .overrideComponent(HeatingRoomsModalComponent, {
         remove: { imports: [TranslatePipe] },
-        add: { imports: [MockTranslatePipe] }
+        add: { imports: [MockTranslatePipe] },
       })
       .compileComponents();
 
@@ -67,7 +67,9 @@ describe('HeatingRoomsModalComponent', () => {
 
   describe('Modal opening', () => {
     it('should initialize editing state and cache roomsWithData on show', () => {
-      fixture.componentRef.setInput('rooms', [{ id: '1', name: 'Living Room', baseTemp: 20, minTemp: 15, maxTemp: 25, isShared: false }]);
+      fixture.componentRef.setInput('rooms', [
+        { id: '1', name: 'Living Room', baseTemp: 20, minTemp: 15, maxTemp: 25, isShared: false },
+      ]);
       fixture.componentRef.setInput('roomsWithDataArray', ['1']);
 
       const compAsAny = component as any;
@@ -83,7 +85,9 @@ describe('HeatingRoomsModalComponent', () => {
 
   describe('Room management', () => {
     beforeEach(() => {
-      fixture.componentRef.setInput('rooms', [{ id: 'room_1', name: 'Room 1', baseTemp: 20, minTemp: 15, maxTemp: 25, isShared: false }]);
+      fixture.componentRef.setInput('rooms', [
+        { id: 'room_1', name: 'Room 1', baseTemp: 20, minTemp: 15, maxTemp: 25, isShared: false },
+      ]);
       const compAsAny = component as any;
       compAsAny.onModalShow();
     });
@@ -269,8 +273,8 @@ describe('HeatingRoomsModalComponent', () => {
       const mockEvent = {
         target: {
           files: [new File([''], 'test.json')],
-          value: 'test.json'
-        }
+          value: 'test.json',
+        },
       } as any;
 
       // Simulate successful import
@@ -290,11 +294,11 @@ describe('HeatingRoomsModalComponent', () => {
       const mockEvent = {
         target: {
           files: [new File([''], 'bad.json')],
-          value: 'bad.json'
-        }
+          value: 'bad.json',
+        },
       } as any;
 
-      vi.spyOn(window, 'alert').mockImplementation(() => { });
+      vi.spyOn(window, 'alert').mockImplementation(() => {});
 
       mockRoomsService.importRooms.mockResolvedValue({ success: false, error: 'Bad file format' });
 

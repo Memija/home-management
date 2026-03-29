@@ -13,16 +13,16 @@ describe('FamilyImportService', () => {
 
   beforeEach(() => {
     mockHouseholdService = {
-      avatars: ['avatar1.png', 'avatar2.png']
+      avatars: ['avatar1.png', 'avatar2.png'],
     };
 
     mockLanguageService = {
-      translate: vi.fn().mockImplementation((key) => key)
+      translate: vi.fn().mockImplementation((key) => key),
     };
 
     mockFileStorageService = {
       importData: vi.fn(),
-      exportData: vi.fn().mockResolvedValue(undefined)
+      exportData: vi.fn().mockResolvedValue(undefined),
     };
 
     TestBed.configureTestingModule({
@@ -30,8 +30,8 @@ describe('FamilyImportService', () => {
         FamilyImportService,
         { provide: HouseholdService, useValue: mockHouseholdService },
         { provide: LanguageService, useValue: mockLanguageService },
-        { provide: FileStorageService, useValue: mockFileStorageService }
-      ]
+        { provide: FileStorageService, useValue: mockFileStorageService },
+      ],
     });
     service = TestBed.inject(FamilyImportService);
   });
@@ -71,7 +71,7 @@ describe('FamilyImportService', () => {
 
     it('should handle validation errors in data', async () => {
       mockFileStorageService.importData.mockResolvedValue({
-        data: [{ name: 'Test' }] // Missing surname etc
+        data: [{ name: 'Test' }], // Missing surname etc
       });
       const result = await service.importFromFile();
       expect(result.success).toBe(false);
@@ -81,7 +81,7 @@ describe('FamilyImportService', () => {
 
     it('should import valid members', async () => {
       const validData = [
-        { name: 'John', surname: 'Doe', type: 'adult', gender: 'male', avatar: 'avatar1.png' }
+        { name: 'John', surname: 'Doe', type: 'adult', gender: 'male', avatar: 'avatar1.png' },
       ];
       mockFileStorageService.importData.mockResolvedValue({ data: validData });
 
@@ -140,31 +140,31 @@ describe('FamilyImportService', () => {
     });
 
     it('should fail if all records invalid', () => {
-        const data = [{ name: '' }]; // invalid
-        const result = service.validateImportedMembers(data);
-        expect(result.valid).toBe(false);
+      const data = [{ name: '' }]; // invalid
+      const result = service.validateImportedMembers(data);
+      expect(result.valid).toBe(false);
     });
 
     it('should fail if no valid members found even if input array not empty', () => {
-        // e.g. empty object
-        const data = [{}];
-        const result = service.validateImportedMembers(data);
-        expect(result.valid).toBe(false);
+      // e.g. empty object
+      const data = [{}];
+      const result = service.validateImportedMembers(data);
+      expect(result.valid).toBe(false);
     });
   });
 
   describe('exportMembers', () => {
-      it('should export members', async () => {
-          const members = [
-              { id: '1', name: 'John', surname: 'Doe', type: 'adult', gender: 'male', avatar: 'a.png' }
-          ] as any[];
+    it('should export members', async () => {
+      const members = [
+        { id: '1', name: 'John', surname: 'Doe', type: 'adult', gender: 'male', avatar: 'a.png' },
+      ] as any[];
 
-          await service.exportMembers(members);
+      await service.exportMembers(members);
 
-          expect(mockFileStorageService.exportData).toHaveBeenCalledWith(
-              expect.arrayContaining([expect.objectContaining({ name: 'John' })]),
-              'family.json'
-          );
-      });
+      expect(mockFileStorageService.exportData).toHaveBeenCalledWith(
+        expect.arrayContaining([expect.objectContaining({ name: 'John' })]),
+        'family.json',
+      );
+    });
   });
 });

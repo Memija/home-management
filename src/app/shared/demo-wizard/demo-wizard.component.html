@@ -1,0 +1,102 @@
+@if (show()) {
+  <div class="modal-overlay" (click)="onClose()">
+    <div class="demo-wizard" [class]="'theme-' + theme()" (click)="$event.stopPropagation()">
+      <!-- Progress bar -->
+      <div class="wizard-progress">
+        <div class="wizard-progress-bar" [style.width.%]="progress()"></div>
+      </div>
+
+      <!-- Header -->
+      <div class="wizard-header">
+        <div class="wizard-header-left">
+          <div class="wizard-icon-badge cat-animation-container">
+            <div class="cat-walker">
+              <span class="cat-frame frame-walk" aria-hidden="true">🐈‍⬛</span>
+              <span class="cat-frame frame-sit" aria-hidden="true">🐈‍⬛</span>
+              <span class="cat-frame frame-play" aria-hidden="true">🐈‍⬛</span>
+            </div>
+            <div class="yarn-ball" aria-hidden="true">🧶</div>
+          </div>
+          <h3>{{ titleKey() | translate }}</h3>
+        </div>
+        <button
+          type="button"
+          class="close-btn"
+          (click)="onClose()"
+          title="{{ 'ACTIONS.CLOSE' | translate }}"
+          aria-label="Close demo wizard"
+        >
+          <lucide-icon [img]="CloseIcon" size="18"></lucide-icon>
+        </button>
+      </div>
+
+      <!-- Body -->
+      <div class="wizard-body">
+        @if (currentStepData(); as step) {
+          <div class="step-content">
+            @if (step.icon) {
+              <div class="step-icon-container">
+                <lucide-icon [img]="step.icon" size="40"></lucide-icon>
+              </div>
+            }
+            <div class="step-text">
+              <span class="step-badge">{{ currentStep() + 1 }} / {{ totalSteps() }}</span>
+              <h4 class="step-title">{{ step.titleKey | translate }}</h4>
+              <p class="step-description">{{ step.descriptionKey | translate }}</p>
+            </div>
+          </div>
+        }
+      </div>
+
+      <!-- Step dots -->
+      <div class="step-dots">
+        @for (step of steps(); track $index) {
+          <button
+            type="button"
+            class="dot"
+            [class.active]="$index === currentStep()"
+            [class.completed]="$index < currentStep()"
+            (click)="goToStep($index)"
+            [attr.aria-label]="'Step ' + ($index + 1)"
+            [title]="'Step ' + ($index + 1)"
+          ></button>
+        }
+      </div>
+
+      <!-- Footer -->
+      <div class="wizard-footer">
+        <button
+          type="button"
+          class="wizard-btn wizard-btn-secondary"
+          (click)="previousStep()"
+          [style.visibility]="isFirstStep() ? 'hidden' : 'visible'"
+          aria-label="Previous step"
+        >
+          <lucide-icon [img]="PrevIcon" size="16"></lucide-icon>
+          {{ 'SETTINGS.FAMILY_HELP_PREVIOUS' | translate }}
+        </button>
+
+        @if (isLastStep()) {
+          <button
+            type="button"
+            class="wizard-btn wizard-btn-primary"
+            (click)="onClose()"
+            aria-label="Done"
+          >
+            {{ 'DEMO.WIZARD_GOT_IT' | translate }}
+          </button>
+        } @else {
+          <button
+            type="button"
+            class="wizard-btn wizard-btn-primary"
+            (click)="nextStep()"
+            aria-label="Next step"
+          >
+            {{ 'SETTINGS.FAMILY_HELP_NEXT' | translate }}
+            <lucide-icon [img]="NextIcon" size="16"></lucide-icon>
+          </button>
+        }
+      </div>
+    </div>
+  </div>
+}

@@ -9,18 +9,21 @@ export const water = {
     EXPORT_PDF: 'Als PDF exportieren',
     IMPORT_EXCEL: 'Aus Excel importieren',
     EXCEL_IMPORT_ERROR_TITLE: 'Excel-Import fehlgeschlagen',
-    EXCEL_IMPORT_ERROR: 'Excel-Daten konnten nicht importiert werden. Bitte überprüfen Sie die Details unten und befolgen Sie die Anweisungen zur Behebung des Problems.',
+    EXCEL_IMPORT_ERROR:
+      'Excel-Daten konnten nicht importiert werden. Bitte überprüfen Sie die Details unten und befolgen Sie die Anweisungen zur Behebung des Problems.',
     JSON_IMPORT_ERROR_TITLE: 'JSON-Import fehlgeschlagen',
-    JSON_IMPORT_ERROR: 'JSON-Daten konnten nicht importiert werden. Bitte überprüfen Sie die Details unten und befolgen Sie die Anweisungen zur Behebung des Problems.',
+    JSON_IMPORT_ERROR:
+      'JSON-Daten konnten nicht importiert werden. Bitte überprüfen Sie die Details unten und befolgen Sie die Anweisungen zur Behebung des Problems.',
     IMPORT_FILTER_WARNING_TITLE: 'Daten außerhalb des aktuellen Filters',
-    IMPORT_FILTER_WARNING_MESSAGE: 'Einige Einträge in dieser Datei liegen außerhalb Ihres aktuellen Filterbereichs. Sie werden importiert, sind aber erst sichtbar, wenn Sie den Filter löschen oder anpassen.',
+    IMPORT_FILTER_WARNING_MESSAGE:
+      'Einige Einträge in dieser Datei liegen außerhalb Ihres aktuellen Filterbereichs. Sie werden importiert, sind aber erst sichtbar, wenn Sie den Filter löschen oder anpassen.',
     IMPORT_FILTER_WARNING_COUNT: '{{count}} Eintrag/Einträge außerhalb des Filters',
     IMPORT_CONTINUE: 'Trotzdem importieren',
     IMPORT_CANCEL: 'Abbrechen',
     KITCHEN: 'Küche',
     BATHROOM: 'Badezimmer',
     WARM: 'Warm',
-    COLD: 'Kalt'
+    COLD: 'Kalt',
   },
   HOME: {
     HISTORY_TITLE: 'Verbrauchsverlauf',
@@ -28,7 +31,7 @@ export const water = {
       TOTAL: 'Gesamt',
       BY_ROOM: 'Nach Raum',
       BY_TYPE: 'Nach Wassertyp',
-      DETAILED: 'Detailliert'
+      DETAILED: 'Detailliert',
     },
     NO_RECORDS: 'Noch keine Einträge.',
     DETAILED_RECORDS: 'Detaillierte Einträge',
@@ -38,31 +41,42 @@ export const water = {
     RECORD_CONSUMPTION: 'Verbrauch erfassen',
     RECORD_HELP_TITLE: 'Wasserverbrauch erfassen',
     RECORD_HELP_STEP_1_TITLE: 'Warum Verbrauch erfassen?',
-    RECORD_HELP_STEP_1_DESC: 'Die Erfassung Ihres Wasserverbrauchs hilft Ihnen, Ihre Nutzungsmuster zu verstehen, Sparmöglichkeiten zu erkennen und mit dem Durchschnittsverbrauch in Ihrer Region oder weltweit zu vergleichen.',
+    RECORD_HELP_STEP_1_DESC:
+      'Die Erfassung Ihres Wasserverbrauchs hilft Ihnen, Ihre Nutzungsmuster zu verstehen, Sparmöglichkeiten zu erkennen und mit dem Durchschnittsverbrauch in Ihrer Region oder weltweit zu vergleichen.',
     RECORD_HELP_STEP_2_TITLE: 'Datum auswählen',
-    RECORD_HELP_STEP_2_DESC: 'Wählen Sie das Datum, an dem Sie die Wasserzählerstände abgelesen haben.',
+    RECORD_HELP_STEP_2_DESC:
+      'Wählen Sie das Datum, an dem Sie die Wasserzählerstände abgelesen haben.',
     RECORD_HELP_STEP_3_TITLE: 'Werte eingeben',
-    RECORD_HELP_STEP_3_DESC: 'Geben Sie die Zählerwerte für Warm- und Kaltwasser in jedem Raum ein. Sie können Werte für einen oder beide Räume eingeben.',
+    RECORD_HELP_STEP_3_DESC:
+      'Geben Sie die Zählerwerte für Warm- und Kaltwasser in jedem Raum ein. Sie können Werte für einen oder beide Räume eingeben.',
     RECORD_HELP_STEP_4_TITLE: 'Eintrag speichern',
     RECORD_HELP_STEP_4_DESC: 'Klicken Sie auf Speichern, um Ihren Verbrauchseintrag zu speichern.',
     CHART_HELP_TITLE: 'Das Diagramm verstehen',
     CHART_HELP_STEP_1_TITLE: 'Was das Diagramm zeigt',
-    CHART_HELP_STEP_1_DESC: 'Das Diagramm visualisiert Ihren Wasserverbrauch über die Zeit und hilft Ihnen, Muster und Trends zu erkennen.',
+    CHART_HELP_STEP_1_DESC:
+      'Das Diagramm visualisiert Ihren Wasserverbrauch über die Zeit und hilft Ihnen, Muster und Trends zu erkennen.',
     CHART_HELP_STEP_2_TITLE: 'Anzeigemodi & Ansichten',
-    CHART_HELP_STEP_2_DESC: 'Wechseln Sie zwischen Gesamt (kumulative Ablesungen) und Inkrementell (täglicher Verbrauch). Verwenden Sie Filterknöpfe für Gesamt, nach Raum (Küche/Bad), nach Typ (Warm/Kalt) oder detaillierte Ansicht.',
+    CHART_HELP_STEP_2_DESC:
+      'Wechseln Sie zwischen Gesamt (kumulative Ablesungen) und Inkrementell (täglicher Verbrauch). Verwenden Sie Filterknöpfe für Gesamt, nach Raum (Küche/Bad), nach Typ (Warm/Kalt) oder detaillierte Ansicht.',
     CHART_HELP_STEP_3_TITLE: 'Ländervergleich',
-    CHART_HELP_STEP_3_DESC: 'Im inkrementellen Modus mit 3+ Einträgen vergleichen Sie Ihren Verbrauch mit 64 Ländern weltweit. Wählen Sie ein Land aus dem Dropdown über dem Diagramm. Eine blaue Länderfakten-Karte zeigt interessante Wasserstatistiken zum gewählten Land.',
+    CHART_HELP_STEP_3_DESC:
+      'Im inkrementellen Modus mit 3+ Einträgen vergleichen Sie Ihren Verbrauch mit 64 Ländern weltweit. Wählen Sie ein Land aus dem Dropdown über dem Diagramm. Eine blaue Länderfakten-Karte zeigt interessante Wasserstatistiken zum gewählten Land.',
     CHART_HELP_STEP_4_TITLE: 'Länderfakten & Aktualisierung',
-    CHART_HELP_STEP_4_DESC: 'Die Länderfakten-Karte zeigt kontextspezifische Informationen zu Ihrem Land und aktueller Diagrammansicht. Klicken Sie auf Aktualisieren (↻) oder wechseln Sie die Ansicht für neue Fakten. Aktivieren Sie Trendlinie für Verbrauchstrends über Zeit.',
+    CHART_HELP_STEP_4_DESC:
+      'Die Länderfakten-Karte zeigt kontextspezifische Informationen zu Ihrem Land und aktueller Diagrammansicht. Klicken Sie auf Aktualisieren (↻) oder wechseln Sie die Ansicht für neue Fakten. Aktivieren Sie Trendlinie für Verbrauchstrends über Zeit.',
     RECORDS_HELP_TITLE: 'Einträge verwalten',
     RECORDS_HELP_STEP_1_TITLE: 'Übersicht',
-    RECORDS_HELP_STEP_1_DESC: 'Dieser Bereich zeigt alle gespeicherten Wasserverbrauchseinträge mit detaillierter Aufschlüsselung nach Raum und Wassertyp.',
+    RECORDS_HELP_STEP_1_DESC:
+      'Dieser Bereich zeigt alle gespeicherten Wasserverbrauchseinträge mit detaillierter Aufschlüsselung nach Raum und Wassertyp.',
     RECORDS_HELP_STEP_2_TITLE: 'Einträge filtern',
-    RECORDS_HELP_STEP_2_DESC: 'Verwenden Sie die Datumsauswahl, Jahres- und Monatsfilter. Nutzen Sie "Filter zurücksetzen", um alle Filter zu löschen. Sie können auch nach Datum oder Verbrauchswerten sortieren.',
+    RECORDS_HELP_STEP_2_DESC:
+      'Verwenden Sie die Datumsauswahl, Jahres- und Monatsfilter. Nutzen Sie "Filter zurücksetzen", um alle Filter zu löschen. Sie können auch nach Datum oder Verbrauchswerten sortieren.',
     RECORDS_HELP_STEP_3_TITLE: 'Bearbeiten und Löschen',
-    RECORDS_HELP_STEP_3_DESC: 'Klicken Sie auf das Bearbeiten-Symbol zum Ändern oder das Papierkorb-Symbol zum Löschen. "Alle löschen" entfernt alle gefilterten Einträge.',
+    RECORDS_HELP_STEP_3_DESC:
+      'Klicken Sie auf das Bearbeiten-Symbol zum Ändern oder das Papierkorb-Symbol zum Löschen. "Alle löschen" entfernt alle gefilterten Einträge.',
     RECORDS_HELP_STEP_4_TITLE: 'Import und Export',
-    RECORDS_HELP_STEP_4_DESC: 'Exportieren Sie Ihre Daten in verschiedenen Formaten: JSON, Excel oder PDF. Importieren Sie aus JSON- oder Excel-Dateien über die entsprechenden Schaltflächen.',
+    RECORDS_HELP_STEP_4_DESC:
+      'Exportieren Sie Ihre Daten in verschiedenen Formaten: JSON, Excel oder PDF. Importieren Sie aus JSON- oder Excel-Dateien über die entsprechenden Schaltflächen.',
     READINGS_FOR: 'Ablesung für',
     KITCHEN: 'Küche',
     BATHROOM: 'Badezimmer',
@@ -73,15 +87,18 @@ export const water = {
     TOTAL: 'Gesamt',
     SUCCESS_TITLE: 'Erfolg',
     RECORD_SAVED: 'Wasserverbrauch erfolgreich gespeichert!',
-    DATE_EXISTS_WARNING: 'Für dieses Datum existiert bereits ein Eintrag. Bitte bearbeiten Sie den bestehenden Eintrag oder wählen Sie ein anderes Datum.',
+    DATE_EXISTS_WARNING:
+      'Für dieses Datum existiert bereits ein Eintrag. Bitte bearbeiten Sie den bestehenden Eintrag oder wählen Sie ein anderes Datum.',
     EDIT_RECORD: 'Eintrag bearbeiten',
     UPDATE_RECORD: 'Eintrag aktualisieren',
     CANCEL: 'Abbrechen',
     SEARCH_DATE: 'Nach Datum suchen',
     SELECT_DATE: 'Datum auswählen',
     SELECT_DATE_ERROR: 'Bitte wählen Sie ein Datum aus.',
-    PARTIAL_INPUT_ERROR: 'Bitte geben Sie sowohl Warm- als auch Kaltwasserwerte für mindestens einen Raum ein.',
-    INCOMPLETE_ROOM_ERROR: 'Bitte vervollständigen Sie die Warm- und Kaltwasserwerte für alle begonnenen Räume.',
+    PARTIAL_INPUT_ERROR:
+      'Bitte geben Sie sowohl Warm- als auch Kaltwasserwerte für mindestens einen Raum ein.',
+    INCOMPLETE_ROOM_ERROR:
+      'Bitte vervollständigen Sie die Warm- und Kaltwasserwerte für alle begonnenen Räume.',
     LOAD_MORE_RECORDS: 'Weitere Datensätze laden',
     SHOWING_RECORDS: '{{current}} von {{total}} Datensätzen angezeigt',
     PAGINATION_SIZE: 'Datensätze pro Seite',
@@ -97,20 +114,29 @@ export const water = {
     DELETE_ALL_TOOLTIP: 'Alle Einträge löschen',
     RESET_FILTERS: 'Filter zurücksetzen',
     DELETE_CONFIRM_TITLE: 'Löschen bestätigen',
-    DELETE_CONFIRM_MESSAGE: 'Sind Sie sicher, dass Sie diesen Eintrag löschen möchten? Diese Aktion kann nicht rückgängig gemacht werden.',
+    DELETE_CONFIRM_MESSAGE:
+      'Sind Sie sicher, dass Sie diesen Eintrag löschen möchten? Diese Aktion kann nicht rückgängig gemacht werden.',
     DELETE_BUTTON: 'Löschen',
     DELETE_ALL_CONFIRM_TITLE: 'Alle Einträge löschen',
-    DELETE_ALL_CONFIRM_MESSAGE_SINGULAR: 'Sind Sie sicher, dass Sie diesen gefilterten Eintrag löschen möchten? Diese Aktion kann nicht rückgängig gemacht werden.',
-    DELETE_ALL_CONFIRM_MESSAGE_PLURAL: 'Sind Sie sicher, dass Sie alle {{count}} gefilterten Einträge löschen möchten? Diese Aktion kann nicht rückgängig gemacht werden.',
+    DELETE_ALL_CONFIRM_MESSAGE_SINGULAR:
+      'Sind Sie sicher, dass Sie diesen gefilterten Eintrag löschen möchten? Diese Aktion kann nicht rückgängig gemacht werden.',
+    DELETE_ALL_CONFIRM_MESSAGE_PLURAL:
+      'Sind Sie sicher, dass Sie alle {{count}} gefilterten Einträge löschen möchten? Diese Aktion kann nicht rückgängig gemacht werden.',
     DELETE_ALL_BUTTON: 'Alle löschen',
     IMPORT_CONFIRM_TITLE: 'Import bestätigen',
-    IMPORT_CONFIRM_MESSAGE: 'Der Import wird mit Ihren bestehenden Einträgen zusammengeführt. Möchten Sie fortfahren?',
+    IMPORT_CONFIRM_MESSAGE:
+      'Der Import wird mit Ihren bestehenden Einträgen zusammengeführt. Möchten Sie fortfahren?',
     IMPORT_BUTTON: 'Importieren',
-    IMPORT_INVALID_DATA: 'Die ausgewählte Datei enthält keine gültigen Daten für diesen Bereich. Bitte stellen Sie sicher, dass Sie den richtigen Dateityp importieren.',
-    IMPORT_INVALID_FORMAT: 'Import fehlgeschlagen. Die Datei ist möglicherweise beschädigt oder hat ein falsches Format. Bitte exportieren Sie eine neue Kopie von der Quelle und versuchen Sie es erneut.',
-    IMPORT_ERROR_INSTRUCTION_1: 'Stellen Sie sicher, dass Sie die richtige Datei für diesen Bereich importieren',
-    IMPORT_ERROR_INSTRUCTION_2: 'Überprüfen Sie, ob die Datei aus dieser Anwendung exportiert wurde',
-    IMPORT_ERROR_INSTRUCTION_3: 'Versuchen Sie, ein neues Backup zu exportieren und erneut zu importieren',
+    IMPORT_INVALID_DATA:
+      'Die ausgewählte Datei enthält keine gültigen Daten für diesen Bereich. Bitte stellen Sie sicher, dass Sie den richtigen Dateityp importieren.',
+    IMPORT_INVALID_FORMAT:
+      'Import fehlgeschlagen. Die Datei ist möglicherweise beschädigt oder hat ein falsches Format. Bitte exportieren Sie eine neue Kopie von der Quelle und versuchen Sie es erneut.',
+    IMPORT_ERROR_INSTRUCTION_1:
+      'Stellen Sie sicher, dass Sie die richtige Datei für diesen Bereich importieren',
+    IMPORT_ERROR_INSTRUCTION_2:
+      'Überprüfen Sie, ob die Datei aus dieser Anwendung exportiert wurde',
+    IMPORT_ERROR_INSTRUCTION_3:
+      'Versuchen Sie, ein neues Backup zu exportieren und erneut zu importieren',
     IMPORT_ERROR_CHECK_FIELD: 'Überprüfen Sie den Wert des Feldes "{{field}}" in Ihrer Datei',
     EXPORT_BUTTON: 'Daten exportieren',
     SORT: {
@@ -123,7 +149,7 @@ export const water = {
       BATHROOM_DESC: 'Badezimmer Gesamt (Hoch bis Niedrig)',
       BATHROOM_ASC: 'Badezimmer Gesamt (Niedrig bis Hoch)',
       LIVING_ROOM_DESC: 'Wohnzimmer (Hoch bis Niedrig)',
-      BEDROOM_DESC: 'Schlafzimmer (Hoch bis Niedrig)'
+      BEDROOM_DESC: 'Schlafzimmer (Hoch bis Niedrig)',
     },
     MONTHS: {
       JANUARY: 'Januar',
@@ -137,12 +163,13 @@ export const water = {
       SEPTEMBER: 'September',
       OCTOBER: 'Oktober',
       NOVEMBER: 'November',
-      DECEMBER: 'Dezember'
+      DECEMBER: 'Dezember',
     },
     IMPORT_WARNING_TITLE: 'Spalten stimmen nicht überein',
-    IMPORT_WARNING_MESSAGE: 'Daten erfolgreich importiert, aber einige in den Einstellungen konfigurierte Spalten wurden in Ihrer Excel-Datei nicht gefunden. Werte für fehlende Spalten wurden auf 0 gesetzt.',
+    IMPORT_WARNING_MESSAGE:
+      'Daten erfolgreich importiert, aber einige in den Einstellungen konfigurierte Spalten wurden in Ihrer Excel-Datei nicht gefunden. Werte für fehlende Spalten wurden auf 0 gesetzt.',
     MISSING_COLUMNS: 'Spalten nicht in Datei gefunden',
     IMPORT_PLACEHOLDER_SKIPPED_SINGULAR: '1 leerer Datensatz ohne Werte wurde übersprungen.',
-    IMPORT_PLACEHOLDER_SKIPPED_PLURAL: '{{count}} leere Datensätze ohne Werte wurden übersprungen.'
-  }
+    IMPORT_PLACEHOLDER_SKIPPED_PLURAL: '{{count}} leere Datensätze ohne Werte wurden übersprungen.',
+  },
 };

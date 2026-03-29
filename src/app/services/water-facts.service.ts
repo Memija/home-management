@@ -50,7 +50,7 @@ const WATER_EQUIVALENTS = {
 };
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class WaterFactsService {
   private languageService = inject(LanguageService);
@@ -62,7 +62,11 @@ export class WaterFactsService {
    * @param context - The context: 'total', 'kitchen', 'bathroom', 'warm', 'cold'
    * @returns WaterFact or null if no data available for the context
    */
-  getFactByIndex(liters: number, index: number, context: WaterFactContext = 'total'): WaterFact | null {
+  getFactByIndex(
+    liters: number,
+    index: number,
+    context: WaterFactContext = 'total',
+  ): WaterFact | null {
     // Return null if no water data for this context
     if (liters <= 0) {
       return null;
@@ -90,7 +94,8 @@ export class WaterFactsService {
     if (isDaysFact && value > 365) {
       // Convert days to years
       const years = Math.floor(value / 365);
-      const yearWord = lang === 'de' ? (years === 1 ? 'Jahr' : 'Jahre') : (years === 1 ? 'year' : 'years');
+      const yearWord =
+        lang === 'de' ? (years === 1 ? 'Jahr' : 'Jahre') : years === 1 ? 'year' : 'years';
       const yearsFormatted = `${years.toLocaleString(lang === 'de' ? 'de-DE' : 'en-US')} ${yearWord}`;
       message = factTemplate.replace(/\{value\}\s*(days?|Tage?)/i, yearsFormatted);
     } else if (isMinutesFact && value > 1440) {
@@ -99,17 +104,19 @@ export class WaterFactsService {
       let timeFormatted: string;
       if (days > 30) {
         const months = Math.floor(days / 30);
-        const monthWord = lang === 'de' ? (months === 1 ? 'Monat' : 'Monate') : (months === 1 ? 'month' : 'months');
+        const monthWord =
+          lang === 'de' ? (months === 1 ? 'Monat' : 'Monate') : months === 1 ? 'month' : 'months';
         timeFormatted = `${months.toLocaleString(lang === 'de' ? 'de-DE' : 'en-US')} ${monthWord}`;
       } else {
-        const dayWord = lang === 'de' ? (days === 1 ? 'Tag' : 'Tage') : (days === 1 ? 'day' : 'days');
+        const dayWord = lang === 'de' ? (days === 1 ? 'Tag' : 'Tage') : days === 1 ? 'day' : 'days';
         timeFormatted = `${days.toLocaleString(lang === 'de' ? 'de-DE' : 'en-US')} ${dayWord}`;
       }
       message = factTemplate.replace(/\{value\}\s*(minutes?|Minuten?)/i, timeFormatted);
     } else if (isMinutesFact && value > 60) {
       // Convert minutes to hours
       const hours = Math.floor(value / 60);
-      const hourWord = lang === 'de' ? (hours === 1 ? 'Stunde' : 'Stunden') : (hours === 1 ? 'hour' : 'hours');
+      const hourWord =
+        lang === 'de' ? (hours === 1 ? 'Stunde' : 'Stunden') : hours === 1 ? 'hour' : 'hours';
       const hoursFormatted = `${hours.toLocaleString(lang === 'de' ? 'de-DE' : 'en-US')} ${hourWord}`;
       message = factTemplate.replace(/\{value\}\s*(minutes?|Minuten?)/i, hoursFormatted);
     } else {
@@ -119,11 +126,14 @@ export class WaterFactsService {
 
     return {
       title: translations.FACTS?.DID_YOU_KNOW || 'Did you know?',
-      message
+      message,
     };
   }
 
-  private getFactsForContext(translations: typeof en | typeof de, context: WaterFactContext): string[] {
+  private getFactsForContext(
+    translations: typeof en | typeof de,
+    context: WaterFactContext,
+  ): string[] {
     switch (context) {
       case 'kitchen':
         return translations.WATER_FACTS.KITCHEN_FACTS;
@@ -138,7 +148,11 @@ export class WaterFactsService {
     }
   }
 
-  private calculateValueForContext(liters: number, factIndex: number, context: WaterFactContext): number {
+  private calculateValueForContext(
+    liters: number,
+    factIndex: number,
+    context: WaterFactContext,
+  ): number {
     // Context-specific equivalents
     const contextEquivalents: Record<WaterFactContext, number[]> = {
       total: [

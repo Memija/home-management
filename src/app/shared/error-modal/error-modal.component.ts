@@ -13,7 +13,7 @@ export interface ErrorInstruction {
   standalone: true,
   imports: [CommonModule, LucideAngularModule, TranslatePipe],
   templateUrl: './error-modal.component.html',
-  styleUrl: './error-modal.component.scss'
+  styleUrl: './error-modal.component.scss',
 })
 export class ErrorModalComponent {
   show = input.required<boolean>();
@@ -26,7 +26,7 @@ export class ErrorModalComponent {
   // Split details into lines for better display
   protected detailLines = computed(() => {
     const d = this.details();
-    return d ? d.split('\n').filter(line => line.trim() !== '') : [];
+    return d ? d.split('\n').filter((line) => line.trim() !== '') : [];
   });
 
   cancel = output<void>();

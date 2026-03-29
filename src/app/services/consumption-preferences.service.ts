@@ -5,7 +5,7 @@ import { ChartView, DisplayMode } from '../shared/consumption-chart/consumption-
 export type ChartType = 'water' | 'heating' | 'home' | 'electricity';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class ConsumptionPreferencesService {
   private storage = inject(STORAGE_SERVICE);
@@ -36,7 +36,7 @@ export class ConsumptionPreferencesService {
         this.loadPreference('water', 'total', 'incremental'),
         this.loadPreference('heating', 'total', 'total'),
         this.loadPreference('electricity', 'total', 'total'),
-        this.loadMeterChanges()
+        this.loadMeterChanges(),
       ]);
     } catch (error) {
       console.warn('Failed to load preferences from storage:', error);
@@ -79,7 +79,7 @@ export class ConsumptionPreferencesService {
   }
 
   setMeterChangeConfirmed(date: string) {
-    this.confirmedMeterChanges.update(current => {
+    this.confirmedMeterChanges.update((current) => {
       const updated = [...current, date];
       const unique = [...new Set(updated)];
       this.storage.save('water_confirmed_meter_changes', unique);
@@ -88,7 +88,7 @@ export class ConsumptionPreferencesService {
   }
 
   setMeterChangeDismissed(date: string) {
-    this.dismissedMeterChanges.update(current => {
+    this.dismissedMeterChanges.update((current) => {
       const updated = [...current, date];
       const unique = [...new Set(updated)];
       this.storage.save('water_dismissed_meter_changes', unique);

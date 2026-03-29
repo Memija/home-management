@@ -20,18 +20,18 @@ describe('LandingComponent', () => {
     themeServiceMock = {
       setTheme: vi.fn(),
       currentTheme: signal<Theme>('light'),
-      resolvedTheme: signal<Theme>('light')
+      resolvedTheme: signal<Theme>('light'),
     };
 
     languageServiceMock = {
       translate: vi.fn().mockImplementation((key: string) => `translated_${key}`),
-      currentLang: signal('en')
+      currentLang: signal('en'),
     };
 
     intersectionObserverMock = {
       observe: vi.fn(),
       unobserve: vi.fn(),
-      disconnect: vi.fn()
+      disconnect: vi.fn(),
     };
 
     // Mock IntersectionObserver
@@ -48,8 +48,8 @@ describe('LandingComponent', () => {
         provideRouter([]),
         { provide: ThemeService, useValue: themeServiceMock },
         { provide: LanguageService, useValue: languageServiceMock },
-        { provide: PLATFORM_ID, useValue: 'browser' }
-      ]
+        { provide: PLATFORM_ID, useValue: 'browser' },
+      ],
     }).compileComponents();
 
     fixture = TestBed.createComponent(LandingComponent);
@@ -109,21 +109,23 @@ describe('LandingComponent', () => {
     it('should return correct title for system theme based on resolved theme', () => {
       (themeServiceMock as any).currentTheme = signal<Theme>('system');
       (themeServiceMock as any).resolvedTheme = signal<Theme>('dark');
-      expect(component['getThemeTitle']()).toBe('translated_SETTINGS.THEME_SYSTEM (translated_SETTINGS.THEME_DARK)');
+      expect(component['getThemeTitle']()).toBe(
+        'translated_SETTINGS.THEME_SYSTEM (translated_SETTINGS.THEME_DARK)',
+      );
     });
   });
 
   describe('Scroll and Viewport', () => {
     it('should set element as visible when intersected', async () => {
       fixture.detectChanges(); // This will call ngOnInit and construct the observer
-      await new Promise(resolve => setTimeout(resolve, 150)); // wait for setTimeout
+      await new Promise((resolve) => setTimeout(resolve, 150)); // wait for setTimeout
 
       const observerDiv = document.createElement('div');
       observerDiv.setAttribute('data-animate', 'test-id');
 
       const mockEntry = {
         isIntersecting: true,
-        target: observerDiv
+        target: observerDiv,
       } as unknown as IntersectionObserverEntry;
 
       observerCallback([mockEntry], {} as IntersectionObserver);
@@ -133,14 +135,14 @@ describe('LandingComponent', () => {
 
     it('should not update visibility if element is not intersecting', async () => {
       fixture.detectChanges();
-      await new Promise(resolve => setTimeout(resolve, 150));
+      await new Promise((resolve) => setTimeout(resolve, 150));
 
       const observerDiv = document.createElement('div');
       observerDiv.setAttribute('data-animate', 'test-id');
 
       const mockEntry = {
         isIntersecting: false,
-        target: observerDiv
+        target: observerDiv,
       } as unknown as IntersectionObserverEntry;
 
       observerCallback([mockEntry], {} as IntersectionObserver);
@@ -150,13 +152,13 @@ describe('LandingComponent', () => {
 
     it('should handle missing data-animate attribute gracefully', async () => {
       fixture.detectChanges();
-      await new Promise(resolve => setTimeout(resolve, 150));
+      await new Promise((resolve) => setTimeout(resolve, 150));
 
       const observerDiv = document.createElement('div');
 
       const mockEntry = {
         isIntersecting: true,
-        target: observerDiv
+        target: observerDiv,
       } as unknown as IntersectionObserverEntry;
 
       observerCallback([mockEntry], {} as IntersectionObserver);
@@ -188,8 +190,8 @@ describe('LandingComponent', () => {
       fixture.detectChanges();
 
       const evt = new MouseEvent('mousedown');
-      vi.spyOn(evt, 'preventDefault').mockImplementation(() => { });
-      vi.spyOn(evt, 'stopPropagation').mockImplementation(() => { });
+      vi.spyOn(evt, 'preventDefault').mockImplementation(() => {});
+      vi.spyOn(evt, 'stopPropagation').mockImplementation(() => {});
       vi.spyOn(document, 'addEventListener');
 
       component['onRoadDragStart'](evt);
@@ -198,8 +200,14 @@ describe('LandingComponent', () => {
       expect(evt.preventDefault).toHaveBeenCalled();
       expect(evt.stopPropagation).toHaveBeenCalled();
 
-      expect(document.addEventListener).toHaveBeenCalledWith('mousemove', component['onDragMoveBound']);
-      expect(document.addEventListener).toHaveBeenCalledWith('mouseup', component['onDragEndBound']);
+      expect(document.addEventListener).toHaveBeenCalledWith(
+        'mousemove',
+        component['onDragMoveBound'],
+      );
+      expect(document.addEventListener).toHaveBeenCalledWith(
+        'mouseup',
+        component['onDragEndBound'],
+      );
     });
 
     it('should calculate scroll correctly on mouse move', () => {
@@ -215,7 +223,7 @@ describe('LandingComponent', () => {
         width: 100,
         x: 0,
         y: 0,
-        toJSON: () => { }
+        toJSON: () => {},
       } as any);
 
       // Mock querySelector to return our controlled element
@@ -225,9 +233,17 @@ describe('LandingComponent', () => {
       });
 
       // Stub window height and scroll
-      Object.defineProperty(document.documentElement, 'scrollHeight', { value: 1000, writable: true, configurable: true });
-      Object.defineProperty(window, 'innerHeight', { value: 500, writable: true, configurable: true });
-      vi.spyOn(window, 'scrollTo').mockImplementation(() => { });
+      Object.defineProperty(document.documentElement, 'scrollHeight', {
+        value: 1000,
+        writable: true,
+        configurable: true,
+      });
+      Object.defineProperty(window, 'innerHeight', {
+        value: 500,
+        writable: true,
+        configurable: true,
+      });
+      vi.spyOn(window, 'scrollTo').mockImplementation(() => {});
 
       component['isDragging'] = true;
       const mouseMoveEvt = new MouseEvent('mousemove', { clientY: 50 });
@@ -239,7 +255,7 @@ describe('LandingComponent', () => {
     });
 
     it('should not update scroll on mouse move if not dragging', () => {
-      vi.spyOn(window, 'scrollTo').mockImplementation(() => { });
+      vi.spyOn(window, 'scrollTo').mockImplementation(() => {});
       component['isDragging'] = false;
 
       const mouseMoveEvt = new MouseEvent('mousemove', { clientY: 50 });
@@ -255,8 +271,14 @@ describe('LandingComponent', () => {
       component['onDragEnd']();
 
       expect(component['isDragging']).toBe(false);
-      expect(document.removeEventListener).toHaveBeenCalledWith('mousemove', component['onDragMoveBound']);
-      expect(document.removeEventListener).toHaveBeenCalledWith('mouseup', component['onDragEndBound']);
+      expect(document.removeEventListener).toHaveBeenCalledWith(
+        'mousemove',
+        component['onDragMoveBound'],
+      );
+      expect(document.removeEventListener).toHaveBeenCalledWith(
+        'mouseup',
+        component['onDragEndBound'],
+      );
     });
 
     it('should handle click on road correctly', () => {
@@ -270,21 +292,32 @@ describe('LandingComponent', () => {
         width: 100,
         x: 0,
         y: 0,
-        toJSON: () => { }
+        toJSON: () => {},
       } as any);
 
       const evt = {
         currentTarget: roadEl,
-        clientY: 50
+        clientY: 50,
       } as unknown as MouseEvent;
 
-      Object.defineProperty(document.documentElement, 'scrollHeight', { value: 1000, writable: true, configurable: true });
-      Object.defineProperty(window, 'innerHeight', { value: 500, writable: true, configurable: true });
-      vi.spyOn(window, 'scrollTo').mockImplementation(() => { });
+      Object.defineProperty(document.documentElement, 'scrollHeight', {
+        value: 1000,
+        writable: true,
+        configurable: true,
+      });
+      Object.defineProperty(window, 'innerHeight', {
+        value: 500,
+        writable: true,
+        configurable: true,
+      });
+      vi.spyOn(window, 'scrollTo').mockImplementation(() => {});
 
       component['onRoadClick'](evt);
 
-      (expect(window.scrollTo) as any).toHaveBeenCalledWith({ top: 250, behavior: 'smooth' } as ScrollToOptions);
+      (expect(window.scrollTo) as any).toHaveBeenCalledWith({
+        top: 250,
+        behavior: 'smooth',
+      } as ScrollToOptions);
     });
   });
 
@@ -297,14 +330,14 @@ describe('LandingComponent', () => {
           provideRouter([]),
           { provide: ThemeService, useValue: themeServiceMock },
           { provide: LanguageService, useValue: languageServiceMock },
-          { provide: PLATFORM_ID, useValue: 'server' }
-        ]
+          { provide: PLATFORM_ID, useValue: 'server' },
+        ],
       }).compileComponents();
 
       const fixtureServer = TestBed.createComponent(LandingComponent);
       const componentServer = fixtureServer.componentInstance;
 
-      vi.spyOn<any, any>(componentServer, 'setupIntersectionObserver').mockImplementation(() => { });
+      vi.spyOn<any, any>(componentServer, 'setupIntersectionObserver').mockImplementation(() => {});
 
       fixtureServer.detectChanges(); // calls ngOnInit
 
@@ -319,8 +352,8 @@ describe('LandingComponent', () => {
           provideRouter([]),
           { provide: ThemeService, useValue: themeServiceMock },
           { provide: LanguageService, useValue: languageServiceMock },
-          { provide: PLATFORM_ID, useValue: 'server' }
-        ]
+          { provide: PLATFORM_ID, useValue: 'server' },
+        ],
       }).compileComponents();
 
       const fixtureServer = TestBed.createComponent(LandingComponent);
@@ -342,5 +375,4 @@ describe('LandingComponent', () => {
       expect(intersectionObserverMock.disconnect).toHaveBeenCalled();
     });
   });
-
 });

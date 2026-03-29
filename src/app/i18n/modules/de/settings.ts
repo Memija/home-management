@@ -40,17 +40,20 @@ export const settings = {
     IMPORT_FAMILY: 'Familie importieren',
     SHOW_ADD_MEMBER_FORM: 'Familienmitglied hinzufügen',
     DELETE_MEMBER_CONFIRM_TITLE: 'Löschen bestätigen',
-    DELETE_MEMBER_CONFIRM_MESSAGE: 'Sind Sie sicher, dass Sie dieses Familienmitglied entfernen möchten? Diese Aktion kann nicht rückgängig gemacht werden.',
+    DELETE_MEMBER_CONFIRM_MESSAGE:
+      'Sind Sie sicher, dass Sie dieses Familienmitglied entfernen möchten? Diese Aktion kann nicht rückgängig gemacht werden.',
     DELETE_MEMBER_BUTTON: 'Mitglied entfernen',
     UNSAVED_CHANGES_TITLE: 'Ungespeicherte Änderungen',
-    UNSAVED_CHANGES_MESSAGE: 'Sie haben ungespeicherte Änderungen an Familienmitgliedern. Wenn Sie jetzt verlassen, gehen Ihre Änderungen verloren.',
-    UNSAVED_CHANGES_MESSAGE_GENERIC: 'Sie haben ungespeicherte Änderungen. Wenn Sie jetzt verlassen, gehen Ihre Änderungen verloren.',
+    UNSAVED_CHANGES_MESSAGE:
+      'Sie haben ungespeicherte Änderungen an Familienmitgliedern. Wenn Sie jetzt verlassen, gehen Ihre Änderungen verloren.',
+    UNSAVED_CHANGES_MESSAGE_GENERIC:
+      'Sie haben ungespeicherte Änderungen. Wenn Sie jetzt verlassen, gehen Ihre Änderungen verloren.',
     UNSAVED_CHANGES_LEAVE: 'Ohne Speichern verlassen',
     UNSAVED_CHANGES_STAY: 'Bleiben und speichern',
     TYPES: {
       ADULT: 'Erwachsener',
       KID: 'Kind',
-      OTHER: 'Andere'
+      OTHER: 'Andere',
     },
     ERRORS: {
       NUMBER_ONLY: 'Nur Zahlen sind erlaubt',
@@ -61,44 +64,64 @@ export const settings = {
       CITY_TOO_LONG: 'Stadtname darf maximal 50 Zeichen haben',
       ZIP_TOO_LONG: 'Postleitzahl darf maximal 10 Zeichen haben',
       MUST_CONTAIN_LETTERS: 'Muss mindestens einen Buchstaben enthalten',
-      INVALID_STREET_NUMBER: 'Nur Buchstaben, Zahlen, Leerzeichen, Bindestriche und Schrägstriche erlaubt',
+      INVALID_STREET_NUMBER:
+        'Nur Buchstaben, Zahlen, Leerzeichen, Bindestriche und Schrägstriche erlaubt',
       INVALID_COUNTRY: 'Bitte wählen Sie ein Land aus der Liste',
-      INVALID_DATA_TYPE: 'Ungültiger Datentyp (Text erwartet)'
+      INVALID_DATA_TYPE: 'Ungültiger Datentyp (Text erwartet)',
     },
     EXPORT_ADDRESS: 'Adresse exportieren',
     IMPORT_ADDRESS: 'Adresse importieren',
     IMPORT_SUCCESS: 'Adresse erfolgreich importiert!',
-    IMPORT_ERROR: 'Adresse konnte nicht importiert werden. Die Datei scheint keine gültigen Adressdaten zu enthalten. Bitte stellen Sie sicher, dass Sie eine Adressdatei mit Straßenname, Hausnummer, Stadt, Postleitzahl und Land importieren.',
+    IMPORT_ERROR:
+      'Adresse konnte nicht importiert werden. Die Datei scheint keine gültigen Adressdaten zu enthalten. Bitte stellen Sie sicher, dass Sie eine Adressdatei mit Straßenname, Hausnummer, Stadt, Postleitzahl und Land importieren.',
     IMPORT_FAMILY_CONFIRM_TITLE: 'Import bestätigen',
-    IMPORT_FAMILY_CONFIRM_MESSAGE: 'Der Import ersetzt alle aktuellen Familienmitglieder. Möchten Sie fortfahren?',
+    IMPORT_FAMILY_CONFIRM_MESSAGE:
+      'Der Import ersetzt alle aktuellen Familienmitglieder. Möchten Sie fortfahren?',
     IMPORT_FAMILY_ERROR_TITLE: 'Import fehlgeschlagen',
-    IMPORT_FAMILY_INVALID_FILE_TYPE: 'Ungültiger Dateityp. Bitte wählen Sie eine JSON-Datei (.json-Erweiterung) zum Importieren von Familiendaten.',
-    IMPORT_FAMILY_INVALID_FILE_TYPE_INSTRUCTION_1: 'Stellen Sie sicher, dass die Datei eine .json-Erweiterung hat',
-    IMPORT_FAMILY_INVALID_FILE_TYPE_INSTRUCTION_2: 'Exportieren Sie zuerst Familiendaten, um ein gültiges JSON-Dateiformat zu erhalten',
+    IMPORT_FAMILY_INVALID_FILE_TYPE:
+      'Ungültiger Dateityp. Bitte wählen Sie eine JSON-Datei (.json-Erweiterung) zum Importieren von Familiendaten.',
+    IMPORT_FAMILY_INVALID_FILE_TYPE_INSTRUCTION_1:
+      'Stellen Sie sicher, dass die Datei eine .json-Erweiterung hat',
+    IMPORT_FAMILY_INVALID_FILE_TYPE_INSTRUCTION_2:
+      'Exportieren Sie zuerst Familiendaten, um ein gültiges JSON-Dateiformat zu erhalten',
     DUPLICATE_MEMBER_ERROR: 'Ein Familienmitglied mit diesem Namen existiert bereits',
     DUPLICATE_MEMBER_NAME: 'Duplikat: {{name}} {{surname}}',
-    DUPLICATE_MEMBER_INSTRUCTION_1: 'Verwenden Sie einen anderen Vornamen oder Nachnamen für dieses Mitglied',
-    DUPLICATE_MEMBER_INSTRUCTION_2: 'Fügen Sie einen zweiten Vornamen oder Spitznamen hinzu, um sie zu unterscheiden',
-    DUPLICATE_MEMBER_INSTRUCTION_3: 'Bearbeiten Sie das bestehende Mitglied, wenn Sie dessen Informationen aktualisieren möchten',
+    DUPLICATE_MEMBER_INSTRUCTION_1:
+      'Verwenden Sie einen anderen Vornamen oder Nachnamen für dieses Mitglied',
+    DUPLICATE_MEMBER_INSTRUCTION_2:
+      'Fügen Sie einen zweiten Vornamen oder Spitznamen hinzu, um sie zu unterscheiden',
+    DUPLICATE_MEMBER_INSTRUCTION_3:
+      'Bearbeiten Sie das bestehende Mitglied, wenn Sie dessen Informationen aktualisieren möchten',
     MAX_MEMBERS_ERROR: 'Maximale Anzahl an Familienmitgliedern erreicht',
-    MAX_MEMBERS_MESSAGE: 'Sie können bis zu {{max}} Familienmitglieder hinzufügen. Bitte entfernen Sie ein Mitglied, bevor Sie ein weiteres hinzufügen.',
+    MAX_MEMBERS_MESSAGE:
+      'Sie können bis zu {{max}} Familienmitglieder hinzufügen. Bitte entfernen Sie ein Mitglied, bevor Sie ein weiteres hinzufügen.',
     MAX_MEMBERS_INSTRUCTION_1: 'Entfernen Sie zuerst ein bestehendes Familienmitglied',
-    MAX_MEMBERS_INSTRUCTION_2: 'Oder exportieren Sie Ihre aktuellen Familiendaten als Sicherung, bevor Sie Änderungen vornehmen',
-    IMPORT_FAMILY_INVALID_DATA: 'Die importierte Datei enthält ungültige Familienmitgliederdaten. Bitte überprüfen Sie die folgenden Probleme:',
-    IMPORT_FAMILY_INVALID_FORMAT: 'Import der Familie fehlgeschlagen. Die Datei scheint keine gültigen Familiendaten zu enthalten. Bitte stellen Sie sicher, dass Sie eine Familiendatei mit einem Array von Mitgliedern importieren, die jeweils Name, Nachname, Typ und Geschlecht enthalten.',
-    IMPORT_FAMILY_ERROR_NOT_OBJECT: 'Jedes Familienmitglied muss ein Objekt mit den Feldern Name, Nachname, Typ und Geschlecht sein',
-    IMPORT_FAMILY_ERROR_MISSING_NAME: 'Jedes Familienmitglied muss einen gültigen Vornamen haben (nicht leere Zeichenfolge)',
-    IMPORT_FAMILY_ERROR_MISSING_SURNAME: 'Jedes Familienmitglied muss einen gültigen Nachnamen haben (nicht leere Zeichenfolge)',
-    IMPORT_FAMILY_ERROR_INVALID_TYPE: 'Der Mitgliedstyp muss entweder "adult", "kid" oder "other" sein',
-    IMPORT_FAMILY_ERROR_INVALID_GENDER: 'Das Geschlecht des Mitglieds muss entweder "male", "female" oder "other" sein',
-    IMPORT_FAMILY_ERROR_NO_VALID_MEMBERS: 'Keine gültigen Familienmitglieder in der importierten Datei gefunden',
+    MAX_MEMBERS_INSTRUCTION_2:
+      'Oder exportieren Sie Ihre aktuellen Familiendaten als Sicherung, bevor Sie Änderungen vornehmen',
+    IMPORT_FAMILY_INVALID_DATA:
+      'Die importierte Datei enthält ungültige Familienmitgliederdaten. Bitte überprüfen Sie die folgenden Probleme:',
+    IMPORT_FAMILY_INVALID_FORMAT:
+      'Import der Familie fehlgeschlagen. Die Datei scheint keine gültigen Familiendaten zu enthalten. Bitte stellen Sie sicher, dass Sie eine Familiendatei mit einem Array von Mitgliedern importieren, die jeweils Name, Nachname, Typ und Geschlecht enthalten.',
+    IMPORT_FAMILY_ERROR_NOT_OBJECT:
+      'Jedes Familienmitglied muss ein Objekt mit den Feldern Name, Nachname, Typ und Geschlecht sein',
+    IMPORT_FAMILY_ERROR_MISSING_NAME:
+      'Jedes Familienmitglied muss einen gültigen Vornamen haben (nicht leere Zeichenfolge)',
+    IMPORT_FAMILY_ERROR_MISSING_SURNAME:
+      'Jedes Familienmitglied muss einen gültigen Nachnamen haben (nicht leere Zeichenfolge)',
+    IMPORT_FAMILY_ERROR_INVALID_TYPE:
+      'Der Mitgliedstyp muss entweder "adult", "kid" oder "other" sein',
+    IMPORT_FAMILY_ERROR_INVALID_GENDER:
+      'Das Geschlecht des Mitglieds muss entweder "male", "female" oder "other" sein',
+    IMPORT_FAMILY_ERROR_NO_VALID_MEMBERS:
+      'Keine gültigen Familienmitglieder in der importierten Datei gefunden',
     IMPORT_ADDRESS_CONFIRM_TITLE: 'Import bestätigen',
-    IMPORT_ADDRESS_CONFIRM_MESSAGE: 'Der Import ersetzt Ihre aktuelle Adresse. Möchten Sie fortfahren?',
+    IMPORT_ADDRESS_CONFIRM_MESSAGE:
+      'Der Import ersetzt Ihre aktuelle Adresse. Möchten Sie fortfahren?',
     VALIDATION_FAILED: 'Validierung fehlgeschlagen',
     GENDERS: {
       MALE: 'Männlich',
       FEMALE: 'Weiblich',
-      OTHER: 'Andere'
+      OTHER: 'Andere',
     },
     EXCEL_TITLE: 'Excel-Integration',
     EXCEL_ENABLED: 'Excel-Integration aktivieren',
@@ -127,69 +150,102 @@ export const settings = {
     IMPORT_EXCEL_SETTINGS_SUCCESS: 'Excel-Einstellungen erfolgreich importiert!',
     IMPORT_EXCEL_SETTINGS_ERROR: 'Excel-Einstellungen konnten nicht importiert werden: {{error}}',
     IMPORT_EXCEL_SETTINGS_CONFIRM_TITLE: 'Import bestätigen',
-    IMPORT_EXCEL_SETTINGS_CONFIRM_MESSAGE: 'Der Import ersetzt Ihre aktuellen Excel-Spalteneinstellungen. Sind Sie sicher, dass Sie fortfahren möchten?',
+    IMPORT_EXCEL_SETTINGS_CONFIRM_MESSAGE:
+      'Der Import ersetzt Ihre aktuellen Excel-Spalteneinstellungen. Sind Sie sicher, dass Sie fortfahren möchten?',
     IMPORT_EXCEL_SETTINGS_ERROR_TITLE: 'Import fehlgeschlagen',
     IMPORT_EXCEL_INVALID_ENABLED: 'Ungültige Aktivierungseinstellung (muss boolesch sein)',
     IMPORT_EXCEL_INVALID_ENABLED_HINT: 'Das Feld "enabled" muss entweder true oder false sein',
     IMPORT_EXCEL_MISSING_WATER: 'Fehlende oder ungültige Wasserzuordnungsdaten',
-    IMPORT_EXCEL_MISSING_WATER_HINT: 'Die Datei muss ein "waterMapping"-Objekt mit date, kitchenWarm, kitchenCold, bathroomWarm und bathroomCold enthalten',
+    IMPORT_EXCEL_MISSING_WATER_HINT:
+      'Die Datei muss ein "waterMapping"-Objekt mit date, kitchenWarm, kitchenCold, bathroomWarm und bathroomCold enthalten',
     IMPORT_EXCEL_MISSING_HEATING: 'Fehlende oder ungültige Heizungszuordnungsdaten',
-    IMPORT_EXCEL_MISSING_HEATING_HINT: 'Die Datei muss ein "heatingMapping"-Objekt mit date, livingRoom, bedroom, kitchen und bathroom enthalten',
-    IMPORT_EXCEL_SETTINGS_INVALID_FORMAT: 'Import der Einstellungen fehlgeschlagen. Die Datei scheint keine gültigen Excel-Einstellungen zu enthalten. Bitte stellen Sie sicher, dass Sie eine Excel-Einstellungsdatei mit Aktivierungsstatus, Wasserzuordnung und Heizungszuordnung importieren.',
-    IMPORT_ADDRESS_INVALID_FILE_TYPE: 'Ungültiger Dateityp. Bitte wählen Sie eine JSON-Datei (.json-Erweiterung) zum Importieren von Adressdaten.',
-    IMPORT_ADDRESS_INVALID_FILE_TYPE_INSTRUCTION_1: 'Stellen Sie sicher, dass die Datei eine .json-Erweiterung hat',
-    IMPORT_ADDRESS_INVALID_FILE_TYPE_INSTRUCTION_2: 'Exportieren Sie zuerst Adressdaten, um ein gültiges JSON-Dateiformat zu erhalten',
-    IMPORT_EXCEL_SETTINGS_INVALID_FILE_TYPE: 'Ungültiger Dateityp. Bitte wählen Sie eine JSON-Datei (.json-Erweiterung) zum Importieren von Excel-Einstellungen.',
-    IMPORT_EXCEL_SETTINGS_INVALID_FILE_TYPE_INSTRUCTION_1: 'Stellen Sie sicher, dass die Datei eine .json-Erweiterung hat',
-    IMPORT_EXCEL_SETTINGS_INVALID_FILE_TYPE_INSTRUCTION_2: 'Exportieren Sie zuerst Excel-Einstellungen, um ein gültiges JSON-Dateiformat zu erhalten',
-    IMPORT_EXCEL_CROSS_SECTION_DUPLICATES: 'Spaltennamenskonflikt: {{columns}} wird sowohl im Wasserbereich als auch im Heizungsbereich verwendet',
-    IMPORT_EXCEL_CROSS_SECTION_DUPLICATES_HINT: 'Jeder Spaltenname muss über alle Bereiche eindeutig sein. Verwenden Sie unterschiedliche Namen für Wasserspalten und Heizungsspalten.',
+    IMPORT_EXCEL_MISSING_HEATING_HINT:
+      'Die Datei muss ein "heatingMapping"-Objekt mit date, livingRoom, bedroom, kitchen und bathroom enthalten',
+    IMPORT_EXCEL_SETTINGS_INVALID_FORMAT:
+      'Import der Einstellungen fehlgeschlagen. Die Datei scheint keine gültigen Excel-Einstellungen zu enthalten. Bitte stellen Sie sicher, dass Sie eine Excel-Einstellungsdatei mit Aktivierungsstatus, Wasserzuordnung und Heizungszuordnung importieren.',
+    IMPORT_ADDRESS_INVALID_FILE_TYPE:
+      'Ungültiger Dateityp. Bitte wählen Sie eine JSON-Datei (.json-Erweiterung) zum Importieren von Adressdaten.',
+    IMPORT_ADDRESS_INVALID_FILE_TYPE_INSTRUCTION_1:
+      'Stellen Sie sicher, dass die Datei eine .json-Erweiterung hat',
+    IMPORT_ADDRESS_INVALID_FILE_TYPE_INSTRUCTION_2:
+      'Exportieren Sie zuerst Adressdaten, um ein gültiges JSON-Dateiformat zu erhalten',
+    IMPORT_EXCEL_SETTINGS_INVALID_FILE_TYPE:
+      'Ungültiger Dateityp. Bitte wählen Sie eine JSON-Datei (.json-Erweiterung) zum Importieren von Excel-Einstellungen.',
+    IMPORT_EXCEL_SETTINGS_INVALID_FILE_TYPE_INSTRUCTION_1:
+      'Stellen Sie sicher, dass die Datei eine .json-Erweiterung hat',
+    IMPORT_EXCEL_SETTINGS_INVALID_FILE_TYPE_INSTRUCTION_2:
+      'Exportieren Sie zuerst Excel-Einstellungen, um ein gültiges JSON-Dateiformat zu erhalten',
+    IMPORT_EXCEL_CROSS_SECTION_DUPLICATES:
+      'Spaltennamenskonflikt: {{columns}} wird sowohl im Wasserbereich als auch im Heizungsbereich verwendet',
+    IMPORT_EXCEL_CROSS_SECTION_DUPLICATES_HINT:
+      'Jeder Spaltenname muss über alle Bereiche eindeutig sein. Verwenden Sie unterschiedliche Namen für Wasserspalten und Heizungsspalten.',
     IMPORT_EXCEL_MISSING_ROOMS: 'Fehlendes oder ungültiges "rooms"-Objekt in der Heizungszuordnung',
-    IMPORT_EXCEL_MISSING_ROOMS_HINT: 'Das heatingMapping muss ein "rooms"-Objekt mit Raum-IDs als Schlüssel und Spaltennamen als Werte enthalten',
+    IMPORT_EXCEL_MISSING_ROOMS_HINT:
+      'Das heatingMapping muss ein "rooms"-Objekt mit Raum-IDs als Schlüssel und Spaltennamen als Werte enthalten',
     IMPORT_EXCEL_EMPTY_ROOMS: 'Das "rooms"-Objekt in der Heizungszuordnung ist leer',
-    IMPORT_EXCEL_EMPTY_ROOMS_HINT: 'Fügen Sie mindestens einen Raum zum "rooms"-Objekt in heatingMapping hinzu',
+    IMPORT_EXCEL_EMPTY_ROOMS_HINT:
+      'Fügen Sie mindestens einen Raum zum "rooms"-Objekt in heatingMapping hinzu',
     IMPORT_EXCEL_UNEXPECTED_FIELDS: 'Unerwartete Felder in der Heizungszuordnung: {{fields}}',
-    IMPORT_EXCEL_UNEXPECTED_FIELDS_HINT: 'Das heatingMapping sollte nur "date" und "rooms" Felder enthalten. Entfernen Sie veraltete Felder wie livingRoom, bedroom, usw.',
+    IMPORT_EXCEL_UNEXPECTED_FIELDS_HINT:
+      'Das heatingMapping sollte nur "date" und "rooms" Felder enthalten. Entfernen Sie veraltete Felder wie livingRoom, bedroom, usw.',
     IMPORT_EXCEL_UNKNOWN_ROOMS: 'Unbekannte Raum-IDs im Import: {{rooms}}',
-    IMPORT_EXCEL_UNKNOWN_ROOMS_HINT: 'Die importierte Datei enthält Räume, die nicht konfiguriert sind. Fügen Sie zuerst die fehlenden Räume in den Heizungseinstellungen hinzu, oder exportieren Sie Ihre aktuellen Einstellungen, um die korrekten Raum-IDs zu erhalten.',
-    IMPORT_EXCEL_MISSING_ROOM_MAPPINGS: 'Fehlende Spaltenzuordnungen für konfigurierte Räume: {{rooms}}',
-    IMPORT_EXCEL_MISSING_ROOM_MAPPINGS_HINT: 'Die importierte Datei muss Spaltenzuordnungen für alle konfigurierten Räume enthalten.',
+    IMPORT_EXCEL_UNKNOWN_ROOMS_HINT:
+      'Die importierte Datei enthält Räume, die nicht konfiguriert sind. Fügen Sie zuerst die fehlenden Räume in den Heizungseinstellungen hinzu, oder exportieren Sie Ihre aktuellen Einstellungen, um die korrekten Raum-IDs zu erhalten.',
+    IMPORT_EXCEL_MISSING_ROOM_MAPPINGS:
+      'Fehlende Spaltenzuordnungen für konfigurierte Räume: {{rooms}}',
+    IMPORT_EXCEL_MISSING_ROOM_MAPPINGS_HINT:
+      'Die importierte Datei muss Spaltenzuordnungen für alle konfigurierten Räume enthalten.',
     FAMILY_HELP_TITLE: 'Familienmitglieder verwalten',
     FAMILY_HELP_STEP_1_TITLE: 'Warum Familienmitglieder hinzufügen?',
-    FAMILY_HELP_STEP_1_DESC: 'Das Hinzufügen von Familienmitgliedern schaltet leistungsstarke Vergleichsfunktionen frei! Sehen Sie, wie Ihr Wasserverbrauch, Heizungsverbrauch und Stromverbrauch im Vergleich zum Landesdurchschnitt für Familien Ihrer Größe abschneidet.',
+    FAMILY_HELP_STEP_1_DESC:
+      'Das Hinzufügen von Familienmitgliedern schaltet leistungsstarke Vergleichsfunktionen frei! Sehen Sie, wie Ihr Wasserverbrauch, Heizungsverbrauch und Stromverbrauch im Vergleich zum Landesdurchschnitt für Familien Ihrer Größe abschneidet.',
     FAMILY_HELP_STEP_2_TITLE: 'Pro-Person Einblicke',
-    FAMILY_HELP_STEP_2_DESC: 'Verfolgen Sie den Wasserverbrauch, Heizungsverbrauch und Stromverbrauch pro Person und finden Sie Sparmöglichkeiten. Je genauer Ihre Familienanzahl, desto besser Ihre Vergleichsdaten!',
+    FAMILY_HELP_STEP_2_DESC:
+      'Verfolgen Sie den Wasserverbrauch, Heizungsverbrauch und Stromverbrauch pro Person und finden Sie Sparmöglichkeiten. Je genauer Ihre Familienanzahl, desto besser Ihre Vergleichsdaten!',
     FAMILY_HELP_STEP_3_TITLE: 'Schritt 1: Bearbeitungsmodus',
-    FAMILY_HELP_STEP_3_DESC: 'Klicken Sie auf "Familie bearbeiten" um Familienmitglieder hinzuzufügen oder zu ändern.',
+    FAMILY_HELP_STEP_3_DESC:
+      'Klicken Sie auf "Familie bearbeiten" um Familienmitglieder hinzuzufügen oder zu ändern.',
     FAMILY_HELP_STEP_4_TITLE: 'Schritt 2: Details eingeben',
-    FAMILY_HELP_STEP_4_DESC: 'Geben Sie Name und Nachname für jedes Familienmitglied ein. Sie können auch Typ (Erwachsener/Kind) und Geschlecht wählen.',
+    FAMILY_HELP_STEP_4_DESC:
+      'Geben Sie Name und Nachname für jedes Familienmitglied ein. Sie können auch Typ (Erwachsener/Kind) und Geschlecht wählen.',
     FAMILY_HELP_STEP_5_TITLE: 'Schritt 3: Avatar wählen',
-    FAMILY_HELP_STEP_5_DESC: 'Wählen Sie ein lustiges Avatar-Bild für jede Person, oder laden Sie Ihr eigenes Foto hoch!',
+    FAMILY_HELP_STEP_5_DESC:
+      'Wählen Sie ein lustiges Avatar-Bild für jede Person, oder laden Sie Ihr eigenes Foto hoch!',
     FAMILY_HELP_STEP_6_TITLE: 'Schritt 4: Änderungen speichern',
-    FAMILY_HELP_STEP_6_DESC: 'Klicken Sie auf "Familie speichern" um alle Änderungen zu behalten. Vergessen Sie diesen Schritt nicht!',
+    FAMILY_HELP_STEP_6_DESC:
+      'Klicken Sie auf "Familie speichern" um alle Änderungen zu behalten. Vergessen Sie diesen Schritt nicht!',
     FAMILY_HELP_STEP_7_TITLE: 'Schritt 5: Sichern & Wiederherstellen',
-    FAMILY_HELP_STEP_7_DESC: 'Verwenden Sie "Exportieren" um eine Sicherung Ihrer Familie in einer Datei zu speichern. Verwenden Sie "Importieren" um Familiendaten aus einer Sicherungsdatei zu laden.',
+    FAMILY_HELP_STEP_7_DESC:
+      'Verwenden Sie "Exportieren" um eine Sicherung Ihrer Familie in einer Datei zu speichern. Verwenden Sie "Importieren" um Familiendaten aus einer Sicherungsdatei zu laden.',
     FAMILY_HELP_PREVIOUS: 'Zurück',
     FAMILY_HELP_NEXT: 'Weiter',
     FAMILY_HELP_DONE: 'Verstanden!',
     ADDRESS_HELP_TITLE: 'Adresse verwalten',
     ADDRESS_HELP_STEP_1_TITLE: 'Warum Adresse eingeben?',
-    ADDRESS_HELP_STEP_1_DESC: 'Ihre Adresse hilft, Ihre Hausverwaltungserfahrung zu personalisieren. Ihr Land wird verwendet, um Ihren Wasserverbrauch, Heizungsverbrauch und Stromverbrauch mit dem Landesdurchschnitt zu vergleichen.',
+    ADDRESS_HELP_STEP_1_DESC:
+      'Ihre Adresse hilft, Ihre Hausverwaltungserfahrung zu personalisieren. Ihr Land wird verwendet, um Ihren Wasserverbrauch, Heizungsverbrauch und Stromverbrauch mit dem Landesdurchschnitt zu vergleichen.',
     ADDRESS_HELP_STEP_2_TITLE: 'Schritt 1: Details eingeben',
-    ADDRESS_HELP_STEP_2_DESC: 'Geben Sie Straßenname, Hausnummer, Stadt, Postleitzahl und Land ein. Nutzen Sie die Ländersuche für schnelles Finden!',
+    ADDRESS_HELP_STEP_2_DESC:
+      'Geben Sie Straßenname, Hausnummer, Stadt, Postleitzahl und Land ein. Nutzen Sie die Ländersuche für schnelles Finden!',
     ADDRESS_HELP_STEP_3_TITLE: 'Schritt 2: Adresse speichern',
-    ADDRESS_HELP_STEP_3_DESC: 'Klicken Sie auf "Adresse speichern" um Ihre Daten zu sichern. Sie können jederzeit auf "Adresse bearbeiten" klicken.',
+    ADDRESS_HELP_STEP_3_DESC:
+      'Klicken Sie auf "Adresse speichern" um Ihre Daten zu sichern. Sie können jederzeit auf "Adresse bearbeiten" klicken.',
     ADDRESS_HELP_STEP_4_TITLE: 'Schritt 3: Sichern & Wiederherstellen',
-    ADDRESS_HELP_STEP_4_DESC: 'Nutzen Sie "Adresse exportieren" für eine Sicherungsdatei. Nutzen Sie "Adresse importieren" zur Wiederherstellung. Ideal für den Gerätewechsel!',
+    ADDRESS_HELP_STEP_4_DESC:
+      'Nutzen Sie "Adresse exportieren" für eine Sicherungsdatei. Nutzen Sie "Adresse importieren" zur Wiederherstellung. Ideal für den Gerätewechsel!',
     HELP: 'Hilfe',
     EXCEL_HELP_TITLE: 'Excel-Integration verwenden',
     EXCEL_HELP_STEP_1_TITLE: 'Was ist Excel-Integration?',
-    EXCEL_HELP_STEP_1_DESC: 'Die Excel-Integration ermöglicht den Import und Export Ihrer Wasserdaten, Heizungsdaten und Stromdaten direkt aus Excel-Tabellen. Perfekt für fortgeschrittene Nutzer!',
+    EXCEL_HELP_STEP_1_DESC:
+      'Die Excel-Integration ermöglicht den Import und Export Ihrer Wasserdaten, Heizungsdaten und Stromdaten direkt aus Excel-Tabellen. Perfekt für fortgeschrittene Nutzer!',
     EXCEL_HELP_STEP_2_TITLE: 'Schritt 1: Integration aktivieren',
-    EXCEL_HELP_STEP_2_DESC: 'Schalten Sie "Excel-Integration aktivieren" ein, um die Funktion zu aktivieren. Dies schaltet die Excel Import/Export-Buttons frei.',
+    EXCEL_HELP_STEP_2_DESC:
+      'Schalten Sie "Excel-Integration aktivieren" ein, um die Funktion zu aktivieren. Dies schaltet die Excel Import/Export-Buttons frei.',
     EXCEL_HELP_STEP_3_TITLE: 'Schritt 2: Spalten konfigurieren',
-    EXCEL_HELP_STEP_3_DESC: 'Klicken Sie auf "Excel-Einstellungen bearbeiten" um die Spaltennamen anzupassen. Passen Sie diese Namen an Ihre Excel-Überschriften an.',
+    EXCEL_HELP_STEP_3_DESC:
+      'Klicken Sie auf "Excel-Einstellungen bearbeiten" um die Spaltennamen anzupassen. Passen Sie diese Namen an Ihre Excel-Überschriften an.',
     EXCEL_HELP_STEP_4_TITLE: 'Schritt 3: Daten importieren',
-    EXCEL_HELP_STEP_4_DESC: 'Gehen Sie zur Wasserseite, Heizungsseite oder Stromseite und nutzen Sie "Aus Excel importieren" um Ihre Tabelle zu laden. Die App liest Daten aus Ihren konfigurierten Spalten!'
-  }
+    EXCEL_HELP_STEP_4_DESC:
+      'Gehen Sie zur Wasserseite, Heizungsseite oder Stromseite und nutzen Sie "Aus Excel importieren" um Ihre Tabelle zu laden. Die App liest Daten aus Ihren konfigurierten Spalten!',
+  },
 };

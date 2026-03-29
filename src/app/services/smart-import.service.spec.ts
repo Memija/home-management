@@ -26,7 +26,7 @@ describe('SmartImportService', () => {
       'MONTHS.SEPTEMBER': 'september',
       'MONTHS.OCTOBER': 'october',
       'MONTHS.NOVEMBER': 'november',
-      'MONTHS.DECEMBER': 'december'
+      'MONTHS.DECEMBER': 'december',
     },
     de: {
       'MONTHS.JANUARY': 'januar',
@@ -40,8 +40,8 @@ describe('SmartImportService', () => {
       'MONTHS.SEPTEMBER': 'september',
       'MONTHS.OCTOBER': 'oktober',
       'MONTHS.NOVEMBER': 'november',
-      'MONTHS.DECEMBER': 'dezember'
-    }
+      'MONTHS.DECEMBER': 'dezember',
+    },
   };
 
   beforeEach(() => {
@@ -50,14 +50,11 @@ describe('SmartImportService', () => {
       translate: vi.fn((key: string) => monthTranslations['en'][key] ?? key),
       translateForLanguage: vi.fn((key: string, lang: string) => {
         return monthTranslations[lang]?.[key] ?? key;
-      })
+      }),
     };
 
     TestBed.configureTestingModule({
-      providers: [
-        SmartImportService,
-        { provide: LanguageService, useValue: languageServiceMock }
-      ]
+      providers: [SmartImportService, { provide: LanguageService, useValue: languageServiceMock }],
     });
     service = TestBed.inject(SmartImportService);
   });
@@ -101,7 +98,9 @@ describe('SmartImportService', () => {
     });
 
     it('should handle tabular input with meter number prefix', () => {
-      const result = service.parseRawText('1HLY02ABCDEFGH\tET\t01.01.2026\t12,632.00\tZwischenablesung\tabgelesen von Ihnen');
+      const result = service.parseRawText(
+        '1HLY02ABCDEFGH\tET\t01.01.2026\t12,632.00\tZwischenablesung\tabgelesen von Ihnen',
+      );
       expect(result.length).toBe(1);
       expect(result[0].value).toBe(12632);
     });
@@ -233,7 +232,7 @@ describe('SmartImportService', () => {
         { name: 'September', index: 8 },
         { name: 'Oktober', index: 9 },
         { name: 'November', index: 10 },
-        { name: 'Dezember', index: 11 }
+        { name: 'Dezember', index: 11 },
       ];
 
       for (const { name, index } of germanMonths) {
@@ -294,7 +293,7 @@ describe('SmartImportService', () => {
         { name: 'September', index: 8 },
         { name: 'October', index: 9 },
         { name: 'November', index: 10 },
-        { name: 'December', index: 11 }
+        { name: 'December', index: 11 },
       ];
 
       for (const { name, index } of englishMonths) {

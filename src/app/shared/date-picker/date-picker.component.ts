@@ -1,4 +1,13 @@
-import { Component, input, output, signal, computed, inject, ElementRef, HostListener } from '@angular/core';
+import {
+  Component,
+  input,
+  output,
+  signal,
+  computed,
+  inject,
+  ElementRef,
+  HostListener,
+} from '@angular/core';
 import { CommonModule, DatePipe } from '@angular/common';
 import { LanguageService } from '../../services/language.service';
 import { TranslatePipe } from '../../pipes/translate.pipe';
@@ -10,7 +19,7 @@ import { LucideAngularModule, ChevronLeft, ChevronRight, Calendar } from 'lucide
   imports: [CommonModule, TranslatePipe, LucideAngularModule],
   providers: [DatePipe],
   templateUrl: './date-picker.component.html',
-  styleUrl: './date-picker.component.scss'
+  styleUrl: './date-picker.component.scss',
 })
 export class DatePickerComponent {
   private languageService = inject(LanguageService);
@@ -98,7 +107,7 @@ export class DatePickerComponent {
 
   toggleCalendar() {
     if (!this.disabled()) {
-      this.isOpen.update(v => !v);
+      this.isOpen.update((v) => !v);
       if (this.isOpen() && this.date()) {
         this.viewDate.set(new Date(this.date()));
       }
@@ -106,11 +115,11 @@ export class DatePickerComponent {
   }
 
   prevMonth() {
-    this.viewDate.update(d => new Date(d.getFullYear(), d.getMonth() - 1, 1));
+    this.viewDate.update((d) => new Date(d.getFullYear(), d.getMonth() - 1, 1));
   }
 
   nextMonth() {
-    this.viewDate.update(d => new Date(d.getFullYear(), d.getMonth() + 1, 1));
+    this.viewDate.update((d) => new Date(d.getFullYear(), d.getMonth() + 1, 1));
   }
 
   selectDate(day: Date | null) {
@@ -155,17 +164,21 @@ export class DatePickerComponent {
   isSameDay(d1: Date | null, d2Str: string): boolean {
     if (!d1 || !d2Str) return false;
     const d2 = new Date(d2Str);
-    return d1.getDate() === d2.getDate() &&
+    return (
+      d1.getDate() === d2.getDate() &&
       d1.getMonth() === d2.getMonth() &&
-      d1.getFullYear() === d2.getFullYear();
+      d1.getFullYear() === d2.getFullYear()
+    );
   }
 
   isToday(d: Date | null): boolean {
     if (!d) return false;
     const today = new Date();
-    return d.getDate() === today.getDate() &&
+    return (
+      d.getDate() === today.getDate() &&
       d.getMonth() === today.getMonth() &&
-      d.getFullYear() === today.getFullYear();
+      d.getFullYear() === today.getFullYear()
+    );
   }
 
   isSunday(d: Date | null): boolean {

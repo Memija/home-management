@@ -1,11 +1,23 @@
-import { Component, inject, ViewChild, HostListener, ChangeDetectionStrategy } from '@angular/core';
+import {
+  Component,
+  inject,
+  ViewChild,
+  HostListener,
+  ChangeDetectionStrategy,
+  signal,
+} from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { LanguageService } from '../services/language.service';
+import { DemoService } from '../services/demo.service';
 import { TranslatePipe } from '../pipes/translate.pipe';
+import { LucideAngularModule, Lightbulb } from 'lucide-angular';
 import { AddressComponent } from './address/address.component';
 import { FamilyComponent } from './family/family.component';
 import { ExcelSettingsComponent } from './excel-settings/excel-settings.component';
 import { StorageSettingsComponent } from './storage-settings/storage-settings.component';
+import { DemoWizardComponent } from '../shared/demo-wizard/demo-wizard.component';
+import { DemoTourComponent } from '../shared/demo-tour/demo-tour.component';
+import { DEMO_WIZARD_STEPS, DEMO_TOUR_STEPS } from './settings.constants';
 
 interface ComponentWithUnsavedChanges {
   hasUnsavedChanges(): boolean;
@@ -16,13 +28,41 @@ interface ComponentWithUnsavedChanges {
 @Component({
   selector: 'app-settings',
   standalone: true,
-  imports: [TranslatePipe, CommonModule, AddressComponent, FamilyComponent, ExcelSettingsComponent, StorageSettingsComponent],
+  imports: [
+    CommonModule,
+    TranslatePipe,
+    LucideAngularModule,
+    AddressComponent,
+    FamilyComponent,
+    StorageSettingsComponent,
+    ExcelSettingsComponent,
+    DemoWizardComponent,
+    DemoTourComponent,
+  ],
   templateUrl: './settings.component.html',
   styleUrl: './settings.component.scss',
-  changeDetection: ChangeDetectionStrategy.OnPush
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class SettingsComponent {
   protected languageService = inject(LanguageService);
+  protected demoService = inject(DemoService);
+
+  // Icons
+  protected readonly LightbulbIcon = Lightbulb;
+
+  // Demo wizard & tour
+  protected demoWizardSteps = DEMO_WIZARD_STEPS;
+  protected demoTourSteps = DEMO_TOUR_STEPS;
+  protected showDemoWizard = signal(false);
+  protected showDemoTour = signal(false);
+
+  protected openRelevantDemoGuide(): void {
+    if (this.demoService.isDemoMode()) {
+      this.showDemoTour.set(true);
+    } else {
+      this.showDemoWizard.set(true);
+    }
+  }
 
   @ViewChild(FamilyComponent) familyComponent!: FamilyComponent;
   @ViewChild(AddressComponent) addressComponent!: AddressComponent;
@@ -31,9 +71,11 @@ export class SettingsComponent {
   // Handle browser refresh/close
   @HostListener('window:beforeunload', ['$event'])
   onBeforeUnload(event: BeforeUnloadEvent) {
-    if (this.familyComponent?.hasUnsavedChanges() ||
+    if (
+      this.familyComponent?.hasUnsavedChanges() ||
       this.addressComponent?.hasUnsavedChanges() ||
-      this.excelSettingsComponent?.hasUnsavedChanges()) {
+      this.excelSettingsComponent?.hasUnsavedChanges()
+    ) {
       event.preventDefault();
       return '';
     }

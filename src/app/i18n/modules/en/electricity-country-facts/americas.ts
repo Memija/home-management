@@ -13,7 +13,7 @@ export const americasElectricityFacts = {
     'Coal usage has dropped by half since 2010.',
     'US households use more electricity than Europeans on average.',
     'Air conditioning is a major driver of US peak demand.',
-    'The US is investing billions in grid modernization.'
+    'The US is investing billions in grid modernization.',
   ],
 
   // Canada
@@ -22,14 +22,14 @@ export const americasElectricityFacts = {
     'Canada exports clean electricity to the US.',
     'Quebec is a hydropower giant, powering much of the northeast.',
     'Ontario phased out coal completely in 2014.',
-    'Nuclear power provides most of Ontario\'s electricity.',
+    "Nuclear power provides most of Ontario's electricity.",
     'Canada has huge untapped wind and solar potential.',
     'Alberta is transitioning from coal to renewables.',
-    'Canada\'s grid is over 80% non-emitting.',
+    "Canada's grid is over 80% non-emitting.",
     'Remote communities often rely on diesel, but are switching to solar.',
     'Newfoundland produces power from massive offshore oil/gas and hydro.',
     'Canada invests heavily in carbon capture technology.',
-    'Electric heating is standard in many Canadian provinces.'
+    'Electric heating is standard in many Canadian provinces.',
   ],
 
   // Mexico
@@ -43,31 +43,31 @@ export const americasElectricityFacts = {
     'Electricity subsidies are common for households in Mexico.',
     'The national utility CFE controls most generation.',
     'Distributed solar generation is growing for businesses.',
-    'Mexico\'s grid faces challenges with reliability.',
+    "Mexico's grid faces challenges with reliability.",
     'Energy reforms have opened the market to private investment.',
-    'Mexico has growing demand for air conditioning.'
+    'Mexico has growing demand for air conditioning.',
   ],
 
   // Brazil
   BR: [
     'Brazil gets over 60% of its electricity from hydropower.',
-    'The Itaipu Dam is one of the world\'s largest power producers.',
+    "The Itaipu Dam is one of the world's largest power producers.",
     'Biomass from sugarcane powers many Brazilian industries.',
     'Brazil has a rapidly growing wind power sector in the Northeast.',
     'Solar energy is booming in sunny Brazil.',
-    'Droughts threaten Brazil\'s hydro-dependent grid.',
+    "Droughts threaten Brazil's hydro-dependent grid.",
     'Brazil has a highly interconnected national grid.',
     'Floating solar is being tested on hydro reservoirs.',
-    'Brazil\'s energy mix is one of the cleanest in the world.',
+    "Brazil's energy mix is one of the cleanest in the world.",
     'Distributed generation is allowed and growing.',
     'Nuclear power plays a small role in Brazil.',
-    'Electricity demand is growing with the economy.'
+    'Electricity demand is growing with the economy.',
   ],
 
   // Argentina
   AR: [
     'Argentina relies heavily on natural gas for power.',
-    'Wind power is growing in Patagonia\'s strong winds.',
+    "Wind power is growing in Patagonia's strong winds.",
     'Argentina has nuclear power plants providing baseload.',
     'Hydroelectricity is important in western provinces.',
     'Solar parks are being built in the sunny north.',
@@ -77,6 +77,6 @@ export const americasElectricityFacts = {
     'Vaca Muerta gas fields fuel power plants.',
     'Argentina aims for 20% renewables by 2025.',
     'Grid expansion is needed to connect renewables.',
-    'Distributed generation laws allow users to sell power.'
-  ]
+    'Distributed generation laws allow users to sell power.',
+  ],
 };

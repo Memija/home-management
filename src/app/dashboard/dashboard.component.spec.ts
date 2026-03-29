@@ -22,7 +22,7 @@ describe('DashboardComponent', () => {
     TestBed.configureTestingModule({
       providers: [
         { provide: DemoService, useValue: mockDemoService },
-        { provide: ActivatedRoute, useValue: { snapshot: { paramMap: { get: () => null } } } }
+        { provide: ActivatedRoute, useValue: { snapshot: { paramMap: { get: () => null } } } },
       ],
     });
 

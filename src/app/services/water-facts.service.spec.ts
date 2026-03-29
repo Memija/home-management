@@ -9,14 +9,11 @@ describe('WaterFactsService', () => {
 
   beforeEach(() => {
     mockLanguageService = {
-      currentLang: vi.fn().mockReturnValue('en')
+      currentLang: vi.fn().mockReturnValue('en'),
     };
 
     TestBed.configureTestingModule({
-      providers: [
-        WaterFactsService,
-        { provide: LanguageService, useValue: mockLanguageService }
-      ]
+      providers: [WaterFactsService, { provide: LanguageService, useValue: mockLanguageService }],
     });
     service = TestBed.inject(WaterFactsService);
   });

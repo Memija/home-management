@@ -19,7 +19,7 @@ const defaultHeatingFacts = {
     'Smart thermostats can reduce heating costs by 10-15%.',
     'Wood was the primary heating fuel for over 400,000 years of human history.',
     'The first central heating systems appeared in ancient Rome.',
-    'Geothermal heating uses Earth\'s constant underground temperature.'
+    "Geothermal heating uses Earth's constant underground temperature.",
   ],
   WORLD: [
     'The Romans invented hypocaust heating over 2,000 years ago, using underfloor channels to distribute warm air.',
@@ -33,8 +33,8 @@ const defaultHeatingFacts = {
     'Heat pumps can provide 3-4 times more energy than they consume, making them incredibly efficient.',
     'The Great Fire of London in 1666 led to building codes requiring chimneys, making heating safer.',
     'Natural gas only became the dominant heating fuel in Europe in the 1960s, replacing coal and oil.',
-    'Modern condensing boilers can achieve efficiency ratings of over 90%, compared to 60% for older models.'
-  ]
+    'Modern condensing boilers can achieve efficiency ratings of over 90%, compared to 60% for older models.',
+  ],
 };
 
 // Merge all regional facts
@@ -44,7 +44,7 @@ export const heatingCountryFacts: Record<string, string[]> = {
   ...asiaPacificHeatingFacts,
   ...middleEastHeatingFacts,
   ...africaHeatingFacts,
-  ...defaultHeatingFacts
+  ...defaultHeatingFacts,
 };
 
 // List of available countries with translation keys
@@ -147,5 +147,5 @@ export const availableHeatingCountries = [
   { code: 'TZ', nameKey: 'COUNTRIES.TANZANIA' },
 
   // World (average)
-  { code: 'WORLD', nameKey: 'COUNTRIES.WORLD' }
+  { code: 'WORLD', nameKey: 'COUNTRIES.WORLD' },
 ];

@@ -1,5 +1,9 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { DetailedRecordsComponent, GenericRecord, SortOptionConfig } from './detailed-records.component';
+import {
+  DetailedRecordsComponent,
+  GenericRecord,
+  SortOptionConfig,
+} from './detailed-records.component';
 import { LanguageService } from '../../services/language.service';
 import { LocalStorageService } from '../../services/local-storage.service';
 import { Component, Pipe, PipeTransform, signal, input, output } from '@angular/core';
@@ -11,7 +15,9 @@ import { vi, afterEach } from 'vitest';
 // Mock TranslatePipe
 @Pipe({ name: 'translate', standalone: true })
 class MockTranslatePipe implements PipeTransform {
-  transform(key: string): string { return key; }
+  transform(key: string): string {
+    return key;
+  }
 }
 
 // Stub components to avoid resolving their templates
@@ -38,8 +44,20 @@ function makeRecord(dateStr: string, extras: Record<string, unknown> = {}): Gene
 }
 
 // Helper to create water-type records
-function makeWaterRecord(dateStr: string, kw: number, kc: number, bw: number, bc: number): GenericRecord {
-  return { date: new Date(dateStr), kitchenWarm: kw, kitchenCold: kc, bathroomWarm: bw, bathroomCold: bc };
+function makeWaterRecord(
+  dateStr: string,
+  kw: number,
+  kc: number,
+  bw: number,
+  bc: number,
+): GenericRecord {
+  return {
+    date: new Date(dateStr),
+    kitchenWarm: kw,
+    kitchenCold: kc,
+    bathroomWarm: bw,
+    bathroomCold: bc,
+  };
 }
 
 describe('DetailedRecordsComponent', () => {
@@ -54,20 +72,20 @@ describe('DetailedRecordsComponent', () => {
       translate: vi.fn().mockImplementation((key: string, params?: Record<string, unknown>) => {
         if (params) return `${key}:${JSON.stringify(params)}`;
         return key;
-      })
+      }),
     };
 
     localStorageServiceMock = {
       getPreference: vi.fn().mockReturnValue(null),
-      setPreference: vi.fn()
+      setPreference: vi.fn(),
     };
 
     await TestBed.configureTestingModule({
-      imports: [DetailedRecordsComponent]
+      imports: [DetailedRecordsComponent],
     })
       .overrideComponent(DetailedRecordsComponent, {
         remove: { imports: [TranslatePipe, DatePickerComponent, HelpModalComponent] },
-        add: { imports: [MockTranslatePipe, MockDatePickerComponent, MockHelpModalComponent] }
+        add: { imports: [MockTranslatePipe, MockDatePickerComponent, MockHelpModalComponent] },
       })
       .overrideProvider(LanguageService, { useValue: languageServiceMock })
       .overrideProvider(LocalStorageService, { useValue: localStorageServiceMock })
@@ -158,7 +176,7 @@ describe('DetailedRecordsComponent', () => {
       fixture.componentRef.setInput('recordType', 'electricity');
       fixture.detectChanges();
       expect(localStorageServiceMock.getPreference).toHaveBeenCalledWith(
-        'detailed_records_for_electricity_are_collapsed'
+        'detailed_records_for_electricity_are_collapsed',
       );
     });
 
@@ -191,7 +209,7 @@ describe('DetailedRecordsComponent', () => {
       (component as any).toggleCollapse();
       expect(localStorageServiceMock.setPreference).toHaveBeenCalledWith(
         'detailed_records_for_heating_are_collapsed',
-        'false'
+        'false',
       );
     });
   });
@@ -202,7 +220,7 @@ describe('DetailedRecordsComponent', () => {
       makeRecord('2024-03-20'),
       makeRecord('2024-06-10'),
       makeRecord('2024-09-05'),
-      makeRecord('2024-12-25')
+      makeRecord('2024-12-25'),
     ];
 
     beforeEach(() => {
@@ -218,7 +236,9 @@ describe('DetailedRecordsComponent', () => {
       (component as any).startDate.set('2024-06-01');
       const filtered = (component as any).filteredRecords();
       expect(filtered.length).toBe(3);
-      expect(filtered.every((r: GenericRecord) => new Date(r.date) >= new Date('2024-06-01'))).toBe(true);
+      expect(filtered.every((r: GenericRecord) => new Date(r.date) >= new Date('2024-06-01'))).toBe(
+        true,
+      );
     });
 
     it('should filter by end date', () => {
@@ -259,7 +279,7 @@ describe('DetailedRecordsComponent', () => {
       makeRecord('2024-01-15'),
       makeRecord('2024-05-20'),
       makeRecord('2024-08-10'),
-      makeRecord('2025-01-05')
+      makeRecord('2025-01-05'),
     ];
 
     beforeEach(() => {
@@ -271,7 +291,9 @@ describe('DetailedRecordsComponent', () => {
       (component as any).searchYear.set(2024);
       const filtered = (component as any).filteredRecords();
       expect(filtered.length).toBe(3);
-      expect(filtered.every((r: GenericRecord) => new Date(r.date).getFullYear() === 2024)).toBe(true);
+      expect(filtered.every((r: GenericRecord) => new Date(r.date).getFullYear() === 2024)).toBe(
+        true,
+      );
     });
 
     it('should filter by month (0-indexed)', () => {
@@ -313,7 +335,7 @@ describe('DetailedRecordsComponent', () => {
         makeRecord('2022-03-10'),
         makeRecord('2024-01-15'),
         makeRecord('2024-06-10'),
-        makeRecord('2023-12-25')
+        makeRecord('2023-12-25'),
       ]);
       fixture.detectChanges();
 
@@ -331,7 +353,7 @@ describe('DetailedRecordsComponent', () => {
       fixture.componentRef.setInput('records', [
         makeRecord('2024-01-01'),
         makeRecord('2024-06-15'),
-        makeRecord('2024-12-31')
+        makeRecord('2024-12-31'),
       ]);
       fixture.detectChanges();
 
@@ -398,13 +420,16 @@ describe('DetailedRecordsComponent', () => {
 
   describe('Sorting', () => {
     const records: GenericRecord[] = [
-      makeWaterRecord('2024-03-15', 10, 5, 8, 3),  // total 26, kitchen 15, bathroom 11
+      makeWaterRecord('2024-03-15', 10, 5, 8, 3), // total 26, kitchen 15, bathroom 11
       makeWaterRecord('2024-01-10', 20, 10, 15, 5), // total 50, kitchen 30, bathroom 20
-      makeWaterRecord('2024-06-20', 5, 2, 3, 1)     // total 11, kitchen 7, bathroom 4
+      makeWaterRecord('2024-06-20', 5, 2, 3, 1), // total 11, kitchen 7, bathroom 4
     ];
 
     const totalFn = (r: GenericRecord) =>
-      (r['kitchenWarm'] || 0) + (r['kitchenCold'] || 0) + (r['bathroomWarm'] || 0) + (r['bathroomCold'] || 0);
+      (r['kitchenWarm'] || 0) +
+      (r['kitchenCold'] || 0) +
+      (r['bathroomWarm'] || 0) +
+      (r['bathroomCold'] || 0);
 
     beforeEach(() => {
       fixture.componentRef.setInput('records', records);
@@ -467,7 +492,7 @@ describe('DetailedRecordsComponent', () => {
     it('should return stable order for unknown sort option on non-water records', () => {
       const genericRecords = [
         makeRecord('2024-01-10', { value: 100 }),
-        makeRecord('2024-06-20', { value: 200 })
+        makeRecord('2024-06-20', { value: 200 }),
       ];
       fixture.componentRef.setInput('records', genericRecords);
       fixture.detectChanges();
@@ -481,7 +506,9 @@ describe('DetailedRecordsComponent', () => {
   describe('Pagination', () => {
     const createRecords = (count: number): GenericRecord[] =>
       Array.from({ length: count }, (_, i) =>
-        makeRecord(`2024-${String(Math.floor(i / 28) + 1).padStart(2, '0')}-${String((i % 28) + 1).padStart(2, '0')}`)
+        makeRecord(
+          `2024-${String(Math.floor(i / 28) + 1).padStart(2, '0')}-${String((i % 28) + 1).padStart(2, '0')}`,
+        ),
       );
 
     it('should return first page of records', () => {
@@ -579,18 +606,21 @@ describe('DetailedRecordsComponent', () => {
       fixture.componentRef.setInput('records', [
         makeRecord('2024-01-01'),
         makeRecord('2024-02-01'),
-        makeRecord('2024-03-01')
+        makeRecord('2024-03-01'),
       ]);
       fixture.detectChanges();
 
       (component as any).pageOfText();
-      expect(languageServiceMock.translate).toHaveBeenCalledWith('HOME.PAGE_OF', { current: 1, total: 1 });
+      expect(languageServiceMock.translate).toHaveBeenCalledWith('HOME.PAGE_OF', {
+        current: 1,
+        total: 1,
+      });
     });
 
     it('should generate showing-records text', () => {
       fixture.componentRef.setInput('records', [
         makeRecord('2024-01-01'),
-        makeRecord('2024-02-01')
+        makeRecord('2024-02-01'),
       ]);
       fixture.detectChanges();
 
@@ -638,7 +668,7 @@ describe('DetailedRecordsComponent', () => {
       const records = [
         makeRecord('2024-01-15'),
         makeRecord('2024-06-20'),
-        makeRecord('2024-12-25')
+        makeRecord('2024-12-25'),
       ];
       fixture.componentRef.setInput('records', records);
       fixture.detectChanges();
@@ -726,18 +756,18 @@ describe('DetailedRecordsComponent', () => {
         (component as any).startDate.set('2024-03-15');
         (component as any).searchYear.set(2024);
 
-        expect((component as any).isMonthDisabled(1)).toBe(true);  // Feb
-        expect((component as any).isMonthDisabled(2)).toBe(false);  // Mar
-        expect((component as any).isMonthDisabled(5)).toBe(false);  // Jun
+        expect((component as any).isMonthDisabled(1)).toBe(true); // Feb
+        expect((component as any).isMonthDisabled(2)).toBe(false); // Mar
+        expect((component as any).isMonthDisabled(5)).toBe(false); // Jun
       });
 
       it('should disable months after endDate month in same year', () => {
         (component as any).endDate.set('2024-08-20');
         (component as any).searchYear.set(2024);
 
-        expect((component as any).isMonthDisabled(7)).toBe(false);  // Aug
-        expect((component as any).isMonthDisabled(8)).toBe(true);   // Sep
-        expect((component as any).isMonthDisabled(11)).toBe(true);  // Dec
+        expect((component as any).isMonthDisabled(7)).toBe(false); // Aug
+        expect((component as any).isMonthDisabled(8)).toBe(true); // Sep
+        expect((component as any).isMonthDisabled(11)).toBe(true); // Dec
       });
 
       it('should not disable months for a year after startDate year', () => {
@@ -772,11 +802,11 @@ describe('DetailedRecordsComponent', () => {
         (component as any).startDate.set('2024-03-01');
         (component as any).endDate.set('2024-08-31');
 
-        expect((component as any).isMonthDisabled(1)).toBe(true);   // Feb
-        expect((component as any).isMonthDisabled(2)).toBe(false);  // Mar
-        expect((component as any).isMonthDisabled(7)).toBe(false);  // Aug
-        expect((component as any).isMonthDisabled(8)).toBe(true);   // Sep
-        expect((component as any).isMonthDisabled(11)).toBe(true);  // Dec
+        expect((component as any).isMonthDisabled(1)).toBe(true); // Feb
+        expect((component as any).isMonthDisabled(2)).toBe(false); // Mar
+        expect((component as any).isMonthDisabled(7)).toBe(false); // Aug
+        expect((component as any).isMonthDisabled(8)).toBe(true); // Sep
+        expect((component as any).isMonthDisabled(11)).toBe(true); // Dec
       });
 
       it('should not disable any month when range spans >= 12 months', () => {
@@ -793,21 +823,21 @@ describe('DetailedRecordsComponent', () => {
         (component as any).endDate.set('2024-02-28');
 
         // Valid months: Nov(10), Dec(11), Jan(0), Feb(1)
-        expect((component as any).isMonthDisabled(0)).toBe(false);   // Jan
-        expect((component as any).isMonthDisabled(1)).toBe(false);   // Feb
-        expect((component as any).isMonthDisabled(2)).toBe(true);    // Mar
-        expect((component as any).isMonthDisabled(9)).toBe(true);    // Oct
-        expect((component as any).isMonthDisabled(10)).toBe(false);  // Nov
-        expect((component as any).isMonthDisabled(11)).toBe(false);  // Dec
+        expect((component as any).isMonthDisabled(0)).toBe(false); // Jan
+        expect((component as any).isMonthDisabled(1)).toBe(false); // Feb
+        expect((component as any).isMonthDisabled(2)).toBe(true); // Mar
+        expect((component as any).isMonthDisabled(9)).toBe(true); // Oct
+        expect((component as any).isMonthDisabled(10)).toBe(false); // Nov
+        expect((component as any).isMonthDisabled(11)).toBe(false); // Dec
       });
 
       it('should handle single-month range', () => {
         (component as any).startDate.set('2024-06-01');
         (component as any).endDate.set('2024-06-30');
 
-        expect((component as any).isMonthDisabled(5)).toBe(false);  // June
-        expect((component as any).isMonthDisabled(4)).toBe(true);   // May
-        expect((component as any).isMonthDisabled(6)).toBe(true);   // July
+        expect((component as any).isMonthDisabled(5)).toBe(false); // June
+        expect((component as any).isMonthDisabled(4)).toBe(true); // May
+        expect((component as any).isMonthDisabled(6)).toBe(true); // July
       });
     });
   });
@@ -837,7 +867,7 @@ describe('DetailedRecordsComponent', () => {
     it('should handle records with same date', () => {
       fixture.componentRef.setInput('records', [
         makeRecord('2024-06-15', { value: 10 }),
-        makeRecord('2024-06-15', { value: 20 })
+        makeRecord('2024-06-15', { value: 20 }),
       ]);
       fixture.detectChanges();
 
@@ -847,7 +877,7 @@ describe('DetailedRecordsComponent', () => {
 
     it('should handle pagination with exactly page-size records', () => {
       const records = Array.from({ length: 5 }, (_, i) =>
-        makeRecord(`2024-01-${String(i + 1).padStart(2, '0')}`)
+        makeRecord(`2024-01-${String(i + 1).padStart(2, '0')}`),
       );
       fixture.componentRef.setInput('records', records);
       fixture.detectChanges();
@@ -859,7 +889,7 @@ describe('DetailedRecordsComponent', () => {
     it('should handle calculateTotalFn that returns 0 for all records', () => {
       const records = [
         makeRecord('2024-01-01', { value: 0 }),
-        makeRecord('2024-02-01', { value: 0 })
+        makeRecord('2024-02-01', { value: 0 }),
       ];
       fixture.componentRef.setInput('records', records);
       fixture.componentRef.setInput('calculateTotalFn', () => 0);
@@ -873,7 +903,7 @@ describe('DetailedRecordsComponent', () => {
       fixture.componentRef.setInput('records', [
         makeRecord('2024-01-15'),
         makeRecord('2024-06-15'),
-        makeRecord('2024-12-15')
+        makeRecord('2024-12-15'),
       ]);
       fixture.detectChanges();
 
@@ -895,7 +925,7 @@ describe('DetailedRecordsComponent', () => {
 
       fixture.componentRef.setInput('records', [
         makeRecord('2024-01-15'),
-        makeRecord('2024-06-20')
+        makeRecord('2024-06-20'),
       ]);
       fixture.detectChanges();
       expect((component as any).filteredRecords().length).toBe(2);
@@ -904,7 +934,7 @@ describe('DetailedRecordsComponent', () => {
     it('should handle records at year boundaries', () => {
       fixture.componentRef.setInput('records', [
         makeRecord('2023-12-31'),
-        makeRecord('2024-01-01')
+        makeRecord('2024-01-01'),
       ]);
       fixture.detectChanges();
 
@@ -918,7 +948,7 @@ describe('DetailedRecordsComponent', () => {
     it('should handle month 0 (January) correctly in filter — not falsy-skipped', () => {
       fixture.componentRef.setInput('records', [
         makeRecord('2024-01-15'),
-        makeRecord('2024-02-15')
+        makeRecord('2024-02-15'),
       ]);
       fixture.detectChanges();
 
@@ -935,13 +965,17 @@ describe('DetailedRecordsComponent', () => {
 
       const options = component.sortOptions();
       expect(options.length).toBe(8);
-      expect(options[0]).toEqual({ value: 'date-desc', labelKey: 'HOME.SORT.DATE_DESC', direction: '↓' });
+      expect(options[0]).toEqual({
+        value: 'date-desc',
+        labelKey: 'HOME.SORT.DATE_DESC',
+        direction: '↓',
+      });
     });
 
     it('should accept custom sort options', () => {
       const customOptions: SortOptionConfig[] = [
         { value: 'date-desc', labelKey: 'CUSTOM.NEWEST', direction: '↓' },
-        { value: 'date-asc', labelKey: 'CUSTOM.OLDEST', direction: '↑' }
+        { value: 'date-asc', labelKey: 'CUSTOM.OLDEST', direction: '↑' },
       ];
       fixture.componentRef.setInput('records', []);
       fixture.componentRef.setInput('sortOptions', customOptions);

@@ -8,7 +8,9 @@ import { By } from '@angular/platform-browser';
 
 @Pipe({ name: 'translate', standalone: true })
 class MockTranslatePipe implements PipeTransform {
-  transform(key: string): string { return key; }
+  transform(key: string): string {
+    return key;
+  }
 }
 
 describe('DatePickerComponent', () => {
@@ -18,15 +20,15 @@ describe('DatePickerComponent', () => {
 
   beforeEach(async () => {
     languageServiceMock = {
-      currentLang: signal('en')
+      currentLang: signal('en'),
     };
 
     await TestBed.configureTestingModule({
-      imports: [DatePickerComponent]
+      imports: [DatePickerComponent],
     })
       .overrideComponent(DatePickerComponent, {
         remove: { imports: [TranslatePipe] },
-        add: { imports: [MockTranslatePipe] }
+        add: { imports: [MockTranslatePipe] },
       })
       .overrideProvider(LanguageService, { useValue: languageServiceMock })
       .compileComponents();
@@ -237,7 +239,7 @@ describe('DatePickerComponent', () => {
   });
 
   describe('selectToday', () => {
-    it('should emit today\'s date in YYYY-MM-DD format', () => {
+    it("should emit today's date in YYYY-MM-DD format", () => {
       fixture.detectChanges();
 
       const spy = vi.fn();

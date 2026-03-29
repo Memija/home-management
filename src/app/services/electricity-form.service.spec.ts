@@ -110,7 +110,7 @@ describe('ElectricityFormService', () => {
     it('should set state from record', () => {
       const record: ElectricityRecord = {
         date: new Date('2023-01-15'),
-        value: 250
+        value: 250,
       };
 
       service.startEdit(record);
@@ -123,7 +123,7 @@ describe('ElectricityFormService', () => {
     it('should handle record with zero value', () => {
       const record: ElectricityRecord = {
         date: new Date('2023-06-01'),
-        value: 0
+        value: 0,
       };
 
       service.startEdit(record);
@@ -135,7 +135,7 @@ describe('ElectricityFormService', () => {
     it('should handle record with date having time component', () => {
       const record: ElectricityRecord = {
         date: new Date('2023-03-15T14:30:00Z'),
-        value: 500
+        value: 500,
       };
 
       service.startEdit(record);
@@ -147,11 +147,11 @@ describe('ElectricityFormService', () => {
     it('should overwrite previous editing state', () => {
       const firstRecord: ElectricityRecord = {
         date: new Date('2023-01-01'),
-        value: 100
+        value: 100,
       };
       const secondRecord: ElectricityRecord = {
         date: new Date('2023-02-01'),
-        value: 200
+        value: 200,
       };
 
       service.startEdit(firstRecord);
@@ -167,7 +167,7 @@ describe('ElectricityFormService', () => {
     it('should reset editing state', () => {
       const record: ElectricityRecord = {
         date: new Date('2023-01-01'),
-        value: 100
+        value: 100,
       };
       service.startEdit(record);
 
@@ -202,7 +202,7 @@ describe('ElectricityFormService', () => {
     it('should return false when editing an existing record', () => {
       const record: ElectricityRecord = {
         date: new Date('2023-01-01'),
-        value: 100
+        value: 100,
       };
       service.startEdit(record);
 
@@ -212,7 +212,7 @@ describe('ElectricityFormService', () => {
     it('should return true when date exists in records', () => {
       const existingRecord: ElectricityRecord = {
         date: new Date('2023-01-01'),
-        value: 100
+        value: 100,
       };
       service.updateDate('2023-01-01');
 
@@ -222,7 +222,7 @@ describe('ElectricityFormService', () => {
     it('should return false when date does not exist in records', () => {
       const existingRecord: ElectricityRecord = {
         date: new Date('2023-01-01'),
-        value: 100
+        value: 100,
       };
       service.updateDate('2023-01-02');
 
@@ -232,7 +232,7 @@ describe('ElectricityFormService', () => {
     it('should handle records with time component in date', () => {
       const existingRecord: ElectricityRecord = {
         date: new Date('2023-01-01T14:30:00Z'),
-        value: 100
+        value: 100,
       };
       service.updateDate('2023-01-01');
 
@@ -243,7 +243,7 @@ describe('ElectricityFormService', () => {
       const records: ElectricityRecord[] = [
         { date: new Date('2023-01-01'), value: 100 },
         { date: new Date('2023-02-01'), value: 200 },
-        { date: new Date('2023-03-01'), value: 300 }
+        { date: new Date('2023-03-01'), value: 300 },
       ];
 
       service.updateDate('2023-02-01');
@@ -256,7 +256,7 @@ describe('ElectricityFormService', () => {
     it('should handle records at year boundaries', () => {
       const records: ElectricityRecord[] = [
         { date: new Date('2022-12-31'), value: 100 },
-        { date: new Date('2023-01-01'), value: 200 }
+        { date: new Date('2023-01-01'), value: 200 },
       ];
 
       service.updateDate('2022-12-31');
@@ -360,9 +360,7 @@ describe('ElectricityFormService', () => {
     });
 
     it('should handle full edit flow', () => {
-      const existingRecords: ElectricityRecord[] = [
-        { date: new Date('2023-01-01'), value: 100 }
-      ];
+      const existingRecords: ElectricityRecord[] = [{ date: new Date('2023-01-01'), value: 100 }];
 
       // Start editing
       service.startEdit(existingRecords[0]);
@@ -379,7 +377,7 @@ describe('ElectricityFormService', () => {
     it('should detect duplicate when switching from edit to new', () => {
       const existingRecords: ElectricityRecord[] = [
         { date: new Date('2023-01-01'), value: 100 },
-        { date: new Date('2023-02-01'), value: 200 }
+        { date: new Date('2023-02-01'), value: 200 },
       ];
 
       // Start editing first record

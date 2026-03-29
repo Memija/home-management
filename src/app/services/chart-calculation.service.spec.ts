@@ -2,7 +2,11 @@ import { TestBed } from '@angular/core/testing';
 import { ChartCalculationService } from './chart-calculation.service';
 import { WaterAveragesService } from './water-averages.service';
 import { ElectricityAveragesService } from './electricity-averages.service';
-import { ConsumptionRecord, DynamicHeatingRecord, ElectricityRecord } from '../models/records.model';
+import {
+  ConsumptionRecord,
+  DynamicHeatingRecord,
+  ElectricityRecord,
+} from '../models/records.model';
 import { vi, describe, it, expect, beforeEach } from 'vitest';
 
 describe('ChartCalculationService', () => {
@@ -18,8 +22,8 @@ describe('ChartCalculationService', () => {
       providers: [
         ChartCalculationService,
         { provide: WaterAveragesService, useValue: waterSpy },
-        { provide: ElectricityAveragesService, useValue: electricitySpy }
-      ]
+        { provide: ElectricityAveragesService, useValue: electricitySpy },
+      ],
     });
     service = TestBed.inject(ChartCalculationService);
     waterAveragesServiceSpy = TestBed.inject(WaterAveragesService) as any;
@@ -33,14 +37,42 @@ describe('ChartCalculationService', () => {
   describe('calculateIncrementalData', () => {
     it('should return empty array for 0 or 1 record', () => {
       expect(service.calculateIncrementalData([])).toEqual([]);
-      expect(service.calculateIncrementalData([{ date: new Date(), kitchenWarm: 10, kitchenCold: 10, bathroomWarm: 10, bathroomCold: 10 }])).toEqual([]);
+      expect(
+        service.calculateIncrementalData([
+          {
+            date: new Date(),
+            kitchenWarm: 10,
+            kitchenCold: 10,
+            bathroomWarm: 10,
+            bathroomCold: 10,
+          },
+        ]),
+      ).toEqual([]);
     });
 
     it('should calculate incremental data for ConsumptionRecord', () => {
       const records: ConsumptionRecord[] = [
-        { date: new Date('2023-01-01'), kitchenWarm: 100, kitchenCold: 200, bathroomWarm: 300, bathroomCold: 400 },
-        { date: new Date('2023-01-02'), kitchenWarm: 110, kitchenCold: 220, bathroomWarm: 330, bathroomCold: 440 },
-        { date: new Date('2023-01-03'), kitchenWarm: 115, kitchenCold: 230, bathroomWarm: 340, bathroomCold: 450 }
+        {
+          date: new Date('2023-01-01'),
+          kitchenWarm: 100,
+          kitchenCold: 200,
+          bathroomWarm: 300,
+          bathroomCold: 400,
+        },
+        {
+          date: new Date('2023-01-02'),
+          kitchenWarm: 110,
+          kitchenCold: 220,
+          bathroomWarm: 330,
+          bathroomCold: 440,
+        },
+        {
+          date: new Date('2023-01-03'),
+          kitchenWarm: 115,
+          kitchenCold: 230,
+          bathroomWarm: 340,
+          bathroomCold: 450,
+        },
       ];
 
       const result = service.calculateIncrementalData(records);
@@ -51,21 +83,21 @@ describe('ChartCalculationService', () => {
         kitchenWarm: 10,
         kitchenCold: 20,
         bathroomWarm: 30,
-        bathroomCold: 40
+        bathroomCold: 40,
       });
       expect(result[1]).toEqual({
         date: new Date('2023-01-03'),
         kitchenWarm: 5,
         kitchenCold: 10,
         bathroomWarm: 10,
-        bathroomCold: 10
+        bathroomCold: 10,
       });
     });
 
     it('should calculate incremental data for DynamicHeatingRecord', () => {
       const records: DynamicHeatingRecord[] = [
-        { date: new Date('2023-01-01'), rooms: { 'room1': 100, 'room2': 200, 'room3': 300 } },
-        { date: new Date('2023-01-02'), rooms: { 'room1': 110, 'room2': 220, 'room3': 330 } }
+        { date: new Date('2023-01-01'), rooms: { room1: 100, room2: 200, room3: 300 } },
+        { date: new Date('2023-01-02'), rooms: { room1: 110, room2: 220, room3: 330 } },
       ];
 
       const result = service.calculateIncrementalData(records);
@@ -74,14 +106,14 @@ describe('ChartCalculationService', () => {
       expect((result[0] as any).rooms).toEqual({
         room1: 10,
         room2: 20,
-        room3: 30
+        room3: 30,
       });
     });
 
     it('should handle meter reset in DynamicHeatingRecord (value drops)', () => {
       const records: DynamicHeatingRecord[] = [
-        { date: new Date('2023-12-31'), rooms: { 'room1': 1000, 'room2': 500 } },
-        { date: new Date('2024-01-01'), rooms: { 'room1': 50, 'room2': 520 } } // room1 reset, room2 normal
+        { date: new Date('2023-12-31'), rooms: { room1: 1000, room2: 500 } },
+        { date: new Date('2024-01-01'), rooms: { room1: 50, room2: 520 } }, // room1 reset, room2 normal
       ];
 
       const result = service.calculateIncrementalData(records);
@@ -91,14 +123,26 @@ describe('ChartCalculationService', () => {
       // room2: 520 - 500 = 20 (normal delta)
       expect((result[0] as any).rooms).toEqual({
         room1: 50,
-        room2: 20
+        room2: 20,
       });
     });
 
     it('should handle negative differences (meter reset/error) by clamping to 0', () => {
       const records: ConsumptionRecord[] = [
-        { date: new Date('2023-01-01'), kitchenWarm: 100, kitchenCold: 200, bathroomWarm: 300, bathroomCold: 400 },
-        { date: new Date('2023-01-02'), kitchenWarm: 90, kitchenCold: 220, bathroomWarm: 330, bathroomCold: 440 }
+        {
+          date: new Date('2023-01-01'),
+          kitchenWarm: 100,
+          kitchenCold: 200,
+          bathroomWarm: 300,
+          bathroomCold: 400,
+        },
+        {
+          date: new Date('2023-01-02'),
+          kitchenWarm: 90,
+          kitchenCold: 220,
+          bathroomWarm: 330,
+          bathroomCold: 440,
+        },
       ];
 
       const result = service.calculateIncrementalData(records);
@@ -153,7 +197,7 @@ describe('ChartCalculationService', () => {
       const result = service.generateTrendlineData(data);
 
       // All values should be >= 0
-      result.forEach(val => {
+      result.forEach((val) => {
         expect(val).toBeGreaterThanOrEqual(0);
       });
     });
@@ -166,7 +210,13 @@ describe('ChartCalculationService', () => {
 
     it('should return empty if family size is 0', () => {
       const records: ConsumptionRecord[] = [
-        { date: new Date('2023-01-01'), kitchenWarm: 0, kitchenCold: 0, bathroomWarm: 0, bathroomCold: 0 }
+        {
+          date: new Date('2023-01-01'),
+          kitchenWarm: 0,
+          kitchenCold: 0,
+          bathroomWarm: 0,
+          bathroomCold: 0,
+        },
       ];
       expect(service.generateComparisonData(records, 0, 'de')).toEqual([]);
     });
@@ -175,12 +225,24 @@ describe('ChartCalculationService', () => {
       waterAveragesServiceSpy.getCountryData.mockReturnValue({
         averageLitersPerPersonPerDay: 100,
         source: 'test',
-        year: 2023
+        year: 2023,
       });
 
       const records: ConsumptionRecord[] = [
-        { date: new Date('2023-01-01'), kitchenWarm: 0, kitchenCold: 0, bathroomWarm: 0, bathroomCold: 0 },
-        { date: new Date('2023-01-02'), kitchenWarm: 0, kitchenCold: 0, bathroomWarm: 0, bathroomCold: 0 }
+        {
+          date: new Date('2023-01-01'),
+          kitchenWarm: 0,
+          kitchenCold: 0,
+          bathroomWarm: 0,
+          bathroomCold: 0,
+        },
+        {
+          date: new Date('2023-01-02'),
+          kitchenWarm: 0,
+          kitchenCold: 0,
+          bathroomWarm: 0,
+          bathroomCold: 0,
+        },
       ];
 
       const result = service.generateComparisonData(records, 2, 'de');
@@ -192,7 +254,7 @@ describe('ChartCalculationService', () => {
         kitchenWarm: 12,
         kitchenCold: 18,
         bathroomWarm: 68,
-        bathroomCold: 102
+        bathroomCold: 102,
       });
     });
 
@@ -200,11 +262,17 @@ describe('ChartCalculationService', () => {
       waterAveragesServiceSpy.getCountryData.mockReturnValue({
         averageLitersPerPersonPerDay: 10,
         source: 'test',
-        year: 2023
+        year: 2023,
       });
 
       const records: ConsumptionRecord[] = [
-        { date: new Date('2023-01-01'), kitchenWarm: 0, kitchenCold: 0, bathroomWarm: 0, bathroomCold: 0 }
+        {
+          date: new Date('2023-01-01'),
+          kitchenWarm: 0,
+          kitchenCold: 0,
+          bathroomWarm: 0,
+          bathroomCold: 0,
+        },
       ];
 
       const result = service.generateComparisonData(records, 1, 'de');
@@ -224,9 +292,7 @@ describe('ChartCalculationService', () => {
     });
 
     it('should return empty array if family size is 0', () => {
-      const records: ElectricityRecord[] = [
-        { date: new Date('2023-01-01'), value: 100 }
-      ];
+      const records: ElectricityRecord[] = [{ date: new Date('2023-01-01'), value: 100 }];
       expect(service.generateElectricityComparisonData(records, 0, 'DE')).toEqual([]);
     });
 
@@ -234,12 +300,12 @@ describe('ChartCalculationService', () => {
       electricityAveragesServiceSpy.getCountryData.mockReturnValue({
         averageKwhPerPersonPerYear: 3652.5, // ~10 kWh/day per person
         source: 'test',
-        year: 2023
+        year: 2023,
       });
 
       const records: ElectricityRecord[] = [
         { date: new Date('2023-01-01'), value: 100 },
-        { date: new Date('2023-01-08'), value: 150 }
+        { date: new Date('2023-01-08'), value: 150 },
       ];
 
       const result = service.generateElectricityComparisonData(records, 2, 'DE');
@@ -257,12 +323,10 @@ describe('ChartCalculationService', () => {
       electricityAveragesServiceSpy.getCountryData.mockReturnValue({
         averageKwhPerPersonPerYear: 365.25,
         source: 'test',
-        year: 2023
+        year: 2023,
       });
 
-      const records: ElectricityRecord[] = [
-        { date: new Date('2023-01-01'), value: 100 }
-      ];
+      const records: ElectricityRecord[] = [{ date: new Date('2023-01-01'), value: 100 }];
 
       const result = service.generateElectricityComparisonData(records, 1, 'DE');
 
@@ -275,12 +339,12 @@ describe('ChartCalculationService', () => {
       electricityAveragesServiceSpy.getCountryData.mockReturnValue({
         averageKwhPerPersonPerYear: 365.25,
         source: 'test',
-        year: 2023
+        year: 2023,
       });
 
       const records: ElectricityRecord[] = [
         { date: new Date('2023-01-01'), value: 100 },
-        { date: new Date('2023-01-08'), value: 150 }
+        { date: new Date('2023-01-08'), value: 150 },
       ];
 
       const result = service.generateElectricityComparisonData(records, 1, 'DE');
@@ -298,8 +362,20 @@ describe('ChartCalculationService', () => {
 
     it('should detect meter drops', () => {
       const records: ConsumptionRecord[] = [
-        { date: new Date('2023-01-01'), kitchenWarm: 100, kitchenCold: 100, bathroomWarm: 100, bathroomCold: 100 },
-        { date: new Date('2023-01-02'), kitchenWarm: 101, kitchenCold: 50, bathroomWarm: 101, bathroomCold: 101 } // Drop in KC
+        {
+          date: new Date('2023-01-01'),
+          kitchenWarm: 100,
+          kitchenCold: 100,
+          bathroomWarm: 100,
+          bathroomCold: 100,
+        },
+        {
+          date: new Date('2023-01-02'),
+          kitchenWarm: 101,
+          kitchenCold: 50,
+          bathroomWarm: 101,
+          bathroomCold: 101,
+        }, // Drop in KC
       ];
 
       const result = service.detectMeterChanges(records);
@@ -308,16 +384,40 @@ describe('ChartCalculationService', () => {
 
     it('should handle multiple drops', () => {
       const records: ConsumptionRecord[] = [
-        { date: new Date('2023-01-01'), kitchenWarm: 100, kitchenCold: 100, bathroomWarm: 100, bathroomCold: 100 },
-        { date: new Date('2023-01-02'), kitchenWarm: 50, kitchenCold: 101, bathroomWarm: 101, bathroomCold: 101 }, // KW drop
-        { date: new Date('2023-01-03'), kitchenWarm: 55, kitchenCold: 102, bathroomWarm: 102, bathroomCold: 102 },
-        { date: new Date('2023-01-04'), kitchenWarm: 60, kitchenCold: 103, bathroomWarm: 50, bathroomCold: 103 } // BW drop
+        {
+          date: new Date('2023-01-01'),
+          kitchenWarm: 100,
+          kitchenCold: 100,
+          bathroomWarm: 100,
+          bathroomCold: 100,
+        },
+        {
+          date: new Date('2023-01-02'),
+          kitchenWarm: 50,
+          kitchenCold: 101,
+          bathroomWarm: 101,
+          bathroomCold: 101,
+        }, // KW drop
+        {
+          date: new Date('2023-01-03'),
+          kitchenWarm: 55,
+          kitchenCold: 102,
+          bathroomWarm: 102,
+          bathroomCold: 102,
+        },
+        {
+          date: new Date('2023-01-04'),
+          kitchenWarm: 60,
+          kitchenCold: 103,
+          bathroomWarm: 50,
+          bathroomCold: 103,
+        }, // BW drop
       ];
 
       const result = service.detectMeterChanges(records);
       expect(result).toEqual([
         new Date('2023-01-02').toISOString().split('T')[0],
-        new Date('2023-01-04').toISOString().split('T')[0]
+        new Date('2023-01-04').toISOString().split('T')[0],
       ]);
     });
   });
@@ -325,8 +425,20 @@ describe('ChartCalculationService', () => {
   describe('adjustForMeterChanges', () => {
     it('should return original records if no confirmed changes', () => {
       const records: ConsumptionRecord[] = [
-        { date: new Date('2023-01-01'), kitchenWarm: 100, kitchenCold: 100, bathroomWarm: 100, bathroomCold: 100 },
-        { date: new Date('2023-01-02'), kitchenWarm: 105, kitchenCold: 105, bathroomWarm: 105, bathroomCold: 105 }
+        {
+          date: new Date('2023-01-01'),
+          kitchenWarm: 100,
+          kitchenCold: 100,
+          bathroomWarm: 100,
+          bathroomCold: 100,
+        },
+        {
+          date: new Date('2023-01-02'),
+          kitchenWarm: 105,
+          kitchenCold: 105,
+          bathroomWarm: 105,
+          bathroomCold: 105,
+        },
       ];
       const result = service.adjustForMeterChanges(records, []);
       expect(result).toEqual(records);
@@ -336,8 +448,20 @@ describe('ChartCalculationService', () => {
 
     it('should adjust for confirmed meter change', () => {
       const records: ConsumptionRecord[] = [
-        { date: new Date('2023-01-01'), kitchenWarm: 100, kitchenCold: 100, bathroomWarm: 100, bathroomCold: 100 },
-        { date: new Date('2023-01-02'), kitchenWarm: 5, kitchenCold: 105, bathroomWarm: 105, bathroomCold: 105 } // KW Drop
+        {
+          date: new Date('2023-01-01'),
+          kitchenWarm: 100,
+          kitchenCold: 100,
+          bathroomWarm: 100,
+          bathroomCold: 100,
+        },
+        {
+          date: new Date('2023-01-02'),
+          kitchenWarm: 5,
+          kitchenCold: 105,
+          bathroomWarm: 105,
+          bathroomCold: 105,
+        }, // KW Drop
       ];
       const changeDate = new Date('2023-01-02').toISOString().split('T')[0];
 
@@ -351,9 +475,27 @@ describe('ChartCalculationService', () => {
 
     it('should maintain offset for subsequent records', () => {
       const records: ConsumptionRecord[] = [
-        { date: new Date('2023-01-01'), kitchenWarm: 100, kitchenCold: 100, bathroomWarm: 100, bathroomCold: 100 },
-        { date: new Date('2023-01-02'), kitchenWarm: 5, kitchenCold: 105, bathroomWarm: 105, bathroomCold: 105 }, // KW Drop, offset 100
-        { date: new Date('2023-01-03'), kitchenWarm: 10, kitchenCold: 110, bathroomWarm: 110, bathroomCold: 110 }
+        {
+          date: new Date('2023-01-01'),
+          kitchenWarm: 100,
+          kitchenCold: 100,
+          bathroomWarm: 100,
+          bathroomCold: 100,
+        },
+        {
+          date: new Date('2023-01-02'),
+          kitchenWarm: 5,
+          kitchenCold: 105,
+          bathroomWarm: 105,
+          bathroomCold: 105,
+        }, // KW Drop, offset 100
+        {
+          date: new Date('2023-01-03'),
+          kitchenWarm: 10,
+          kitchenCold: 110,
+          bathroomWarm: 110,
+          bathroomCold: 110,
+        },
       ];
       const changeDate = new Date('2023-01-02').toISOString().split('T')[0];
 
@@ -367,13 +509,15 @@ describe('ChartCalculationService', () => {
   describe('detectNewRoomSpikes', () => {
     it('should return empty for < 2 records', () => {
       expect(service.detectNewRoomSpikes([])).toEqual([]);
-      expect(service.detectNewRoomSpikes([{ date: new Date(), rooms: { room1: 100 } }])).toEqual([]);
+      expect(service.detectNewRoomSpikes([{ date: new Date(), rooms: { room1: 100 } }])).toEqual(
+        [],
+      );
     });
 
     it('should detect spike when room jumps from 0 to high value', () => {
       const records: DynamicHeatingRecord[] = [
-        { date: new Date('2023-01-01'), rooms: { 'room1': 100, 'room2': 0 } },
-        { date: new Date('2023-01-02'), rooms: { 'room1': 110, 'room2': 500 } } // room2 spike (0 -> 500)
+        { date: new Date('2023-01-01'), rooms: { room1: 100, room2: 0 } },
+        { date: new Date('2023-01-02'), rooms: { room1: 110, room2: 500 } }, // room2 spike (0 -> 500)
       ];
 
       const result = service.detectNewRoomSpikes(records);
@@ -385,8 +529,8 @@ describe('ChartCalculationService', () => {
 
     it('should not detect spike for small values', () => {
       const records: DynamicHeatingRecord[] = [
-        { date: new Date('2023-01-01'), rooms: { 'room1': 100, 'room2': 0 } },
-        { date: new Date('2023-01-02'), rooms: { 'room1': 110, 'room2': 20 } } // room2: 0 -> 20 (too small)
+        { date: new Date('2023-01-01'), rooms: { room1: 100, room2: 0 } },
+        { date: new Date('2023-01-02'), rooms: { room1: 110, room2: 20 } }, // room2: 0 -> 20 (too small)
       ];
 
       const result = service.detectNewRoomSpikes(records);
@@ -397,14 +541,14 @@ describe('ChartCalculationService', () => {
       const records: DynamicHeatingRecord[] = [
         { date: new Date('2023-01-01'), rooms: { room1: 100, room2: 0, room3: 0 } },
         { date: new Date('2023-01-02'), rooms: { room1: 110, room2: 600, room3: 0 } }, // room2 spike
-        { date: new Date('2023-01-03'), rooms: { room1: 120, room2: 610, room3: 800 } } // room3 spike
+        { date: new Date('2023-01-03'), rooms: { room1: 120, room2: 610, room3: 800 } }, // room3 spike
       ];
 
       const result = service.detectNewRoomSpikes(records);
 
       expect(result.length).toBe(2);
-      expect(result.map(s => s.roomId)).toContain('room2');
-      expect(result.map(s => s.roomId)).toContain('room3');
+      expect(result.map((s) => s.roomId)).toContain('room2');
+      expect(result.map((s) => s.roomId)).toContain('room3');
     });
   });
 
@@ -412,7 +556,7 @@ describe('ChartCalculationService', () => {
     it('should return original records if no spikes to ignore', () => {
       const records: DynamicHeatingRecord[] = [
         { date: new Date('2023-01-01'), rooms: { room1: 100 } },
-        { date: new Date('2023-01-02'), rooms: { room1: 110 } }
+        { date: new Date('2023-01-02'), rooms: { room1: 110 } },
       ];
 
       const result = service.adjustForNewRooms(records, []);
@@ -423,7 +567,7 @@ describe('ChartCalculationService', () => {
       const records: DynamicHeatingRecord[] = [
         { date: new Date('2023-01-01'), rooms: { room1: 100, room2: 0 } },
         { date: new Date('2023-01-02'), rooms: { room1: 110, room2: 500 } }, // room2 spike
-        { date: new Date('2023-01-03'), rooms: { room1: 120, room2: 550 } }
+        { date: new Date('2023-01-03'), rooms: { room1: 120, room2: 550 } },
       ];
       const spikeDate = new Date('2023-01-02').toISOString().split('T')[0];
 
@@ -438,7 +582,10 @@ describe('ChartCalculationService', () => {
     });
   });
 
-  const createHeatingRecord = (dateString: string, rooms: { [key: string]: number }): DynamicHeatingRecord => {
+  const createHeatingRecord = (
+    dateString: string,
+    rooms: { [key: string]: number },
+  ): DynamicHeatingRecord => {
     return { date: new Date(dateString), rooms };
   };
 
@@ -485,7 +632,7 @@ describe('ChartCalculationService', () => {
   it('should correctly handle Dec 7 reset scenario (1200 -> 271)', () => {
     const records = [
       createHeatingRecord('2025-11-30', { room_3: 1200 }),
-      createHeatingRecord('2025-12-07', { room_3: 271 })
+      createHeatingRecord('2025-12-07', { room_3: 271 }),
     ];
     // Spike on unrelated date
     const spikes = [{ date: '2025-11-16', roomId: 'room_3' }];
@@ -499,7 +646,7 @@ describe('ChartCalculationService', () => {
   it('should zero out delta if record matches an ignored spike', () => {
     const records = [
       createHeatingRecord('2025-11-09', { room_3: 0 }),
-      createHeatingRecord('2025-11-16', { room_3: 1000 })
+      createHeatingRecord('2025-11-16', { room_3: 1000 }),
     ];
     const spikes = [{ date: '2025-11-16', roomId: 'room_3' }];
 
@@ -517,12 +664,10 @@ describe('ChartCalculationService', () => {
     });
 
     it('should normalize electricity data correctly', () => {
-      const incrementalData: any[] = [
-        { date: new Date('2023-01-31'), value: 300 }
-      ];
+      const incrementalData: any[] = [{ date: new Date('2023-01-31'), value: 300 }];
       const originalData: any[] = [
         { date: new Date('2023-01-01'), value: 1000 },
-        { date: new Date('2023-01-31'), value: 1300 }
+        { date: new Date('2023-01-31'), value: 1300 },
       ];
 
       const result = service.calculateDailyAverage(incrementalData, originalData, 'electricity');
@@ -534,11 +679,29 @@ describe('ChartCalculationService', () => {
 
     it('should normalize water data correctly', () => {
       const incrementalData: any[] = [
-        { date: new Date('2023-01-11'), kitchenWarm: 100, kitchenCold: 200, bathroomWarm: 50, bathroomCold: 150 }
+        {
+          date: new Date('2023-01-11'),
+          kitchenWarm: 100,
+          kitchenCold: 200,
+          bathroomWarm: 50,
+          bathroomCold: 150,
+        },
       ];
       const originalData = [
-        { date: new Date('2023-01-01'), kitchenWarm: 0, kitchenCold: 0, bathroomWarm: 0, bathroomCold: 0 },
-        { date: new Date('2023-01-11'), kitchenWarm: 100, kitchenCold: 200, bathroomWarm: 50, bathroomCold: 150 }
+        {
+          date: new Date('2023-01-01'),
+          kitchenWarm: 0,
+          kitchenCold: 0,
+          bathroomWarm: 0,
+          bathroomCold: 0,
+        },
+        {
+          date: new Date('2023-01-11'),
+          kitchenWarm: 100,
+          kitchenCold: 200,
+          bathroomWarm: 50,
+          bathroomCold: 150,
+        },
       ];
 
       const result = service.calculateDailyAverage(incrementalData, originalData, 'water');
@@ -551,11 +714,11 @@ describe('ChartCalculationService', () => {
 
     it('should normalize heating data correctly', () => {
       const incrementalData: any[] = [
-        { date: new Date('2023-01-08'), rooms: { room1: 70, room2: 140 } }
+        { date: new Date('2023-01-08'), rooms: { room1: 70, room2: 140 } },
       ];
       const originalData: DynamicHeatingRecord[] = [
         { date: new Date('2023-01-01'), rooms: { room1: 0, room2: 0 } },
-        { date: new Date('2023-01-08'), rooms: { room1: 70, room2: 140 } }
+        { date: new Date('2023-01-08'), rooms: { room1: 70, room2: 140 } },
       ];
 
       const result = service.calculateDailyAverage(incrementalData, originalData, 'heating');
@@ -570,22 +733,24 @@ describe('ChartCalculationService', () => {
       const electricityIncremental: any[] = [{ date: new Date('2023-01-08'), value: 70 }];
       const electricityOriginal: any[] = [
         { date: new Date('2023-01-01'), value: 1000 },
-        { date: new Date('2023-01-08'), value: 1070 }
+        { date: new Date('2023-01-08'), value: 1070 },
       ];
 
-      const result = service.calculateDailyAverage(electricityIncremental, electricityOriginal, 'electricity');
+      const result = service.calculateDailyAverage(
+        electricityIncremental,
+        electricityOriginal,
+        'electricity',
+      );
 
       expect(result.length).toBe(2);
       expect(new Date(result[0].date).toISOString().split('T')[0]).toBe('2023-01-01');
     });
 
     it('should treat intervals < 0.5 days as 1 day', () => {
-      const incrementalData: any[] = [
-        { date: new Date('2023-01-01T12:00:00'), value: 24 }
-      ];
+      const incrementalData: any[] = [{ date: new Date('2023-01-01T12:00:00'), value: 24 }];
       const originalData: any[] = [
         { date: new Date('2023-01-01T08:00:00'), value: 100 },
-        { date: new Date('2023-01-01T12:00:00'), value: 124 }
+        { date: new Date('2023-01-01T12:00:00'), value: 124 },
       ];
 
       const result = service.calculateDailyAverage(incrementalData, originalData, 'electricity');

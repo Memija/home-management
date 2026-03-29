@@ -4,9 +4,14 @@
     <div class="header-actions">
       <ng-content select="[header-actions]"></ng-content>
       @if (helpSteps().length > 0) {
-      <button type="button" class="help-btn" (click)="showHelp()" title="{{ helpTitleKey() | translate }}">
-        <lucide-icon [img]="HelpIcon" size="20"></lucide-icon>
-      </button>
+        <button
+          type="button"
+          class="help-btn"
+          (click)="showHelp()"
+          title="{{ helpTitleKey() | translate }}"
+        >
+          <lucide-icon [img]="HelpIcon" size="20"></lucide-icon>
+        </button>
       }
     </div>
   </div>
@@ -14,66 +19,89 @@
   <div class="date-selection">
     <div class="input-pair">
       <span class="form-label">{{ readingsForKey() | translate }}</span>
-      <app-date-picker [date]="selectedDate()" (dateChange)="onDateChange($event)" [disabled]="editingMode()"
-        [maxDate]="maxDate()" [placeholder]="'HOME.SELECT_DATE' | translate">
+      <app-date-picker
+        [date]="selectedDate()"
+        (dateChange)="onDateChange($event)"
+        [disabled]="editingMode()"
+        [maxDate]="maxDate()"
+        [placeholder]="'HOME.SELECT_DATE' | translate"
+      >
       </app-date-picker>
     </div>
     @if (dateExists()) {
-    <div class="warning-message">
-      <lucide-icon [img]="TriangleAlertIcon" size="24" class="warning-icon"></lucide-icon>
-      <span>{{ dateWarningKey() | translate }}</span>
-    </div>
+      <div class="warning-message">
+        <lucide-icon [img]="TriangleAlertIcon" size="24" class="warning-icon"></lucide-icon>
+        <span>{{ dateWarningKey() | translate }}</span>
+      </div>
     }
   </div>
 
   <!-- Grouped Layout (Water style - groups with titles) -->
   @if (layoutMode() === 'grouped') {
-  <div class="readings-grid grouped">
-    @for (group of groups(); track group.title) {
-    <div class="reading-group">
-      <h3>{{ group.title | translate }}</h3>
-      @for (field of group.fields; track field.key) {
-      <div class="input-pair">
-        <label [for]="field.key">{{ field.label | translate }}</label>
-        <input type="number" [id]="field.key" [name]="field.key" [ngModel]="field.value"
-          (ngModelChange)="onFieldChange(field.key, $event)" (keydown)="onKeyDown($event)" (input)="onInput($event)"
-          placeholder="0" min="0">
-      </div>
+    <div class="readings-grid grouped">
+      @for (group of groups(); track group.title) {
+        <div class="reading-group">
+          <h3>{{ group.title | translate }}</h3>
+          @for (field of group.fields; track field.key) {
+            <div class="input-pair">
+              <label [for]="field.key">{{ field.label | translate }}</label>
+              <input
+                type="number"
+                [id]="field.key"
+                [name]="field.key"
+                [ngModel]="field.value"
+                (ngModelChange)="onFieldChange(field.key, $event)"
+                (keydown)="onKeyDown($event)"
+                (input)="onInput($event)"
+                placeholder="0"
+                min="0"
+              />
+            </div>
+          }
+        </div>
       }
     </div>
-    }
-  </div>
   }
 
   <!-- Flat Layout (Heating style - room cards in grid with icons) -->
   @if (layoutMode() === 'flat') {
-  <div class="readings-grid flat">
-    @for (group of groups(); track group.title) {
-    @for (field of group.fields; track field.key) {
-    <div class="input-pair room-field">
-      <label [for]="field.key">
-        <lucide-icon [img]="field.icon || HomeIcon" size="16" class="room-icon"></lucide-icon>
-        {{ field.label | translate }}
-      </label>
-      <input type="number" [id]="field.key" [name]="field.key" [ngModel]="field.value"
-        (ngModelChange)="onFieldChange(field.key, $event)" (keydown)="onKeyDown($event)" (input)="onInput($event)"
-        placeholder="0" min="0">
+    <div class="readings-grid flat">
+      @for (group of groups(); track group.title) {
+        @for (field of group.fields; track field.key) {
+          <div class="input-pair room-field">
+            <label [for]="field.key">
+              <lucide-icon [img]="field.icon || HomeIcon" size="16" class="room-icon"></lucide-icon>
+              {{ field.label | translate }}
+            </label>
+            <input
+              type="number"
+              [id]="field.key"
+              [name]="field.key"
+              [ngModel]="field.value"
+              (ngModelChange)="onFieldChange(field.key, $event)"
+              (keydown)="onKeyDown($event)"
+              (input)="onInput($event)"
+              placeholder="0"
+              min="0"
+            />
+          </div>
+        }
+      }
     </div>
-    }
-    }
-  </div>
   }
 
   @if (errorMessage()) {
-  <div class="warning-message error-message">
-    <lucide-icon [img]="TriangleAlertIcon" size="24" class="warning-icon"></lucide-icon>
-    <span>{{ errorMessage()! | translate }}</span>
-  </div>
+    <div class="warning-message error-message">
+      <lucide-icon [img]="TriangleAlertIcon" size="24" class="warning-icon"></lucide-icon>
+      <span>{{ errorMessage()! | translate }}</span>
+    </div>
   }
 
   <div class="button-group">
     @if (editingMode()) {
-    <button type="button" class="cancel-btn" (click)="onCancel()">{{ cancelKey() | translate }}</button>
+      <button type="button" class="cancel-btn" (click)="onCancel()">
+        {{ cancelKey() | translate }}
+      </button>
     }
     <button type="button" class="save-btn" (click)="onSave()">
       {{ editingMode() ? (updateKey() | translate) : (saveKey() | translate) }}
@@ -82,6 +110,11 @@
 </div>
 
 @if (helpSteps().length > 0) {
-<app-help-modal [show]="showHelpModal()" [titleKey]="helpTitleKey()" [steps]="helpSteps()" (close)="closeHelp()">
-</app-help-modal>
+  <app-help-modal
+    [show]="showHelpModal()"
+    [titleKey]="helpTitleKey()"
+    [steps]="helpSteps()"
+    (close)="closeHelp()"
+  >
+  </app-help-modal>
 }

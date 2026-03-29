@@ -3,14 +3,42 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 
 import { TranslatePipe } from '../pipes/translate.pipe';
-import { LucideAngularModule, Download, Upload, CircleCheck, Trash2, FileText, FileInput, FileOutput, AlertTriangle, Lightbulb, RefreshCw, Droplet } from 'lucide-angular';
-import { ConsumptionInputComponent, type ConsumptionData, type ConsumptionGroup } from '../shared/consumption-input/consumption-input.component';
+import { DemoService } from '../services/demo.service';
+import { DemoWizardComponent } from '../shared/demo-wizard/demo-wizard.component';
+import {
+  LucideAngularModule,
+  Download,
+  Upload,
+  CircleCheck,
+  Trash2,
+  FileText,
+  FileInput,
+  FileOutput,
+  AlertTriangle,
+  RefreshCw,
+  Droplet,
+  Lightbulb,
+} from 'lucide-angular';
+import {
+  ConsumptionInputComponent,
+  type ConsumptionData,
+  type ConsumptionGroup,
+} from '../shared/consumption-input/consumption-input.component';
 import { DeleteConfirmationModalComponent } from '../shared/delete-confirmation-modal/delete-confirmation-modal.component';
 import { ConfirmationModalComponent } from '../shared/confirmation-modal/confirmation-modal.component';
 import { DetailedRecordsComponent } from '../shared/detailed-records/detailed-records.component';
-import { ConsumptionRecord, calculateWaterTotal, calculateKitchenTotal, calculateBathroomTotal } from '../models/records.model';
+import {
+  ConsumptionRecord,
+  calculateWaterTotal,
+  calculateKitchenTotal,
+  calculateBathroomTotal,
+} from '../models/records.model';
 import { ComparisonNoteComponent } from '../shared/comparison-note/comparison-note.component';
-import { ConsumptionChartComponent, type ChartView, type DisplayMode } from '../shared/consumption-chart/consumption-chart.component';
+import {
+  ConsumptionChartComponent,
+  type ChartView,
+  type DisplayMode,
+} from '../shared/consumption-chart/consumption-chart.component';
 import { ErrorModalComponent } from '../shared/error-modal/error-modal.component';
 import { HouseholdService } from '../services/household.service';
 import { ConsumptionPreferencesService } from '../services/consumption-preferences.service';
@@ -21,15 +49,35 @@ import { ChartCalculationService } from '../services/chart-calculation.service';
 import { LocalStorageService } from '../services/local-storage.service';
 import { LanguageService } from '../services/language.service';
 import { WaterFactsService, WaterFact } from '../services/water-facts.service';
-import { CHART_HELP_STEPS, RECORD_HELP_STEPS, RECORDS_LIST_HELP_STEPS } from './water.constants';
+import {
+  CHART_HELP_STEPS,
+  RECORD_HELP_STEPS,
+  RECORDS_LIST_HELP_STEPS,
+  DEMO_WIZARD_STEPS,
+  DEMO_TOUR_STEPS,
+} from './water.constants';
+import { DemoTourComponent } from '../shared/demo-tour/demo-tour.component';
 
 @Component({
   selector: 'app-water',
   standalone: true,
-  imports: [CommonModule, FormsModule, TranslatePipe, LucideAngularModule, ConsumptionInputComponent, DeleteConfirmationModalComponent, ConfirmationModalComponent, DetailedRecordsComponent, ConsumptionChartComponent, ComparisonNoteComponent, ErrorModalComponent],
+  imports: [
+    CommonModule,
+    FormsModule,
+    TranslatePipe,
+    LucideAngularModule,
+    ConsumptionInputComponent,
+    DeleteConfirmationModalComponent,
+    ConfirmationModalComponent,
+    DetailedRecordsComponent,
+    ConsumptionChartComponent,
+    ComparisonNoteComponent,
+    ErrorModalComponent,
+    DemoWizardComponent,
+    DemoTourComponent,
+  ],
   templateUrl: './water.component.html',
   styleUrl: './water.component.scss',
-
 })
 export class WaterComponent {
   // Icons
@@ -41,11 +89,12 @@ export class WaterComponent {
   protected readonly CheckCircleIcon = CircleCheck;
   protected readonly TrashIcon = Trash2;
   protected readonly AlertTriangleIcon = AlertTriangle;
-  protected readonly LightbulbIcon = Lightbulb;
   protected readonly RefreshCwIcon = RefreshCw;
+  protected readonly LightbulbIcon = Lightbulb;
 
   // Services
   protected excelSettings = inject(ExcelSettingsService);
+  protected demoService = inject(DemoService);
   private householdService = inject(HouseholdService);
   private chartCalculationService = inject(ChartCalculationService);
   private localStorageService = inject(LocalStorageService);
@@ -81,17 +130,37 @@ export class WaterComponent {
     {
       title: 'WATER.KITCHEN',
       fields: [
-        { key: 'kitchenWarm', label: 'WATER.WARM', icon: Droplet, value: this.formService.kitchenWarm() },
-        { key: 'kitchenCold', label: 'WATER.COLD', icon: Droplet, value: this.formService.kitchenCold() }
-      ]
+        {
+          key: 'kitchenWarm',
+          label: 'WATER.WARM',
+          icon: Droplet,
+          value: this.formService.kitchenWarm(),
+        },
+        {
+          key: 'kitchenCold',
+          label: 'WATER.COLD',
+          icon: Droplet,
+          value: this.formService.kitchenCold(),
+        },
+      ],
     },
     {
       title: 'WATER.BATHROOM',
       fields: [
-        { key: 'bathroomWarm', label: 'WATER.WARM', icon: Droplet, value: this.formService.bathroomWarm() },
-        { key: 'bathroomCold', label: 'WATER.COLD', icon: Droplet, value: this.formService.bathroomCold() }
-      ]
-    }
+        {
+          key: 'bathroomWarm',
+          label: 'WATER.WARM',
+          icon: Droplet,
+          value: this.formService.bathroomWarm(),
+        },
+        {
+          key: 'bathroomCold',
+          label: 'WATER.COLD',
+          icon: Droplet,
+          value: this.formService.bathroomCold(),
+        },
+      ],
+    },
   ]);
 
   protected selectedDate = this.formService.selectedDate;
@@ -101,6 +170,20 @@ export class WaterComponent {
   protected helpSteps = RECORD_HELP_STEPS;
   protected chartHelpSteps = CHART_HELP_STEPS;
   protected recordsHelpSteps = RECORDS_LIST_HELP_STEPS;
+
+  // Demo wizard & tour
+  protected demoWizardSteps = DEMO_WIZARD_STEPS;
+  protected demoTourSteps = DEMO_TOUR_STEPS;
+  protected showDemoWizard = signal(false);
+  protected showDemoTour = signal(false);
+
+  protected openRelevantDemoGuide(): void {
+    if (this.demoService.isDemoMode()) {
+      this.showDemoTour.set(true);
+    } else {
+      this.showDemoWizard.set(true);
+    }
+  }
 
   protected isExporting = this.dataService.isExporting;
   protected isImporting = this.dataService.isImporting;
@@ -112,9 +195,10 @@ export class WaterComponent {
   protected unconfirmedMeterChanges = computed(() => {
     if (this.records().length < 2) return [];
     const changes = this.chartCalculationService.detectMeterChanges(this.records());
-    return changes.filter(date =>
-      !this.confirmedMeterChanges().includes(date) &&
-      !this.dismissedMeterChanges().includes(date)
+    return changes.filter(
+      (date) =>
+        !this.confirmedMeterChanges().includes(date) &&
+        !this.dismissedMeterChanges().includes(date),
     );
   });
 
@@ -128,7 +212,9 @@ export class WaterComponent {
   protected successMessage = this.dataService.successMessage;
 
   protected deleteAllMessageKey = computed(() => 'HOME.DELETE_ALL_CONFIRM_MESSAGE');
-  protected deleteAllMessageParams = computed<Record<string, string>>(() => ({ count: this.dataService.recordsToDelete().length.toString() }));
+  protected deleteAllMessageParams = computed<Record<string, string>>(() => ({
+    count: this.dataService.recordsToDelete().length.toString(),
+  }));
 
   protected errorTitle = this.dataService.errorTitle;
   protected errorMessage = this.dataService.errorMessage;
@@ -172,20 +258,30 @@ export class WaterComponent {
     switch (chartView) {
       case 'by-room':
         if (seed > 0.5) {
-          context = kitchenTotal > 0 ? 'kitchen' : (bathroomTotal > 0 ? 'bathroom' : 'total');
-          liters = context === 'kitchen' ? kitchenTotal : (context === 'bathroom' ? bathroomTotal : totalLiters);
+          context = kitchenTotal > 0 ? 'kitchen' : bathroomTotal > 0 ? 'bathroom' : 'total';
+          liters =
+            context === 'kitchen'
+              ? kitchenTotal
+              : context === 'bathroom'
+                ? bathroomTotal
+                : totalLiters;
         } else {
-          context = bathroomTotal > 0 ? 'bathroom' : (kitchenTotal > 0 ? 'kitchen' : 'total');
-          liters = context === 'bathroom' ? bathroomTotal : (context === 'kitchen' ? kitchenTotal : totalLiters);
+          context = bathroomTotal > 0 ? 'bathroom' : kitchenTotal > 0 ? 'kitchen' : 'total';
+          liters =
+            context === 'bathroom'
+              ? bathroomTotal
+              : context === 'kitchen'
+                ? kitchenTotal
+                : totalLiters;
         }
         break;
       case 'by-type':
         if (seed > 0.5) {
-          context = warmTotal > 0 ? 'warm' : (coldTotal > 0 ? 'cold' : 'total');
-          liters = context === 'warm' ? warmTotal : (context === 'cold' ? coldTotal : totalLiters);
+          context = warmTotal > 0 ? 'warm' : coldTotal > 0 ? 'cold' : 'total';
+          liters = context === 'warm' ? warmTotal : context === 'cold' ? coldTotal : totalLiters;
         } else {
-          context = coldTotal > 0 ? 'cold' : (warmTotal > 0 ? 'warm' : 'total');
-          liters = context === 'cold' ? coldTotal : (context === 'warm' ? warmTotal : totalLiters);
+          context = coldTotal > 0 ? 'cold' : warmTotal > 0 ? 'warm' : 'total';
+          liters = context === 'cold' ? coldTotal : context === 'warm' ? warmTotal : totalLiters;
         }
         break;
       default:
@@ -210,9 +306,15 @@ export class WaterComponent {
     this.preferencesService.setChartView(view);
     this.refreshFact();
   };
-  protected onDisplayModeChange = (mode: DisplayMode) => this.preferencesService.setDisplayMode(mode);
+  protected onDisplayModeChange = (mode: DisplayMode) =>
+    this.preferencesService.setDisplayMode(mode);
 
-  protected onFilterStateChange(state: { year: number | null; month: number | null; startDate: string | null; endDate: string | null }) {
+  protected onFilterStateChange(state: {
+    year: number | null;
+    month: number | null;
+    startDate: string | null;
+    endDate: string | null;
+  }) {
     this.dataService.updateFilterState(state);
   }
 
@@ -221,26 +323,48 @@ export class WaterComponent {
   }
 
   // Delegations to DataService
-  protected importData(event: Event) { this.dataService.importData(event); }
-  protected importFromExcel(event: Event) { this.dataService.importFromExcel(event); }
+  protected importData(event: Event) {
+    this.dataService.importData(event);
+  }
+  protected importFromExcel(event: Event) {
+    this.dataService.importFromExcel(event);
+  }
 
-  protected confirmImport() { this.dataService.confirmImport(); }
-  protected cancelImport() { this.dataService.cancelImport(); }
+  protected confirmImport() {
+    this.dataService.confirmImport();
+  }
+  protected cancelImport() {
+    this.dataService.cancelImport();
+  }
 
-  protected confirmFilterWarningImport() { this.dataService.confirmFilterWarningImport(); }
-  protected cancelFilterWarningImport() { this.dataService.cancelFilterWarningImport(); }
+  protected confirmFilterWarningImport() {
+    this.dataService.confirmFilterWarningImport();
+  }
+  protected cancelFilterWarningImport() {
+    this.dataService.cancelFilterWarningImport();
+  }
 
-  protected exportData() { this.dataService.exportData(); }
-  protected exportToExcel() { this.dataService.exportToExcel(); }
-  protected exportToPdf() { this.dataService.exportToPdf(); }
+  protected exportData() {
+    this.dataService.exportData();
+  }
+  protected exportToExcel() {
+    this.dataService.exportToExcel();
+  }
+  protected exportToPdf() {
+    this.dataService.exportToPdf();
+  }
 
-  protected confirmDelete() { this.dataService.confirmDelete(); }
+  protected confirmDelete() {
+    this.dataService.confirmDelete();
+  }
   protected cancelDelete() {
     this.dataService.showDeleteModal.set(false);
     this.dataService.recordToDelete.set(null);
   }
 
-  protected confirmDeleteAll() { this.dataService.confirmDeleteAll(); }
+  protected confirmDeleteAll() {
+    this.dataService.confirmDeleteAll();
+  }
   protected cancelDeleteAll() {
     this.dataService.showDeleteAllModal.set(false);
     this.dataService.recordsToDelete.set([]);
@@ -251,9 +375,12 @@ export class WaterComponent {
     this.dataService.showDeleteAllModal.set(true);
   }
 
-  protected closeSuccessModal() { this.dataService.showSuccessModal.set(false); }
-  protected closeErrorModal() { this.dataService.showErrorModal.set(false); }
-
+  protected closeSuccessModal() {
+    this.dataService.showSuccessModal.set(false);
+  }
+  protected closeErrorModal() {
+    this.dataService.showErrorModal.set(false);
+  }
 
   // Edit/Delete Interactions
   protected editRecord(record: unknown) {
@@ -301,7 +428,8 @@ export class WaterComponent {
     return this.formService.isDateDuplicate(this.records());
   }
 
-  protected calculateTotal = (record: unknown): number => calculateWaterTotal(record as ConsumptionRecord);
+  protected calculateTotal = (record: unknown): number =>
+    calculateWaterTotal(record as ConsumptionRecord);
   protected calculateKitchenTotal = calculateKitchenTotal;
   protected calculateBathroomTotal = calculateBathroomTotal;
 

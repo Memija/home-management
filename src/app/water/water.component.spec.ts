@@ -14,8 +14,16 @@ import { STORAGE_SERVICE, StorageService } from '../services/storage.service';
 import { ConsumptionRecord } from '../models/records.model';
 import { describe, it, expect, beforeEach, vi, afterEach } from 'vitest';
 import {
-  Download, Upload, CircleCheck, Trash2, FileText,
-  FileInput, FileOutput, AlertTriangle, Lightbulb, RefreshCw
+  Download,
+  Upload,
+  CircleCheck,
+  Trash2,
+  FileText,
+  FileInput,
+  FileOutput,
+  AlertTriangle,
+  Cat,
+  RefreshCw,
 } from 'lucide-angular';
 import { CHART_HELP_STEPS, RECORD_HELP_STEPS, RECORDS_LIST_HELP_STEPS } from './water.constants';
 
@@ -135,7 +143,12 @@ describe('WaterComponent', () => {
     } as any;
 
     mockExcelSettingsService = {
-      settings: signal({ enabled: false, waterMapping: {}, heatingMapping: {}, electricityMapping: {} }),
+      settings: signal({
+        enabled: false,
+        waterMapping: {},
+        heatingMapping: {},
+        electricityMapping: {},
+      }),
     } as any;
 
     mockLanguageService = {
@@ -214,8 +227,8 @@ describe('WaterComponent', () => {
       expect((component as any).AlertTriangleIcon).toBe(AlertTriangle);
     });
 
-    it('should have LightbulbIcon set to lucide Lightbulb icon', () => {
-      expect((component as any).LightbulbIcon).toBe(Lightbulb);
+    it('should have CatIcon set to lucide Cat icon', () => {
+      expect((component as any).CatIcon).toBe(Cat);
     });
 
     it('should have RefreshCwIcon set to lucide RefreshCw icon', () => {
@@ -336,7 +349,9 @@ describe('WaterComponent', () => {
       (mockChartCalculationService.adjustForMeterChanges as any).mockReturnValue(adjustedRecords);
 
       expect((component as any).adjustedRecords()).toEqual(adjustedRecords);
-      expect(mockChartCalculationService.adjustForMeterChanges).toHaveBeenCalledWith(records, ['2025-02-15']);
+      expect(mockChartCalculationService.adjustForMeterChanges).toHaveBeenCalledWith(records, [
+        '2025-02-15',
+      ]);
     });
 
     it('should compute deleteAllMessageKey as HOME.DELETE_ALL_CONFIRM_MESSAGE', () => {
@@ -348,7 +363,10 @@ describe('WaterComponent', () => {
     });
 
     it('should update deleteAllMessageParams when recordsToDelete changes', () => {
-      (mockDataService.recordsToDelete as WritableSignal<any>).set([createMockRecord(), createMockRecord()]);
+      (mockDataService.recordsToDelete as WritableSignal<any>).set([
+        createMockRecord(),
+        createMockRecord(),
+      ]);
       expect((component as any).deleteAllMessageParams()).toEqual({ count: '2' });
     });
   });
@@ -671,7 +689,12 @@ describe('WaterComponent', () => {
 
   describe('Calculation Helpers', () => {
     it('should calculate total water consumption', () => {
-      const record = createMockRecord({ kitchenWarm: 10, kitchenCold: 20, bathroomWarm: 30, bathroomCold: 40 });
+      const record = createMockRecord({
+        kitchenWarm: 10,
+        kitchenCold: 20,
+        bathroomWarm: 30,
+        bathroomCold: 40,
+      });
       expect((component as any).calculateTotal(record)).toBe(100);
     });
 
@@ -686,7 +709,12 @@ describe('WaterComponent', () => {
     });
 
     it('should calculate total as 0 for zero-value record', () => {
-      const record = createMockRecord({ kitchenWarm: 0, kitchenCold: 0, bathroomWarm: 0, bathroomCold: 0 });
+      const record = createMockRecord({
+        kitchenWarm: 0,
+        kitchenCold: 0,
+        bathroomWarm: 0,
+        bathroomCold: 0,
+      });
       expect((component as any).calculateTotal(record)).toBe(0);
     });
   });
@@ -731,7 +759,10 @@ describe('WaterComponent', () => {
     it('should call waterFactsService.getFactByIndex when display mode is total and records exist', () => {
       (mockDataService.records as WritableSignal<any>).set([createMockRecord()]);
       (mockPreferencesService.displayMode as WritableSignal<any>).set('total');
-      (mockWaterFactsService.getFactByIndex as any).mockReturnValue({ title: 'Fun Fact', message: 'Water is wet' });
+      (mockWaterFactsService.getFactByIndex as any).mockReturnValue({
+        title: 'Fun Fact',
+        message: 'Water is wet',
+      });
 
       const fact = (component as any).waterFact();
 

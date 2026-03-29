@@ -1,24 +1,36 @@
 @if (!seasonService.disabled()) {
-<div class="season-switcher">
-  <button type="button" class="season-nav-btn prev" (click)="previousSeason()" [title]="'SEASONS.PREVIOUS' | translate"
-    aria-label="Previous season">
-    <lucide-icon [img]="ChevronLeftIcon" size="18"></lucide-icon>
-  </button>
+  <div class="season-switcher">
+    <button
+      type="button"
+      class="season-nav-btn prev"
+      (click)="previousSeason()"
+      [title]="'SEASONS.PREVIOUS' | translate"
+      aria-label="Previous season"
+    >
+      <lucide-icon [img]="ChevronLeftIcon" size="18"></lucide-icon>
+    </button>
 
-  <div class="season-display">
-    <span class="season-emoji">{{ getSeasonEmoji() }}</span>
-    <div class="season-text">
-      <span class="season-name">{{ 'SEASONS.' + seasonService.currentSeason().toUpperCase() + '.NAME' | translate
+    <div class="season-display">
+      <span class="season-emoji">{{ getSeasonEmoji() }}</span>
+      <div class="season-text">
+        <span class="season-name">{{
+          'SEASONS.' + seasonService.currentSeason().toUpperCase() + '.NAME' | translate
         }}</span>
-      <span class="season-tagline">{{ 'SEASONS.' + seasonService.currentSeason().toUpperCase() + '.TAGLINE' |
-        translate }}</span>
+        <span class="season-tagline">{{
+          'SEASONS.' + seasonService.currentSeason().toUpperCase() + '.TAGLINE' | translate
+        }}</span>
+      </div>
+      <span class="season-emoji">{{ getSeasonEmoji() }}</span>
     </div>
-    <span class="season-emoji">{{ getSeasonEmoji() }}</span>
-  </div>
 
-  <button type="button" class="season-nav-btn next" (click)="nextSeason()" [title]="'SEASONS.NEXT' | translate"
-    aria-label="Next season">
-    <lucide-icon [img]="ChevronRightIcon" size="18"></lucide-icon>
-  </button>
-</div>
+    <button
+      type="button"
+      class="season-nav-btn next"
+      (click)="nextSeason()"
+      [title]="'SEASONS.NEXT' | translate"
+      aria-label="Next season"
+    >
+      <lucide-icon [img]="ChevronRightIcon" size="18"></lucide-icon>
+    </button>
+  </div>
 }

@@ -9,7 +9,7 @@ import { SeasonService, Season } from '../../services/season.service';
   standalone: true,
   imports: [CommonModule, LucideAngularModule, TranslatePipe],
   templateUrl: './season-switcher.component.html',
-  styleUrl: './season-switcher.component.scss'
+  styleUrl: './season-switcher.component.scss',
 })
 export class SeasonSwitcherComponent {
   protected readonly seasonService = inject(SeasonService);
@@ -22,7 +22,7 @@ export class SeasonSwitcherComponent {
     spring: '🌸',
     summer: '☀️',
     autumn: '🍂',
-    winter: '❄️'
+    winter: '❄️',
   };
 
   protected previousSeason(): void {

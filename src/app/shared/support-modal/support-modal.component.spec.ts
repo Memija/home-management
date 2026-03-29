@@ -14,7 +14,8 @@ import { X, Heart } from 'lucide-angular';
 describe('SupportModalComponent', () => {
   let component: SupportModalComponent;
   let mockSanitizer: DomSanitizer;
-  const EXPECTED_KOFI_URL = 'https://ko-fi.com/memija/?hidefeed=true&widget=true&embed=true&preview=true';
+  const EXPECTED_KOFI_URL =
+    'https://ko-fi.com/memija/?hidefeed=true&widget=true&embed=true&preview=true';
   const MOCK_SAFE_URL = { toString: () => EXPECTED_KOFI_URL } as SafeResourceUrl;
 
   beforeEach(() => {
@@ -82,27 +83,32 @@ describe('SupportModalComponent', () => {
     });
 
     it('should include hidefeed=true in the URL', () => {
-      const calledUrl = (mockSanitizer.bypassSecurityTrustResourceUrl as ReturnType<typeof vi.fn>).mock.calls[0][0];
+      const calledUrl = (mockSanitizer.bypassSecurityTrustResourceUrl as ReturnType<typeof vi.fn>)
+        .mock.calls[0][0];
       expect(calledUrl).toContain('hidefeed=true');
     });
 
     it('should include widget=true in the URL', () => {
-      const calledUrl = (mockSanitizer.bypassSecurityTrustResourceUrl as ReturnType<typeof vi.fn>).mock.calls[0][0];
+      const calledUrl = (mockSanitizer.bypassSecurityTrustResourceUrl as ReturnType<typeof vi.fn>)
+        .mock.calls[0][0];
       expect(calledUrl).toContain('widget=true');
     });
 
     it('should include embed=true in the URL', () => {
-      const calledUrl = (mockSanitizer.bypassSecurityTrustResourceUrl as ReturnType<typeof vi.fn>).mock.calls[0][0];
+      const calledUrl = (mockSanitizer.bypassSecurityTrustResourceUrl as ReturnType<typeof vi.fn>)
+        .mock.calls[0][0];
       expect(calledUrl).toContain('embed=true');
     });
 
     it('should include preview=true in the URL', () => {
-      const calledUrl = (mockSanitizer.bypassSecurityTrustResourceUrl as ReturnType<typeof vi.fn>).mock.calls[0][0];
+      const calledUrl = (mockSanitizer.bypassSecurityTrustResourceUrl as ReturnType<typeof vi.fn>)
+        .mock.calls[0][0];
       expect(calledUrl).toContain('preview=true');
     });
 
     it('should point to the correct Ko-fi user (memija)', () => {
-      const calledUrl = (mockSanitizer.bypassSecurityTrustResourceUrl as ReturnType<typeof vi.fn>).mock.calls[0][0];
+      const calledUrl = (mockSanitizer.bypassSecurityTrustResourceUrl as ReturnType<typeof vi.fn>)
+        .mock.calls[0][0];
       expect(calledUrl).toContain('ko-fi.com/memija');
     });
   });

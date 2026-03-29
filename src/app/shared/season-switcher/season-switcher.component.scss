@@ -35,11 +35,13 @@
     content: '';
     position: absolute;
     inset: 0;
-    background: linear-gradient(90deg,
-        transparent 0%,
-        var(--primary-light-bg) 30%,
-        var(--primary-light-bg) 70%,
-        transparent 100%);
+    background: linear-gradient(
+      90deg,
+      transparent 0%,
+      var(--primary-light-bg) 30%,
+      var(--primary-light-bg) 70%,
+      transparent 100%
+    );
     opacity: 0.3;
     pointer-events: none;
   }
@@ -120,7 +122,6 @@
 }
 
 @keyframes gentle-bounce {
-
   0%,
   100% {
     transform: translateY(0);

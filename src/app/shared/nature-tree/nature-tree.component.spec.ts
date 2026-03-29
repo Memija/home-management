@@ -6,11 +6,14 @@ import { describe, it, expect, beforeEach, vi, afterEach } from 'vitest';
 
 describe('NatureTreeComponent', () => {
   let component: NatureTreeComponent;
-  let mockSeasonService: { currentSeason: ReturnType<typeof signal<Season>>; setSeason: (s: Season) => void };
+  let mockSeasonService: {
+    currentSeason: ReturnType<typeof signal<Season>>;
+    setSeason: (s: Season) => void;
+  };
 
   const mockThemeService = {
     isDarkTheme: signal(false),
-    resolvedTheme: signal('light' as const)
+    resolvedTheme: signal('light' as const),
   };
 
   beforeEach(() => {
@@ -19,7 +22,7 @@ describe('NatureTreeComponent', () => {
 
     mockSeasonService = {
       currentSeason: signal<Season>('summer'),
-      setSeason: (s: Season) => mockSeasonService.currentSeason.set(s)
+      setSeason: (s: Season) => mockSeasonService.currentSeason.set(s),
     };
 
     // Direct instantiation with manual season/tree setup since effect() requires Angular runtime

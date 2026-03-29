@@ -1,4 +1,11 @@
-import { Component, inject, effect, ChangeDetectionStrategy, ChangeDetectorRef, PLATFORM_ID } from '@angular/core';
+import {
+  Component,
+  inject,
+  effect,
+  ChangeDetectionStrategy,
+  ChangeDetectorRef,
+  PLATFORM_ID,
+} from '@angular/core';
 import { isPlatformBrowser, CommonModule } from '@angular/common';
 import { ThemeService } from '../../services/theme.service';
 import { SeasonService, Season } from '../../services/season.service';
@@ -76,7 +83,7 @@ const FPS_SAMPLE_FRAMES = 30;
   imports: [CommonModule],
   templateUrl: './nature-tree.component.html',
   styleUrl: './nature-tree.component.scss',
-  changeDetection: ChangeDetectionStrategy.OnPush
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class NatureTreeComponent {
   branches: Branch[] = [];
@@ -131,7 +138,9 @@ export class NatureTreeComponent {
         const fps = (FPS_SAMPLE_FRAMES / elapsed) * 1000;
 
         if (fps < MIN_FPS_THRESHOLD) {
-          console.warn(`[NatureTree] Low FPS detected (${fps.toFixed(1)}fps). Disabling tree for better performance.`);
+          console.warn(
+            `[NatureTree] Low FPS detected (${fps.toFixed(1)}fps). Disabling tree for better performance.`,
+          );
           this.seasonService.disabled.set(true);
           this.branches = [];
           this.snowflakes = [];
@@ -166,7 +175,7 @@ export class NatureTreeComponent {
       children: [],
       leaves: [],
       lanterns: [],
-      flowers: []
+      flowers: [],
     };
 
     this.generateBranchChildren(trunk, MAX_DEPTH);
@@ -181,8 +190,8 @@ export class NatureTreeComponent {
           x: Math.random() * 3000 - 1000,
           y: Math.random() * 1200 - 1200,
           size: 1.5 + Math.random() * 3.5,
-          animDuration: (8 + Math.random() * 12) + 's',
-          animDelay: '-' + (Math.random() * 20) + 's'
+          animDuration: 8 + Math.random() * 12 + 's',
+          animDelay: '-' + Math.random() * 20 + 's',
         });
       }
     } else if (this.season === 'autumn') {
@@ -191,8 +200,8 @@ export class NatureTreeComponent {
           x: Math.random() * 3000 - 500,
           y: Math.random() * 1200 - 1200,
           height: 15 + Math.random() * 25,
-          animDuration: (0.4 + Math.random() * 0.6) + 's',
-          animDelay: '-' + (Math.random() * 2) + 's'
+          animDuration: 0.4 + Math.random() * 0.6 + 's',
+          animDelay: '-' + Math.random() * 2 + 's',
         });
       }
     }
@@ -216,7 +225,7 @@ export class NatureTreeComponent {
             rotation: this.random() * 360,
             scale: 1.2 + this.random() * 2.0,
             type: Math.floor(this.random() * 3),
-            animDelay: '-' + (this.random() * 5).toFixed(2) + 's'
+            animDelay: '-' + (this.random() * 5).toFixed(2) + 's',
           });
         }
       }
@@ -230,7 +239,7 @@ export class NatureTreeComponent {
           offsetX: 0,
           offsetY: -parent.length,
           length: 40 + this.random() * 60,
-          animDelay: '-' + (this.random() * 5).toFixed(2) + 's'
+          animDelay: '-' + (this.random() * 5).toFixed(2) + 's',
         });
       }
     }
@@ -244,7 +253,7 @@ export class NatureTreeComponent {
         scale: 0.8 + this.random() * 1.2,
         rotation: this.random() * 360,
         color: colors[Math.floor(this.random() * colors.length)],
-        animDelay: '-' + (this.random() * 5).toFixed(2) + 's'
+        animDelay: '-' + (this.random() * 5).toFixed(2) + 's',
       });
     }
 
@@ -260,7 +269,7 @@ export class NatureTreeComponent {
             rotation: this.random() * 360,
             scale: 1.0 + this.random() * 1.5,
             type: Math.floor(this.random() * 3),
-            animDelay: '-' + (this.random() * 5).toFixed(2) + 's'
+            animDelay: '-' + (this.random() * 5).toFixed(2) + 's',
           });
         }
       }
@@ -276,13 +285,13 @@ export class NatureTreeComponent {
     if (numBranches === 2) {
       angleDeltas = [
         -angleSpread / 2 + (this.random() * 15 - 7.5),
-        angleSpread / 2 + (this.random() * 15 - 7.5)
+        angleSpread / 2 + (this.random() * 15 - 7.5),
       ];
     } else {
       angleDeltas = [
-        -angleSpread + (this.random() * 10),
-        (this.random() * 10 - 5),
-        angleSpread - (this.random() * 10)
+        -angleSpread + this.random() * 10,
+        this.random() * 10 - 5,
+        angleSpread - this.random() * 10,
       ];
     }
 
@@ -301,11 +310,11 @@ export class NatureTreeComponent {
         width: parent.width * 0.7,
         depth: depth - 1,
         animDelay: '-' + (this.random() * 5).toFixed(2) + 's',
-        animDuration: (4 + (this.random() * 4) + (depth * 0.5)) + 's',
+        animDuration: 4 + this.random() * 4 + depth * 0.5 + 's',
         children: [],
         leaves: [],
         lanterns: [],
-        flowers: []
+        flowers: [],
       };
       this.generateBranchChildren(child, depth - 1);
       parent.children.push(child);

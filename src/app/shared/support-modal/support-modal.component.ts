@@ -8,7 +8,7 @@ import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
   standalone: true,
   imports: [TranslatePipe, LucideAngularModule],
   templateUrl: './support-modal.component.html',
-  styleUrl: './support-modal.component.scss'
+  styleUrl: './support-modal.component.scss',
 })
 export class SupportModalComponent {
   readonly XIcon = X;
@@ -19,7 +19,9 @@ export class SupportModalComponent {
   kofiUrl: SafeResourceUrl;
 
   constructor(private sanitizer: DomSanitizer) {
-    this.kofiUrl = this.sanitizer.bypassSecurityTrustResourceUrl('https://ko-fi.com/memija/?hidefeed=true&widget=true&embed=true&preview=true');
+    this.kofiUrl = this.sanitizer.bypassSecurityTrustResourceUrl(
+      'https://ko-fi.com/memija/?hidefeed=true&widget=true&embed=true&preview=true',
+    );
   }
 
   onClose() {

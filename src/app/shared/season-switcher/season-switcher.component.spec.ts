@@ -8,7 +8,7 @@ import { TranslatePipe } from '../../pipes/translate.pipe';
 
 @Pipe({
   name: 'translate',
-  standalone: true
+  standalone: true,
 })
 class MockTranslatePipe implements PipeTransform {
   transform(key: string): string {
@@ -31,18 +31,16 @@ describe('SeasonSwitcherComponent', () => {
       currentSeason: currentSeasonSignal,
       disabled: disabledSignal,
       nextSeason: vi.fn(),
-      previousSeason: vi.fn()
+      previousSeason: vi.fn(),
     };
 
     await TestBed.configureTestingModule({
       imports: [SeasonSwitcherComponent, MockTranslatePipe],
-      providers: [
-        { provide: SeasonService, useValue: mockSeasonService }
-      ]
+      providers: [{ provide: SeasonService, useValue: mockSeasonService }],
     })
       .overrideComponent(SeasonSwitcherComponent, {
         remove: { imports: [TranslatePipe] },
-        add: { imports: [MockTranslatePipe] }
+        add: { imports: [MockTranslatePipe] },
       })
       .compileComponents();
 

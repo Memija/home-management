@@ -84,6 +84,7 @@ export const common = {
     WIZARD_TITLE: 'Diese Seite erkunden',
     WIZARD_GOT_IT: 'Verstanden!',
     WIZARD_BUTTON: 'Tour starten',
+    STEP: 'Schritt',
     // Wasserzähler-Wizard (Normalmodus)
     WATER_STEP_1_TITLE: 'Interaktive Diagramme',
     WATER_STEP_1_DESC:

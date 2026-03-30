@@ -83,6 +83,7 @@ export const common = {
     WIZARD_TITLE: 'Explore This Page',
     WIZARD_GOT_IT: 'Got it!',
     WIZARD_BUTTON: 'Take the Tour',
+    STEP: 'Step',
     // Water wizard steps (non-demo mode)
     WATER_STEP_1_TITLE: 'Interactive Charts',
     WATER_STEP_1_DESC:

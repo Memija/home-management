@@ -9,6 +9,7 @@ interface MockLocalStorageService {
   exportAll: ReturnType<typeof vi.fn>;
   save: ReturnType<typeof vi.fn>;
   delete: ReturnType<typeof vi.fn>;
+  clearAll: ReturnType<typeof vi.fn>;
   importAll: ReturnType<typeof vi.fn>;
   getPreference: ReturnType<typeof vi.fn>;
   setPreference: ReturnType<typeof vi.fn>;
@@ -28,6 +29,7 @@ describe('DemoService', () => {
       exportAll: vi.fn().mockResolvedValue({ key: 'value' }),
       save: vi.fn().mockResolvedValue(undefined),
       delete: vi.fn().mockResolvedValue(undefined),
+      clearAll: vi.fn().mockResolvedValue(undefined),
       importAll: vi.fn().mockResolvedValue(undefined),
       getPreference: vi.fn().mockReturnValue('true'),
       setPreference: vi.fn(),
@@ -119,10 +121,13 @@ describe('DemoService', () => {
         json: () => Promise.resolve([{ data: 'test' }]),
       } as any);
 
+      // Add dummy data with hm_ prefix to ensure backup is performed
+      localStorage.setItem('hm_some_data', 'true');
+
       await service.activateDemo();
 
       expect(mockLocalStorageService.exportAll).toHaveBeenCalled();
-      expect(localStorage.setItem).toHaveBeenCalledWith('hm_user_backup', expect.any(String));
+      expect(localStorage.setItem).toHaveBeenCalledWith('hm_user_backup_raw', expect.any(String));
       expect(localStorage.setItem).toHaveBeenCalledWith('hm_demo_mode_is_active', 'true');
       expect(mockLocalStorageService.save).toHaveBeenCalled();
       expect(window.location.reload).toHaveBeenCalled();
@@ -283,12 +288,9 @@ describe('DemoService', () => {
       });
 
       await service.deactivateDemo();
-
-      expect(mockLocalStorageService.delete).toHaveBeenCalled();
-      expect(mockLocalStorageService.removePreference).toHaveBeenCalled();
-      expect(mockLocalStorageService.importAll).toHaveBeenCalledWith({ k: 'v' });
-      expect(mockLocalStorageService.setPreference).toHaveBeenCalledWith('p', 'v');
-      expect(localStorage.removeItem).toHaveBeenCalledWith('hm_user_backup');
+  
+      expect(mockLocalStorageService.clearAll).toHaveBeenCalled();
+      expect(localStorage.removeItem).toHaveBeenCalledWith('hm_user_backup_raw');
       expect(localStorage.removeItem).toHaveBeenCalledWith('hm_demo_mode_is_active');
       expect(window.location.reload).toHaveBeenCalled();
       expect(service.isDemoMode()).toBe(false);
@@ -302,13 +304,13 @@ describe('DemoService', () => {
 
     it('should set isLoading during deactivation and reset after', async () => {
       let loadingDuringExecution = false;
-      mockLocalStorageService.delete.mockImplementation(async () => {
+      mockLocalStorageService.clearAll.mockImplementation(async () => {
         loadingDuringExecution = service.isLoading();
       });
       vi.mocked(localStorage.getItem).mockReturnValue(null);
-
+  
       await service.deactivateDemo();
-
+  
       expect(loadingDuringExecution).toBe(true);
       expect(service.isLoading()).toBe(false);
     });
@@ -339,56 +341,36 @@ describe('DemoService', () => {
       await service.deactivateDemo();
 
       // Should not throw, should still cleanup
-      expect(localStorage.removeItem).toHaveBeenCalledWith('hm_user_backup');
+      expect(localStorage.removeItem).toHaveBeenCalledWith('hm_user_backup_raw');
       expect(localStorage.removeItem).toHaveBeenCalledWith('hm_demo_mode_is_active');
       expect(window.location.reload).toHaveBeenCalled();
     });
 
-    it('should work when backup has no preferences', async () => {
+    it('should work when backup has no data', async () => {
       vi.mocked(localStorage.getItem).mockImplementation((key) => {
-        if (key === 'hm_user_backup') return JSON.stringify({ storage: { k: 'v' } });
+        if (key === 'hm_user_backup_raw') return JSON.stringify({});
         return null;
       });
 
       await service.deactivateDemo();
 
-      expect(mockLocalStorageService.importAll).toHaveBeenCalledWith({ k: 'v' });
-      expect(mockLocalStorageService.setPreference).not.toHaveBeenCalled();
+      expect(mockLocalStorageService.clearAll).toHaveBeenCalled();
     });
 
-    it('should delete all storage keys', async () => {
+    it('should call clearAll to remove data', async () => {
       vi.mocked(localStorage.getItem).mockReturnValue(null);
 
       await service.deactivateDemo();
 
-      expect(mockLocalStorageService.delete).toHaveBeenCalledWith('water_consumption_records');
-      expect(mockLocalStorageService.delete).toHaveBeenCalledWith('heating_consumption_records');
-      expect(mockLocalStorageService.delete).toHaveBeenCalledWith('heating_room_configuration');
-      expect(mockLocalStorageService.delete).toHaveBeenCalledWith(
-        'electricity_consumption_records',
-      );
-      expect(mockLocalStorageService.delete).toHaveBeenCalledWith('household_members');
-      expect(mockLocalStorageService.delete).toHaveBeenCalledWith('household_address');
-      expect(mockLocalStorageService.delete).toHaveBeenCalledWith('excel_settings');
+      expect(mockLocalStorageService.clearAll).toHaveBeenCalled();
     });
 
-    it('should remove all preference keys', async () => {
+    it('should call clearAll which handles both data and preferences', async () => {
       vi.mocked(localStorage.getItem).mockReturnValue(null);
 
       await service.deactivateDemo();
 
-      expect(mockLocalStorageService.removePreference).toHaveBeenCalledWith(
-        'water_confirmed_meter_changes',
-      );
-      expect(mockLocalStorageService.removePreference).toHaveBeenCalledWith(
-        'water_dismissed_meter_changes',
-      );
-      expect(mockLocalStorageService.removePreference).toHaveBeenCalledWith(
-        'heating_confirmed_spikes',
-      );
-      expect(mockLocalStorageService.removePreference).toHaveBeenCalledWith(
-        'heating_dismissed_spikes',
-      );
+      expect(mockLocalStorageService.clearAll).toHaveBeenCalled();
     });
   });
 });

@@ -59,7 +59,7 @@
   } @else if (displayMode() === 'total' && electricityFact()) {
     <div class="notification-card notification-card--info">
       <div class="notification-content">
-        <span class="cat-mascot notification-cat">🐈‍⬛</span>
+        <lucide-icon [img]="LightbulbIcon" class="notification-cat"></lucide-icon>
         <div class="notification-text">
           <strong>{{ electricityFact()!.title }}</strong>
           <p>{{ electricityFact()!.message }}</p>

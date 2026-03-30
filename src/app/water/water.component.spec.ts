@@ -22,7 +22,7 @@ import {
   FileInput,
   FileOutput,
   AlertTriangle,
-  Cat,
+  Lightbulb,
   RefreshCw,
 } from 'lucide-angular';
 import { CHART_HELP_STEPS, RECORD_HELP_STEPS, RECORDS_LIST_HELP_STEPS } from './water.constants';
@@ -227,8 +227,8 @@ describe('WaterComponent', () => {
       expect((component as any).AlertTriangleIcon).toBe(AlertTriangle);
     });
 
-    it('should have CatIcon set to lucide Cat icon', () => {
-      expect((component as any).CatIcon).toBe(Cat);
+    it('should have LightbulbIcon set to lucide Lightbulb icon', () => {
+      expect((component as any).LightbulbIcon).toBe(Lightbulb);
     });
 
     it('should have RefreshCwIcon set to lucide RefreshCw icon', () => {

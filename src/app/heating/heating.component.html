@@ -59,7 +59,7 @@
   @if (displayMode() === 'total' && heatingFact()) {
     <div class="notification-card notification-card--info">
       <div class="notification-content">
-        <span class="cat-mascot notification-cat">🐈‍⬛</span>
+        <lucide-icon [img]="LightbulbIcon" class="notification-cat"></lucide-icon>
         <div class="notification-text">
           <strong>{{ heatingFact()!.title }}</strong>
           <p>{{ heatingFact()!.message }}</p>

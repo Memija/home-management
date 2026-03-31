@@ -8,8 +8,7 @@
 
   <!-- Spotlight cutout -->
   <div
-    class="tour-spotlight"
-    [class]="'theme-' + theme()"
+    [class]="'tour-spotlight theme-' + theme()"
     [class.transitioning]="isTransitioning()"
     [style.top.px]="spotTop()"
     [style.left.px]="spotLeft()"
@@ -19,13 +18,12 @@
 
   <!-- Progress bar -->
   <div class="tour-progress-bar">
-    <div class="tour-progress-fill" [class]="'theme-' + theme()" [style.width.%]="progress()"></div>
+    <div [class]="'tour-progress-fill theme-' + theme()" [style.width.%]="progress()"></div>
   </div>
 
   <!-- Tooltip bubble -->
   <div
-    class="tour-tooltip"
-    [class]="'position-' + tipPosition() + ' theme-' + theme()"
+    [class]="'tour-tooltip position-' + tipPosition() + ' theme-' + theme()"
     [class.transitioning]="isTransitioning()"
     [style.top.px]="tipTop()"
     [style.left.px]="tipLeft()"

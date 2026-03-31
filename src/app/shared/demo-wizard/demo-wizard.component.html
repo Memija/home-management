@@ -1,6 +1,6 @@
 @if (show()) {
 <div class="modal-overlay" (click)="onClose()">
-  <div class="demo-wizard" [class]="'theme-' + theme()" (click)="$event.stopPropagation()">
+  <div [class]="'demo-wizard theme-' + theme()" (click)="$event.stopPropagation()">
     <!-- Progress bar -->
     <div class="wizard-progress">
       <div class="wizard-progress-bar" [style.width.%]="progress()"></div>

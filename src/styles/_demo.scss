@@ -351,7 +351,8 @@
 // Demo Tour - Theme Variables & Base Styles
 // ============================================
 
-[class^="theme-"] {
+// Match any element with a theme class, regardless of position in class list
+[class*="theme-"] {
   --tour-primary: #0ea5e9;
   --tour-glow: rgba(14, 165, 233, 0.35);
   --tour-badge-bg: #e0f2fe;

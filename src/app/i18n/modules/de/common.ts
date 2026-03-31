@@ -107,10 +107,10 @@ export const common = {
       'Dieses Panel vergleicht Ihren Verbrauch mit dem nationalen Durchschnitt. So sehen Sie sofort, ob Ihr Haushalt Wasser spart oder über dem Durchschnitt Ihres Landes liegt.',
     TOUR_WATER_RECORDS_TITLE: 'Ihre Ablesehistorie',
     TOUR_WATER_RECORDS_DESC:
-      'Jede Ablesung wird hier gespeichert. Filtern Sie die Liste nach Jahr oder Monat und nutzen Sie das Lösch-Icon bei Fehlern—die Diagramme passen sich sofort an.',
+      'Jede Ablesung wird hier gespeichert. Sie können ganz einfach nach Datum filtern, um bestimmte Einträge zu finden, und das Aktionsmenü nutzen, um Ihren Verlauf zu exportieren oder neue Datensätze zu importieren.',
     TOUR_WATER_INPUT_TITLE: 'Neue Ablesung hinzufügen',
     TOUR_WATER_INPUT_DESC:
-      'Geben Sie hier Ihre Zählerstände ein. Wenn Sie Kalt- und Warmwasser getrennt erfassen, verarbeitet die App beides. Probieren Sie es mit einem Testwert aus!',
+      'Geben Sie hier Ihre Zählerstände ein. Wenn Sie Kaltwasser und Warmwasser getrennt erfassen, verarbeitet die App beides.',
 
     // Heizungs-Wizard (Normalmodus)
     HEATING_STEP_1_TITLE: 'Raumbasierte Erfassung',
@@ -128,13 +128,13 @@ export const common = {
     // Heizungs Tour-Schritte (Demo-Modus)
     TOUR_HEATING_CHART_TITLE: 'Heizung nach Räumen',
     TOUR_HEATING_CHART_DESC:
-      'Überwachen Sie den Energieverbrauch für jeden Raum. Ein Klick auf den Raumnamen in der Legende blendet diesen aus, was den Vergleich zwischen Wohn- und Schlafzimmer erleichtert.',
+      'Überwachen Sie den Energieverbrauch für jeden Raum. Ein Klick auf den Raumnamen in der Legende blendet diesen aus, was den Vergleich zwischen Wohnzimmer und Schlafzimmer erleichtert.',
     TOUR_HEATING_RECORDS_TITLE: 'Historische Ablesungen',
     TOUR_HEATING_RECORDS_DESC:
-      'Hier finden Sie die Historie aller Heizungszähler. Sortieren Sie nach Datum, um saisonale Spitzen zu erkennen, oder bearbeiten Sie Einträge direkt bei Tippfehlern.',
+      'Hier finden Sie die Historie aller Heizungsablesungen. Sie können ganz einfach nach Datum filtern, um bestimmte Einträge zu finden, und das Aktionsmenü nutzen, um Ihren Verlauf zu exportieren oder neue Datensätze zu importieren.',
     TOUR_HEATING_INPUT_TITLE: 'Smartes Eingabeformular',
     TOUR_HEATING_INPUT_DESC:
-      'Erfassen Sie Ablesungen für alle Räume gleichzeitig. Über das Zahnrad-Symbol können Sie Räume hinzufügen oder entfernen—das Formular passt sich automatisch an.',
+      'Erfassen Sie Ablesungen für alle Räume gleichzeitig. Über das Zahnradsymbol können Sie Räume hinzufügen oder entfernen, und das Formular passt sich automatisch an.',
 
     // Strom-Wizard (Normalmodus)
     ELECTRICITY_STEP_1_TITLE: 'Einfache kWh-Erfassung',
@@ -158,7 +158,7 @@ export const common = {
       'Vergleichen Sie Ihren Stromverbrauch mit typischen Werten für Haushalte Ihrer Größe. Dies hilft Ihnen, unnötige Stromfresser in Ihrem Zuhause zu identifizieren.',
     TOUR_ELECTRICITY_RECORDS_TITLE: 'Strom-Protokoll',
     TOUR_ELECTRICITY_RECORDS_DESC:
-      'Eine chronologische Liste Ihrer Ablesungen. Die Spalte "Verbrauch" berechnet automatisch die Differenz zum vorherigen Datum und zeigt Ihren exakten Verbrauch.',
+      'Eine chronologische Liste Ihrer Ablesungen. Sie können ganz einfach nach Datum filtern, um bestimmte Einträge zu finden, und das Aktionsmenü nutzen, um Ihren Verlauf zu exportieren oder neue Datensätze zu importieren.',
     TOUR_ELECTRICITY_INPUT_TITLE: 'Smarte Zählerfunktionen',
     TOUR_ELECTRICITY_INPUT_DESC:
       'Geben Sie einfach Ihren aktuellen Zählerstand ein. Wurde Ihr Zähler getauscht oder zurückgesetzt? Die App erkennt den niedrigeren Wert und bittet Sie um Bestätigung.',
@@ -166,7 +166,7 @@ export const common = {
     // Einstellungs-Wizard (Normalmodus)
     SETTINGS_STEP_1_TITLE: 'Adresse einrichten',
     SETTINGS_STEP_1_DESC:
-      'Legen Sie Ihre Haushaltsadresse fest, um länderspezifische Verbrauchsvergleiche und lokalisierte Durchschnittswerte auf allen Tracker-Seiten zu ermöglichen.',
+      'Legen Sie eine Haushaltsadresse fest, um Verbrauchsvergleiche mit nationalen Durchschnittswerten auf allen Tracker-Seiten zu ermöglichen.',
     SETTINGS_STEP_2_TITLE: 'Familienmitglieder',
     SETTINGS_STEP_2_DESC:
       'Fügen Sie Ihre Haushaltsmitglieder hinzu. Dies ermöglicht die Berechnung des Pro-Kopf-Verbrauchs in den Diagrammen.',
@@ -175,14 +175,14 @@ export const common = {
       'Aktivieren Sie den Excel-Import und -Export, um Ihre Verbrauchsdaten in Tabellenkalkulationen zu bearbeiten. Konfigurieren Sie Spaltenzuordnungen für Ihr Format.',
     SETTINGS_STEP_4_TITLE: 'Datenspeicherung',
     SETTINGS_STEP_4_DESC:
-      'Ihre Daten werden standardmäßig lokal gespeichert. Melden Sie sich mit Google an, um geräteübergreifend zu synchronisieren, oder exportieren Sie jederzeit ein Backup.',
+      'Alles wird standardmäßig auf Ihrem Gerät gespeichert. Nutzen Sie "Export" für ein manuelles Backup oder "Mit Google anmelden", um Ihre Daten sicher zwischen all Ihren Geräten zu synchronisieren.',
     // Einstellungs Tour-Schritte (Demo-Modus)
     TOUR_SETTINGS_STORAGE_TITLE: 'Datenschutz & Speicherung',
     TOUR_SETTINGS_STORAGE_DESC:
-      'Standardmäßig bleibt alles auf Ihrem Gerät. Nutzen Sie "Export" für ein manuelles Backup oder "Mit Google anmelden", um Ihre Daten sicher zwischen Handy und Computer zu synchronisieren.',
+      'Alles wird standardmäßig auf Ihrem Gerät gespeichert. Nutzen Sie "Export" für ein manuelles Backup oder "Mit Google anmelden", um Ihre Daten sicher zwischen all Ihren Geräten zu synchronisieren.',
     TOUR_SETTINGS_ADDRESS_TITLE: 'Standort & Kontext',
     TOUR_SETTINGS_ADDRESS_DESC:
-      'Die Angabe Ihrer Adresse ermöglicht den Abruf nationaler Durchschnittswerte für Ihr Land, was die Vergleichsdiagramme auf allen Seiten wesentlich genauer macht.',
+      'Die Angabe einer Adresse ermöglicht Verbrauchsvergleiche mit nationalen Durchschnittswerten und sorgt für wesentlich genauere Diagramme und Auswertungen.',
     TOUR_SETTINGS_FAMILY_TITLE: 'Haushaltsmitglieder',
     TOUR_SETTINGS_FAMILY_DESC:
       'Geben Sie an, wie viele Personen im Haushalt leben. Dies ermöglicht die "Pro Kopf"-Ansicht, mit der Sie den Verbrauch unabhängig von der Haushaltsgröße vergleichen können.',

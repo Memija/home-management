@@ -106,10 +106,10 @@ export const common = {
       'This panel compares your usage against national averages. It helps you understand if your household is saving water or consuming more than typical homes in your region.',
     TOUR_WATER_RECORDS_TITLE: 'Your Reading History',
     TOUR_WATER_RECORDS_DESC:
-      'Every reading you enter is stored here. You can filter the list by year or month, and use the delete icon to remove mistakes—the charts will instantly recalculate.',
+      'Every reading you enter is stored here. You can easily filter by dates to find specific entries, and use the action menu to export your history or import new records.',
     TOUR_WATER_INPUT_TITLE: 'Add a New Reading',
     TOUR_WATER_INPUT_DESC:
-      'Enter the numbers from your meter here. If you track cold and warm water separately, the app handles both. Try entering a test value to see how the charts update!',
+      'Enter the numbers from your meter here. If you track cold and warm water separately, the app handles both.',
 
     // Heating wizard steps (non-demo mode)
     HEATING_STEP_1_TITLE: 'Room-Based Tracking',
@@ -130,7 +130,7 @@ export const common = {
       'Analyze energy usage for every room in your home. Click on a room name in the legend to toggle its visibility, making it easier to compare the bedroom versus the living room.',
     TOUR_HEATING_RECORDS_TITLE: 'Historical Readings',
     TOUR_HEATING_RECORDS_DESC:
-      'This table lists every registered heating reading. Sorting by date allows you to track seasonal spikes, and you can edit any entry if you notice a typo.',
+      'This table lists every registered heating reading. You can easily filter by dates to find specific entries, and use the action menu to export your history or import new records.',
     TOUR_HEATING_INPUT_TITLE: 'Smart Input Form',
     TOUR_HEATING_INPUT_DESC:
       'Enter readings for all your rooms in one go. If you add or remove rooms in settings, this form will automatically update to match your household layout.',
@@ -157,7 +157,7 @@ export const common = {
       'Compare your electricity usage against typical benchmarks for homes of your size. This helps you identify if your electronics or habits are using more power than expected.',
     TOUR_ELECTRICITY_RECORDS_TITLE: 'Raw Electricity Log',
     TOUR_ELECTRICITY_RECORDS_DESC:
-      'A chronological list of every meter reading. The "Usage" column automatically calculates the difference between dates, showing your exact power consumption between readings.',
+      'A chronological list of every meter reading. You can easily filter by dates to find specific entries, and use the action menu to export your history or import new records.',
     TOUR_ELECTRICITY_INPUT_TITLE: 'Smart Meter Features',
     TOUR_ELECTRICITY_INPUT_DESC:
       'Enter your current meter reading here. If your meter was recently replaced or reset, the app will intelligently detect the lower value and ask you to confirm the change.',
@@ -165,7 +165,7 @@ export const common = {
     // Settings wizard steps (non-demo mode)
     SETTINGS_STEP_1_TITLE: 'Address Setup',
     SETTINGS_STEP_1_DESC:
-      'Set your household address to enable country-specific consumption comparisons and localized averages on all tracker pages.',
+      'Set a household address to enable consumption comparisons against national averages on all tracker pages.',
     SETTINGS_STEP_2_TITLE: 'Family Members',
     SETTINGS_STEP_2_DESC:
       'Add your household members. This enables per-person consumption calculations on the charts.',
@@ -174,14 +174,14 @@ export const common = {
       'Enable Excel import and export to work with your consumption data in spreadsheets. Configure column mappings for your format.',
     SETTINGS_STEP_4_TITLE: 'Data Storage',
     SETTINGS_STEP_4_DESC:
-      'Your data is stored locally by default. Sign in with Google to sync across devices, or export a backup at any time.',
+      'Everything is stored on your device by default. Use "Export" to save a backup file, or "Sign in with Google" to securely sync your data across all your devices.',
     // Settings tour steps (in demo mode)
     TOUR_SETTINGS_STORAGE_TITLE: 'Your Data & Privacy',
     TOUR_SETTINGS_STORAGE_DESC:
-      'Everything is stored on your device by default. Use "Export" to save a backup file, or "Sign in with Google" to securely sync your data across all your phones and computers.',
+      'Everything is stored on your device by default. Use "Export" to save a backup file, or "Sign in with Google" to securely sync your data across all your devices.',
     TOUR_SETTINGS_ADDRESS_TITLE: 'Location & Context',
     TOUR_SETTINGS_ADDRESS_DESC:
-      'Setting your address allows the app to fetch the latest national average consumption data for your country, making your comparison charts much more accurate.',
+      'Providing an address enables consumption comparisons against national averages, ensuring more accurate charts and insights.',
     TOUR_SETTINGS_FAMILY_TITLE: 'Household Members',
     TOUR_SETTINGS_FAMILY_DESC:
       'Add everyone who lives with you. This enables the "Per Person" view on charts, allowing you to fairly compare usage even if your family grows or moves.',

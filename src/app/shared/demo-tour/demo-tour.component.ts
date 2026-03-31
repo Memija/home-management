@@ -155,33 +155,29 @@ export class DemoTourComponent implements OnDestroy {
 
   private transitionToStep(index: number): void {
     this.isTransitioning.set(true);
+    const direction = index > this.currentStep() ? 1 : -1;
 
     // Fade tooltip out, then move spotlight
     setTimeout(() => {
       this.currentStep.set(index);
-      this.gotoStep(index);
+      this.gotoStep(index, direction);
     }, 200);
   }
 
-  private gotoStep(index: number): void {
+  private gotoStep(index: number, direction: 1 | -1 = 1): void {
     const stepsArr = this.steps();
-    if (index < 0 || index >= stepsArr.length) return;
+    if (index < 0 || index >= stepsArr.length) {
+      this.onClose();
+      return;
+    }
 
     const step = stepsArr[index];
     const el = document.querySelector(step.selector);
 
     if (!el) {
-      // Skip missing elements - try next
-      if (index < stepsArr.length - 1) {
-        this.currentStep.set(index + 1);
-        this.gotoStep(index + 1);
-      } else if (index > 0) {
-        // Or try previous
-        this.currentStep.set(index - 1);
-        this.gotoStep(index - 1);
-      } else {
-        this.onClose();
-      }
+      // Skip missing elements in the current direction
+      this.currentStep.set(index + direction);
+      this.gotoStep(index + direction, direction);
       return;
     }
 
@@ -215,22 +211,32 @@ export class DemoTourComponent implements OnDestroy {
 
     // Determine tooltip position (above or below)
     const spaceBelow = viewportH - (rect.bottom + padding);
-    const tooltipEstimatedH = 190;
-    const position: 'top' | 'bottom' = spaceBelow > tooltipEstimatedH + 16 ? 'bottom' : 'top';
+    // Be more realistic with height on mobile where text might wrap more
+    const tooltipEstimatedH = viewportW < 480 ? 240 : 190;
+    const position: 'top' | 'bottom' =
+      spaceBelow > tooltipEstimatedH + 20 ? 'bottom' : 'top';
     this.tipPosition.set(position);
 
     // Tooltip horizontal centering
     const tooltipW = Math.min(360, viewportW - 24);
     const centerX = rect.left + rect.width / 2;
     let left = centerX - tooltipW / 2;
+
+    // Keep in view horizontally with buffer
     left = Math.max(12, Math.min(left, viewportW - tooltipW - 12));
     this.tipLeft.set(left);
 
-    // Tooltip vertical
+    // Tooltip vertical - keep in view
+    let top = 0;
     if (position === 'bottom') {
-      this.tipTop.set(rect.bottom + padding + 14);
+      top = rect.bottom + padding + 14;
     } else {
-      this.tipTop.set(rect.top - padding - tooltipEstimatedH - 14);
+      top = rect.top - padding - tooltipEstimatedH - 14;
     }
+
+    // Vertical safety buffer to prevent cutting off on mobile
+    // Ensure it doesn't go above top (12px) or below bottom (viewportH - height - 12px)
+    top = Math.max(12, Math.min(top, viewportH - tooltipEstimatedH - 12));
+    this.tipTop.set(top);
   }
 }

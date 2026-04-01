@@ -1,0 +1,150 @@
+// Main heating country facts index - merges all regional fact files
+import { europeHeatingFacts } from './europe';
+import { americasHeatingFacts } from './americas';
+import { asiaPacificHeatingFacts } from './asia-pacific';
+import { middleEastHeatingFacts } from './middle-east';
+import { africaHeatingFacts } from './africa';
+
+// Default/historical facts about heating evolution
+const defaultHeatingFacts = {
+  DEFAULT: [
+    'Na globalnom nivou, grijanje i hlađenje objekata zauzimaju gotovo 40% sveukupne potrošnje energije.',
+    'Poboljšanje kućne izolacije vrlo često je najisplativija metoda smanjenja visokih računa za grijanje.',
+    'Najugodnija i zdravstveno idealna sobna temperatura uglavnom se kreće oko vrijednosti između 18 i 21°C.',
+    'Ukoliko umanjite vaš termostat za ravno 1°C, potencijalno smanjujete račun od grijanja i do ušteđenih 10%.',
+    'Novi obnovljivi sistemi toplotnih tehnologija i pumpi rastu širom svijeta tempom od preko 10% svake godine.',
+    'Ove toplotne pumpe prenose impresivna izuzetna učešća donoseći 3 do 4 puta više toplote po konzumiranoj mjeri.',
+    'Regionalno stacionarni razvod grijanja (tzv. daljinsko grijanje) služi preko divovskih 50 miliona rezidencija za Evropu.',
+    'Napredna deblja ugradnja kućne i podne izolacije može nevjerovatno umanjiti toplotni gubitak i obavezu čak 80%.',
+    'Moderni i digitalno automatizovani termostati i mjerači znaju znatno umanjiti račune grijanja za 10 do 15%.',
+    'Kamen, ćumur i naravno preteča od drveta preuzimali su apsolutno vodstvo ogrevnog lica planete dobrih 400.000 godina.',
+    'Najstariji otkriveni primjeri naprednog daljinskog odnosno prvog kućnog parnog grijanja pojavljuju se rano po ruševinama Rima.',
+    'Geotermalno centralno grijanje u svijetu zapanjujuće uspješno koristi dubinske visoko temperaturne pojaseve unutar same unutrašnjosti kugle planete.',
+  ],
+  WORLD: [
+    'Rimljani su osmislili famozno "hipokaust" antičko grijanje čak 2.000 godina ranije uz kanale po podovima razvedenog i vlažnog dima i vrućeg zraka.',
+    'Stari dobri rani i po dizajnu moderan sobni metalni radijator bio je originalno zamišljen i zaštićen kroz patent u godini 1855. po pronalasku od San Galija na ruskim stepama.',
+    'Prilično udoban razveden kućni stacionarni ili dvodomni radijatorski sistem stana počeo je tek prodirati u primjenu poslije drugog ratnog previranja u vijeku.',
+    'Gotovo kompletan posjed domova, tačnije o oko 90% širom države Island crpi svoju tešku svotu prelijepog geotermalnog obuhvatanog toplog navoda.',
+    'Veliki javni distributivni pojas obuhvatno izgrađenog sistema gradskog okružnog grijanja pokrenut je po mjerici i gradnji u Lockport gradu unutra države New York o davnoj sezoni 1877.',
+    'Puno godina prije pronalaska radijatorskog razvoda, moćnije bogatije buržoazne vile imale su isključivo unajmljenu posadu posluge zaduženu sa zadaćom čuvanja naloženih plamenova tokom zime.',
+    'Pametna domišljata naprava originalnog prvog po redu sobnog termostata otkrivenog zbog vizionara Warrena u periodu iz godine 1883 donosi automatzaciju osjećaja ugode temperature.',
+    'Divni i domišljati domorodački "ondol" antički princip prenošenog ugrijanog poda iz Koreje star je više od 5.000 godina.',
+    'Najmodernije toplotne pumpe pružaju 3-4 puta veću moć grijanja s obzirom na početni energetski ulog.',
+    'Veliki londonski požar usmjerio je britanske zakone ka strožijem poštivanju odžaka, zidova i mjera sigurnosti vatre.',
+    'Prirodni plin postaje apsolutno globalno vodeća struktura primarnog goriva za zapadne kulture krajem prošlog vijeka.'
+  ]
+};
+
+// Merge all regional facts
+export const heatingCountryFacts: Record<string, string[]> = {
+  ...europeHeatingFacts,
+  ...americasHeatingFacts,
+  ...asiaPacificHeatingFacts,
+  ...middleEastHeatingFacts,
+  ...africaHeatingFacts,
+  ...defaultHeatingFacts,
+};
+
+// List of available countries with translation keys
+export const availableHeatingCountries = [
+  // Europe
+  { code: 'DE', nameKey: 'COUNTRIES.GERMANY' },
+  { code: 'AT', nameKey: 'COUNTRIES.AUSTRIA' },
+  { code: 'CH', nameKey: 'COUNTRIES.SWITZERLAND' },
+  { code: 'NL', nameKey: 'COUNTRIES.NETHERLANDS' },
+  { code: 'FR', nameKey: 'COUNTRIES.FRANCE' },
+  { code: 'GB', nameKey: 'COUNTRIES.UNITED_KINGDOM' },
+  { code: 'IT', nameKey: 'COUNTRIES.ITALY' },
+  { code: 'ES', nameKey: 'COUNTRIES.SPAIN' },
+  { code: 'BE', nameKey: 'COUNTRIES.BELGIUM' },
+  { code: 'IE', nameKey: 'COUNTRIES.IRELAND' },
+  { code: 'NO', nameKey: 'COUNTRIES.NORWAY' },
+  { code: 'DK', nameKey: 'COUNTRIES.DENMARK' },
+  { code: 'FI', nameKey: 'COUNTRIES.FINLAND' },
+  { code: 'SE', nameKey: 'COUNTRIES.SWEDEN' },
+  { code: 'PL', nameKey: 'COUNTRIES.POLAND' },
+  { code: 'PT', nameKey: 'COUNTRIES.PORTUGAL' },
+  { code: 'GR', nameKey: 'COUNTRIES.GREECE' },
+  { code: 'HR', nameKey: 'COUNTRIES.CROATIA' },
+  { code: 'CZ', nameKey: 'COUNTRIES.CZECH_REPUBLIC' },
+  { code: 'HU', nameKey: 'COUNTRIES.HUNGARY' },
+  { code: 'RO', nameKey: 'COUNTRIES.ROMANIA' },
+  { code: 'SK', nameKey: 'COUNTRIES.SLOVAKIA' },
+  { code: 'SI', nameKey: 'COUNTRIES.SLOVENIA' },
+  { code: 'BG', nameKey: 'COUNTRIES.BULGARIA' },
+  { code: 'RS', nameKey: 'COUNTRIES.SERBIA' },
+  { code: 'BA', nameKey: 'COUNTRIES.BOSNIA_AND_HERZEGOVINA' },
+  { code: 'AL', nameKey: 'COUNTRIES.ALBANIA' },
+  { code: 'ME', nameKey: 'COUNTRIES.MONTENEGRO' },
+  { code: 'MK', nameKey: 'COUNTRIES.NORTH_MACEDONIA' },
+  { code: 'XK', nameKey: 'COUNTRIES.KOSOVO' },
+  { code: 'IS', nameKey: 'COUNTRIES.ICELAND' },
+  { code: 'LU', nameKey: 'COUNTRIES.LUXEMBOURG' },
+  { code: 'MT', nameKey: 'COUNTRIES.MALTA' },
+  { code: 'CY', nameKey: 'COUNTRIES.CYPRUS' },
+  { code: 'EE', nameKey: 'COUNTRIES.ESTONIA' },
+  { code: 'LV', nameKey: 'COUNTRIES.LATVIA' },
+  { code: 'LT', nameKey: 'COUNTRIES.LITHUANIA' },
+  // Americas
+  { code: 'US', nameKey: 'COUNTRIES.USA' },
+  { code: 'CA', nameKey: 'COUNTRIES.CANADA' },
+  { code: 'MX', nameKey: 'COUNTRIES.MEXICO' },
+  { code: 'BR', nameKey: 'COUNTRIES.BRAZIL' },
+  { code: 'AR', nameKey: 'COUNTRIES.ARGENTINA' },
+  { code: 'CL', nameKey: 'COUNTRIES.CHILE' },
+  { code: 'CO', nameKey: 'COUNTRIES.COLOMBIA' },
+  { code: 'PE', nameKey: 'COUNTRIES.PERU' },
+  { code: 'VE', nameKey: 'COUNTRIES.VENEZUELA' },
+  { code: 'EC', nameKey: 'COUNTRIES.ECUADOR' },
+  { code: 'UY', nameKey: 'COUNTRIES.URUGUAY' },
+  { code: 'PY', nameKey: 'COUNTRIES.PARAGUAY' },
+  { code: 'BO', nameKey: 'COUNTRIES.BOLIVIA' },
+  // Asia-Pacific
+  { code: 'JP', nameKey: 'COUNTRIES.JAPAN' },
+  { code: 'CN', nameKey: 'COUNTRIES.CHINA' },
+  { code: 'KR', nameKey: 'COUNTRIES.SOUTH_KOREA' },
+  { code: 'IN', nameKey: 'COUNTRIES.INDIA' },
+  { code: 'AU', nameKey: 'COUNTRIES.AUSTRALIA' },
+  { code: 'NZ', nameKey: 'COUNTRIES.NEW_ZEALAND' },
+  { code: 'ID', nameKey: 'COUNTRIES.INDONESIA' },
+  { code: 'TH', nameKey: 'COUNTRIES.THAILAND' },
+  { code: 'VN', nameKey: 'COUNTRIES.VIETNAM' },
+  { code: 'PH', nameKey: 'COUNTRIES.PHILIPPINES' },
+  { code: 'MY', nameKey: 'COUNTRIES.MALAYSIA' },
+  { code: 'SG', nameKey: 'COUNTRIES.SINGAPORE' },
+  { code: 'TW', nameKey: 'COUNTRIES.TAIWAN' },
+  { code: 'HK', nameKey: 'COUNTRIES.HONG_KONG' },
+  { code: 'BD', nameKey: 'COUNTRIES.BANGLADESH' },
+  { code: 'PK', nameKey: 'COUNTRIES.PAKISTAN' },
+  { code: 'LK', nameKey: 'COUNTRIES.SRI_LANKA' },
+  { code: 'NP', nameKey: 'COUNTRIES.NEPAL' },
+  { code: 'MN', nameKey: 'COUNTRIES.MONGOLIA' },
+  { code: 'KZ', nameKey: 'COUNTRIES.KAZAKHSTAN' },
+  // Middle East
+  { code: 'SA', nameKey: 'COUNTRIES.SAUDI_ARABIA' },
+  { code: 'AE', nameKey: 'COUNTRIES.UAE' },
+  { code: 'QA', nameKey: 'COUNTRIES.QATAR' },
+  { code: 'KW', nameKey: 'COUNTRIES.KUWAIT' },
+  { code: 'BH', nameKey: 'COUNTRIES.BAHRAIN' },
+  { code: 'OM', nameKey: 'COUNTRIES.OMAN' },
+  { code: 'IL', nameKey: 'COUNTRIES.ISRAEL' },
+  { code: 'JO', nameKey: 'COUNTRIES.JORDAN' },
+  { code: 'LB', nameKey: 'COUNTRIES.LEBANON' },
+  { code: 'TR', nameKey: 'COUNTRIES.TURKEY' },
+  { code: 'IR', nameKey: 'COUNTRIES.IRAN' },
+  // Africa
+  { code: 'ZA', nameKey: 'COUNTRIES.SOUTH_AFRICA' },
+  { code: 'MA', nameKey: 'COUNTRIES.MOROCCO' },
+  { code: 'DZ', nameKey: 'COUNTRIES.ALGERIA' },
+  { code: 'TN', nameKey: 'COUNTRIES.TUNISIA' },
+  { code: 'EG', nameKey: 'COUNTRIES.EGYPT' },
+  { code: 'NG', nameKey: 'COUNTRIES.NIGERIA' },
+  { code: 'KE', nameKey: 'COUNTRIES.KENYA' },
+  { code: 'ET', nameKey: 'COUNTRIES.ETHIOPIA' },
+  { code: 'GH', nameKey: 'COUNTRIES.GHANA' },
+  { code: 'TZ', nameKey: 'COUNTRIES.TANZANIA' },
+
+  // World (average)
+  { code: 'WORLD', nameKey: 'COUNTRIES.WORLD' },
+];

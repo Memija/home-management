@@ -2,6 +2,7 @@ import { Injectable, inject } from '@angular/core';
 import { LanguageService, Language } from './language.service';
 import { en } from '../i18n/en';
 import { de } from '../i18n/de';
+import { bs } from '../i18n/bs';
 
 type CountryFactsMap = Record<string, string[]>;
 
@@ -53,7 +54,7 @@ export class CountryFactsService {
    * @returns Array of facts for the country
    */
   private getFactsForCountry(countryCode: string, lang: Language): string[] {
-    const translations = lang === 'de' ? de : en;
+    const translations = lang === 'de' ? de : lang === 'bs' ? bs : en;
     const countryFacts = translations.COUNTRY_FACTS as CountryFactsMap;
 
     // Try to get country-specific facts, fall back to DEFAULT

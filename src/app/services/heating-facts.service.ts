@@ -5,8 +5,10 @@ import {
   availableHeatingCountries,
 } from '../i18n/modules/en/heating-country-facts';
 import { heatingCountryFacts as deHeatingFacts } from '../i18n/modules/de/heating-country-facts';
+import { heatingCountryFacts as bsHeatingFacts } from '../i18n/modules/bs/heating-country-facts';
 import { en } from '../i18n/en';
 import { de } from '../i18n/de';
+import { bs } from '../i18n/bs';
 
 export interface HeatingFact {
   title: string;
@@ -47,9 +49,9 @@ export class HeatingFactsService {
     countryCode?: string,
   ): HeatingFact | null {
     const lang = this.languageService.currentLang();
-    const translations = lang === 'de' ? de : en;
-    const countryFacts = lang === 'de' ? deHeatingFacts : enHeatingFacts;
-    const didYouKnow = translations.FACTS?.DID_YOU_KNOW || 'Did you know?';
+    const translations = lang === 'de' ? de : lang === 'bs' ? bs : en;
+    const countryFacts = lang === 'de' ? deHeatingFacts : lang === 'bs' ? bsHeatingFacts : enHeatingFacts;
+    const didYouKnow = (translations.FACTS as any)?.DID_YOU_KNOW || 'Did you know?';
 
     if (mode === 'historical') {
       return this.getHistoricalFact(didYouKnow, index, countryFacts);

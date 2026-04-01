@@ -2,6 +2,7 @@ import { Injectable, inject } from '@angular/core';
 import { LanguageService, Language } from './language.service';
 import { en } from '../i18n/en';
 import { de } from '../i18n/de';
+import { bs } from '../i18n/bs';
 
 export interface WaterFact {
   title: string;
@@ -73,7 +74,7 @@ export class WaterFactsService {
     }
 
     const lang = this.languageService.currentLang();
-    const translations = lang === 'de' ? de : en;
+    const translations = lang === 'de' ? de : lang === 'bs' ? bs : en;
 
     // Get the appropriate facts array based on context
     const facts = this.getFactsForContext(translations, context);
@@ -86,8 +87,8 @@ export class WaterFactsService {
     const value = this.calculateValueForContext(liters, safeIndex, context);
 
     // Detect time-based facts that need conversion
-    const isDaysFact = /\{value\}\s*(days?|Tage?)/i.test(factTemplate);
-    const isMinutesFact = /\{value\}\s*(minutes?|Minuten?)/i.test(factTemplate);
+    const isDaysFact = /\{value\}\s*(days?|Tage?|dana|dan)/i.test(factTemplate);
+    const isMinutesFact = /\{value\}\s*(minutes?|Minuten?|minuta|minutu)/i.test(factTemplate);
 
     let message: string;
 
@@ -95,30 +96,74 @@ export class WaterFactsService {
       // Convert days to years
       const years = Math.floor(value / 365);
       const yearWord =
-        lang === 'de' ? (years === 1 ? 'Jahr' : 'Jahre') : years === 1 ? 'year' : 'years';
-      const yearsFormatted = `${years.toLocaleString(lang === 'de' ? 'de-DE' : 'en-US')} ${yearWord}`;
-      message = factTemplate.replace(/\{value\}\s*(days?|Tage?)/i, yearsFormatted);
+        lang === 'de'
+          ? years === 1
+            ? 'Jahr'
+            : 'Jahre'
+          : lang === 'bs'
+            ? years === 1
+              ? 'godinu'
+              : 'godina'
+            : years === 1
+              ? 'year'
+              : 'years';
+      const locale = lang === 'de' ? 'de-DE' : lang === 'bs' ? 'bs-BA' : 'en-US';
+      const yearsFormatted = `${years.toLocaleString(locale)} ${yearWord}`;
+      message = factTemplate.replace(/\{value\}\s*(days?|Tage?|dana|dan)/i, yearsFormatted);
     } else if (isMinutesFact && value > 1440) {
       // Convert minutes to days (1440 minutes = 1 day)
       const days = Math.floor(value / 1440);
       let timeFormatted: string;
+      const locale = lang === 'de' ? 'de-DE' : lang === 'bs' ? 'bs-BA' : 'en-US';
       if (days > 30) {
         const months = Math.floor(days / 30);
         const monthWord =
-          lang === 'de' ? (months === 1 ? 'Monat' : 'Monate') : months === 1 ? 'month' : 'months';
-        timeFormatted = `${months.toLocaleString(lang === 'de' ? 'de-DE' : 'en-US')} ${monthWord}`;
+          lang === 'de'
+            ? months === 1
+              ? 'Monat'
+              : 'Monate'
+            : lang === 'bs'
+              ? months === 1
+                ? 'mjesec'
+                : 'mjeseci'
+              : months === 1
+                ? 'month'
+                : 'months';
+        timeFormatted = `${months.toLocaleString(locale)} ${monthWord}`;
       } else {
-        const dayWord = lang === 'de' ? (days === 1 ? 'Tag' : 'Tage') : days === 1 ? 'day' : 'days';
-        timeFormatted = `${days.toLocaleString(lang === 'de' ? 'de-DE' : 'en-US')} ${dayWord}`;
+        const dayWord =
+          lang === 'de'
+            ? days === 1
+              ? 'Tag'
+              : 'Tage'
+            : lang === 'bs'
+              ? days === 1
+                ? 'dan'
+                : 'dana'
+              : days === 1
+                ? 'day'
+                : 'days';
+        timeFormatted = `${days.toLocaleString(locale)} ${dayWord}`;
       }
-      message = factTemplate.replace(/\{value\}\s*(minutes?|Minuten?)/i, timeFormatted);
+      message = factTemplate.replace(/\{value\}\s*(minutes?|Minuten?|minuta|minutu)/i, timeFormatted);
     } else if (isMinutesFact && value > 60) {
       // Convert minutes to hours
       const hours = Math.floor(value / 60);
       const hourWord =
-        lang === 'de' ? (hours === 1 ? 'Stunde' : 'Stunden') : hours === 1 ? 'hour' : 'hours';
-      const hoursFormatted = `${hours.toLocaleString(lang === 'de' ? 'de-DE' : 'en-US')} ${hourWord}`;
-      message = factTemplate.replace(/\{value\}\s*(minutes?|Minuten?)/i, hoursFormatted);
+        lang === 'de'
+          ? hours === 1
+            ? 'Stunde'
+            : 'Stunden'
+          : lang === 'bs'
+            ? hours === 1
+              ? 'sat'
+              : 'sati'
+            : hours === 1
+              ? 'hour'
+              : 'hours';
+      const locale = lang === 'de' ? 'de-DE' : lang === 'bs' ? 'bs-BA' : 'en-US';
+      const hoursFormatted = `${hours.toLocaleString(locale)} ${hourWord}`;
+      message = factTemplate.replace(/\{value\}\s*(minutes?|Minuten?|minuta|minutu)/i, hoursFormatted);
     } else {
       // Replace placeholder with formatted value
       message = factTemplate.replace('{value}', this.formatNumber(value, lang));
@@ -131,7 +176,7 @@ export class WaterFactsService {
   }
 
   private getFactsForContext(
-    translations: typeof en | typeof de,
+    translations: typeof en | typeof de | typeof bs,
     context: WaterFactContext,
   ): string[] {
     switch (context) {
@@ -284,20 +329,34 @@ export class WaterFactsService {
    * - Large numbers (100k+) become "over X thousand" or "over X million"
    */
   private formatNumber(value: number, lang: Language): string {
-    const locale = lang === 'de' ? 'de-DE' : 'en-US';
+    const locale = lang === 'de' ? 'de-DE' : lang === 'bs' ? 'bs-BA' : 'en-US';
 
     // Abbreviate large numbers with full words
     if (value >= 1000000) {
       const millions = Math.floor(value / 100000) / 10; // Round to 1 decimal
-      const prefix = lang === 'de' ? 'über' : 'over';
-      const suffix = lang === 'de' ? 'Millionen' : 'million';
+      const prefix = lang === 'de' ? 'über' : lang === 'bs' ? 'preko' : 'over';
+      const suffix =
+        lang === 'de'
+          ? 'Millionen'
+          : lang === 'bs'
+            ? millions === 1
+              ? 'milion'
+              : 'miliona'
+            : 'million';
       return `${prefix} ${millions.toLocaleString(locale)} ${suffix}`;
     }
 
     if (value >= 100000) {
       const thousands = Math.floor(value / 1000);
-      const prefix = lang === 'de' ? 'über' : 'over';
-      const suffix = lang === 'de' ? 'Tausend' : 'thousand';
+      const prefix = lang === 'de' ? 'über' : lang === 'bs' ? 'preko' : 'over';
+      const suffix =
+        lang === 'de'
+          ? 'Tausend'
+          : lang === 'bs'
+            ? thousands === 1
+              ? 'hiljadu'
+              : 'hiljada'
+            : 'thousand';
       return `${prefix} ${thousands.toLocaleString(locale)} ${suffix}`;
     }
 

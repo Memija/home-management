@@ -1,0 +1,226 @@
+// Asia-Pacific countries water facts - Bosnian
+export const asiaPacificFacts = {
+  // China
+  CN: [
+    'Kina se nalazi na prvom mjestu po broju brana, posjedujući gotovo više od čitavog ostatka planete.',
+    'Rijeka Jangce je daleko najduža rijeka čitavog azijskog kontinenta sa svojih 6.300 km dužine.',
+    'Impozantna Brana tri klanca proizvodi ogromnu količinu električne energije isključivo snagom vode.',
+    'Kina planira preusmjeriti 44,8 milijardi kubnih metara vode sa juga na sjever.',
+    'Peking dobija vodu iz rezervoara udaljenih preko 1.000 km.',
+    'Kineska poljoprivreda troši 60% ukupnih vodenih resursa zemlje.',
+    'Zemlja ima preko 87.000 brana za kontrolu poplava i navodnjavanje.',
+    'Žuta rijeka je kolijevka kineske civilizacije, duga 5.464 km.',
+    'Kina posjeduje 7% svjetskih resursa svježe vode za 18% svjetske populacije.',
+    'Veliki kanal je najduži vještački kanal na svijetu, dug 1.776 km.',
+    'Kina reciklira oko 15% svoje industrijske vode.',
+    'Zemlja se suočava s ozbiljnim zagađenjem podzemnih voda u urbanim područjima.',
+  ],
+
+  // Japan
+  JP: [
+    'Piti vodu iz slavine je potpuno sigurno sa čistoćom iznad prosjeka u Japanu.',
+    'Tradicionalni toaleti u Japanu spajaju umivaonike koji vodu šalju u kotlić radi štede.',
+    'Nevjerovatan tunel G-Cans štiti podzemni Tokio od poplava.',
+    'Japan ima preko 3.000 termalnih izvora (onsen) širom zemlje.',
+    'Japanska domaćinstva troše prosječno 233 litra po osobi dnevno.',
+    'Jezero Biwa je najveće slatkovodno jezero u Japanu.',
+    'Japan reciklira preko 10% svoje vode u industrijske svrhe.',
+    'Tokio koristi napredne sisteme za otkrivanje curenja vode u gradu.',
+    'Planina Fuji je izvor čiste mineralne vode za milione ljudi.',
+    'Japan ima jednu od najrazvijenijih tehnologija desalinacije na svijetu.',
+    'Zemlja troši 60% svoje vode na poljoprivredu, prvenstveno na rižu.',
+    'Japanski zakoni o vodi fokusiraju se na prevenciju poplava i kvalitet.',
+  ],
+
+  // South Korea
+  KR: [
+    'Južna Koreja troši 295 litara vode po osobi dnevno u ovoj zemlji s oskudicom vode.',
+    'Rijeka Han u Seulu snabdijeva vodom 24 miliona ljudi.',
+    'Zemlja reciklira 86% otpadnih voda, što je vodeća stopa u svijetu.',
+    'Južna Koreja je izgradila morski zid Saemangeum, najduži na svijetu.',
+    'Ostrvo Jeju ima jedinstvenu vodu iz vulkanskih akvifera.',
+    'Zemlja je od 2018. godine investirala 18 milijardi dolara u vodnu infrastrukturu.',
+    'Tradicionalne korejske hanok kuće imaju ondol podno grijanje (izvorno s vodom).',
+    'Južna Koreja ima 18.000 km rijeka uprkos svojoj maloj veličini.',
+    'Tampon zona DMZ stvorila je slučajne močvarne rezervate za divlje životinje.',
+    'Korejska javna kupatila (jjimjilbang) troše 500 litara po posjetiocu.',
+    'Zemlja doživljava monsunske kiše koje donose 60% godišnje vode.',
+    'Južna Koreja izvozi naprednu tehnologiju tretmana vode širom svijeta.',
+  ],
+
+  // India
+  IN: [
+    'Ime "Indija" nastalo je iz naziva veličanstvene i duge rijeke Ind.',
+    'Indijci su najveći potrošači podzemnih slatkovodnih izvora u svijetu.',
+    'Ogroman procenat konzumiranja vode u Indiji odlazi na navodnjavanje u poljoprivredi.',
+    'Rijeka Gang se smatra svetom i obezbjeđuje vodu za 400 miliona ljudi.',
+    'Indija ima samo 4% svjetskih vodenih resursa za 18% svjetske populacije.',
+    'Čunovi (stepwells) su drevni indijski sistemi za prikupljanje kišnice.',
+    'Preko 60% indijske poljoprivrede zavisi od podzemnih voda.',
+    'Indija godišnje prečisti samo oko 30% svojih otpadnih voda.',
+    'Novi Delhi se suočava s ekstremnom oskudicom vode svakog ljeta.',
+    'Rijeka Brahmaputra je deveta najveća rijeka u svijetu po protoku.',
+    'Indija ima najveću površinu pod navodnjavanjem na planeti.',
+    'Prikupljanje kišnice je zakonski obavezno u mnogim indijskim gradovima.',
+  ],
+
+  // Australia
+  AU: [
+    'Australija se ubraja u najsušnija ljudska staništa na ovoj planeti.',
+    'Veliki arteški basen drži moćnu količinu vlage ispod sušne unutrašnjosti.',
+    'Veliki koralni greben je globalno poznato stanište u Tihom okeanu.',
+    'Australijanci troše oko 340 litara vode po osobi dnevno.',
+    'Sistem rijeka Murray-Darling je poljoprivredno srce Australije.',
+    'Australija ima neke od najstarijih i najstabilnijih vodenih sistema na svijetu.',
+    'Grad Adelaide dobija do 90% vode iz rijeke Murray tokom suše.',
+    'Australija je lider u recikliranju vode za poljoprivredu i industriju.',
+    'Zemlja investira milijarde u postrojenja za desalinaciju u velikim gradovima.',
+    'Sidnejska luka je najveća prirodna luka na svijetu.',
+    'Australijske kuće često imaju sisteme za prikupljanje kišnice.',
+    'Nestašice vode su čest problem u većini australijskih država.',
+  ],
+
+  // New Zealand
+  NZ: [
+    'Novi Zeland nudi vrhunski čistu vodu s izrazitim kvalitetom izvora.',
+    'Narod Maori je pravno podario statuse ličnosti nekim rijekama u zemlji.',
+    'Rijeka Whanganui drži pravno prepoznati ugled kao pravni subjekt.',
+    'Novi Zeland proizvodi 80% električne energije iz obnovljivih izvora, uglavnom hidroenergije.',
+    'Zemlja ima preko 3.800 jezera većih od jednog hektara.',
+    'Novozelanđani troše oko 227 litara vode po osobi dnevno.',
+    'Jezero Taupo je najveće jezero u Australaziji po površini.',
+    'Novi Zeland ima neke od najdužih spiljskih sistema s vodom na svijetu.',
+    'Poljoprivreda (posebno mliječna industrija) troši 75% vode u zemlji.',
+    'Glečeri na Južnom ostrvu su ključni rezervoari svježe vode.',
+    'Novi Zeland ima 15.000 km obale bogate morskim životom.',
+    'Kvalitet vode u rijekama je veliki ekološki prioritet na Novom Zelandu.',
+  ],
+
+  // Singapore
+  SG: [
+    'Singapur uvozi 40% svoje vode iz Malezije!',
+    'Nacija troši 141 litar vode po osobi dnevno.',
+    'Singapur ima četiri "nacionalne slavine": uvoznu, desaliniranu, recikliranu i kišnicu.',
+    'Reciklirana voda NEWater ispunjava standarde SZO za pitku vodu.',
+    'Brana Marina Barrage stvara rezervoar svježe vode iz morske vode.',
+    'Singapur teži samostalnosti u snabdijevanju vodom do 2061. godine.',
+    'Zemlja nema prirodnih akvifera niti podzemnih voda.',
+    'Aerodrom Changi posjeduje najveći unutrašnji vodopad na svijetu.',
+    'Cijena vode u Singapuru uključuje taksu za očuvanje vode.',
+    'Zemlja snažno investira u istraživanje i razvoj vodne tehnologije.',
+    'Svaka zgrada mora instalirati armaturu koja štedi vodu.',
+    'Priča o vodi u Singapuru uči se u školama od šeste godine života.',
+  ],
+
+  // Thailand
+  TH: [
+    'Tajland troši oko 197 litara vode po osobi dnevno.',
+    'Rijeka Mekong protiče kroz Tajland u dužini od 1.800 km.',
+    'Bangkok tone 2 cm godišnje zbog crpljenja podzemnih voda.',
+    'Plutajuće pijace Tajlanda prikazuju kulturu zasnovanu na vodi.',
+    'Delta rijeke Chao Phraya podržava tajlandsku poljoprivredu.',
+    'Tajland ima preko 600 vodopada.',
+    'Zemlja doživljava monsune koji donose 90% godišnje kiše.',
+    'Tajlandska polja riže troše 80% vodenih rezervi nacije.',
+    'Phuket zavisi od prikupljanja kišnice i desalinacije.',
+    'Most na rijeci Kwai je historijski vještački prelaz preko vode.',
+    'Tajland prečišćava samo 30% svojih otpadnih voda.',
+    'Kanali (klongi) Bangkoka nekada su služili kao vodeni autoputevi.',
+  ],
+
+  // Vietnam
+  VN: [
+    'Vijetnam troši oko 130 litara vode po osobi dnevno.',
+    'Delta Mekonga obezbjeđuje 50% vijetnamske proizvodnje riže.',
+    'Zaljev Ha Long ima 1.600 ostrva i hridi.',
+    'Vijetnam ima 2.360 rijeka dužih od 10 km.',
+    'Delta Crvene rijeke izdržava 20 miliona ljudi.',
+    'Plutajuće pijace u Vijetnamu u potpunosti zavise od plovnih puteva.',
+    'Zemlja ima 3.260 km obale.',
+    'Vijetnamska proizvodnja riže zahtijeva masovno navodnjavanje.',
+    'Mirisna rijeka (Perfume River) protiče kroz drevni grad Hue.',
+    'Vijetnam gradi velike hidroenergetske brane u visočju.',
+    'Krečnjački krš u zaljevu Halong stvara jedinstvene vodene formacije.',
+    'Rijeka Saigon obezbjeđuje vodu za Ho Chi Minh City.',
+  ],
+
+  // Philippines
+  PH: [
+    'Filipini imaju 7.641 ostrvo okruženo vodom!',
+    'Filipinci troše oko 175 litara vode po osobi dnevno.',
+    'Manila se u velikoj mjeri oslanja na branu Angat za vodu.',
+    'Zemlja ima 421 rijeku i 59 prirodnih jezera.',
+    'Jezero Taal sadrži vulkansko ostrvo sa sopstvenim kraternim jezerom.',
+    'Filipini godišnje prime 2.000–4.000 mm kiše.',
+    'Palawan posjeduje podzemnu rijeku koja je na listi UNESCO-a.',
+    'Zemlja se suočava s čestim tajfunima koji utiču na zalihe vode.',
+    'Manila prečišćava manje od 10% svojih otpadnih voda.',
+    'Filipinske terase riže koriste drevne sisteme navodnjavanja.',
+    'Voda na Boracayu dolazi iz dubokih bunara.',
+    'Rehabilitacija rijeke Pasig ima za cilj čišćenje glavnog vodenog puta Manile.',
+  ],
+
+  // Malaysia
+  MY: [
+    'Malezija troši oko 210 litara vode po osobi dnevno.',
+    'Zemlja godišnje primi 2.500–3.000 mm kiše.',
+    'Malezija ima 189 riječnih slivova.',
+    'Kuala Lumpur dobija vodu iz sliva doline Klang.',
+    'Netaknuta voda Cameron Highlandsa snabdijeva obližnje regije.',
+    'Malezija posjeduje 65.877 kvadratnih kilometara močvara.',
+    'Rijeka Kinabatangan na Borneu podržava jedinstven životinjski svijet.',
+    'Malezija prečišćava 85% svojih vodenih zaliha.',
+    'Penang se 1998. suočio s vodenom krizom i izgradio novu infrastrukturu.',
+    'Zemlja ima preko 90 javnih postrojenja za tretman vode.',
+    'Malezijske prašume prirodno filtriraju i skladište vodu.',
+    'Langkawi promoviše prikupljanje kišnice u hotelima.',
+  ],
+
+  // Indonesia
+  ID: [
+    'Indonezija ima preko 17.000 ostrva!',
+    'Indonežani troše oko 144 litra vode po osobi dnevno.',
+    'Jezero Toba je najveće vulkansko jezero na svijetu.',
+    'Indonezija ima 5.590 km rijeka.',
+    'Jakarta tone do 25 cm godišnje zbog crpljenja podzemnih voda.',
+    'Sistem navodnjavanja subak na Baliju je na listi UNESCO-a.',
+    'Zemlja godišnje primi 1.750–3.000 mm kiše.',
+    'Indonezija ima 521 rijeku i raznolike slivove.',
+    'Prašume u Kalimantan i Sumatri čuvaju masivne količine vode.',
+    'Tradicionalni indonezijski hramovi vode upravljaju navodnjavanjem.',
+    'Indonezija prečišćava samo 4% svojih kanalizacionih voda.',
+    'Zemlja gradi 65 novih brana za sigurnost snabdijevanja vodom.',
+  ],
+
+  // Pakistan
+  PK: [
+    'Pakistan troši oko 95 litara vode po osobi dnevno.',
+    'Rijeka Ind obezbjeđuje 90% vode u Pakistanu.',
+    'Pakistan ima najveći neprekidni sistem navodnjavanja na svijetu.',
+    'Brana Tarbela je jedna od najvećih zemljanih brana na svijetu.',
+    'Glečeri sa K2 napajaju sjeverne rijeke Pakistana.',
+    'Zemlja se suočava s ozbiljnom oskudicom vode, rangirana je na 3. mjesto u svijetu.',
+    'Voda u Lahoreu dolazi iz podzemnih voda i rijeke Ravi.',
+    'Pakistan ima 150 velikih brana.',
+    'Delta Inda nekada je pokrivala 16.000 kvadratnih km, a sada se smanjuje.',
+    'Karachi se suočava s hroničnom nestašicom vode uprkos obalnoj lokaciji.',
+    'Dostupnost vode po glavi stanovnika opala je za 75% od 1950. godine.',
+    'Zemlja gradi brane kako bi skladištila monsunske kiše.',
+  ],
+
+  // Bangladesh
+  BD: [
+    'Bangladeš je zemlja rijeka s preko 700 tokovnih grana!',
+    'Bangladešani troše oko 95 litara vode po osobi dnevno.',
+    'Gang, Brahmaputra i Meghna se spajaju u Bangladešu.',
+    'Zemlja ima najveću deltu na svijetu.',
+    'Bangladeš se suočava sa zagađenjem arsenom u 35 miliona bunara.',
+    'Monsunske poplave godišnje pokriju do 70% zemlje.',
+    'Mangrovska šuma Sundarbans filtrira priobalnu vodu.',
+    'Dhaka se u 87% svojih zaliha oslanja na podzemne vode.',
+    'Bangladeš je izuzetno ranjiv na vodne uticaje klimatskih promjena.',
+    'Kroz zemlju protiče 260 rijeka.',
+    'Vodeni zumbul blokira plovne puteve, utičući na transport.',
+    'Bangladeš gradi plutajuće vrtove na vodi za poljoprivredu.',
+  ],
+};

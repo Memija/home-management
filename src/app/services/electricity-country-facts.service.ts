@@ -5,9 +5,11 @@ import {
   availableElectricityCountries,
 } from '../i18n/modules/en/electricity-country-facts';
 import { electricityCountryFacts as deElectricityFacts } from '../i18n/modules/de/electricity-country-facts';
+import { electricityCountryFacts as bsElectricityFacts } from '../i18n/modules/bs/electricity-country-facts';
 
 import { en } from '../i18n/en';
 import { de } from '../i18n/de';
+import { bs } from '../i18n/bs';
 
 export interface ElectricityFact {
   title: string;
@@ -48,8 +50,8 @@ export class ElectricityCountryFactsService {
     countryCode?: string,
   ): ElectricityFact | null {
     const lang = this.languageService.currentLang();
-    const translations = lang === 'de' ? de : en;
-    const countryFacts = lang === 'de' ? deElectricityFacts : enElectricityFacts;
+    const translations = lang === 'de' ? de : lang === 'bs' ? bs : en;
+    const countryFacts = lang === 'de' ? deElectricityFacts : lang === 'bs' ? bsElectricityFacts : enElectricityFacts;
     // Fallback title if translation missing
     const didYouKnow = (translations.FACTS as any)?.DID_YOU_KNOW || 'Did you know?';
 

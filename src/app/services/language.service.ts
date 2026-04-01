@@ -1,9 +1,9 @@
 import { Injectable, signal, inject, ApplicationRef } from '@angular/core';
 
-export type Language = 'en' | 'de';
+export type Language = 'en' | 'de' | 'bs';
 
 /** All supported languages - update this when adding a new language */
-export const SUPPORTED_LANGUAGES: readonly Language[] = ['en', 'de'] as const;
+export const SUPPORTED_LANGUAGES: readonly Language[] = ['en', 'de', 'bs'] as const;
 
 /** Storage key for user's preferred language (hm = homemanagement) */
 const LANGUAGE_STORAGE_KEY = 'hm_preferred_language';
@@ -20,6 +20,7 @@ export class LanguageService {
   private translations: Record<string, Record<string, unknown>> = {
     en: {},
     de: {},
+    bs: {},
   };
 
   // Signal to notify when translations are loaded/updated
@@ -34,7 +35,7 @@ export class LanguageService {
     if (typeof window !== 'undefined' && typeof localStorage !== 'undefined') {
       // 1. Check local storage (explicit user preference)
       const stored = localStorage.getItem(LANGUAGE_STORAGE_KEY);
-      if (stored === 'en' || stored === 'de') {
+      if (stored === 'en' || stored === 'de' || stored === 'bs') {
         return stored;
       }
 
@@ -57,7 +58,9 @@ export class LanguageService {
     if (typeof window !== 'undefined' && typeof localStorage !== 'undefined') {
       localStorage.setItem(LANGUAGE_STORAGE_KEY, lang);
     }
-    const locale = lang === 'de' ? 'de-DE' : 'en-US';
+    let locale = 'en-US';
+    if (lang === 'de') locale = 'de-DE';
+    else if (lang === 'bs') locale = 'bs-BA';
     document.documentElement.lang = locale;
 
     // Update meta tag for browser localization hints
@@ -82,6 +85,9 @@ export class LanguageService {
       if (lang === 'de') {
         module = await import('../i18n/de');
         this.translations['de'] = module.de as Record<string, unknown>;
+      } else if (lang === 'bs') {
+        module = await import('../i18n/bs');
+        this.translations['bs'] = module.bs as Record<string, unknown>;
       } else {
         module = await import('../i18n/en');
         this.translations['en'] = module.en as Record<string, unknown>;

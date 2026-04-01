@@ -1,0 +1,210 @@
+// Americas heating/energy facts - Bosnian
+export const americasHeatingFacts = {
+  // United States
+  US: [
+    'Prirodni plin grije oko 48% američkih domova, a slijedi ga električna energija sa 37%.',
+    'Sjeveroistočni dio SAD-a ima neke od najvećih troškova grijanja zbog hladnih zima.',
+    'Mnogi stariji američki domovi još uvijek koriste grijanje na lož-ulje, posebno u Novoj Engleskoj.',
+    'Pametni termostati se brzo usvajaju u SAD-u, s preko 40 miliona instaliranih uređaja.',
+    'Američki domovi godišnje troše prosječno 130 kWh/m² za grijanje.',
+    'Prosječno američko domaćinstvo troši 1.800–2.500 $ na grijanje godišnje.',
+    'Toplotne pumpe najbrže rastu u južnim državama.',
+    'Građevinski propisi se značajno razlikuju među američkim državama.',
+    'Grijanje na drva ostaje popularno u ruralnoj Americi.',
+    'SAD ima najveću distributivnu mrežu prirodnog plina na svijetu.',
+    'Klimatizacija često služi i za grijanje u regijama s blagom klimom.',
+    'Savezne porezne olakšice u SAD-u podstiču usvajanje toplotnih pumpi.',
+  ],
+
+  // Canada
+  CA: [
+    'Kanada ima neke od najhladnijih zima koje zahtijevaju intenzivno grijanje.',
+    'Prirodni plin grije 47% kanadskih domova.',
+    'Kanadski domovi troše prosječno 200 kWh/m² za grijanje, što je među najvećim vrijednostima u svijetu.',
+    'Prosječno kanadsko domaćinstvo godišnje troši 2.500–3.500 CAD na grijanje.',
+    'Grijanje na drva i drvene pelete uobičajeno je u ruralnoj Kanadi.',
+    'Britanska Kolumbija ima visoku upotrebu električnog grijanja zahvaljujući hidroenergiji.',
+    'Kanada ima stroge standarde za izolaciju zgrada.',
+    'Toplotne pumpe s izvorom u zemlji efikasne su u kanadskim hladnoćama.',
+    'Quebec koristi gotovo isključivo električno grijanje zbog jeftine hidroenergije.',
+    'Gradnja pasivnih kuća u Kanadi je u porastu.',
+    'Arktičke regije Kanade koriste dizel za grijanje.',
+    'Daljinsko grijanje opslužuje neke kanadske gradove.',
+  ],
+
+  // Mexico
+  MX: [
+    'Meksički domovi uglavnom trebaju minimalno grijanje zbog tople klime.',
+    'Sjeverni Meksiko ima hladne zime koje zahtijevaju grijanje.',
+    'Meksički domovi troše prosječno 20 kWh/m² za grijanje, što je među najnižim vrijednostima.',
+    'Prosječno meksičko domaćinstvo godišnje troši 2.000–5.000 MXN na grijanje.',
+    'LPG je uobičajen za kuhanje i zagrijavanje vode u Meksiku.',
+    'Električne grijalice se koriste tokom kratkih hladnih perioda.',
+    'Klimatizacija omogućava reverzibilno grijanje u sjevernim regijama.',
+    'Izolacija zgrada nije obavezna u većini meksičkih država.',
+    'Meksiko Siti ima blage temperature tokom cijele godine.',
+    'Grijanje na prirodni plin je ograničeno na urbana područja.',
+    'Peći na drva koriste se u ruralnim planinskim područjima.',
+    'Solarno zagrijavanje vode je u porastu u sunčanim regijama.',
+  ],
+
+  // Brazil
+  BR: [
+    'Većini brazilskih domova nije potrebno grijanje, ali je plin za kuhanje (LPG) neophodan za skoro svako domaćinstvo.',
+    'Brazil je jedan od najvećih svjetskih potrošača LPG-a za kuhanje u domaćinstvima.',
+    'Južni Brazil koristi električne grijalice tokom blagih zimskih mjeseci.',
+    'Brazilski domovi u hladnim regijama često koriste peći na drva za dodatno grijanje.',
+    'Brazilski domovi praktično ne troše energiju za grijanje prostora.',
+    'Prosječno brazilsko domaćinstvo godišnje troši 1.500–2.500 R$ na plin za kuhanje.',
+    'Električni tuševi za zagrijavanje vode su jedinstveno popularni u Brazilu.',
+    'São Paulo ima blage zime koje rijetko zahtijevaju grijanje.',
+    'Grijanje na drva je tradicionalno u kulturi gauča na jugu.',
+    'Klimatizacija je u Brazilu češća od grijanja.',
+    'Grijanje na prirodni plin je rijetko izvan industrijskih područja.',
+    'Solarno zagrijavanje vode promoviše se državnim programima.',
+  ],
+
+  // Argentina
+  AR: [
+    'Argentina ekstenzivno koristi prirodni plin za grijanje i kuhanje.',
+    'Patagonija ima značajne potrebe za grijanjem zbog hladne klime.',
+    'Argentinski domovi troše prosječno 80 kWh/m² za grijanje.',
+    'Prosječno argentinsko domaćinstvo godišnje troši 50.000–100.000 ARS na grijanje.',
+    'Buenos Aires ima blage zime koje zahtijevaju minimalno grijanje.',
+    'LPG se koristi tamo gdje plinske mreže ne dosežu.',
+    'Grijanje na drva je tradicionalno u andskim regijama.',
+    'Električno grijanje je skupo zbog troškova električne energije.',
+    'Argentina ima velike rezerve prirodnog plina.',
+    'Standardi izolacije zgrada se poboljšavaju.',
+    'Klimatizacija omogućava grijanje u sjevernoj Argentini.',
+    'Daljinsko grijanje gotovo da i ne postoji.',
+  ],
+
+  // Chile
+  CL: [
+    'Čileansko grijanje drastično varira od pustinjskog sjevera do hladnog juga.',
+    'Ogrjevno drvo je glavni izvor grijanja u južnom Čileu.',
+    'Čileanski domovi troše prosječno 100 kWh/m² za grijanje.',
+    'Prosječno čileansko domaćinstvo godišnje troši 500.000–1.000.000 CLP na grijanje.',
+    'Zagađenje zraka od sagorijevanja drva je ozbiljno u gradovima poput Temuca.',
+    'Grijanje na prirodni plin raste u Santiagu.',
+    'Parafinske grijalice su uobičajene u čileanskim domovima.',
+    'Električno grijanje je skupo u odnosu na primanja.',
+    'Standardi izolacije zgrada se poboljšavaju.',
+    'Sjeverni Čile ima minimalne potrebe za grijanjem.',
+    'Centralni Čile ima mediteransku klimu s blagim zimama.',
+    'Toplotne pumpe su u porastu u domovima srednje klase.',
+  ],
+
+  // Colombia
+  CO: [
+    'Obalna i nizinska područja Kolumbije ne trebaju grijanje.',
+    'Bogotá na 2.640 m nadmorske visine zahtijeva određeno grijanje.',
+    'Kolumbijski domovi troše minimalnu energiju za grijanje.',
+    'Prosječno kolumbijsko domaćinstvo godišnje troši 200.000–400.000 COP na grijanje.',
+    'Električne grijalice se koriste u planinskim gradovima.',
+    'Prirodni plin se koristi prvenstveno za kuhanje i zagrijavanje vode.',
+    'Dizajn zgrada se fokusira na ventilaciju prije nego na izolaciju.',
+    'Planinske regije imaju svježe temperature tokom cijele godine.',
+    'LPG je uobičajen u područjima bez prirodnog plina.',
+    'Solarno zagrijavanje vode je nedovoljno iskorišteno uprkos potencijalu.',
+    'Klimatizacija je za hlađenje, a ne za grijanje.',
+    'Kolumbijska klima eliminiše većinu potreba za grijanjem.',
+  ],
+
+  // Peru
+  PE: [
+    'Peruanska obala ima blagu klimu koja ne zahtijeva grijanje.',
+    'Andske visočije regije imaju hladne noći koje zahtijevaju grijanje.',
+    'Peruanski domovi troše minimalnu energiju za grijanje prostora.',
+    'Prosječno peruansko domaćinstvo godišnje troši 500–1.000 PEN na grijanje.',
+    'Drvo i balega su tradicionalna goriva za grijanje u Andama.',
+    'LPG se koristi za kuhanje i zagrijavanje vode.',
+    'Električne grijalice koristi urbana srednja klasa.',
+    'Izolacija zgrada je rijetka u Peruu.',
+    'Vlažnost u Limi čini da se unutrašnje temperature osjećaju hladnim.',
+    'Amazonske regije trebaju hlađenje prije nego grijanje.',
+    'Prirodni plin iz Camisee se širi u Limi.',
+    'Solarna kuhala se koriste na velikim nadmorskim visinama.',
+  ],
+
+  // Venezuela
+  VE: [
+    'Venecuelanska tropska klima eliminiše potrebu za grijanjem.',
+    'Samo andska visočja povremeno zahtijevaju grijanje.',
+    'Venecuelanski domovi se fokusiraju na ventilaciju i hlađenje.',
+    'Prosječno venecuelansko domaćinstvo praktično ne troši ništa na grijanje.',
+    'Električna energija se snažno subvencionira, ali je nepouzdana.',
+    'LPG se koristi za kuhanje širom zemlje.',
+    'Rezerve prirodnog plina se koriste za izvoz, a ne za domaće grijanje.',
+    'Klimatizacija je neophodna u većini venecuelanskih regija.',
+    'Dizajn zgrada daje prioritet hlađenju.',
+    'Ventilatori, a ne grijalice, su standardni uređaji.',
+    'Visokoplaninska Mérida povremeno koristi električne grijalice.',
+    'Venecuela praktično nema infrastrukturu za grijanje.',
+  ],
+
+  // Ecuador
+  EC: [
+    'Ekvadorska klima varira prema nadmorskoj visini, a ne prema sezoni.',
+    'Quito na 2.850 m ima svježe temperature tokom cijele godine.',
+    'Ekvadorski domovi troše minimalnu energiju za grijanje.',
+    'Prosječno ekvadorsko domaćinstvo godišnje troši oko 100–200 $ na grijanje.',
+    'Električne grijalice se koriste u domovima u visočju.',
+    'Obalni Ekvador treba hlađenje, a ne grijanje.',
+    'LPG se subvencionira i koristi za kuhanje.',
+    'Izolacija zgrada je neuobičajena.',
+    'Solarno zagrijavanje vode je u porastu u sunčanim regijama.',
+    'Vatre na drva pružaju toplinu u ruralnim andskim predjelima.',
+    'Ne postoji infrastruktura daljinskog grijanja.',
+    'Klima čini većinu sistema grijanja nepotrebnim.',
+  ],
+
+  // Uruguay
+  UY: [
+    'Urugvajske zime su blage, ali ipak zahtijevaju određeno grijanje.',
+    'Električna energija je primarni izvor grijanja.',
+    'Urugvajski domovi troše prosječno 50 kWh/m² za grijanje.',
+    'Prosječno urugvajsko domaćinstvo godišnje troši 15.000–25.000 UYU na grijanje.',
+    'Drvo i kerozin se koriste u ruralnim područjima.',
+    'LPG osigurava rezervno grijanje.',
+    'Klima uređaji pružaju reverzibilno grijanje.',
+    'Prirodni plin je ograničen na područje Montevidea.',
+    'Standardi izolacije zgrada se poboljšavaju.',
+    'Toplotne pumpe rastu u urbanim područjima.',
+    'Energija vjetra osigurava čistu električnu energiju za grijanje.',
+    'Blaga klima smanjuje potražnju za grijanjem.',
+  ],
+
+  // Paraguay
+  PY: [
+    'Paragvajske zime su blage s kratkim hladnim periodima.',
+    'Klimatizacija omogućava grijanje po potrebi.',
+    'Paragvajski domovi troše minimalnu energiju za grijanje.',
+    'Prosječno paragvajsko domaćinstvo godišnje troši 500.000–1.000.000 PYG na grijanje.',
+    'LPG je uobičajen za kuhanje i zagrijavanje vode.',
+    'Drvo se koristi u ruralnim područjima.',
+    'Električne grijalice se koriste tokom zahlađenja.',
+    'Hidroenergija osigurava jeftinu električnu energiju.',
+    'Izolacija zgrada je neuobičajena.',
+    'Klima čini ekstenzivno grijanje nepotrebnim.',
+    'Prirodni plin nije dostupan u zemlji.',
+    'Hlađenje je važnije od grijanja.',
+  ],
+
+  // Bolivia
+  BO: [
+    'Bolivijski Altiplano zahtijeva značajno grijanje zbog nadmorske visine.',
+    'La Paz i El Alto na 3.600–4.100 m imaju niske temperature tokom cijele godine.',
+    'Bolivijski domovi koriste drvo, plin i električnu energiju za grijanje.',
+    'Prosječno bolivijsko domaćinstvo godišnje troši 2.000–4.000 BOB na grijanje.',
+    'Prirodni plin se subvencionira i široko koristi.',
+    'Drvo i balega ostaju važni u ruralnim visočjima.',
+    'Nizije trebaju hlađenje, a ne grijanje.',
+    'Izolacija zgrada je rijetka.',
+    'Kerozinske grijalice su uobičajene.',
+    'Električno grijanje je skupo za većinu porodica.',
+    'Nadmorska visina stvara jedinstvene izazove u grijanju.',
+    'Solarno grijanje je nedovoljno iskorišteno.',
+  ],
+};

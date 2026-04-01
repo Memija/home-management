@@ -1,0 +1,226 @@
+// Middle East heating/energy facts - Bosnian
+export const middleEastHeatingFacts = {
+  // Saudi Arabia
+  SA: [
+    'Saudijska Arabija troši više energije za klimatizaciju nego za grijanje zbog tople klime.',
+    'Moderni saudijski objekti opremljeni su toplotnom izolacijom radi smanjenja troškova hlađenja.',
+    'Prirodni plin se sve više koristi za proizvodnju električne energije i kuhanje u domaćinstvima.',
+    'Solarno zagrijavanje vode postaje sve popularnije u zaljevskoj regiji.',
+    'Saudijski domovi praktično ne troše energiju za grijanje prostora.',
+    'Prosječno saudijsko domaćinstvo gotovo ništa ne troši na grijanje.',
+    'Klimatizacija čini preko 70% potrošnje električne energije.',
+    'Rijad ima neke zimske noći koje su svježe, ali ne zahtijevaju grijanje.',
+    'Građevinski propisi se fokusiraju na efikasnost hlađenja.',
+    'LPG se koristi za kuhanje.',
+    'Daljinsko hlađenje je relevantnije od daljinskog grijanja.',
+    'Saudijska Arabija ima obilje prirodnog plina, ali nisku domaću upotrebu za grijanje.',
+  ],
+
+  // United Arab Emirates
+  AE: [
+    'UAE nema potrebe za grijanjem zbog pustinjske klime.',
+    'Klimatizacija je neophodna tokom većeg dijela godine.',
+    'Zgrade u UAE su snažno izolirane radi hlađenja.',
+    'Prosječno domaćinstvo ne troši ništa na grijanje.',
+    'Prirodni plin napaja kuhanje i proizvodnju električne energije.',
+    'Dubai ima sisteme daljinskog hlađenja umjesto grijanja.',
+    'Pustinjske noći mogu biti svježe, ali je grijanje nepotrebno.',
+    'Građevinski propisi daju prioritet toplotnoj izolaciji za hlađenje.',
+    'Solarno zagrijavanje vode je u porastu.',
+    'LPG se koristi u nekim područjima.',
+    'Potrošnjom energije dominira hlađenje.',
+    'UAE uvozi energetski efikasne građevinske tehnologije.',
+  ],
+
+  // Qatar
+  QA: [
+    'Katar nema apsolutno nikakve potrebe za grijanjem.',
+    'Klimatizacija radi praktično tokom cijele godine.',
+    'Prirodni plin osigurava obilnu i jeftinu energiju.',
+    'Katarski domovi su dizajnirani za zaštitu od ekstremnih vrućina.',
+    'Prosječno domaćinstvo ne troši ništa na grijanje.',
+    'Daljinsko hlađenje opslužuje velike građevinske projekte.',
+    'Izolacija zgrada se fokusira na zadržavanje toplote vani.',
+    'Izvoz LNG-a je u kontrastu sa nikakvom domaćom upotrebom za grijanje.',
+    'Solarna energija je nedovoljno iskorištena uprkos obilju sunca.',
+    'Električna energija za hlađenje glavni je trošak energije.',
+    'Pustinjska klima čini grijanje nebitnim.',
+    'Moderne zgrade u Dohi koriste vrhunsku tehnologiju hlađenja.',
+  ],
+
+  // Kuwait
+  KW: [
+    'Kuvajt nema potrebe za grijanjem zbog pustinjske klime.',
+    'Klimatizacija se subvencionira i radi neprekidno.',
+    'Kuvajtski domovi su izgrađeni da izdrže ekstremne vrućine.',
+    'Prosječno domaćinstvo ne troši ništa na grijanje.',
+    'Nafta i plin napajaju sve.',
+    'Dizajn zgrada se fokusira na hlađenje.',
+    'Daljinsko hlađenje postoji u novim naseljima.',
+    'Potrošnjom električne energije dominiraju klima uređaji.',
+    'Ne postoji infrastruktura za grijanje.',
+    'Zima je blaga i ugodna.',
+    'Solarni potencijal je ogroman, ali nedovoljno iskorišten.',
+    'Kuvajt ima jedan od najvećih nivoa korištenja klima uređaja po glavi stanovnika u svijetu.',
+  ],
+
+  // Bahrain
+  BH: [
+    'Bahrein nema potrebe za grijanjem.',
+    'Klimatizacija je neophodna za udobnost.',
+    'Prirodni plin napaja kuhanje i električnu energiju.',
+    'Bahreinski domovi se fokusiraju na efikasnost hlađenja.',
+    'Prosječno domaćinstvo ne troši ništa na grijanje.',
+    'Daljinsko hlađenje opslužuje neka naselja.',
+    'Građevinski propisi daju prioritet toplotnim performansama.',
+    'Zimske temperature su blage i ugodne.',
+    'Solarno zagrijavanje vode je u porastu.',
+    'Električna energija za hlađenje je glavni trošak.',
+    'Ne postoji infrastruktura za grijanje.',
+    'Mala veličina Bahreina ograničava energetsku raznolikost.',
+  ],
+
+  // Oman
+  OM: [
+    'Oman ima minimalne potrebe za grijanjem, osim u planinskim područjima.',
+    'Klimatizacija dominira potrošnjom energije.',
+    'Omanski domovi su dizajnirani za toplu klimu.',
+    'Prosječno domaćinstvo praktično ne troši ništa na grijanje.',
+    'Prirodni plin i nafta napajaju kuhanje i električnu energiju.',
+    'Planine Jebel Akhdar imaju niže temperature.',
+    'Građevinski propisi se fokusiraju na hlađenje.',
+    'Solarni potencijal je značajan.',
+    'LPG se koristi za kuhanje.',
+    'Maskatu je rijetko potrebno bilo kakvo grijanje.',
+    'Pustinjska klima dominira obalnim područjima.',
+    'Oman ulaže u obnovljive izvore energije.',
+  ],
+
+  // Israel
+  IL: [
+    'Izrael ima mediteransku klimu s blagim zimama.',
+    'Klimatizacija omogućava i hlađenje i grijanje.',
+    'Izraelski domovi troše prosječno 50 kWh/m² za grijanje.',
+    'Prosječno izraelsko domaćinstvo godišnje troši 3.000–5.000 ILS na grijanje.',
+    'Solarno zagrijavanje vode je obavezno u novim zgradama.',
+    'Grijanje na prirodni plin raste.',
+    'Električne grijalice su uobičajene.',
+    'Sjeverni Izrael i Jerusalem imaju hladnije zime.',
+    'Standardi izolacije zgrada se poboljšavaju.',
+    'Toplotne pumpe su sve popularnije.',
+    'Eilatu je rijetko potrebno grijanje.',
+    'Programi energetske efikasnosti se šire.',
+  ],
+
+  // Jordan
+  JO: [
+    'Jordan ima hladne zime u planinskim područjima.',
+    'Grijalice na kerozin i dizel su uobičajene.',
+    'Jordanski domovi troše prosječno 60 kWh/m² za grijanje.',
+    'Prosječno jordansko domaćinstvo godišnje troši 200–400 JOD na grijanje.',
+    'Aman ima hladne zimske noći koje zahtijevaju grijanje.',
+    'Prirodni plin je ograničen, ali u porastu.',
+    'Izolacija zgrada je često neadekvatna.',
+    'LPG se koristi za kuhanje i dio grijanja.',
+    'Električne grijalice su skupe za korištenje.',
+    'Područje Mrtvog mora u Jordanu ima minimalne potrebe za grijanjem.',
+    'Energetsko siromaštvo pogađa mnoga domaćinstva.',
+    'Solarno zagrijavanje vode je nedovoljno iskorišteno.',
+  ],
+
+  // Lebanon
+  LB: [
+    'Libanon ima mediteransku obalu i hladne planinske zime.',
+    'Dizel i kerozin dominiraju grijanjem u Libanonu.',
+    'Libanonski domovi troše prosječno 70 kWh/m² za grijanje.',
+    'Prosječno libanonsko domaćinstvo godišnje troši 500–1.000 $ na grijanje.',
+    'Bejrut ima blage zime, ali su planine hladne.',
+    'Električna energija je nepouzdana za grijanje.',
+    'Generatori dopunjuju nepouzdanu mrežu.',
+    'Izolacija zgrada je minimalna.',
+    'Peći na drva koriste se u planinskim selima.',
+    'Prirodni plin nije dostupan za grijanje.',
+    'Energetska kriza utiče na pristup grijanju.',
+    'Solarno grijanje je nedovoljno iskorišteno.',
+  ],
+
+  // Syria
+  SY: [
+    'Sirija ima hladne zime, posebno u unutrašnjosti.',
+    'Dizel i kerozin su tradicionalna goriva za grijanje.',
+    'Sukob je poremetio snabdijevanje energijom.',
+    'Damask ima niske zimske temperature.',
+    'Oštećenja zgrada su pogoršala uslove grijanja.',
+    'Drvo se sve više koristi zbog nestašice goriva.',
+    'Prirodni plin se koristio prije sukoba.',
+    'Rekonstrukcija će morati obuhvatiti grijanje.',
+    'Energetsko siromaštvo je rasprostranjeno.',
+    'Obalna područja imaju blaže zime.',
+    'Sirijska domaćinstva se suočavaju sa izazovima u grijanju.',
+    'Daljinsko grijanje je postojalo u nekim gradovima.',
+  ],
+
+  // Iraq
+  IQ: [
+    'Irak ima topla ljeta i hladne zime u sjevernim regijama.',
+    'Kerozin i dizel su uobičajena goriva za grijanje.',
+    'Irački domovi u Bagdadu koriste skromno grijanje.',
+    'Prosječno iračko domaćinstvo troši ograničene iznose na grijanje.',
+    'Kurdistan ima hladne planinske zime.',
+    'Sagorijevanje prirodnog plina uzalud troši potencijalno gorivo za grijanje.',
+    'Električna energija je nepouzdana.',
+    'Izolacija zgrada je neadekvatna.',
+    'LPG se koristi za kuhanje.',
+    'Upotreba generatora je rasprostranjena.',
+    'Južni Irak ima blage zime.',
+    'Infrastruktura grijanja zahtijeva razvoj.',
+  ],
+
+  // Iran
+  IR: [
+    'Iran ima raznoliku klimu, od toplog juga do hladnog sjevera.',
+    'Prirodni plin je glavno gorivo za grijanje.',
+    'Iranski domovi u Teheranu koriste značajno grijanje.',
+    'Prosječno iransko domaćinstvo godišnje troši 50.000.000–100.000.000 IRR na grijanje.',
+    'Tabriz i drugi sjeverni gradovi imaju oštre zime.',
+    'Plin se u Iranu snažno subvencionira.',
+    'Daljinsko grijanje postoji u nekim gradovima.',
+    'Standardi izolacije zgrada se poboljšavaju.',
+    'Kerozin se koristi u udaljenim područjima.',
+    'Obala Perzijskog zaljeva ima minimalne potrebe za grijanjem.',
+    'Iran ima druge po veličini rezerve prirodnog plina na svijetu.',
+    'Peći na drva su tradicionalne u ruralnim područjima.',
+  ],
+
+  // Turkey
+  TR: [
+    'Turska ima velike potrebe za grijanjem, posebno u istočnim regijama.',
+    'Prirodni plin je primarno gorivo za grijanje u gradovima.',
+    'Turski domovi troše prosječno 120 kWh/m² za grijanje.',
+    'Prosječno tursko domaćinstvo godišnje troši 15.000–30.000 TRY na grijanje.',
+    'Istanbul ima hladne i vlažne zime.',
+    'Ugalj se i dalje koristi u istočnoj Turskoj.',
+    'Daljinsko grijanje je ograničeno, ali u porastu.',
+    'Drvo i lignit uzrokuju zagađenje zraka.',
+    'Izolacija zgrada se poboljšala.',
+    'Toplotne pumpe se šire u zapadnoj Turskoj.',
+    'Mediteranska obala ima blage zime.',
+    'Istočna Anadolija ima oštre zime.',
+  ],
+
+  // Egypt
+  EG: [
+    'Egipat ima minimalne potrebe za grijanjem zbog tople klime.',
+    'Noći na Sinaju i u pustinji mogu biti hladne.',
+    'Klimatizacija omogućava grijanje po potrebi.',
+    'Egipatski domovi troše minimalnu energiju za grijanje.',
+    'Prosječno domaćinstvo vrlo malo troši na grijanje.',
+    'LPG se koristi za kuhanje širom Egipta.',
+    'Prirodni plin se širi u Kairu.',
+    'Dizajn zgrada daje prioritet ventilaciji.',
+    'Aleksandrija ima hladnije zime od Kaira.',
+    'Gornji Egipat ima veoma toplu klimu.',
+    'Ne postoji značajna infrastruktura za grijanje.',
+    'Potrošnjom energije dominira hlađenje.',
+  ],
+};

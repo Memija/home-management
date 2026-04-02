@@ -30,31 +30,35 @@
     </button>
   </div>
 
-  <!-- Try Demo Section (always visible) -->
-  @if (!demoService.isDemoMode()) {
-    <div class="demo-section">
-      <div class="demo-card">
-        <div class="demo-icon">
-          <lucide-icon [img]="PlayIcon" size="32"></lucide-icon>
-        </div>
-        <div class="demo-content">
-          <h3>{{ 'DEMO.TITLE' | translate }}</h3>
-          <p>{{ 'DEMO.DESCRIPTION' | translate }}</p>
-        </div>
-        <button
-          type="button"
-          class="try-demo-btn"
-          (click)="activateDemo()"
-          [disabled]="demoService.isLoading()"
-        >
-          @if (demoService.isLoading()) {
-            <span>{{ 'DEMO.LOADING' | translate }}</span>
-          } @else {
-            <lucide-icon [img]="PlayIcon" size="18"></lucide-icon>
-            <span>{{ 'DEMO.TRY_BUTTON' | translate }}</span>
-          }
-        </button>
-      </div>
-    </div>
+  <!-- Try Demo Section (conditionally moved) -->
+  @if (!demoService.isDemoMode() && (authService.isAuthenticated() || hybridStorageService.hasUserContent())) {
+    <ng-container *ngTemplateOutlet="demoContent"></ng-container>
   }
 </div>
+
+<ng-template #demoContent>
+  <div class="demo-section">
+    <div class="demo-card">
+      <div class="demo-icon">
+        <lucide-icon [img]="PlayIcon" size="32"></lucide-icon>
+      </div>
+      <div class="demo-content">
+        <h3>{{ 'DEMO.TITLE' | translate }}</h3>
+        <p>{{ 'DEMO.DESCRIPTION' | translate }}</p>
+      </div>
+      <button
+        type="button"
+        class="try-demo-btn"
+        (click)="activateDemo()"
+        [disabled]="demoService.isLoading()"
+      >
+        @if (demoService.isLoading()) {
+          <span>{{ 'DEMO.LOADING' | translate }}</span>
+        } @else {
+          <lucide-icon [img]="PlayIcon" size="18"></lucide-icon>
+          <span>{{ 'DEMO.TRY_BUTTON' | translate }}</span>
+        }
+      </button>
+    </div>
+  </div>
+</ng-template>

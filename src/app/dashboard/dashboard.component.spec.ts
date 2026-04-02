@@ -1,6 +1,8 @@
 import { TestBed } from '@angular/core/testing';
 import { DashboardComponent } from './dashboard.component';
 import { DemoService } from '../services/demo.service';
+import { AuthService } from '../services/auth.service';
+import { HybridStorageService } from '../services/hybrid-storage.service';
 import { describe, it, expect, beforeEach, vi, afterEach } from 'vitest';
 import { Droplets, Flame, Play, X, Zap } from 'lucide-angular';
 import { ActivatedRoute } from '@angular/router';
@@ -9,6 +11,8 @@ import { signal } from '@angular/core';
 describe('DashboardComponent', () => {
   let component: DashboardComponent;
   let mockDemoService: Partial<DemoService>;
+  let mockAuthService: Partial<AuthService>;
+  let mockHybridStorageService: Partial<HybridStorageService>;
 
   beforeEach(() => {
     TestBed.resetTestingModule();
@@ -19,9 +23,19 @@ describe('DashboardComponent', () => {
       deactivateDemo: vi.fn(),
     };
 
+    mockAuthService = {
+      isAuthenticated: signal(false) as any,
+    };
+
+    mockHybridStorageService = {
+      hasUserContent: signal(false) as any,
+    };
+
     TestBed.configureTestingModule({
       providers: [
         { provide: DemoService, useValue: mockDemoService },
+        { provide: AuthService, useValue: mockAuthService },
+        { provide: HybridStorageService, useValue: mockHybridStorageService },
         { provide: ActivatedRoute, useValue: { snapshot: { paramMap: { get: () => null } } } },
       ],
     });

@@ -3,7 +3,7 @@
 }
 <app-header></app-header>
 <app-menu-bar></app-menu-bar>
-@if (!demoService.isDemoMode()) {
+@if (canShowSeasonSwitcher()) {
   <app-season-switcher></app-season-switcher>
 }
 <router-outlet></router-outlet>

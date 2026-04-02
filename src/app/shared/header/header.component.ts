@@ -3,11 +3,13 @@ import { Router } from '@angular/router';
 import { TranslatePipe } from '../../pipes/translate.pipe';
 import { LanguageSwitcherComponent } from '../../components/language-switcher/language-switcher.component';
 import { AuthButtonComponent } from '../../components/auth-button/auth-button.component';
-import { LucideAngularModule, Play, X, Bell, ArrowRight, Sun, Moon, Monitor } from 'lucide-angular';
+import { LucideAngularModule, Play, X, Bell, ArrowRight, Sun, Moon, Monitor, CirclePlay } from 'lucide-angular';
 import { DemoService } from '../../services/demo.service';
 import { NotificationService, Notification } from '../../services/notification.service';
 import { ThemeService, Theme } from '../../services/theme.service';
 import { LanguageService } from '../../services/language.service';
+import { AuthService } from '../../services/auth.service';
+import { HybridStorageService } from '../../services/hybrid-storage.service';
 
 @Component({
   selector: 'app-header',
@@ -22,6 +24,8 @@ export class HeaderComponent {
   protected readonly demoService = inject(DemoService);
   protected readonly notificationService = inject(NotificationService);
   protected readonly themeService = inject(ThemeService);
+  protected readonly authService = inject(AuthService);
+  protected readonly hybridStorageService = inject(HybridStorageService);
   private readonly languageService = inject(LanguageService);
 
   protected readonly XIcon = X;
@@ -31,6 +35,13 @@ export class HeaderComponent {
   protected readonly SunIcon = Sun;
   protected readonly MoonIcon = Moon;
   protected readonly MonitorIcon = Monitor;
+  protected readonly CirclePlayIcon = CirclePlay;
+
+  protected isDashboard = computed(() => {
+    const url = this.router.url;
+    // Account for both leading slash and trailing slashes
+    return url === '/' || url === '/dashboard' || url.startsWith('/dashboard/');
+  });
 
   protected isNotificationPanelOpen = signal(false);
 

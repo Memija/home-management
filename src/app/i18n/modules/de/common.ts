@@ -70,6 +70,9 @@ export const common = {
     FEATURE_6_TITLE: 'Code-Qualitäts-Exzellenz',
     FEATURE_6_DESC:
       'Wir verpflichten uns zur Einhaltung höchster Code-Standards. Unser nächstes Release wird sich auf eine tiefere SonarCloud-Integration und die Behebung aller gemeldeten Sonar-Probleme konzentrieren.',
+    FEATURE_7_TITLE: 'Motivationsnachrichten zum Verbrauch',
+    FEATURE_7_DESC:
+      'Erhalten Sie personalisierte Motivationsnachrichten basierend auf Ihren Verbrauchstrends. Bekommen Sie positive Bestärkung beim Sparen und sanfte Erinnerungen bei Verbrauchsspitzen, um Ihre Nachhaltigkeitsziele im Blick zu behalten.',
     CTA_TEXT:
       'Ihre Unterstützung hilft uns, diese Funktionen schneller zu entwickeln. Danke, dass Sie Teil unserer Community sind!',
     BACK_TO_HOME: 'Zurück zur Startseite',

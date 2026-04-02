@@ -69,6 +69,9 @@ export const common = {
     FEATURE_6_TITLE: 'Code Quality Excellence',
     FEATURE_6_DESC:
       'We are committed to maintaining the highest code standards. Our next release will focus on deeper SonarCloud integration and resolving all reported Sonar issues.',
+    FEATURE_7_TITLE: 'Consumption Motivation Messages',
+    FEATURE_7_DESC:
+      'Receive personalized motivational messages based on your consumption trends. Get positive reinforcement when you save and gentle reminders when usage spikes, helping you stay on track with your sustainability goals.',
     CTA_TEXT:
       'Your support helps us build these features faster. Thank you for being part of our community!',
     BACK_TO_HOME: 'Back to Home',
@@ -77,6 +80,7 @@ export const common = {
     TITLE: 'Try Demo Mode',
     DESCRIPTION: 'Experience the app with sample data to see all features in action.',
     TRY_BUTTON: 'Try Demo',
+    ACTIVATE_BUTTON: 'Experience Demo',
     EXIT_BUTTON: 'Exit Demo',
     BANNER_TEXT: 'You are viewing demo data',
     LOADING: 'Loading...',

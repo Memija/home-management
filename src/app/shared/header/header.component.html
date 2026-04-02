@@ -145,4 +145,16 @@
       <span class="btn-text">{{ 'DEMO.EXIT_BUTTON' | translate }}</span>
     </button>
   </div>
+} @else if (!authService.isAuthenticated() && !hybridStorageService.hasUserContent() && isDashboard()) {
+  <div class="demo-banner-global">
+    <button
+      type="button"
+      class="exit-demo-btn"
+      (click)="demoService.activateDemo()"
+      [disabled]="demoService.isLoading()"
+    >
+      <lucide-icon [img]="PlayIcon" size="14"></lucide-icon>
+      <span class="btn-text">{{ 'DEMO.TRY_BUTTON' | translate }}</span>
+    </button>
+  </div>
 }

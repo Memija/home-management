@@ -1,4 +1,4 @@
-import { Component, signal, computed, inject, effect } from '@angular/core';
+import { Component, signal, computed, inject, effect, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { TranslatePipe } from '../pipes/translate.pipe';
@@ -86,7 +86,7 @@ import { ExcelSettingsService } from '../services/excel-settings.service';
   templateUrl: './heating.component.html',
   styleUrl: './heating.component.scss',
 })
-export class HeatingComponent {
+export class HeatingComponent implements OnInit {
   // Services
   protected dataService = inject(HeatingDataService);
   protected formService = inject(HeatingFormService);
@@ -356,6 +356,12 @@ export class HeatingComponent {
 
   constructor() {
     this.dataService.loadData();
+  }
+
+  ngOnInit() {
+    if (this.demoService.isDemoMode()) {
+      this.openRelevantDemoGuide();
+    }
   }
 
   // ===== Delegations to DataService =====

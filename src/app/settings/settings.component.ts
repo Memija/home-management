@@ -5,6 +5,7 @@ import {
   HostListener,
   ChangeDetectionStrategy,
   signal,
+  OnInit,
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { LanguageService } from '../services/language.service';
@@ -43,7 +44,7 @@ interface ComponentWithUnsavedChanges {
   styleUrl: './settings.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class SettingsComponent {
+export class SettingsComponent implements OnInit {
   protected languageService = inject(LanguageService);
   protected demoService = inject(DemoService);
 
@@ -55,6 +56,12 @@ export class SettingsComponent {
   protected demoTourSteps = DEMO_TOUR_STEPS;
   protected showDemoWizard = signal(false);
   protected showDemoTour = signal(false);
+
+  ngOnInit() {
+    if (this.demoService.isDemoMode()) {
+      this.openRelevantDemoGuide();
+    }
+  }
 
   protected openRelevantDemoGuide(): void {
     if (this.demoService.isDemoMode()) {

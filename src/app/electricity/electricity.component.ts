@@ -1,4 +1,4 @@
-import { Component, computed, inject, signal, effect } from '@angular/core';
+import { Component, computed, inject, signal, effect, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 
@@ -84,7 +84,7 @@ import { SmartImportModalComponent } from '../shared/smart-import-modal/smart-im
   templateUrl: './electricity.component.html',
   styleUrl: './electricity.component.scss',
 })
-export class ElectricityComponent {
+export class ElectricityComponent implements OnInit {
   // Services
   protected excelSettings = inject(ExcelSettingsService);
   protected demoService = inject(DemoService);
@@ -96,6 +96,12 @@ export class ElectricityComponent {
   private formService = inject(ElectricityFormService);
   private dataService = inject(ElectricityDataService);
   private meterService = inject(ElectricityMeterService);
+
+  ngOnInit() {
+    if (this.demoService.isDemoMode()) {
+      this.openRelevantDemoGuide();
+    }
+  }
 
   // Signals
   protected records = this.dataService.records;

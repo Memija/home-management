@@ -97,6 +97,14 @@ export class ReleasePlanComponent {
       tag: 'enhancement',
       colorClass: 'enhancement-feature',
     },
+    {
+      id: 7,
+      titleKey: 'RELEASE_PLAN.FEATURE_7_TITLE',
+      descKey: 'RELEASE_PLAN.FEATURE_7_DESC',
+      icon: TrendingUp,
+      tag: 'smart',
+      colorClass: 'prediction-feature',
+    },
   ];
 
   // Filter state

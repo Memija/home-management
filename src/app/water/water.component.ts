@@ -1,4 +1,4 @@
-import { Component, computed, inject, signal, effect } from '@angular/core';
+import { Component, computed, inject, signal, effect, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 
@@ -79,7 +79,7 @@ import { DemoTourComponent } from '../shared/demo-tour/demo-tour.component';
   templateUrl: './water.component.html',
   styleUrl: './water.component.scss',
 })
-export class WaterComponent {
+export class WaterComponent implements OnInit {
   // Icons
   protected readonly DownloadIcon = Download;
   protected readonly UploadIcon = Upload;
@@ -103,6 +103,12 @@ export class WaterComponent {
   private preferencesService = inject(ConsumptionPreferencesService);
   private formService = inject(ConsumptionFormService);
   private dataService = inject(ConsumptionDataService);
+
+  ngOnInit() {
+    if (this.demoService.isDemoMode()) {
+      this.openRelevantDemoGuide();
+    }
+  }
 
   // Signals
   protected records = this.dataService.records;

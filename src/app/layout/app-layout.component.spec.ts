@@ -2,7 +2,11 @@ import { ComponentFixture, TestBed, DeferBlockState } from '@angular/core/testin
 import { AppLayoutComponent } from './app-layout.component';
 import { ThemeService } from '../services/theme.service';
 import { Component } from '@angular/core';
-import { RouterOutlet } from '@angular/router';
+import { RouterOutlet, Router } from '@angular/router';
+import { DemoService } from '../services/demo.service';
+import { AuthService } from '../services/auth.service';
+import { HybridStorageService } from '../services/hybrid-storage.service';
+import { signal } from '@angular/core';
 
 import { HeaderComponent } from '../shared/header/header.component';
 import { FooterComponent } from '../shared/footer/footer.component';
@@ -56,13 +60,35 @@ describe('AppLayoutComponent', () => {
   let component: AppLayoutComponent;
   let fixture: ComponentFixture<AppLayoutComponent>;
   let mockThemeService: any;
+  let mockDemoService: any;
+  let mockAuthService: any;
+  let mockHybridStorageService: any;
+  let mockRouter: any;
 
   beforeEach(async () => {
-    mockThemeService = {}; // Mock any methods if needed for ThemeService
+    mockThemeService = {};
+    mockDemoService = {
+      isDemoMode: signal(false),
+    };
+    mockAuthService = {
+      isAuthenticated: signal(false),
+    };
+    mockHybridStorageService = {
+      hasUserContent: signal(false),
+    };
+    mockRouter = {
+      url: '/dashboard',
+    };
 
     await TestBed.configureTestingModule({
       imports: [AppLayoutComponent],
-      providers: [{ provide: ThemeService, useValue: mockThemeService }],
+      providers: [
+        { provide: ThemeService, useValue: mockThemeService },
+        { provide: DemoService, useValue: mockDemoService },
+        { provide: AuthService, useValue: mockAuthService },
+        { provide: HybridStorageService, useValue: mockHybridStorageService },
+        { provide: Router, useValue: mockRouter },
+      ],
     })
       .overrideComponent(AppLayoutComponent, {
         remove: {

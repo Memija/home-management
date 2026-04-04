@@ -14,6 +14,8 @@ import { electricity } from './modules/bs/electricity';
 import { auth } from './modules/bs/auth';
 import { landing } from './modules/bs/landing';
 import { privacy } from './modules/bs/privacy';
+import { electricityCountryFacts } from './modules/bs/electricity-country-facts/index';
+import { heatingCountryFacts } from './modules/bs/heating-country-facts/index';
 
 export const bs = {
   ...common,
@@ -31,4 +33,6 @@ export const bs = {
   ...privacy,
   WATER_FACTS: waterFacts,
   COUNTRY_FACTS: countryFacts,
+  ELECTRICITY_COUNTRY_FACTS: electricityCountryFacts,
+  HEATING_COUNTRY_FACTS: heatingCountryFacts,
 };

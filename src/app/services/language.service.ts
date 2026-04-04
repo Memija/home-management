@@ -1,9 +1,9 @@
 import { Injectable, signal, inject, ApplicationRef } from '@angular/core';
 
-export type Language = 'en' | 'de' | 'bs';
+export type Language = 'en' | 'de' | 'bs' | 'sr' | 'id' | 'pl';
 
 /** All supported languages - update this when adding a new language */
-export const SUPPORTED_LANGUAGES: readonly Language[] = ['en', 'de', 'bs'] as const;
+export const SUPPORTED_LANGUAGES: readonly Language[] = ['en', 'de', 'bs', 'sr', 'id', 'pl'] as const;
 
 /** Storage key for user's preferred language (hm = homemanagement) */
 const LANGUAGE_STORAGE_KEY = 'hm_preferred_language';
@@ -21,6 +21,9 @@ export class LanguageService {
     en: {},
     de: {},
     bs: {},
+    sr: {},
+    id: {},
+    pl: {},
   };
 
   // Signal to notify when translations are loaded/updated
@@ -35,14 +38,26 @@ export class LanguageService {
     if (typeof window !== 'undefined' && typeof localStorage !== 'undefined') {
       // 1. Check local storage (explicit user preference)
       const stored = localStorage.getItem(LANGUAGE_STORAGE_KEY);
-      if (stored === 'en' || stored === 'de' || stored === 'bs') {
+      if (stored === 'en' || stored === 'de' || stored === 'bs' || stored === 'sr' || stored === 'id' || stored === 'pl') {
         return stored;
       }
 
-      // 2. Check browser language
+      // 2. Check browser language (sr-RS, sr-Cyrl, etc)
       const browserLang = navigator.language;
       if (browserLang.startsWith('de')) {
         return 'de';
+      }
+      if (browserLang.startsWith('bs')) {
+        return 'bs';
+      }
+      if (browserLang.startsWith('sr')) {
+        return 'sr';
+      }
+      if (browserLang.startsWith('id')) {
+        return 'id';
+      }
+      if (browserLang.startsWith('pl')) {
+        return 'pl';
       }
     }
     // 3. Default to English
@@ -61,6 +76,9 @@ export class LanguageService {
     let locale = 'en-US';
     if (lang === 'de') locale = 'de-DE';
     else if (lang === 'bs') locale = 'bs-BA';
+    else if (lang === 'sr') locale = 'sr-RS';
+    else if (lang === 'id') locale = 'id-ID';
+    else if (lang === 'pl') locale = 'pl-PL';
     document.documentElement.lang = locale;
 
     // Update meta tag for browser localization hints
@@ -88,6 +106,15 @@ export class LanguageService {
       } else if (lang === 'bs') {
         module = await import('../i18n/bs');
         this.translations['bs'] = module.bs as Record<string, unknown>;
+      } else if (lang === 'sr') {
+        module = await import('../i18n/sr');
+        this.translations['sr'] = module.sr as Record<string, unknown>;
+      } else if (lang === 'id') {
+        module = await import('../i18n/id');
+        this.translations['id'] = module.id as Record<string, unknown>;
+      } else if (lang === 'pl') {
+        module = await import('../i18n/pl');
+        this.translations['pl'] = module.pl as Record<string, unknown>;
       } else {
         module = await import('../i18n/en');
         this.translations['en'] = module.en as Record<string, unknown>;

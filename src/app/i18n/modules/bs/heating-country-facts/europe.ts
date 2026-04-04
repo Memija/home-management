@@ -1,4 +1,4 @@
-// European heating/energy facts - Bosnian
+// European heating/energy facts - BS
 export const europeHeatingFacts = {
   // Germany
   DE: [
@@ -109,7 +109,7 @@ export const europeHeatingFacts = {
     'Grijanje na drvene pelete popularno je u alpskim i ruralnim područjima.',
     'Italijanski građevinski propisi sada zahtijevaju certifikate o energetskim performansama.',
     'Solarno termalno zagrijavanje vode uobičajeno je u mediteranskom dijelu Italije.',
-    'Milano ima jednu od najvećih mreža daljinskog grijanja u Evropi.',
+    'Milan ima jednu od najvećih mreža daljinskog grijanja u Evropi.',
   ],
 
   // Spain
@@ -173,7 +173,7 @@ export const europeHeatingFacts = {
     'Električno podno grijanje je rasprostranjeno u norveškim kupatilima.',
     'Norveški standardi izolacije su među najstrožima na svijetu.',
     'Bergen ima značajne padavine koje zahtijevaju robusnu hidroizolaciju.',
-    'Norveška izvozi hidroenergiju kako bi pomogla susjedima da zagriju svoje domove.',
+    'Norveška izvozi hidroenergiju kako bi pomogla susjedima da griju svoje domove.',
   ],
 
   // Denmark
@@ -461,7 +461,7 @@ export const europeHeatingFacts = {
     'Skoplje se zimi svrstava među najzagađenije gradove u Evropi.',
     'Promoviraju se opcije obnovljivog grijanja.',
     'Energetsko siromaštvo pogađa mnoga domaćinstva.',
-    'Integracija u EU pokreće poboljšanja infrastrukture grijanja.',
+    'Integracija u EU podstiče poboljšanja infrastrukture grijanja.',
   ],
 
   // Kosovo
@@ -492,7 +492,7 @@ export const europeHeatingFacts = {
     'Islandski bazeni se griju geotermalnom energijom.',
     'Zemlja je praktično eliminisala grijanje na fosilna goriva.',
     'Geotermalna energija takođe grije trotoare radi topljenja snijega.',
-    'Energetska nezavisnost Islanda predmet je zavisti širom svijeta.',
+    'Energetska nezavisnost Islanda je predmet zavisti širom svijeta.',
     'Nove zgrade su obavezne da se povežu na geotermalne mreže.',
   ],
 
@@ -509,7 +509,7 @@ export const europeHeatingFacts = {
     'Solarno termalno grijanje dopunjuje mnoge domove.',
     'Bioplin se sve više koristi u sistemima grijanja.',
     'Programi energetske efikasnosti nude izdašne subvencije.',
-    'Luksemburg ima jedne od najvećih troškova grijanja po domaćinstvu u Evropi.',
+    'Luksemburg ima neke od najvećih troškova grijanja po domaćinstvu u Evropi.',
   ],
 
   // Malta
@@ -541,7 +541,7 @@ export const europeHeatingFacts = {
     'Toplotne pumpe se koriste prvenstveno za hlađenje.',
     'Planinske regije imaju veće potrebe za grijanjem.',
     'Dizajn zgrada daje prioritet hlađenju nad grijanjem.',
-    'Kipar ima jedne od najnižih troškova grijanja u Evropi.',
+    'Kipar ima neke od najnižih troškova grijanja u Evropi.',
   ],
 
   // Estonia

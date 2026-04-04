@@ -73,6 +73,9 @@ export const common = {
     FEATURE_7_TITLE: 'Motivationsnachrichten zum Verbrauch',
     FEATURE_7_DESC:
       'Erhalten Sie personalisierte Motivationsnachrichten basierend auf Ihren Verbrauchstrends. Bekommen Sie positive Bestärkung beim Sparen und sanfte Erinnerungen bei Verbrauchsspitzen, um Ihre Nachhaltigkeitsziele im Blick zu behalten.',
+    FEATURE_8_TITLE: 'Wetterbasierte Einblicke',
+    FEATURE_8_DESC:
+      'Die App ruft aktuelle Wetterdaten für Ihren Standort ab und liefert personalisierte Tipps und Motivation.',
     CTA_TEXT:
       'Ihre Unterstützung hilft uns, diese Funktionen schneller zu entwickeln. Danke, dass Sie Teil unserer Community sind!',
     BACK_TO_HOME: 'Zurück zur Startseite',
@@ -81,6 +84,7 @@ export const common = {
     TITLE: 'Demo-Modus ausprobieren',
     DESCRIPTION: 'Erleben Sie die App mit Beispieldaten, um alle Funktionen in Aktion zu sehen.',
     TRY_BUTTON: 'Demo starten',
+    ACTIVATE_BUTTON: 'Demo erleben',
     EXIT_BUTTON: 'Demo beenden',
     BANNER_TEXT: 'Sie sehen Demo-Daten',
     LOADING: 'Wird geladen...',

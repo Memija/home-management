@@ -1,0 +1,210 @@
+// Americas heating/energy facts - ID
+export const americasHeatingFacts = {
+  // United States
+  US: [
+    'Gas alam memanaskan hampir 50% rumah tangga di Amerika Serikat.',
+    'Listrik adalah sumber energi pemanas paling umum kedua di AS.',
+    'Rumah-rumah di AS menggunakan rata-rata 110 kWh/m² untuk pemanasan.',
+    'AS adalah pasar terbesar untuk tungku gas udara-paksa di dunia.',
+    'Pompa panas udara semakin populer di wilayah Selatan dan Barat AS.',
+    'Rumah tangga AS rata-rata menghabiskan $700-$1.500 per tahun untuk pemanasan.',
+    'Pajak kredit federal mendorong isolasi dan efisiensi energi di AS.',
+    'Pemanasan minyak masih umum di wilayah Timur Laut AS yang dingin.',
+    'Standar isolasi "Energy Star" membantu jutaan orang Amerika hemat energi.',
+    'Industri pemanas AS secara bertahap beralih ke peralatan pintar.',
+    'Kayu adalah sumber pemanas utama bagi sekitar 2 juta rumah di AS.',
+    'Kredit pajak federal AS mendorong penggunaan pompa panas.',
+  ],
+
+  // Canada
+  CA: [
+    'Kanada adalah salah satu konsumen energi per kapita tertinggi untuk pemanas.',
+    'Gas alam adalah bahan bakar pemanas paling populer di Kanada.',
+    'Rumah-rumah di Kanada menggunakan rata-rata 160 kWh/m² untuk pemanasan.',
+    'Kanada adalah pemimpin dunia dalam teknologi pompa panas sumber tanah.',
+    'Sistem pemanasan distrik umum di kota-kota besar Kanada.',
+    'Rumah tangga Kanada rata-rata menghabiskan CAD 1.000-2.000 per tahun untuk pemanasan.',
+    'Isolasi R-nilai tinggi wajib untuk semua bangunan baru di Kanada.',
+    'Listrik (hydropower) memanaskan banyak rumah di Quebec dan BC.',
+    'Kanada melarang pemasangan pemanas minyak baru di beberapa provinsi.',
+    'Pemanasan kayu tetap menjadi alternatif populer di pedesaan Kanada.',
+    'Energi matahari digunakan untuk pemanasan air di wilayah cerah Kanada.',
+    'Kanada memiliki stok perumahan yang sangat tahan cuaca dingin.',
+  ],
+
+  // Mexico
+  MX: [
+    'Meksiko hanya memiliki sedikit kebutuhan pemanas ruangan.',
+    'LPG adalah bahan bakar utama untuk memasak dan pemanasan air di Meksiko.',
+    'Rumah-rumah di Meksiko menggunakan minimal energi untuk pemanasan ruangan.',
+    'Pemanas air tenaga surya adalah industri yang tumbuh cepat di Meksiko.',
+    'AC sering digunakan untuk pemanasan ringan di Meksiko Utara.',
+    'Rumah tangga Meksiko rata-rata menghabiskan sedikit untuk pemanasan ruangan.',
+    'Isolasi termal bangunan secara historis rendah di Meksiko.',
+    'Kayu bakar memanaskan banyak rumah di daerah pegunungan Meksiko.',
+    'Meksiko mempromosikan efisiensi energi melalui program nasional.',
+    'Tidak ada infrastruktur pemanasan distrik di Meksiko.',
+    'Desain bangunan Meksiko secara tradisional berfokus pada pendinginan.',
+    'Pergeseran ke pemanas listrik mulai terlihat di zona perkotaan dingin.',
+  ],
+
+  // Brazil
+  BR: [
+    'Brasil hampir tidak memiliki kebutuhan pemanasan ruangan sama sekali.',
+    'LPG adalah bahan bakar universal untuk memasak di Brasil.',
+    'Fokus energi Brasil adalah pada pendinginan dan ventilasi.',
+    'Rumah tangga Brasil rata-rata menghabiskan nol untuk pemanasan ruangan.',
+    'Pemanas air listrik (shower) umum digunakan di seluruh Brasil.',
+    'Matahari Brasil yang melimpah mendukung pemanasan air tenaga surya.',
+    'Tidak ada infrastruktur pemanasan distrik di Brasil.',
+    'Desain bangunan Brasil memprioritaskan aliran udara dan keteduhan.',
+    'Wilayah Selatan Brasil yang dingin terkadang menggunakan pemanas portabel.',
+    'Kemiskinan energi membatasi akses ke teknologi pendinginan modern.',
+    'Brasil adalah pemimpin dunia dalam bahan bakar hayati cair.',
+    'Pemanasan air tenaga surya dipromosikan melalui program pemerintah.',
+  ],
+
+  // Argentina
+  AR: [
+    'Gas alam memanaskan mayoritas rumah tangga perkotaan di Argentina.',
+    'Argentina memiliki cadangan gas alam sendiri yang besar untuk energi.',
+    'Rumah-rumah di Argentina menggunakan rata-rata 90 kWh/m² untuk pemanasan.',
+    'Musim dingin di Patagonia memerlukan pemanasan yang intensif.',
+    'Subsidi gas gas alam di Argentina telah dikurangi belakangan ini.',
+    'Rumah tangga Argentina rata-rata menghabiskan ARS 30.000-60.000 per tahun untuk pemanasan.',
+    'Isolasi bangunan di Argentina bervariasi namun sedang ditingkatkan standar-nya.',
+    'LPG digunakan di desa-desa yang tidak memiliki akses pipa gas.',
+    'AC dengan mode pemanas populer di Buenos Aires dan Cordoba.',
+    'Tidak ada jaringan pemanasan distrik komersial di Argentina.',
+    'Pemanasan kayu tetap penting di wilayah selatan dan pedesaan.',
+    'Pemanasan distrik hampir tidak ada.',
+  ],
+
+  // Chile
+  CL: [
+    'Chili sangat bergantung pada kayu bakar untuk pemanasan rumah.',
+    'Polusi udara musim dingin di kota-kota Chili adalah masalah utama karena kayu.',
+    'Rumah-rumah di Chili menggunakan rata-rata 100 kWh/m² untuk pemanasan.',
+    'Pemerintah Chili mempromosikan pemanas pelet dan gas sebagai alternatif.',
+    'LPG adalah bahan bakar utama untuk pemanasan air di Chili.',
+    'Rumah tangga Chili rata-rata menghabiskan CLP 300.000-600.000 per tahun untuk pemanasan.',
+    'Program isolasi termal nasional sedang dilakukan secara masif di Chili.',
+    'Pompa panas mulai diperkenalkan untuk menggantikan tungku kayu.',
+    'Chili memiliki potensi panas bumi yang sangat tinggi di sepanjang Andes.',
+    'Pemanasan distrik baru mulai dikembangkan di kota-kota Chili Selatan.',
+    'Listrik semakin banyak digunakan untuk pemanasan ruangan di apartemen.',
+    'Standar efisiensi energi bangunan Chili telah diperketat baru-baru ini.',
+  ],
+
+  // Colombia
+  CO: [
+    'Kolombia tidak memiliki kebutuhan pemanasan ruangan karena letak tropis-nya.',
+    'LPG dan gas alam adalah bahan bakar utama untuk memasak di Kolombia.',
+    'Rumah-rumah di Kolombia fokus pada pendinginan dan ventilasi alami.',
+    'Rumah tangga Kolombia rata-rata menghabiskan hampir nol untuk pemanasan ruangan.',
+    'Air hangat didapat dari pemanas listrik atau gas instan.',
+    'Kota pegunungan seperti Bogota mungkin memerlukan pemanasan ringan di malam hari.',
+    'Tidak ada infrastruktur pemanasan distrik di Kolombia.',
+    'Pemanas air tenaga surya sedang dipromosikan sebagai energi bersih.',
+    'Kayu bakar memanaskan banyak rumah di daerah pedesaan tinggi Andes.',
+    'Desain arsitektur Kolombia memprioritaskan aliran udara bebas.',
+    'Sektor energi Kolombia didominasi oleh tenaga air (hydropower).',
+    'Subdisi energi ditargetkan untuk membantu rumah tangga miskin.',
+  ],
+
+  // Peru
+  PE: [
+    'Peru memiliki kebutuhan pemanas yang rendah kecuali di dataran tinggi Andes.',
+    'LPG adalah bahan bakar dominan untuk kebutuhan energi rumah tangga Peru.',
+    'Rumah-rumah di Peru pesisir dirancang untuk ventilasi maksimal.',
+    'Rumah tangga Peru rata-rata menghabiskan sedikit untuk pemanasan ruangan.',
+    'Kayu dan kotoran hewan memanaskan rumah-rumah tradisional di pegunungan.',
+    'Pemanas air listrik instan sangat populer di kota-kota Peru.',
+    'Tidak ada infrastruktur pemanasan distrik di Peru.',
+    'Peru sedang mengembangkan jaringan gas alam perkotaan di Lima.',
+    'Pemanas matahari adalah solusi efektif untuk wilayah Andes yang dingin.',
+    'Arsitektur Peru secara historis menggunakan bahan dengan massa termal tinggi.',
+    'Listrik adalah sumber energi utama untuk peralatan rumah tangga.',
+    'Kompor tenaga surya digunakan di ketinggian pegunungan.',
+  ],
+
+  // Venezuela
+  VE: [
+    'Venezuela tidak memiliki kebutuhan pemanasan ruangan karena iklim tropis.',
+    'Gas alam sangat melimpah dan murah untuk kebutuhan domestik Venezuela.',
+    'Rumah tangga Venezuela rata-rata menghabiskan nol untuk pemanasan ruangan.',
+    'Listrik bersubsidi tinggi memicu konsumsi daya rumah tangga yang besar.',
+    'LPG adalah bahan bakar utama untuk memasak di banyak wilayah.',
+    'Air hangat adalah kemewahan yang dihasilkan oleh pemanas listrik kecil.',
+    'Tidak ada infrastruktur pemanasan distrik di Venezuela.',
+    'Desain bangunan Venezuela difokuskan pada perlindungan dari panas matahari.',
+    'Energi surya di Venezuela masih sangat kurang dikembangkan.',
+    'Infrastruktur gas negara memprioritaskan pemanfaatan domestik.',
+    'Sektor energi rumah tangga didominasi oleh gas dan tenaga air.',
+    'Pendinginan ruangan (AC) adalah pengeluaran energi utama rumah tangga.',
+  ],
+
+  // Ecuador
+  EC: [
+    'Ekuador tidak memiliki kebutuhan pemanasan ruangan karena letak khatulistiwa-nya.',
+    'LPG bersubsidi adalah bahan bakar memasak universal di Ekuador.',
+    'Rumah-rumah di Ekuador dirancang untuk aliran udara alami.',
+    'Rumah tangga Ekuador rata-rata menghabiskan nol untuk pemanasan ruangan.',
+    'Pemanas air listrik shower sangat umum di seluruh negeri.',
+    'Wilayah pegunungan Andes mungkin memerlukan pemanas portabel di malam hari.',
+    'Tidak ada infrastruktur pemanasan distrik di Ekuador.',
+    'Pemerintah Ekuador mempromosikan kompor induksi listrik daripada LPG.',
+    'Tenaga air (hydropower) menyediakan sebagian besar listrik rumah tangga.',
+    'Pemanas matahari mulai terlihat di rumah-rumah modern di Quito.',
+    'Fokus efisiensi energi adalah pada pendinginan dan pencahayaan.',
+    'Kayu bakar masih digunakan oleh masyarakat adat di pegunungan.',
+  ],
+
+  // Uruguay
+  UY: [
+    'Uruguay memiliki kebutuhan pemanas sedang selama musim dingin.',
+    'Listrik dan biomasa adalah sumber energi pemanas utama di Uruguay.',
+    'Rumah-rumah di Uruguay menggunakan rata-rata 70 kWh/m² untuk pemanasan.',
+    'Uruguay telah mencapai 98% energi terbarukan di jaringan listrik-nya.',
+    'AC dengan mode pemanas sangat populer di rumah tangga Uruguay.',
+    'Rumah tangga Uruguay rata-rata menghabiskan UYU 15.000-25.000 per tahun untuk pemanasan.',
+    'Isolasi bangunan di Uruguay sedang ditingkatkan standar teknis-nya.',
+    'Penggunaan kayu bakar sebagai pemanas tradisional tetap sangat kuat.',
+    'Tidak ada jaringan pemanasan distrik di kota-kota Uruguay.',
+    'Gas alam memiliki penetrasi yang rendah dan terbatas pada wilayah tertentu.',
+    'Pemanas air matahari adalah solusi penghematan energi yang populer.',
+    'Uruguay mempromosikan efisiensi energi melalui insentif pajak.',
+  ],
+
+  // Paraguay
+  PY: [
+    'Paraguay hampir tidak memiliki kebutuhan pemanasan ruangan.',
+    'LPG adalah bahan bakar utama untuk memasak dan kebutuhan rumah tangga.',
+    'Rumah-rumah di Paraguay dirancang untuk ventilasi dan keteduhan.',
+    'Rumah tangga Paraguay rata-rata menghabiskan nol untuk pemanasan ruangan.',
+    'Listrik dari Itaipu (hydropower) sangat berlimpah di Paraguay.',
+    'Pemanas air listrik instan digunakan untuk keperluan mandi.',
+    'Tidak ada infrastruktur pemanasan distrik di Paraguay.',
+    'Biomasa (kayu dan arang) masih digunakan untuk memasak di pedesaan.',
+    'Arsitektur tradisional Paraguay menggunakan beranda luas untuk pendinginan.',
+    'Pemanas ruangan portabel digunakan hanya beberapa hari setahun.',
+    'Paraguay mengekspor sebagian besar listrik bersih hasil produksinya.',
+    'Fokus energi nasional adalah pada elektrifikasi transportasi.',
+  ],
+
+  // Bolivia
+  BO: [
+    'Bolivia memiliki kebutuhan pemanas tinggi di daerah Altiplano yang dingin.',
+    'Gas alam memanaskan semakin banyak rumah tangga perkotaan di Bolivia.',
+    'Rumah-rumah di Bolivia menggunakan rata-rata 80 kWh/m² untuk pemanasan.',
+    'Isolasi bangunan secara historis minim di daerah dataran tinggi Bolivia.',
+    'LPG bersubsidi digunakan secara luas di wilayah tanpa pipa gas.',
+    'Rumah tangga Bolivia rata-rata menghabiskan BOB 1.000-2.500 per tahun untuk pemanasan.',
+    'Kayu dan pupuk kering memanaskan rumah di pedesaan Andes.',
+    'Pemanas matahari adalah teknologi yang sangat tepat untuk Altiplano yang cerah.',
+    'Tidak ada infrastruktur pemanasan distrik di kota-kota Bolivia.',
+    'Gas alam domestik diprioritaskan setelah nasionalisasi energi tahun 2006.',
+    'Sektor energi rumah tangga Bolivia sedang berupaya meningkatkan efisiensi.',
+    'Elektrifikasi pedesaan telah membawa pemanas listrik ke desa-desa terpencil.',
+  ],
+};

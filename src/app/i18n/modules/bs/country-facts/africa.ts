@@ -1,4 +1,4 @@
-// African countries water facts - Bosnian
+// African countries water facts - BS
 export const africaFacts = {
   // Nigeria
   NG: [
@@ -29,7 +29,7 @@ export const africaFacts = {
     'Nacionalni park Kruger pažljivo upravlja vodom za divlje životinje.',
     'Cape Town je smanjio potrošnju vode za 50% tokom krize.',
     'Brana Vaal snabdijeva provinciju Gauteng.',
-    'Južna Afrika je pionir u tehnologijama uštede vode za aridne regije.',
+    'Južna Afrika predvodi u tehnologijama uštede vode za sušne regije.',
   ],
 
   // Egypt
@@ -43,7 +43,7 @@ export const africaFacts = {
     'Kairo dobija vodu iz Nila putem postrojenja za prečišćavanje.',
     'Delta Nila izdržava 40% egipatskog stanovništva.',
     'Egipat gradi najveće svjetsko postrojenje za tretman otpadnih voda.',
-    'Feluše (tradicionalni čamci) plove Nilom hiljadama godina.',
+    'Feluke plove Nilom hiljadama godina.',
     'Egipat koristi 80% svoje vode za poljoprivredu.',
     'Velika etiopska renesansna brana utiče na snabdijevanje Egipta vodom.',
   ],
@@ -57,8 +57,8 @@ export const africaFacts = {
     'Kenija ima 5 glavnih vodenih tornjeva (planinske šume).',
     'Velika rascjepna dolina (Great Rift Valley) ima brojna jezera poput Nakurua i Naivashe.',
     'Samo 59% Kenijaca ima pristup čistoj vodi.',
-    'Sezonske rijeke Maasai Mare prate veliku migraciju životinja.',
-    '30% zemljišta u Keniji je aridno ili poluaridno.',
+    'Sezonske rijeke Maasai Mare prate veliku migraciju.',
+    '30% teritorije Kenije su sušna ili polusušna područja.',
     'Mombasa gradi postrojenje za desalinaciju.',
     'Prikupljanje kišnice u Keniji se širi u školama.',
     'Zemlja teži 100% pokrivenosti vodom do 2030. godine.',
@@ -74,8 +74,8 @@ export const africaFacts = {
     'Maroko planira vršiti desalinaciju vode za obalne gradove.',
     'Planine Atlas obezbjeđuju snabdijevanje Maroka vodom.',
     'Tradicionalni marokanski riadi imaju centralne fontane.',
-    'Maroko snažno investira u navodnjavanje kap po kap za poljoprivredu.',
-    'Zemlja se suočava s rastućim vodenim stresom zbog klimatskih promjena.',
+    'Maroko ulaže velika sredstva u navodnjavanje kap po kap u poljoprivredi.',
+    'Zemlja se suočava sa sve većim vodenim stresom zbog klimatskih promjena.',
     'Casablanca gradi najveće postrojenje za desalinaciju u Sjevernoj Africi.',
     'Marokanski hamami (kupatila) su kulturne institucije zasnovane na vodi.',
   ],
@@ -123,9 +123,9 @@ export const africaFacts = {
     'Jezera rascjepne doline podržavaju jedinstvene ekosisteme.',
     'Uzgoj etiopske kafe zahtijeva precizno upravljanje vodom.',
     'Tis Abay (vodopad Plavog Nila) visok je 45 metara.',
-    'Drevni etiopski inženjering stvorio je planinske terase.',
+    'Drevno etiopsko inženjerstvo stvorilo je planinske terase.',
     'Jezero Tana je najveće jezero u Etiopiji.',
-    'Etiopija teži da do 2030. godine svima obezbijedi čistu vodu.',
+    'Etiopija teži obezbjeđivanju čiste vode svima do 2030. godine.',
   ],
 
   // Ghana
@@ -141,7 +141,7 @@ export const africaFacts = {
     'Accra se suočava s nestašicom vode uprkos obalnoj lokaciji.',
     'Gana ekstenzivno koristi vodu u vrećicama (sachet water) za piće.',
     'Zemlja poboljšava ruralnu vodnu infrastrukturu.',
-    'Tradicionalni ganski pot filteri prečišćavaju pitku vodu.',
+    'Tradicionalni ganski filteri u posudama pročišćavaju pitku vodu.',
   ],
 
   // Tanzania
@@ -155,8 +155,8 @@ export const africaFacts = {
     'Samo 56% Tanzanijaca ima pristup čistoj vodi.',
     'Sliv rijeke Rufiji je najveći u Tanzaniji.',
     'Sezonska migracija u Serengetiju prati izvore vode.',
-    'Dar es Salaam dobija vodu iz rijeka Ruvu i Kimbiji.',
-    'Tanzanija ima 17 miliona hektara močvara.',
-    'Tradicionalni Maasai ratnici kopaju bunare rukama u suhim riječnim koritima.',
+    'Dar es Salaam dobija vodu iz rijeka Ruvu i Kimbij.',
+    'Tanzanija ima 17 miliona hektara močvarnih područja.',
+    'Tradicionalni pripadnici naroda Maasai ručno kopaju bunare u suhim riječnim koritima.',
   ],
 };

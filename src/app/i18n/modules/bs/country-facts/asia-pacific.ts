@@ -1,21 +1,5 @@
-// Asia-Pacific countries water facts - Bosnian
+// Asia-Pacific countries water facts - BS
 export const asiaPacificFacts = {
-  // China
-  CN: [
-    'Kina se nalazi na prvom mjestu po broju brana, posjedujući gotovo više od čitavog ostatka planete.',
-    'Rijeka Jangce je daleko najduža rijeka čitavog azijskog kontinenta sa svojih 6.300 km dužine.',
-    'Impozantna Brana tri klanca proizvodi ogromnu količinu električne energije isključivo snagom vode.',
-    'Kina planira preusmjeriti 44,8 milijardi kubnih metara vode sa juga na sjever.',
-    'Peking dobija vodu iz rezervoara udaljenih preko 1.000 km.',
-    'Kineska poljoprivreda troši 60% ukupnih vodenih resursa zemlje.',
-    'Zemlja ima preko 87.000 brana za kontrolu poplava i navodnjavanje.',
-    'Žuta rijeka je kolijevka kineske civilizacije, duga 5.464 km.',
-    'Kina posjeduje 7% svjetskih resursa svježe vode za 18% svjetske populacije.',
-    'Veliki kanal je najduži vještački kanal na svijetu, dug 1.776 km.',
-    'Kina reciklira oko 15% svoje industrijske vode.',
-    'Zemlja se suočava s ozbiljnim zagađenjem podzemnih voda u urbanim područjima.',
-  ],
-
   // Japan
   JP: [
     'Piti vodu iz slavine je potpuno sigurno sa čistoćom iznad prosjeka u Japanu.',
@@ -26,10 +10,26 @@ export const asiaPacificFacts = {
     'Jezero Biwa je najveće slatkovodno jezero u Japanu.',
     'Japan reciklira preko 10% svoje vode u industrijske svrhe.',
     'Tokio koristi napredne sisteme za otkrivanje curenja vode u gradu.',
-    'Planina Fuji je izvor čiste mineralne vode za milione ljudi.',
-    'Japan ima jednu od najrazvijenijih tehnologija desalinacije na svijetu.',
-    'Zemlja troši 60% svoje vode na poljoprivredu, prvenstveno na rižu.',
-    'Japanski zakoni o vodi fokusiraju se na prevenciju poplava i kvalitet.',
+    'Hokkaido praškasti snijeg dolazi od vlage iznad Japanskog mora.',
+    'Japan uvozi virtuelnu vodu kroz hranu, štedeći lokalne resurse.',
+    'Tradicionalni japanski vrtovi koriste sofisticirane vodene oblike.',
+    'Zemlja reciklira 77% otpadnih voda za industrijsku upotrebu.',
+  ],
+
+  // China
+  CN: [
+    'Kina se nalazi na prvom mjestu po broju brana, posjedujući gotovo više od čitavog ostatka planete.',
+    'Rijeka Jangce je daleko najduža rijeka čitavog azijskog kontinenta sa svojih 6.300 km dužine.',
+    'Impozantna Brana tri klanca proizvodi ogromnu količinu električne energije isključivo snagom vode.',
+    'Kina planira preusmjeriti 44,8 milijardi kubnih metara vode sa juga na sjever.',
+    'Peking dobija vodu iz rezervoara udaljenih preko 1.000 km.',
+    'Kineska poljoprivreda troši 60% ukupnih vodenih resursa zemlje.',
+    'Zemlja ima preko 87.000 brana za kontrolu poplava i navodnjavanje.',
+    'Šangaj prečišćava 98% svojih otpadnih voda iz domaćinstava.',
+    'Kineski projekat transfera vode prebacuje 45 milijardi kubnih metara godišnje.',
+    'Rijeka Li u Guilinu poznata je po svojoj zadivljujućoj kraškoj scenografiji.',
+    'Kina proizvodi 70% svjetske flaširane vode.',
+    'Zemlja je investirala 87 milijardi dolara u vodenu infrastrukturu od 2020. godine.',
   ],
 
   // South Korea
@@ -56,44 +56,12 @@ export const asiaPacificFacts = {
     'Rijeka Gang se smatra svetom i obezbjeđuje vodu za 400 miliona ljudi.',
     'Indija ima samo 4% svjetskih vodenih resursa za 18% svjetske populacije.',
     'Čunovi (stepwells) su drevni indijski sistemi za prikupljanje kišnice.',
-    'Preko 60% indijske poljoprivrede zavisi od podzemnih voda.',
-    'Indija godišnje prečisti samo oko 30% svojih otpadnih voda.',
-    'Novi Delhi se suočava s ekstremnom oskudicom vode svakog ljeta.',
-    'Rijeka Brahmaputra je deveta najveća rijeka u svijetu po protoku.',
-    'Indija ima najveću površinu pod navodnjavanjem na planeti.',
-    'Prikupljanje kišnice je zakonski obavezno u mnogim indijskim gradovima.',
-  ],
-
-  // Australia
-  AU: [
-    'Australija se ubraja u najsušnija ljudska staništa na ovoj planeti.',
-    'Veliki arteški basen drži moćnu količinu vlage ispod sušne unutrašnjosti.',
-    'Veliki koralni greben je globalno poznato stanište u Tihom okeanu.',
-    'Australijanci troše oko 340 litara vode po osobi dnevno.',
-    'Sistem rijeka Murray-Darling je poljoprivredno srce Australije.',
-    'Australija ima neke od najstarijih i najstabilnijih vodenih sistema na svijetu.',
-    'Grad Adelaide dobija do 90% vode iz rijeke Murray tokom suše.',
-    'Australija je lider u recikliranju vode za poljoprivredu i industriju.',
-    'Zemlja investira milijarde u postrojenja za desalinaciju u velikim gradovima.',
-    'Sidnejska luka je najveća prirodna luka na svijetu.',
-    'Australijske kuće često imaju sisteme za prikupljanje kišnice.',
-    'Nestašice vode su čest problem u većini australijskih država.',
-  ],
-
-  // New Zealand
-  NZ: [
-    'Novi Zeland nudi vrhunski čistu vodu s izrazitim kvalitetom izvora.',
-    'Narod Maori je pravno podario statuse ličnosti nekim rijekama u zemlji.',
-    'Rijeka Whanganui drži pravno prepoznati ugled kao pravni subjekt.',
-    'Novi Zeland proizvodi 80% električne energije iz obnovljivih izvora, uglavnom hidroenergije.',
-    'Zemlja ima preko 3.800 jezera većih od jednog hektara.',
-    'Novozelanđani troše oko 227 litara vode po osobi dnevno.',
-    'Jezero Taupo je najveće jezero u Australaziji po površini.',
-    'Novi Zeland ima neke od najdužih spiljskih sistema s vodom na svijetu.',
-    'Poljoprivreda (posebno mliječna industrija) troši 75% vode u zemlji.',
-    'Glečeri na Južnom ostrvu su ključni rezervoari svježe vode.',
-    'Novi Zeland ima 15.000 km obale bogate morskim životom.',
-    'Kvalitet vode u rijekama je veliki ekološki prioritet na Novom Zelandu.',
+    'Pustinja Thar prima manje od 250 mm kiše godišnje.',
+    'Indijska poljoprivreda troši 90% vode u zemlji.',
+    'Jezerske palate u Rajasthanu prikazuju historijsko upravljanje vodom.',
+    'Mumbai prima 2.200 mm kiše godišnje, ali se i dalje suočava s nestašicama.',
+    'Indijska misija Jal Jeevan ima za cilj obezbijediti vodu iz česme svima do 2024. godine.',
+    'Rukavci Kerale čine mrežu jezera i kanala dugu 900 km.',
   ],
 
   // Singapore
@@ -107,9 +75,41 @@ export const asiaPacificFacts = {
     'Zemlja nema prirodnih akvifera niti podzemnih voda.',
     'Aerodrom Changi posjeduje najveći unutrašnji vodopad na svijetu.',
     'Cijena vode u Singapuru uključuje taksu za očuvanje vode.',
-    'Zemlja snažno investira u istraživanje i razvoj vodne tehnologije.',
-    'Svaka zgrada mora instalirati armaturu koja štedi vodu.',
-    'Priča o vodi u Singapuru uči se u školama od šeste godine života.',
+    'Zemlja ulaže velika sredstva u istraživanje i razvoj vodene tehnologije.',
+    'Svaka zgrada mora instalirati vodeno efikasne armature.',
+    'Singapurska priča o vodi uči se u školama od navršene 6. godine.',
+  ],
+
+  // Australia
+  AU: [
+    'Australija se ubraja u najsušnija ljudska staništa na ovoj planeti.',
+    'Veliki arteški basen drži moćnu količinu vlage ispod sušne unutrašnjosti.',
+    'Veliki koralni greben je globalno poznato stanište u Tihom okeanu.',
+    'Australijanci troše oko 340 litara vode po osobi dnevno.',
+    'Sistem rijeka Murray-Darling je poljoprivredno srce Australije.',
+    'Australija ima neke od najstarijih i najstabilnijih vodenih sistema na svijetu.',
+    'Grad Adelaide dobija do 90% vode iz rijeke Murray tokom suše.',
+    'Australija je lider u recikliranju vode za poljoprivredu i industriju.',
+    'Zemlja je prošla kroz decenijske suše.',
+    'Perth zavisi od desalinacije za 50% svoje vode.',
+    'Veliki koraljni greben zahtijeva specifičan kvalitet vode za preživljavanje.',
+    'Australija reciklira samo 2% prečišćene otpadne vode - ima prostora za napredak!',
+  ],
+
+  // New Zealand
+  NZ: [
+    'Novi Zeland nudi vrhunski čistu vodu s izrazitim kvalitetom izvora.',
+    'Narod Maori je pravno podario statuse ličnosti nekim rijekama u zemlji.',
+    'Rijeka Whanganui drži pravno prepoznati ugled kao pravni subjekt.',
+    'Novi Zeland proizvodi 80% električne energije iz obnovljivih izvora, uglavnom hidroenergije.',
+    'Zemlja ima preko 3.800 jezera većih od jednog hektara.',
+    'Novozelanđani troše oko 227 litara vode po osobi dnevno.',
+    'Jezero Taupo je najveće jezero u Australaziji po površini.',
+    'Novi Zeland ima neke od najdužih spiljskih sistema s vodom na svijetu.',
+    'Rijeke u zemlji su dom jedinstvenim vrstama koje se ne nalaze nigdje drugdje.',
+    'Auckland dobija 90% svoje vode iz brana u gorju Waitākere.',
+    'Glečeri Novog Zelanda izgubili su 30% svoje zapremine od 1977. godine.',
+    'Zemlja izvozi premium flaširanu vodu u preko 60 nacija.',
   ],
 
   // Thailand
@@ -123,9 +123,9 @@ export const asiaPacificFacts = {
     'Zemlja doživljava monsune koji donose 90% godišnje kiše.',
     'Tajlandska polja riže troše 80% vodenih rezervi nacije.',
     'Phuket zavisi od prikupljanja kišnice i desalinacije.',
-    'Most na rijeci Kwai je historijski vještački prelaz preko vode.',
+    'Most na rijeci Kwai je historijski vodeni prelaz.',
     'Tajland prečišćava samo 30% svojih otpadnih voda.',
-    'Kanali (klongi) Bangkoka nekada su služili kao vodeni autoputevi.',
+    'Bangkoški klongovi (kanali) nekada su služili kao vodene magistrale.',
   ],
 
   // Vietnam
@@ -139,9 +139,9 @@ export const asiaPacificFacts = {
     'Zemlja ima 3.260 km obale.',
     'Vijetnamska proizvodnja riže zahtijeva masovno navodnjavanje.',
     'Mirisna rijeka (Perfume River) protiče kroz drevni grad Hue.',
-    'Vijetnam gradi velike hidroenergetske brane u visočju.',
-    'Krečnjački krš u zaljevu Halong stvara jedinstvene vodene formacije.',
-    'Rijeka Saigon obezbjeđuje vodu za Ho Chi Minh City.',
+    'Vijetnam gradi velike hidroenergetske brane u planinskim predjelima.',
+    'Krečnjački krševi zaljeva Halong stvaraju jedinstvene vodene formacije.',
+    'Rijeka Sajgon obezbjeđuje vodu za Ho Chi Minh City.',
   ],
 
   // Philippines
@@ -157,7 +157,7 @@ export const asiaPacificFacts = {
     'Manila prečišćava manje od 10% svojih otpadnih voda.',
     'Filipinske terase riže koriste drevne sisteme navodnjavanja.',
     'Voda na Boracayu dolazi iz dubokih bunara.',
-    'Rehabilitacija rijeke Pasig ima za cilj čišćenje glavnog vodenog puta Manile.',
+    'Rehabilitacija rijeke Pasig ima za cilj očistiti Manilski vodeni put.',
   ],
 
   // Malaysia
@@ -188,8 +188,8 @@ export const asiaPacificFacts = {
     'Indonezija ima 521 rijeku i raznolike slivove.',
     'Prašume u Kalimantan i Sumatri čuvaju masivne količine vode.',
     'Tradicionalni indonezijski hramovi vode upravljaju navodnjavanjem.',
-    'Indonezija prečišćava samo 4% svojih kanalizacionih voda.',
-    'Zemlja gradi 65 novih brana za sigurnost snabdijevanja vodom.',
+    'Indonezija prečišćava samo 4% svojih otpadnih voda.',
+    'Zemlja gradi 65 novih brana za sigurnost vode.',
   ],
 
   // Pakistan
@@ -202,10 +202,10 @@ export const asiaPacificFacts = {
     'Zemlja se suočava s ozbiljnom oskudicom vode, rangirana je na 3. mjesto u svijetu.',
     'Voda u Lahoreu dolazi iz podzemnih voda i rijeke Ravi.',
     'Pakistan ima 150 velikih brana.',
-    'Delta Inda nekada je pokrivala 16.000 kvadratnih km, a sada se smanjuje.',
-    'Karachi se suočava s hroničnom nestašicom vode uprkos obalnoj lokaciji.',
-    'Dostupnost vode po glavi stanovnika opala je za 75% od 1950. godine.',
-    'Zemlja gradi brane kako bi skladištila monsunske kiše.',
+    'Delta Inda nekada je pokrivala 16.000 kvadratnih kilometara, a sada se smanjuje.',
+    'Karachi se suočava s hroničnim nestašicama vode uprkos obalnoj lokaciji.',
+    'Dostupnost vode po glavi stanovnika u Pakistanu opala je za 75% od 1950. godine.',
+    'Zemlja gradi brane za skladištenje monsunske kiše.',
   ],
 
   // Bangladesh

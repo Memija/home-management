@@ -1,4 +1,4 @@
-// Europäische Länder Wasserfakten - Deutsch
+// European countries water facts - DE
 export const europeFacts = {
   // Germany
   DE: [
@@ -13,7 +13,7 @@ export const europeFacts = {
     'Hamburg hat Europas ältesten Wasserturm, erbaut 1848.',
     'Deutschland investiert jährlich 4 Milliarden Euro in die Wartung der Wasserinfrastruktur.',
     'Die Spree in Berlin fließt aufgrund des Wassermanagements rückwärts!',
-    'Deutsche Toiletten nutzen Zwei-Mengen-Spülung und sparen 4 Liter pro Spülung.',
+    'Deutsche Toiletten nutzen Doppelspülsysteme, was 4 Liter pro Spülung spart.',
   ],
 
   // Austria
@@ -24,8 +24,8 @@ export const europeFacts = {
     'Österreicher verbrauchen durchschnittlich 130 Liter Wasser pro Person pro Tag.',
     'Österreichs Gletscher speichern genug Wasser, um den Bodensee zweimal zu füllen.',
     'Die Donau durchquert Österreich auf 350km.',
-    'Österreichische Skigebiete nutzen fortschrittliche Beschneiung zur Wassereinsparung.',
-    'Wiens Wasserversorgung hat internationale Qualitätspreise gewonnen.',
+    'Österreichische Skigebiete nutzen fortschrittliche Beschneiung, um Wasser zu sparen.',
+    'Wiener Wasserversorgung hat internationale Qualitätsauszeichnungen gewonnen.',
     'Österreich hat über 2.000 natürliche Mineralquellen.',
     'Salzburgs historische Brunnen stammen aus dem 17. Jahrhundert.',
     'Österreichisches Gesetz garantiert freien Zugang zu sauberem Trinkwasser.',
@@ -44,7 +44,7 @@ export const europeFacts = {
     'Zürichs Wasserversorgung kommt aus dem Zürichsee, ohne Aufbereitung nötig.',
     'Die Schweiz exportiert Wasser an Nachbarländer in Dürrezeiten.',
     'Schweizer Gletscher haben seit 1970 30% ihres Volumens verloren.',
-    "Genfs berühmter Jet d'Eau schießt Wasser 140 Meter hoch.",
+    'Genfs berühmte Jet d\'Eau Fontäne schießt Wasser 140 Meter hoch.',
     'Schweizer Bauvorschriften erfordern Regenwassernutzung für Neubauten.',
   ],
 
@@ -59,8 +59,8 @@ export const europeFacts = {
     'Rotterdams Wasserplatz speichert 1,7 Millionen Liter bei starkem Regen.',
     'Der Afsluitdijk-Damm ist 32km lang und schützt Millionen vor Überschwemmungen.',
     'Niederländische Wasserunternehmen sind öffentlich und sichern niedrige Preise.',
-    'Die Niederlande behandelten 2023 99,9% ihres Abwassers.',
-    'Amsterdam hat über 2.500 Hausboote auf den Stadtkanälen.',
+    'Die Niederlande klärten 2023 99,9% ihres Abwassers.',
+    'Amsterdams Hausboote zählen über 2.500 auf den Stadtkanälen.',
     'Niederländische Ingenieure halfen beim Bau von Wassersystemen in über 50 Ländern.',
   ],
 
@@ -91,9 +91,9 @@ export const europeFacts = {
     'Der Lake District enthält Englands tiefsten See mit 79 Metern.',
     'UK-Wasserzähler sparen Haushalten durchschnittlich 12% bei Rechnungen.',
     'Britanniens viktorianische Abwasserkanäle sind teilweise noch heute in Betrieb.',
-    'Das Vereinigte Königreich behandelt täglich 16 Milliarden Liter Abwasser.',
+    'Das Vereinigte Königreich klärt täglich 16 Milliarden Liter Abwasser.',
     'Walisische Stauseen versorgen Birmingham, 120km entfernt, mit Wasser.',
-    'Das UK verliert täglich 3 Milliarden Liter durch undichte Rohre.',
+    'Das Vereinigte Königreich verliert täglich 3 Milliarden Liter durch undichte Rohre.',
   ],
 
   // Italy
@@ -107,9 +107,9 @@ export const europeFacts = {
     'Italienischer Espresso verwendet nur 30ml Wasser pro Tasse.',
     'Rom hat über 2.500 Trinkbrunnen, genannt "Nasoni".',
     'Italien produziert jährlich 14 Milliarden Liter Mineralwasser.',
-    'Der Gardasee ist Italiens größter See mit 370 Quadratkilometern.',
-    'Italienisches Gesetz erklärt Wasser zum öffentlichen Gut, nicht zur Ware.',
-    'Sizilien leidet trotz Meerlage unter Wassermangel.',
+    'Der Gardasee ist mit 370 Quadratkilometern Italiens größter See.',
+    'Das italienische Gesetz erklärt Wasser zum öffentlichen Gut, nicht zur Ware.',
+    'Sizilien hat Wasserknappheit, obwohl es vom Meer umgeben ist.',
   ],
 
   // Spain
@@ -121,91 +121,11 @@ export const europeFacts = {
     'Die spanische Landwirtschaft nutzt 80% der Wasserressourcen des Landes.',
     'Die Alhambra zeigt ausgeklügelte islamische Wassergärten.',
     'Barcelona recycelt Grauwasser für 25% seiner Parkbewässerung.',
-    'Spaniens Stauseen können 56 Milliarden Kubikmeter speichern.',
+    'Spaniens Stauseesystem kann 56 Milliarden Kubikmeter speichern.',
     'Der Ebro ist Spaniens wichtigste Wasserquelle.',
     'Die Kanarischen Inseln hängen zu 100% von entsalztem Wasser ab.',
     'Madrids Canal de Isabel II versorgt 6 Millionen Menschen.',
-    'Spanische Tröpfchenbewässerung wurde in Almerías Gewächshäusern entwickelt.',
-  ],
-
-  // Poland
-  PL: [
-    'Polen hat über 9.300 Seen, meist von Gletschern geformt.',
-    'Die Weichsel ist Polens längster Fluss mit 1.047km.',
-    'Polnische Haushalte verbrauchen durchschnittlich 92 Liter pro Person pro Tag.',
-    'Krakaus Wasser stammt aus der Rudawa, einem Weichsel-Nebenfluss.',
-    'Polens Ostseeküste erstreckt sich über 770km.',
-    'Das Salzbergwerk Wieliczka hat unterirdische Seen in 135 Metern Tiefe.',
-    'Polnische Wasserpreise gehören zu den niedrigsten in der EU.',
-    'Der Białowieża-Urwald enthält Europas größte Feuchtgebiete.',
-    'Polen recycelt 64% seines Abwassers für die Landwirtschaft.',
-    'Warschaus Wassersystem versorgt 1,8 Millionen Einwohner.',
-    'Die Oder bildet den größten Teil der polnisch-deutschen Grenze.',
-    'Polnische Kurorte nutzen Mineralwasser seit dem 13. Jahrhundert.',
-  ],
-
-  // Bosnia and Herzegovina
-  BA: [
-    'Bosnien hat einige der saubersten Flüsse und unberührten Wasserquellen Europas.',
-    'Die Neretva ist berühmt für ihre atemberaubende smaragdgrüne Farbe.',
-    'Sarajevos Wasser stammt aus Bosniens reichhaltigen Bergquellen.',
-    'Bosniens Pliva-Wasserfall trieb Europas erste elektrische Mühle an.',
-    'Die Una ist einer der letzten wilden Flüsse Europas, perfekt zum Rafting.',
-    'Bosnien nutzt nur 1% seiner verfügbaren Wasserressourcen.',
-    'Das Hutovo Blato Feuchtgebiet beherbergt 240 Vogelarten und seltene Fische.',
-    'Die Buna-Quelle bei Blagaj ist eine der größten Karstquellen Europas.',
-    'Bosniens Kravice-Wasserfälle werden oft "Mini-Niagara" genannt.',
-    'Das Land hat über 30 Mineralwasserquellen.',
-    'Mostars Alte Brücke überspannt die Neretva, ein UNESCO-Welterbe.',
-    'Bosniens Wasser ist so rein, dass 90% keine Aufbereitung benötigen.',
-  ],
-
-  // Portugal
-  PT: [
-    'Portugal hat über 1.200km Küstenlinie am Atlantik.',
-    'Der Tejo ist mit 1.007km der längste Fluss der Iberischen Halbinsel.',
-    'Lissabons historisches Aquädukt Águas Livres wurde im 18. Jahrhundert erbaut.',
-    'Portugal nutzt 75% seines Wassers für die Landwirtschaft.',
-    'Die Algarve-Region leidet unter Wasserstress durch Tourismus.',
-    'Portugiesische Haushalte verbrauchen etwa 130 Liter pro Person pro Tag.',
-    'Portugals Douro-Tal-Weinberge nutzen antike Bewässerungssysteme.',
-    'Das Land hat über 50 Thermalquellen für Wellness-Tourismus.',
-    'Portos Wasser stammt aus den Flüssen Douro und Paiva.',
-    'Portugal produziert einige der feinsten Mineralwässer Europas.',
-    'Der Alqueva-Stausee ist Westeuropas größter künstlicher See.',
-    'Madeira sammelt Wasser durch historische "Levada"-Kanäle.',
-  ],
-
-  // Croatia
-  HR: [
-    'Kroatien hat über 1.000 Inseln entlang seiner Adriaküste.',
-    'Der Nationalpark Plitvicer Seen hat 16 terrassierte Seen und Wasserfälle.',
-    'Kroatisches Leitungswasser gehört zu den besten in Europa.',
-    'Das Land nutzt nur 10% seines verfügbaren Süßwassers.',
-    'Der Nationalpark Krka bietet spektakuläre Kaskadenwasserfälle.',
-    'Splits Diokletianpalast nutzte römische Wassersysteme.',
-    'Kroatiens Küste ist berühmt für kristallklares Badewasser.',
-    'Die Cetina-Schlucht ist beliebt für Abenteuer-Wassersport.',
-    'Dubrovniks historische Mauern schützten wertvolle Wasserzisternen.',
-    'Kroatische Haushalte verbrauchen etwa 100 Liter pro Person pro Tag.',
-    'Die Blaue Grotte auf Vis erzeugt atemberaubende Wasserlichteffekte.',
-    'Zagrebs Wasser stammt aus dem Save-Alluvialaquifer.',
-  ],
-
-  // Greece
-  GR: [
-    'Griechenland hat über 6.000 Inseln, von denen nur 227 bewohnt sind.',
-    'Die alten Griechen bauten vor 2.500 Jahren ausgeklügelte Aquädukte.',
-    'Griechische Inseln sind stark auf Entsalzung für Süßwasser angewiesen.',
-    'Die Griechen erfanden frühe Sanitär- und Abwassersysteme.',
-    'Santorin hat keine natürlichen Wasserquellen und importiert alles Wasser.',
-    'Griechische Haushalte verbrauchen etwa 120 Liter pro Person pro Tag.',
-    'Die Akropolis hatte ein komplexes Wassersammelsystem.',
-    'Kretas minoische Zivilisation hatte vor 4.000 Jahren Spültoiletten!',
-    'Griechenlands längster Fluss, der Aliakmonas, ist 297km lang.',
-    'Das Land hat über 400 Thermalquellen.',
-    'Griechische Olivenhaine sparen 70% Wasser durch Tröpfchenbewässerung.',
-    'Thessalonikis Wasser stammt aus dem Aliakmonas.',
+    'Spanische Tröpfchenbewässerung war Vorreiter in Almerías Gewächshäusern.',
   ],
 
   // Belgium
@@ -219,9 +139,9 @@ export const europeFacts = {
     'Brüssel hat 14 historische öffentliche Brunnen.',
     'Belgische Schokoladenproduktion erfordert strenge Wasserreinheit.',
     'Das Land recycelt 85% seines Industriewassers.',
-    'Spa in Belgien gab allen Wellness-Wasserkurorten seinen Namen.',
-    'Gents mittelalterliches Wassersystem ist teilweise noch in Betrieb.',
-    'Belgiens Flaschenwasserindustrie reicht bis ins 16. Jahrhundert zurück.',
+    'Spa in Belgien gab allen Wellness-Wasser-Resorts seinen Namen.',
+    'Ghents mittelalterliches Wassersystem ist teilweise noch in Gebrauch.',
+    'Belgiens Flaschenwasserindustrie geht auf das 16. Jahrhundert zurück.',
   ],
 
   // Ireland
@@ -233,27 +153,11 @@ export const europeFacts = {
     'Irland erhebt keine Wassergebühren für Privatnutzung.',
     'Die Torflandschaften des Landes wirken als natürliche Wasserfilter.',
     'Die Galway Bay versorgt die Muschelzucht mit Wasser.',
-    'Irlands Cliffs of Moher sind ständiger Atlantikgischt ausgesetzt.',
+    'Irlands Cliffs of Moher sind ständigem Atlantik-Spray ausgesetzt.',
     'Traditionelle irische Brunnen galten als heilige Stätten.',
-    "Der Giant's Causeway zeigt antike vulkanische Wasserkühlung.",
-    'Corks Lee River fließt durch Europas ältesten Buttermarkt.',
-    'Irland plant Investitionen von 13 Milliarden Euro in Wasserinfrastruktur.',
-  ],
-
-  // Sweden
-  SE: [
-    'Schweden hat über 100.000 Seen, die 9% seiner Fläche bedecken!',
-    'Schwedisches Leitungswasser gehört zum saubersten der Welt.',
-    'Das Land nutzt nur 3% seines verfügbaren Süßwassers.',
-    'Stockholm ist auf 14 Inseln gebaut, verbunden durch 57 Brücken.',
-    'Schwedische Haushalte verbrauchen etwa 140 Liter pro Person pro Tag.',
-    'Der Götakanal verbindet Schwedens Ost- und Westküste.',
-    'Schwedens nördliche Flüsse liefern 45% der EU-Wasserkraft.',
-    'Der Vänern ist Westeuropas größter See.',
-    'Schwedisches Recht garantiert öffentlichen Zugang zu Seen und Flüssen.',
-    'Göteborgs Wasser stammt aus der Göta älv.',
-    'Schweden recycelt 99% des häuslichen Abwassers.',
-    'Das Land hat über 2.000 Wasserkraftwerke.',
+    'Der Giant\'s Causeway zeigt uralte vulkanische Wasserabkühlung.',
+    'Corks Lee-Fluss fließt durch Europas ältesten Buttermarkt.',
+    'Irland plant 13 Milliarden Euro in Wasserinfrastruktur zu investieren.',
   ],
 
   // Norway
@@ -264,12 +168,12 @@ export const europeFacts = {
     'Norwegens Wasserkraft stammt aus über 1.600 Anlagen.',
     'Das Land hat 450.000 Seen, darunter Europas tiefster.',
     'Bergen erhält jährlich über 2.250mm Niederschlag!',
-    'Norwegen exportiert Wassertechnologie in über 40 Länder.',
-    'Die Mitternachtssonne verhindert Eis auf nördlichen Seen im Sommer.',
-    'Oslos Leitungswasser stammt aus geschützten Wald-Wassereinzugsgebieten.',
+    'Norwegen exportiert Wassertechnologien in über 40 Länder.',
+    'Die Mitternachtssonne verhindert im Sommer Eis auf nördlichen Seen.',
+    'Oslos Leitungswasser kommt aus geschützten Waldgebieten.',
     'Norwegische Lachsfarmen nutzen fortschrittliche Wasserfiltersysteme.',
-    'Die Gletscher des Landes schmelzen jährlich um 2%.',
-    'Norwegen hat den längsten Straßentunnel der Welt mit 24,5km.',
+    'Die Gletscher des Landes schmelzen um 2% pro Jahr.',
+    'Norwegen hat den weltweit längsten Straßentunnel mit 24,5km.',
   ],
 
   // Denmark
@@ -285,7 +189,7 @@ export const europeFacts = {
     'Dänemarks Wasserqualität wird jährlich 200.000 Mal getestet.',
     'Die Öresundbrücke verbindet Dänemark über Wasser mit Schweden.',
     'Dänische Haushalte zahlen etwa 5€ pro Kubikmeter Wasser.',
-    'Das Land strebt bis 2030 100% erneuerbare Wassererwärmung an.',
+    'Das Land strebt 100% erneuerbare Wassererwärmung bis 2030 an.',
   ],
 
   // Finland
@@ -299,9 +203,89 @@ export const europeFacts = {
     'Der Saimaa-See ist Finnlands größter See mit 4.400 km².',
     'Finnlands Lappland hat Europas letzte wilde Stromschnellen.',
     'Das Land behandelt 99,9% seines Abwassers.',
-    'Finnische Wälder filtern Regenwasser natürlich in Aquifere.',
-    'Finnland hat 314 Inseln größer als 1 Quadratkilometer.',
+    'Finnische Wälder filtern Regenwasser natürlich in Grundwasserleiter.',
+    'Finnland hat 314 Inseln, die größer als 1 Quadratkilometer sind.',
     'Die Mitternachtssonne spiegelt sich im Sommer auf unzähligen finnischen Seen.',
+  ],
+
+  // Sweden
+  SE: [
+    'Schweden hat über 100.000 Seen, die 9% seiner Fläche bedecken!',
+    'Schwedisches Leitungswasser gehört zum saubersten der Welt.',
+    'Das Land nutzt nur 3% seines verfügbaren Süßwassers.',
+    'Stockholm ist auf 14 Inseln gebaut, verbunden durch 57 Brücken.',
+    'Schwedische Haushalte verbrauchen etwa 140 Liter pro Person pro Tag.',
+    'Der Götakanal verbindet Schwedens Ost- und Westküste.',
+    'Schwedens nördliche Flüsse liefern 45% der EU-Wasserkraft.',
+    'Der Vänersee ist Westeuropas größter See.',
+    'Das schwedische Gesetz garantiert öffentlichen Zugang zu Seen und Flüssen.',
+    'Göteborgs Wasser kommt aus dem Fluss Göta älv.',
+    'Schweden recycelt 99% des Haushaltsabwassers.',
+    'Das Land hat über 2.000 Wasserkraftwerke.',
+  ],
+
+  // Poland
+  PL: [
+    'Polen hat über 9.300 Seen, meist von Gletschern geformt.',
+    'Die Weichsel ist Polens längster Fluss mit 1.047km.',
+    'Polnische Haushalte verbrauchen durchschnittlich 92 Liter pro Person pro Tag.',
+    'Krakaus Wasser stammt aus der Rudawa, einem Weichsel-Nebenfluss.',
+    'Polens Ostseeküste erstreckt sich über 770km.',
+    'Das Salzbergwerk Wieliczka hat unterirdische Seen in 135 Metern Tiefe.',
+    'Polnische Wasserpreise gehören zu den niedrigsten in der EU.',
+    'Der Białowieża-Wald enthält Europas größte Urwald-Feuchtgebiete.',
+    'Polen recycelt 64% seines Abwassers für die Landwirtschaft.',
+    'Warschaus Wassersystem versorgt 1,8 Millionen Einwohner.',
+    'Die Oder bildet den Großteil von Polens Grenze zu Deutschland.',
+    'Polnische Heilbäder nutzen Mineralwasser seit dem 13. Jahrhundert.',
+  ],
+
+  // Portugal
+  PT: [
+    'Portugal hat über 1.200km Küstenlinie am Atlantik.',
+    'Der Tejo ist mit 1.007km der längste Fluss der Iberischen Halbinsel.',
+    'Lissabons historisches Aquädukt Águas Livres wurde im 18. Jahrhundert erbaut.',
+    'Portugal nutzt 75% seines Wassers für die Landwirtschaft.',
+    'Die Algarve-Region leidet unter Wasserstress durch Tourismus.',
+    'Portugiesische Haushalte verbrauchen etwa 130 Liter pro Person pro Tag.',
+    'Portugals Douro-Tal-Weinberge nutzen antike Bewässerungssysteme.',
+    'Das Land hat über 50 Thermalquellen für Kur-Tourismus.',
+    'Portos Wasser kommt aus den Flüssen Douro und Paiva.',
+    'Portugal produziert einige von Europas feinsten Mineralwässern.',
+    'Der Alqueva-Stausee ist Westeuropas größter künstlicher See.',
+    'Madeira sammelt Wasser durch historische "Levada"-Kanäle.',
+  ],
+
+  // Greece
+  GR: [
+    'Griechenland hat über 6.000 Inseln, von denen nur 227 bewohnt sind.',
+    'Die alten Griechen bauten vor 2.500 Jahren ausgeklügelte Aquädukte.',
+    'Griechische Inseln sind stark auf Entsalzung für Süßwasser angewiesen.',
+    'Die Griechen erfanden frühe Sanitär- und Abwassersysteme.',
+    'Santorin hat keine natürlichen Wasserquellen und importiert alles Wasser.',
+    'Griechische Haushalte verbrauchen etwa 120 Liter pro Person pro Tag.',
+    'Die Akropolis hatte ein komplexes Wassersammelsystem.',
+    'Kretas minoische Zivilisation hatte vor 4.000 Jahren Spültoiletten!',
+    'Griechenlands längster Fluss, der Aliakmonas, ist 297km lang.',
+    'Das Land hat über 400 Thermalquellen.',
+    'Griechische Olivenhaine verbrauchen 70% weniger Wasser mit Tröpfchenbewässerung.',
+    'Thessalonikis Wasser kommt aus dem Fluss Aliakmonas.',
+  ],
+
+  // Croatia
+  HR: [
+    'Kroatien hat über 1.000 Inseln entlang seiner Adriaküste.',
+    'Der Nationalpark Plitvicer Seen hat 16 terrassierte Seen und Wasserfälle.',
+    'Kroatisches Leitungswasser gehört zu den besten in Europa.',
+    'Das Land nutzt nur 10% seines verfügbaren Süßwassers.',
+    'Der Nationalpark Krka bietet spektakuläre Kaskadenwasserfälle.',
+    'Splits Diokletianpalast nutzte römische Wassersysteme.',
+    'Kroatiens Küste ist berühmt für kristallklares Badewasser.',
+    'Die Cetina-Schlucht ist beliebt für Abenteuer-Wassersport.',
+    'Dubrovniks historische Mauern schützten seine kostbaren Wasserzisternen.',
+    'Kroatische Haushalte verbrauchen etwa 100 Liter pro Person pro Tag.',
+    'Die Blaue Grotte auf der Insel Vis erzeugt atemberaubende Wasser-Lichteffekte.',
+    'Zagrebs Wasser kommt aus dem alluvialen Grundwasserleiter der Save.',
   ],
 
   // Czech Republic
@@ -317,7 +301,23 @@ export const europeFacts = {
     'Die Elbe verbindet Tschechien mit der Nordsee.',
     'České Budějovice ist Heimat der originalen Budweiser-Brauerei.',
     'Das Land behandelt 99,5% seines Abwassers.',
-    'Tschechische Schlösser haben oft kunstvolle barocke Brunnen.',
+    'Tschechische Schlösser verfügen oft über kunstvolle Barockbrunnen.',
+  ],
+
+  // Bosnia and Herzegovina
+  BA: [
+    'Bosnien hat einige der saubersten Flüsse und unberührten Wasserquellen Europas.',
+    'Die Neretva ist berühmt für ihre atemberaubende smaragdgrüne Farbe.',
+    'Sarajevos Wasser stammt aus Bosniens reichhaltigen Bergquellen.',
+    'Bosniens Pliva-Wasserfall trieb Europas erste elektrische Mühle an.',
+    'Die Una ist einer der letzten wilden Flüsse Europas, perfekt zum Rafting.',
+    'Bosnien nutzt nur 1% seiner verfügbaren Wasserressourcen.',
+    'Das Feuchtgebiet Hutovo Blato ist Heimat für 240 Vogelarten und seltene Fische.',
+    'Blagajs Buna-Quelle ist eine der größten Karstquellen Europas.',
+    'Bosniens Kravice-Wasserfälle werden oft als "Mini-Niagara" bezeichnet.',
+    'Das Land hat über 30 Mineralwasserquellen.',
+    'Mostars Alte Brücke überspannt die Neretva, ein UNESCO-Weltkulturerbe.',
+    'Bosniens Wasser ist so rein, dass 90% keine Aufbereitung benötigen.',
   ],
 
   // Hungary
@@ -331,9 +331,9 @@ export const europeFacts = {
     'Ungarische Thermen ziehen jährlich 5 Millionen Besucher an.',
     'Die Große Ungarische Tiefebene ist stark auf Grundwasser angewiesen.',
     'Ungarn exportiert natürliches Mineralwasser in über 40 Länder.',
-    'Die Theiß versorgt Ostungarn mit Wasser.',
-    'Ungarisches Thermalwasser ist für heilende Eigenschaften bekannt.',
-    'Budapest hat 125 natürliche heiße Quellen im Stadtgebiet.',
+    'Der Fluss Theiß versorgt Ostungarn mit Wasser.',
+    'Ungarisches Thermalwasser ist für seine heilenden Eigenschaften bekannt.',
+    'Budapest hat 125 natürliche heiße Quellen innerhalb der Stadtgrenzen.',
   ],
 
   // Romania
@@ -346,7 +346,7 @@ export const europeFacts = {
     'Siebenbürgens Mineralwasser wird weltweit in Flaschen abgefüllt und exportiert.',
     'Die Eiserne Tor-Schlucht ist die tiefste Stelle der Donau.',
     'Rumänische Seen liefern 70% des Trinkwassers des Landes.',
-    'Der Bigar-Wasserfall hat eine perfekte Kegelform.',
+    'Der Bigar-Wasserfall hat die Form eines perfekten Kegels.',
     'Rumänien klärt 60% seines Abwassers.',
     'Die Karpatenwälder filtern Regenwasser natürlich.',
     'Bukarest bezieht Wasser aus den Flüssen Argeș und Ialomița.',
@@ -364,8 +364,8 @@ export const europeFacts = {
     'Slowenien recycelt 72% seines Abwassers.',
     'Die Save ist mit 221km der längste Fluss des Landes.',
     'Ljubljana liegt an der Ljubljanica.',
-    'Sloweniens Leitungswasserqualität gehört zu Europas besten.',
-    'Die Julischen Alpen liefern reines Schmelzwasser.',
+    'Sloweniens Leitungswasserqualität gehört zu den besten Europas.',
+    'Die Julischen Alpen liefern reines Schneeschmelzwasser.',
   ],
 
   // Slovakia
@@ -379,9 +379,9 @@ export const europeFacts = {
     'Die Slowakei hat 23.000km Flüsse und Bäche.',
     'Das Land klärt 68% seines Abwassers.',
     'Die Domica-Höhle hat Europas größten unterirdischen Fluss.',
-    'Die Waag ist mit 406km die Slowakeis längster Fluss.',
+    'Die Waag ist mit 406km der längste Fluss der Slowakei.',
     'Slowakische Bergquellen liefern makelloses Trinkwasser.',
-    'Der Kurort Bardejov hat 6 Thermalquellen.',
+    'Die Kurstadt Bardejov hat 6 Thermalquellen.',
   ],
 
   // Serbia
@@ -395,8 +395,8 @@ export const europeFacts = {
     'Belgrad liegt am Zusammenfluss von Save und Donau.',
     'Der Djerdap-Staudamm liefert Wasserkraft für Serbien.',
     'Serbisches Thermalwasser wird für landwirtschaftliche Heizung genutzt.',
-    'Der Uvac schlängelt sich spektakulär durch Schluchten.',
-    'Serbische Klöster wurden oft nahe natürlicher Quellen gebaut.',
+    'Der Fluss Uvac schlängelt sich spektakulär durch Schluchten.',
+    'Serbische Klöster wurden oft in der Nähe natürlicher Quellen gebaut.',
     'Das Land hat 55.000km Wasserinfrastruktur.',
   ],
 
@@ -409,10 +409,10 @@ export const europeFacts = {
     'Montenegro hat 293km atemberaubender Adriaküste.',
     'Die Bucht von Kotor ist UNESCO-Weltkulturerbe.',
     'Montenegros Flüsse liefern 99% erneuerbare Wasserkraft.',
-    'Das Land hat einige der saubersten Badegewässer Europas.',
+    'Das Land hat einige von Europas saubersten Badegewässern.',
     'Biogradska Gora hat drei Gletscherseen.',
     'Montenegro exportiert Flaschenwasser in Nachbarländer.',
-    'Die Morača versorgt Podgorica mit Wasser.',
+    'Der Fluss Morača speist die Wasserversorgung von Podgorica.',
     'Montenegros Quellen erzeugen zahlreiche Wasserfälle.',
   ],
 
@@ -429,7 +429,7 @@ export const europeFacts = {
     'Mazedonisches Mineralwasser wird regional exportiert.',
     'Die Treska-Schlucht ist beliebt für Wassersport.',
     'Nordmazedonien klärt 30% seines Abwassers.',
-    'Quellwasser vom Vodno-Berg versorgt Skopje.',
+    'Quellwasser vom Berg Vodno versorgt Skopje.',
   ],
 
   // Albania
@@ -444,7 +444,7 @@ export const europeFacts = {
     'Das Land hat 427km Küste.',
     'Thermalquellen in Benja werden therapeutisch genutzt.',
     'Albanien exportiert Flaschenwasser aus Bergquellen.',
-    'Der Drin ist mit 285km Albaniens längster Fluss.',
+    'Der Drin ist mit 285km der längste Fluss Albaniens.',
     'Der Ohridsee grenzt an Albanien und Nordmazedonien.',
   ],
 
@@ -461,6 +461,6 @@ export const europeFacts = {
     'Das Land hat mehrere Mineralwasserquellen.',
     'Die Gadime-Höhle hat unterirdische Wassermerkmale.',
     'Kosovo arbeitet an verbesserter Abwasserklärung.',
-    'Bergbäche versorgen die meisten ländlichen Gebiete.',
+    'Gebirgsbäche versorgen die meisten ländlichen Gebiete.',
   ],
 };

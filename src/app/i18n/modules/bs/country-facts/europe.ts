@@ -1,4 +1,4 @@
-// European countries water facts - Bosnian
+// European countries water facts - BS
 export const europeFacts = {
   // Germany
   DE: [
@@ -13,7 +13,7 @@ export const europeFacts = {
     'Hamburg ima najstariji vodotoranj u Evropi, izgrađen 1848. godine.',
     'Njemačka godišnje investira 4 milijarde eura u održavanje vodovodne infrastrukture.',
     'Rijeka Spree u Berlinu teče unazad zbog upravljanja vodama!',
-    'Njemački toaleti koriste sisteme dvostrukog ispiranja, štedeći 4 litra po ispiranju.',
+    'Njemački toaleti koriste sisteme s dvostrukim ispiranjem, štedeći 4 litra po ispiranju.',
   ],
 
   // Austria
@@ -24,11 +24,11 @@ export const europeFacts = {
     'Austrijanci troše prosječno 130 litara vode po osobi dnevno.',
     'Austrijski glečeri čuvaju dovoljno vode da dvaput napune Bodensko jezero.',
     'Rijeka Dunav prolazi kroz Austriju u dužini od 350 km.',
-    'Austrijska skijališta koriste napredno pravljenje snijega kako bi uštedjeli vodu.',
-    'Snabdijevanje Beča vodom dobilo je međunarodne nagrade za kvalitet.',
+    'Austrijska skijališta koriste napredno pravljenje snijega za očuvanje vode.',
+    'Bečki vodovod je dobio međunarodne nagrade za kvalitet.',
     'Austrija ima preko 2.000 prirodnih mineralnih izvora.',
     'Historijske fontane u Salzburgu datiraju iz 17. vijeka.',
-    'Austrijski zakon garantuje slobodan pristup čistoj pitkoj vodi.',
+    'Austrijski zakon garantuje besplatan pristup čistoj pitkoj vodi.',
     'Austrijske Alpe čuvaju 50% evropskih rezervi svježe vode.',
   ],
 
@@ -44,7 +44,7 @@ export const europeFacts = {
     'Snabdijevanje Züricha vodom dolazi iz Ciriškog jezera bez potrebe za tretmanom.',
     'Švicarska izvozi vodu susjednim zemljama u periodima suše.',
     'Švicarski glečeri su izgubili 30% svog volumena od 1970. godine.',
-    'Čuvena fontana Jet d\'Eau u Ženevi izbacuje vodu do 140 metara visine.',
+    'Čuvena fontana Jet d\'Eau u Ženevi izbacuje vodu 140 metara u visinu.',
     'Švicarski građevinski propisi zahtijevaju prikupljanje kišnice za nove objekte.',
   ],
 
@@ -59,8 +59,8 @@ export const europeFacts = {
     'Vodeni trg u Roterdamu skladišti 1,7 miliona litara vode tokom jake kiše.',
     'Brana Afsluitdijk duga je 32 km, štiteći milione od poplava.',
     'Holandska vodovodna preduzeća su u javnom vlasništvu, što osigurava niske cijene.',
-    'Holandija je u 2023. godini prečistila 99,9% svojih otpadnih voda.',
-    'Amsterdamski splavovi na gradskim kanalima broje preko 2.500 objekata.',
+    'Holandija je prečistila 99,9% svojih otpadnih voda u 2023. godini.',
+    'U Amsterdamu ima preko 2.500 kuća na vodi na gradskim kanalima.',
     'Holandski inženjeri su pomogli u izgradnji vodovodnih sistema u preko 50 zemalja.',
   ],
 
@@ -91,9 +91,9 @@ export const europeFacts = {
     'Lake District sadrži najdublje jezero u Engleskoj sa 79 metara dubine.',
     'Vodomjeri u UK štede domaćinstvima prosječno 12% na računima.',
     'Britanska viktorijanska kanalizacija je i danas djelimično u upotrebi.',
-    'UK dnevno prečišćava 16 milijardi litara otpadnih voda.',
-    'Velški rezervoari snabdijevaju vodom Birmingham, udaljen 120 km.',
-    'UK dnevno gubi 3 milijarde litara vode kroz cijevi koje cure.',
+    'UK prečišćava 16 milijardi litara otpadnih voda dnevno.',
+    'Velški rezervoari snabdijevaju Birmingham vodom, udaljen 120 km.',
+    'UK gubi 3 milijarde litara dnevno kroz cijevi koje procure.',
   ],
 
   // Italy
@@ -107,9 +107,9 @@ export const europeFacts = {
     'Italijanski espresso koristi samo 30 ml vode po šoljici.',
     'Rim ima preko 2.500 javnih česmi zvanih "nasoni".',
     'Italija godišnje proizvodi 14 milijardi litara mineralne vode.',
-    'Jezero Garda je najveće jezero u Italiji sa 370 kvadratnih kilometara.',
+    'Garda je najveće jezero u Italiji sa 370 kvadratnih kilometara.',
     'Italijanski zakon proglašava vodu javnim dobrom, a ne robom.',
-    'Sicilija se suočava s nestašicom vode uprkos tome što je okružena morem.',
+    'Sicilija se suočava s nestašicom vode iako je okružena morem.',
   ],
 
   // Spain
@@ -120,12 +120,12 @@ export const europeFacts = {
     'Sliv rijeke Guadalquivir navodnjava maslinike u južnoj Španiji.',
     'Španska poljoprivreda koristi 80% vodenih resursa zemlje.',
     'Palata Alhambra posjeduje sofisticirane islamske vodene vrtove.',
-    'Barcelona reciklira otpadne kuhinjske i kupaonske vode za 25% navodnjavanja svojih parkova.',
-    'Sistem rezervoara u Španiji može uskladištiti 56 milijardi kubnih metara vode.',
+    'Barcelona reciklira sivu vodu za 25% navodnjavanja svojih parkova.',
+    'Španski sistem rezervoara može uskladištiti 56 milijardi kubnih metara.',
     'Rijeka Ebro je najvažniji izvor vode u Španiji.',
     'Kanarska ostrva 100% zavise od desalinirane vode.',
     'Madridski Canal de Isabel II snabdijeva 6 miliona ljudi.',
-    'Špansko navodnjavanje kap po kap uvedeno je u staklenicima Almerije.',
+    'Špansko navodnjavanje kap po kap započeto je u staklenicima u Almeríji.',
   ],
 
   // Belgium
@@ -139,7 +139,7 @@ export const europeFacts = {
     'Brisel ima 14 historijskih javnih fontana.',
     'Proizvodnja belgijske čokolade zahtijeva strogu čistoću vode.',
     'Zemlja reciklira 85% svoje industrijske vode.',
-    'Spa u Belgiji je dao ime svim wellness vodenim centrima širom svijeta.',
+    'Grad Spa u Belgiji dao je ime svim wellness centrima.',
     'Srednjovjekovni vodovodni sistem u Gentu je i dalje djelimično u upotrebi.',
     'Belgijska industrija flaširane vode datira iz 1500-ih godina.',
   ],
@@ -153,10 +153,10 @@ export const europeFacts = {
     'Irska nema naknade za vodu za stambeno korištenje.',
     'Irska tresetna područja djeluju kao prirodni filteri vode.',
     'Zaljev Galway obezbjeđuje vodu za uzgoj školjki.',
-    'Irske litice Cliffs of Moher suočavaju se sa stalnim morskim prskanjem s Atlantika.',
+    'Irske litice Moher izložene su stalnom prskanju Atlantika.',
     'Tradicionalni irski bunari smatrani su svetim mjestima.',
-    'Giant\'s Causeway pokazuje drevno hlađenje vulkanske vode.',
-    'Rijeka Lee u Corku teče kroz najstariju pijacu putera u Evropi.',
+    'Giant\'s Causeway pokazuje drevno vulkansko hlađenje vodom.',
+    'Rijeka Lee u Corku protiče kroz najstariju pijacu putera u Evropi.',
     'Irska planira investirati 13 milijardi eura u vodovodnu infrastrukturu.',
   ],
 
@@ -169,10 +169,10 @@ export const europeFacts = {
     'Zemlja ima 450.000 jezera, uključujući najdublje u Evropi.',
     'U Bergenu godišnje padne preko 2.250 mm kiše!',
     'Norveška izvozi vodnu tehnologiju u preko 40 zemalja.',
-    'Ponoćno sunce sprječava zaleđivanje sjevernih jezera ljeti.',
-    'Voda iz česme u Oslu dolazi iz zaštićenih šumskih slivova.',
-    'Norveške farme lososa koriste napredne sisteme za filtriranje vode.',
-    'Norveški glečeri se tope brzinom od 2% godišnje.',
+    'Ponoćno sunce sprečava zaleđivanje sjevernih jezera ljeti.',
+    'Osloska voda iz česme dolazi iz zaštićenih šumskih slivova.',
+    'Norveške farme lososa koriste napredne sisteme filtracije vode.',
+    'Glečeri u zemlji se tope stopom od 2% godišnje.',
     'Norveška ima najduži cestovni tunel na svijetu od 24,5 km.',
   ],
 
@@ -189,7 +189,7 @@ export const europeFacts = {
     'Kvalitet vode u Danskoj se testira 200.000 puta godišnje.',
     'Most Øresund povezuje Dansku sa Švedskom preko vode.',
     'Danska domaćinstva plaćaju oko 5 € po kubnom metru vode.',
-    'Zemlja teži 100% obnovljivom zagrijavanju vode do 2030. godine.',
+    'Zemlja teži 100% obnovljivom grijanju vode do 2030. godine.',
   ],
 
   // Finland
@@ -203,9 +203,9 @@ export const europeFacts = {
     'Jezero Saimaa je najveće jezero u Finskoj s površinom od 4.400 km².',
     'Finska Laponija posjeduje posljednje divlje brzake u Evropi.',
     'Zemlja prečišćava 99,9% svojih otpadnih voda.',
-    'Finske šume prirodno filtriraju kišnicu u vodonosne slojeve.',
+    'Finske šume prirodno filtriraju kišnicu u akvifere.',
     'Finska ima 314 ostrva većih od 1 kvadratnog kilometra.',
-    'Ponoćno sunce se ljeti reflektuje na bezbrojnim finskim jezerima.',
+    'Ponoćno sunce se ljeti reflektuje sa nebrojenih finskih jezera.',
   ],
 
   // Sweden
@@ -217,9 +217,9 @@ export const europeFacts = {
     'Švedska domaćinstva troše oko 140 litara po osobi dnevno.',
     'Kanal Göta povezuje istočnu i zapadnu obalu Švedske.',
     'Švedske sjeverne rijeke obezbjeđuju 45% hidroenergije u EU.',
-    'Jezero Vänern je najveće jezero u zapadnoj Evropi.',
+    'Vänern je najveće jezero u zapadnoj Evropi.',
     'Švedski zakon garantuje javni pristup jezerima i rijekama.',
-    'Voda u Göteborgu dolazi iz rijeke Göta älv.',
+    'Voda u Gothenburgu dolazi iz rijeke Göta älv.',
     'Švedska reciklira 99% otpadnih voda iz domaćinstava.',
     'Zemlja ima preko 2.000 hidroelektrana.',
   ],
@@ -233,10 +233,10 @@ export const europeFacts = {
     'Poljska obala Baltika proteže se na 770 km.',
     'Rudnik soli Wieliczka ima podzemna jezera na dubini od 135 metara.',
     'Cijene vode u Poljskoj su među najnižim u EU.',
-    'Bjelovješka šuma sadrži najveće prašumske močvare u Evropi.',
+    'Šuma Białowieża sadrži najveća prašumska močvarna područja u Evropi.',
     'Poljska reciklira 64% svojih otpadnih voda za poljoprivredu.',
-    'Varšavski vodovodni sistem opslužuje 1,8 miliona stanovnika.',
-    'Rijeka Odra čini veći dio granice Poljske s Njemačkom.',
+    'Vodovodni sistem Varšave opslužuje 1,8 miliona stanovnika.',
+    'Rijeka Odra čini veći dio poljske granice s Njemačkom.',
     'Poljske banje koriste mineralne vode još od 13. vijeka.',
   ],
 
@@ -253,7 +253,7 @@ export const europeFacts = {
     'Voda u Portu dolazi iz rijeka Douro i Paiva.',
     'Portugal proizvodi neke od najboljih mineralnih voda u Evropi.',
     'Rezervoar Alqueva je najveće vještačko jezero u zapadnoj Evropi.',
-    'Ostrvo Madeira prikuplja vodu kroz historijske "levada" kanale.',
+    'Ostrvo Madeira prikuplja vodu kroz historijske kanale "levada".',
   ],
 
   // Greece
@@ -268,7 +268,7 @@ export const europeFacts = {
     'Minojska civilizacija na Kritu imala je toalete s ispiranjem prije 4.000 godina!',
     'Najduža rijeka u Grčkoj, Aliakmonas, duga je 297 km.',
     'Zemlja ima preko 400 termalnih izvora.',
-    'Grčki maslinici troše 70% manje vode uz navodnjavanje kap po kap.',
+    'Grčki maslinici koriste 70% manje vode uz navodnjavanje kap po kap.',
     'Voda u Solunu dolazi iz rijeke Aliakmonas.',
   ],
 
@@ -284,8 +284,8 @@ export const europeFacts = {
     'Kanjon rijeke Cetine popularan je za avanturističke sportove na vodi.',
     'Historijske zidine Dubrovnika štitile su njegove dragocjene cisterne za vodu.',
     'Hrvatska domaćinstva troše oko 100 litara po osobi dnevno.',
-    'Modra špilja na ostrvu Visu stvara zapanjujuće svjetlosne efekte u vodi.',
-    'Voda u Zagrebu dolazi iz aluvijalnog vodonosnog sloja rijeke Save.',
+    'Modra špilja na ostrvu Visu stvara zadivljujuće efekte svjetla u vodi.',
+    'Zagrebačka voda dolazi iz aluvijalnog akvifera rijeke Save.',
   ],
 
   // Czech Republic
@@ -301,7 +301,7 @@ export const europeFacts = {
     'Rijeka Elba povezuje Češku sa Sjevernim morem.',
     'České Budějovice su dom originalne pivare Budweiser.',
     'Zemlja prečišćava 99,5% svojih otpadnih voda.',
-    'Češki dvorci često imaju raskošne barokne fontane.',
+    'Češki dvorci često imaju bogato ukrašene barokne fontane.',
   ],
 
   // Bosnia and Herzegovina
@@ -312,12 +312,12 @@ export const europeFacts = {
     'Vodopad Plive u Bosni pokretao je prvi električni mlin u Evropi.',
     'Rijeka Una je jedna od posljednjih divljih rijeka u Evropi, savršena za rafting.',
     'Bosna koristi samo 1% svojih dostupnih vodenih resursa.',
-    'Močvara Hutovo blato je dom za 240 vrsta ptica i rijetke ribe.',
-    'Izvor Bune u Blagaju jedan je od najvećih kraških izvora u Evropi.',
-    'Vodopadi Kravice u Bosni često se nazivaju "mini Nijagarom".',
-    'Zemlja ima preko 30 mineralnih izvora vode.',
-    'Stari most u Mostaru premošćuje Neretvu, na listi UNESCO-ve svjetske baštine.',
-    'Bosanska voda je toliko čista da 90% ne zahtijeva nikakav tretman.',
+    'Močvarno područje Hutovo Blato je dom za 240 vrsta ptica i rijetke ribe.',
+    'Vrelo Bune u Blagaju je jedno od najvećih kraških vrela u Evropi.',
+    'Bosanski vodopadi Kravice često se nazivaju "malom Niagarom".',
+    'Zemlja ima preko 30 izvora mineralne vode.',
+    'Stari most u Mostaru premošćuje Neretvu i nalazi se na UNESCO-voj listi.',
+    'Bosanska voda je toliko čista da 90% nje ne zahtijeva nikakav tretman.',
   ],
 
   // Hungary
@@ -332,7 +332,7 @@ export const europeFacts = {
     'Velika ravnica (Alföld) se u velikoj mjeri oslanja na podzemne vode.',
     'Mađarska izvozi prirodnu mineralnu vodu u preko 40 zemalja.',
     'Rijeka Tisa obezbjeđuje vodu za istočnu Mađarsku.',
-    'Mađarska termalna voda je poznata po ljekovitim svojstvima.',
+    'Mađarska termalna voda poznata je po ljekovitim svojstvima.',
     'Budimpešta ima 125 prirodnih toplih izvora unutar granica grada.',
   ],
 
@@ -345,8 +345,8 @@ export const europeFacts = {
     'Rumunija ima preko 160 terapeutskih mineralnih izvora.',
     'Mineralna voda iz Transilvanije se flašira i izvozi širom svijeta.',
     'Klisura Đerdap je najdublja tačka Dunava.',
-    'Rumunska jezera obezbjeđuju 70% pitke vode u zemlji.',
-    'Vodopad Bigar ima oblik savršenog kupa.',
+    'Rumunska jezera snabdijevaju 70% pitke vode u zemlji.',
+    'Vodopad Bigar ima oblik savršenog konusa.',
     'Rumunija prečišćava 60% svojih otpadnih voda.',
     'Karpatske šume prirodno filtriraju kišnicu.',
     'Bukurešt dobija vodu iz rijeka Argeș i Ialomița.',
@@ -364,7 +364,7 @@ export const europeFacts = {
     'Slovenija reciklira 72% svojih otpadnih voda.',
     'Rijeka Sava je najduža u zemlji sa 221 km dužine.',
     'Ljubljana leži na rijeci Ljubljanici.',
-    'Kvalitet vode iz česme u Sloveniji je među najboljima u Evropi.',
+    'Kvalitet slovenačke vode iz česme je među najboljima u Evropi.',
     'Julijske Alpe obezbjeđuju čistu vodu od otopljenog snijega.',
   ],
 
@@ -379,8 +379,8 @@ export const europeFacts = {
     'Slovačka ima 23.000 km rijeka i potoka.',
     'Zemlja prečišćava 68% svojih otpadnih voda.',
     'Pećina Domica ima najveću podzemnu rijeku u Evropi.',
-    'Váh je najduža rijeka u Slovačkoj duga 406 km.',
-    'Slovački planinski izvori obezbjeđuju djevičansku pitku vodu.',
+    'Váh je najduža slovačka rijeka sa 406 km.',
+    'Slovački planinski izvori obezbjeđuju kristalno čistu pitku vodu.',
     'Banjski grad Bardejov ima 6 termalnih izvora.',
   ],
 
@@ -408,11 +408,11 @@ export const europeFacts = {
     'Skadarsko jezero je najveće jezero na Balkanu.',
     'Crna Gora ima 293 km zadivljujuće jadranske obale.',
     'Kotorski zaljev je na UNESCO-voj listi svjetske baštine.',
-    'Rijeke Crne Gore obezbjeđuju 99% obnovljive hidroenergije.',
+    'Crnogorske rijeke obezbjeđuju 99% obnovljive hidroenergije.',
     'Zemlja ima neke od najčistijih voda za kupanje u Evropi.',
     'Biogradska gora ima tri glacijalna jezera.',
-    'Crna Gora izvozi flaširanu vodu susjednim zemljama.',
-    'Rijeka Morača napaja snabdijevanje Podgorice vodom.',
+    'Crna Gora izvozi flaširanu vodu u susjedne zemlje.',
+    'Rijeka Morača napaja vodovod Podgorice.',
     'Crnogorski izvori stvaraju brojne vodopade.',
   ],
 
@@ -429,7 +429,7 @@ export const europeFacts = {
     'Makedonska mineralna voda se izvozi u regiji.',
     'Kanjon rijeke Treske popularan je za sportove na vodi.',
     'Sjeverna Makedonija prečišćava 30% svojih otpadnih voda.',
-    'Izvorska voda s planine Vodno snabdijeva Skoplje.',
+    'Izvorska voda sa planine Vodno snabdijeva Skoplje.',
   ],
 
   // Albania
@@ -444,8 +444,8 @@ export const europeFacts = {
     'Zemlja ima 427 km obale.',
     'Termalni izvori u Benji koriste se u terapeutske svrhe.',
     'Albanija izvozi flaširanu vodu s planinskih izvora.',
-    'Rijeka Drim je najduža u Albaniji sa 285 km dužine.',
-    'Ohridsko jezero graniči s Albanijom i Sjevernom Makedonijom.',
+    'Rijeka Drim je najduža u Albaniji sa 285 km.',
+    'Ohridsko jezero se graniči s Albanijom i Sjevernom Makedonijom.',
   ],
 
   // Kosovo

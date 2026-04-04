@@ -31,7 +31,6 @@ export const settings = {
     EDIT_FAMILY: 'Uredi porodicu',
     SAVE_FAMILY: 'Sačuvaj porodicu',
     FAMILY_SAVED: 'Porodica je uspješno sačuvana!',
-    CHART_TITLE: 'Potrošnja po osobi',
     EDIT_MEMBER: 'Uredi',
     SAVE_MEMBER: 'Sačuvaj promjene',
     UPLOAD_PICTURE: 'Otpremi sliku',
@@ -40,10 +39,12 @@ export const settings = {
     IMPORT_FAMILY: 'Uvezi porodicu',
     SHOW_ADD_MEMBER_FORM: 'Dodaj člana porodice',
     DELETE_MEMBER_CONFIRM_TITLE: 'Potvrda brisanja',
-    DELETE_MEMBER_CONFIRM_MESSAGE: 'Jeste li sigurni da želite obrisati člana porodice? Akcija se ne može poništiti.',
+    DELETE_MEMBER_CONFIRM_MESSAGE:
+      'Jeste li sigurni da želite obrisati člana porodice? Akcija se ne može poništiti.',
     DELETE_MEMBER_BUTTON: 'Ukloni člana',
     UNSAVED_CHANGES_TITLE: 'Nesačuvane promjene',
-    UNSAVED_CHANGES_MESSAGE: 'Imate nesačuvane promjene kod članova porodice. Ako izađete sada, promjene će biti izgubljene.',
+    UNSAVED_CHANGES_MESSAGE:
+      'Imate nesačuvane promjene kod članova porodice. Ako izađete sada, promjene će biti izgubljene.',
     UNSAVED_CHANGES_MESSAGE_GENERIC: 'Imate nesačuvane promjene. Ako odete, promjene će biti izgubljene.',
     UNSAVED_CHANGES_LEAVE: 'Izađi bez čuvanja',
     UNSAVED_CHANGES_STAY: 'Ostani i sačuvaj',
@@ -68,32 +69,39 @@ export const settings = {
     EXPORT_ADDRESS: 'Izvezi adresu',
     IMPORT_ADDRESS: 'Uvezi adresu',
     IMPORT_SUCCESS: 'Adresa je uspješno učitana!',
-    IMPORT_ERROR: 'Učitavanje adrese nije uspjelo. Datoteka ne sadrži validne podatke (ulica, broj, grad, poštanski broj).',
+    IMPORT_ERROR:
+      'Učitavanje adrese nije uspjelo. Datoteka ne sadrži validne podatke (ulica, broj, grad, poštanski broj).',
     IMPORT_FAMILY_CONFIRM_TITLE: 'Potvrda uvoza',
-    IMPORT_FAMILY_CONFIRM_MESSAGE: 'Ovaj uvoz će prepisati trenutne članove porodice. Jeste li sigurni da želite nastaviti?',
+    IMPORT_FAMILY_CONFIRM_MESSAGE:
+      'Ovaj uvoz će prepisati trenutne članove porodice. Jeste li sigurni da želite nastaviti?',
     IMPORT_FAMILY_ERROR_TITLE: 'Greška pri uvozu',
     IMPORT_FAMILY_INVALID_FILE_TYPE: 'Dozvoljen je samo uvoz JSON datoteka (.json).',
     IMPORT_FAMILY_INVALID_FILE_TYPE_INSTRUCTION_1: 'Osigurajte da datoteka ima .json ekstenziju',
-    IMPORT_FAMILY_INVALID_FILE_TYPE_INSTRUCTION_2: 'Prvo izvezite porodicu kako biste dobili ispravan format',
+    IMPORT_FAMILY_INVALID_FILE_TYPE_INSTRUCTION_2:
+      'Prvo izvezite porodicu kako biste dobili ispravan format',
     DUPLICATE_MEMBER_ERROR: 'Ovaj član porodice već postoji.',
     DUPLICATE_MEMBER_NAME: 'Ime: {{name}} {{surname}}',
     DUPLICATE_MEMBER_INSTRUCTION_1: 'Koristite jedinstveno ime za novog člana',
     DUPLICATE_MEMBER_INSTRUCTION_2: 'Dodajte nadimak ili srednje ime ako se radi o drugoj osobi',
     DUPLICATE_MEMBER_INSTRUCTION_3: 'Provjerite listu trenutnih članova.',
     MAX_MEMBERS_ERROR: 'Dosegnut je maksimalan broj članova',
-    MAX_MEMBERS_MESSAGE: 'Aplikacija trenutno podržava maksimalno {{max}} članova. Izbrišite nekoga da biste dodali novog člana.',
+    MAX_MEMBERS_MESSAGE:
+      'Aplikacija trenutno podržava maksimalno {{max}} članova. Izbrišite nekoga da biste dodali novog člana.',
     MAX_MEMBERS_INSTRUCTION_1: 'Uklonite neaktivne članove porodice',
     MAX_MEMBERS_INSTRUCTION_2: 'Izvezite trenutnu porodicu kao arhivu prije brisanja',
     IMPORT_FAMILY_INVALID_DATA: 'Uvezena datoteka sadrži neispravne podatke o članovima porodice.',
-    IMPORT_FAMILY_INVALID_FORMAT: 'Format datoteke nije ispravan. Provjerite da li su polja ime, vrsta i spol ispravno popunjena.',
-    IMPORT_FAMILY_ERROR_NOT_OBJECT: 'Podaci o članu moraju biti u obliku objekta sa atributima: ime, prezime, vrsta, spol.',
+    IMPORT_FAMILY_INVALID_FORMAT:
+      'Format datoteke nije ispravan. Provjerite da li su polja ime, vrsta i spol ispravno popunjena.',
+    IMPORT_FAMILY_ERROR_NOT_OBJECT:
+      'Podaci o članu moraju biti u obliku objekta sa atributima: ime, prezime, vrsta, spol.',
     IMPORT_FAMILY_ERROR_MISSING_NAME: 'Polje ime ne smije biti prazno.',
     IMPORT_FAMILY_ERROR_MISSING_SURNAME: 'Polje prezime ne smije biti prazno.',
     IMPORT_FAMILY_ERROR_INVALID_TYPE: 'Vrsta člana mora biti: "adult", "kid" ili "other".',
     IMPORT_FAMILY_ERROR_INVALID_GENDER: 'Spol člana mora biti: "male", "female" ili "other".',
     IMPORT_FAMILY_ERROR_NO_VALID_MEMBERS: 'U datoteci nisu pronađeni validni članovi porodice za uvoz.',
     IMPORT_ADDRESS_CONFIRM_TITLE: 'Potvrda uvoza adrese',
-    IMPORT_ADDRESS_CONFIRM_MESSAGE: 'Ovaj uvoz će prepisati vašu trenutnu adresu. Jeste li sigurni da želite nastaviti?',
+    IMPORT_ADDRESS_CONFIRM_MESSAGE:
+      'Ovaj uvoz će prepisati vašu trenutnu adresu. Jeste li sigurni da želite nastaviti?',
     VALIDATION_FAILED: 'Validacija podataka nije uspjela.',
     GENDERS: {
       MALE: 'Muško',
@@ -116,7 +124,7 @@ export const settings = {
     EXCEL_COLUMN_BEDROOM_NAME: 'Spavaća soba',
     EXCEL_COLUMN_KITCHEN_NAME: 'Kuhinja',
     EXCEL_COLUMN_BATHROOM_NAME: 'Kupatilo',
-    EXCEL_COLUMN_FOR_ROOM: 'Naziv kolone za: {name}',
+    EXCEL_COLUMN_FOR_ROOM: 'Naziv kolone za: {{name}}',
     EXCEL_SAVE_SETTINGS: 'Sačuvaj Excel postavke',
     EXCEL_RESET_DEFAULTS: 'Vrati na zadano',
     EXCEL_SETTINGS_SAVED: 'Excel postavke su uspješno sačuvane!',
@@ -127,21 +135,28 @@ export const settings = {
     IMPORT_EXCEL_SETTINGS_SUCCESS: 'Uvoz Excel postavki uspješan.',
     IMPORT_EXCEL_SETTINGS_ERROR: 'Greška pri uvozu Excel postavki: {{error}}',
     IMPORT_EXCEL_SETTINGS_CONFIRM_TITLE: 'Potvrda uvoza postavki',
-    IMPORT_EXCEL_SETTINGS_CONFIRM_MESSAGE: 'Ovaj uvoz će prepisati vaše trenutne Excel postavke mapiranja. Želite li nastaviti?',
+    IMPORT_EXCEL_SETTINGS_CONFIRM_MESSAGE:
+      'Ovaj uvoz će prepisati vaše trenutne Excel postavke mapiranja. Želite li nastaviti?',
     IMPORT_EXCEL_SETTINGS_ERROR_TITLE: 'Neuspješan uvoz',
     IMPORT_EXCEL_INVALID_ENABLED: 'Nevažeća postavka za opciju omogući (mora biti boolean)',
     IMPORT_EXCEL_INVALID_ENABLED_HINT: 'Polje "enabled" mora biti true (tačno) ili false (netačno)',
     IMPORT_EXCEL_MISSING_WATER: 'Nedostaju podaci za mapiranje vode',
-    IMPORT_EXCEL_MISSING_WATER_HINT: 'Datoteka mora sadržavati "waterMapping" objekat sa poljima: date, kitchenWarm, kitchenCold, bathroomWarm i bathroomCold',
+    IMPORT_EXCEL_MISSING_WATER_HINT:
+      'Datoteka mora sadržavati "waterMapping" objekat sa poljima: date, kitchenWarm, kitchenCold, bathroomWarm i bathroomCold',
     IMPORT_EXCEL_MISSING_HEATING: 'Nedostaju podaci za mapiranje grijanja',
-    IMPORT_EXCEL_MISSING_HEATING_HINT: 'Mapiranje grijanja ("heatingMapping") mora sadržavati "rooms" objekat sa ID-ovima soba.',
-    IMPORT_EXCEL_SETTINGS_INVALID_FORMAT: 'Nije moguće uvesti postavke. Datoteka ne sadrži važeće Excel postavke.',
+    IMPORT_EXCEL_MISSING_HEATING_HINT:
+      'Mapiranje grijanja ("heatingMapping") mora sadržavati "rooms" objekat sa ID-ovima soba.',
+    IMPORT_EXCEL_SETTINGS_INVALID_FORMAT:
+      'Nije moguće uvesti postavke. Datoteka ne sadrži važeće Excel postavke.',
     IMPORT_ADDRESS_INVALID_FILE_TYPE: 'Nevažeći tip datoteke. Molimo izaberite .json datoteku za uvoz adrese.',
     IMPORT_ADDRESS_INVALID_FILE_TYPE_INSTRUCTION_1: 'Osigurajte da datoteka ima .json ekstenziju',
-    IMPORT_ADDRESS_INVALID_FILE_TYPE_INSTRUCTION_2: 'Prvo izvezite podatke adrese kako biste dobili ispravan JSON format',
-    IMPORT_EXCEL_SETTINGS_INVALID_FILE_TYPE: 'Nevažeći tip datoteke. Molimo odaberite .json datoteku za uvoz Excel postavki.',
+    IMPORT_ADDRESS_INVALID_FILE_TYPE_INSTRUCTION_2:
+      'Prvo izvezite podatke adrese kako biste dobili ispravan JSON format',
+    IMPORT_EXCEL_SETTINGS_INVALID_FILE_TYPE:
+      'Nevažeći tip datoteke. Molimo odaberite .json datoteku za uvoz Excel postavki.',
     IMPORT_EXCEL_SETTINGS_INVALID_FILE_TYPE_INSTRUCTION_1: 'Osigurajte da datoteka ima .json ekstenziju',
-    IMPORT_EXCEL_SETTINGS_INVALID_FILE_TYPE_INSTRUCTION_2: 'Prvo izvezite Excel postavke kako biste dobili ispravan JSON format',
+    IMPORT_EXCEL_SETTINGS_INVALID_FILE_TYPE_INSTRUCTION_2:
+      'Prvo izvezite Excel postavke kako biste dobili ispravan JSON format',
     IMPORT_EXCEL_CROSS_SECTION_DUPLICATES: 'Konflikt imena kolone: {{columns}} se koristi u više sekcija',
     IMPORT_EXCEL_CROSS_SECTION_DUPLICATES_HINT: 'Svako ime kolone mora biti jedinstveno.',
     IMPORT_EXCEL_MISSING_ROOMS: 'Nedostaje "rooms" objekat u mapiranju grijanja',
@@ -153,12 +168,15 @@ export const settings = {
     IMPORT_EXCEL_UNKNOWN_ROOMS: 'Nepoznat ID sobe: {{rooms}}',
     IMPORT_EXCEL_UNKNOWN_ROOMS_HINT: 'Prvo dodajte ove sobe u postavkama grijanja.',
     IMPORT_EXCEL_MISSING_ROOM_MAPPINGS: 'Nedostaje mapiranje za sobe: {{rooms}}',
-    IMPORT_EXCEL_MISSING_ROOM_MAPPINGS_HINT: 'Uvezeni fajl mora sadržavati mapiranje za sve konfigurisane sobe.',
+    IMPORT_EXCEL_MISSING_ROOM_MAPPINGS_HINT:
+      'Uvezeni fajl mora sadržavati mapiranje za sve konfigurisane sobe.',
     FAMILY_HELP_TITLE: 'Upravljanje članovima porodice',
     FAMILY_HELP_STEP_1_TITLE: 'Zašto dodati članove?',
-    FAMILY_HELP_STEP_1_DESC: 'Dodavanje članova porodice omogućava poređenje vaše potrošnje s nacionalnim prosjekom za domaćinstvo vaše veličine.',
+    FAMILY_HELP_STEP_1_DESC:
+      'Dodavanje članova porodice omogućava poređenje vaše potrošnje s nacionalnim prosjekom za domaćinstvo vaše veličine.',
     FAMILY_HELP_STEP_2_TITLE: 'Analiza po osobi',
-    FAMILY_HELP_STEP_2_DESC: 'Pratite potrošnju vode, struje i grijanja po članu porodice kako biste otkrili gdje možete uštedjeti.',
+    FAMILY_HELP_STEP_2_DESC:
+      'Pratite potrošnju vode, struje i grijanja po članu porodice kako biste otkrili gdje možete uštedjeti.',
     FAMILY_HELP_STEP_3_TITLE: 'Korak 1: uređivanje',
     FAMILY_HELP_STEP_3_DESC: 'Kliknite na dugme "Uredi porodicu" da započnete dodavanje ili izmjenu članova.',
     FAMILY_HELP_STEP_4_TITLE: 'Korak 2: unos podataka',
@@ -168,28 +186,37 @@ export const settings = {
     FAMILY_HELP_STEP_6_TITLE: 'Korak 4: čuvanje',
     FAMILY_HELP_STEP_6_DESC: 'Ne zaboravite kliknuti na "Sačuvaj porodicu" kako biste primijenili promjene.',
     FAMILY_HELP_STEP_7_TITLE: 'Korak 5: izvoz i uvoz',
-    FAMILY_HELP_STEP_7_DESC: 'Koristite "Izvezi" za kreiranje sigurnosne kopije, a "Uvezi" za vraćanje podataka iz datoteke.',
+    FAMILY_HELP_STEP_7_DESC:
+      'Koristite "Izvezi" za kreiranje sigurnosne kopije, a "Uvezi" za vraćanje podataka iz datoteke.',
     FAMILY_HELP_PREVIOUS: 'Prethodni',
     FAMILY_HELP_NEXT: 'Sljedeći',
     FAMILY_HELP_DONE: 'Završeno!',
     ADDRESS_HELP_TITLE: 'Postavke adrese',
     ADDRESS_HELP_STEP_1_TITLE: 'Zašto je adresa bitna?',
-    ADDRESS_HELP_STEP_1_DESC: 'Vaša država se koristi za poređenje vaše potrošnje s nacionalnim prosjekom na grafikonima i izvještajima.',
+    ADDRESS_HELP_STEP_1_DESC:
+      'Vaša država se koristi za poređenje vaše potrošnje s nacionalnim prosjekom na grafikonima i izvještajima.',
     ADDRESS_HELP_STEP_2_TITLE: 'Korak 1: popunjavanje',
-    ADDRESS_HELP_STEP_2_DESC: 'Unesite ulicu, broj, grad i poštanski broj, te odaberite državu iz ponuđene liste.',
+    ADDRESS_HELP_STEP_2_DESC:
+      'Unesite ulicu, broj, grad i poštanski broj, te odaberite državu iz ponuđene liste.',
     ADDRESS_HELP_STEP_3_TITLE: 'Korak 2: čuvanje',
-    ADDRESS_HELP_STEP_3_DESC: 'Kliknite na "Sačuvaj adresu". Podatke možete naknadno mijenjati klikom na "Uredi adresu".',
+    ADDRESS_HELP_STEP_3_DESC:
+      'Kliknite na "Sačuvaj adresu". Podatke možete naknadno mijenjati klikom na "Uredi adresu".',
     ADDRESS_HELP_STEP_4_TITLE: 'Korak 3: backup',
-    ADDRESS_HELP_STEP_4_DESC: 'Opcije izvoza i uvoza su korisne ako želite prenijeti podatke na drugi uređaj.',
+    ADDRESS_HELP_STEP_4_DESC:
+      'Opcije izvoza i uvoza su korisne ako želite prenijeti podatke na drugi uređaj.',
     HELP: 'Pomoć',
     EXCEL_HELP_TITLE: 'Excel integracija',
     EXCEL_HELP_STEP_1_TITLE: 'Šta je Excel integracija?',
-    EXCEL_HELP_STEP_1_DESC: 'Ova opcija omogućava uvoz podataka o potrošnji direktno iz vaših Excel tabela, bez ručnog unosa svakog zapisa.',
+    EXCEL_HELP_STEP_1_DESC:
+      'Ova opcija omogućava uvoz podataka o potrošnji direktno iz vaših Excel tabela, bez ručnog unosa svakog zapisa.',
     EXCEL_HELP_STEP_2_TITLE: 'Korak 1: aktiviranje',
-    EXCEL_HELP_STEP_2_DESC: 'Uključite prekidač "Omogući Excel integraciju" u postavkama. Tada će se pojaviti dugme za uvoz u modulima.',
+    EXCEL_HELP_STEP_2_DESC:
+      'Uključite prekidač "Omogući Excel integraciju" u postavkama. Tada će se pojaviti dugme za uvoz u modulima.',
     EXCEL_HELP_STEP_3_TITLE: 'Korak 2: mapiranje kolona',
-    EXCEL_HELP_STEP_3_DESC: 'Podesite nazive kolona (stupaca) tako da odgovaraju vašem Excel fajlu (npr. "Datum", "Kuhinja topla", itd.).',
+    EXCEL_HELP_STEP_3_DESC:
+      'Podesite nazive kolona soba i medija tako da odgovaraju vašem Excel fajlu.',
     EXCEL_HELP_STEP_4_TITLE: 'Korak 3: uvoz podataka',
-    EXCEL_HELP_STEP_4_DESC: 'U modulima vode ili grijanja kliknite na "Import iz Excela", odaberite fajl i pregledajte rezultate prije čuvanja.',
+    EXCEL_HELP_STEP_4_DESC:
+      'U modulima vode, struje ili grijanja kliknite na "Import iz Excela" i odaberite fajl.',
   },
 };

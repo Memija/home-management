@@ -66,6 +66,8 @@ describe('AppLayoutComponent', () => {
   let mockRouter: any;
 
   beforeEach(async () => {
+    TestBed.resetTestingModule();
+
     mockThemeService = {};
     mockDemoService = {
       isDemoMode: signal(false),
@@ -74,7 +76,7 @@ describe('AppLayoutComponent', () => {
       isAuthenticated: signal(false),
     };
     mockHybridStorageService = {
-      hasUserContent: signal(false),
+      hasUserContent: signal(true), // Set to true so season switcher is shown
     };
     mockRouter = {
       url: '/dashboard',
@@ -131,6 +133,7 @@ describe('AppLayoutComponent', () => {
   });
 
   it('should render core static components', () => {
+    fixture.detectChanges();
     const compiled = fixture.nativeElement as HTMLElement;
 
     // Header, Menu Bar, Season Switcher, and Router Outlet are not deferred

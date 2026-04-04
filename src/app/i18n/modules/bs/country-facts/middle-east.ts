@@ -1,4 +1,4 @@
-// Middle East countries water facts - Bosnian
+// Middle East countries water facts - BS
 export const middleEastFacts = {
   // Turkey
   TR: [
@@ -11,9 +11,9 @@ export const middleEastFacts = {
     'Termalne vode Pamukkalea stvaraju zadivljujuće bijele terase.',
     'Turska ima preko 1.300 termalnih izvora.',
     'Jezero Van je najveće u Turskoj i veoma je alkalno.',
-    'Bazilika cisterna u Istanbulu mogla je primiti 80 miliona litara.',
+    'Istanbulska Bazilika cisterna mogla je primiti 80 miliona litara.',
     'Podzemni gradovi Kapadokije imali su genijalno prikupljanje vode.',
-    'Turska teži recikliranju 60% otpadnih voda do 2030. godine.',
+    'Turska teži da reciklira 60% otpadnih voda do 2030. godine.',
   ],
 
   // UAE
@@ -27,8 +27,8 @@ export const middleEastFacts = {
     'UAE nemaju stalne rijeke niti jezera.',
     'Džamija šeika Zajeda u Abu Dabiju koristi recikliranu vodu za svoje vrtove.',
     'Dubai uvozi 85% svoje hrane, čuvajući lokalnu vodu za osnovne potrebe.',
-    'UAE su od 2010. godine investirali 15 milijardi dolara u vodnu infrastrukturu.',
-    'Čudesni vrt u Dubaiju (Miracle Garden) koristi navodnjavanje kap po kap i recikliranu vodu.',
+    'UAE su investirali 15 milijardi dolara u vodovodnu infrastrukturu od 2010. godine.',
+    'Dubai Miracle Garden koristi navodnjavanje kap po kap i recikliranu vodu.',
     'UAE grade najveće svjetsko postrojenje za desalinaciju na solarni pogon.',
   ],
 
@@ -42,10 +42,10 @@ export const middleEastFacts = {
     'Drevni aflaj sistemi navodnjavanja i dalje napajaju palme datula.',
     'Saudijska Arabija je prestala s uzgojem pšenice kako bi uštedjela vodu.',
     'Rub\' al Khali (Prazna četvrt) je najveća pješčana pustinja na svijetu.',
-    'Voda u Džedi u potpunosti dolazi iz desalinirane morske vode.',
-    'Saudijska Arabija reciklira 45% tretirane otpadne vode.',
-    'Vodovodno polje Tobruk obezbjeđuje vodu za Rijad.',
-    'Zemlja snažno investira u desalinaciju na solarni pogon.',
+    'Voda u Džedi u potpunosti dolazi od desalinirane morske vode.',
+    'Saudijska Arabija reciklira 45% prečišćenih otpadnih voda.',
+    'Polje bunara Tobruk obezbjeđuje vodu za Rijad.',
+    'Zemlja ulaže velika sredstva u desalinaciju na solarni pogon.',
   ],
 
   // Iran
@@ -61,7 +61,7 @@ export const middleEastFacts = {
     'Iran ima 270 brana za skladištenje vode.',
     'Zemlja koristi 92% svoje vode za poljoprivredu.',
     'Rijeka Zayandeh u Isfahanu često potpuno presuši.',
-    'Iran gradi projekte za međubazenski transfer vode.',
+    'Iran gradi projekte za međubasenski transfer vode.',
   ],
 
   // Israel
@@ -75,8 +75,8 @@ export const middleEastFacts = {
     'Mrtvo more je najniža tačka na Zemlji sa 430 m ispod nivoa mora.',
     'Izraelska poljoprivreda koristi samo 1,8% vode u zemlji.',
     'Voda u Tel Avivu dolazi iz postrojenja za desalinaciju.',
-    'Izrael ima 5 velikih postrojenja za desalinaciju na obali.',
-    'Zemlja izvozi vodnu tehnologiju u preko 150 država.',
-    'Izrael je pretvorio vodni deficit u suficit putem inovacija.',
+    'Izrael ima 5 glavnih postrojenja za desalinaciju na obali.',
+    'Zemlja izvozi vodnu tehnologiju u preko 150 nacija.',
+    'Izrael je pretvorio deficit vode u suficit kroz inovacije.',
   ],
 };

@@ -15,6 +15,9 @@ import { auth } from './modules/de/auth';
 import { landing } from './modules/de/landing';
 import { privacy } from './modules/de/privacy';
 
+import { electricityCountryFacts } from './modules/de/electricity-country-facts/index';
+import { heatingCountryFacts } from './modules/de/heating-country-facts/index';
+
 export const de = {
   ...common,
   ...water,
@@ -31,4 +34,6 @@ export const de = {
   ...privacy,
   WATER_FACTS: waterFacts,
   COUNTRY_FACTS: countryFacts,
+  ELECTRICITY_COUNTRY_FACTS: electricityCountryFacts,
+  HEATING_COUNTRY_FACTS: heatingCountryFacts,
 };

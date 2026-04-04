@@ -1,0 +1,226 @@
+// Middle East heating/energy facts - ID
+export const middleEastHeatingFacts = {
+  // Saudi Arabia
+  SA: [
+    'Arab Saudi tidak memiliki kebutuhan pemanasan ruangan di sebagian besar wilayahnya.',
+    'Listrik adalah sumber energi utama untuk pendinginan dan peralatan di Arab Saudi.',
+    'Rumah tangga di Arab Saudi menghabiskan hampir nol untuk pemanasan.',
+    'AC adalah pengeluaran energi rumah tangga terbesar di Arab Saudi.',
+    'LPG digunakan secara universal di Arab Saudi untuk memasak.',
+    'Wilayah Utara Arab Saudi yang dingin mungkin memerlukan pemanas ringan di musim dingin.',
+    'Isolasi bangunan secara historis rendah namun standar baru mulai diterapkan.',
+    'Arab Saudi sedang beralih ke gas alam untuk pembangkit listrik domestik.',
+    'Pemanas air tenaga surya mulai diperkenalkan di kota-kota baru.',
+    'Gas alam melimpah untuk menunjang kebutuhan energi domestik.',
+    'Meningkatkan efisiensi energi bangunan adalah tujuan Visi 2030.',
+    'Arab Saudi memiliki gas alam yang melimpah namun penggunaan pemanas domestik rendah.',
+  ],
+
+  // United Arab Emirates
+  AE: [
+    'UEA hampir tidak memiliki kebutuhan pemanasan ruangan karena iklim gurun yang panas.',
+    'AC menyumbang mayoritas konsumsi energi perumahan di UEA.',
+    'Rumah-rumah di UEA dirancang untuk perlindungan maksimal dari sinar matahari.',
+    'Rumah tangga UEA rata-rata menghabiskan nol untuk pemanasan ruangan.',
+    'Listrik didominasi oleh gas alam dan sekarang energi nuklir serta surya.',
+    'Pendinginan distrik lebih relevan daripada pemanasan distrik di UEA.',
+    'Emirat Utara memiliki suhu yang sedikit lebih sejuk di malam hari.',
+    'UEA mempromosikan gedung hijau sebagai bagian dari strategi keberlanjutan.',
+    'Air panas dihasilkan hampir sepanjang tahun oleh panas matahari alami.',
+    'Fokus efisiensi energi adalah pada pendinginan ruangan dan ventilasi.',
+    'LPG adalah bahan bakar utama untuk memasak di rumah-rumah UEA.',
+    'Musim dingin di UEA sangat sejuk bahkan hingga tidak memerlukan pemanas.',
+  ],
+
+  // Qatar
+  QA: [
+    'Qatar tidak butuh pemanas karena suhu gurun yang panas sepanjang tahun.',
+    'AC adalah penggunaan energi rumah tangga paling dominan di Qatar.',
+    'Desain arsitektur di Qatar berfokus pada pendinginan cerdas.',
+    'Rumah tangga di Qatar rata-rata menghabiskan hampir nol untuk pemanasan.',
+    'Gas alam sangat melimpah dan murah untuk pembangkit listrik di Qatar.',
+    'Qatar memiliki penggunaan sistem pendingin distrik berskala besar.',
+    'Pemanas air bertenaga matahari sedang mulai dikembangkan di Doha.',
+    'Isolasi termal bangunan diwajibkan untuk konstruksi perumahan baru.',
+    'Konsumsi energi per kapita di Qatar adalah salah satu yang tertinggi di dunia.',
+    'Program Tarsheed bertujuan mengurangi pemborosan energi di Qatar.',
+    'Air panas domestik didapat dari pemanas listrik kecil bila perlu.',
+    'Musim dingin di Qatar singkat dan suhu jarang turun di bawah 15°C.',
+  ],
+
+  // Kuwait
+  KW: [
+    'Kuwait tidak memiliki kebutuhan pemanas kecuali beberapa malam di musim dingin.',
+    'AC menyumbang lebih dari 70% beban listrik perumahan di Kuwait.',
+    'Rumah-rumah di Kuwait menggunakan energi minimal untuk pemanasan.',
+    'Rumah tangga Kuwait rata-rata menghabiskan nol untuk pemanasan ruangan.',
+    'Pembangkit listrik di Kuwait sangat bergantung pada minyak dan gas.',
+    'Kuwait sedang mengeksplorasi energi surya sebagai penghemat bahan bakar fosil.',
+    'Pendinginan distrik mulai berkembang di Kuwait City.',
+    'LPG digunakan untuk aktivitas memasak harian di Kuwait.',
+    'Isolasi bangunan di Kuwait sangat krusial untuk efisiensi pendinginan.',
+    'Air tawar di Kuwait diproduksi melalui desalinasi yang boros energi.',
+    'Kuwait memberikan subsidi energi yang sangat besar kepada penduduknya.',
+    'Kuwait memiliki salah satu penggunaan AC per kapita tertinggi di dunia.',
+  ],
+
+  // Bahrain
+  BH: [
+    'Bahrain tidak butuh sistem pemanas karena iklim tropis/gurunnya.',
+    'Pendingin ruangan (AC) menyerap mayoritas energi rumah tangga Bahrain.',
+    'Rumah-rumah di Bahrain dirancang agar aliran udara tetap lancar.',
+    'Rumah tangga Bahrain rata-rata menghabiskan nol untuk pemanasan ruangan.',
+    'Hampir semua listrik di Bahrain dihasilkan dari gas alam lokal.',
+    'Bahrain mempromosikan efisiensi energi melalui audit gedung.',
+    'Air panas domestik di Bahrain didapat melalui matahari yang panas.',
+    'LPG adalah bahan bakar memasak standar di rumah-rumah Bahrain.',
+    'Isolasi atap sangat penting di Bahrain untuk mencegah panas masuk.',
+    'Bahrain memiliki potensi energi surya besar di atap-atap gedung.',
+    'Fokus keberlanjutan Bahrain adalah pada desalinasi ramah lingkungan.',
+    'Ukuran Bahrain yang kecil membatasi keragaman energinya.',
+  ],
+
+  // Oman
+  OM: [
+    'Oman tidak memiliki kebutuhan pemanas di sebagian besar wilayah pesisirnya.',
+    'AC adalah andalan energi rumah tangga bagi penduduk Oman.',
+    'Pesisir Oman yang panas dan lembap fokus pada sirkulasi udara.',
+    'Rumah tangga di Oman menghabiskan hampir nol untuk pemanasan ruangan.',
+    'Gas alam memicu hampir seluruh sistem ketenagalistrikan di Oman.',
+    'Pepegunungan Al Hajar di Oman sangat dingin di malam hari dan butuh pemanas.',
+    'Oman sedang meluncurkan inisiatif surya "Sahim" untuk atap rumah.',
+    'LPG digunakan secara universal untuk kegiatan memasak di Oman.',
+    'Isolasi termal bangunan mulai menjadi fokus dalam kode bangunan baru.',
+    'Oman memprioritaskan konservasi energi sebagai strategi jangka panjang.',
+    'Air panas domestik di Oman sering kali didapat secara alami.',
+    'Penggunaan energi diperkirakan akan terus naik karena pertumbuhan penduduk.',
+  ],
+
+  // Israel
+  IL: [
+    'Gas alam dan batu bara adalah sumber daya energi utama di Israel.',
+    'Pemanas air matahari wajib di hampir semua rumah perumahan di Israel.',
+    'Rumah-rumah di Israel menggunakan rata-rata 40 kWh/m² untuk pemanasan.',
+    'Israel adalah pemimpin dunia dalam teknologi pemanas air tenaga surya.',
+    'AC siklus terbalik adalah sumber utama pemanasan ruangan di Israel.',
+    'Rumah tangga Israel rata-rata menghabiskan ILS 2.000-4.000 untuk pemanasan.',
+    'Pemanasan di bawah lantai populer di gedung-gedung mewah di Yerusalem.',
+    'Isolasi bangunan di Israel telah diperketat seiring waktu.',
+    'Pompa panas semakin populer sebagai solusi hemat energi di Israel.',
+    'Israel memiliki target ambisius untuk porsi energi terbarukan pada 2030.',
+    'Kota-kota di atas bukit di Israel memerlukan pemanas di musim dingin.',
+    'Gas alam lepas pantai Israel mendukung bauran energi domestik.',
+  ],
+
+  // Jordan
+  JO: [
+    'Yordania sangat bergantung pada impor energi untuk kebutuhan pemanasnya.',
+    'Minyak pemanas dan gas LPG adalah bahan bakar pemanas utama di Yordania.',
+    'Rumah-rumah di Yordania menggunakan rata-rata 60 kWh/m² untuk pemanasan.',
+    'Yordania sedang beralih ke pemanas matahari dan listrik bersih.',
+    'Sistem AC digunakan warga Yordania untuk pemanasan selama musim dingin.',
+    'Rumah tangga Yordania rata-rata menghabiskan JOD 300-600 untuk pemanasan setiap tahun.',
+    'Isolasi bangunan di Yordania secara tradisional belum maksimal.',
+    'Yordania memiliki salah satu penggunaan pemanas matahari tertinggi di kawasan.',
+    'Musim dingin di Amman bisa sangat dingin dan bahkan bersalju.',
+    'Kemiskinan energi menjadi tantangan bagi pengungsi dan warga miskin.',
+    'Program efisiensi energi nasional Yordania menargetkan sektor perumahan.',
+    'Kompor kayu masih digunakan di daerah pedesaan terpencil Yordania.',
+  ],
+
+  // Lebanon
+  LB: [
+    'Lebanon menghadapi tantangan energi yang parah yang mempengaruhi pemanasan.',
+    'Diesel (solar) dan listrik adalah sumber ketersediaan pemanas di Lebanon.',
+    'Rumah-rumah di Lebanon menggunakan rata-rata 70 kWh/m² untuk pemanasan.',
+    'Pemanas air matahari sangat populer dijadikan solusi energi mandiri.',
+    'Genset pribadi sering menyalakan pemanas listrik di Beirut.',
+    'Rumah tangga Lebanon rata-rata menghabiskan USD 500-1.200 untuk pemanasan.',
+    'Isolasi bangunan kurang diatur secara ketat di Lebanon.',
+    'Kayu bakar memanaskan banyak rumah di desa-desa pegunungan Lebanon.',
+    'Krisis ekonomi Lebanon telah membuat bahan bakar pemanas sangat mahal.',
+    'Lebanon memiliki potensi besar untuk biomassa dan energi surya.',
+    'Pegunungan Lebanon tertutup salju di musim dingin dan butuh pemanas kuat.',
+    'Pasar pemanas Lebanon saat ini sangat tidak stabil.',
+  ],
+
+  // Syria
+  SY: [
+    'Suriah sangat kekurangan bahan bakar energi untuk pemanasan saat ini.',
+    'Diesel dan kayu adalah sumber utama pemanasan bagi penduduk Suriah.',
+    'Rumah-rumah di Suriah menggunakan energi minimal karena kelangkaan pasokan.',
+    'Kekurangan listrik di Suriah membuat pemanas listrik sulit digunakan.',
+    'Pemanas air matahari adalah solusi ideal di Suriah yang cerah.',
+    'Rumah tangga Suriah rata-rata menghabiskan banyak dibanding pendapatan untuk pemanas.',
+    'Banyak warga Suriah bergantung pada tungku kayu untuk bertahan hidup.',
+    'Krisis energi Suriah telah menyebabkan deforestasi besar-besaran.',
+    'Infrastruktur gas Suriah telah rusak parah akibat konflik berkepanjangan.',
+    'Musim dingin di Suriah bisa terasa sangat dingin bagi pengungsi.',
+    'Pemiskinan energi di Suriah berada pada tingkat yang sangat kritis.',
+    'Harapan masa depan pemanas Suriah bergantung pada pemulihan infrastruktur.',
+  ],
+
+  // Iraq
+  IQ: [
+    'Irak memiliki kebutuhan pemanas sedang selama musim dingin yang singkat.',
+    'Minyak tanah adalah bahan bakar pemanas paling umum bagi warga Irak.',
+    'Rumah-rumah di Irak menggunakan minimal energi untuk pemanasan ruangan.',
+    'Irak sedang berupaya memperluas jaringan gas alam domestiknya.',
+    'Listrik dari grid nasional sering tidak stabil untuk pemanas di Irak.',
+    'Rumah tangga Irak rata-rata menghabiskan sedikit untuk pemanasan ruangan tetap.',
+    'LPG digunakan secara universal oleh keluarga di Irak untuk memasak.',
+    'Isolasi termal bangunan mulai menjadi perhatian dalam konstruksi baru.',
+    'Desain rumah Irak secara tradisional fokus pada menjaga kesejukan.',
+    'Malam musim dingin di gurun Irak bisa sangat dingin bagi penghuninya.',
+    'Pemanas air listrik kecil digunakan secara luas di rumah-rumah Irak.',
+    'Irak memiliki potensi energi matahari yang sangat besar dan belum tergarap.',
+  ],
+
+  // Iran
+  IR: [
+    'Iran memiliki cadangan gas alam terbesar kedua di dunia untuk pemanasan.',
+    'Gas alam memanaskan hampir 95% rumah tangga perkotaan di Iran.',
+    'Rumah-rumah di Iran menggunakan rata-rata 150 kWh/m² untuk pemanasan.',
+    'Biaya gas alam di Iran sangat rendah karena subsidi pemerintah yang besar.',
+    'Pemanasan distrik terbatas di wilayah Iran Utara yang dingin.',
+    'Rumah tangga Iran rata-rata menghabiskan IRR 10.000.000-25.000.000 untuk pemanasan.',
+    'Isolasi bangunan di Iran secara historis terabaikan karena gas yang murah.',
+    'Iran sedang berusaha meningkatkan standar efisiensi energi nasional.',
+    'Minyak tanah digunakan sebagai pemanas cadangan di pedesaan Iran.',
+    'Musim dingin di Teheran dan Tabriz bisa sangat ekstrem dan bersalju.',
+    'Iran mempromosikan pemanas air matahari untuk mengurangi konsumsi gas.',
+    'Kompor kayu masih sangat tradisional di daerah pedesaan.',
+  ],
+
+  // Turkey
+  TR: [
+    'Turki memiliki jaringan pemanasan gas alam yang luas di seluruh negeri.',
+    'Gas alam adalah bahan bakar pemanas paling populer di kota-kota Turki.',
+    'Rumah-rumah di Turki menggunakan rata-rata 110 kWh/m² untuk pemanasan.',
+    'Turki adalah pemimpin dunia dalam penggunaan panas bumi (geotermal) untuk distrik.',
+    'Pemanasan distrik bertenaga geotermal melayani belasan kota di Turki.',
+    'Rumah tangga Turki rata-rata menghabiskan TRY 5.000-10.000 untuk pemanasan.',
+    'Standar isolasi bangunan di Turki terus meningkat demi efisiensi gas.',
+    'Batubara (lignit) masih digunakan di banyak wilayah pedesaan Turki.',
+    'Turki memproduksi banyak kolektor matahari untuk pemanasan air domestik.',
+    'Istanbul memiliki kebutuhan pemanasan yang signifikan di musim dingin.',
+    'Biomasa (limbah pertanian) sedang dieksplorasi untuk pemanasan distrik.',
+    'Energi surya di Turki tumbuh sangat cepat di sektor perumahan.',
+  ],
+
+  // Egypt
+  EG: [
+    'Mesir hampir tidak butuh pemanas ruangan karena iklimnya yang hangat.',
+    'AC digunakan oleh warga Mesir saat musim panas untuk pendinginan utama.',
+    'Gas alam berekspansi pesat di Mesir untuk kebutuhan dapur perumahan.',
+    'Rumah tangga di Mesir rata-rata menghabiskan nol untuk pemanasan ruangan.',
+    'LPG masih digunakan di daerah Mesir yang belum terjangkau pipa gas.',
+    'Pemanas air tenaga surya sedang dipromosikan di kota-kota baru Mesir.',
+    'Desain bangunan Mesir dirancang untuk mengatasi panas matahari gurun.',
+    'Tidak ada infrastruktur pemanasan distrik di seluruh wilayah Mesir.',
+    'Mesir menjadi pusat regional untuk energi gas alam di Timur Tengah.',
+    'Kipas angin lebih banyak digunakan daripada AC di kalangan warga miskin.',
+    'Isolasi atap adalah fokus utama peningkatan efisiensi energi di Mesir.',
+    'Musim dingin di Mesir sangat ringan dan nyaman bagi rata-rata penduduk.',
+  ],
+};

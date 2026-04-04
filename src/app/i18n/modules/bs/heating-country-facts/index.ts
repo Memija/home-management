@@ -32,7 +32,8 @@ const defaultHeatingFacts = {
     'Divni i domišljati domorodački "ondol" antički princip prenošenog ugrijanog poda iz Koreje star je više od 5.000 godina.',
     'Najmodernije toplotne pumpe pružaju 3-4 puta veću moć grijanja s obzirom na početni energetski ulog.',
     'Veliki londonski požar usmjerio je britanske zakone ka strožijem poštivanju odžaka, zidova i mjera sigurnosti vatre.',
-    'Prirodni plin postaje apsolutno globalno vodeća struktura primarnog goriva za zapadne kulture krajem prošlog vijeka.'
+    'Prirodni plin postaje apsolutno globalno vodeća struktura primarnog goriva za zapadne kulture krajem prošlog vijeka.',
+    'Moderni kondenzacijski kotlovi mogu postići stepen efikasnosti od preko 90%, u poređenju sa 60% kod starijih modela.'
   ]
 };
 

@@ -1,0 +1,226 @@
+// Middle East heating/energy facts - PL
+export const middleEastHeatingFacts = {
+  // Saudi Arabia
+  SA: [
+    'Arabia Saudyjska zużywa więcej energii na klimatyzację niż na ogrzewanie ze względu na upalny klimat.',
+    'Nowoczesne saudyjskie budynki są wyposażone w izolację termiczną, aby obniżyć koszty chłodzenia.',
+    'Gaz ziemny jest coraz częściej wykorzystywany do wytwarzania energii i gotowania w domach.',
+    'Solarne podgrzewanie wody zyskuje na popularności w całzm regionie Zatoki.',
+    'Saudyjskie domy nie zużywają praktycznie żadnej energii na ogrzewanie pomieszczeń.',
+    'Typowe saudyjskie gospodarstwo domowe nie wydaje niemal nic na ogrzewanie.',
+    'Klimatyzacja odpowiada za ponad 70% całego zużycia energii elektrycznej w kraju.',
+    'Rijad miewa zimowe noce, które są chłodne, ale zazwyczaj nie wymagają włączania ogrzewania.',
+    'Przepisy budowlane koncentrują się na efektywności systemów chłodzenia.',
+    'Gaz LPG jest powszechnie stosowany do przygotowywania posiłków.',
+    'Chłodzenie miejskie (district cooling) jest tu znacznie bardziej istotne niż ogrzewanie sieciowe.',
+    'Arabia Saudyjska posiada obfite zasoby gazu ziemnego, ale niskie zużycie domowe na cele grzewcze.',
+  ],
+
+  // United Arab Emirates
+  AE: [
+    'ZEA nie mają potrzeb grzewczych ze względu na swój suchy, pustynny klimat.',
+    'Klimatyzacja jest niezbędna do życia przez większą część roku.',
+    'Budynki w ZEA są mocno izolowane, aby utrzymać chłód wewnątrz pomimo upałów.',
+    'Typowe gospodarstwo domowe w Emiratach nie wydaje nic na ogrzewanie.',
+    'Gaz ziemny zasila procesy gotowania oraz elektrownie wytwarzające prąd.',
+    'Dubaj rozwija systemy chłodzenia miejskiego zamiast tradycyjnego ciepłownictwa.',
+    'Pustynne noce mogą być chłodne, ale rzadko wymagają stosowania ogrzewania.',
+    'Przepisy budowlane priorytetyzują izolację termiczną w celu ograniczenia wysokich kosztów chłodzenia.',
+    'Wykorzystanie solarnych podgrzewaczy wody systematycznie rośnie w całym kraju.',
+    'LPG jest nadal używany w niektórych starszych obszarach mieszkalnych.',
+    'W ogólnym zużyciu energii przez budynki zdecydowanie dominuje klimatyzacja.',
+    'ZEA importują najbardziej zaawansowane, energooszczędne technologie budowlane.',
+  ],
+
+  // Qatar
+  QA: [
+    'Katar nie ma absolutnie żadnych potrzeb związanych z ogrzewaniem pomieszczeń.',
+    'Klimatyzacja w domach i biurach działa praktycznie przez cały okrągły rok.',
+    'Gaz ziemny dostarcza mieszkańcom obfitej i relatywnie taniej energii.',
+    'Katarskie domy są projektowane tak, aby zapewniać ochronę przed ekstremalnymi upałami.',
+    'Typowe gospodarstwo domowe w Katarze nie przeznacza żadnych środków na ogrzewanie.',
+    'Miejskie systemy chłodzenia służą wszystkim głównym nowym inwestycjom w kraju.',
+    'Izolacja budynków skupia się wyłącznie na zatrzymywaniu ciepła na zewnątrz.',
+    'Potężny eksport LNG kontrastuje z brakiem jakiegokolwiek domowego zużycia na cele grzewcze.',
+    'Energia słoneczna jest wciąż niedostatecznie wykorzystywana mimo dużego nasłonecznienia.',
+    'Koszty energii elektrycznej na chłodzenie są głównym wydatkiem energetycznym rodzin.',
+    'Pustynny klimat sprawia, że temat ogrzewania jest w Katarze całkowicie nieistotny.',
+    'Nowoczesne budynki w Dosze wykorzystują najnowocześniejsze światowe technologie chłodzenia.',
+  ],
+
+  // Kuwait
+  KW: [
+    'Kuwejt nie ma potrzeb grzewczych ze względu na swój ekstremalny, pustynny klimat.',
+    'Klimatyzacja jest dotowana przez państwo i działa niemal bez przerwy.',
+    'Domy w Kuwejcie są budowane tak, aby wytrzymać jedne z najwyższych temperatur na Ziemi.',
+    'Typowe gospodarstwo domowe w Kuwejcie nie wydaje nic na ogrzewanie.',
+    'Ropa naftowa i gaz ziemny zasilają niemal wszystkie aspekty życia w kraju.',
+    'Projektowanie budynków koncentruje się wyłącznie na utrzymaniu chłodu.',
+    'Systemy chłodzenia miejskiego istnieją we wszystkich nowych dzielnicach miast.',
+    'W zużyciu energii elektrycznej absolutnie dominuje klimatyzacja (AC).',
+    'W kraju nie istnieje żadna infrastruktura systemów grzewczych.',
+    'Zima w Kuwejcie jest bardzo łagodna i uważana za najprzyjemniejszą porę roku.',
+    'Potencjał energii słonecznej jest ogromny, ale nadal słabo wykorzystany.',
+    'Kuwejt ma jedno z najwyższych na świecie zużyć klimatyzacji na mieszkańca.',
+  ],
+
+  // Bahrain
+  BH: [
+    'Bahrajn nie ma żadnych potrzeb związanych z ogrzewaniem budynków.',
+    'Klimatyzacja jest niezbędna do zapewnienia komfortu życia mieszkańców.',
+    'Gaz ziemny zasila systemy gotowania oraz elektrownie gazowe.',
+    'Bahrajńskie domy skupiają się na efektywności energetycznej systemów chłodzenia.',
+    'Typowe gospodarstwo domowe w Bahrajnie nie wydaje nic na ogrzewanie.',
+    'Systemy chłodzenia miejskiego służą niektórym nowym kompleksom budynków.',
+    'Przepisy budowlane kładą duży nacisk na parametry izolacyjności termicznej przegród.',
+    'Temperatury zimowe są tu bardzo łagodne i niezwykle przyjemne.',
+    'Solarne podgrzewanie wody zyskuje coraz większą liczbę zwolenników.',
+    'Energia elektryczna na chłodzenie stanowi główny wydatek domowego budżetu.',
+    'W Bahrajnie nie istnieje żadna infrastruktura do przesyłu ciepła.',
+    'Niewielki obszar Bahrajnu ogranicza różnorodność energetyczną kraju.',
+  ],
+
+  // Oman
+  OM: [
+    'Oman ma minimalne potrzeby grzewcze, ograniczone jedynie do wysokich partii gór.',
+    'Klimatyzacja całkowicie dominuje w domowym zużyciu energii elektrycznej.',
+    'Omańskie domy są projektowane przede wszystkim z myślą o bardzo gorącym klimacie.',
+    'Typowe gospodarstwo domowe nie wydaje praktycznie nic na cele grzewcze.',
+    'Gaz ziemny i ropa naftowa zasilają systemy gotowania oraz produkcję prądu.',
+    'Góry Jebel Akhdar notują znacznie niższe temperatury niż reszta kraju.',
+    'Przepisy budowlane w Omanie skupiają się na efektywnym chłodzeniu pasywnym.',
+    'Potencjał wykorzystania energii słonecznej jest w Omanie gigantyczny.',
+    'Gaz LPG jest powszechnie stosowany do przygotowywania codziennych posiłków.',
+    'Maskat jako stolica bardzo rzadko wymaga włączania jakiegokolwiek ogrzewania.',
+    'Pustynny i suchy klimat dominuje na wszystkich obszarach przybrzeżnych kraju.',
+    'Oman intensywnie inwestuje w rozwój odnawialnych źródeł energii.',
+  ],
+
+  // Israel
+  IL: [
+    'Izrael ma klimat śródziemnomorski z bardzo łagodnymi i krótkimi zimami.',
+    'Klimatyzatory powietrzne (split) zapewniają zarówno chłodzenie latem, jak i ciepło zimą.',
+    'Izraelskie domy zużywają średnio tylko 50 kWh/m² na ogrzewanie.',
+    'Typowe izraelskie gospodarstwo wydaje 3.000-5.000 ILS na ogrzewanie rocznie.',
+    'Solarne podgrzewanie wody jest obowiązkowe we wszystkich nowych budynkach od lat.',
+    'Wykorzystanie gazu ziemnego do celów grzewczych sukcesywnie rośnie.',
+    'Przenośne grzejniki elektryczne są powszechnie używane w starszych domach.',
+    'Północny Izrael oraz Jerozolima mają znacznie mroźniejsze zimy niż wybrzeże.',
+    'Standardy izolacji budynków w Izraelu są systematycznie podnoszone.',
+    'Pompy ciepła stają się coraz bardziej popularnym rozwiązaniem w kraju.',
+    'Kurort Ejlat nad Morzem Czerwonym rzadko wymaga stosowania ogrzewania.',
+    'Programy rządowe promujące efektywność energetyczną stale się rozrastają.',
+  ],
+
+  // Jordan
+  JO: [
+    'Jordania ma mroźne zimy, szczególnie w wysoko położonych regionach kraju.',
+    'Powszechnie używane są piecyki na naftę (kerosene) oraz na olej napędowy.',
+    'Jordańskie domy zużywają średnio około 60 kWh/m² na cele grzewcze.',
+    'Typowe jordańskie gospodarstwo wydaje 200-400 JOD na ogrzewanie rocznie.',
+    'Amman ma mroźne noce zimowe, które absolutnie wymagają stosowania ogrzewania.',
+    'Dostęp do gazu ziemnego jest ogranczony, ale infrastruktura stale się rozwija.',
+    'Izolacja budynków w Jordanii jest często niewystarczająca do ochrony przed mrozem.',
+    'Gaz LPG służy do gotowania oraz jako paliwo do piecyków gazowych.',
+    'Grzejniki elektryczne są uważane za bardzo drogie w codziennej eksploatacji.',
+    'Obszar Morza Martwego ma minimalne potrzeby grzewcze dzięki swemu położeniu.',
+    'Ubóstwo energetyczne dotyka znaczną część jordańskich gospodarstw domowych.',
+    'Solarne podgrzewanie wody jest jeszcze niedostatecznie wykorzystywane w regionie.',
+  ],
+
+  // Lebanon
+  LB: [
+    'Liban dzieli się na łagodne wybrzeże oraz mroźne regiony górskie zimą.',
+    'Olej napędowy i nafta dominują na libańskim rynku paliw grzewczych.',
+    'Libańskie domy zużywają średnio około 70 kWh/m² na ogrzewanie.',
+    'Typowe gospodarstwo w Libanie wydaje 500-1.000 USD na ogrzewanie rocznie.',
+    'Bejrut ma łagodne zimy, ale w górach regularnie pada śnieg i jest mróz.',
+    'Sieć elektryczna jest niestabilna, co utrudnia poleganie na ogrzewaniu elektrycznym.',
+    'Prywatne generatory uzupełniają braki w dostawach energii z sieci krajowej.',
+    'Izolacja budynków w Libanie jest zazwyczaj na minimalnym poziomie.',
+    'Piece na drewno są tradycyjnie używane w wielu wioskach górskich.',
+    'Gaz ziemny nie jest aktualnie dostępny do celów ogrzewania domowego.',
+    'Kryzys energetyczny w kraju drastycznie ogranicza dostęp do ciepła zimą.',
+    'Solarne podgrzewacze wody są rzadko spotykane mimo dużego nasłonecznienia.',
+  ],
+
+  // Syria
+  SY: [
+    'Syria doświadcza mroźnych zim, szczególnie w głębi lądu kraju.',
+    'Olej napędowy i nafta to tradycyjne i główne paliwa grzewcze.',
+    'Trwający konflikt zbrojny drastycznie zakłócił wszelkie dostawy energii.',
+    'Damaszek notuje niskie temperatury zimą, wymagające ogrzewania domów.',
+    'Zniszczenia wojenne budynków drastycznie pogorszyły warunki cieplne mieszkańców.',
+    'Drewno jest coraz częściej używane do ogrzewania z powodu braku innych paliw.',
+    'Gaz ziemny był szeroko stosowany przed wybuchem konfliktu w kraju.',
+    'Przyszła odbudowa kraju będzie musiała rozwiązać ogromne problemy ciepłownicze.',
+    'Ubóstwo energetyczne jest w dzisiejszej Syrii zjawiskiem powszechnym.',
+    'Obszary przybrzeżne kraju cieszą się znacznie łagodniejszym klimatem zimowym.',
+    'Syryjskie rodziny borykają się z ogromnymi wyzwaniami w zapewnieniu ciepła.',
+    'W niektórych miastach przed wojną istniały zalążki systemów ogrzewania miejskiego.',
+  ],
+
+  // Iraq
+  IQ: [
+    'Irak ma ekstremalnie gorące lata oraz mroźne zimy na północy kraju.',
+    'Nafta i olej napędowy są najpopularniejszymi paliwami grzewczymi.',
+    'Domy w Bagdadzie wymagają umiarkowanego dogrzewania podczas zimy.',
+    'Typowe irackie gospodarstwo wydaje ograniczone kwoty pieniędzy na ogrzewanie.',
+    'Region Kurdystanu posiada surowe, mroźne zimy w partiach górskich.',
+    'Spalanie gazu towarzyszącego przy wydobyciu ropy marnuje ogromny potencjał grzewczy.',
+    'Dostawy energii elektrycznej z sieci są nieregularne i niepewne.',
+    'Izolacja budynków w Iraku pozostaje zazwyczaj na niewystarczającym poziomie.',
+    'Gaz LPG jest podstawowym paliwem stosowanym w irackich kuchniach.',
+    'Użytkowanie prywatnych generatorów prądu jest w Iraku zjawiskiem powszechnym.',
+    'Południowy Irak cieszy się łagodniejszymi temperaturami podczas zimy.',
+    'Infrastruktura ciepłownicza w Iraku wymaga pilnego rozwoju i inwestycji.',
+  ],
+
+  // Iran
+  IR: [
+    'Iran ma bardzo zróżnicowany klimat — od upalnego południa po mroźną północ.',
+    'Gaz ziemny jest zdecydowanie głównym paliwem grzewczym w irańskich domach.',
+    'Domy w Teheranie zużywają znaczące ilości energii na cele grzewcze zimą.',
+    'Typowe irańskie gospodarstwo wydaje 50-100 mln IRR na ogrzewanie rocznie.',
+    'Tabriz i inne miasta na północy kraju doświadczają bardzo surowych zim.',
+    'Cena gazu ziemnego jest w Iranie mocno dotowana przez państwo.',
+    'Systemy ogrzewania miejskiego funkcjonują w kilku największych miastach kraju.',
+    'Standardy izolacyjności budynków w Iranie są systematycznie poprawiane.',
+    'Nafta jest nadal używana w odległych i trudnodostępnych obszarach wiejskich.',
+    'Wybrzeże Zatoki Perskiej ma minimalne potrzeby związane z ogrzewaniem.',
+    'Iran posiada drugie co do wielkości na świecie potwierdzone rezerwy gazu ziemnego.',
+    'Piece na drewno są tradycyjnym rozwiązaniem na obszarach wiejskich.',
+  ],
+
+  // Turkey
+  TR: [
+    'Turcja ma duże potrzeby grzewcze, szczególnie we wschodnich regionach kraju.',
+    'Gaz ziemny jest głównym paliwem grzewczym we wszystkich dużych miastach.',
+    'Tureckie domy zużywają średnio około 120 kWh/m² na cele grzewcze.',
+    'Typowe tureckie gospodarstwo wydaje 15.000-30.000 TRY na ogrzewanie rocznie.',
+    'Stambuł charakteryzuje się zimnymi i wilgotnymi miesiącami zimowymi.',
+    'Węgiel jest nadal powszechnie stosowany w domach we wschodniej Turcji.',
+    'Ogrzewanie miejskie (sieciowe) jest ograniczone, ale systematycznie się rozwija.',
+    'Spalanie drewna i węgla brunatnego powoduje zanieczyszczenie powietrza w miastach.',
+    'Izolacja budynków w Turcji uległa w ostatnich latach znacznej poprawie.',
+    'Pompy ciepła zyskują coraz więcej użytkowników w zachodniej części kraju.',
+    'Wybrzeże Morza Śródziemnego ma bardzo łagodne zimy bez dużych mrozów.',
+    'Anatolia Wschodnia charakteryzuje się bardzo surowymi i długimi zimami.',
+  ],
+
+  // Egypt
+  EG: [
+    'Egipt ma minimalne potrzeby grzewcze ze względu na swój bardzo ciepły klimat.',
+    'Noce na Synaju oraz na pustyniach potrafią być zaskakująco mroźne.',
+    'Klimatyzatory split zapewniają dogrzewanie pomieszczeń, gdy zajdzie taka potrzeba.',
+    'Egipskie domy zużywają śladowe ilości energii na cele grzewcze.',
+    'Typowe egipskie gospodarstwo domowe wydaje bardzo niewiele na ogrzewanie.',
+    'Gaz LPG służy powszechnie do gotowania w domach w całym Egipcie.',
+    'Sieć gazu ziemnego jest systematycznie rozbudowywana w Kairze i okolicy.',
+    'Projektowanie budynków w Egipcie zawsze traktuje priorytetowo wentylację.',
+    'Aleksandria ma nieco chłodniejsze i bardziej wilgotne zimy niż stolica kraju.',
+    'Górny Egipt charakteryzuje się bardzo upalnym klimatem przez cały rok.',
+    'W kraju nie istnieje żadna znacząca infrastruktura do przesyłu ciepła.',
+    'W całkowitym zużyciu energii przez budynki zdecydowanie dominuje chłodzenie.',
+  ],
+};

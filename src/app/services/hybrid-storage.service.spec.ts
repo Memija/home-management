@@ -36,6 +36,22 @@ describe('HybridStorageService', () => {
   let demoServiceSpy: { isDemoMode: Mock };
 
   beforeEach(() => {
+    TestBed.resetTestingModule();
+
+    // Ensure localStorage has the required methods for tests
+    if (typeof localStorage === 'undefined' || !localStorage.clear) {
+      const mockStorage: any = {
+        store: {} as Record<string, string>,
+        getItem: (key: string) => mockStorage.store[key] || null,
+        setItem: (key: string, value: string) => mockStorage.store[key] = value,
+        removeItem: (key: string) => delete mockStorage.store[key],
+        clear: () => mockStorage.store = {},
+        key: (index: number) => Object.keys(mockStorage.store)[index] || null,
+        get length() { return Object.keys(mockStorage.store).length; }
+      };
+      vi.stubGlobal('localStorage', mockStorage);
+    }
+
     localStorageSpy = {
       getPreference: vi.fn(),
       setPreference: vi.fn(),

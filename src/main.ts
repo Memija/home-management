@@ -3,9 +3,17 @@ import { appConfig } from './app/app.config';
 import { App } from './app/app';
 import { registerLocaleData } from '@angular/common';
 import localeDe from '@angular/common/locales/de';
+import localeBs from '@angular/common/locales/bs';
+import localeSr from '@angular/common/locales/sr';
+import localeId from '@angular/common/locales/id';
+import localePl from '@angular/common/locales/pl';
 
-// Register German locale for DatePipe
+// Register locales for DatePipe
 registerLocaleData(localeDe);
+registerLocaleData(localeBs);
+registerLocaleData(localeSr);
+registerLocaleData(localeId);
+registerLocaleData(localePl);
 
 // Add security warning for users opening the console
 console.log(

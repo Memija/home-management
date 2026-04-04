@@ -1,0 +1,210 @@
+// Americas heating/energy facts - PL
+export const americasHeatingFacts = {
+  // United States
+  US: [
+    'Gaz ziemny ogrzewa około 48% amerykańskich domów, a energia elektryczna 37%.',
+    'Północno-wschodnie USA mają jedne z najwyższych kosztów ogrzewania ze względu na mroźne zimy.',
+    'Wiele starszych domów w USA wciąż używa oleju opałowego, zwłaszcza w Nowej Anglii.',
+    'Inteligentne termostaty są szybko adoptowane w USA, z ponad 40 milionami zainstalowanych urządzeń.',
+    'Amerykańskie domy zużywają średnio 130 kWh/m² na ogrzewanie rocznie.',
+    'Typowe gospodarstwo domowe w USA wydaje 1.800-2.500 USD na ogrzewanie rocznie.',
+    'Pompy ciepła zyskują największą popularność w stanach południowych.',
+    'Przepisy budowlane różnią się znacznie między poszczególnymi stanami USA.',
+    'Ogrzewanie drewnem pozostaje popularne na obszarach wiejskich Ameryki.',
+    'USA posiadają największą na świecie sieć dystrybucji gazu ziemnego.',
+    'Klimatyzacja często służy jako ogrzewanie w regionach o łagodnym klimacie.',
+    'Federalne ulgi podatkowe w USA zachęcają do stosowania pomp ciepła.',
+  ],
+
+  // Canada
+  CA: [
+    'Kanada ma jedne z najmroźniejszych zim, wymagające intensywnego ogrzewania.',
+    'Gaz ziemny ogrzewa 47% kanadyjskich domów.',
+    'Kanadyjskie domy zużywają średnio 200 kWh/m² na ogrzewanie — to jeden z najwyższych wyników na świecie.',
+    'Typowe kanadyjskie gospodarstwo domowe wydaje 2.500-3.500 CAD na ogrzewanie rocznie.',
+    'Ogrzewanie drewnem i peletem jest powszechne na obszarach wiejskich Kanady.',
+    'Kolumbia Brytyjska ma wysokie zużycie ogrzewania elektrycznego dzięki hydroenergii.',
+    'Kanada posiada surowe standardy izolacji budynków.',
+    'Gruntowe pompy ciepła są skuteczne w kanadyjskich mrozach.',
+    'Quebec używa ogrzewania elektrycznego niemal wyłącznie dzięki taniej energii z wody.',
+    'Budownictwo w standardzie Passive House (dom pasywny) zyskuje na popularności.',
+    'Regiony arktyczne Kanady wykorzystują olej napędowy do celów grzewczych.',
+    'Ogrzewanie miejskie służy niektórym kanadyjskim miastom.',
+  ],
+
+  // Mexico
+  MX: [
+    'Meksykańskie domy zazwyczaj potrzebują minimalnego ogrzewania ze względu na ciepły klimat.',
+    'Północny Meksyk ma mroźne zimy wymagające stosowania ogrzewania.',
+    'Meksykańskie domy zużywają średnio 20 kWh/m² na ogrzewanie — to jedne z najniższych wartości.',
+    'Typowe meksykańskie gospodarstwo domowe wydaje 2.000-5.000 MXN na ogrzewanie rocznie.',
+    'LPG jest powszechny do gotowania i ogrzewania wody w Meksyku.',
+    'Grzejniki elektryczne są używane podczas krótkich okresów chłodu.',
+    'Klimatyzacja zapewnia ogrzewanie rewersyjne w regionach północnych.',
+    'Izolacja budynków nie jest wymagana w większości stanów Meksyku.',
+    'Miasto Meksyk ma łagodne temperatury przez cały rok.',
+    'Ogrzewanie gazem ziemnym jest ograniczone do obszarów miejskich.',
+    'Piece na drewno są używane w wiejskich obszarach górskich.',
+    'Solarne ogrzewanie wody zyskuje na popularności w słonecznych regionach.',
+  ],
+
+  // Brazil
+  BR: [
+    'Większość brazylijskich domów nie potrzebuje ogrzewania, ale gaz LPG jest niezbędny niemal wszędzie.',
+    'Brazylia jest jednym z największych na świecie konsumentów LPG do gotowania domowego.',
+    'Południowa Brazylia używa grzejników elektrycznych podczas łagodnych miesięcy zimowych.',
+    'Brazylijskie domy w zimnych regionach często używają pieców na drewno jako wsparcia.',
+    'Domostwa w Brazylii zużywają praktycznie zerową ilość energii na ogrzewanie pomieszczeń.',
+    'Typowe brazylijskie gospodarstwo wydaje 1.500-2.500 R$ na gaz do gotowania rocznie.',
+    'Prysznice elektryczne do podgrzewania wody są wyjątkowo popularne w Brazylii.',
+    'São Paulo ma łagodne zimy, rzadko wymagające stosowania ogrzewania.',
+    'Ogrzewanie drewnem jest tradycyjne w kulturze południowych stanów (gaucho).',
+    'Klimatyzacja jest w Brazylii znacznie częstsza niż systemy grzewcze.',
+    'Ogrzewanie gazem ziemnym jest rzadkością poza obszarami przemysłowymi.',
+    'Solarne ogrzewanie wody jest promowane przez programy rządowe.',
+  ],
+
+  // Argentina
+  AR: [
+    'Argentyna wykorzystuje gaz ziemny na szeroką skalę do ogrzewania i gotowania.',
+    'Patagonia ma znaczące potrzeby grzewcze ze względu na mroźny klimat.',
+    'Argentyńskie domy zużywają średnio 80 kWh/m² na ogrzewanie.',
+    'Typowe argentyńskie gospodarstwo wydaje 50.000-100.000 ARS na ogrzewanie rocznie.',
+    'Buenos Aires ma łagodne zimy wymagające minimalnego ogrzewania.',
+    'LPG jest używane tam, gdzie nie docierają sieci gazu ziemnego.',
+    'Ogrzewanie drewnem jest tradycyjne w regionach andyjskich.',
+    'Ogrzewanie elektryczne jest kosztowne ze względu na ceny prądu.',
+    'Argentyna posiada potężne rezerwy gazu ziemnego.',
+    'Standardy izolacji budynków ulegają poprawie.',
+    'Klimatyzacja zapewnia ogrzewanie w północnej Argentynie.',
+    'Ogrzewanie miejskie (sieciowe) praktycznie tu nie istnieje.',
+  ],
+
+  // Chile
+  CL: [
+    'Ogrzewanie w Chile różni się drastycznie między pustynną północą a mroźnym południem.',
+    'Drewno opałowe jest głównym źródłem ciepła w południowym Chile.',
+    'Chileńskie domy zużywają średnio 100 kWh/m² na ogrzewanie.',
+    'Typowe chilijskie gospodarstwo wydaje 500.000-1.000.000 CLP na ogrzewanie rocznie.',
+    'Zanieczyszczenie powietrza spalaniem drewna jest poważne w miastach takich jak Temuco.',
+    'Ogrzewanie gazem ziemnym rozwija się w Santiago.',
+    'Piecyki na parafinę są powszechne w chilijskich domach.',
+    'Ogrzewanie elektryczne jest drogie w stosunku do dochodów.',
+    'Standardy izolacji budynków są sukcesywnie podnoszone.',
+    'Północne Chile ma minimalne potrzeby grzewcze.',
+    'Środkowe Chile ma klimat śródziemnomorski z łagodnymi zimami.',
+    'Pompy ciepła zyskują popularność w domach klasy średniej.',
+  ],
+
+  // Colombia
+  CO: [
+    'Kolumbijskie wybrzeże i niziny nie wymagają żadnego ogrzewania.',
+    'Bogotá na wysokości 2.640 m n.p.m. wymaga okresowo ogrzewania.',
+    'Kolumbijskie domy zużywają minimalną ilość energii na cele grzewcze.',
+    'Średnie kolumbijskie gospodarstwo wydaje 200.000-400.000 COP rocznie na ogrzewanie.',
+    'Grzejniki elektryczne są używane w miastach położonych wysoko w górach.',
+    'Gaz ziemny służy głównie do gotowania i podgrzewania wody.',
+    'Projektowanie budynków skupia się na wentylacji, a nie na izolacji.',
+    'Regiony górskie mają chłodne temperatury przez cały rok.',
+    'LPG jest powszechny w obszarach bez dostępu do gazu ziemnego.',
+    'Solarne podgrzewanie wody jest niedoceniane mimo dużego potencjału.',
+    'Klimatyzacja służy do chłodzenia, a nie do ogrzewania.',
+    'Klimat Kolumbii eliminuje większość potrzeb związanych z ogrzewaniem.',
+  ],
+
+  // Peru
+  PE: [
+    'Wybrzeże Peru ma łagodny klimat, który nie wymaga ogrzewania.',
+    'Wysokogórskie regiony Andów mają mroźne noce wymagające ogrzewania.',
+    'Peruwiańskie domy zużywają minimalną ilość energii na ogrzewanie pomieszczeń.',
+    'Typowe peruwiańskie gospodarstwo wydaje 500-1.000 PEN na ogrzewanie rocznie.',
+    'Drewno i nawóz są tradycyjnymi paliwami grzewczymi w Andach.',
+    'LPG służy do gotowania i podgrzewania wody użytkowej.',
+    'Grzejniki elektryczne są używane przez miejską klasę średnią.',
+    'Izolacja budynków jest w Peru rzadkością.',
+    'Wilgotność w Limie sprawia, że temperatury pokojowe wydają się niższe.',
+    'Regiony Amazonii wymagają raczej chłodzenia niż ogrzewania.',
+    'Gaz ziemny z Camisea rozwija się w Limie.',
+    'Kuchenki solarne są używane na dużych wysokościach w Andach.',
+  ],
+
+  // Venezuela
+  VE: [
+    'Tropikalny klimat Wenezueli eliminuje potrzeby grzewcze.',
+    'Tylko wyżyny andyjskie mają sporadyczne wymagania dotyczące ogrzewania.',
+    'Wenezuelskie domy skupiają się na wentylacji i chłodzeniu.',
+    'Typowe wenezuelskie gospodarstwo wydaje praktycznie zero na ogrzewanie.',
+    'Energia elektryczna jest mocno dotowana, ale niestabilna.',
+    'LPG służy do gotowania w całym kraju.',
+    'Rezerwy gazu ziemnego idą na eksport, nie do ogrzewania domowego.',
+    'Klimatyzacja jest niezbędna w większości regionów Wenezueli.',
+    'Projektowanie budynków priorytetyzuje chłodzenie.',
+    'Standardowymi urządzeniami są wentylatory, a nie grzejniki.',
+    'Wysoko położona Mérida okazjonalnie korzysta z grzejników elektrycznych.',
+    'Wenezuela praktycznie nie posiada infrastruktury grzewczej.',
+  ],
+
+  // Ecuador
+  EC: [
+    'Klimat Ekwadoru zmienia się wraz z wysokością, a nie porami roku.',
+    'Quito na 2.850 m n.p.m. ma chłodne temperatury przez cały rok.',
+    'Ekwadorskie domy zużywają minimalną ilość energii na ogrzewanie.',
+    'Typowe ekwadorskie gospodarstwo wydaje około 100-200 USD rocznie na ogrzewanie.',
+    'Grzejniki elektryczne są używane w domach na wyżynach.',
+    'Wybrzeże Ekwadoru potrzebuje chłodzenia, nie ogrzewania.',
+    'LPG jest dotowane i używane powszechnie do gotowania.',
+    'Izolacja budynków jest niespotykana.',
+    'Solarne ogrzewanie wody rozwija się w słonecznych regionach.',
+    'Ogniska na drewno dają ciepło na obszarach wiejskich w Andach.',
+    'Nie istnieje żadna infrastruktura ogrzewania miejskiego.',
+    'Klimat sprawia, że większość systemów grzewczych jest zbędna.',
+  ],
+
+  // Uruguay
+  UY: [
+    'Zimy w Urugwaju są łagodne, ale wciąż wymagają pewnego ogrzewania.',
+    'Energia elektryczna jest głównym źródłem ciepła.',
+    'Urugwajskie domy zużywają średnio 50 kWh/m² na ogrzewanie.',
+    'Typowe urugwajskie gospodarstwo wydaje 15.000-25.000 UYU na ogrzewanie rocznie.',
+    'Drewno i nafta są używane w obszarach wiejskich.',
+    'LPG zapewnia ogrzewanie awaryjne.',
+    'Jednostki klimatyzacji zapewniają ogrzewanie rewersyjne.',
+    'Gaz ziemny ogranicza się do obszaru Montevideo.',
+    'Standardy izolacji budynków ulegają poprawie.',
+    'Pompy ciepła zyskują popularność w obszarach miejskich.',
+    'Energia wiatrowa zapewnia czystą energię elektryczną do ogrzewania.',
+    'Łagodny klimat redukuje zapotrzebowanie na energię cieplną.',
+  ],
+
+  // Paraguay
+  PY: [
+    'Zimy w Paragwaju są łagodne z krótkimi okresami zimna.',
+    'Klimatyzacja zapewnia ogrzewanie wtedy, gdy jest to potrzebne.',
+    'Paragwajskie domy zużywają minimalną ilość energii na ogrzewanie.',
+    'Typowe paragwajskie gospodarstwo wydaje 500.000-1.000.000 PYG rocznie na ogrzewanie.',
+    'LPG służy powszechnie do gotowania i podgrzewania wody.',
+    'Drewno jest używane w obszarach wiejskich.',
+    'Grzejniki elektryczne są używane podczas nagłych fal zimna.',
+    'Hydroenergia zapewnia tanią energię elektryczną.',
+    'Izolacja budynków jest niespotykana.',
+    'Klimat sprawia, że rozbudowane ogrzewanie jest niepotrzebne.',
+    'Gaz ziemny nie jest dostępny w kraju.',
+    'Chłodzenie jest znacznie ważniejsze niż ogrzewanie.',
+  ],
+
+  // Bolivia
+  BO: [
+    'Boliwijskie Altiplano wymaga znaczącego ogrzewania ze względu na wysokość.',
+    'La Paz i El Alto na 3.600-4.100 m n.p.m. mają niskie temperatury przez cały rok.',
+    'Boliwijskie domy używają drewna, gazu i prądu do ogrzewania.',
+    'Typowe boliwijskie gospodarstwo wydaje 2.000-4.000 BOB na ogrzewanie rocznie.',
+    'Gaz ziemny jest dotowany i powszechnie stosowany.',
+    'Drewno i nawóz pozostają ważne na wiejskich wyżynach.',
+    'Niziny potrzebują chłodzenia, nie ogrzewania.',
+    'Izolacja budynków jest rzadkością.',
+    'Piecyki naftowe są powszechne.',
+    'Ogrzewanie elektryczne jest drogie dla większości rodzin.',
+    'Wysokość nad poziomem morza tworzy unikalne wyzwania grzewcze.',
+    'Ogrzewanie solarne jest niedostatecznie wykorzystywane.',
+  ],
+};

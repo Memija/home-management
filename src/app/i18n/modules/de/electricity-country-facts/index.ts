@@ -114,4 +114,7 @@ export const availableElectricityCountries = [
   { code: 'NG', nameKey: 'COUNTRIES.NIGERIA' },
   { code: 'KE', nameKey: 'COUNTRIES.KENYA' },
   { code: 'MA', nameKey: 'COUNTRIES.MOROCCO' },
+
+  // World (average)
+  { code: 'WORLD', nameKey: 'COUNTRIES.WORLD' },
 ];

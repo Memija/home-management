@@ -1,0 +1,226 @@
+// Asia-Pacific countries water facts - PL
+export const asiaPacificFacts = {
+  // Japan
+  JP: [
+    'Japonia obsługuje ponad 1.000 zakładów odsalania wody!',
+    'Przeciętny Japończyk zużywa 250 litrów wody dziennie w domu.',
+    'Kąpiele Onsen w Japonii wykorzystują naturalną wodę geotermalną.',
+    'Japonia posiada ponad 30.000 zapór i zbiorników wodnych.',
+    'Tokio poddaje recyklingowi 100% swoich ścieków na potrzeby przemysłowe.',
+    'Uprawa ryżu w Japonii pochłania 50% zasobów wody w kraju.',
+    'Japonia posiada ponad 2.000 historycznych łaźni publicznych (Sento).',
+    'Kraj ten przetwarza 77% ścieków na potrzeby przemysłowe.',
+    'Puszysty śnieg na Hokkaido powstaje z wilgoci znad Morza Japońskiego.',
+    'Japonia importuje „wirtualną wodę” poprzez żywność, oszczędzając lokalne zasoby.',
+    'Tradycyjne japońskie ogrody wykorzystują wyrafinowane elementy wodne.',
+    'W kraju występuje rocznie ponad 1.500 trzęsień ziemi, które wpływają na infrastrukturę wodną.',
+  ],
+
+  // China
+  CN: [
+    'Chiny posiadają największą tamę na świecie, Tamę Trzech Przełomów!',
+    'Chiny zużywają 600 miliardów metrów sześciennych wody każdego roku.',
+    'Pustynia Gobi w Chinach powiększa się z powodu niedoboru wody.',
+    'Rzeka Jangcy jest najdłuższą rzeką w Azji (6.300 km).',
+    'Chiny produkują 70% światowych paneli słonecznych oszczędzających wodę.',
+    'Projekt przesyłu wody z południa na północ przenosi rocznie 44 mld m3 wody.',
+    'Ponad 80% zasobów wodnych Chin znajduje się na południu kraju.',
+    'Szanghaj oczyszcza 98% ścieków komunalnych.',
+    'Rzeka Li w Guilin słynie z oszałamiających krajobrazów krasowych.',
+    'Chiny produkują 70% światowej wody butelkowanej.',
+    'Od 2020 r. kraj zainwestował 87 mld dolarów w infrastrukturę wodną.',
+    'Chiny zbudowały 98.000 zbiorników wody deszczowej.',
+  ],
+
+  // South Korea
+  KR: [
+    'Korea Południowa zużywa 295 litrów wody na osobę dziennie.',
+    'Kraj przetwarza 86% ścieków, co jest wynikiem światowej klasy.',
+    'Korea Południowa zbudowała falochron Saemangeum, najdłuższy na świecie.',
+    'Wyspa Jeju posiada unikalną wodę z wulkanicznych warstw wodonośnych.',
+    'Od 2018 r. kraj zainwestował 18 mld dolarów w infrastrukturę wodną.',
+    'Tradycyjne koreańskie domy hanok posiadają ogrzewanie podłogowe ondol.',
+    'Korea Południowa posiada 18.000 km rzek mimo niewielkich rozmiarów.',
+    'Strefa buforowa DMZ stworzyła przypadkowe sanktuaria na terenach podmokłych.',
+    'Koreańskie łaźnie publiczne (jjimjilbang) zużywają 500 litrów na gościa.',
+    'Monsunowe deszcze przynoszą 60% rocznych zasobów wody w kraju.',
+    'Korea Południowa eksportuje zaawansowaną technologię uzdatniania wody na cały świat.',
+    'Rzeka Han w Seulu zaopatruje w wodę 24 miliony ludzi.',
+  ],
+
+  // India
+  IN: [
+    'Indie mają 18% światowej populacji, ale tylko 4% światowych zasobów wody słodkiej!',
+    'Rzeka Ganges jest uważana za świętą i utrzymuje 400 milionów ludzi.',
+    'Gromadzenie wody deszczowej jest obecnie obowiązkowe w wielu indyjskich miastach.',
+    'Indie są największym na świecie użytkownikiem wód gruntowych.',
+    'Indyjskie studnie schodkowe (np. Rani ki Vav) to cuda starożytnej inżynierii.',
+    'Ponad 600 milionów Hindusów boryka się z ekstremalnym niedoborem wody.',
+    'Pustynia Thar otrzymuje rocznie mniej niż 250 mm deszczu.',
+    'Rolnictwo w Indiach pochłania 90% zasobów wody w kraju.',
+    'Pałace nad jeziorami w Radżastanie ukazują historyczne zarządzanie wodą.',
+    'Bombaj otrzymuje 2.200 mm deszczu rocznie, ale nadal boryka się z niedoborami.',
+    'Indyjska misja Jal Jeevan ma na celu zapewnienie wody z kranu wszystkim do 2024 r.',
+    'Rozlewiska w Kerali tworzą sieć jezior i kanałów o długości 900 km.',
+  ],
+
+  // Singapore
+  SG: [
+    'Singapur importuje 40% wody z Malezji.',
+    'Mieszkańcy zużywają 141 litrów wody na osobę dziennie.',
+    'Singapur ma „cztery kany”: wodę importowaną, odsoloną, odzyskaną i deszczową.',
+    'Woda z recyklingu NEWater spełnia normy picia WHO.',
+    'Zapora Marina Barrage tworzy zbiornik słodkiej wody z wody morskiej.',
+    'Singapur dąży do samowystarczalności wodnej do 2061 r.',
+    'Kraj nie posiada naturalnych warstw wodonośnych ani wód gruntowych.',
+    'Singapur mocno inwestuje w badania i rozwój technologii wodnych.',
+    'Każdy budynek musi posiadać wodooszczędną armaturę.',
+    'Historia wody w Singapurze jest nauczana w szkołach od 6. roku życia.',
+    'Lotnisko Changi posiada najwyższy na świecie wodospad wewnątrz budynku.',
+    'Cena wody w Singapurze obejmuje podatek na cele ochrony zasobów.',
+  ],
+
+  // Australia
+  AU: [
+    'Australia jest najsuchszym zamieszkanym kontynentem na Ziemi!',
+    'Australijczycy zużywają około 340 litrów wody na osobę dziennie.',
+    'Wielki Basen Artezyjski jest jednym z największych zbiorników wód gruntowych.',
+    'Niedobory wody podczas Milenijnej Suszy doprowadziły do wielkich reform.',
+    'Australia eksportuje wiedzę z zakresu zarządzania wodą na cały świat.',
+    'Dorzecze Murray-Darling produkuje 40% żywności w Australii.',
+    'Australia odsala wodę wystarczającą dla 5 milionów ludzi.',
+    'Rdzenne ludy Australii zarządzają wodą od ponad 60.000 lat.',
+    'Kraj przechodził przez trwające dekadę susze.',
+    'Perth polega na odsalaniu wody w 50%.',
+    'Wielka Rafa Koralowa wymaga określonej jakości wody, aby przetrwać.',
+    'Australia przetwarza tylko 2% oczyszczonych ścieków – spore pole do poprawy!',
+  ],
+
+  // New Zealand
+  NZ: [
+    'Nowa Zelandia posiada 425.000 kilometrów rzek i strumieni!',
+    'Mieszkańcy zużywają około 227 litrów wody na osobę dziennie.',
+    'Kraj posiada 3.820 lodowców, głównie w Alpach Południowych.',
+    'Rzeka Waikato zapewnia wodę dla 1,7 mln ludzi.',
+    'Zatoka Milford Sound otrzymuje rocznie ponad 7.000 mm deszczu!',
+    'Auckland czerpie 90% wody z zapór w górach Waitākere.',
+    'Nowozelandzkie lodowce straciły 30% swojej objęości od 1977 r.',
+    'Kraj eksportuje wodę butelkowaną premium do ponad 60 krajów.',
+    'Rzeki Nowej Zelandii są domem dla gatunków niespotykanych nigdzie indziej.',
+    'Woda w Nowej Zelandii w 94% nadaje się do kąpieli.',
+    'Nowa Zelandia posiada jedne z najczystszych na świecie wód pitnych ze źródeł.',
+    'Jezioro Taupo jest największym słodkowodnym jeziorem w Australazji.',
+  ],
+
+  // Thailand
+  TH: [
+    'Tajlandia zużywa około 197 litrów wody na osobę dziennie.',
+    'Rzeka Mekong przepływa przez Tajlandię na odcinku 1.800 km.',
+    'Bangkok tonie o 2 cm rocznie z powodu wydobycia wód gruntowych.',
+    'Delta rzeki Menam (Chao Phraya) jest podstawą tajskiego rolnictwa.',
+    'Tajlandia posiada ponad 600 wodospadów.',
+    'Monsuny przynoszą w kraju 90% rocznych opadów.',
+    'Phuket polega na zbiórce deszczówki i odsalaniu wody.',
+    'Most na rzece Kwai to historyczna przeprawa wodna.',
+    'Tajlandia oczyszcza tylko 30% ścieków.',
+    'Kanały Bangkoku (klongs) służyły niegdyś jako wodne autostrady.',
+    'Pływające targi w Tajlandii ukazują kulturę opartą na wodzie.',
+    'Tajskie pola ryżowe pochłaniają 80% zasobów wody w kraju.',
+  ],
+
+  // Vietnam
+  VN: [
+    'Wietnam zużywa około 130 litrów wody na osobę dziennie.',
+    'Zatoka Ha Long liczy 1.600 wysp i wysepek.',
+    'Wietnam posiada 2.360 rzek dłuższych niż 10 km.',
+    'Delta Rzeki Czerwonej utrzymuje 20 mln ludzi.',
+    'Kraj posiada 3.260 km linii brzegowej.',
+    'Uprawa ryżu w Wietnamie wymaga ogromnej irygacji.',
+    'Rzeka Perfumowa przepływa przez zabytkowe Hue.',
+    'Wietnam buduje potężne zapory wodne na wyżynach.',
+    'Rzeka Sajgon zapewnia wodę dla Ho Chi Minh.',
+    'Wapienne ostańce w zatoce Halong tworzą unikalne formacje wodne.',
+    'Delta Mekongu dostarcza 50% ryżu w Wietnamie.',
+    'Wietnamskie targi pływające zależą całkowicie od dróg wodnych.',
+  ],
+
+  // Philippines
+  PH: [
+    'Filipiny mają 7.641 wysp otoczonych wodą!',
+    'Filipińczycy zużywają około 175 litrów wody na osobę dziennie.',
+    'Manila polega głównie na zaporze Angat.',
+    'Kraj posiada 421 rzek i 59 naturalnych jezior.',
+    'Jezioro Taal zawiera wyspę wulkaniczną z własnym jeziorem kraterowym.',
+    'Filipiny otrzymują rocznie 2.000-4.000 mm deszczu.',
+    'Palawan posiada podziemną rzekę wpisaną na listę UNESCO.',
+    'Częste tajfuny wpływają na systemy wodociągowe w kraju.',
+    'Manila oczyszcza mniej niż 10% swoich ścieków.',
+    'Tarasy ryżowe na Filipinach wykorzystują starożytne systemy nawadniania.',
+    'Woda na Boracay pochodzi z głębokich studni.',
+    'Rewitalizacja rzeki Pasig ma na celu oczyszczenie głównych dróg wodnych Manili.',
+  ],
+
+  // Malaysia
+  MY: [
+    'Malezja zużywa około 210 litrów wody na osobę dziennie.',
+    'Kraj otrzymuje rocznie 2.500-3.000 mm deszczu.',
+    'Malezja posiada 189 dorzeczy.',
+    'Kuala Lumpur czerpie wodę z dorzecza doliny Klang.',
+    'Malezja ma 65.877 kilometrów kwadratowych terenów podmokłych.',
+    'Rzeka Kinabatangan na Borneo jest domem dla unikalnej dzikiej przyrody.',
+    'Malezja oczyszcza 85% swoich zasobów wody.',
+    'Penang po kryzysie wodnym w 1998 r. zbudowało nową infrastrukturę.',
+    'Kraj posiada ponad 90 publicznych stacji uzdatniania wody.',
+    'Malezyjskie lasy deszczowe naturalnie filtrują i magazynują wodę.',
+    'Langkawi promuje zbieranie deszczówki w hotelach.',
+    'Nieskazitelnie czysta woda z Cameron Highlands zaopatruje sąsiednie regiony.',
+  ],
+
+  // Indonesia
+  ID: [
+    'Indonezja ma ponad 17.000 wysp!',
+    'Indonezyjczycy zużywają około 144 litry wody na osobę dziennie.',
+    'Indonezja posiada 5.590 km rzek.',
+    'Dżakarta tonie o 25 cm rocznie z powodu wydobycia wód gruntowych.',
+    'Kraj otrzymuje rocznie 1.750-3.000 mm opadów.',
+    'Indonezja posiada 521 rzek i różnorodne dorzecza.',
+    'Lasy deszczowe na Kalimantanie i Sumatrze magazynują potężne ilości wody.',
+    'Tradycyjne indonezyjskie świątynie wody zarządzają irygacją.',
+    'Indonezja oczyszcza tylko 4% ścieków komunalnych.',
+    'Kraj buduje 65 nowych zapór dla bezpieczeństwa wodnego.',
+    'Jezioro Toba jest największym jeziorem wulkanicznym na świecie.',
+    'System irygacyjny Subak na Bali znajduje się na liście UNESCO.',
+  ],
+
+  // Pakistan
+  PK: [
+    'Pakistan zużywa około 95 litrów wody na osobę dziennie.',
+    'Kraj boryka się z ekstremalnym niedoborem wody, zajmując 3. miejsce na świecie.',
+    'Pakistan posiada 150 głównych zapór.',
+    'Delta Indusu zajmowała niegdyś 16.000 km kw., obecnie się kurczy.',
+    'Karaczi boryka się z chronicznym niedoborem wody mimo nadmorskiego położenia.',
+    'Kraj buduje zapory do magazynowania deszczów monsunowych.',
+    'Woda w Lahore pochodzi z wód gruntowych i rzeki Ravi.',
+    'Dostępność wody na mieszkańca w Pakistanie spadła o 75% od 1950 r.',
+    'Rzeka Indus zapewnia 90% wody w Pakistanie.',
+    'Pakistan posiada największy na świecie scentralizowany system irygacyjny.',
+    'Zapora Tarbela jest jedną z największych na świecie zapór sypanych.',
+    'Lodowce K2 zasilają północne rzeki Pakistanu.',
+  ],
+
+  // Bangladesh
+  BD: [
+    'Bangladesz to kraina rzek, których jest ponad 700!',
+    'Mieszkańcy zużywają około 95 litrów wody na osobę dziennie.',
+    'Ganges, Brahmaputra i Meghna zbiegają się w Bangladeszu.',
+    'Bangladesz boryka się ze skażeniem arszenikiem w 35 mln studni.',
+    'Monsunowe powodzie zalewają rocznie do 70% powierzchni kraju.',
+    'Las namorzynowy Sundarbans filtruje wodę przybrzeżną.',
+    'Dhaka polega w 87% na wodach gruntowych.',
+    'Bangladesz jest niezwykle podatny na wodne skutki zmian klimatu.',
+    'Przez kraj przepływa 260 rzek.',
+    'Hiacynt wodny blokuje drogi wodne, wpływając na transport.',
+    'Bangladesz buduje pływające ogrody na wodzie dla rolnictwa.',
+    'Kraj ten posiada największą deltę na świecie.',
+  ],
+};

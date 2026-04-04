@@ -145,4 +145,7 @@ export const availableHeatingCountries = [
   { code: 'ET', nameKey: 'COUNTRIES.ETHIOPIA' },
   { code: 'GH', nameKey: 'COUNTRIES.GHANA' },
   { code: 'TZ', nameKey: 'COUNTRIES.TANZANIA' },
+
+  // World (average)
+  { code: 'WORLD', nameKey: 'COUNTRIES.WORLD' },
 ];

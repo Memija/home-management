@@ -60,110 +60,80 @@ describe('LanguageSwitcherComponent', () => {
       expect(container.name).toBe('div');
     });
 
-    it('should display EN, DE and BS buttons within the container', () => {
+    it('should display all 6 language buttons within the container', () => {
       const container = fixture.debugElement.query(By.css('.language-switcher'));
       const buttons = container.queryAll(By.css('button'));
 
       // Check strict structure
-      expect(container.children.length).toBe(3);
+      expect(container.children.length).toBe(6);
       expect(container.children[0].name).toBe('button');
       expect(container.children[1].name).toBe('button');
       expect(container.children[2].name).toBe('button');
+      expect(container.children[3].name).toBe('button');
+      expect(container.children[4].name).toBe('button');
+      expect(container.children[5].name).toBe('button');
 
-      expect(buttons.length).toBe(3);
+      expect(buttons.length).toBe(6);
       expect(buttons[0].nativeElement.textContent.trim()).toBe('EN');
       expect(buttons[1].nativeElement.textContent.trim()).toBe('DE');
       expect(buttons[2].nativeElement.textContent.trim()).toBe('BS');
+      expect(buttons[3].nativeElement.textContent.trim()).toBe('SR');
+      expect(buttons[4].nativeElement.textContent.trim()).toBe('ID');
+      expect(buttons[5].nativeElement.textContent.trim()).toBe('PL');
     });
   });
 
   describe('CSS Styling & Classes', () => {
-    it('should apply "active" class to EN button when current language is en', () => {
-      currentLangSignal.set('en');
-      fixture.detectChanges();
-
-      const buttons = fixture.debugElement.queryAll(By.css('button'));
-      expect(buttons[0].nativeElement.classList.contains('active')).toBe(true);
-      expect(buttons[1].nativeElement.classList.contains('active')).toBe(false);
-      expect(buttons[2].nativeElement.classList.contains('active')).toBe(false);
+    it('should apply "active" class to the correct button based on current language', () => {
+      const languages: Language[] = ['en', 'de', 'bs', 'sr', 'id', 'pl'];
+      
+      languages.forEach((lang, index) => {
+        currentLangSignal.set(lang);
+        fixture.detectChanges();
+        
+        const buttons = fixture.debugElement.queryAll(By.css('button'));
+        buttons.forEach((btn, i) => {
+          expect(btn.nativeElement.classList.contains('active')).toBe(i === index);
+        });
+      });
     });
 
-    it('should apply "active" class to DE button when current language is de', () => {
-      currentLangSignal.set('de');
-      fixture.detectChanges();
-
-      const buttons = fixture.debugElement.queryAll(By.css('button'));
-      expect(buttons[0].nativeElement.classList.contains('active')).toBe(false);
-      expect(buttons[1].nativeElement.classList.contains('active')).toBe(true);
-      expect(buttons[2].nativeElement.classList.contains('active')).toBe(false);
-    });
-
-    it('should apply "active" class to BS button when current language is bs', () => {
-      currentLangSignal.set('bs');
-      fixture.detectChanges();
-
-      const buttons = fixture.debugElement.queryAll(By.css('button'));
-      expect(buttons[0].nativeElement.classList.contains('active')).toBe(false);
-      expect(buttons[1].nativeElement.classList.contains('active')).toBe(false);
-      expect(buttons[2].nativeElement.classList.contains('active')).toBe(true);
-    });
-
-    it('should ensure "active" class is mutually exclusive', () => {
-      // Test transition from EN to DE
+    it('should ensure "active" class is mutually exclusive across all languages', () => {
+      // Test a few transitions
       currentLangSignal.set('en');
       fixture.detectChanges();
       let buttons = fixture.debugElement.queryAll(By.css('button'));
       expect(buttons[0].classes['active']).toBe(true);
-      expect(buttons[1].classes['active']).toBeFalsy();
-      expect(buttons[2].classes['active']).toBeFalsy();
+      expect(buttons.slice(1).every(b => !b.classes['active'])).toBe(true);
 
-      currentLangSignal.set('de');
+      currentLangSignal.set('sr');
       fixture.detectChanges();
       buttons = fixture.debugElement.queryAll(By.css('button'));
-      expect(buttons[0].classes['active']).toBeFalsy();
-      expect(buttons[1].classes['active']).toBe(true);
-      expect(buttons[2].classes['active']).toBeFalsy();
-
-      currentLangSignal.set('bs');
-      fixture.detectChanges();
-      buttons = fixture.debugElement.queryAll(By.css('button'));
-      expect(buttons[0].classes['active']).toBeFalsy();
-      expect(buttons[1].classes['active']).toBeFalsy();
-      expect(buttons[2].classes['active']).toBe(true);
+      expect(buttons[3].classes['active']).toBe(true);
+      expect(buttons.filter((_, i) => i !== 3).every(b => !b.classes['active'])).toBe(true);
     });
   });
 
   describe('User Interaction', () => {
-    it('should call setLanguage with "en" when EN button is clicked', () => {
+    it('should call setLanguage with correct code when buttons are clicked', () => {
+      const languages: Language[] = ['en', 'de', 'bs', 'sr', 'id', 'pl'];
       const buttons = fixture.debugElement.queryAll(By.css('button'));
-      buttons[0].triggerEventHandler('click', null);
 
-      expect(languageServiceMock.setLanguage).toHaveBeenCalledWith('en');
+      languages.forEach((lang, index) => {
+        buttons[index].triggerEventHandler('click', null);
+        expect(languageServiceMock.setLanguage).toHaveBeenCalledWith(lang);
+      });
     });
 
-    it('should call setLanguage with "de" when DE button is clicked', () => {
-      const buttons = fixture.debugElement.queryAll(By.css('button'));
-      buttons[1].triggerEventHandler('click', null);
-
-      expect(languageServiceMock.setLanguage).toHaveBeenCalledWith('de');
-    });
-
-    it('should call setLanguage with "bs" when BS button is clicked', () => {
-      const buttons = fixture.debugElement.queryAll(By.css('button'));
-      buttons[2].triggerEventHandler('click', null);
-
-      expect(languageServiceMock.setLanguage).toHaveBeenCalledWith('bs');
-    });
-
-    // Edge case: ensure button calls service even if it's already active (the service handles the "no-op" logic usually, but the UI should still pass the command)
-    it('should still call setLanguage("en") even if already "en"', () => {
-      currentLangSignal.set('en');
+    // Edge case: ensure button calls service even if it's already active
+    it('should still call setLanguage even if already active', () => {
+      currentLangSignal.set('pl');
       fixture.detectChanges();
 
       const buttons = fixture.debugElement.queryAll(By.css('button'));
-      buttons[0].triggerEventHandler('click', null);
+      buttons[5].triggerEventHandler('click', null);
 
-      expect(languageServiceMock.setLanguage).toHaveBeenCalledWith('en');
+      expect(languageServiceMock.setLanguage).toHaveBeenCalledWith('pl');
     });
   });
 });

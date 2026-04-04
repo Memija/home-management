@@ -1,21 +1,5 @@
-// Asien-Pazifik Länder Wasserfakten - Deutsch
+// Asia-Pacific countries water facts - DE
 export const asiaPacificFacts = {
-  // China
-  CN: [
-    'China hat 20% der Weltbevölkerung, aber nur 7% des Süßwassers.',
-    'Der Jangtse ist mit 6.300km der drittlängste Fluss der Welt.',
-    'Chinesische Haushalte verbrauchen etwa 176 Liter pro Person pro Tag.',
-    'Der Drei-Schluchten-Damm ist das weltweit größte Wasserkraftprojekt.',
-    'Peking transportiert Wasser 1.400km aus Südchina.',
-    'China hat 98.000 Regenwasserspeicher gebaut.',
-    'Der Gelbe Fluss ist aufgrund der Nutzung mehrfach bis zum Meer ausgetrocknet.',
-    'Shanghai behandelt 98% seines häuslichen Abwassers.',
-    'Chinas Wassertransferprojekt bewegt jährlich 45 Milliarden Kubikmeter.',
-    'Der Li-Fluss in Guilin ist berühmt für seine atemberaubende Karstlandschaft.',
-    'China produziert 70% des weltweiten Flaschenwassers.',
-    'Das Land hat seit 2020 87 Milliarden Dollar in Wasserinfrastruktur investiert.',
-  ],
-
   // Japan
   JP: [
     'Japan verbraucht 219 Liter pro Person täglich trotz Wasserknappheit.',
@@ -26,58 +10,26 @@ export const asiaPacificFacts = {
     'Die Schneeschmelze des Mount Fuji versorgt Tokio mit Trinkwasser.',
     'Japanische Reisfelder benötigen 5.000 Liter Wasser pro Kilogramm.',
     'Das Land behandelt Abwasser auf Trinkwasserstandard.',
-    'Hokkaidos Pulverschnee entsteht durch Feuchtigkeit über dem Japanischen Meer.',
-    'Japan importiert virtuelles Wasser durch Lebensmittel und spart lokale Ressourcen.',
-    'Traditionelle japanische Gärten nutzen ausgeklügelte Wasserspiele.',
-    'Das Land recycelt 77% seines Abwassers für industrielle Nutzung.',
+    'Hokkaidos Pulverschnee stammt aus Feuchtigkeit über dem Japanischen Meer.',
+    'Japan importiert virtuelles Wasser durch Lebensmittel und schont so lokale Ressourcen.',
+    'Traditionelle japanische Gärten nutzen ausgeklügelte Wasserelemente.',
+    'Das Land recycelt 77% seines Abwassers für die industrielle Nutzung.',
   ],
 
-  // India
-  IN: [
-    'Indien hat 18% der Weltbevölkerung, aber nur 4% des Süßwassers.',
-    'Das Ganges-Flussbecken versorgt 500 Millionen Menschen!',
-    'Indien ist der weltweit größte Nutzer von Grundwasser.',
-    'Traditionelle Stufenbrunnen (Baoli) sammelten jahrhundertelang Regenwasser.',
-    'Chennai war 2019 die erste Großstadt, die kein Grundwasser mehr hatte.',
-    'Indiens Monsunzeit liefert 80% des jährlichen Niederschlags.',
-    'Die Thar-Wüste erhält weniger als 250mm Regen jährlich.',
-    'Die indische Landwirtschaft verbraucht 90% des Wassers des Landes.',
-    'Rajasthans Seepaläste zeigen historisches Wassermanagement.',
-    'Mumbai erhält 2.200mm Regen jährlich, leidet aber dennoch unter Mangel.',
-    'Indiens Jal Jeevan Mission will bis 2024 Leitungswasser für alle bereitstellen.',
-    'Die Kerala-Backwaters bilden ein 900km langes Netz aus Seen und Kanälen.',
-  ],
-
-  // Australia
-  AU: [
-    'Australien ist der trockenste bewohnte Kontinent der Erde!',
-    'Australier verbrauchen 340 Liter pro Person täglich - zu den höchsten weltweit.',
-    'Das Murray-Darling-Becken liefert 40% der australischen Lebensmittel.',
-    'Melbourne hat das weltweit größte überdachte Wasserreservoir.',
-    'Australien hat fünf der weltweit größten Entsalzungsanlagen.',
-    'Das Great Artesian Basin unterliegt 23% des Kontinents.',
-    'Sydneys Wasser stammt aus geschützten Einzugsgebieten in den Blue Mountains.',
-    'Australien erfand Zwei-Mengen-Spülungen, heute weltweit genutzt.',
-    'Das Land durchlebte jahrzehntelange Dürreperioden.',
-    'Perth ist zu 50% auf Entsalzung für Wasser angewiesen.',
-    'Das Great Barrier Reef benötigt spezifische Wasserqualität zum Überleben.',
-    'Australien recycelt nur 2% des behandelten Abwassers - Verbesserungspotenzial!',
-  ],
-
-  // New Zealand
-  NZ: [
-    'Neuseeland hat 425.000 Kilometer Flüsse und Bäche!',
-    'Kiwis verbrauchen etwa 227 Liter pro Person pro Tag.',
-    'Das Land hat 3.820 Gletscher, die meisten in den Südalpen.',
-    'Der Taupo-See ist Australasiens größter Süßwassersee.',
-    '94% von Neuseelands Wasser ist zum Schwimmen geeignet.',
-    'Der Waikato-Fluss versorgt 1,7 Millionen Menschen mit Wasser.',
-    'Milford Sound erhält jährlich über 7.000mm Niederschlag!',
-    'NZ hat einige der reinsten Trinkwasserquellen der Welt.',
-    'Die Flüsse des Landes beherbergen einzigartige Arten, die nirgendwo sonst vorkommen.',
-    'Auckland bezieht 90% seines Wassers aus Dämmen in den Waitākere Ranges.',
-    'Neuseeländische Gletscher haben seit 1977 30% ihres Volumens verloren.',
-    'Das Land exportiert Premium-Flaschenwasser in über 60 Länder.',
+  // China
+  CN: [
+    'China hat 20% der Weltbevölkerung, aber nur 7% des Süßwassers.',
+    'Der Jangtse ist mit 6.300km der drittlängste Fluss der Welt.',
+    'Chinesische Haushalte verbrauchen etwa 176 Liter pro Person pro Tag.',
+    'Der Drei-Schluchten-Damm ist das weltweit größte Wasserkraftprojekt.',
+    'Peking transportiert Wasser 1.400km aus Südchina.',
+    'China hat 98.000 Regenwasserspeicher gebaut.',
+    'Der Gelbe Fluss ist aufgrund der Nutzung mehrfach bis zum Meer ausgetrocknet.',
+    'Shanghai klärt 98% seines häuslichen Abwassers.',
+    'Chinas Wasserumleitungsprojekt bewegt jährlich 45 Milliarden Kubikmeter.',
+    'Der Li-Fluss in Guilin ist berühmt für seine atemberaubende Karstlandschaft.',
+    'China produziert 70% des weltweit in Flaschen abgefüllten Wassers.',
+    'Das Land hat seit 2020 87 Milliarden Dollar in die Wasserinfrastruktur investiert.',
   ],
 
   // South Korea
@@ -93,7 +45,23 @@ export const asiaPacificFacts = {
     'Die DMZ-Pufferzone hat versehentlich Feuchtgebiet-Schutzgebiete geschaffen.',
     'Koreanische öffentliche Badehäuser (Jjimjilbang) verbrauchen 500L pro Besucher.',
     'Das Land erlebt Monsunregen, die 60% des jährlichen Wassers bringen.',
-    'Südkorea exportiert fortschrittliche Wasseraufbereitungstechnologie global.',
+    'Südkorea exportiert weltweit fortschrittliche Wasseraufbereitungstechnologie.',
+  ],
+
+  // India
+  IN: [
+    'Indien hat 18% der Weltbevölkerung, aber nur 4% des Süßwassers.',
+    'Das Ganges-Flussbecken versorgt 500 Millionen Menschen!',
+    'Indien ist der weltweit größte Nutzer von Grundwasser.',
+    'Traditionelle Stufenbrunnen (Baoli) sammelten jahrhundertelang Regenwasser.',
+    'Chennai war 2019 die erste Großstadt, die kein Grundwasser mehr hatte.',
+    'Indiens Monsunzeit liefert 80% des jährlichen Niederschlags.',
+    'Die Thar-Wüste erhält jährlich weniger als 250mm Regen.',
+    'Die indische Landwirtschaft verbraucht 90% des Wassers des Landes.',
+    'Rajasthans Seepaläste zeigen historisches Wassermanagement.',
+    'Mumbai erhält jährlich 2.200mm Regen, hat aber dennoch Knappheiten.',
+    'Indiens Jal-Jeevan-Mission zielt darauf ab, bis 2024 alle mit Leitungswasser zu versorgen.',
+    'Die Backwaters von Kerala bilden ein 900km langes Netzwerk aus Seen und Kanälen.',
   ],
 
   // Singapore
@@ -107,9 +75,41 @@ export const asiaPacificFacts = {
     'Das Land hat keine natürlichen Aquifere oder Grundwasser.',
     'Der Changi Airport zeigt den weltweit höchsten Indoor-Wasserfall.',
     'Singapurs Wasserpreis enthält eine Erhaltungssteuer.',
-    'Das Land investiert stark in Wassertechnologie-F&E.',
+    'Das Land investiert massiv in Forschung und Entwicklung von Wassertechnologie.',
     'Jedes Gebäude muss wassereffiziente Armaturen installieren.',
-    'Singapurs Wassergeschichte wird ab 6 Jahren in Schulen gelehrt.',
+    'Singapurs Wassergeschichte wird in Schulen ab dem Alter von 6 Jahren gelehrt.',
+  ],
+
+  // Australia
+  AU: [
+    'Australien ist der trockenste bewohnte Kontinent der Erde!',
+    'Australier verbrauchen 340 Liter pro Person täglich - zu den höchsten weltweit.',
+    'Das Murray-Darling-Becken liefert 40% der australischen Lebensmittel.',
+    'Melbourne hat das weltweit größte überdachte Wasserreservoir.',
+    'Australien hat fünf der weltweit größten Entsalzungsanlagen.',
+    'Das Great Artesian Basin unterliegt 23% des Kontinents.',
+    'Sydneys Wasser stammt aus geschützten Einzugsgebieten in den Blue Mountains.',
+    'Australien erfand Zwei-Mengen-Spülungen, heute weltweit genutzt.',
+    'Das Land hat jahrzehntelange Dürreperioden durchlebt.',
+    'Perth hängt für 50% seines Wassers von Entsalzung ab.',
+    'Das Great Barrier Reef benötigt spezifische Wasserqualität zum Überleben.',
+    'Australien recycelt nur 2% des geklärten Abwassers - Raum für Verbesserungen!',
+  ],
+
+  // New Zealand
+  NZ: [
+    'Neuseeland hat 425.000 Kilometer Flüsse und Bäche!',
+    'Kiwis verbrauchen etwa 227 Liter pro Person pro Tag.',
+    'Das Land hat 3.820 Gletscher, die meisten in den Südalpen.',
+    'Der Taupo-See ist Australasiens größter Süßwassersee.',
+    '94% von Neuseelands Wasser ist zum Schwimmen geeignet.',
+    'Der Waikato-Fluss versorgt 1,7 Millionen Menschen mit Wasser.',
+    'Milford Sound erhält jährlich über 7.000mm Niederschlag!',
+    'NZ hat einige der reinsten Trinkwasserquellen der Welt.',
+    'Die Flüsse des Landes sind Heimat für einzigartige Arten, die es nirgendwo sonst gibt.',
+    'Auckland bezieht 90% seines Wassers aus Staudämmen in den Waitākere Ranges.',
+    'Neuseeländische Gletscher haben seit 1977 30% ihres Volumens verloren.',
+    'Das Land exportiert Premium-Flaschenwasser in über 60 Nationen.',
   ],
 
   // Thailand
@@ -123,9 +123,9 @@ export const asiaPacificFacts = {
     'Das Land erlebt Monsune, die 90% des jährlichen Regens bringen.',
     'Thailändische Reisfelder verbrauchen 80% des Wassers der Nation.',
     'Phuket ist auf Regenwassernutzung und Entsalzung angewiesen.',
-    'Die Brücke am Kwai ist ein historischer Flussübergang.',
+    'Die Brücke am Fluss Kwai ist eine historische Wasserüberquerung.',
     'Thailand klärt nur 30% seines Abwassers.',
-    'Bangkoks Klongs (Kanäle) dienten einst als Wasserwege.',
+    'Bangkoks Klongs (Kanäle) dienten einst als Wasserstraßen.',
   ],
 
   // Vietnam
@@ -139,8 +139,8 @@ export const asiaPacificFacts = {
     'Das Land hat 3.260km Küste.',
     'Vietnamesische Reisproduktion erfordert massive Bewässerung.',
     'Der Parfümfluss fließt durch das antike Hue.',
-    'Vietnam baut große Wasserkraftdämme im Hochland.',
-    'Halong-Buchts Kalksteinkarst erzeugt einzigartige Wasserformationen.',
+    'Vietnam baut bedeutende Wasserkraftwerke im Hochland.',
+    'Die Kalksteinkarste der Halong-Bucht erzeugen einzigartige Wasserformationen.',
     'Der Saigon-Fluss versorgt Ho-Chi-Minh-Stadt mit Wasser.',
   ],
 
@@ -156,8 +156,8 @@ export const asiaPacificFacts = {
     'Das Land erlebt häufige Taifune, die Wasserversorgung beeinträchtigen.',
     'Manila klärt weniger als 10% seines Abwassers.',
     'Philippinische Reisterrassen nutzen antike Bewässerungssysteme.',
-    'Boracays Wasser kommt aus Tiefbrunnen.',
-    'Die Pasig-Fluss-Rehabilitation zielt darauf ab, Manilas Wasserweg zu reinigen.',
+    'Boracays Wasser stammt aus Tiefbrunnen.',
+    'Die Sanierung des Pasig-Flusses zielt darauf ab, Manilas Wasserweg zu reinigen.',
   ],
 
   // Malaysia
@@ -166,7 +166,7 @@ export const asiaPacificFacts = {
     'Das Land erhält jährlich 2.500-3.000mm Regen.',
     'Malaysia hat 189 Flussbecken.',
     'Kuala Lumpur bezieht Wasser aus dem Klang-Tal-Einzugsgebiet.',
-    "Cameron Highlands' makelloses Wasser versorgt nahe Regionen.",
+    'Das unberührte Wasser der Cameron Highlands versorgt benachbarte Regionen.',
     'Malaysia hat 65.877 Quadratkilometer Feuchtgebiete.',
     'Der Kinabatangan in Borneo unterstützt einzigartige Tierwelt.',
     'Malaysia klärt 85% seiner Wasserversorgung.',
@@ -189,7 +189,7 @@ export const asiaPacificFacts = {
     'Regenwälder in Kalimantan und Sumatra speichern massiv Wasser.',
     'Traditionelle indonesische Wassertempel verwalten Bewässerung.',
     'Indonesien klärt nur 4% seines Abwassers.',
-    'Das Land baut 65 neue Dämme für Wassersicherheit.',
+    'Das Land baut 65 neue Dämme für die Wassersicherheit.',
   ],
 
   // Pakistan
@@ -200,12 +200,12 @@ export const asiaPacificFacts = {
     'Der Tarbela-Damm ist einer der weltweit größten erdgefüllten Dämme.',
     'K2-Gletscher speisen Pakistans nördliche Flüsse.',
     'Das Land leidet unter schwerem Wasserstress, weltweit auf Platz 3.',
-    'Lahores Wasser kommt aus Grundwasser und dem Ravi.',
+    'Lahores Wasser stammt aus Grundwasser und dem Fluss Ravi.',
     'Pakistan hat 150 große Dämme.',
-    'Das Indus-Delta umfasste einst 16.000 qkm, schrumpft nun.',
-    'Karatschi leidet unter chronischer Wasserknappheit trotz Küstenlage.',
-    'Pakistans Pro-Kopf-Wasserverfügbarkeit fiel seit 1950 um 75%.',
-    'Das Land baut Dämme zur Speicherung von Monsunregen.',
+    'Das Indus-Delta umfasste einst 16.000 km², schrumpft aber jetzt.',
+    'Karatschi hat chronische Wasserknappheit trotz der Küstenlage.',
+    'Pakistans Wasserverfügbarkeit pro Kopf ist seit 1950 um 75% gesunken.',
+    'Das Land baut Dämme, um Monsunregen zu speichern.',
   ],
 
   // Bangladesh
@@ -221,6 +221,6 @@ export const asiaPacificFacts = {
     'Bangladesch ist extrem anfällig für Klimawandel-Wasserauswirkungen.',
     'Das Land hat 260 durchfließende Flüsse.',
     'Wasserhyazinthen blockieren Wasserwege und beeinträchtigen Transport.',
-    'Bangladesch baut schwimmende Gärten auf Wasser für Landwirtschaft.',
+    'Bangladesch baut schwimmende Gärten auf dem Wasser für die Landwirtschaft.',
   ],
 };

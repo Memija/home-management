@@ -14,6 +14,7 @@ import {
   Zap,
   ShieldCheck,
   LucideIconData,
+  CloudSun,
 } from 'lucide-angular';
 
 type FeatureTag = 'new' | 'enhancement' | 'smart';
@@ -102,6 +103,14 @@ export class ReleasePlanComponent {
       titleKey: 'RELEASE_PLAN.FEATURE_7_TITLE',
       descKey: 'RELEASE_PLAN.FEATURE_7_DESC',
       icon: TrendingUp,
+      tag: 'smart',
+      colorClass: 'prediction-feature',
+    },
+    {
+      id: 8,
+      titleKey: 'RELEASE_PLAN.FEATURE_8_TITLE',
+      descKey: 'RELEASE_PLAN.FEATURE_8_DESC',
+      icon: CloudSun,
       tag: 'smart',
       colorClass: 'prediction-feature',
     },

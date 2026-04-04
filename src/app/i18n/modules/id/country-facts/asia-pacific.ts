@@ -1,0 +1,226 @@
+// Asia-Pacific countries water facts - ID
+export const asiaPacificFacts = {
+  // Japan
+  JP: [
+    'Jepang mengoperasikan lebih dari 1.000 pabrik desalinasi!',
+    'Rata-rata orang Jepang menggunakan 250 liter air per hari di rumah.',
+    'Pemandian Onsen di Jepang menggunakan air panas bumi alami.',
+    'Jepang memiliki lebih dari 30.000 bendungan dan waduk.',
+    'Tokyo mendaur ulang 100% air limbahnya untuk penggunaan industri.',
+    'Budidaya padi di Jepang menggunakan 50% sumber daya air negara.',
+    'Jepang memiliki lebih dari 2.000 pemandian umum bersejarah (Sento).',
+    'Negara ini mendaur ulang 77% air limbahnya untuk keperluan industri.',
+    'Salju Hokkaido berasal dari kelembapan di atas wilayah Laut Jepang.',
+    'Jepang mengimpor air virtual melalui makanan untuk menghemat sumber daya.',
+    'Taman tradisional Jepang menggunakan fitur air yang sangat canggih.',
+    'Modernisasi pengelolaan air di Tokyo menjadi contoh bagi dunia.',
+  ],
+
+  // China
+  CN: [
+    'Tiongkok memiliki bendungan terbesar di dunia, Bendungan Tiga Ngarai!',
+    'Tiongkok menggunakan 600 miliar meter kubik air setiap tahun.',
+    'Gurun Gobi di Tiongkok berkembang karena kelangkaan air.',
+    'Sungai Yangtze adalah sungai terpanjang di Asia (6.300 km).',
+    'Tiongkok memproduksi 70% panel surya dunia yang menghemat air.',
+    'Proyek Pemindahan Air Selatan-ke-Utara memindahkan 44 miliar m3 per tahun.',
+    'Lebih dari 80% sumber daya air kedaulatan Tiongkok berada di selatan.',
+    'Shanghai mengolah 98% air limbah domestiknya dengan sistem modern.',
+    'Proyek transfer air Tiongkok adalah rekayasa hidrolik terbesar di dunia.',
+    'Sungai Li di Guilin terkenal dengan pemandangan karst yang menakjubkan.',
+    'Tiongkok memproduksi sebagian besar air kemasan yang ada di dunia.',
+    'Negara ini menginvestasikan $87 miliar dalam infrastruktur air sejak 2020.',
+  ],
+
+  // South Korea
+  KR: [
+    'Korea Selatan menggunakan 295 liter per orang setiap hari.',
+    'Negara ini mendaur ulang 86% air limbah, tingkat terdepan di dunia.',
+    'Korea Selatan membangun tembok laut Saemangeum, terpanjang di dunia.',
+    'Pulau Jeju memiliki air akuifer vulkanik yang sangat unik dan murni.',
+    'Negara ini menginvestasikan $18 miliar dalam infrastruktur air sejak 2018.',
+    'Rumah hanok tradisional Korea memiliki pemanas bawah lantai ondol.',
+    'Korea Selatan memiliki 18.000 km sungai meskipun ukurannya kecil.',
+    'Zona penyangga DMZ telah menciptakan suaka lahan basah yang tak terduga.',
+    'Pemandian umum Korea (jjimjilbang) menggunakan 500L air per pengunjung.',
+    'Negara ini mengalami hujan monsun yang membawa 60% pasokan air tahunan.',
+    'Korea Selatan mengekspor teknologi pengolahan air canggih secara global.',
+    'Pengelolaan air pintar adalah prioritas nasional bagi Korea Selatan.',
+  ],
+
+  // India
+  IN: [
+    'India memiliki 18% populasi dunia tetapi hanya 4% air tawar dunia!',
+    'Sungai Gangga dianggap suci dan menopang 400 juta orang.',
+    'Pemanenan air hujan sekarang diwajibkan di banyak kota di India.',
+    'India adalah pengguna air tanah terbesar di dunia.',
+    'Sumur stepwell di India (seperti Rani ki Vav) adalah keajaiban kuno.',
+    'Lebih dari 600 juta warga India menghadapi tekanan air tinggi hingga ekstrim.',
+    'Gurun Thar menerima kurang dari 250 mm curah hujan setiap tahunnya.',
+    'Pertanian di wilayah India mengkonsumsi 90% sumber daya air negara.',
+    'Istana danau di Rajasthan menunjukkan manajemen air bersejarah yang hebat.',
+    'Mumbai menerima 2.200 mm hujan setahun namun tetap menghadapi kekurangan.',
+    'Misi Jal Jeevan India bertujuan menyediakan air keran bagi semua pada 2024.',
+    'Perairan darat Kerala membentuk jaringan danau dan kanal sepanjang 900 km.',
+  ],
+
+  // Singapore
+  SG: [
+    'Singapura mengimpor sekitar 40% air bersihnya dari negara tetangga, Malaysia.',
+    'Bangsa ini menggunakan sekitar 141 liter air per orang setiap harinya.',
+    'Singapura memiliki empat keran nasional: impor, desalinasi, daur ulang, hujan.',
+    'Air daur ulang NEWater memenuhi standar air minum organisasi WHO.',
+    'Marina Barrage menciptakan reservoir air tawar dari daerah air laut.',
+    'Singapura menargetkan kemandirian air sepenuhnya pada tahun 2061.',
+    'Negara ini sama sekali tidak memiliki akuifer alami atau air tanah.',
+    'Singapura berinvestasi besar dalam R&D teknologi air masa depan.',
+    'Setiap bangunan wajib memasang perlengkapan air yang hemat energi.',
+    'Cerita air Singapura diajarkan di sekolah-sekolah sejak usia 6 tahun.',
+    'Singapura adalah pemimpin global dalam pengelolaan air perkotaan.',
+    'Pusat air Singapura menjadi hub bagi inovasi teknologi dunia.',
+  ],
+
+  // Australia
+  AU: [
+    'Australia adalah benua berpenghuni terkering di Bumi!',
+    'Warga Australia menggunakan sekitar 340 liter air per orang per hari.',
+    'The Great Artesian Basin adalah salah satu waduk air tanah terbesar.',
+    'Kelangkaan air selama Musim Kering Milenium menyebabkan reformasi besar.',
+    'Australia mengekspor keahlian manajemen air global.',
+    'Daerah aliran sungai Murray-Darling menghasilkan 40% makanan Australia.',
+    'Australia mendesalinasi air yang cukup untuk melayani 5 juta orang.',
+    'Suku Aborigin Australia telah mengelola air selama lebih dari 60.000 tahun.',
+    'Negara ini telah melewati masa kekeringan yang berlangsung selama satu dekade.',
+    'Kota Perth bergantung pada desalinasi untuk 50% pasokan air bersihnya.',
+    'Great Barrier Reef membutuhkan kualitas air tertentu agar dapat bertahan hidup.',
+    'Australia baru mendaur ulang 2% air limbah olahan, perlu ditingkatkan.',
+  ],
+
+  // New Zealand
+  NZ: [
+    'Selandia Baru memiliki 425.000 kilometer sungai dan juga aliran air.',
+    'Warga Selandia Baru menggunakan sekitar 227 liter air per orang per hari.',
+    'Negara ini memiliki 3.820 gletser, sebagian besar di Alpen Selatan.',
+    'Sungai Waikato menyediakan air bagi sekitar 1,7 juta penduduk lokal.',
+    'Wilayah Milford Sound menerima lebih dari 7.000 mm hujan setiap tahunnya.',
+    'Auckland mendapat 90% air dari bendungan di pegunungan Waitākere.',
+    'Gletser Selandia Baru telah kehilangan 30% volumenya sejak tahun 1977.',
+    'Negara ini mengekspor air mineral premium ke lebih dari 60 negara.',
+    'Sungai-sungai di negara ini adalah rumah bagi spesies air yang unik.',
+    'Wilayah Danau Taupo adalah kawah gunung berapi masif yang berisi air.',
+    'Perlindungan kualitas air adalah isu lingkungan utama bagi warga Kiwis.',
+    'Selandia Baru memiliki beberapa air tawar paling murni di dunia.',
+  ],
+
+  // Thailand
+  TH: [
+    'Thailand menggunakan sekitar 197 liter air per orang setiap harinya.',
+    'Sungai Mekong mengalir melalui wilayah Thailand sejauh 1.800 km.',
+    'Bangkok amblas 2 cm per tahun karena penggunaan air tanah yang masif.',
+    'Delta sungai Chao Phraya menyokong sektor pertanian seluruh Thailand.',
+    'Thailand memiliki lebih dari 600 air terjun di seluruh kedaulatannya.',
+    'Negara ini mengalami monsun yang membawa 90% dari curah hujan tahunan.',
+    'Phuket bergantung pada pemanenan air hujan dan juga desalinasi air.',
+    'Jembatan sungai Kwai adalah penyeberangan air bersejarah yang terkenal.',
+    'Thailand saat ini baru mengolah sekitar 30% dari air limbahnya.',
+    'Kanal-kanal (klong) Bangkok pernah berfungsi sebagai jalan raya air.',
+    'Festival Songkran merayakan air sebagai bagian dari budaya Thailand.',
+    'Negara ini sedang meningkatkan infrastruktur pencegahan banjir di Bangkok.',
+  ],
+
+  // Vietnam
+  VN: [
+    'Vietnam menggunakan sekitar 130 liter air per orang setiap harinya.',
+    'Teluk Ha Long memiliki 1.600 pulau dan juga pulau-pulau kecil.',
+    'Vietnam memiliki 2.360 sungai yang memiliki panjang lebih dari 10 km.',
+    'Delta Sungai Merah menyokong kehidupan bagi sekitar 20 juta orang.',
+    'Negara ini memiliki garis pantai sepanjang 3.260 km di wilayah timur.',
+    'Produksi beras Vietnam membutuhkan irigasi besar dari sistem sungai.',
+    'Sungai Perfume mengalir melalui wilayah kota kuno Hue di Vietnam.',
+    'Vietnam membangun bendungan hidroelektrik besar di wilayah dataran tinggi.',
+    'Sungai Saigon menyediakan air bersih bagi warga kota Ho Chi Minh.',
+    'Karst kapur di teluk Halong menciptakan formasi air yang sangat unik.',
+    'Delta Mekong adalah salah satu wilayah paling subur di seluruh dunia.',
+    'Vietnam menargetkan peningkatan akses air bersih di daerah pedesaan.',
+  ],
+
+  // Philippines
+  PH: [
+    'Filipina memiliki 7.641 pulau yang dikelilingi oleh wilayah perairan.',
+    'Warga Filipina menggunakan sekitar 175 liter air per orang per hari.',
+    'Manila sangat bergantung pada Bendungan Angat untuk pasokan air bersih.',
+    'Negara ini memiliki sekitar 421 sungai dan 59 danau alami yang besar.',
+    'Danau Taal berisi Pulau Vulkano dengan danau kawahnya sendiri yang unik.',
+    'Filipina menerima sekitar 2.000-4.000 mm curah hujan setiap tahunnya.',
+    'Palawan memiliki sungai bawah tanah yang merupakan situs kedaulatan UNESCO.',
+    'Negara ini sering menghadapi topan yang mempengaruhi pasokan air bersih.',
+    'Manila saat ini mengolah kurang dari 10% dari seluruh air limbahnya.',
+    'Teras siring padi Filipina menggunakan sistem irigasi kuno yang efektif.',
+    'Air di Boracay berasal dari sumur dalam yang dikelola secara khusus.',
+    'Rehabilitasi Sungai Pasig bertujuan membersihkan jalur air utama Manila.',
+  ],
+
+  // Malaysia
+  MY: [
+    'Malaysia menggunakan sekitar 210 liter air per orang setiap harinya.',
+    'Negara ini menerima curah hujan 2.500-3.000 mm setiap tahun di sini.',
+    'Malaysia memiliki sekitar 189 daerah aliran sungai di wilayahnya.',
+    'Kuala Lumpur mendapat air dari daerah aliran sungai Lembah Klang.',
+    'Malaysia memiliki 65.877 kilometer persegi lahan basah yang dilindungi.',
+    'Sungai Kinabatangan di Kalimantan menyokong satwa liar yang sangat unik.',
+    'Malaysia mengolah sekitar 85% dari seluruh pasokan air bersih negara.',
+    'Penang menghadapi krisis air tahun 1998 dan membangun infrastruktur baru.',
+    'Negara ini memiliki lebih dari 90 pabrik pengolahan air untuk publik.',
+    'Hutan hujan Malaysia menyaring serta menyimpan air secara alami di sana.',
+    'Langkawi mempromosikan pemanenan air hujan bagi hotel-hotel di pulau.',
+    'Bendungan Bakun di Sarawak adalah salah satu yang terbesar di Asia.',
+  ],
+
+  // Indonesia
+  ID: [
+    'Indonesia memiliki lebih dari 17.000 pulau di wilayah kedaulatannya!',
+    'Warga Indonesia menggunakan rata-rata 144 liter air per orang per hari.',
+    'Indonesia memiliki total panjang sungai mencapai 5.590 km.',
+    'Jakarta amblas hingga 25 cm per tahun akibat penggunaan air tanah.',
+    'Negara ini menerima curah hujan 1.750-3.000 mm setiap tahunnya.',
+    'Indonesia memiliki 521 sungai besar serta beragam ketersediaan DAS.',
+    'Sungai-sungai di Kalimantan dan Sumatera menyimpan cadangan air masif.',
+    'Candi air tradisional di Indonesia (Subak) mengelola sistem irigasi.',
+    'Indonesia saat ini baru mengolah sekitar 4% air limbah domestiknya.',
+    'Negara ini sedang membangun 65 bendungan baru demi ketahanan air.',
+    'Danau Toba di Sumatera adalah danau vulkanik terbesar yang ada di dunia.',
+    'Infrastruktur air bersih di IKN dirancang dengan standar kualitas tinggi.',
+  ],
+
+  // Pakistan
+  PK: [
+    'Pakistan menggunakan sekitar 95 liter air per orang setiap harinya.',
+    'Negara ini menghadapi tekanan air parah serta peringkat ke-3 global.',
+    'Pakistan memiliki sekitar 150 bendungan besar di seluruh wilayahnya.',
+    'Delta Indus pernah mencakup 16.000 km persegi namun kini telah menyusut.',
+    'Karachi menghadapi kekurangan air kronis meski berada di lokasi pesisir.',
+    'Negara ini membangun bendungan untuk menyimpan air monsun yang melimpah.',
+    'Air di Lahore berasal dari air tanah dan juga aliran sungai Ravi.',
+    'Ketersediaan air per kapita Pakistan turun 75% sejak tahun 1950.',
+    'Gletser di wilayah utara Pakistan adalah sumber air yang sangat vital.',
+    'Konflik air antar provinsi sering terjadi selama musim kemarau panjang.',
+    'Sistem irigasi Indus adalah salah satu yang terbesar di seluruh dunia.',
+    'Pakistan menargetkan peningkatan efisiensi air di sektor pertaniannya.',
+  ],
+
+  // Bangladesh
+  BD: [
+    'Bangladesh adalah negeri sungai dengan total lebih dari 700 sungai!',
+    'Warga Bangladesh menggunakan sekitar 95 liter air per orang per hari.',
+    'Sungai Gangga, Brahmaputra, serta Meghna bertemu di wilayah Bangladesh.',
+    'Bangladesh menghadapi kontaminasi arsenik pada 35 juta sumur tabung.',
+    'Banjir monsun menutupi hingga 70% wilayah negara secara rutin tahunan.',
+    'Hutan bakau Sundarbans menyaring air pesisir secara alami di selatan.',
+    'Dhaka bergantung pada pasokan air tanah untuk 87% kebutuhan warga.',
+    'Bangladesh sangat rentan terhadap dampak air akibat perubahan iklim.',
+    'Negara ini memiliki sekitar 260 sungai yang mengalir melintasi batas.',
+    'Eceng gondok menyumbat jalur air serta mempengaruhi transportasi di sana.',
+    'Bangladesh membangun kebun terapung di atas air demi sistem pertanian.',
+    'Pengelolaan wilayah delta adalah kunci bagi keberlangsungan Bangladesh.',
+  ],
+};

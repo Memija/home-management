@@ -1,4 +1,4 @@
-// African heating/energy facts - Bosnian
+// African heating/energy facts - BS
 export const africaHeatingFacts = {
   // South Africa
   ZA: [
@@ -45,7 +45,7 @@ export const africaHeatingFacts = {
     'Alžir ima ogromne rezerve prirodnog plina.',
     'Daljinsko grijanje je ograničeno.',
     'Drvo i kerozin dopunjuju plin.',
-    'Obalni gradovi imaju blaže zime.',
+    'Obalni gradovi imaju blage zime.',
   ],
 
   // Tunisia
@@ -93,7 +93,7 @@ export const africaHeatingFacts = {
     'Plato Jos je svježiji, ali ne zahtijeva grijanje.',
     'Glavna briga je energija za hlađenje.',
     'Drvo i ugalj se koriste za kuhanje.',
-    'Nigerija izvozi prirodni plin, ali ga malo koristi za grijanje.',
+    'Nigerija izvozi prirodni gas, ali ga malo koristi u zemlji za grijanje.',
   ],
 
   // Kenya
@@ -221,7 +221,7 @@ export const africaHeatingFacts = {
     'Visočja su svježija, ali ne zahtijevaju grijanje.',
     'Pristup električnoj energiji je ograničen.',
     'Energetsko siromaštvo je rasprostranjeno.',
-    'Angola izvozi naftu dok uvozi energiju.',
+    'Angola izvozi naftu, dok uvozi energiju.',
   ],
 
   // Mozambique

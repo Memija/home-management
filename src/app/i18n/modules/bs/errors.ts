@@ -1,3 +1,4 @@
+// Bosnian error message translations
 export const errors = {
   ERROR: {
     TITLE: 'Greška',

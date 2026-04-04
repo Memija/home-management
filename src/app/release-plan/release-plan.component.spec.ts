@@ -42,7 +42,7 @@ describe('ReleasePlanComponent', () => {
 
   it('should show all features when filter is "all"', () => {
     component.setFilter('all');
-    expect(component.filteredFeatures().length).toBe(6);
+    expect(component.filteredFeatures().length).toBe(8);
   });
 
   it('should filter features by "new"', () => {
@@ -64,16 +64,16 @@ describe('ReleasePlanComponent', () => {
   it('should filter features by "smart"', () => {
     component.setFilter('smart');
     const filtered = component.filteredFeatures();
-    expect(filtered.length).toBe(1);
+    expect(filtered.length).toBe(3);
     expect(filtered[0].tag).toBe('smart');
   });
 
   it('should calculate filter counts correctly', () => {
     const counts = component.filterOptions();
-    expect(counts['all']).toBe(6);
+    expect(counts['all']).toBe(8);
     expect(counts['new']).toBe(1);
     expect(counts['enhancement']).toBe(4);
-    expect(counts['smart']).toBe(1);
+    expect(counts['smart']).toBe(3);
   });
 
   it('should return correct translation key for tags', () => {
@@ -95,6 +95,6 @@ describe('ReleasePlanComponent', () => {
 
     component.setFilter('all');
     expect(component.activeFilter()).toBe('all');
-    expect(component.filteredFeatures().length).toBe(6);
+    expect(component.filteredFeatures().length).toBe(8);
   });
 });

@@ -72,6 +72,9 @@ export const common = {
     FEATURE_7_TITLE: 'Consumption Motivation Messages',
     FEATURE_7_DESC:
       'Receive personalized motivational messages based on your consumption trends. Get positive reinforcement when you save and gentle reminders when usage spikes, helping you stay on track with your sustainability goals.',
+    FEATURE_8_TITLE: 'Weather-Based Insights',
+    FEATURE_8_DESC:
+      'The app will fetch current weather data for your location and provide personalized tips and motivation.',
     CTA_TEXT:
       'Your support helps us build these features faster. Thank you for being part of our community!',
     BACK_TO_HOME: 'Back to Home',

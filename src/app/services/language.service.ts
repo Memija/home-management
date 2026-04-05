@@ -1,9 +1,9 @@
-import { Injectable, signal, inject, ApplicationRef } from '@angular/core';
+import { Injectable, signal, inject, ApplicationRef, computed } from '@angular/core';
 
 export type Language = 'en' | 'de' | 'bs' | 'sr' | 'id' | 'pl';
 
 /** All supported languages - update this when adding a new language */
-export const SUPPORTED_LANGUAGES: readonly Language[] = ['en', 'de', 'bs', 'sr', 'id', 'pl'] as const;
+export const SUPPORTED_LANGUAGES: readonly Language[] = ['id', 'bs', 'de', 'en', 'pl', 'sr'] as const;
 
 /** Storage key for user's preferred language (hm = homemanagement) */
 const LANGUAGE_STORAGE_KEY = 'hm_preferred_language';
@@ -14,6 +14,7 @@ const LANGUAGE_STORAGE_KEY = 'hm_preferred_language';
 export class LanguageService {
   private appRef = inject(ApplicationRef);
   readonly currentLang = signal<Language>(this.getStoredLanguage());
+  readonly currentLocale = computed(() => this.getLocale(this.currentLang()));
   readonly isLoading = signal<boolean>(false);
 
   // Store loaded translations
@@ -73,13 +74,9 @@ export class LanguageService {
     if (typeof window !== 'undefined' && typeof localStorage !== 'undefined') {
       localStorage.setItem(LANGUAGE_STORAGE_KEY, lang);
     }
-    let locale = 'en-US';
-    if (lang === 'de') locale = 'de-DE';
-    else if (lang === 'bs') locale = 'bs-BA';
-    else if (lang === 'sr') locale = 'sr-RS';
-    else if (lang === 'id') locale = 'id-ID';
-    else if (lang === 'pl') locale = 'pl-PL';
-    document.documentElement.lang = locale;
+    const locale = this.getLocale(lang);
+    const localeStr = Array.isArray(locale) ? locale[0] : locale;
+    document.documentElement.lang = localeStr;
 
     // Update meta tag for browser localization hints
     let meta = document.querySelector('meta[http-equiv="Content-Language"]');
@@ -88,7 +85,83 @@ export class LanguageService {
       meta.setAttribute('http-equiv', 'Content-Language');
       document.head.appendChild(meta);
     }
-    meta.setAttribute('content', locale);
+    meta.setAttribute('content', localeStr);
+  }
+
+  /** Gets the BCP 47 locale for a given language */
+  /** Gets the BCP 47 locale for a given language. 
+   * Returns an array for Bosnian to ensure Latin Slavic fallback if browser data is missing.
+   */
+  getLocale(lang: Language): string | string[] {
+    switch (lang) {
+      case 'de':
+        return 'de-DE';
+      case 'bs':
+        return ['bs-Latn-BA', 'hr-HR', 'sr-Latn-RS'];
+      case 'sr':
+        return 'sr-RS';
+      case 'id':
+        return 'id-ID';
+      case 'pl':
+        return 'pl-PL';
+      default:
+        return 'en-US';
+    }
+  }
+
+  /** Capitalizes the first letter of a string */
+  capitalize(value: string): string {
+    if (!value) return value;
+    return value.charAt(0).toUpperCase() + value.slice(1);
+  }
+
+  /**
+   * Formats a date using translated day and month names.
+   * Ensures consistency across browsers and handles environments with incomplete locale data.
+   */
+  formatDate(date: Date, options: { weekday?: 'long' | 'short'; month?: 'long' | 'short'; day?: 'numeric'; year?: 'numeric' } = {}): string {
+    const lang = this.currentLang();
+    const locale = this.currentLocale();
+    
+    // If not using weekday or month names, use native locale formatting for numbers/order
+    if (!options.weekday && !options.month) {
+      return date.toLocaleDateString(locale, options);
+    }
+
+    let result = '';
+    
+    // This is a simplified localized formatter that works for the app's current needs.
+    // In a larger app, we might use a library, but here we want to avoid extra weight.
+    if (options.weekday === 'long') {
+      const days = ['SUNDAY', 'MONDAY', 'TUESDAY', 'WEDNESDAY', 'THURSDAY', 'FRIDAY', 'SATURDAY'];
+      result += this.capitalize(this.translate(`DAYS.${days[date.getDay()]}`)) + ', ';
+    } else if (options.weekday === 'short') {
+      const days = ['SUNDAY', 'MONDAY', 'TUESDAY', 'WEDNESDAY', 'THURSDAY', 'FRIDAY', 'SATURDAY'];
+      const dayName = this.translate(`DAYS.${days[date.getDay()]}`);
+      result += this.capitalize(dayName.substring(0, 3)) + (['de', 'bs', 'sr', 'pl'].includes(lang) ? '.' : '') + ', ';
+    }
+
+    if (options.day === 'numeric') {
+      const day = date.getDate();
+      // Slavic languages often use dot after the day number
+      const needsDot = ['de', 'bs', 'sr', 'pl'].includes(lang);
+      result += day + (needsDot ? '. ' : ' ');
+    }
+
+    if (options.month === 'long') {
+      const months = ['JANUARY', 'FEBRUARY', 'MARCH', 'APRIL', 'MAY', 'JUNE', 'JULY', 'AUGUST', 'SEPTEMBER', 'OCTOBER', 'NOVEMBER', 'DECEMBER'];
+      result += this.translate(`MONTHS.${months[date.getMonth()]}`) + ' ';
+    } else if (options.month === 'short') {
+      const months = ['JANUARY', 'FEBRUARY', 'MARCH', 'APRIL', 'MAY', 'JUNE', 'JULY', 'AUGUST', 'SEPTEMBER', 'OCTOBER', 'NOVEMBER', 'DECEMBER'];
+      const monthName = this.translate(`MONTHS.${months[date.getMonth()]}`);
+      result += monthName.substring(0, 3) + (['de', 'bs', 'sr', 'pl'].includes(lang) ? '.' : '') + ' ';
+    }
+
+    if (options.year === 'numeric') {
+      result += date.getFullYear();
+    }
+
+    return result.trim();
   }
 
   private async loadLanguage(lang: Language) {

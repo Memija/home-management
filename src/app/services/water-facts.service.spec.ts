@@ -10,6 +10,7 @@ describe('WaterFactsService', () => {
   beforeEach(() => {
     mockLanguageService = {
       currentLang: vi.fn().mockReturnValue('en'),
+      currentLocale: vi.fn().mockReturnValue('en-US'),
     };
 
     TestBed.configureTestingModule({

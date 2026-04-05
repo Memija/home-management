@@ -1,5 +1,8 @@
 // English common translations - shared across the app
 export const common = {
+  LANGUAGE: {
+    CHOOSE: 'Choose Language',
+  },
   APP: {
     TITLE: 'Water Consumption Tracker',
     SETTINGS: 'Settings',
@@ -260,18 +263,27 @@ export const common = {
   // Month names for date parsing in Smart Import
   // When adding a new language, include these month names for automatic date parsing
   MONTHS: {
-    JANUARY: 'january',
-    FEBRUARY: 'february',
-    MARCH: 'march',
-    APRIL: 'april',
-    MAY: 'may',
-    JUNE: 'june',
-    JULY: 'july',
-    AUGUST: 'august',
-    SEPTEMBER: 'september',
-    OCTOBER: 'october',
-    NOVEMBER: 'november',
-    DECEMBER: 'december',
+    JANUARY: 'January',
+    FEBRUARY: 'February',
+    MARCH: 'March',
+    APRIL: 'April',
+    MAY: 'May',
+    JUNE: 'June',
+    JULY: 'July',
+    AUGUST: 'August',
+    SEPTEMBER: 'September',
+    OCTOBER: 'October',
+    NOVEMBER: 'November',
+    DECEMBER: 'December',
+  },
+  DAYS: {
+    MONDAY: 'Monday',
+    TUESDAY: 'Tuesday',
+    WEDNESDAY: 'Wednesday',
+    THURSDAY: 'Thursday',
+    FRIDAY: 'Friday',
+    SATURDAY: 'Saturday',
+    SUNDAY: 'Sunday',
   },
   SEASONS: {
     PREVIOUS: 'Previous season',
@@ -292,5 +304,9 @@ export const common = {
       NAME: 'Winter',
       TAGLINE: 'Too cold to move, time for hot cocoa ☕',
     },
+  },
+  PDF: {
+    GENERATED_ON: 'Generated on',
+    DIFFERENCE: 'Difference',
   },
 };

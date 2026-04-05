@@ -44,7 +44,7 @@ export class PdfService {
    */
   private formatDate(date: Date): string {
     const d = new Date(date);
-    return d.toLocaleDateString(this.languageService.currentLang() === 'de' ? 'de-DE' : 'en-US');
+    return this.languageService.formatDate(d, { day: 'numeric', month: 'long', year: 'numeric' });
   }
 
   /**
@@ -86,7 +86,8 @@ export class PdfService {
     // Generation date
     doc.setFontSize(10);
     doc.setTextColor(100);
-    const generatedText = `${this.languageService.currentLang() === 'de' ? 'Erstellt am' : 'Generated on'}: ${new Date().toLocaleDateString()}`;
+    const generatedOn = this.languageService.translate('PDF.GENERATED_ON');
+    const generatedText = `${generatedOn}: ${new Date().toLocaleDateString(this.languageService.currentLocale())}`;
     doc.text(generatedText, 14, 40);
 
     // Reset text color
@@ -98,8 +99,7 @@ export class PdfService {
     );
 
     // Table headers - added Difference column
-    const differenceLabel =
-      this.languageService.currentLang() === 'de' ? 'Differenz' : 'Difference';
+    const differenceLabel = this.languageService.translate('PDF.DIFFERENCE');
     const headers = [
       this.languageService.translate('HOME.SELECT_DATE') || 'Date',
       `${this.languageService.translate('WATER.KITCHEN')} ${this.languageService.translate('WATER.WARM')}`,
@@ -247,7 +247,8 @@ export class PdfService {
     // Generation date
     doc.setFontSize(10);
     doc.setTextColor(100);
-    const generatedText = `${this.languageService.currentLang() === 'de' ? 'Erstellt am' : 'Generated on'}: ${new Date().toLocaleDateString()}`;
+    const generatedOn = this.languageService.translate('PDF.GENERATED_ON');
+    const generatedText = `${generatedOn}: ${new Date().toLocaleDateString(this.languageService.currentLocale())}`;
     doc.text(generatedText, 14, 40);
 
     // Reset text color
@@ -259,8 +260,7 @@ export class PdfService {
     );
 
     // Table headers - Date, dynamic rooms, Total, Difference
-    const differenceLabel =
-      this.languageService.currentLang() === 'de' ? 'Differenz' : 'Difference';
+    const differenceLabel = this.languageService.translate('PDF.DIFFERENCE');
     const headers = [
       this.languageService.translate('HOME.SELECT_DATE') || 'Date',
       ...roomNames,
@@ -424,7 +424,8 @@ export class PdfService {
 
     doc.setFontSize(10);
     doc.setTextColor(100);
-    const generatedText = `${this.languageService.currentLang() === 'de' ? 'Erstellt am' : 'Generated on'}: ${new Date().toLocaleDateString()}`;
+    const generatedOn = this.languageService.translate('PDF.GENERATED_ON');
+    const generatedText = `${generatedOn}: ${new Date().toLocaleDateString(this.languageService.currentLocale())}`;
     doc.text(generatedText, 14, 40);
 
     doc.setTextColor(0);
@@ -433,8 +434,7 @@ export class PdfService {
       (a, b) => new Date(a.date).getTime() - new Date(b.date).getTime(),
     );
 
-    const differenceLabel =
-      this.languageService.currentLang() === 'de' ? 'Differenz' : 'Difference';
+    const differenceLabel = this.languageService.translate('PDF.DIFFERENCE');
     const headers = [
       this.languageService.translate('HOME.SELECT_DATE') || 'Date',
       this.languageService.translate('ELECTRICITY.VALUE') || 'Value (kWh)',

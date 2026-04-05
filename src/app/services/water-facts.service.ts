@@ -3,6 +3,9 @@ import { LanguageService, Language } from './language.service';
 import { en } from '../i18n/en';
 import { de } from '../i18n/de';
 import { bs } from '../i18n/bs';
+import { sr } from '../i18n/sr';
+import { pl } from '../i18n/pl';
+import { id } from '../i18n/id';
 
 export interface WaterFact {
   title: string;
@@ -74,7 +77,18 @@ export class WaterFactsService {
     }
 
     const lang = this.languageService.currentLang();
-    const translations = lang === 'de' ? de : lang === 'bs' ? bs : en;
+    const translations =
+      lang === 'de'
+        ? de
+        : lang === 'bs'
+          ? bs
+          : lang === 'sr'
+            ? sr
+            : lang === 'pl'
+              ? pl
+              : lang === 'id'
+                ? id
+                : en;
 
     // Get the appropriate facts array based on context
     const facts = this.getFactsForContext(translations, context);
@@ -87,8 +101,15 @@ export class WaterFactsService {
     const value = this.calculateValueForContext(liters, safeIndex, context);
 
     // Detect time-based facts that need conversion
-    const isDaysFact = /\{value\}\s*(days?|Tage?|dana|dan)/i.test(factTemplate);
-    const isMinutesFact = /\{value\}\s*(minutes?|Minuten?|minuta|minutu)/i.test(factTemplate);
+    // Detect time-based facts that need conversion (days, minutes)
+    // Supports English, German, Bosnian, Serbian (Cyrillic), Polish, and Indonesian
+    const isDaysFact = /\{value\}\s*(days?|Tage?|dana|dan|дана|дан|dni|dzień|hari)/i.test(
+      factTemplate,
+    );
+    const isMinutesFact =
+      /\{value\}\s*(minutes?|Minuten?|minuta|minutu|минута|минуту|minut|minuty|menit)/i.test(
+        factTemplate,
+      );
 
     let message: string;
 
@@ -104,17 +125,32 @@ export class WaterFactsService {
             ? years === 1
               ? 'godinu'
               : 'godina'
-            : years === 1
-              ? 'year'
-              : 'years';
-      const locale = lang === 'de' ? 'de-DE' : lang === 'bs' ? 'bs-BA' : 'en-US';
+            : lang === 'sr'
+              ? years === 1
+                ? 'годину'
+                : 'година'
+              : lang === 'pl'
+                ? years === 1
+                  ? 'rok'
+                  : years < 5
+                    ? 'lata'
+                    : 'lat'
+                : lang === 'id'
+                  ? 'tahun'
+                  : years === 1
+                    ? 'year'
+                    : 'years';
+      const locale = this.languageService.currentLocale();
       const yearsFormatted = `${years.toLocaleString(locale)} ${yearWord}`;
-      message = factTemplate.replace(/\{value\}\s*(days?|Tage?|dana|dan)/i, yearsFormatted);
+      message = factTemplate.replace(
+        /\{value\}\s*(days?|Tage?|dana|dan|дана|дан|dni|dzień|hari)/i,
+        yearsFormatted,
+      );
     } else if (isMinutesFact && value > 1440) {
       // Convert minutes to days (1440 minutes = 1 day)
       const days = Math.floor(value / 1440);
       let timeFormatted: string;
-      const locale = lang === 'de' ? 'de-DE' : lang === 'bs' ? 'bs-BA' : 'en-US';
+      const locale = this.languageService.currentLocale();
       if (days > 30) {
         const months = Math.floor(days / 30);
         const monthWord =
@@ -126,9 +162,21 @@ export class WaterFactsService {
               ? months === 1
                 ? 'mjesec'
                 : 'mjeseci'
-              : months === 1
-                ? 'month'
-                : 'months';
+              : lang === 'sr'
+                ? months === 1
+                  ? 'месец'
+                  : 'месеци'
+                : lang === 'pl'
+                  ? months === 1
+                    ? 'miesiąc'
+                    : months < 5
+                      ? 'miesiące'
+                      : 'miesięcy'
+                  : lang === 'id'
+                    ? 'bulan'
+                    : months === 1
+                      ? 'month'
+                      : 'months';
         timeFormatted = `${months.toLocaleString(locale)} ${monthWord}`;
       } else {
         const dayWord =
@@ -140,12 +188,25 @@ export class WaterFactsService {
               ? days === 1
                 ? 'dan'
                 : 'dana'
-              : days === 1
-                ? 'day'
-                : 'days';
+              : lang === 'sr'
+                ? days === 1
+                  ? 'дан'
+                  : 'дана'
+                : lang === 'pl'
+                  ? days === 1
+                    ? 'dzień'
+                    : 'dni'
+                  : lang === 'id'
+                    ? 'hari'
+                    : days === 1
+                      ? 'day'
+                      : 'days';
         timeFormatted = `${days.toLocaleString(locale)} ${dayWord}`;
       }
-      message = factTemplate.replace(/\{value\}\s*(minutes?|Minuten?|minuta|minutu)/i, timeFormatted);
+      message = factTemplate.replace(
+        /\{value\}\s*(minutes?|Minuten?|minuta|minutu|минута|минуту|minut|minuty|menit)/i,
+        timeFormatted,
+      );
     } else if (isMinutesFact && value > 60) {
       // Convert minutes to hours
       const hours = Math.floor(value / 60);
@@ -158,12 +219,27 @@ export class WaterFactsService {
             ? hours === 1
               ? 'sat'
               : 'sati'
+          : lang === 'sr'
+            ? hours === 1
+              ? 'сат'
+              : 'сати'
+          : lang === 'pl'
+            ? hours === 1
+              ? 'godzinę'
+              : hours < 5
+                ? 'godziny'
+                : 'godzin'
+          : lang === 'id'
+            ? 'jam'
             : hours === 1
               ? 'hour'
               : 'hours';
-      const locale = lang === 'de' ? 'de-DE' : lang === 'bs' ? 'bs-BA' : 'en-US';
+      const locale = this.languageService.currentLocale();
       const hoursFormatted = `${hours.toLocaleString(locale)} ${hourWord}`;
-      message = factTemplate.replace(/\{value\}\s*(minutes?|Minuten?|minuta|minutu)/i, hoursFormatted);
+      message = factTemplate.replace(
+        /\{value\}\s*(minutes?|Minuten?|minuta|minutu|минута|минуту|minut|minuty|menit)/i,
+        hoursFormatted,
+      );
     } else {
       // Replace placeholder with formatted value
       message = factTemplate.replace('{value}', this.formatNumber(value, lang));
@@ -176,7 +252,7 @@ export class WaterFactsService {
   }
 
   private getFactsForContext(
-    translations: typeof en | typeof de | typeof bs,
+    translations: typeof en | typeof de | typeof bs | typeof sr | typeof pl | typeof id,
     context: WaterFactContext,
   ): string[] {
     switch (context) {
@@ -329,12 +405,23 @@ export class WaterFactsService {
    * - Large numbers (100k+) become "over X thousand" or "over X million"
    */
   private formatNumber(value: number, lang: Language): string {
-    const locale = lang === 'de' ? 'de-DE' : lang === 'bs' ? 'bs-BA' : 'en-US';
+    const locale = this.languageService.currentLocale();
 
     // Abbreviate large numbers with full words
     if (value >= 1000000) {
       const millions = Math.floor(value / 100000) / 10; // Round to 1 decimal
-      const prefix = lang === 'de' ? 'über' : lang === 'bs' ? 'preko' : 'over';
+      const prefix =
+        lang === 'de'
+          ? 'über'
+          : lang === 'bs'
+            ? 'preko'
+            : lang === 'sr'
+              ? 'преко'
+              : lang === 'pl'
+                ? 'ponad'
+                : lang === 'id'
+                  ? 'lebih dari'
+                  : 'over';
       const suffix =
         lang === 'de'
           ? 'Millionen'
@@ -342,13 +429,36 @@ export class WaterFactsService {
             ? millions === 1
               ? 'milion'
               : 'miliona'
+          : lang === 'sr'
+            ? millions === 1
+              ? 'милион'
+              : 'милиона'
+          : lang === 'pl'
+            ? millions === 1
+              ? 'milion'
+              : millions % 10 >= 2 && millions % 10 <= 4 && (millions % 100 < 12 || millions % 100 > 14)
+                ? 'miliony'
+                : 'milionów'
+          : lang === 'id'
+            ? 'juta'
             : 'million';
       return `${prefix} ${millions.toLocaleString(locale)} ${suffix}`;
     }
 
     if (value >= 100000) {
       const thousands = Math.floor(value / 1000);
-      const prefix = lang === 'de' ? 'über' : lang === 'bs' ? 'preko' : 'over';
+      const prefix =
+        lang === 'de'
+          ? 'über'
+          : lang === 'bs'
+            ? 'preko'
+            : lang === 'sr'
+              ? 'преко'
+              : lang === 'pl'
+                ? 'ponad'
+                : lang === 'id'
+                  ? 'lebih dari'
+                  : 'over';
       const suffix =
         lang === 'de'
           ? 'Tausend'
@@ -356,6 +466,18 @@ export class WaterFactsService {
             ? thousands === 1
               ? 'hiljadu'
               : 'hiljada'
+          : lang === 'sr'
+            ? thousands === 1
+              ? 'хиљаду'
+              : 'хиљада'
+          : lang === 'pl'
+            ? thousands === 1
+              ? 'tysiąc'
+              : thousands % 10 >= 2 && thousands % 10 <= 4 && (thousands % 100 < 12 || thousands % 100 > 14)
+                ? 'tysiące'
+                : 'tysięcy'
+          : lang === 'id'
+            ? 'ribu'
             : 'thousand';
       return `${prefix} ${thousands.toLocaleString(locale)} ${suffix}`;
     }

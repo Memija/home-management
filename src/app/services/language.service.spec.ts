@@ -135,4 +135,142 @@ describe('LanguageService', () => {
     expect(service.translateForLanguage('KEY', 'en')).toBe('Value EN');
     expect(service.translateForLanguage('KEY', 'de')).toBe('Value DE');
   });
+
+  describe('getLocale', () => {
+    it('should return correct locale for German', () => {
+      service = TestBed.inject(LanguageService);
+      expect(service.getLocale('de')).toBe('de-DE');
+    });
+
+    it('should return array of locales for Bosnian', () => {
+      service = TestBed.inject(LanguageService);
+      const locale = service.getLocale('bs');
+      expect(Array.isArray(locale)).toBe(true);
+      expect(locale).toContain('bs-Latn-BA');
+    });
+
+    it('should return correct locale for Serbian', () => {
+      service = TestBed.inject(LanguageService);
+      expect(service.getLocale('sr')).toBe('sr-RS');
+    });
+
+    it('should return correct locale for Indonesian', () => {
+      service = TestBed.inject(LanguageService);
+      expect(service.getLocale('id')).toBe('id-ID');
+    });
+
+    it('should return correct locale for Polish', () => {
+      service = TestBed.inject(LanguageService);
+      expect(service.getLocale('pl')).toBe('pl-PL');
+    });
+
+    it('should return default locale for English', () => {
+      service = TestBed.inject(LanguageService);
+      expect(service.getLocale('en')).toBe('en-US');
+    });
+  });
+
+  describe('capitalize', () => {
+    it('should capitalize first letter', () => {
+      service = TestBed.inject(LanguageService);
+      expect(service.capitalize('hello')).toBe('Hello');
+    });
+
+    it('should not change already capitalized string', () => {
+      service = TestBed.inject(LanguageService);
+      expect(service.capitalize('Hello')).toBe('Hello');
+    });
+
+    it('should return empty string for empty input', () => {
+      service = TestBed.inject(LanguageService);
+      expect(service.capitalize('')).toBe('');
+    });
+
+    it('should handle single character strings', () => {
+      service = TestBed.inject(LanguageService);
+      expect(service.capitalize('a')).toBe('A');
+    });
+  });
+
+  describe('formatDate', () => {
+    let date: Date;
+
+    beforeEach(() => {
+      service = TestBed.inject(LanguageService);
+      date = new Date(2026, 0, 5); // Monday, January 5, 2026
+      
+      // Mock translations needed for formatDate
+      (service as any).translations['en'] = {
+        DAYS: { MONDAY: 'monday' },
+        MONTHS: { JANUARY: 'january' }
+      };
+      (service as any).translations['de'] = {
+        DAYS: { MONDAY: 'Montag' },
+        MONTHS: { JANUARY: 'Januar' }
+      };
+    });
+
+    it('should use native formatting if no weekday or month specified', () => {
+      const spy = vi.spyOn(date, 'toLocaleDateString');
+      service.formatDate(date, { day: 'numeric', year: 'numeric' });
+      expect(spy).toHaveBeenCalled();
+    });
+
+    it('should format full date in English', () => {
+      service.currentLang.set('en');
+      const result = service.formatDate(date, { 
+        weekday: 'long', 
+        day: 'numeric', 
+        month: 'long', 
+        year: 'numeric' 
+      });
+      expect(result).toBe('Monday, 5 january 2026');
+    });
+
+    it('should format short date with dots for German', () => {
+      service.currentLang.set('de');
+      const result = service.formatDate(date, { 
+        weekday: 'short', 
+        day: 'numeric', 
+        month: 'short'
+      });
+      // Montag -> Mon. (first 3 chars + dot)
+      // 5 -> 5.
+      // Januar -> Jan.
+      expect(result).toBe('Mon., 5. Jan.');
+    });
+
+    it('should format date with dots for Bosnian', () => {
+      service.currentLang.set('bs');
+      // Mock Bosnian translations
+      (service as any).translations['bs'] = {
+        DAYS: { MONDAY: 'ponedjeljak' },
+        MONTHS: { JANUARY: 'januar' }
+      };
+
+      const result = service.formatDate(date, { 
+        day: 'numeric', 
+        month: 'long'
+      });
+      // 5 -> 5.
+      // januar -> januar
+      expect(result).toBe('5. januar');
+    });
+
+    it('should handle year only', () => {
+      const result = service.formatDate(date, { 
+        year: 'numeric',
+        month: 'long' // Need month to trigger the custom formatter
+      });
+      // English: january 2026 (since weekday/day skipped)
+      expect(result).toContain('2026');
+    });
+
+    it('should capitalize translated day names', () => {
+      service.currentLang.set('en');
+      // 'monday' -> 'Monday'
+      const result = service.formatDate(date, { weekday: 'long' });
+      expect(result).toBe('Monday,');
+    });
+  });
 });

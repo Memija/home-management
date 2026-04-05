@@ -124,8 +124,7 @@ export class ConsumptionChartComponent implements OnInit {
     const dataPointCount = recs.length;
 
     // Use language-aware locale
-    const lang = this.languageService.currentLang();
-    const locale = lang === 'de' ? 'de-DE' : 'en-US';
+    const locale = this.languageService.currentLocale();
 
     // Determine label format based on data density
     // Many data points (>20): show just month (Chart.js will auto-skip duplicates)
@@ -136,15 +135,15 @@ export class ConsumptionChartComponent implements OnInit {
       if (dataPointCount > 20) {
         // High density: show just month name
         if (spansMultipleYears) {
-          return date.toLocaleDateString(locale, { month: 'short' }) + ` '${year}`;
+          return this.languageService.formatDate(date, { month: 'short', year: 'numeric' });
         }
-        return date.toLocaleDateString(locale, { month: 'short' });
+        return this.languageService.formatDate(date, { month: 'short' });
       } else {
         // Low/medium density: show month and day
         if (spansMultipleYears) {
-          return date.toLocaleDateString(locale, { month: 'short', day: 'numeric' }) + ` '${year}`;
+          return this.languageService.formatDate(date, { month: 'short', day: 'numeric', year: 'numeric' });
         }
-        return date.toLocaleDateString(locale, { month: 'short', day: 'numeric' });
+        return this.languageService.formatDate(date, { month: 'short', day: 'numeric' });
       }
     });
   }
@@ -351,9 +350,8 @@ export class ConsumptionChartComponent implements OnInit {
                 const item = tooltipItems[0];
                 const rawDateStr = this.data()[item.dataIndex].date;
                 const date = new Date(rawDateStr);
-                const lang = this.languageService.currentLang();
-                const locale = lang === 'de' ? 'de-DE' : 'en-US';
-                return date.toLocaleDateString(locale, {
+                const locale = this.languageService.currentLocale();
+                return this.languageService.formatDate(date, {
                   weekday: 'long',
                   year: 'numeric',
                   month: 'long',

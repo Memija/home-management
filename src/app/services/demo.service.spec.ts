@@ -48,12 +48,33 @@ describe('DemoService', () => {
     delete (window as any).location;
     (window as any).location = { reload: vi.fn() };
 
-    // Mock localStorage
-    vi.spyOn(Storage.prototype, 'getItem');
-    vi.spyOn(Storage.prototype, 'setItem');
-    vi.spyOn(Storage.prototype, 'removeItem');
+    // Mock localStorage with a functional implementation for length and keys
+    const store: Record<string, string> = {};
+    const mockLocalStorage = {
+      getItem: vi.fn((key: string) => store[key] ?? null),
+      setItem: vi.fn((key: string, value: string) => {
+        store[key] = value;
+      }),
+      removeItem: vi.fn((key: string) => {
+        delete store[key];
+      }),
+      clear: vi.fn(() => {
+        for (const key in store) delete store[key];
+      }),
+      key: vi.fn((index: number) => Object.keys(store)[index] ?? null),
+      get length() {
+        return Object.keys(store).length;
+      },
+    } as any;
+
+    Object.defineProperty(window, 'localStorage', {
+      value: mockLocalStorage,
+      writable: true,
+      configurable: true,
+    });
 
     mockPlatformId = 'browser';
+
 
     TestBed.configureTestingModule({
       providers: [

@@ -255,9 +255,7 @@ export class HeatingComponent implements OnInit {
     const spike = this.unconfirmedSpike();
     if (!spike) return '';
     const date = new Date(spike.date);
-    const lang = this.languageService.currentLang();
-    const locale = lang === 'de' ? 'de-DE' : 'en-US';
-    return date.toLocaleDateString(locale, { year: 'numeric', month: 'long', day: 'numeric' });
+    return this.languageService.formatDate(date, { year: 'numeric', month: 'long', day: 'numeric' });
   });
 
   protected adjustedRecords = computed(() => {

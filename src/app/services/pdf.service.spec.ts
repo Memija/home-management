@@ -27,8 +27,18 @@ describe('PdfService', () => {
 
   beforeEach(() => {
     mockLanguageService = {
-      translate: vi.fn().mockImplementation((key) => key),
+      translate: vi.fn().mockImplementation((key) => {
+        if (key === 'PDF.GENERATED_ON') {
+          return mockLanguageService.currentLang() === 'de' ? 'Erstellt am' : 'Generated on';
+        }
+        if (key === 'PDF.DIFFERENCE') {
+          return mockLanguageService.currentLang() === 'de' ? 'Differenz' : 'Difference';
+        }
+        return key;
+      }),
       currentLang: vi.fn().mockReturnValue('en'),
+      currentLocale: vi.fn().mockReturnValue('en-US'),
+      formatDate: vi.fn().mockReturnValue('Jan 1, 2023'),
     };
 
     // Reset mocks

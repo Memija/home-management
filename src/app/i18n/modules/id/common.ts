@@ -1,5 +1,8 @@
 // Indonesian common translations - shared across the app
 export const common = {
+  LANGUAGE: {
+    CHOOSE: 'Pilih Bahasa',
+  },
   APP: {
     TITLE: 'Pelacak Konsumsi Air',
     SETTINGS: 'Pengaturan',
@@ -197,18 +200,27 @@ export const common = {
     IMPORT_BUTTON: 'Impor Catatan',
   },
   MONTHS: {
-    JANUARY: 'januari',
-    FEBRUARY: 'februari',
-    MARCH: 'maret',
-    APRIL: 'april',
-    MAY: 'mei',
-    JUNE: 'juni',
-    JULY: 'juli',
-    AUGUST: 'agustus',
-    SEPTEMBER: 'september',
-    OCTOBER: 'oktober',
-    NOVEMBER: 'november',
-    DECEMBER: 'desember',
+    JANUARY: 'Januari',
+    FEBRUARY: 'Februari',
+    MARCH: 'Maret',
+    APRIL: 'April',
+    MAY: 'Mei',
+    JUNE: 'Juni',
+    JULY: 'Juli',
+    AUGUST: 'Agustus',
+    SEPTEMBER: 'September',
+    OCTOBER: 'Oktober',
+    NOVEMBER: 'November',
+    DECEMBER: 'Desember',
+  },
+  DAYS: {
+    MONDAY: 'Senin',
+    TUESDAY: 'Selasa',
+    WEDNESDAY: 'Rabu',
+    THURSDAY: 'Kamis',
+    FRIDAY: 'Jumat',
+    SATURDAY: 'Sabtu',
+    SUNDAY: 'Minggu',
   },
   SEASONS: {
     PREVIOUS: 'Musim sebelumnya',
@@ -229,5 +241,9 @@ export const common = {
       NAME: 'Musim Dingin',
       TAGLINE: 'Terlalu dingin untuk bergerak, waktunya cokelat panas ☕',
     },
+  },
+  PDF: {
+    GENERATED_ON: 'Dibuat pada',
+    DIFFERENCE: 'Selisih',
   },
 };

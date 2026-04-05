@@ -62,7 +62,14 @@ describe('ConsumptionChartComponent', () => {
   beforeEach(async () => {
     languageServiceMock = {
       currentLang: signal('en'),
+      currentLocale: signal('en-US'),
       translate: vi.fn().mockImplementation((key: string) => key),
+      formatDate: vi.fn().mockImplementation((date, options) => {
+        if (options?.year === 'numeric') {
+          return "Jan 1 '24";
+        }
+        return 'Jan 1';
+      }),
     };
 
     chartDataServiceMock = {

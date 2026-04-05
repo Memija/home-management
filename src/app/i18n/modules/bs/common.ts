@@ -1,5 +1,8 @@
 // Bosnian common translations - shared across the app
 export const common = {
+  LANGUAGE: {
+    CHOOSE: 'Odaberi jezik',
+  },
   APP: {
     TITLE: 'Praćenje potrošnje vode',
     SETTINGS: 'Postavke',
@@ -197,18 +200,27 @@ export const common = {
     IMPORT_BUTTON: 'Uvezi zapise',
   },
   MONTHS: {
-    JANUARY: 'januar',
-    FEBRUARY: 'februar',
-    MARCH: 'mart',
-    APRIL: 'april',
-    MAY: 'maj',
-    JUNE: 'juni',
-    JULY: 'juli',
-    AUGUST: 'august',
-    SEPTEMBER: 'septembar',
-    OCTOBER: 'oktobar',
-    NOVEMBER: 'novembar',
-    DECEMBER: 'decembar',
+    JANUARY: 'Januar',
+    FEBRUARY: 'Februar',
+    MARCH: 'Mart',
+    APRIL: 'April',
+    MAY: 'Maj',
+    JUNE: 'Juni',
+    JULY: 'Juli',
+    AUGUST: 'August',
+    SEPTEMBER: 'Septembar',
+    OCTOBER: 'Oktobar',
+    NOVEMBER: 'Novembar',
+    DECEMBER: 'Decembar',
+  },
+  DAYS: {
+    MONDAY: 'Ponedjeljak',
+    TUESDAY: 'Utorak',
+    WEDNESDAY: 'Srijeda',
+    THURSDAY: 'Četvrtak',
+    FRIDAY: 'Petak',
+    SATURDAY: 'Subota',
+    SUNDAY: 'Nedjelja',
   },
   SEASONS: {
     PREVIOUS: 'Prethodna sezona',
@@ -229,5 +241,9 @@ export const common = {
       NAME: 'Zima',
       TAGLINE: 'Hladno za kretanje, vrijeme za toplu čokoladu ☕',
     },
+  },
+  PDF: {
+    GENERATED_ON: 'Kreirano dana',
+    DIFFERENCE: 'Razlika',
   },
 };

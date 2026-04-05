@@ -1,5 +1,8 @@
 // Serbian (Cyrillic) common translations - shared across the app
 export const common = {
+  LANGUAGE: {
+    CHOOSE: 'Изабери језик',
+  },
   APP: {
     TITLE: 'Праћење потрошње воде',
     SETTINGS: 'Поставке',
@@ -197,18 +200,27 @@ export const common = {
     IMPORT_BUTTON: 'Увези записе',
   },
   MONTHS: {
-    JANUARY: 'јануар',
-    FEBRUARY: 'фебруар',
-    MARCH: 'март',
-    APRIL: 'април',
-    MAY: 'мај',
-    JUNE: 'јуни',
-    JULY: 'јули',
-    AUGUST: 'август',
-    SEPTEMBER: 'септембар',
-    OCTOBER: 'октобар',
-    NOVEMBER: 'новембар',
-    DECEMBER: 'децембар',
+    JANUARY: 'Јануар',
+    FEBRUARY: 'Фебруар',
+    MARCH: 'Март',
+    APRIL: 'Април',
+    MAY: 'Мај',
+    JUNE: 'Јуни',
+    JULY: 'Јули',
+    AUGUST: 'Август',
+    SEPTEMBER: 'Септембар',
+    OCTOBER: 'Октобар',
+    NOVEMBER: 'Новембар',
+    DECEMBER: 'Децембар',
+  },
+  DAYS: {
+    MONDAY: 'Понедељак',
+    TUESDAY: 'Уторак',
+    WEDNESDAY: 'Среда',
+    THURSDAY: 'Четвртак',
+    FRIDAY: 'Петак',
+    SATURDAY: 'Субота',
+    SUNDAY: 'Недеља',
   },
   SEASONS: {
     PREVIOUS: 'Претходна сезона',
@@ -229,5 +241,9 @@ export const common = {
       NAME: 'Зима',
       TAGLINE: 'Хладно за кретање, време за топлу чоколаду ☕',
     },
+  },
+  PDF: {
+    GENERATED_ON: 'Креирано дана',
+    DIFFERENCE: 'Разлика',
   },
 };

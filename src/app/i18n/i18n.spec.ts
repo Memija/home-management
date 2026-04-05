@@ -1,21 +1,3 @@
-/**
- * I18n Unified Unit Tests
- *
- * This file contains the complete, strict baseline suite for localization.
- * English is the single source of truth. Every other language must:
- *
- *   1. Contain every key that exists in English (zero missing keys).
- *   2. Not introduce keys that are absent from English (zero extra keys).
- *   3. For every key whose English value is an array, its translated value
- *      must ALSO be an array with the EXACT same number of elements as
- *      English. This applies to all content, including factual/content
- *      arrays (COUNTRY_FACTS, WATER_FACTS, ELECTRICITY_COUNTRY_FACTS,
- *      HEATING_COUNTRY_FACTS) and predefined room names/patterns.
- *
- * Languages verified: German (de), Bosnian (bs), Serbian (sr),
- *                     Indonesian (id), Polish (pl).
- */
-import { describe, it, expect } from 'vitest';
 import { en } from './en';
 import { de } from './de';
 import { bs } from './bs';
@@ -23,9 +5,37 @@ import { sr } from './sr';
 import { id } from './id';
 import { pl } from './pl';
 
+// Static imports for module-level integrity checks
+import * as enModules from './modules/en';
+import * as deModules from './modules/de';
+import * as bsModules from './modules/bs';
+import * as srModules from './modules/sr';
+import * as idModules from './modules/id';
+import * as plModules from './modules/pl';
+
 // ---------------------------------------------------------------------------
 // Helpers
 // ---------------------------------------------------------------------------
+
+const ALL_LANG_MODULES: Record<string, any> = {
+  en: enModules,
+  de: deModules,
+  bs: bsModules,
+  sr: srModules,
+  id: idModules,
+  pl: plModules,
+};
+
+/**
+ * Maps a module path to its export name in the index file.
+ * Example: 'common' -> 'common'
+ * Example: 'water-facts' -> 'waterFacts'
+ * Example: 'country-facts/index' -> 'countryFacts'
+ */
+function getExportKey(modName: string): string {
+  const base = modName.split('/')[0];
+  return base.replace(/-([a-z])/g, (g) => g[1].toUpperCase());
+}
 
 type TranslationObject = Record<string, unknown>;
 
@@ -33,10 +43,7 @@ type TranslationObject = Record<string, unknown>;
  * Collects every leaf path from a (possibly nested) translation object.
  * Array-valued leaves are stored as a single path with their value.
  */
-function collectLeaves(
-  obj: TranslationObject,
-  prefix = '',
-): Map<string, unknown> {
+function collectLeaves(obj: TranslationObject, prefix = ''): Map<string, unknown> {
   const result = new Map<string, unknown>();
   if (!obj || typeof obj !== 'object') return result;
 
@@ -66,18 +73,17 @@ const enLeaves = collectLeaves(en as unknown as TranslationObject);
 // Languages to verify
 // ---------------------------------------------------------------------------
 const LANGUAGES = [
-  { name: 'German',     code: 'de', obj: de },
-  { name: 'Bosnian',    code: 'bs', obj: bs },
-  { name: 'Serbian',    code: 'sr', obj: sr },
+  { name: 'German', code: 'de', obj: de },
+  { name: 'Bosnian', code: 'bs', obj: bs },
+  { name: 'Serbian', code: 'sr', obj: sr },
   { name: 'Indonesian', code: 'id', obj: id },
-  { name: 'Polish',     code: 'pl', obj: pl },
+  { name: 'Polish', code: 'pl', obj: pl },
 ] as const;
 
 // ---------------------------------------------------------------------------
 // Test suite
 // ---------------------------------------------------------------------------
 describe('I18n — English as baseline', () => {
-
   for (const { name, code, obj } of LANGUAGES) {
     describe(`${name} (${code})`, () => {
       const langLeaves = collectLeaves(obj as unknown as TranslationObject);
@@ -96,7 +102,9 @@ describe('I18n — English as baseline', () => {
 
         expect(
           missing,
-          `[${code}] Missing ${missing.length} key(s) that exist in English:\n  ${missing.join('\n  ')}`,
+          `[${code}] Missing ${missing.length} key(s) that exist in English:\n  ${missing.join(
+            '\n  ',
+          )}`,
         ).toEqual([]);
       });
 
@@ -114,7 +122,9 @@ describe('I18n — English as baseline', () => {
 
         expect(
           extra,
-          `[${code}] Has ${extra.length} extra key(s) not present in English:\n  ${extra.join('\n  ')}`,
+          `[${code}] Has ${extra.length} extra key(s) not present in English:\n  ${extra.join(
+            '\n  ',
+          )}`,
         ).toEqual([]);
       });
 
@@ -131,24 +141,24 @@ describe('I18n — English as baseline', () => {
 
           if (!Array.isArray(langValue)) {
             allIssues.push(
-              `[wrong type] ${key}: English has array[${(enValue as unknown[]).length}] but ${code} has ${typeof langValue}`,
+              `[wrong type] ${key}: English has array[${
+                (enValue as unknown[]).length
+              }] but ${code} has ${typeof langValue}`,
             );
             continue;
           }
 
           if ((langValue as unknown[]).length !== (enValue as unknown[]).length) {
             allIssues.push(
-              `[length mismatch] ${key}: English[${(enValue as unknown[]).length}] vs ${code}[${(langValue as unknown[]).length}]`,
+              `[length mismatch] ${key}: English[${(enValue as unknown[]).length}] vs ${code}[${
+                (langValue as unknown[]).length
+              }]`,
             );
           }
         }
 
-        expect(
-          allIssues,
-          `[${code}] Array issues:\n  ${allIssues.join('\n  ')}`,
-        ).toEqual([]);
+        expect(allIssues, `[${code}] Array issues:\n  ${allIssues.join('\n  ')}`).toEqual([]);
       });
-
     });
   }
 
@@ -179,18 +189,27 @@ describe('I18n — English as baseline', () => {
       { path: 'heating-country-facts/index', key: 'HEATING_COUNTRY_FACTS' },
     ];
 
-    const ALL_MODULES_TO_CHECK = [
-      ...SPREAD_MODULES,
-      ...ASSIGNED_MODULES.map((m) => m.path),
-    ];
+    const ALL_MODULES_TO_CHECK = [...SPREAD_MODULES, ...ASSIGNED_MODULES.map((m) => m.path)];
 
-    for (const { name, code } of LANGUAGES) {
-      it(`[${code}] each module should strictly match its English counterpart`, async () => {
+    for (const { code } of LANGUAGES) {
+      it(`[${code}] each module should strictly match its English counterpart`, () => {
         const moduleIssues: string[] = [];
+        const enModSet = ALL_LANG_MODULES['en'];
+        const langModSet = ALL_LANG_MODULES[code];
 
         for (const modName of ALL_MODULES_TO_CHECK) {
-          const enMod = (await import(`./modules/en/${modName}`)) as Record<string, unknown>;
-          const langMod = (await import(`./modules/${code}/${modName}`)) as Record<string, unknown>;
+          const exportKey = getExportKey(modName);
+
+          const enMod = enModSet[exportKey];
+          const langMod = langModSet[exportKey];
+
+          if (!enMod) {
+            throw new Error(`English export not found for "${modName}" (key: ${exportKey})`);
+          }
+          if (!langMod) {
+            moduleIssues.push(`Module "${modName}" (export key: ${exportKey}) is missing in ${code}`);
+            continue;
+          }
 
           const enExports = Object.keys(enMod).filter((k) => k !== 'default');
           const langExports = Object.keys(langMod).filter((k) => k !== 'default');
@@ -252,38 +271,37 @@ describe('I18n — English as baseline', () => {
         ).toEqual([]);
       });
 
-      it(`[${code}] should not have top-level key shadowing (collisions between modules)`, async () => {
+      it(`[${code}] should not have top-level key shadowing (collisions between modules)`, () => {
         const collisions: string[] = [];
         const seenKeys = new Map<string, string>();
+        const langModSet = ALL_LANG_MODULES[code];
 
         for (const modName of SPREAD_MODULES) {
-          const mod = (await import(`./modules/${code}/${modName}`)) as Record<string, unknown>;
+          const exportKey = getExportKey(modName);
+          const mod = langModSet[exportKey];
+          if (!mod) continue;
 
-          for (const [exportName, value] of Object.entries(mod)) {
-            if (exportName === 'default') continue;
-
-            if (typeof value === 'object' && value !== null && !Array.isArray(value)) {
-              for (const key of Object.keys(value)) {
-                if (seenKeys.has(key)) {
-                  collisions.push(
-                    `Key "${key}" in module "${modName}" (shadows key from "${seenKeys.get(key)}")`,
-                  );
-                }
-                seenKeys.set(key, modName);
-              }
+          // In our architecture, these modules are spread: { ...common, ...water }
+          // So the top-level keys of each module must be unique across all modules.
+          for (const key of Object.keys(mod)) {
+            if (seenKeys.has(key)) {
+              collisions.push(
+                `Top-level key "${key}" in module "${modName}" (shadows key from "${seenKeys.get(key)}")`,
+              );
             }
+            seenKeys.set(key, modName);
           }
         }
 
-        for (const { path: modName, key } of ASSIGNED_MODULES) {
+        for (const { path: modPath, key } of ASSIGNED_MODULES) {
           if (seenKeys.has(key)) {
             collisions.push(
-              `Top-level assignment key "${key}" (from module "${modName}") shadows key from "${seenKeys.get(
+              `Top-level assignment key "${key}" (from module "${modPath}") shadows key from "${seenKeys.get(
                 key,
               )}"`,
             );
           }
-          seenKeys.set(key, modName);
+          seenKeys.set(key, modPath);
         }
 
         expect(
@@ -301,10 +319,9 @@ describe('I18n — English as baseline', () => {
     const { SUPPORTED_LANGUAGES } = await import('../services/language.service');
     const expectedCodes = ['en', 'de', 'bs', 'sr', 'id', 'pl'];
     for (const code of expectedCodes) {
-      expect(
-        SUPPORTED_LANGUAGES,
-        `Language "${code}" is missing from SUPPORTED_LANGUAGES`,
-      ).toContain(code);
+      expect(SUPPORTED_LANGUAGES, `Language "${code}" is missing from SUPPORTED_LANGUAGES`).toContain(
+        code,
+      );
     }
   });
 });

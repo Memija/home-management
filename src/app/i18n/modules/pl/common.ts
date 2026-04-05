@@ -1,5 +1,8 @@
 // Polish common translations - shared across the app
 export const common = {
+  LANGUAGE: {
+    CHOOSE: 'Wybierz język',
+  },
   APP: {
     TITLE: 'Licznik Zużycia Wody',
     SETTINGS: 'Ustawienia',
@@ -197,18 +200,27 @@ export const common = {
     IMPORT_BUTTON: 'Importuj Rekordy',
   },
   MONTHS: {
-    JANUARY: 'styczeń',
-    FEBRUARY: 'luty',
-    MARCH: 'marzec',
-    APRIL: 'kwiecień',
-    MAY: 'maj',
-    JUNE: 'czerwiec',
-    JULY: 'lipiec',
-    AUGUST: 'sierpień',
-    SEPTEMBER: 'wrzesień',
-    OCTOBER: 'październik',
-    NOVEMBER: 'listopad',
-    DECEMBER: 'grudzień',
+    JANUARY: 'Styczeń',
+    FEBRUARY: 'Luty',
+    MARCH: 'Marzec',
+    APRIL: 'Kwiecień',
+    MAY: 'Maj',
+    JUNE: 'Czerwiec',
+    JULY: 'Lipiec',
+    AUGUST: 'Sierpień',
+    SEPTEMBER: 'Wrzesień',
+    OCTOBER: 'Październik',
+    NOVEMBER: 'Listopad',
+    DECEMBER: 'Grudzień',
+  },
+  DAYS: {
+    MONDAY: 'Poniedziałek',
+    TUESDAY: 'Wtorek',
+    WEDNESDAY: 'Środa',
+    THURSDAY: 'Czwartek',
+    FRIDAY: 'Piątek',
+    SATURDAY: 'Sobota',
+    SUNDAY: 'Niedziela',
   },
   SEASONS: {
     PREVIOUS: 'Poprzedni sezon',
@@ -229,5 +241,9 @@ export const common = {
       NAME: 'Zima',
       TAGLINE: 'Zbyt zimno, by się ruszać, czas na gorące kakao ☕',
     },
+  },
+  PDF: {
+    GENERATED_ON: 'Utworzono dnia',
+    DIFFERENCE: 'Różnica',
   },
 };

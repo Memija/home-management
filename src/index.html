@@ -1,32 +1,52 @@
 <!doctype html>
 <html lang="en">
-  <head>
-    <meta charset="utf-8" />
-    <title>Home Management</title>
-    <meta
-      name="description"
-      content="Your all-in-one household management app. Manage family members, track consumption, monitor expenses, and optimize your home's efficiency with powerful insights and visualizations."
-    />
-    <base href="/" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <link rel="icon" type="image/png" href="assets/logo-128.png" />
-    <script>
-      // Redirect default Firebase domains to the custom domain
-      if (
-        window.location.hostname === 'home-management-be965.web.app' ||
-        window.location.hostname === 'home-management-be965.firebaseapp.com'
-      ) {
-        window.location.replace(
-          'https://home-management.dev' +
-            window.location.pathname +
-            window.location.search +
-            window.location.hash,
-        );
-      }
-    </script>
-  </head>
 
-  <body>
-    <app-root></app-root>
-  </body>
+<head>
+  <meta charset="utf-8" />
+  <title>Home Management</title>
+  <meta name="description"
+    content="Your all-in-one household management app. Manage family members, track consumption, monitor expenses, and optimize your home's efficiency with powerful insights and visualizations." />
+  <base href="/" />
+  <link rel="canonical" href="https://home-management.dev/" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <link rel="manifest" href="manifest.webmanifest" />
+  <meta property="og:site_name" content="Home Management" />
+  <meta property="og:type" content="website" />
+  <meta property="og:title" content="Home Management - All-in-one Household Tracker" />
+  <meta property="og:description"
+    content="Manage family members, track consumption, monitor expenses, and optimize your home's efficiency with powerful insights and visualizations." />
+  <meta property="og:image" content="https://home-management.dev/assets/og-image.png" />
+  <meta property="og:image:width" content="1200" />
+  <meta property="og:image:height" content="630" />
+  <meta property="og:url" content="https://home-management.dev/" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="Home Management - All-in-one Household Tracker" />
+  <meta name="twitter:description"
+    content="Track consumption, monitor expenses, and optimize your home's efficiency with professional visualizations. Free and Open Source." />
+  <meta name="twitter:image" content="https://home-management.dev/assets/og-image.png" />
+  <link rel="icon" type="image/png" href="assets/logo-128.png" />
+  <link rel="apple-touch-icon" href="assets/logo-512.png" />
+  <meta name="apple-mobile-web-app-title" content="Home Management" />
+  <meta name="application-name" content="Home Management" />
+  <script>
+    // Redirect default Firebase domains to the custom domain
+    if (
+      window.location.hostname === 'home-management-be965.web.app' ||
+      window.location.hostname === 'home-management-be965.firebaseapp.com'
+    ) {
+      window.location.replace(
+        'https://home-management.dev' +
+        window.location.pathname +
+        window.location.search +
+        window.location.hash,
+      );
+    }
+  </script>
+</head>
+
+<body>
+  <app-root></app-root>
+</body>
+
 </html>

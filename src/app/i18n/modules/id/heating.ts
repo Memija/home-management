@@ -31,6 +31,7 @@ export const heating = {
     RECORD_CONSUMPTION: 'Catat Pemanas',
     IMPORT_PLACEHOLDER_SKIPPED_SINGULAR: '1 catatan kosong dilewati.',
     IMPORT_PLACEHOLDER_SKIPPED_PLURAL: '{{count}} catatan kosong dilewati.',
+    READINGS_BY_ROOM: 'Tentukan bacaan untuk ruangan',
     ROOMS_SETTINGS_TITLE: 'Pengaturan Ruangan',
     ROOMS_SETTINGS_DESCRIPTION: 'Pilih ruangan yang ingin Anda lacak pemanasnya.',
     ROOM_NAME_PLACEHOLDER: 'Nama ruangan',

@@ -326,7 +326,7 @@ export class HeatingComponent implements OnInit {
     const rooms = this.roomsService.rooms();
     return [
       {
-        title: 'HEATING.ROOMS_SETTINGS_TITLE',
+        title: 'HEATING.READINGS_BY_ROOM',
         fields: rooms.map((room) => ({
           key: room.id,
           label: room.name,

@@ -29,6 +29,7 @@ export const heating = {
     RECORD_CONSUMPTION: 'Zapisz Zużycie Ogrzewania',
     IMPORT_PLACEHOLDER_SKIPPED_SINGULAR: 'Pominięto 1 pusty rekord.',
     IMPORT_PLACEHOLDER_SKIPPED_PLURAL: 'Pominięto {{count}} pustych rekordów.',
+    READINGS_BY_ROOM: 'Przypisz odczyt do pokoju',
     ROOMS_SETTINGS_TITLE: 'Ustawienia Pokoi',
     ROOMS_SETTINGS_DESCRIPTION: 'Skonfiguruj pokoje, dla których chcesz śledzić zużycie ogrzewania.',
     ROOM_NAME_PLACEHOLDER: 'Wprowadź nazwę pokoju',

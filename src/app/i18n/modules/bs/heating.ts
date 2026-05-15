@@ -29,6 +29,7 @@ export const heating = {
     RECORD_CONSUMPTION: 'Zabilježi potrošnju grijanja',
     IMPORT_PLACEHOLDER_SKIPPED_SINGULAR: 'Preskočen 1 prazan zapis.',
     IMPORT_PLACEHOLDER_SKIPPED_PLURAL: 'Preskočeno {{count}} praznih zapisa.',
+    READINGS_BY_ROOM: 'Dodijeli očitavanje sobi',
     ROOMS_SETTINGS_TITLE: 'Postavke prostorija',
     ROOMS_SETTINGS_DESCRIPTION: 'Konfigurišite koje prostorije želite pratiti za potrošnju grijanja.',
     ROOM_NAME_PLACEHOLDER: 'Unesite naziv prostorije',

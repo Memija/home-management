@@ -7,10 +7,16 @@ import {
   TriangleAlert,
   HelpCircle,
   Home,
+  Camera,
   type LucideIconData,
 } from 'lucide-angular';
 import { DatePickerComponent } from '../date-picker/date-picker.component';
 import { HelpModalComponent, HelpStep } from '../help-modal/help-modal.component';
+import {
+  MeterReaderModalComponent,
+  type MeterField,
+  type MeterReadingOutput,
+} from '../meter-reader-modal/meter-reader-modal.component';
 
 export interface ConsumptionField {
   key: string;
@@ -38,6 +44,7 @@ export interface ConsumptionData {
     LucideAngularModule,
     DatePickerComponent,
     HelpModalComponent,
+    MeterReaderModalComponent,
   ],
   templateUrl: './consumption-input.component.html',
   styleUrl: './consumption-input.component.scss',
@@ -48,6 +55,7 @@ export class ConsumptionInputComponent {
   protected readonly TriangleAlertIcon = TriangleAlert;
   protected readonly HelpIcon = HelpCircle;
   protected readonly HomeIcon = Home;
+  protected readonly CameraIcon = Camera;
 
   // Inputs
   groups = input.required<ConsumptionGroup[]>();
@@ -76,6 +84,7 @@ export class ConsumptionInputComponent {
   // State
   protected errorMessage = signal<string | null>(null);
   protected showHelpModal = signal(false);
+  protected showMeterReader = signal(false);
 
   // Outputs
   dateChange = output<string>();
@@ -224,5 +233,35 @@ export class ConsumptionInputComponent {
 
   protected closeHelp() {
     this.showHelpModal.set(false);
+  }
+
+  // Meter Reader
+  protected meterReaderFields = computed<MeterField[]>(() => {
+    const grps = this.groups();
+    const fields: MeterField[] = [];
+    grps.forEach((group) => {
+      group.fields.forEach((field) => {
+        fields.push({ 
+          key: field.key, 
+          label: field.label, 
+          groupLabel: group.title,
+          currentValue: field.value,
+          icon: field.icon 
+        });
+      });
+    });
+    return fields;
+  });
+
+  protected openMeterReader() {
+    this.showMeterReader.set(true);
+  }
+
+  protected closeMeterReader() {
+    this.showMeterReader.set(false);
+  }
+
+  protected onMeterReading(event: MeterReadingOutput) {
+    this.fieldChange.emit({ key: event.fieldKey, value: event.value });
   }
 }

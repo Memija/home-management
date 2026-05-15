@@ -3,6 +3,15 @@
     <h2>{{ editingMode() ? (editTitleKey() | translate) : (titleKey() | translate) }}</h2>
     <div class="header-actions">
       <ng-content select="[header-actions]"></ng-content>
+      <button
+        type="button"
+        class="help-btn camera-btn"
+        (click)="openMeterReader()"
+        title="{{ 'METER_READER.TITLE' | translate }}"
+        aria-label="Read meter from photo"
+      >
+        <lucide-icon [img]="CameraIcon" size="20"></lucide-icon>
+      </button>
       @if (helpSteps().length > 0) {
         <button
           type="button"
@@ -118,3 +127,11 @@
   >
   </app-help-modal>
 }
+
+<app-meter-reader-modal
+  [show]="showMeterReader()"
+  [fields]="meterReaderFields()"
+  (close)="closeMeterReader()"
+  (reading)="onMeterReading($event)"
+>
+</app-meter-reader-modal>

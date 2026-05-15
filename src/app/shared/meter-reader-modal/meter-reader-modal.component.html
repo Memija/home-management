@@ -1,0 +1,224 @@
+@if (show()) {
+<div class="modal-overlay" (click)="onOverlayClick()">
+  <div class="modal-content modal-lg" (click)="onModalClick($event)">
+    <!-- Header -->
+    <div class="modal-header modal-header-premium">
+      <lucide-icon [img]="CameraIcon" size="24" class="header-icon"></lucide-icon>
+      <h3>{{ 'METER_READER.TITLE' | translate }}</h3>
+      <button class="close-btn" (click)="resetAndClose()" title="{{ 'ACTIONS.CLOSE' | translate }}"
+        aria-label="Close meter reader">
+        <lucide-icon [img]="XIcon" size="18"></lucide-icon>
+      </button>
+    </div>
+
+    <div class="modal-body">
+      <!-- Step 1: Capture -->
+      @if (step() === 'capture') {
+      <div class="capture-step">
+        @if (useCameraMode() && cameraStream()) {
+        <!-- Live camera preview -->
+        <div class="camera-preview">
+          <video #cameraVideo autoplay [attr.playsinline]="true" muted (loadedmetadata)="initCameraStream(cameraVideo)"
+            (playing)="onCameraReady(cameraVideo)" class="camera-video"></video>
+          <div class="camera-overlay">
+            @if (!isCameraReady()) {
+            <div class="camera-loader" (click)="manualKickstart()">
+              <div class="spinner"></div>
+              <span>{{ 'METER_READER.STARTING_CAMERA' | translate }}</span>
+            </div>
+            } @else {
+            <div class="scan-frame"></div>
+            }
+          </div>
+          <div class="camera-actions">
+            <button type="button" class="btn-capture" (click)="captureFromCamera(cameraVideo)"
+              [disabled]="!isCameraReady()" [class.disabled]="!isCameraReady()"
+              title="{{ 'METER_READER.CAPTURE' | translate }}" aria-label="Capture photo">
+              <lucide-icon [img]="CameraIcon" size="24"></lucide-icon>
+            </button>
+            <button type="button" class="btn-cancel-camera" (click)="stopCamera()"
+              title="{{ 'ACTIONS.CANCEL' | translate }}" aria-label="Cancel camera">
+              <lucide-icon [img]="XIcon" size="20"></lucide-icon>
+            </button>
+          </div>
+        </div>
+        } @else {
+        <!-- Camera / Upload options -->
+        <p class="instruction-text">{{ 'METER_READER.INSTRUCTION' | translate }}</p>
+
+        @if (cameraError()) {
+        <div class="error-note">
+          <span>{{ cameraError()! | translate }}</span>
+        </div>
+        }
+
+        <div class="capture-options">
+          <button type="button" class="capture-option-btn" (click)="startCamera()"
+            aria-label="Take a photo with camera">
+            <div class="option-icon camera-gradient">
+              <lucide-icon [img]="CameraIcon" size="32"></lucide-icon>
+            </div>
+            <span class="option-label">{{ 'METER_READER.TAKE_PHOTO' | translate }}</span>
+            <span class="option-hint">{{ 'METER_READER.CAMERA_HINT' | translate }}</span>
+          </button>
+
+          <label class="capture-option-btn" for="meter-image-upload" aria-label="Upload an image">
+            <div class="option-icon upload-gradient">
+              <lucide-icon [img]="UploadIcon" size="32"></lucide-icon>
+            </div>
+            <span class="option-label">{{ 'METER_READER.UPLOAD_IMAGE' | translate }}</span>
+            <span class="option-hint">{{ 'METER_READER.UPLOAD_HINT' | translate }}</span>
+            <input type="file" id="meter-image-upload" accept="image/*" [attr.capture]="'environment'"
+              (change)="onFileSelected($event)" class="hidden-input" />
+          </label>
+        </div>
+        }
+      </div>
+      }
+
+      <!-- Step 2: Crop -->
+      @if (step() === 'crop') {
+      <div class="crop-step">
+        <p class="instruction-text">
+          <lucide-icon [img]="CropIcon" size="16" class="instruction-icon"></lucide-icon>
+          {{ 'METER_READER.CROP_INSTRUCTION' | translate }}
+        </p>
+        <div class="crop-canvas-wrapper">
+          <canvas #cropCanvas class="crop-canvas" (mousedown)="onCropStart($event)" (mousemove)="onCropMove($event)"
+            (mouseup)="onCropEnd($event)" (mouseleave)="onCropEnd($event)" (touchstart)="onCropStart($event)"
+            (touchmove)="onCropMove($event)" (touchend)="onCropEnd($event)"></canvas>
+        </div>
+        <div class="crop-hint">
+          @if (cropRect()) {
+          <span class="crop-hint-active">{{ 'METER_READER.CROP_SELECTED' | translate }}</span>
+          } @else {
+          <span>{{ 'METER_READER.CROP_DRAG_HINT' | translate }}</span>
+          }
+        </div>
+        <div class="result-actions">
+          <button type="button" class="btn-secondary" (click)="retry()" aria-label="Retake">
+            <lucide-icon [img]="RetryIcon" size="16"></lucide-icon>
+            {{ 'METER_READER.RETRY' | translate }}
+          </button>
+          @if (cropRect()) {
+          <button type="button" class="btn-primary" (click)="confirmCrop()" aria-label="Scan selection">
+            <lucide-icon [img]="CropIcon" size="16"></lucide-icon>
+            {{ 'METER_READER.SCAN_SELECTION' | translate }}
+          </button>
+          }
+        </div>
+      </div>
+      }
+
+      <!-- Step 3: Processing -->
+      @if (step() === 'processing') {
+      <div class="processing-step">
+        @if (capturedImage()) {
+        <div class="image-preview-small">
+          <img [src]="capturedImage()" alt="Captured meter" />
+        </div>
+        }
+        <div class="processing-indicator">
+          <div class="progress-ring">
+            <svg viewBox="0 0 56 56">
+              <circle cx="28" cy="28" r="24" class="progress-bg"></circle>
+              <circle cx="28" cy="28" r="24" class="progress-fill" [style.strokeDasharray]="'151'"
+                [style.strokeDashoffset]="151 - (151 * progress()) / 100"></circle>
+            </svg>
+            <span class="progress-text">{{ progress() }}%</span>
+          </div>
+          <p class="processing-text">{{ 'METER_READER.PROCESSING' | translate }}</p>
+        </div>
+      </div>
+      }
+
+      <!-- Step 4: Result -->
+      @if (step() === 'result') {
+      <div class="result-step">
+        @if (capturedImage()) {
+        <div class="image-preview-small">
+          <img [src]="capturedImage()" alt="Captured meter" />
+        </div>
+        }
+
+        @if (selectedValue() !== null) {
+        <div class="result-card success-card">
+          <div class="result-label">{{ 'METER_READER.DETECTED_VALUE' | translate }}</div>
+          <div class="result-value-editor">
+            <input id="meter-detected-value" name="meter-detected-value" type="text" inputmode="numeric"
+              [value]="editedValue()" (input)="onValueEdit($event)" class="value-input"
+              aria-label="Detected meter value" />
+          </div>
+          <p class="edit-hint">{{ 'METER_READER.EDIT_HINT' | translate }}</p>
+        </div>
+        } @else {
+        <div class="result-card error-card">
+          <p>{{ 'METER_READER.NO_VALUE_FOUND' | translate }}</p>
+        </div>
+        }
+
+        <div class="result-actions">
+          <button type="button" class="btn-secondary" (click)="retry()" aria-label="Try again">
+            <lucide-icon [img]="RetryIcon" size="16"></lucide-icon>
+            {{ 'METER_READER.RETRY' | translate }}
+          </button>
+          @if (selectedValue() !== null) {
+          <button type="button" class="btn-primary" (click)="confirmValue()" aria-label="Use this value">
+            <lucide-icon [img]="CheckIcon" size="16"></lucide-icon>
+            {{ 'METER_READER.USE_VALUE' | translate }}
+          </button>
+          }
+        </div>
+      </div>
+      }
+
+      <!-- Step 5: Select which field (multi-field mode) -->
+      @if (step() === 'select-field') {
+      <div class="select-field-step">
+        <p class="instruction-text">{{ 'METER_READER.SELECT_FIELD' | translate }}</p>
+        <div class="detected-value-badge">{{ selectedValue() }}</div>
+        @if (hasNoFields()) {
+        <div class="no-fields-notice">
+          <p>{{ 'METER_READER.NO_FIELDS_CONFIGURED' | translate }}</p>
+          <button type="button" class="btn-secondary" (click)="retry()" aria-label="Go back">
+            <lucide-icon [img]="RetryIcon" size="16"></lucide-icon>
+            {{ 'METER_READER.RETRY' | translate }}
+          </button>
+        </div>
+        } @else {
+        <div class="field-groups">
+          @for (group of groupedFields(); track group.label) {
+          <div class="field-group">
+            @if (group.label) {
+            <div class="group-title">
+              <span>{{ group.label | translate }}</span>
+            </div>
+            }
+            <div class="field-options">
+              @for (field of group.fields; track field.key) {
+              <button type="button" class="field-option-btn" (click)="selectField(field.key)"
+                [attr.aria-label]="'Assign to ' + field.key">
+                @if (field.icon) {
+                <lucide-icon [img]="field.icon" size="20" class="field-icon"
+                  [class.icon-warm]="field.key.toLowerCase().includes('warm')"
+                  [class.icon-cold]="field.key.toLowerCase().includes('cold')"></lucide-icon>
+                }
+                <span class="field-btn-text">
+                  <span class="field-btn-label">{{ field.label | translate }}</span>
+                  @if (field.currentValue !== null && field.currentValue !== undefined) {
+                  <span class="field-btn-current">{{ field.currentValue }}</span>
+                  }
+                </span>
+              </button>
+              }
+            </div>
+          </div>
+          }
+        </div>
+        }
+      </div>
+      }
+    </div>
+  </div>
+</div>
+}

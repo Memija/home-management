@@ -33,6 +33,7 @@ export const heating = {
     RECORD_CONSUMPTION: 'Heizungsverbrauch erfassen',
     IMPORT_PLACEHOLDER_SKIPPED_SINGULAR: '1 leerer Datensatz ohne Werte wurde übersprungen.',
     IMPORT_PLACEHOLDER_SKIPPED_PLURAL: '{{count}} leere Datensätze ohne Werte wurden übersprungen.',
+    READINGS_BY_ROOM: 'Ablesung dem Raum zuordnen',
     ROOMS_SETTINGS_TITLE: 'Raumeinstellungen',
     ROOMS_SETTINGS_DESCRIPTION:
       'Konfigurieren Sie, welche Räume für den Heizungsverbrauch erfasst werden sollen.',

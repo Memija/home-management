@@ -32,6 +32,7 @@ export const heating = {
     RECORD_CONSUMPTION: 'Record Heating Consumption',
     IMPORT_PLACEHOLDER_SKIPPED_SINGULAR: '1 empty record with no values was skipped.',
     IMPORT_PLACEHOLDER_SKIPPED_PLURAL: '{{count}} empty records with no values were skipped.',
+    READINGS_BY_ROOM: 'Assign reading to room',
     ROOMS_SETTINGS_TITLE: 'Room Settings',
     ROOMS_SETTINGS_DESCRIPTION: 'Configure which rooms to track for heating consumption.',
     ROOM_NAME_PLACEHOLDER: 'Enter room name',

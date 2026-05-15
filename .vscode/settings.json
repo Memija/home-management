@@ -1,0 +1,6 @@
+{
+  "files.associations": {
+    "firebase.json": "jsonc",
+    "angular.json": "jsonc"
+  }
+}

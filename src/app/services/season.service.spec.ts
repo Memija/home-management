@@ -6,6 +6,18 @@ import { vi } from 'vitest';
 describe('SeasonService', () => {
   describe('Browser Platform Environment', () => {
     beforeEach(() => {
+      if (typeof localStorage === 'undefined' || !localStorage.clear) {
+        const mockStorage: any = {
+          store: {} as Record<string, string>,
+          getItem: (key: string) => mockStorage.store[key] || null,
+          setItem: (key: string, value: string) => mockStorage.store[key] = value,
+          removeItem: (key: string) => delete mockStorage.store[key],
+          clear: () => mockStorage.store = {},
+          key: (index: number) => Object.keys(mockStorage.store)[index] || null,
+          get length() { return Object.keys(mockStorage.store).length; }
+        };
+        vi.stubGlobal('localStorage', mockStorage);
+      }
       localStorage.clear();
       vi.useFakeTimers();
       TestBed.configureTestingModule({

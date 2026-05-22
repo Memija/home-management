@@ -63,7 +63,12 @@
               "core-js",
               "hammerjs",
               "@grpc/grpc-js",
-              "@grpc/proto-loader"
+              "@grpc/proto-loader",
+              "tesseract.js",
+              "regenerator-runtime",
+              "regenerator-runtime/runtime",
+              "is-url",
+              "whatwg-url"
             ]
           },
           "configurations": {

@@ -176,7 +176,7 @@ describe('HeatingComponent', () => {
       (mockFormService.getRoomValue as any).mockReturnValue(50);
       const groups = (component as any).consumptionGroups();
       expect(groups).toHaveLength(1);
-      expect(groups[0].title).toBe('HEATING.ROOMS_SETTINGS_TITLE');
+      expect(groups[0].title).toBe('HEATING.READINGS_BY_ROOM');
       expect(groups[0].fields).toHaveLength(1);
       expect(groups[0].fields[0].key).toBe('room-1');
       expect(groups[0].fields[0].label).toBe('Living Room');

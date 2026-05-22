@@ -201,6 +201,7 @@ export const common = {
   },
   METER_READER: {
     TITLE: 'Odczyt Licznika ze Zdjęcia',
+    STARTING_CAMERA: 'Uruchamianie aparatu...',
     INSTRUCTION: 'Sfotografuj lub prześlij zdjęcie swojego licznika, aby automatycznie zeskanować odczyt. Prosimy o zweryfikowanie wykrytych liczb, ponieważ dokładność optycznego rozpoznawania znaków (OCR) może się różnić w zależności od jakości obrazu.',
     TAKE_PHOTO: 'Zrób Zdjęcie',
     CAMERA_HINT: 'Użyj aparatu',

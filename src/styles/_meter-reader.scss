@@ -1,0 +1,532 @@
+@use 'variables' as *;
+
+// Meter Reader Modal styles — kept global to avoid per-component budget limits.
+
+// 1. Structural Layout Groups
+.result-step,
+.crop-step,
+.field-groups,
+.field-group,
+.processing-step,
+.camera-loader,
+.processing-indicator,
+.select-field-step {
+  display: flex;
+  flex-direction: column;
+}
+
+.processing-step,
+.camera-loader,
+.processing-indicator,
+.select-field-step {
+  align-items: center;
+}
+
+.option-icon,
+.camera-overlay,
+.btn-capture,
+.btn-cancel-camera,
+.crop-canvas-wrapper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.field-options,
+.capture-options {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+}
+
+@media (max-width: 480px) {
+
+  .field-options,
+  .capture-options {
+    grid-template-columns: 1fr;
+  }
+}
+
+.result-actions,
+.result-value-editor {
+  display: flex;
+  justify-content: center;
+}
+
+// 2. Spacing / Gaps
+.crop-step,
+.result-step,
+.camera-loader,
+.processing-indicator,
+.capture-options {
+  gap: 1rem;
+}
+
+.select-field-step {
+  gap: 1.25rem;
+}
+
+.processing-step,
+.field-groups {
+  gap: 1.5rem;
+}
+
+.field-group,
+.field-options,
+.result-actions,
+.capture-option-btn {
+  gap: 0.75rem;
+}
+
+// 3. Typography & Colors
+.value-input,
+.detected-value-badge,
+.field-btn-current {
+  font-family: 'Courier New', monospace;
+}
+
+.instruction-text,
+.option-hint,
+.processing-text,
+.result-label,
+.edit-hint,
+.no-fields-notice p,
+.group-title,
+.field-icon,
+.field-btn-current,
+.crop-hint {
+  color: var(--text-secondary);
+}
+
+.option-label,
+.progress-text,
+.value-input,
+.field-option-btn {
+  color: var(--text-primary);
+}
+
+.detected-value-badge,
+.crop-hint-active {
+  color: var(--theme-primary, #3b82f6);
+  font-weight: 600;
+}
+
+.capture-option-btn,
+.field-option-btn,
+.btn-cancel-camera,
+.btn-capture,
+.progress-fill,
+.value-input {
+  transition: all 0.2s ease;
+}
+
+.capture-option-btn,
+.field-option-btn,
+.btn-capture,
+.btn-cancel-camera,
+.crop-canvas {
+  cursor: pointer;
+}
+
+// 4. Shared Shapes & Backgrounds
+.capture-option-btn,
+.camera-preview,
+.result-card,
+.no-fields-notice {
+  border-radius: 12px;
+}
+
+.capture-option-btn,
+.image-preview-small,
+.no-fields-notice,
+.field-option-btn {
+  background: var(--bg-secondary);
+}
+
+.btn-capture,
+.btn-cancel-camera {
+  border-radius: 50%;
+}
+
+.camera-preview,
+.crop-canvas-wrapper {
+  overflow: hidden;
+  background: #000;
+  max-height: 400px;
+}
+
+// 5. Interactive Cards Hover
+.capture-option-btn,
+.field-option-btn {
+  border: 2px solid var(--border-color);
+
+  &:hover {
+    border-color: var(--theme-primary, $primary);
+    background: rgba($primary, 0.04);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  }
+}
+
+// --- Specific Rules ---
+.instruction-text {
+  font-size: 1rem;
+  margin-bottom: 3rem;
+  text-align: center;
+  line-height: 1.5;
+}
+
+.instruction-icon {
+  vertical-align: middle;
+  margin-right: 6px;
+}
+
+.capture-options {
+  margin: 1rem 0;
+}
+
+.capture-option-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 1.5rem 1rem;
+  border-style: dashed;
+  text-align: center;
+}
+
+.option-icon {
+  width: 64px;
+  height: 64px;
+  border-radius: 16px;
+  color: white;
+
+  &.camera-gradient,
+  &.upload-gradient {
+    background: linear-gradient(135deg, var(--theme-primary, #3b82f6), var(--theme-primary-dark, #1d4ed8));
+  }
+}
+
+.option-label {
+  font-size: 0.95rem;
+  font-weight: 600;
+}
+
+.option-hint {
+  font-size: 0.8rem;
+}
+
+.hidden-input {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+}
+
+.camera-preview {
+  position: relative;
+}
+
+.camera-video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.camera-overlay {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: rgba(0, 0, 0, 0.2);
+}
+
+.camera-loader {
+  color: white;
+  font-size: 0.9rem;
+  font-weight: 500;
+}
+
+.spinner {
+  width: 32px;
+  height: 32px;
+  border: 3px solid rgba(255, 255, 255, 0.3);
+  border-top-color: white;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+.scan-frame {
+  width: 70%;
+  height: 40%;
+  border-radius: 8px;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.camera-actions {
+  position: absolute;
+  bottom: 2rem;
+  left: 0;
+  right: 0;
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+}
+
+.btn-capture {
+  width: 56px;
+  height: 56px;
+  background: white;
+  border: 3px solid rgba(255, 255, 255, 0.8);
+  color: #1d4ed8;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+
+  &:hover:not(.disabled) {
+    transform: scale(1.1);
+    background: #f0f0f0;
+  }
+
+  &.disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    background: #ccc;
+    color: #888;
+  }
+}
+
+.btn-cancel-camera {
+  width: 40px;
+  height: 40px;
+  background: rgba(255, 255, 255, 0.2);
+  border: none;
+  color: white;
+  margin-top: 0.5rem;
+
+  &:hover {
+    background: rgba(255, 255, 255, 0.3);
+  }
+}
+
+.error-note {
+  background: $error-bg-light;
+  color: $error-text-dark;
+  padding: 0.75rem 1rem;
+  border-radius: 8px;
+  margin-bottom: 1rem;
+  font-size: 0.9rem;
+  text-align: center;
+  border-left: 4px solid $danger;
+}
+
+.processing-step {
+  padding: 1rem 0;
+}
+
+.image-preview-small {
+  border-radius: 8px;
+
+  img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    max-height: 200px;
+  }
+}
+
+.progress-ring {
+  position: relative;
+  width: 56px;
+  height: 56px;
+
+  svg {
+    transform: rotate(-90deg);
+    width: 56px;
+    height: 56px;
+  }
+}
+
+.progress-bg {
+  fill: none;
+  stroke: var(--border-light);
+  stroke-width: 4;
+}
+
+.progress-fill {
+  fill: none;
+  stroke: var(--theme-primary, $primary);
+  stroke-width: 4;
+  stroke-linecap: round;
+}
+
+.progress-text {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+.processing-text {
+  font-size: 0.95rem;
+  animation: pulse 1.5s ease-in-out infinite;
+}
+
+@keyframes pulse {
+
+  0%,
+  100% {
+    opacity: 1;
+  }
+
+  50% {
+    opacity: 0.5;
+  }
+}
+
+.result-card {
+  padding: 1.25rem;
+  text-align: center;
+
+  &.success-card {
+    background: linear-gradient(135deg, rgba($success, 0.08), rgba($success, 0.02));
+    border: 1px solid rgba($success, 0.2);
+  }
+
+  &.error-card {
+    background: $error-bg-light;
+    border: 1px solid $error-border-light;
+
+    p {
+      color: $error-text-dark;
+      margin: 0;
+    }
+  }
+}
+
+.result-label {
+  font-size: 0.85rem;
+  margin-bottom: 0.5rem;
+  font-weight: 500;
+}
+
+.value-input {
+  font-size: 2rem;
+  font-weight: 700;
+  text-align: center;
+  border-radius: 8px;
+  padding: 0.5rem 1rem;
+  max-width: 200px;
+  width: 100%;
+  border: 2px solid var(--border-color);
+  background: var(--input-bg);
+
+  &:focus {
+    outline: none;
+    border-color: var(--theme-primary, $primary);
+    box-shadow: 0 0 0 3px rgba($primary, 0.1);
+  }
+}
+
+.edit-hint {
+  font-size: 0.8rem;
+  margin: 0.5rem 0 0;
+}
+
+.result-actions {
+  margin-top: 0.5rem;
+}
+
+.detected-value-badge {
+  font-size: 1.75rem;
+  background: rgba($primary, 0.08);
+  padding: 0.5rem 1.5rem;
+  border-radius: 10px;
+}
+
+.no-fields-notice {
+  text-align: center;
+  border: 1px dashed var(--border-color);
+  width: 100%;
+
+  p {
+    font-size: 0.9rem;
+    margin-bottom: 1rem;
+    line-height: 1.5;
+  }
+
+  .btn-secondary {
+    display: inline;
+    margin-bottom: 1rem;
+    margin-top: 1rem;
+  }
+}
+
+.group-title {
+  font-size: 0.85rem;
+  letter-spacing: 0.02em;
+}
+
+.field-option-btn {
+  display: flex;
+  align-items: center;
+  padding: 1rem;
+  border-radius: 10px;
+  font-size: 0.95rem;
+  font-weight: 500;
+  justify-content: space-between;
+}
+
+.field-icon {
+  flex-shrink: 0;
+
+  &.icon-warm {
+    color: #ef4444;
+  }
+
+  &.icon-cold {
+    color: #3b82f6;
+  }
+}
+
+.field-btn-left {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  min-width: 0;
+}
+
+.field-btn-label {
+  font-size: 0.9rem;
+}
+
+.field-btn-current {
+  font-size: 0.78rem;
+  background: var(--bg-primary);
+  border-radius: 4px;
+  padding: 0.3rem 1rem 0.1rem 1rem;
+  line-height: 1.4;
+}
+
+.crop-canvas-wrapper {
+  width: 100%;
+  border-radius: 10px;
+}
+
+.crop-canvas {
+  display: block;
+  max-width: 100%;
+  max-height: 420px;
+  -webkit-user-select: none;
+  user-select: none;
+  touch-action: none;
+}
+
+.crop-hint {
+  text-align: center;
+  font-size: 0.85rem;
+  min-height: 1.2em;
+}

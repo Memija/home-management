@@ -201,6 +201,7 @@ export const common = {
   },
   METER_READER: {
     TITLE: 'Očitavanje mjerača sa fotografije',
+    STARTING_CAMERA: 'Pokretanje kamere...',
     INSTRUCTION: 'Fotografišite ili učitajte sliku vašeg mjerača za automatsko skeniranje stanja. Molimo vas da provjerite prepoznate brojeve, jer tačnost optičkog prepoznavanja znakova (OCR) zavisi od kvaliteta slike.',
     TAKE_PHOTO: 'Uslikaj',
     CAMERA_HINT: 'Koristite kameru',

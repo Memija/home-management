@@ -1,11 +1,11 @@
 @if (show()) {
-<div class="modal-overlay" (click)="onOverlayClick()">
+<div class="modal-overlay" (click)="onOverlayClick($event)">
   <div class="modal-content modal-lg" (click)="onModalClick($event)">
     <!-- Header -->
     <div class="modal-header modal-header-premium">
       <lucide-icon [img]="CameraIcon" size="24" class="header-icon"></lucide-icon>
       <h3>{{ 'METER_READER.TITLE' | translate }}</h3>
-      <button class="close-btn" (click)="resetAndClose()" title="{{ 'ACTIONS.CLOSE' | translate }}"
+      <button class="close-btn" (click)="closeModal($event)" title="{{ 'ACTIONS.CLOSE' | translate }}"
         aria-label="Close meter reader">
         <lucide-icon [img]="XIcon" size="18"></lucide-icon>
       </button>
@@ -198,17 +198,17 @@
               @for (field of group.fields; track field.key) {
               <button type="button" class="field-option-btn" (click)="selectField(field.key)"
                 [attr.aria-label]="'Assign to ' + field.key">
-                @if (field.icon) {
-                <lucide-icon [img]="field.icon" size="20" class="field-icon"
-                  [class.icon-warm]="field.key.toLowerCase().includes('warm')"
-                  [class.icon-cold]="field.key.toLowerCase().includes('cold')"></lucide-icon>
-                }
-                <span class="field-btn-text">
-                  <span class="field-btn-label">{{ field.label | translate }}</span>
-                  @if (field.currentValue !== null && field.currentValue !== undefined) {
-                  <span class="field-btn-current">{{ field.currentValue }}</span>
+                <span class="field-btn-left">
+                  @if (field.icon) {
+                  <lucide-icon [img]="field.icon" size="20" class="field-icon"
+                    [class.icon-warm]="field.key.toLowerCase().includes('warm')"
+                    [class.icon-cold]="field.key.toLowerCase().includes('cold')"></lucide-icon>
                   }
+                  <span class="field-btn-label">{{ field.label | translate }}</span>
                 </span>
+                @if (field.currentValue !== null && field.currentValue !== undefined) {
+                <span class="field-btn-current">{{ field.currentValue }}</span>
+                }
               </button>
               }
             </div>

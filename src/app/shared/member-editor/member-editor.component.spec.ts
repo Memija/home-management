@@ -31,6 +31,15 @@ describe('MemberEditorComponent', () => {
   const mockAvatars = ['avatar1.png', 'avatar2.png', 'avatar3.png'];
 
   beforeEach(async () => {
+    if (!globalThis.navigator) {
+      (globalThis as any).navigator = { userAgent: 'test' };
+    } else if (!globalThis.navigator.userAgent) {
+      Object.defineProperty(globalThis.navigator, 'userAgent', {
+        value: 'test',
+        configurable: true
+      });
+    }
+
     await TestBed.configureTestingModule({
       imports: [MemberEditorComponent],
     })

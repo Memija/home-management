@@ -161,8 +161,12 @@ export class MeterReaderModalComponent implements OnDestroy, AfterViewInit {
     this.stopCamera();
   }
 
-  protected onOverlayClick(): void {
-    this.resetAndClose();
+  protected onOverlayClick(event?: Event): void {
+    if (event) {
+      event.preventDefault();
+      event.stopPropagation();
+    }
+    this.closeModal();
   }
 
   protected onModalClick(event: Event): void {
@@ -440,7 +444,8 @@ export class MeterReaderModalComponent implements OnDestroy, AfterViewInit {
       this.step.set('select-field');
     } else if (this.isSingleField()) {
       this.reading.emit({ fieldKey: this.fields()[0].key, value });
-      this.resetAndClose();
+      this.resetState();
+      this.close.emit();
     } else {
       this.step.set('select-field');
     }
@@ -460,8 +465,16 @@ export class MeterReaderModalComponent implements OnDestroy, AfterViewInit {
     this.step.set('capture');
   }
 
-  protected resetAndClose(): void {
-    this.resetState();
+  protected closeModal(event?: Event): void {
+    if (event) {
+      event.preventDefault();
+      event.stopPropagation();
+    }
+    try {
+      this.stopCamera();
+    } catch (err) {
+      console.error('Error stopping camera:', err);
+    }
     this.close.emit();
   }
 
@@ -474,10 +487,5 @@ export class MeterReaderModalComponent implements OnDestroy, AfterViewInit {
     this.cropRect.set(null);
     this.cropImage = null;
     this.stopCamera();
-  }
-
-  protected selectCandidate(candidate: number): void {
-    this.selectedValue.set(candidate);
-    this.editedValue.set(candidate.toString());
   }
 }

@@ -201,6 +201,7 @@ export const common = {
   },
   METER_READER: {
     TITLE: 'Pembacaan Meteran dari Foto',
+    STARTING_CAMERA: 'Memulai kamera...',
     INSTRUCTION: 'Ambil foto atau unggah gambar meteran Anda untuk memindai pembacaan secara otomatis. Harap verifikasi angka yang terdeteksi, karena akurasi Pengenalan Karakter Optik (OCR) dapat bervariasi tergantung pada kualitas gambar.',
     TAKE_PHOTO: 'Ambil Foto',
     CAMERA_HINT: 'Gunakan kamera',

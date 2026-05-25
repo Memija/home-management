@@ -43,6 +43,11 @@ const routes: Routes = [
           import('./release-plan/release-plan.component').then((m) => m.ReleasePlanComponent),
       },
       {
+        path: 'changelog',
+        loadComponent: () =>
+          import('./changelog/changelog.component').then((m) => m.ChangelogComponent),
+      },
+      {
         path: 'privacy',
         loadComponent: () => import('./privacy/privacy.component').then((m) => m.PrivacyComponent),
       },

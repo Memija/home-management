@@ -8,13 +8,13 @@ import {
   TrendingUp,
   Calendar,
   Sparkles,
-  Camera,
   ArrowUpCircle,
   Brain,
   Zap,
   ShieldCheck,
   LucideIconData,
   CloudSun,
+  Mic,
 } from 'lucide-angular';
 
 type FeatureTag = 'new' | 'enhancement' | 'smart';
@@ -43,17 +43,8 @@ export class ReleasePlanComponent {
   readonly EnhancementIcon = ArrowUpCircle;
   readonly SmartIcon = Brain;
 
-  // All features - grouped by tag type
+  // Upcoming features
   readonly features: Feature[] = [
-    // New features
-    {
-      id: 4,
-      titleKey: 'RELEASE_PLAN.FEATURE_4_TITLE',
-      descKey: 'RELEASE_PLAN.FEATURE_4_DESC',
-      icon: Camera,
-      tag: 'new',
-      colorClass: 'new-feature',
-    },
     // Enhancement
     {
       id: 1,
@@ -113,6 +104,14 @@ export class ReleasePlanComponent {
       icon: CloudSun,
       tag: 'smart',
       colorClass: 'prediction-feature',
+    },
+    {
+      id: 9,
+      titleKey: 'RELEASE_PLAN.FEATURE_9_TITLE',
+      descKey: 'RELEASE_PLAN.FEATURE_9_DESC',
+      icon: Mic,
+      tag: 'new',
+      colorClass: 'new-feature',
     },
   ];
 

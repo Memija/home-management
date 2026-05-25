@@ -1,6 +1,15 @@
 <footer class="app-footer">
   <div class="footer-content">
     <a
+      routerLink="/dashboard/changelog"
+      class="changelog-link"
+      title="{{ 'FOOTER.CHANGELOG' | translate }}"
+    >
+      <lucide-icon [img]="HistoryIcon" [size]="16"></lucide-icon>
+      <span>{{ 'FOOTER.CHANGELOG' | translate }}</span>
+    </a>
+    <span class="divider">•</span>
+    <a
       routerLink="/dashboard/release-plan"
       class="release-plan-link"
       title="{{ 'FOOTER.RELEASE_PLAN' | translate }}"

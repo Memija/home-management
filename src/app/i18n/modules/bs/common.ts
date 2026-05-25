@@ -41,10 +41,17 @@ export const common = {
   FOOTER: {
     APP_NAME: 'Upravljanje domom',
     SUPPORT_PROJECT: 'Podržite ovaj projekat',
+    CHANGELOG: 'Historija izmjena',
     RELEASE_PLAN: 'Nadolazeće funkcije',
     CONTRIBUTE: 'Doprinesi',
     PRIVACY_POLICY: 'Politika privatnosti',
     VERSION: 'Verzija {{version}}',
+  },
+  CHANGELOG: {
+    TITLE: 'Historija izmjena',
+    SUBTITLE: 'Pregled svih značajnih izmjena objavljenih u svakom izdanju',
+    V1_1_0_LABEL: 'Verzija 1.1.0',
+    SHIPPED: 'Objavljeno',
   },
   RELEASE_PLAN: {
     TITLE: 'Nadolazeće funkcije',
@@ -70,6 +77,9 @@ export const common = {
     FEATURE_7_DESC: 'Primajte personalizovane motivacijske poruke na osnovu vaših trendova potrošnje. Dobijte pozitivnu podršku kada štedite i blage podsjetnike kod skokova potrošnje.',
     FEATURE_8_TITLE: 'Uvidi na osnovu vremenske prognoze',
     FEATURE_8_DESC: 'Aplikacija će preuzimati trenutne vremenske podatke za vašu lokaciju i pružati personalizovane savjete i motivaciju.',
+    FEATURE_9_TITLE: 'Glasovni Unos Mjerenja',
+    FEATURE_9_DESC:
+      'Samo izgovorite očitavanje mjerača naglas i prepustite aplikaciji da uradi ostalo. Vaš glas se transkribuje u realnom vremenu, a pametna ekstrakcija vrijednosti automatski popunjava ispravna polja, potpuno slobodnih ruku, bez tipkanja.',
     CTA_TEXT: 'Vaša podrška pomaže nam u bržoj izgradnji ovih opcija. Hvala vam što ste dio naše zajednice!',
     BACK_TO_HOME: 'Nazad na početnu',
   },

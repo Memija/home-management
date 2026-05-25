@@ -1,0 +1,201 @@
+@use 'variables' as *;
+
+$shipped-color: #059669;
+$tag-new: #1976d2;
+$tag-enh: #059669;
+$tag-smart: #d97706;
+
+.changelog-page {
+  max-width: 900px;
+  margin: 0 auto;
+  padding-bottom: 2rem;
+}
+
+.changelog-hero {
+  text-align: center;
+  margin-bottom: 2.5rem;
+  padding: 2rem 1rem;
+
+  .hero-icon {
+    width: 100px;
+    height: 100px;
+    margin: 0 auto 1.5rem;
+    background: linear-gradient(135deg, #059669, #0d9488);
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+  }
+
+  h1 {
+    margin: 0 0 0.75rem;
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: var(--text-primary);
+  }
+}
+
+// ── Version block ───────────────────────────────────────────────────
+
+.version-block {
+  margin-bottom: 2.5rem;
+}
+
+.version-header {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 1.25rem;
+}
+
+.version-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  border-radius: 20px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  white-space: nowrap;
+  background: var(--card-bg);
+  border: 1px solid var(--border-light);
+  color: var(--text-primary);
+}
+
+.version-divider {
+  flex: 1;
+  height: 1px;
+  background: var(--border-light);
+}
+
+// ── Entry cards ─────────────────────────────────────────────────────
+
+.entries-grid {
+  display: grid;
+  gap: 1.5rem;
+}
+
+.entry-card {
+  background: var(--card-bg);
+  border: 1px solid var(--border-light);
+  border-radius: 16px;
+  padding: 1.75rem;
+  position: relative;
+  overflow: hidden;
+  transition: box-shadow 0.2s ease;
+
+  &::before {
+    content: '';
+    position: absolute;
+    inset: 0 0 auto 0;
+    height: 4px;
+    border-radius: 16px 16px 0 0;
+    background: linear-gradient(90deg, var(--f-c, #ccc), var(--f-l2, #eee));
+  }
+
+  &:hover {
+    box-shadow: var(--shadow-lg);
+  }
+
+  .entry-icon {
+    width: 64px;
+    height: 64px;
+    border-radius: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 1.25rem;
+    background: linear-gradient(135deg, var(--f-l1, #eee), var(--f-l2, #ddd));
+    color: var(--f-c, inherit);
+  }
+
+  .entry-content {
+    h2 {
+      margin: 0 0 0.75rem;
+      font-size: 1.35rem;
+      font-weight: 600;
+      color: var(--text-primary);
+    }
+
+    p {
+      margin: 0;
+      font-size: 1rem;
+      color: var(--text-secondary);
+      line-height: 1.7;
+    }
+  }
+
+  .shipped-badge {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    padding: 0.35rem 0.75rem;
+    border-radius: 12px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: $shipped-color;
+    background: rgba($shipped-color, 0.12);
+    border: 1px solid rgba($shipped-color, 0.3);
+  }
+}
+
+// ── Color variants ───────────────────────────────────────────────────
+
+.new-feature {
+  --f-c: #{$tag-new};
+  --f-l1: #e3f2fd;
+  --f-l2: #bbdefb;
+}
+
+.enhancement-feature {
+  --f-c: #{$tag-enh};
+  --f-l1: #d1fae5;
+  --f-l2: #a7f3d0;
+}
+
+.prediction-feature {
+  --f-c: #{$tag-smart};
+  --f-l1: #fffbeb;
+  --f-l2: #fef3c7;
+}
+
+// ── Responsive ───────────────────────────────────────────────────────
+
+@media (max-width: 768px) {
+  .changelog-hero {
+    padding: 1.5rem 1rem;
+
+    .hero-icon {
+      width: 80px;
+      height: 80px;
+    }
+
+    h1 {
+      font-size: 2rem;
+    }
+  }
+
+  .entry-card {
+    padding: 1.5rem;
+
+    .entry-icon {
+      width: 56px;
+      height: 56px;
+    }
+
+    .entry-content h2 {
+      font-size: 1.2rem;
+    }
+
+    .shipped-badge {
+      position: static;
+      margin-top: 1rem;
+    }
+  }
+}

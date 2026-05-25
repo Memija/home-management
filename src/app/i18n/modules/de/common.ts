@@ -41,10 +41,17 @@ export const common = {
   FOOTER: {
     APP_NAME: 'Haushaltsmanagement',
     SUPPORT_PROJECT: 'Projekt unterstützen',
+    CHANGELOG: 'Änderungsprotokoll',
     RELEASE_PLAN: 'Kommende Funktionen',
     CONTRIBUTE: 'Mitwirken',
     PRIVACY_POLICY: 'Datenschutzerklärung',
     VERSION: 'Version {{version}}',
+  },
+  CHANGELOG: {
+    TITLE: 'Änderungsprotokoll',
+    SUBTITLE: 'Eine Übersicht aller wichtigen Änderungen in jedem Release',
+    V1_1_0_LABEL: 'Version 1.1.0',
+    SHIPPED: 'Veröffentlicht',
   },
   RELEASE_PLAN: {
     TITLE: 'Kommende Funktionen',
@@ -79,6 +86,9 @@ export const common = {
     FEATURE_8_TITLE: 'Wetterbasierte Einblicke',
     FEATURE_8_DESC:
       'Die App ruft aktuelle Wetterdaten für Ihren Standort ab und liefert personalisierte Tipps und Motivation.',
+    FEATURE_9_TITLE: 'Sprachgestützte Zählererfassung',
+    FEATURE_9_DESC:
+      'Sprechen Sie Ihren Zählerstand einfach laut aus und überlassen Sie der App den Rest. Ihre Sprache wird in Echtzeit transkribiert und die intelligente Werteextraktion füllt automatisch die richtigen Felder aus, völlig freihändig, ohne Tippen.',
     CTA_TEXT:
       'Ihre Unterstützung hilft uns, diese Funktionen schneller zu entwickeln. Danke, dass Sie Teil unserer Community sind!',
     BACK_TO_HOME: 'Zurück zur Startseite',

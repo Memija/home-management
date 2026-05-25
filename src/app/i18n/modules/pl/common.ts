@@ -41,10 +41,17 @@ export const common = {
   FOOTER: {
     APP_NAME: 'Zarządzanie Domem',
     SUPPORT_PROJECT: 'Wesprzyj ten Projekt',
+    CHANGELOG: 'Zmiany',
     RELEASE_PLAN: 'Nadchodzące Funkcje',
     CONTRIBUTE: 'Współpracuj',
     PRIVACY_POLICY: 'Polityka Prywatności',
     VERSION: 'Wersja {{version}}',
+  },
+  CHANGELOG: {
+    TITLE: 'Historia zmian',
+    SUBTITLE: 'Zestawienie wszystkich istotnych zmian w każdej wersji',
+    V1_1_0_LABEL: 'Wersja 1.1.0',
+    SHIPPED: 'Wydano',
   },
   RELEASE_PLAN: {
     TITLE: 'Nadchodzące Funkcje',
@@ -70,6 +77,9 @@ export const common = {
     FEATURE_7_DESC: 'Otrzymuj spersonalizowane wiadomości motywacyjne na podstawie trendów zużycia. Pozytywne wzmocnienie, gdy oszczędzasz, i delikatne przypomnienia, gdy zużycie rośnie.',
     FEATURE_8_TITLE: 'Wnioski Oparte na Pogodzie',
     FEATURE_8_DESC: 'Aplikacja pobierze aktualne dane pogodowe dla Twojej lokalizacji i dostarczy spersonalizowane wskazówki oraz motywację.',
+    FEATURE_9_TITLE: 'Głosowe Wprowadzanie Odczytów',
+    FEATURE_9_DESC:
+      'Wystarczy powiedzieć odczyt licznika na głos, a aplikacja zrobi resztę. Twój głos jest transkrybowany w czasie rzeczywistym, a inteligentna ekstrakcja wartości automatycznie wypełnia odpowiednie pola, całkowicie wolnoręczna, bez pisania.',
     CTA_TEXT: 'Twoje wsparcie pomaga nam budować te funkcje szybciej. Dziękujemy za bycie częścią naszej społeczności!',
     BACK_TO_HOME: 'Powrót do strony głównej',
   },

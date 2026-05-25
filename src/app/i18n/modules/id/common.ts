@@ -41,10 +41,17 @@ export const common = {
   FOOTER: {
     APP_NAME: 'Manajemen Rumah',
     SUPPORT_PROJECT: 'Dukung Proyek Ini',
+    CHANGELOG: 'Riwayat Perubahan',
     RELEASE_PLAN: 'Fitur Mendatang',
     CONTRIBUTE: 'Berkontribusi',
     PRIVACY_POLICY: 'Kebijakan Privasi',
     VERSION: 'Versi {{version}}',
+  },
+  CHANGELOG: {
+    TITLE: 'Riwayat Perubahan',
+    SUBTITLE: 'Catatan semua perubahan penting yang dikirimkan di setiap rilis',
+    V1_1_0_LABEL: 'Versi 1.1.0',
+    SHIPPED: 'Dirilis',
   },
   RELEASE_PLAN: {
     TITLE: 'Fitur Mendatang',
@@ -70,6 +77,9 @@ export const common = {
     FEATURE_7_DESC: 'Terima pesan motivasi yang dipersonalisasi berdasarkan tren konsumsi Anda. Dapatkan apresiasi positif saat Anda berhemat dan pengingat lembut saat penggunaan melonjak, membantu Anda tetap pada jalur tujuan keberlanjutan Anda.',
     FEATURE_8_TITLE: 'Wawasan Berbasis Cuaca',
     FEATURE_8_DESC: 'Aplikasi akan mengambil data cuaca terkini untuk lokasi Anda dan memberikan tips serta motivasi yang dipersonalisasi.',
+    FEATURE_9_TITLE: 'Input Meteran Berbasis Suara',
+    FEATURE_9_DESC:
+      'Cukup ucapkan pembacaan meteran Anda dengan lantang dan biarkan aplikasi yang mengurus sisanya. Suara Anda ditranskripsi secara real time, dan ekstraksi nilai cerdas secara otomatis mengisi kolom yang tepat, sepenuhnya bebas genggam, tanpa perlu mengetik.',
     CTA_TEXT: 'Dukungan Anda membantu kami membangun fitur-fitur ini lebih cepat. Terima kasih telah menjadi bagian dari komunitas kami!',
     BACK_TO_HOME: 'Kembali ke Beranda',
   },

@@ -1,0 +1,41 @@
+<div class="page-container changelog-page">
+  <!-- Hero Section -->
+  <div class="changelog-hero">
+    <div class="hero-icon">
+      <lucide-icon [img]="HistoryIcon" [size]="48"></lucide-icon>
+    </div>
+    <h1>{{ 'CHANGELOG.TITLE' | translate }}</h1>
+    <p class="shared-card-text">{{ 'CHANGELOG.SUBTITLE' | translate }}</p>
+  </div>
+
+  <!-- Version Sections -->
+  @for (versionBlock of versions; track versionBlock.version) {
+    <div class="version-block">
+      <div class="version-header">
+        <div class="version-pill">
+          <lucide-icon [img]="CheckCircleIcon" [size]="16"></lucide-icon>
+          <span>{{ versionBlock.labelKey | translate }}</span>
+        </div>
+        <div class="version-divider"></div>
+      </div>
+
+      <div class="entries-grid">
+        @for (entry of versionBlock.entries; track entry.id) {
+          <div class="entry-card" [class]="entry.colorClass">
+            <div class="entry-icon">
+              <lucide-icon [img]="entry.icon" [size]="32"></lucide-icon>
+            </div>
+            <div class="entry-content">
+              <h2>{{ entry.titleKey | translate }}</h2>
+              <p>{{ entry.descKey | translate }}</p>
+            </div>
+            <div class="shipped-badge">
+              <lucide-icon [img]="CheckCircleIcon" [size]="12"></lucide-icon>
+              <span>{{ 'CHANGELOG.SHIPPED' | translate }}</span>
+            </div>
+          </div>
+        }
+      </div>
+    </div>
+  }
+</div>

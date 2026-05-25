@@ -41,10 +41,17 @@ export const common = {
   FOOTER: {
     APP_NAME: 'Home Management',
     SUPPORT_PROJECT: 'Support this Project',
+    CHANGELOG: 'Changelog',
     RELEASE_PLAN: 'Upcoming Features',
     CONTRIBUTE: 'Contribute',
     PRIVACY_POLICY: 'Privacy Policy',
     VERSION: 'Version {{version}}',
+  },
+  CHANGELOG: {
+    TITLE: 'Changelog',
+    SUBTITLE: 'A record of all notable changes shipped in each release',
+    V1_1_0_LABEL: 'Version 1.1.0',
+    SHIPPED: 'Shipped',
   },
   RELEASE_PLAN: {
     TITLE: 'Upcoming Features',
@@ -78,6 +85,9 @@ export const common = {
     FEATURE_8_TITLE: 'Weather-Based Insights',
     FEATURE_8_DESC:
       'The app will fetch current weather data for your location and provide personalized tips and motivation.',
+    FEATURE_9_TITLE: 'Voice-Powered Meter Entry',
+    FEATURE_9_DESC:
+      'Just speak your meter reading aloud and let the app handle the rest. Your voice is transcribed in real time, and smart value extraction automatically fills in the correct fields, completely hands-free, no typing required.',
     CTA_TEXT:
       'Your support helps us build these features faster. Thank you for being part of our community!',
     BACK_TO_HOME: 'Back to Home',

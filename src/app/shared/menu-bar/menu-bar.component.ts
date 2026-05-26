@@ -30,7 +30,7 @@ export class MenuBarComponent {
     message: string;
     client: EmailClient;
   }) {
-    const recipient = 'support@homemanagement.app';
+    const recipient = 'homemngdev@gmail.com';
     const subject = encodeURIComponent(`[${data.name}] ${data.subject}`);
     const body = encodeURIComponent(`From: ${data.name} (${data.email})\n\n${data.message}`);
 

@@ -62,7 +62,7 @@ describe('MenuBarComponent', () => {
       const expectedBody = encodeURIComponent(
         'From: John Doe (john@example.com)\n\nHello, this is a test.\nNewline included.',
       );
-      const expectedUrl = `https://mail.google.com/mail/?view=cm&to=support@homemanagement.app&su=${expectedSubject}&body=${expectedBody}`;
+      const expectedUrl = `https://mail.google.com/mail/?view=cm&to=homemngdev@gmail.com&su=${expectedSubject}&body=${expectedBody}`;
       expect(windowOpenSpy).toHaveBeenCalledWith(expectedUrl, '_blank');
       expect((component as any).showContactModal()).toBe(false);
     });
@@ -73,7 +73,7 @@ describe('MenuBarComponent', () => {
       const expectedBody = encodeURIComponent(
         'From: John Doe (john@example.com)\n\nHello, this is a test.\nNewline included.',
       );
-      const expectedUrl = `https://outlook.live.com/mail/0/deeplink/compose?to=support@homemanagement.app&subject=${expectedSubject}&body=${expectedBody}`;
+      const expectedUrl = `https://outlook.live.com/mail/0/deeplink/compose?to=homemngdev@gmail.com&subject=${expectedSubject}&body=${expectedBody}`;
       expect(windowOpenSpy).toHaveBeenCalledWith(expectedUrl, '_blank');
       expect((component as any).showContactModal()).toBe(false);
     });
@@ -84,7 +84,7 @@ describe('MenuBarComponent', () => {
       const expectedBody = encodeURIComponent(
         'From: John Doe (john@example.com)\n\nHello, this is a test.\nNewline included.',
       );
-      const expectedUrl = `mailto:support@homemanagement.app?subject=${expectedSubject}&body=${expectedBody}`;
+      const expectedUrl = `mailto:homemngdev@gmail.com?subject=${expectedSubject}&body=${expectedBody}`;
       expect(windowOpenSpy).toHaveBeenCalledWith(expectedUrl, '_blank');
       expect((component as any).showContactModal()).toBe(false);
     });
@@ -99,7 +99,7 @@ describe('MenuBarComponent', () => {
       });
       const expectedSubject = encodeURIComponent('[A & B] 100% Free?!');
       const expectedBody = encodeURIComponent('From: A & B (test+1@example.com)\n\nSymbols: /?#&=');
-      const expectedUrl = `mailto:support@homemanagement.app?subject=${expectedSubject}&body=${expectedBody}`;
+      const expectedUrl = `mailto:homemngdev@gmail.com?subject=${expectedSubject}&body=${expectedBody}`;
       expect(windowOpenSpy).toHaveBeenCalledWith(expectedUrl, '_blank');
     });
   });

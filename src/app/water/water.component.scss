@@ -30,3 +30,33 @@ $water-primary-dark: $primary-dark;
     flex-shrink: 0;
   }
 }
+
+// Toggle button projected into consumption-input header-actions slot
+.settings-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 8px;
+  height: 32px;
+  border: none;
+  border-radius: 999px;
+  background: transparent;
+  color: var(--text-muted, #9ca3af);
+  cursor: pointer;
+  transition: color 0.2s, background 0.2s;
+
+  &:hover {
+    color: $water-primary;
+    background: rgba($water-primary, 0.08);
+  }
+
+  // Active state: cold-water-only mode is ON
+  &--active {
+    color: $water-primary;
+    background: rgba($water-primary, 0.14);
+
+    &:hover {
+      background: rgba($water-primary, 0.22);
+    }
+  }
+}

@@ -209,11 +209,27 @@
     [editingMode]="!!editingRecord()"
     [dateExists]="dateExists"
     [helpSteps]="helpSteps"
+    [noValuesErrorKey]="coldWaterOnlyMode() ? 'WATER.COLD_ONLY_NO_VALUES_ERROR' : 'HOME.PARTIAL_INPUT_ERROR'"
+    [incompleteRoomErrorKey]="coldWaterOnlyMode() ? 'WATER.COLD_ONLY_INCOMPLETE_ERROR' : 'HOME.INCOMPLETE_ROOM_ERROR'"
     (dateChange)="selectedDate.set($event)"
     (fieldChange)="onFieldChange($event)"
     (save)="onConsumptionSave($event)"
     (cancel)="cancelEdit()"
   >
+    <button
+      header-actions
+      type="button"
+      class="settings-btn"
+      [class.settings-btn--active]="coldWaterOnlyMode()"
+      (click)="toggleColdWaterOnlyMode()"
+      title="{{ 'WATER.COLD_ONLY_MODE_TOGGLE' | translate }}"
+      aria-label="{{ 'WATER.COLD_ONLY_MODE_TOGGLE' | translate }}"
+    >
+      <lucide-icon
+        [img]="coldWaterOnlyMode() ? ToggleRightIcon : ToggleLeftIcon"
+        size="22"
+      ></lucide-icon>
+    </button>
   </app-consumption-input>
 </div>
 

@@ -86,9 +86,12 @@ export const common = {
     FEATURE_8_TITLE: 'Wetterbasierte Einblicke',
     FEATURE_8_DESC:
       'Die App ruft aktuelle Wetterdaten für Ihren Standort ab und liefert personalisierte Tipps und Motivation.',
-    FEATURE_9_TITLE: 'Sprachgestützte Zählererfassung',
+    FEATURE_9_TITLE: 'Sprachgesteuerte Zählereingabe',
     FEATURE_9_DESC:
-      'Sprechen Sie Ihren Zählerstand einfach laut aus und überlassen Sie der App den Rest. Ihre Sprache wird in Echtzeit transkribiert und die intelligente Werteextraktion füllt automatisch die richtigen Felder aus, völlig freihändig, ohne Tippen.',
+      'Sprechen Sie einfach Ihren Zählerstand laut aus und lassen Sie die App den Rest erledigen. Ihre Stimme wird in Echtzeit transkribiert und die intelligente Wertextraktion füllt automatisch die richtigen Felder aus – komplett freihändig, kein Tippen erforderlich.',
+    FEATURE_10_TITLE: 'Unterstützung für Bulgarisch',
+    FEATURE_10_DESC:
+      'Wir erweitern unsere Sprachoptionen! Bald werden Sie die gesamte Anwendung auf Bulgarisch nutzen können, was die Hausverwaltung für unsere Nutzer in Bulgarien noch zugänglicher macht.',
     CTA_TEXT:
       'Ihre Unterstützung hilft uns, diese Funktionen schneller zu entwickeln. Danke, dass Sie Teil unserer Community sind!',
     BACK_TO_HOME: 'Zurück zur Startseite',

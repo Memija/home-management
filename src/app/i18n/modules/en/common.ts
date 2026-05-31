@@ -88,6 +88,9 @@ export const common = {
     FEATURE_9_TITLE: 'Voice-Powered Meter Entry',
     FEATURE_9_DESC:
       'Just speak your meter reading aloud and let the app handle the rest. Your voice is transcribed in real time, and smart value extraction automatically fills in the correct fields, completely hands-free, no typing required.',
+    FEATURE_10_TITLE: 'Bulgarian Language Support',
+    FEATURE_10_DESC:
+      'We are expanding our language options! Soon, you will be able to use the entire application in Bulgarian, making home management even more accessible to our users in Bulgaria.',
     CTA_TEXT:
       'Your support helps us build these features faster. Thank you for being part of our community!',
     BACK_TO_HOME: 'Back to Home',

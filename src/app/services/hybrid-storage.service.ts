@@ -40,6 +40,7 @@ const SETTINGS_KEYS = [
   // Specific Feature Preferences & Visibility
   'water_confirmed_meter_changes',
   'water_dismissed_meter_changes',
+  'water_cold_only_mode',
   'electricity_confirmed_meter_changes',
   'electricity_dismissed_meter_changes',
   'heating_confirmed_spikes',

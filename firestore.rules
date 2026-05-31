@@ -53,6 +53,7 @@ service cloud.firestore {
         && (!('heating_dismissed_spikes' in data) || data.heating_dismissed_spikes is list)
 
       // 5. Check optional Booleans
+        && (!('water_cold_only_mode' in data) || data.water_cold_only_mode is bool)
         && (!('water_chart_trendline_visible' in data) || data.water_chart_trendline_visible is bool)
         && (!('heating_chart_trendline_visible' in data) || data.heating_chart_trendline_visible is bool)
         && (!('electricity_chart_trendline_visible' in data) || data.electricity_chart_trendline_visible is bool)
@@ -66,6 +67,7 @@ service cloud.firestore {
         && (!('detailed_records_for_home_are_collapsed' in data) || data.detailed_records_for_home_are_collapsed is bool)
 
       // 5. Check optional Booleans (or Strings)
+        && (!('water_cold_only_mode' in data) || data.water_cold_only_mode is bool || data.water_cold_only_mode is string)
         && (!('water_chart_trendline_visible' in data) || data.water_chart_trendline_visible is bool || data.water_chart_trendline_visible is string)
         && (!('heating_chart_trendline_visible' in data) || data.heating_chart_trendline_visible is bool || data.heating_chart_trendline_visible is string)
         && (!('electricity_chart_trendline_visible' in data) || data.electricity_chart_trendline_visible is bool || data.electricity_chart_trendline_visible is string)

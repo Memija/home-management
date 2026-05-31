@@ -125,12 +125,14 @@ describe('WaterComponent', () => {
     mockPreferencesService = {
       chartView: signal('total'),
       displayMode: signal('incremental'),
+      coldWaterOnlyMode: signal(false),
       confirmedMeterChanges: signal<string[]>([]),
       dismissedMeterChanges: signal<string[]>([]),
       setChartView: vi.fn(),
       setDisplayMode: vi.fn(),
       setMeterChangeConfirmed: vi.fn(),
       setMeterChangeDismissed: vi.fn(),
+      setColdWaterOnlyMode: vi.fn(),
     } as any;
 
     mockChartCalculationService = {
@@ -319,6 +321,22 @@ describe('WaterComponent', () => {
       expect(bathroom.fields[1].label).toBe('WATER.COLD');
     });
 
+    it('should compute consumptionGroups with only cold fields when coldWaterOnlyMode is true', () => {
+      (mockPreferencesService.coldWaterOnlyMode as WritableSignal<boolean>).set(true);
+      const groups = (component as any).consumptionGroups();
+      
+      const kitchen = groups[0];
+      expect(kitchen.fields).toHaveLength(1);
+      expect(kitchen.fields[0].key).toBe('kitchenCold');
+      expect(kitchen.fields[0].label).toBe('WATER.TOTAL_LABEL');
+      
+      const bathroom = groups[1];
+      expect(bathroom.fields).toHaveLength(1);
+      expect(bathroom.fields[0].key).toBe('bathroomCold');
+      expect(bathroom.fields[0].label).toBe('WATER.TOTAL_LABEL');
+    });
+
+
     it('should compute familySize from household members count', () => {
       expect((component as any).familySize()).toBe(0);
     });
@@ -441,6 +459,11 @@ describe('WaterComponent', () => {
     it('should delegate onDisplayModeChange to preferences service', () => {
       (component as any).onDisplayModeChange('total');
       expect(mockPreferencesService.setDisplayMode).toHaveBeenCalledWith('total');
+    });
+
+    it('should delegate toggleColdWaterOnlyMode to preferences service', () => {
+      (component as any).toggleColdWaterOnlyMode();
+      expect(mockPreferencesService.setColdWaterOnlyMode).toHaveBeenCalledWith(true);
     });
 
     it('should delegate onFilterStateChange to data service', () => {

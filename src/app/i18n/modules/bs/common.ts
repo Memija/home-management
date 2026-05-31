@@ -80,6 +80,9 @@ export const common = {
     FEATURE_9_TITLE: 'Glasovni Unos Mjerenja',
     FEATURE_9_DESC:
       'Samo izgovorite očitavanje mjerača naglas i prepustite aplikaciji da uradi ostalo. Vaš glas se transkribuje u realnom vremenu, a pametna ekstrakcija vrijednosti automatski popunjava ispravna polja, potpuno slobodnih ruku, bez tipkanja.',
+    FEATURE_10_TITLE: 'Podrška za bugarski jezik',
+    FEATURE_10_DESC:
+      'Proširujemo naše jezične opcije! Uskoro ćete moći koristiti cijelu aplikaciju na bugarskom jeziku, čineći upravljanje domaćinstvom još pristupačnijim našim korisnicima u Bugarskoj.',
     CTA_TEXT: 'Vaša podrška pomaže nam u bržoj izgradnji ovih opcija. Hvala vam što ste dio naše zajednice!',
     BACK_TO_HOME: 'Nazad na početnu',
   },

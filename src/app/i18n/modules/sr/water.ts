@@ -21,6 +21,10 @@ export const water = {
     BATHROOM: 'Купатило',
     WARM: 'Топла',
     COLD: 'Хладна',
+    TOTAL_LABEL: 'Укупно',
+    COLD_ONLY_MODE_TOGGLE: 'Активирај мод само хладне воде',
+    COLD_ONLY_NO_VALUES_ERROR: 'Молимо унесите потрошњу воде за барем једну просторију.',
+    COLD_ONLY_INCOMPLETE_ERROR: 'Молимо попуните унос потрошње воде за све започете просторије.',
   },
   HOME: {
     HISTORY_TITLE: 'Историја Потрошње',

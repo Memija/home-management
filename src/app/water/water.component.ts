@@ -18,6 +18,8 @@ import {
   RefreshCw,
   Droplet,
   Lightbulb,
+  ToggleLeft,
+  ToggleRight,
 } from 'lucide-angular';
 import {
   ConsumptionInputComponent,
@@ -91,6 +93,8 @@ export class WaterComponent implements OnInit {
   protected readonly AlertTriangleIcon = AlertTriangle;
   protected readonly RefreshCwIcon = RefreshCw;
   protected readonly LightbulbIcon = Lightbulb;
+  protected readonly ToggleLeftIcon = ToggleLeft;
+  protected readonly ToggleRightIcon = ToggleRight;
 
   // Services
   protected excelSettings = inject(ExcelSettingsService);
@@ -132,42 +136,75 @@ export class WaterComponent implements OnInit {
   protected factRandomSeed = signal(Math.random());
 
   // Template Helpers & Signals
-  protected consumptionGroups = computed<ConsumptionGroup[]>(() => [
-    {
-      title: 'WATER.KITCHEN',
-      fields: [
+  protected coldWaterOnlyMode = this.preferencesService.coldWaterOnlyMode;
+
+  protected consumptionGroups = computed<ConsumptionGroup[]>(() => {
+    const coldOnly = this.coldWaterOnlyMode();
+
+    if (coldOnly) {
+      return [
         {
-          key: 'kitchenWarm',
-          label: 'WATER.WARM',
-          icon: Droplet,
-          value: this.formService.kitchenWarm(),
+          title: 'WATER.KITCHEN',
+          fields: [
+            {
+              key: 'kitchenCold',
+              label: 'WATER.TOTAL_LABEL',
+              icon: Droplet,
+              value: this.formService.kitchenCold(),
+            },
+          ],
         },
         {
-          key: 'kitchenCold',
-          label: 'WATER.COLD',
-          icon: Droplet,
-          value: this.formService.kitchenCold(),
+          title: 'WATER.BATHROOM',
+          fields: [
+            {
+              key: 'bathroomCold',
+              label: 'WATER.TOTAL_LABEL',
+              icon: Droplet,
+              value: this.formService.bathroomCold(),
+            },
+          ],
         },
-      ],
-    },
-    {
-      title: 'WATER.BATHROOM',
-      fields: [
-        {
-          key: 'bathroomWarm',
-          label: 'WATER.WARM',
-          icon: Droplet,
-          value: this.formService.bathroomWarm(),
-        },
-        {
-          key: 'bathroomCold',
-          label: 'WATER.COLD',
-          icon: Droplet,
-          value: this.formService.bathroomCold(),
-        },
-      ],
-    },
-  ]);
+      ];
+    }
+
+    return [
+      {
+        title: 'WATER.KITCHEN',
+        fields: [
+          {
+            key: 'kitchenWarm',
+            label: 'WATER.WARM',
+            icon: Droplet,
+            value: this.formService.kitchenWarm(),
+          },
+          {
+            key: 'kitchenCold',
+            label: 'WATER.COLD',
+            icon: Droplet,
+            value: this.formService.kitchenCold(),
+          },
+        ],
+      },
+      {
+        title: 'WATER.BATHROOM',
+        fields: [
+          {
+            key: 'bathroomWarm',
+            label: 'WATER.WARM',
+            icon: Droplet,
+            value: this.formService.bathroomWarm(),
+          },
+          {
+            key: 'bathroomCold',
+            label: 'WATER.COLD',
+            icon: Droplet,
+            value: this.formService.bathroomCold(),
+          },
+        ],
+      },
+    ];
+  });
 
   protected selectedDate = this.formService.selectedDate;
   protected editingRecord = this.formService.editingRecord;
@@ -423,6 +460,15 @@ export class WaterComponent implements OnInit {
 
   protected onFieldChange(event: { key: string; value: number | null }) {
     this.formService.updateField(event.key, event.value);
+  }
+
+  protected toggleColdWaterOnlyMode() {
+    this.preferencesService.setColdWaterOnlyMode(!this.coldWaterOnlyMode());
+    // Reset warm fields when switching to cold-only mode
+    if (this.coldWaterOnlyMode()) {
+      this.formService.updateField('kitchenWarm', null);
+      this.formService.updateField('bathroomWarm', null);
+    }
   }
 
   // Calc Helpers

@@ -21,6 +21,10 @@ export const water = {
     BATHROOM: 'Łazienka',
     WARM: 'Ciepła',
     COLD: 'Zimna',
+    TOTAL_LABEL: 'Łącznie',
+    COLD_ONLY_MODE_TOGGLE: 'Przełącz tryb tylko zimnej wody',
+    COLD_ONLY_NO_VALUES_ERROR: 'Wprowadź wartość zużycia wody dla przynajmniej jednego pomieszczenia.',
+    COLD_ONLY_INCOMPLETE_ERROR: 'Uzupełnij wpis zużycia wody dla wszystkich rozpoczętych pomieszczeń.',
   },
   HOME: {
     HISTORY_TITLE: 'Historia Zużycia',

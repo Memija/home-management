@@ -80,6 +80,9 @@ export const common = {
     FEATURE_9_TITLE: 'Input Meteran Berbasis Suara',
     FEATURE_9_DESC:
       'Cukup ucapkan pembacaan meteran Anda dengan lantang dan biarkan aplikasi yang mengurus sisanya. Suara Anda ditranskripsi secara real time, dan ekstraksi nilai cerdas secara otomatis mengisi kolom yang tepat, sepenuhnya bebas genggam, tanpa perlu mengetik.',
+    FEATURE_10_TITLE: 'Dukungan Bahasa Bulgaria',
+    FEATURE_10_DESC:
+      'Kami memperluas pilihan bahasa kami! Segera, Anda akan dapat menggunakan seluruh aplikasi dalam bahasa Bulgaria, membuat manajemen rumah menjadi lebih mudah diakses oleh pengguna kami di Bulgaria.',
     CTA_TEXT: 'Dukungan Anda membantu kami membangun fitur-fitur ini lebih cepat. Terima kasih telah menjadi bagian dari komunitas kami!',
     BACK_TO_HOME: 'Kembali ke Beranda',
   },

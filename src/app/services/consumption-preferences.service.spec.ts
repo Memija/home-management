@@ -278,6 +278,31 @@ describe('ConsumptionPreferencesService', () => {
     });
   });
 
+  // ============ Cold Water Mode ============
+
+  describe('cold water mode', () => {
+    it('should load cold water mode from storage', async () => {
+      mockStorageService.load.mockImplementation(async (key: string) => {
+        if (key === 'water_cold_only_mode') return true;
+        return null;
+      });
+      service = setupService();
+      await waitForInit();
+
+      expect(service.coldWaterOnlyMode()).toBe(true);
+    });
+
+    it('should set cold water mode and save to storage', async () => {
+      service = setupService();
+      await waitForInit();
+
+      service.setColdWaterOnlyMode(true);
+
+      expect(service.coldWaterOnlyMode()).toBe(true);
+      expect(mockStorageService.save).toHaveBeenCalledWith('water_cold_only_mode', true);
+    });
+  });
+
   // ============ Meter Change Setting ============
 
   describe('meter change setting', () => {

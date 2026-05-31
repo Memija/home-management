@@ -3,7 +3,6 @@ import { TranslatePipe } from '../pipes/translate.pipe';
 import {
   LucideAngularModule,
   Rocket,
-  Droplets,
   Maximize2,
   TrendingUp,
   Calendar,
@@ -15,6 +14,7 @@ import {
   LucideIconData,
   CloudSun,
   Mic,
+  Languages,
 } from 'lucide-angular';
 
 type FeatureTag = 'new' | 'enhancement' | 'smart';
@@ -45,15 +45,6 @@ export class ReleasePlanComponent {
 
   // Upcoming features
   readonly features: Feature[] = [
-    // Enhancement
-    {
-      id: 1,
-      titleKey: 'RELEASE_PLAN.FEATURE_1_TITLE',
-      descKey: 'RELEASE_PLAN.FEATURE_1_DESC',
-      icon: Droplets,
-      tag: 'enhancement',
-      colorClass: 'enhancement-feature',
-    },
     {
       id: 2,
       titleKey: 'RELEASE_PLAN.FEATURE_2_TITLE',
@@ -110,6 +101,14 @@ export class ReleasePlanComponent {
       titleKey: 'RELEASE_PLAN.FEATURE_9_TITLE',
       descKey: 'RELEASE_PLAN.FEATURE_9_DESC',
       icon: Mic,
+      tag: 'new',
+      colorClass: 'new-feature',
+    },
+    {
+      id: 10,
+      titleKey: 'RELEASE_PLAN.FEATURE_10_TITLE',
+      descKey: 'RELEASE_PLAN.FEATURE_10_DESC',
+      icon: Languages,
       tag: 'new',
       colorClass: 'new-feature',
     },

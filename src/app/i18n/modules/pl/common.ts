@@ -80,6 +80,9 @@ export const common = {
     FEATURE_9_TITLE: 'Głosowe Wprowadzanie Odczytów',
     FEATURE_9_DESC:
       'Wystarczy powiedzieć odczyt licznika na głos, a aplikacja zrobi resztę. Twój głos jest transkrybowany w czasie rzeczywistym, a inteligentna ekstrakcja wartości automatycznie wypełnia odpowiednie pola, całkowicie wolnoręczna, bez pisania.',
+    FEATURE_10_TITLE: 'Wsparcie dla języka bułgarskiego',
+    FEATURE_10_DESC:
+      'Rozszerzamy nasze opcje językowe! Wkrótce będziesz mógł korzystać z całej aplikacji w języku bułgarskim, co sprawi, że zarządzanie domem będzie jeszcze bardziej dostępne dla naszych użytkowników w Bułgarii.',
     CTA_TEXT: 'Twoje wsparcie pomaga nam budować te funkcje szybciej. Dziękujemy za bycie częścią naszej społeczności!',
     BACK_TO_HOME: 'Powrót do strony głównej',
   },

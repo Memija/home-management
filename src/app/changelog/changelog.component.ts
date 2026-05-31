@@ -5,6 +5,7 @@ import {
   Camera,
   CheckCircle2,
   History,
+  Droplets,
   LucideIconData,
 } from 'lucide-angular';
 
@@ -38,6 +39,13 @@ export class ChangelogComponent {
           descKey: 'RELEASE_PLAN.FEATURE_4_DESC',
           icon: Camera,
           colorClass: 'new-feature',
+        },
+        {
+          id: 2,
+          titleKey: 'RELEASE_PLAN.FEATURE_1_TITLE',
+          descKey: 'RELEASE_PLAN.FEATURE_1_DESC',
+          icon: Droplets,
+          colorClass: 'enhancement-feature',
         },
       ],
     },

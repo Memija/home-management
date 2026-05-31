@@ -22,6 +22,9 @@ export class ConsumptionPreferencesService {
   readonly electricityChartView = signal<ChartView>('total');
   readonly electricityDisplayMode = signal<DisplayMode>('total');
 
+  // Water Mode Preferences
+  readonly coldWaterOnlyMode = signal<boolean>(false);
+
   // Meter Change Preferences (Water)
   readonly confirmedMeterChanges = signal<string[]>([]);
   readonly dismissedMeterChanges = signal<string[]>([]);
@@ -37,10 +40,18 @@ export class ConsumptionPreferencesService {
         this.loadPreference('heating', 'total', 'total'),
         this.loadPreference('electricity', 'total', 'total'),
         this.loadMeterChanges(),
+        this.loadColdWaterOnlyMode(),
       ]);
     } catch (error) {
       console.warn('Failed to load preferences from storage:', error);
       // Verify defaults are set (they are initialized with defaults in signal declaration)
+    }
+  }
+
+  private async loadColdWaterOnlyMode() {
+    const stored = await this.storage.load<boolean>('water_cold_only_mode');
+    if (stored !== null && stored !== undefined) {
+      this.coldWaterOnlyMode.set(stored);
     }
   }
 
@@ -94,6 +105,11 @@ export class ConsumptionPreferencesService {
       this.storage.save('water_dismissed_meter_changes', unique);
       return unique;
     });
+  }
+
+  setColdWaterOnlyMode(enabled: boolean) {
+    this.coldWaterOnlyMode.set(enabled);
+    this.storage.save('water_cold_only_mode', enabled);
   }
 
   setChartView(view: ChartView, chartType: ChartType = 'water') {

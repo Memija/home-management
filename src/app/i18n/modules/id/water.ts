@@ -24,6 +24,10 @@ export const water = {
     BATHROOM: 'Kamar Mandi',
     WARM: 'Panas',
     COLD: 'Dingin',
+    TOTAL_LABEL: 'Total',
+    COLD_ONLY_MODE_TOGGLE: 'Aktifkan Mode Hanya Air Dingin',
+    COLD_ONLY_NO_VALUES_ERROR: 'Silakan masukkan konsumsi air untuk setidaknya satu ruangan.',
+    COLD_ONLY_INCOMPLETE_ERROR: 'Silakan lengkapi entri konsumsi air untuk semua ruangan yang dimulai.',
   },
   HOME: {
     HISTORY_TITLE: 'Riwayat Konsumsi',

@@ -24,6 +24,10 @@ export const water = {
     BATHROOM: 'Bathroom',
     WARM: 'Warm',
     COLD: 'Cold',
+    TOTAL_LABEL: 'Total',
+    COLD_ONLY_MODE_TOGGLE: 'Toggle Cold Water Only Mode',
+    COLD_ONLY_NO_VALUES_ERROR: 'Please enter the water consumption value for at least one room.',
+    COLD_ONLY_INCOMPLETE_ERROR: 'Please complete the water consumption entry for all started rooms.',
   },
   HOME: {
     HISTORY_TITLE: 'Consumption History',

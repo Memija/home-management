@@ -79,6 +79,14 @@
     ],
     "rewrites": [
       {
+        "source": "**/.*",
+        "destination": "/404.html"
+      },
+      {
+        "source": "**/*.{env,json,yml,yaml,php,sql,bak,map,config,credentials}",
+        "destination": "/404.html"
+      },
+      {
         "source": "**",
         "destination": "/index.html"
       }

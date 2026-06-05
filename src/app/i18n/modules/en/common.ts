@@ -91,6 +91,9 @@ export const common = {
     FEATURE_10_TITLE: 'Bulgarian Language Support',
     FEATURE_10_DESC:
       'We are expanding our language options! Soon, you will be able to use the entire application in Bulgarian, making home management even more accessible to our users in Bulgaria.',
+    FEATURE_11_TITLE: 'Chart Custom Notes',
+    FEATURE_11_DESC:
+      'Add custom notes directly onto your charts. Mark important events, changes in habits, or appliance replacements to better understand the context behind your consumption spikes or drops.',
     CTA_TEXT:
       'Your support helps us build these features faster. Thank you for being part of our community!',
     BACK_TO_HOME: 'Back to Home',

@@ -15,6 +15,7 @@ import {
   CloudSun,
   Mic,
   Languages,
+  StickyNote,
 } from 'lucide-angular';
 
 type FeatureTag = 'new' | 'enhancement' | 'smart';
@@ -45,14 +46,6 @@ export class ReleasePlanComponent {
 
   // Upcoming features
   readonly features: Feature[] = [
-    {
-      id: 2,
-      titleKey: 'RELEASE_PLAN.FEATURE_2_TITLE',
-      descKey: 'RELEASE_PLAN.FEATURE_2_DESC',
-      icon: Maximize2,
-      tag: 'enhancement',
-      colorClass: 'enhancement-feature',
-    },
     // Smart
     {
       id: 3,
@@ -111,6 +104,14 @@ export class ReleasePlanComponent {
       icon: Languages,
       tag: 'new',
       colorClass: 'new-feature',
+    },
+    {
+      id: 11,
+      titleKey: 'RELEASE_PLAN.FEATURE_11_TITLE',
+      descKey: 'RELEASE_PLAN.FEATURE_11_DESC',
+      icon: StickyNote,
+      tag: 'enhancement',
+      colorClass: 'enhancement-feature',
     },
   ];
 

@@ -83,6 +83,9 @@ export const common = {
     FEATURE_10_TITLE: 'Dukungan Bahasa Bulgaria',
     FEATURE_10_DESC:
       'Kami memperluas pilihan bahasa kami! Segera, Anda akan dapat menggunakan seluruh aplikasi dalam bahasa Bulgaria, membuat manajemen rumah menjadi lebih mudah diakses oleh pengguna kami di Bulgaria.',
+    FEATURE_11_TITLE: 'Catatan Kustom pada Grafik',
+    FEATURE_11_DESC:
+      'Tambahkan catatan kustom langsung ke grafik Anda. Tandai acara penting, perubahan kebiasaan, atau penggantian alat untuk lebih memahami konteks di balik lonjakan atau penurunan konsumsi Anda.',
     CTA_TEXT: 'Dukungan Anda membantu kami membangun fitur-fitur ini lebih cepat. Terima kasih telah menjadi bagian dari komunitas kami!',
     BACK_TO_HOME: 'Kembali ke Beranda',
   },

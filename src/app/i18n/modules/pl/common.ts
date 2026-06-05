@@ -83,6 +83,9 @@ export const common = {
     FEATURE_10_TITLE: 'Wsparcie dla języka bułgarskiego',
     FEATURE_10_DESC:
       'Rozszerzamy nasze opcje językowe! Wkrótce będziesz mógł korzystać z całej aplikacji w języku bułgarskim, co sprawi, że zarządzanie domem będzie jeszcze bardziej dostępne dla naszych użytkowników w Bułgarii.',
+    FEATURE_11_TITLE: 'Niestandardowe notatki na wykresach',
+    FEATURE_11_DESC:
+      'Dodawaj niestandardowe notatki bezpośrednio na wykresach. Zaznaczaj ważne wydarzenia, zmiany nawyków lub wymianę urządzeń, aby lepiej zrozumieć kontekst wzrostów lub spadków zużycia.',
     CTA_TEXT: 'Twoje wsparcie pomaga nam budować te funkcje szybciej. Dziękujemy za bycie częścią naszej społeczności!',
     BACK_TO_HOME: 'Powrót do strony głównej',
   },

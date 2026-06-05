@@ -6,6 +6,7 @@ import {
   CheckCircle2,
   History,
   Droplets,
+  Maximize2,
   LucideIconData,
 } from 'lucide-angular';
 
@@ -45,6 +46,13 @@ export class ChangelogComponent {
           titleKey: 'RELEASE_PLAN.FEATURE_1_TITLE',
           descKey: 'RELEASE_PLAN.FEATURE_1_DESC',
           icon: Droplets,
+          colorClass: 'enhancement-feature',
+        },
+        {
+          id: 3,
+          titleKey: 'RELEASE_PLAN.FEATURE_2_TITLE',
+          descKey: 'RELEASE_PLAN.FEATURE_2_DESC',
+          icon: Maximize2,
           colorClass: 'enhancement-feature',
         },
       ],

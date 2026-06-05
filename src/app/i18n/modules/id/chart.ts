@@ -67,5 +67,9 @@ export const chart = {
     DISMISS_METER_CHANGE: 'Tidak, biarkan apa adanya',
     RESET_ZOOM: 'Reset Zoom',
     ZOOM_HINT: 'Gulir untuk zoom, geser untuk menggeser tampilan',
+    EXPAND_CHART: 'Perluas ke layar penuh',
+    COLLAPSE_CHART: 'Keluar dari layar penuh',
+    HIDE_CONTROLS: 'Sembunyikan kontrol',
+    SHOW_CONTROLS: 'Tampilkan kontrol',
   },
 };

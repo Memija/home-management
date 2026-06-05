@@ -77,5 +77,9 @@ export const chart = {
     DISMISS_METER_CHANGE: 'No, keep as is',
     RESET_ZOOM: 'Reset Zoom',
     ZOOM_HINT: 'Scroll to zoom, drag to pan',
+    EXPAND_CHART: 'Expand to full screen',
+    COLLAPSE_CHART: 'Exit full screen',
+    HIDE_CONTROLS: 'Hide controls',
+    SHOW_CONTROLS: 'Show controls',
   },
 };

@@ -78,5 +78,9 @@ export const chart = {
     DISMISS_METER_CHANGE: 'Nein, beibehalten',
     RESET_ZOOM: 'Zoom zurücksetzen',
     ZOOM_HINT: 'Scrollen zum Zoomen, Ziehen zum Schwenken',
+    EXPAND_CHART: 'Vollbild öffnen',
+    COLLAPSE_CHART: 'Vollbild schließen',
+    HIDE_CONTROLS: 'Steuerelemente ausblenden',
+    SHOW_CONTROLS: 'Steuerelemente anzeigen',
   },
 };

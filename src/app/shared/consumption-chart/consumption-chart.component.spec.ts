@@ -624,4 +624,76 @@ describe('ConsumptionChartComponent', () => {
       expect(component.ignoredSpikes()).toEqual([]);
     });
   });
+
+  describe('Fullscreen and Controls', () => {
+    it('should toggle controls visibility and update chart', () => {
+      initWithDefaults();
+
+      let capturedCallback: Function | undefined;
+      const setTimeoutSpy = vi.spyOn(window, 'setTimeout').mockImplementation((fn: any) => {
+        capturedCallback = fn;
+        return 0 as any;
+      });
+
+      const mockChart = { update: vi.fn() };
+      (component as any).chart = mockChart;
+
+      expect((component as any).isControlsHidden()).toBe(false);
+
+      (component as any).toggleControls();
+      expect((component as any).isControlsHidden()).toBe(true);
+
+      // Verify setTimeout was called and capture the callback
+      expect(setTimeoutSpy).toHaveBeenCalled();
+      expect(capturedCallback).toBeDefined();
+
+      // Manually trigger the callback (avoids Angular Zone.js signal notification phase conflicts)
+      capturedCallback!();
+
+      expect(mockChart.update).toHaveBeenCalled();
+
+      setTimeoutSpy.mockRestore();
+    });
+
+    it('should attempt to enter fullscreen when not in fullscreen', () => {
+      initWithDefaults();
+      const requestFullscreenSpy = vi.fn().mockResolvedValue(undefined);
+
+      (component as any).chartWrapperRef = {
+        nativeElement: { requestFullscreen: requestFullscreenSpy }
+      };
+
+      // Mock document.fullscreenElement to be null
+      Object.defineProperty(document, 'fullscreenElement', {
+        value: null,
+        configurable: true
+      });
+
+      (component as any).toggleFullscreen();
+      expect(requestFullscreenSpy).toHaveBeenCalled();
+    });
+
+    it('should exit fullscreen when already in fullscreen', () => {
+      initWithDefaults();
+      const exitFullscreenSpy = vi.fn();
+
+      // Mock document.exitFullscreen
+      document.exitFullscreen = exitFullscreenSpy;
+
+      // Mock document.fullscreenElement to be truthy
+      Object.defineProperty(document, 'fullscreenElement', {
+        value: document.createElement('div'),
+        configurable: true
+      });
+
+      (component as any).toggleFullscreen();
+      expect(exitFullscreenSpy).toHaveBeenCalled();
+
+      // Restore property
+      Object.defineProperty(document, 'fullscreenElement', {
+        value: null,
+        configurable: true
+      });
+    });
+  });
 });

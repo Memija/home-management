@@ -92,6 +92,9 @@ export const common = {
     FEATURE_10_TITLE: 'Unterstützung für Bulgarisch',
     FEATURE_10_DESC:
       'Wir erweitern unsere Sprachoptionen! Bald werden Sie die gesamte Anwendung auf Bulgarisch nutzen können, was die Hausverwaltung für unsere Nutzer in Bulgarien noch zugänglicher macht.',
+    FEATURE_11_TITLE: 'Benutzerdefinierte Notizen im Diagramm',
+    FEATURE_11_DESC:
+      'Fügen Sie benutzerdefinierte Notizen direkt in Ihre Diagramme ein. Markieren Sie wichtige Ereignisse, Gewohnheitsänderungen oder den Austausch von Geräten, um den Kontext hinter Ihren Verbrauchsspitzen oder -rückgängen besser zu verstehen.',
     CTA_TEXT:
       'Ihre Unterstützung hilft uns, diese Funktionen schneller zu entwickeln. Danke, dass Sie Teil unserer Community sind!',
     BACK_TO_HOME: 'Zurück zur Startseite',

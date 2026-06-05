@@ -67,5 +67,9 @@ export const chart = {
     DISMISS_METER_CHANGE: 'Nie, zostaw bez zmian',
     RESET_ZOOM: 'Resetuj Widok',
     ZOOM_HINT: 'Przewiń, by przybliżyć, przeciągnij, by przesunąć',
+    EXPAND_CHART: 'Rozszerz do pełnego ekranu',
+    COLLAPSE_CHART: 'Zakończ tryb pełnoekranowy',
+    HIDE_CONTROLS: 'Ukryj kontrolki',
+    SHOW_CONTROLS: 'Pokaż kontrolki',
   },
 };

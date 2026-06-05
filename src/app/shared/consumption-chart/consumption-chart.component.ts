@@ -2,12 +2,15 @@ import {
   Component,
   Input,
   ViewChild,
+  ElementRef,
   computed,
   effect,
   inject,
   input,
   signal,
   OnInit,
+  OnDestroy,
+  HostListener,
 } from '@angular/core';
 import { BaseChartDirective } from 'ng2-charts';
 import {
@@ -33,6 +36,9 @@ import {
   Info,
   HelpCircle,
   ZoomIn,
+  Maximize2,
+  Minimize2,
+  SlidersHorizontal,
 } from 'lucide-angular';
 import { HelpModalComponent, HelpStep } from '../help-modal/help-modal.component';
 import 'hammerjs';
@@ -59,8 +65,9 @@ registerChartPlugins();
   templateUrl: './consumption-chart.component.html',
   styleUrl: './consumption-chart.component.scss',
 })
-export class ConsumptionChartComponent implements OnInit {
+export class ConsumptionChartComponent implements OnInit, OnDestroy {
   @ViewChild(BaseChartDirective) chart?: BaseChartDirective;
+  @ViewChild('chartWrapper') chartWrapperRef?: ElementRef<HTMLDivElement>;
 
   data = input.required<ChartDataPoint[]>();
   currentView = input.required<ChartView>();
@@ -90,6 +97,25 @@ export class ConsumptionChartComponent implements OnInit {
   protected readonly InfoIcon = Info;
   protected readonly HelpIcon = HelpCircle;
   protected readonly ZoomInIcon = ZoomIn;
+  protected readonly Maximize2Icon = Maximize2;
+  protected readonly Minimize2Icon = Minimize2;
+  protected readonly SlidersHorizontalIcon = SlidersHorizontal;
+
+  // Fullscreen state — synced from the native fullscreenchange event
+  protected isFullscreen = signal<boolean>(false);
+
+  // Hide controls state (used to maximize chart canvas inside fullscreen)
+  protected isControlsHidden = signal<boolean>(false);
+
+  private readonly onFullscreenChange = () => {
+    const isFS = !!document.fullscreenElement;
+    this.isFullscreen.set(isFS);
+    if (!isFS) {
+      this.isControlsHidden.set(false); // Reset controls visibility when exiting fullscreen
+    }
+    // Give the browser a frame to resize, then update Chart.js
+    setTimeout(() => this.chart?.update(), 100);
+  };
 
   // Trendline visibility toggle - initialized in ngOnInit after chartType is set
   protected showTrendline = signal<boolean>(true);
@@ -230,6 +256,8 @@ export class ConsumptionChartComponent implements OnInit {
     // Initialize toggle states after chartType input is available
     this.showTrendline.set(this.getStoredTrendlineVisibility());
     this.showAverageComparison.set(this.getStoredAverageComparisonVisibility());
+    // Listen for native fullscreen changes (e.g. user presses Escape)
+    document.addEventListener('fullscreenchange', this.onFullscreenChange);
   }
 
   protected chartOptions = computed<ChartConfiguration['options']>(() => {
@@ -476,5 +504,37 @@ export class ConsumptionChartComponent implements OnInit {
 
   protected resetZoom(): void {
     this.chart?.chart?.resetZoom();
+  }
+
+  protected toggleFullscreen(): void {
+    if (!document.fullscreenElement) {
+      // Enter fullscreen on the wrapper element
+      this.chartWrapperRef?.nativeElement.requestFullscreen().catch((err) => {
+        console.error('Failed to enter fullscreen:', err);
+      });
+    } else {
+      document.exitFullscreen();
+    }
+  }
+
+  protected toggleControls(): void {
+    this.isControlsHidden.update(v => !v);
+    setTimeout(() => this.chart?.update(), 50);
+  }
+
+  // Escape key is handled natively by the browser when in fullscreen.
+  // This handler catches it if the user presses Escape while NOT in native fullscreen.
+  @HostListener('document:keydown.escape')
+  protected onEscapeKey(): void {
+    if (document.fullscreenElement) {
+      document.exitFullscreen();
+    }
+  }
+
+  ngOnDestroy(): void {
+    document.removeEventListener('fullscreenchange', this.onFullscreenChange);
+    if (document.fullscreenElement) {
+      document.exitFullscreen();
+    }
   }
 }

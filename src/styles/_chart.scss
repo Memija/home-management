@@ -45,3 +45,60 @@
     width: 100%;
   }
 }
+
+// ==========================================================================
+// Native Fullscreen API — applied globally because Angular encapsulation
+// prevents :fullscreen from matching in component-scoped stylesheets
+// ==========================================================================
+
+// Wrapper is a transparent passthrough by default
+.chart-fullscreen-wrapper {
+  display: contents;
+}
+
+// When the browser enters fullscreen mode on this element
+.chart-fullscreen-wrapper:fullscreen,
+.chart-fullscreen-wrapper:-webkit-full-screen {
+  display: flex;
+  align-items: stretch;
+  background: var(--bg-secondary, #f0f2f5);
+  padding: 16px;
+  box-sizing: border-box;
+
+  .chart-section {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 0;
+    border-radius: 16px;
+    overflow: hidden;
+  }
+
+  .chart-header {
+    flex-shrink: 0;
+    margin-bottom: 16px;
+  }
+
+  .chart-container {
+    flex: 1;
+    height: auto !important;
+    min-height: 0;
+  }
+
+  .zoom-hint {
+    flex-shrink: 0;
+    padding-bottom: 8px;
+  }
+}
+
+@media (max-width: 768px) {
+
+  .chart-fullscreen-wrapper:fullscreen,
+  .chart-fullscreen-wrapper:-webkit-full-screen {
+    padding: 8px;
+
+    .chart-section {
+      border-radius: 10px;
+    }
+  }
+}

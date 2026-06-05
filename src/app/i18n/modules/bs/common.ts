@@ -83,6 +83,9 @@ export const common = {
     FEATURE_10_TITLE: 'Podrška za bugarski jezik',
     FEATURE_10_DESC:
       'Proširujemo naše jezične opcije! Uskoro ćete moći koristiti cijelu aplikaciju na bugarskom jeziku, čineći upravljanje domaćinstvom još pristupačnijim našim korisnicima u Bugarskoj.',
+    FEATURE_11_TITLE: 'Prilagođene bilješke na grafikonima',
+    FEATURE_11_DESC:
+      'Dodajte prilagođene bilješke direktno na vaše grafikone. Označite važne događaje, promjene u navikama ili zamjenu uređaja kako biste bolje razumjeli kontekst iza vaših skokova ili padova u potrošnji.',
     CTA_TEXT: 'Vaša podrška pomaže nam u bržoj izgradnji ovih opcija. Hvala vam što ste dio naše zajednice!',
     BACK_TO_HOME: 'Nazad na početnu',
   },

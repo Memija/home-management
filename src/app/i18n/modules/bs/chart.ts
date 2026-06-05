@@ -67,5 +67,9 @@ export const chart = {
     DISMISS_METER_CHANGE: 'Ne, zadrži kako jeste',
     RESET_ZOOM: 'Resetuj zum',
     ZOOM_HINT: 'Točkićem zumirajte, prevucite za pomjeranje',
+    EXPAND_CHART: 'Proširi na cijeli ekran',
+    COLLAPSE_CHART: 'Zatvori cijeli ekran',
+    HIDE_CONTROLS: 'Sakrij kontrole',
+    SHOW_CONTROLS: 'Prikaži kontrole',
   },
 };

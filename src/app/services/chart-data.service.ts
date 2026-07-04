@@ -94,7 +94,7 @@ export class ChartDataService {
       country,
     } = params;
 
-    let normalizedData: any[] | undefined;
+    let normalizedData: CombinedData[] | undefined;
 
     // Normalize incremental heating data if in incremental mode
     if (mode === 'incremental' && heatingRecs.length > 1) {
@@ -340,7 +340,7 @@ export class ChartDataService {
     // But here we need to map records to values
     // NOTE: For electricity, we normalize incremental data to monthly equivalent to avoid "drops" for short intervals
     let dataPoints: number[] = [];
-    let normalizedData: any[] | undefined;
+    let normalizedData: Array<{ days: number; raw?: number; [key: string]: number | undefined } | undefined> | undefined;
 
     if (mode === 'incremental') {
       // Normalize incremental data to daily averages using original records for accurate date calculations
@@ -348,12 +348,12 @@ export class ChartDataService {
         electricityRecs) as unknown as ElectricityRecord[];
 
       const normalized = this.calculationService.calculateDailyAverage(
-        electricityRecs as any as CombinedData[],
+        electricityRecs as unknown as CombinedData[],
         originalLikeRecs,
         'electricity',
       );
-      dataPoints = normalized.map((r) => (r as any).value);
-      normalizedData = normalized.map((r) => (r as any).normalized);
+      dataPoints = normalized.map((r) => r['value'] as number);
+      normalizedData = normalized.map((r) => r.normalized);
     } else {
       dataPoints = electricityRecs.map((r) => r.value);
     }

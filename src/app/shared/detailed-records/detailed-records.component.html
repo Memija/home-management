@@ -220,30 +220,30 @@
                   <div class="consumption-row">
                     <strong>{{ 'HOME.KITCHEN' | translate }}:</strong>
                     <span class="warm-water"
-                      >{{ 'HOME.WARM_WATER' | translate }}: {{ record['kitchenWarm'] }}</span
+                      >{{ 'HOME.WARM_WATER' | translate }}: {{ record.kitchenWarm }}</span
                     >
                     <span class="cold-water"
-                      >{{ 'HOME.COLD_WATER' | translate }}: {{ record['kitchenCold'] }}</span
+                      >{{ 'HOME.COLD_WATER' | translate }}: {{ record.kitchenCold }}</span
                     >
                   </div>
                   <div class="consumption-row">
                     <strong>{{ 'HOME.BATHROOM' | translate }}:</strong>
                     <span class="warm-water"
-                      >{{ 'HOME.WARM_WATER' | translate }}: {{ record['bathroomWarm'] }}</span
+                      >{{ 'HOME.WARM_WATER' | translate }}: {{ record.bathroomWarm }}</span
                     >
                     <span class="cold-water"
-                      >{{ 'HOME.COLD_WATER' | translate }}: {{ record['bathroomCold'] }}</span
+                      >{{ 'HOME.COLD_WATER' | translate }}: {{ record.bathroomCold }}</span
                     >
                   </div>
                   <div class="consumption-row combined-totals">
                     <span></span>
                     <span class="warm-water"
                       >{{ 'HOME.WARM_WATER' | translate }}:
-                      {{ record['kitchenWarm'] + record['bathroomWarm'] }}</span
+                      {{ (record.kitchenWarm || 0) + (record.bathroomWarm || 0) }}</span
                     >
                     <span class="cold-water"
                       >{{ 'HOME.COLD_WATER' | translate }}:
-                      {{ record['kitchenCold'] + record['bathroomCold'] }}</span
+                      {{ (record.kitchenCold || 0) + (record.bathroomCold || 0) }}</span
                     >
                   </div>
                 }

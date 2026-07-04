@@ -127,7 +127,7 @@ export class FirebaseStorageService extends StorageService {
       const querySnapshot = await getDocs(colRef);
 
       const data: Record<string, unknown> = {};
-      querySnapshot.forEach((docSnap: any) => {
+      querySnapshot.forEach((docSnap: import('firebase/firestore').QueryDocumentSnapshot) => {
         const docData = docSnap.data();
         if (docSnap.id === 'user_settings') {
           // Settings are stored as direct fields, not wrapped in 'value'
@@ -220,7 +220,7 @@ export class FirebaseStorageService extends StorageService {
       const querySnapshot = await getDocs(colRef);
 
       const deletePromises: Promise<void>[] = [];
-      querySnapshot.forEach((docSnap: any) => {
+      querySnapshot.forEach((docSnap: import('firebase/firestore').QueryDocumentSnapshot) => {
         deletePromises.push(deleteDoc(docSnap.ref));
       });
 

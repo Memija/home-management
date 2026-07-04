@@ -15,10 +15,16 @@ export interface MeterReadingResult {
 }
 
 /** Internal result from a single OCR pass */
+interface TesseractWord {
+  text: string;
+  confidence: number;
+  bbox: { x0: number; y0: number; x1: number; y1: number };
+}
+
 interface OcrPassResult {
   text: string;
   confidence: number;
-  words: any[];
+  words: TesseractWord[];
 }
 
 interface ScoredCandidate {
@@ -44,7 +50,7 @@ export class MeterReaderService {
   /** Progress percentage (0-100) during OCR */
   readonly progress = signal(0);
 
-  private tesseractWorker: any = null;
+  private tesseractWorker: unknown = null;
 
   /**
    * @param imageSource - File or base64 data URL
@@ -75,9 +81,9 @@ export class MeterReaderService {
         confidence: bestOverallConfidence,
         candidates: uniqueValues,
       };
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('Meter reading OCR failed:', error);
-      return { value: null, rawText: `ERROR: ${error?.message || error}`, confidence: 0, candidates: [] };
+      return { value: null, rawText: `ERROR: ${(error as Error)?.message || error}`, confidence: 0, candidates: [] };
     } finally {
       this.isProcessing.set(false);
       this.progress.set(100);
@@ -197,7 +203,7 @@ export class MeterReaderService {
    */
   async dispose(): Promise<void> {
     if (this.tesseractWorker) {
-      await this.tesseractWorker.terminate();
+      await (this.tesseractWorker as { terminate: () => Promise<void> }).terminate();
       this.tesseractWorker = null;
     }
   }
@@ -217,7 +223,7 @@ export class MeterReaderService {
     return {
       text: result.data.text,
       confidence: result.data.confidence,
-      words: (result.data.words ?? []).map((w: any) => ({
+      words: (result.data.words ?? []).map((w: TesseractWord) => ({
         text: w.text,
         confidence: w.confidence,
         bbox: w.bbox
@@ -239,7 +245,7 @@ export class MeterReaderService {
       workerPath: '/assets/tesseract/worker.min.js',
       corePath: '/assets/tesseract/core/tesseract-core.wasm.js',
       langPath: '/assets/tesseract-lang',
-      logger: (m: any) => {
+      logger: (m: { status: string; progress: number }) => {
         if (m.status === 'recognizing text') {
           const passProgress = Math.round(m.progress * 100);
           const currentBase = this.progress();

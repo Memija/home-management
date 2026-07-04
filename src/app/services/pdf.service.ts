@@ -349,7 +349,7 @@ export class PdfService {
       },
       columnStyles,
       // Add horizontal line when year changes
-      willDrawCell: (data: any) => {
+      willDrawCell: (data: { section: string; row: { index: number }; column: { index: number }; doc: import('jspdf').jsPDF; cell: { y: number } }) => {
         if (data.section === 'body' && data.row.index > 0 && data.column.index === 0) {
           const currentRecord = sortedRecords[data.row.index];
           const prevRecord = sortedRecords[data.row.index - 1];

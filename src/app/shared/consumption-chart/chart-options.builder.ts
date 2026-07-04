@@ -1,7 +1,7 @@
 import { Chart, ChartConfiguration, ChartEvent, LegendItem, LegendElement, TooltipItem } from 'chart.js';
 import { LanguageService } from '../../services/language.service';
 import { AppChartDataset } from '../../models/records.model';
-import { ChartDataPoint } from './consumption-chart.models';
+import { ChartDataPoint } from '../../models/consumption-chart.model';
 
 export interface ChartOptionsBuilderDeps {
   languageService: LanguageService;

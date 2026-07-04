@@ -1,7 +1,7 @@
 import { ChartConfiguration } from 'chart.js';
 import { LanguageService } from '../../services/language.service';
 import { AppChartDataset } from '../../models/records.model';
-import { ChartDataPoint } from './consumption-chart.models';
+import { ChartDataPoint } from '../../models/consumption-chart.model';
 import { PredictionResult, MultiPredictionResult } from '../../models/prediction.models';
 
 export type PredictionPeriod = 30 | 90 | 180 | 365 | 3650;
@@ -89,7 +89,7 @@ function getPredictionMonths(predictionPeriod: PredictionPeriod): number {
         predictionPeriod === 3650 ? 120 : 12;
 }
 
-function padDatasets(datasets: any[], targetLength: number): void {
+function padDatasets(datasets: AppChartDataset[], targetLength: number): void {
   datasets.forEach(ds => {
     if (ds.data) {
       const currentLength = ds.data.length;
@@ -101,7 +101,7 @@ function padDatasets(datasets: any[], targetLength: number): void {
   });
 }
 
-function padDatasetsForFuture(datasets: any[], predictionMonths: number): void {
+function padDatasetsForFuture(datasets: AppChartDataset[], predictionMonths: number): void {
   datasets.forEach(ds => {
     if (ds.data) {
       ds.data = [...ds.data, ...Array(predictionMonths).fill(null)];
@@ -118,7 +118,7 @@ function extendLabels(labels: string[], lastRecordDate: Date, predictionMonths: 
   }
 }
 
-function extendTrendlinesAndAverages(datasets: any[], originalLabelsLength: number, predictionMonths: number, languageService: LanguageService): void {
+function extendTrendlinesAndAverages(datasets: AppChartDataset[], originalLabelsLength: number, predictionMonths: number, languageService: LanguageService): void {
   const existingDatasetCount = datasets.length;
   for (let i = 0; i < existingDatasetCount; i++) {
     const ds = datasets[i];
@@ -263,7 +263,7 @@ function generatePredictionData(
 }
 
 function drawTotalPredictions(
-  datasets: any[],
+  datasets: AppChartDataset[],
   labels: string[],
   pred: MultiPredictionResult,
   deps: PredictionBuilderDeps,
@@ -367,7 +367,7 @@ function drawTotalPredictions(
 }
 
 function drawSubcategoryPredictions(
-  datasets: any[],
+  datasets: AppChartDataset[],
   labels: string[],
   pred: MultiPredictionResult,
   deps: PredictionBuilderDeps,
@@ -497,10 +497,10 @@ function drawSubcategoryPredictions(
   }
 }
 
-function reorderDatasets(datasets: any[]): void {
+function reorderDatasets(datasets: AppChartDataset[]): void {
   // Reorder datasets so that all datasets belonging to the same category are grouped together
-  const groupedDatasets: any[] = [];
-  const otherDatasets: any[] = [];
+  const groupedDatasets: AppChartDataset[] = [];
+  const otherDatasets: AppChartDataset[] = [];
   const categoryIds = Array.from(
     new Set(
       datasets

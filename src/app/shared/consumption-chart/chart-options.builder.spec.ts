@@ -1,7 +1,7 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { buildChartOptions, ChartOptionsBuilderDeps } from './chart-options.builder';
 import { LanguageService } from '../../services/language.service';
-import { ChartDataPoint } from './consumption-chart.models';
+import { ChartDataPoint } from '../../models/consumption-chart.model';
 
 // ─── Shared test helpers ──────────────────────────────────────────────────────
 

@@ -45,10 +45,14 @@ export type { ConsumptionRecord } from '../../models/records.model';
 
 // Generic record interface - any record with a date
 // Index signature allows bracket notation access for water-specific fallback in template
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export interface GenericRecord {
   date: Date;
-  [key: string]: any;
+  kitchenWarm?: number;
+  kitchenCold?: number;
+  bathroomWarm?: number;
+  bathroomCold?: number;
+  value?: number;
+  rooms?: Record<string, number>;
 }
 
 // Sort option interface for configurable sorting

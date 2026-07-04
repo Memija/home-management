@@ -1,5 +1,5 @@
 import { LanguageService } from '../../services/language.service';
-import { ChartDataPoint } from './consumption-chart.models';
+import { ChartDataPoint } from '../../models/consumption-chart.model';
 
 /**
  * Generates smart x-axis labels that adapt their format based on data density and locale.

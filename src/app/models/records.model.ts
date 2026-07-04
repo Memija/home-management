@@ -58,7 +58,7 @@ export type AppChartDataset = ChartDataset<
   /** Marks a dataset as a prediction extension (hidden from legend) */
   isPredictionExtension?: boolean;
   /** Normalized values for incremental-mode tooltip display */
-  normalizedData?: (number | null)[];
+  normalizedData?: unknown[];
 };
 
 /**
@@ -158,25 +158,26 @@ export function getDateKey(date: Date): string {
 /**
  * Safely parse a date that might be a string, a Date object, or a Firebase Timestamp
  */
-export function parseSafeDate(dateRaw: any): Date {
+export function parseSafeDate(dateRaw: unknown): Date {
   if (!dateRaw) return new Date(NaN);
 
   if (dateRaw instanceof Date) {
     return dateRaw;
   }
 
-  // Check for Firebase Timestamp-like objects
-  if (typeof dateRaw === 'object') {
-    if (typeof dateRaw.toDate === 'function') {
-      return dateRaw.toDate();
+// Check for Firebase Timestamp-like objects
+  if (typeof dateRaw === 'object' && dateRaw !== null) {
+    const rawObj = dateRaw as Record<string, unknown>;
+    if (typeof rawObj['toDate'] === 'function') {
+      return (rawObj['toDate'] as () => Date)();
     }
-    if ('seconds' in dateRaw) {
-      return new Date(dateRaw.seconds * 1000);
+    if (typeof rawObj['seconds'] === 'number') {
+      return new Date(rawObj['seconds'] * 1000);
     }
   }
 
   // Fallback for strings/numbers
-  return new Date(dateRaw);
+  return new Date(dateRaw as string | number);
 }
 
 /**

@@ -512,25 +512,27 @@ export class ChartCalculationService {
   /**
    * Normalize a single electricity record to daily average
    */
-  private normalizeElectricityRecord(record: any, daysDiff: number): void {
+  private normalizeElectricityRecord(record: { value?: unknown; normalized?: Record<string, unknown>; [key: string]: unknown }, daysDiff: number): void {
     const val = record['value'];
     if (typeof val === 'number') {
       const dailyAvg = val / daysDiff;
       record['value'] = Math.round(dailyAvg);
-      record.normalized.raw = val;
+      if (!record['normalized']) record['normalized'] = {};
+      record['normalized']['raw'] = val;
     }
   }
 
   /**
    * Normalize a single water record to daily average
    */
-  private normalizeWaterRecord(record: any, daysDiff: number): void {
+  private normalizeWaterRecord(record: { normalized?: Record<string, unknown>; [key: string]: unknown }, daysDiff: number): void {
     const fields = ['kitchenWarm', 'kitchenCold', 'bathroomWarm', 'bathroomCold'];
     fields.forEach((field) => {
       if (typeof record[field] === 'number') {
         const rawVal = record[field];
         record[field] = Math.round(rawVal / daysDiff);
-        record.normalized[field] = rawVal;
+        if (!record['normalized']) record['normalized'] = {};
+        record['normalized'][field] = rawVal;
       }
     });
   }
@@ -538,13 +540,15 @@ export class ChartCalculationService {
   /**
    * Normalize a single heating record to daily average
    */
-  private normalizeHeatingRecord(record: any, daysDiff: number): void {
-    if (record.rooms) {
-      Object.keys(record.rooms).forEach((roomId) => {
-        const rawVal = record.rooms[roomId];
+  private normalizeHeatingRecord(record: { rooms?: Record<string, unknown>; normalized?: Record<string, unknown>; [key: string]: unknown }, daysDiff: number): void {
+    const rooms = record.rooms;
+    if (rooms) {
+      Object.keys(rooms).forEach((roomId) => {
+        const rawVal = rooms[roomId];
         if (typeof rawVal === 'number') {
-          record.rooms[roomId] = Math.round(rawVal / daysDiff);
-          record.normalized[roomId] = rawVal;
+          rooms[roomId] = Math.round(rawVal / daysDiff);
+          if (!record['normalized']) record['normalized'] = {};
+          record['normalized'][roomId] = rawVal;
         }
       });
     }

@@ -48,7 +48,7 @@ import {
   ElectricityRecord,
 } from '../../models/records.model';
 import { registerChartPlugins } from './chart-plugins';
-import { ChartDataPoint, ChartConfig } from './consumption-chart.models';
+import { ChartDataPoint, ChartConfig } from '../../models/consumption-chart.model';
 import { MultiPredictionResult } from '../../models/prediction.models';
 import { generateSmartLabels } from './chart-labels.utils';
 import { buildChartOptions } from './chart-options.builder';
@@ -57,7 +57,7 @@ import { appendPredictionDatasets, PredictionPeriod } from './chart-prediction.b
 
 // Re-export types for consumers
 export type { ChartView, DisplayMode } from '../../services/chart-data.service';
-export type { ChartDataPoint, ChartConfig } from './consumption-chart.models';
+export type { ChartDataPoint, ChartConfig } from '../../models/consumption-chart.model';
 
 Chart.register(...registerables, zoomPlugin);
 registerChartPlugins();

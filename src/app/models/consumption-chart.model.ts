@@ -2,14 +2,14 @@ import {
   ConsumptionRecord,
   DynamicHeatingRecord,
   ElectricityRecord,
-} from '../../models/records.model';
+} from './records.model';
 
 // Re-export types for consumers
-export type { ChartView, DisplayMode } from '../../services/chart-data.service';
+export type { ChartView, DisplayMode } from '../services/chart-data.service';
 export type {
   ChartView as ChartViewType,
   DisplayMode as DisplayModeType,
-} from '../../services/chart-data.service';
+} from '../services/chart-data.service';
 
 /**
  * Union type for all chart data point types.
@@ -21,6 +21,6 @@ export type ChartDataPoint = ConsumptionRecord | DynamicHeatingRecord | Electric
  * Configuration interface for the consumption chart component.
  */
 export interface ChartConfig {
-  view: import('../../services/chart-data.service').ChartView;
-  onViewChange: (view: import('../../services/chart-data.service').ChartView) => void;
+  view: import('../services/chart-data.service').ChartView;
+  onViewChange: (view: import('../services/chart-data.service').ChartView) => void;
 }

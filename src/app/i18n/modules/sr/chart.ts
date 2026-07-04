@@ -1,6 +1,9 @@
 // Serbian (Cyrillic) chart translations
 export const chart = {
   CHART: {
+    SHOW_PAST_FORECAST: 'Прикажи прошлу прогнозу',
+    PAST_FORECAST: 'Прошла прогноза',
+    CONSUMPTION_PREDICTION: 'Предикција потрошње',
     AXIS_DATE: 'Датум',
     AXIS_LITERS: 'Литри',
     AXIS_KWH: 'kWh',
@@ -51,6 +54,7 @@ export const chart = {
     TRENDLINE: 'Линија Тренда',
     SHOW_TRENDLINE: 'Прикажи Линију Тренда',
     SHOW_AVERAGE: 'Прикажи Просек',
+    SHOW_PREDICTIONS: 'Прикажи предвиђања',
     YOU_VS_AVERAGE: 'Ви у односу на Просек',
     COUNTRY_AVERAGE: 'Просек Државе',
     AVERAGE_REQUIRES_FAMILY: 'Додајте чланове породице у Поставкама да бисте омогућили поређење',
@@ -67,8 +71,8 @@ export const chart = {
     DISMISS_METER_CHANGE: 'Не, задржи како јесте',
     RESET_ZOOM: 'Ресетуј Зум',
     ZOOM_HINT: 'Точкићем зумирајте, превуците за померање',
-    EXPAND_CHART: 'Прикажи на цеом екрану',
-    COLLAPSE_CHART: 'Затвори приказ на цеом екрану',
+    EXPAND_CHART: 'Прикажи на целом екрану',
+    COLLAPSE_CHART: 'Затвори приказ на целом екрану',
     HIDE_CONTROLS: 'Сакриј контроле',
     SHOW_CONTROLS: 'Прикажи контроле',
   },

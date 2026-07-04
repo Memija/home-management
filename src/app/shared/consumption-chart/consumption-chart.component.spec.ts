@@ -18,6 +18,7 @@ import {
 } from '@angular/core';
 import { vi, afterEach } from 'vitest';
 import { ConsumptionRecord } from '../../models/records.model';
+import { generateSmartLabels } from './chart-labels.utils';
 
 @Pipe({ name: 'translate', standalone: true })
 class MockTranslatePipe implements PipeTransform {
@@ -508,14 +509,14 @@ describe('ConsumptionChartComponent', () => {
   describe('Smart Labels', () => {
     it('should return empty array for empty data', () => {
       initWithDefaults({ data: [] });
-      const labels = (component as any).generateSmartLabels([]);
+      const labels = generateSmartLabels([], languageServiceMock);
       expect(labels).toEqual([]);
     });
 
     it('should generate labels for small datasets with day info', () => {
       const data = makeWaterData(['2024-01-15', '2024-02-15']);
       initWithDefaults({ data });
-      const labels = (component as any).generateSmartLabels(data);
+      const labels = generateSmartLabels(data, languageServiceMock);
 
       expect(labels.length).toBe(2);
       labels.forEach((label: string) => {
@@ -531,7 +532,7 @@ describe('ConsumptionChartComponent', () => {
       });
       const data = makeWaterData(dates);
       initWithDefaults({ data });
-      const labels = (component as any).generateSmartLabels(data);
+      const labels = generateSmartLabels(data, languageServiceMock);
 
       expect(labels.length).toBe(25);
     });
@@ -539,7 +540,7 @@ describe('ConsumptionChartComponent', () => {
     it('should include year suffix when data spans multiple years', () => {
       const data = makeWaterData(['2023-12-15', '2024-01-15']);
       initWithDefaults({ data });
-      const labels = (component as any).generateSmartLabels(data);
+      const labels = generateSmartLabels(data, languageServiceMock);
 
       // Both labels should contain year info (e.g. "'23" or "'24")
       labels.forEach((label: string) => {
@@ -550,7 +551,7 @@ describe('ConsumptionChartComponent', () => {
     it('should not include year suffix when data is within same year', () => {
       const data = makeWaterData(['2024-01-15', '2024-06-15']);
       initWithDefaults({ data });
-      const labels = (component as any).generateSmartLabels(data);
+      const labels = generateSmartLabels(data, languageServiceMock);
 
       labels.forEach((label: string) => {
         expect(label).not.toMatch(/'[0-9]{2}/);
@@ -561,7 +562,7 @@ describe('ConsumptionChartComponent', () => {
       languageServiceMock.currentLang.set('de');
       const data = makeWaterData(['2024-06-15']);
       initWithDefaults({ data });
-      const labels = (component as any).generateSmartLabels(data);
+      const labels = generateSmartLabels(data, languageServiceMock);
 
       expect(labels.length).toBe(1);
       // German month abbreviation for June is "Jun" or "Juni"

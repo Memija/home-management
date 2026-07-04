@@ -63,6 +63,8 @@ import { LocalStorageService } from '../services/local-storage.service';
 import { HeatingRoomUtilsService } from '../services/heating-room-utils.service';
 import { LanguageService } from '../services/language.service';
 import { ExcelSettingsService } from '../services/excel-settings.service';
+import { PredictionService } from '../services/prediction.service';
+import { PredictionsPanelComponent } from '../shared/predictions-panel/predictions-panel.component';
 
 @Component({
   selector: 'app-heating',
@@ -82,6 +84,7 @@ import { ExcelSettingsService } from '../services/excel-settings.service';
     DeleteConfirmationModalComponent,
     DemoWizardComponent,
     DemoTourComponent,
+    PredictionsPanelComponent,
   ],
   templateUrl: './heating.component.html',
   styleUrl: './heating.component.scss',
@@ -100,6 +103,7 @@ export class HeatingComponent implements OnInit {
   private roomUtilsService = inject(HeatingRoomUtilsService);
   private languageService = inject(LanguageService);
   private householdService = inject(HouseholdService);
+  private predictionService = inject(PredictionService);
 
   // Icons
   protected readonly ArrowLeftIcon = ArrowLeft;
@@ -120,6 +124,7 @@ export class HeatingComponent implements OnInit {
 
   // State delegation to HeatingDataService
   protected records = this.dataService.records;
+  protected heatingPrediction = computed(() => this.predictionService.predictHeating(this.records()));
   protected isExporting = this.dataService.isExporting;
   protected isImporting = this.dataService.isImporting;
   protected showImportConfirmModal = this.dataService.showImportConfirmModal;
@@ -136,6 +141,20 @@ export class HeatingComponent implements OnInit {
   // Chart preferences
   protected chartView = this.preferencesService.heatingChartView;
   protected displayMode = this.preferencesService.heatingDisplayMode;
+  protected selectedPredictionPeriod = signal<30 | 90 | 180 | 365 | 3650>(30);
+
+  protected onPredictionPeriodChange(period: 30 | 90 | 180 | 365 | 3650): void {
+    this.selectedPredictionPeriod.set(period);
+  }
+
+  // Category names mapping for predictions
+  protected heatingCategoryNames = computed(() => {
+    const map: Record<string, string> = {};
+    for (const r of this.roomsService.rooms()) {
+      map[r.id] = r.type ? r.type : r.name;
+    }
+    return map;
+  });
 
   // Country selection for facts
   protected readonly availableCountries = this.heatingFactsService.getAvailableCountries();

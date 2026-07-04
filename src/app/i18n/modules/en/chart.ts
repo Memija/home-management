@@ -1,6 +1,9 @@
 // English chart translations
 export const chart = {
   CHART: {
+    SHOW_PAST_FORECAST: 'Show Past Forecast',
+    PAST_FORECAST: 'Past Forecast',
+    CONSUMPTION_PREDICTION: 'Consumption prediction',
     AXIS_DATE: 'Date',
     AXIS_LITERS: 'Liters',
     AXIS_KWH: 'kWh',
@@ -58,6 +61,7 @@ export const chart = {
     TRENDLINE: 'Trendline',
     SHOW_TRENDLINE: 'Show Trendline',
     SHOW_AVERAGE: 'Show Average',
+    SHOW_PREDICTIONS: 'Show Predictions',
     YOU_VS_AVERAGE: 'You vs. Average',
     COUNTRY_AVERAGE: 'Country Average',
     AVERAGE_REQUIRES_FAMILY: 'Add family members in Settings to enable comparison',

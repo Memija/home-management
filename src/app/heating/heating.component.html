@@ -91,8 +91,18 @@
     [country]="selectedCountryCode()"
     [ignoredSpikes]="confirmedSpikes()"
     [helpSteps]="chartHelpSteps"
+    [prediction]="heatingPrediction()"
+    [predictionPeriod]="selectedPredictionPeriod()"
   >
   </app-consumption-chart>
+
+  <app-predictions-panel
+    [prediction]="heatingPrediction()"
+    type="heating"
+    [selectedPeriod]="selectedPredictionPeriod()"
+    [categoryNames]="heatingCategoryNames()"
+    (periodChange)="onPredictionPeriodChange($event)"
+  ></app-predictions-panel>
 
   <app-detailed-records
     [records]="records()"

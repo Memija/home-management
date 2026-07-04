@@ -1,0 +1,216 @@
+<section class="predictions-section" [class]="typeClass()">
+  @if (totalPrediction(); as pred) {
+  <div class="predictions-header">
+    <div class="header-icon">
+      <lucide-icon [img]="BrainIcon" [size]="24"></lucide-icon>
+    </div>
+    <div class="header-text">
+      <h3>{{ 'PREDICTIONS.TITLE' | translate }}</h3>
+      <p>{{ 'PREDICTIONS.SUBTITLE' | translate }}</p>
+    </div>
+    <div class="confidence-badge" [class]="confidenceClass()">
+      <lucide-icon [img]="ShieldCheckIcon" [size]="14"></lucide-icon>
+      <span>
+        {{ 'PREDICTIONS.CONFIDENCE' | translate }}:
+        @switch (pred.confidence) {
+        @case ('high') { {{ 'PREDICTIONS.CONFIDENCE_HIGH' | translate }} }
+        @case ('medium') { {{ 'PREDICTIONS.CONFIDENCE_MEDIUM' | translate }} }
+        @case ('low') { {{ 'PREDICTIONS.CONFIDENCE_LOW' | translate }} }
+        }
+      </span>
+      <span class="info-tooltip-container">
+        <lucide-icon [img]="InfoIcon" size="14" class="info-icon"></lucide-icon>
+        <span class="info-tooltip">{{ 'PREDICTIONS.CONFIDENCE_INFO' | translate }}</span>
+      </span>
+    </div>
+    @if (pred.accuracyPercentage) {
+    <div class="confidence-badge accuracy-badge" [ngClass]="accuracyClass()">
+      <lucide-icon [img]="TargetIcon" [size]="14"></lucide-icon>
+      <span>{{ 'PREDICTIONS.ACCURACY' | translate }}: {{ pred.accuracyPercentage }}%</span>
+      <span class="info-tooltip-container">
+        <lucide-icon [img]="InfoIcon" size="14" class="info-icon"></lucide-icon>
+        <span class="info-tooltip">{{ 'PREDICTIONS.ACCURACY_INFO' | translate }}</span>
+      </span>
+    </div>
+    }
+  </div>
+
+  <!-- Trend Indicator -->
+  <div class="trend-row">
+    <div class="trend-indicator" [class]="trendClass()">
+      <lucide-icon [img]="trendIcon()" [size]="20"></lucide-icon>
+      <span class="trend-text">
+        @switch (pred.trend) {
+        @case ('rising') { {{ 'PREDICTIONS.TREND_RISING' | translate }} }
+        @case ('falling') { {{ 'PREDICTIONS.TREND_FALLING' | translate }} }
+        @case ('stable') { {{ 'PREDICTIONS.TREND_STABLE' | translate }} }
+        }
+      </span>
+      @if (pred.trendPercentage !== undefined) {
+      <span class="trend-percent">{{ pred.trendPercentage }}%</span>
+      }
+      <span class="info-tooltip-container">
+        <lucide-icon [img]="InfoIcon" size="14" class="info-icon"></lucide-icon>
+        <span class="info-tooltip">{{ 'PREDICTIONS.TREND_INFO' | translate }}</span>
+      </span>
+    </div>
+
+    <div class="daily-avg">
+      <lucide-icon [img]="ActivityIcon" [size]="16"></lucide-icon>
+      <span>{{ 'PREDICTIONS.DAILY_AVERAGE' | translate }}: <strong>{{ pred.averageDaily }} {{ pred.unit
+          }}</strong></span>
+      <span class="info-tooltip-container">
+        <lucide-icon [img]="InfoIcon" size="14" class="info-icon"></lucide-icon>
+        <span class="info-tooltip">{{ 'PREDICTIONS.AVERAGE_DAILY_INFO' | translate }}</span>
+      </span>
+    </div>
+  </div>
+
+  @if (pred.appliedCorrection) {
+  <div class="auto-correction-notice">
+    <lucide-icon [img]="RefreshCcwIcon" [size]="14"></lucide-icon>
+    <span>{{ 'PREDICTIONS.AUTO_CORRECTED' | translate:{ percent: ((pred.appliedCorrection - 1) * 100).toFixed(1) }
+      }}</span>
+    <span class="info-tooltip-container">
+      <lucide-icon [img]="InfoIcon" size="14" class="info-icon"></lucide-icon>
+      <span class="info-tooltip">{{ 'PREDICTIONS.AUTO_CORRECTED_INFO' | translate }}</span>
+    </span>
+  </div>
+  }
+
+  <!-- Prediction Cards -->
+  <div class="predictions-grid">
+    <button type="button" class="prediction-card" [class.active]="selectedPeriod() === 30" (click)="selectPeriod(30)"
+      aria-label="View 30 days prediction on chart">
+      <div class="card-header">
+        <lucide-icon [img]="CalendarIcon" [size]="18"></lucide-icon>
+        <span>{{ 'PREDICTIONS.NEXT_30_DAYS' | translate }}</span>
+      </div>
+      <div class="card-value">
+        <span class="value">{{ pred.daily30 }}</span>
+        <span class="unit">{{ pred.unit }}{{ 'PREDICTIONS.DAILY_UNIT' | translate }}</span>
+      </div>
+      <div class="card-range">
+        <span>{{ 'PREDICTIONS.MIN' | translate }}: {{ pred.daily30Min }}</span>
+        <span class="divider">|</span>
+        <span>{{ 'PREDICTIONS.MAX' | translate }}: {{ pred.daily30Max }}</span>
+      </div>
+      <div class="card-label">{{ 'PREDICTIONS.PREDICTED_DAILY' | translate }}</div>
+    </button>
+
+    <button type="button" class="prediction-card" [class.active]="selectedPeriod() === 90" (click)="selectPeriod(90)"
+      aria-label="View 90 days prediction on chart">
+      <div class="card-header">
+        <lucide-icon [img]="CalendarIcon" [size]="18"></lucide-icon>
+        <span>{{ 'PREDICTIONS.NEXT_90_DAYS' | translate }}</span>
+      </div>
+      <div class="card-value">
+        <span class="value">{{ pred.daily90 }}</span>
+        <span class="unit">{{ pred.unit }}{{ 'PREDICTIONS.DAILY_UNIT' | translate }}</span>
+      </div>
+      <div class="card-range">
+        <span>{{ 'PREDICTIONS.MIN' | translate }}: {{ pred.daily90Min }}</span>
+        <span class="divider">|</span>
+        <span>{{ 'PREDICTIONS.MAX' | translate }}: {{ pred.daily90Max }}</span>
+      </div>
+      <div class="card-label">{{ 'PREDICTIONS.PREDICTED_DAILY' | translate }}</div>
+    </button>
+
+    <button type="button" class="prediction-card" [class.active]="selectedPeriod() === 180" (click)="selectPeriod(180)"
+      aria-label="View half year prediction on chart">
+      <div class="card-header">
+        <lucide-icon [img]="CalendarIcon" [size]="18"></lucide-icon>
+        <span>{{ 'PREDICTIONS.HALF_YEAR' | translate }}</span>
+      </div>
+      <div class="card-value">
+        <span class="value">{{ pred.dailyHalfYear }}</span>
+        <span class="unit">{{ pred.unit }}{{ 'PREDICTIONS.DAILY_UNIT' | translate }}</span>
+      </div>
+      <div class="card-range">
+        <span>{{ 'PREDICTIONS.MIN' | translate }}: {{ pred.dailyHalfYearMin }}</span>
+        <span class="divider">|</span>
+        <span>{{ 'PREDICTIONS.MAX' | translate }}: {{ pred.dailyHalfYearMax }}</span>
+      </div>
+      <div class="card-label">{{ 'PREDICTIONS.PREDICTED_DAILY' | translate }}</div>
+    </button>
+
+    <button type="button" class="prediction-card" [class.active]="selectedPeriod() === 365" (click)="selectPeriod(365)"
+      aria-label="View yearly prediction on chart">
+      <div class="card-header">
+        <lucide-icon [img]="CalendarIcon" [size]="18"></lucide-icon>
+        <span>{{ 'PREDICTIONS.YEARLY' | translate }}</span>
+      </div>
+      <div class="card-value">
+        <span class="value">{{ pred.dailyYear }}</span>
+        <span class="unit">{{ pred.unit }}{{ 'PREDICTIONS.DAILY_UNIT' | translate }}</span>
+      </div>
+      <div class="card-range">
+        <span>{{ 'PREDICTIONS.MIN' | translate }}: {{ pred.dailyYearMin }}</span>
+        <span class="divider">|</span>
+        <span>{{ 'PREDICTIONS.MAX' | translate }}: {{ pred.dailyYearMax }}</span>
+      </div>
+      <div class="card-label">{{ 'PREDICTIONS.PREDICTED_DAILY' | translate }}</div>
+    </button>
+
+    <button type="button" class="prediction-card" [class.active]="selectedPeriod() === 3650"
+      (click)="selectPeriod(3650)" aria-label="View decade prediction on chart">
+      <div class="card-header">
+        <lucide-icon [img]="CalendarIcon" [size]="18"></lucide-icon>
+        <span>{{ 'PREDICTIONS.DECADE' | translate }}</span>
+      </div>
+      <div class="card-value">
+        <span class="value">{{ pred.dailyDecade }}</span>
+        <span class="unit">{{ pred.unit }}{{ 'PREDICTIONS.DAILY_UNIT' | translate }}</span>
+      </div>
+      <div class="card-range">
+        <span>{{ 'PREDICTIONS.MIN' | translate }}: {{ pred.dailyDecadeMin }}</span>
+        <span class="divider">|</span>
+        <span>{{ 'PREDICTIONS.MAX' | translate }}: {{ pred.dailyDecadeMax }}</span>
+      </div>
+      <div class="card-label">{{ 'PREDICTIONS.PREDICTED_DAILY' | translate }}</div>
+    </button>
+  </div>
+
+  @if (categoryPredictions().length > 0) {
+  <div class="category-predictions">
+    <h4 class="category-heading">{{ 'PREDICTIONS.BREAKDOWN' | translate }}</h4>
+    <div class="category-list">
+      @for (cat of categoryPredictions(); track cat.key) {
+      <div class="category-item">
+        <span class="category-name">{{ cat.key | translate }}</span>
+        <div class="category-values">
+          <span class="category-avg">
+            {{ cat.value.averageDaily }} {{ cat.value.unit }}
+            <lucide-icon [img]="ActivityIcon" [size]="14"></lucide-icon>
+          </span>
+          <span class="category-trend" [class]="cat.value.trend">
+            @if (cat.value.trendPercentage !== undefined) {
+            {{ cat.value.trendPercentage }}%
+            }
+            @switch (cat.value.trend) {
+            @case ('rising') { <lucide-icon [img]="TrendingUpIcon" [size]="14"></lucide-icon> }
+            @case ('falling') { <lucide-icon [img]="TrendingDownIcon" [size]="14"></lucide-icon> }
+            @case ('stable') { <lucide-icon [img]="MinusIcon" [size]="14"></lucide-icon> }
+            }
+            <span class="info-tooltip-container">
+              <lucide-icon [img]="InfoIcon" size="14" class="info-icon"></lucide-icon>
+              <span class="info-tooltip">{{ 'PREDICTIONS.TREND_INFO' | translate }}</span>
+            </span>
+          </span>
+        </div>
+      </div>
+      }
+    </div>
+  </div>
+  }
+  } @else {
+  <!-- Empty State -->
+  <div class="empty-state">
+    <div class="empty-icon">
+      <lucide-icon [img]="BrainIcon" [size]="40"></lucide-icon>
+    </div>
+    <h3>{{ 'PREDICTIONS.TITLE' | translate }}</h3>
+    <p>{{ 'PREDICTIONS.NOT_ENOUGH_DATA' | translate }}</p>
+  </div>
+  }
+</section>

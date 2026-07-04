@@ -104,6 +104,18 @@
           }
         </label>
         }
+        @if (prediction() && displayMode() === 'incremental') {
+        <label class="trendline-toggle" for="show-predictions">
+          <input id="show-predictions" type="checkbox" [checked]="showPredictions()" (change)="togglePredictions()" />
+          <lucide-icon [img]="SmartIcon" size="16"></lucide-icon>
+          {{ 'CHART.SHOW_PREDICTIONS' | translate }}
+        </label>
+        <label class="trendline-toggle" for="show-past-forecast">
+          <input id="show-past-forecast" type="checkbox" [checked]="showPastForecast()" (change)="togglePastForecast()" />
+          <lucide-icon [img]="TargetIcon" size="16"></lucide-icon>
+          {{ 'CHART.SHOW_PAST_FORECAST' | translate }}
+        </label>
+        }
         @if (chartType !== 'electricity') {
         <div class="chart-filters">
           <button type="button" [class.active]="currentView() === 'total'" (click)="setView('total')">

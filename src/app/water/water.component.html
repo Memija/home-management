@@ -90,8 +90,18 @@
     [familySize]="familySize()"
     [country]="effectiveComparisonCountryCode()"
     [helpSteps]="chartHelpSteps"
+    [prediction]="waterPrediction()"
+    [predictionPeriod]="selectedPredictionPeriod()"
   >
   </app-consumption-chart>
+
+  <app-predictions-panel
+    [prediction]="waterPrediction()"
+    type="water"
+    [selectedPeriod]="selectedPredictionPeriod()"
+    [categoryNames]="waterCategoryNames()"
+    (periodChange)="onPredictionPeriodChange($event)"
+  ></app-predictions-panel>
 
   <app-detailed-records
     [records]="records()"

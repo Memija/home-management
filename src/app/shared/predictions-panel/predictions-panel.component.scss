@@ -1,0 +1,26 @@
+// Only the theme-colour tokens need component scope.
+// All structural styles live in src/styles/_predictions.scss.
+
+.predictions-section {
+  --accent: #1976d2;
+  --accent-grad-a: #1976d2;
+  --accent-grad-b: #42a5f5;
+  --accent-light: #e3f2fd;
+  --accent-muted: #bbdefb;
+
+  &.electricity {
+    --accent: #ffc107;
+    --accent-grad-a: #f9a825;
+    --accent-grad-b: #ffc107;
+    --accent-light: #fff8e1;
+    --accent-muted: #ffecb3;
+  }
+
+  &.heating {
+    --accent: #f57c00;
+    --accent-grad-a: #f57c00;
+    --accent-grad-b: #ff9800;
+    --accent-light: #fff3e0;
+    --accent-muted: #ffe0b2;
+  }
+}

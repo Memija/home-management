@@ -1,6 +1,9 @@
 // German chart translations
 export const chart = {
   CHART: {
+    SHOW_PAST_FORECAST: 'Vergangene Prognose anzeigen',
+    PAST_FORECAST: 'Vergangene Prognose',
+    CONSUMPTION_PREDICTION: 'Verbrauchsprognose',
     AXIS_DATE: 'Datum',
     AXIS_LITERS: 'Liter',
     AXIS_KWH: 'kWh',
@@ -58,6 +61,7 @@ export const chart = {
     TRENDLINE: 'Trendlinie',
     SHOW_TRENDLINE: 'Trendlinie anzeigen',
     SHOW_AVERAGE: 'Durchschnitt anzeigen',
+    SHOW_PREDICTIONS: 'Prognosen anzeigen',
     YOU_VS_AVERAGE: 'Sie vs. Durchschnitt',
     COUNTRY_AVERAGE: 'Landesdurchschnitt',
     AVERAGE_REQUIRES_FAMILY:

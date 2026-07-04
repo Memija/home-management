@@ -19,8 +19,8 @@ export type StorageMode = 'local' | 'cloud';
 const STORAGE_MODE_KEY = 'storage_mode';
 const LAST_SYNC_KEY = 'last_sync_timestamp';
 
-// Keys that should be grouped into the single 'user_settings' document
-const SETTINGS_KEYS = [
+// Core settings keys that don't follow a simple pattern
+const CORE_SETTINGS_KEYS = [
   'heating_room_configuration',
   'excel_settings',
   'storage_mode',
@@ -30,14 +30,6 @@ const SETTINGS_KEYS = [
   'dismissed_notifications',
   'theme',
   'preferred_language',
-  // Chart Views & Display Modes
-  'water_chart_view',
-  'water_display_mode',
-  'heating_chart_view',
-  'heating_display_mode',
-  'electricity_chart_view',
-  'electricity_display_mode',
-  // Specific Feature Preferences & Visibility
   'water_confirmed_meter_changes',
   'water_dismissed_meter_changes',
   'water_cold_only_mode',
@@ -45,18 +37,27 @@ const SETTINGS_KEYS = [
   'electricity_dismissed_meter_changes',
   'heating_confirmed_spikes',
   'heating_dismissed_spikes',
-  'water_chart_trendline_visible',
-  'heating_chart_trendline_visible',
-  'electricity_chart_trendline_visible',
-  'water_chart_average_visible',
-  'heating_chart_average_visible',
-  'electricity_chart_average_visible',
-  'excel_preview_is_collapsed',
-  'detailed_records_for_water_are_collapsed',
-  'detailed_records_for_heating_are_collapsed',
-  'detailed_records_for_electricity_are_collapsed',
-  'detailed_records_for_home_are_collapsed',
 ];
+
+/**
+ * Checks if a key belongs in the user_settings document.
+ * This includes core settings and dynamic chart preferences.
+ */
+function isSettingsKey(key: string): boolean {
+  if (CORE_SETTINGS_KEYS.includes(key)) return true;
+  
+  // Dynamic Chart Views & Display Modes
+  if (key.endsWith('_chart_view') || key.endsWith('_display_mode')) return true;
+  
+  // Dynamic Chart Toggle States
+  if (key.endsWith('_chart_trendline_visible') || key.endsWith('_chart_average_visible')) return true;
+  if (key.endsWith('_show_predictions') || key.endsWith('_show_past_forecast')) return true;
+  
+  // Dynamic Collapsed States
+  if (key.endsWith('_are_collapsed') || key.endsWith('_is_collapsed')) return true;
+
+  return false;
+}
 
 /**
  * Hybrid storage service that uses localStorage as cache and optionally syncs to Firebase.
@@ -197,7 +198,7 @@ export class HybridStorageService extends StorageService {
 
     // If cloud mode is active, sync in background
     if (this.isCloudMode()) {
-      if (SETTINGS_KEYS.includes(key)) {
+      if (isSettingsKey(key)) {
         this.firebaseStorage.updateSettings({ [key]: data }).catch((error) => {
           console.error(`Background settings sync failed for key ${key}:`, error);
         });
@@ -225,7 +226,7 @@ export class HybridStorageService extends StorageService {
     await this.localStorage.delete(key);
 
     if (this.isCloudMode()) {
-      if (SETTINGS_KEYS.includes(key)) {
+      if (isSettingsKey(key)) {
         this.firebaseStorage.deleteSetting(key).catch((error) => {
           console.error(`Background cloud setting delete failed for key ${key}:`, error);
         });
@@ -346,7 +347,7 @@ export class HybridStorageService extends StorageService {
       for (const key of keys) {
         if (VALID_RECORD_KEYS.includes(key)) {
           recordKeys.push(key);
-        } else if (SETTINGS_KEYS.includes(key)) {
+        } else if (isSettingsKey(key)) {
           settingsGroup[key] = allData[key];
         } else {
           console.warn(
@@ -391,9 +392,9 @@ export class HybridStorageService extends StorageService {
       const rawSettings = cloudData['user_settings'];
       if (rawSettings && typeof rawSettings === 'object' && !Array.isArray(rawSettings)) {
         const settings = rawSettings as Record<string, unknown>;
-        for (const key of SETTINGS_KEYS) {
-          if (key in settings) {
-            cloudData[key] = settings[key];
+        for (const [key, value] of Object.entries(settings)) {
+          if (isSettingsKey(key)) {
+            cloudData[key] = value;
           }
         }
       }

@@ -88,8 +88,17 @@
     [familySize]="familySize()"
     [country]="effectiveComparisonCountryCode()"
     [helpSteps]="chartHelpSteps"
+    [prediction]="electricityPrediction()"
+    [predictionPeriod]="selectedPredictionPeriod()"
   >
   </app-consumption-chart>
+
+  <app-predictions-panel
+    [prediction]="electricityPrediction()"
+    type="electricity"
+    [selectedPeriod]="selectedPredictionPeriod()"
+    (periodChange)="onPredictionPeriodChange($event)"
+  ></app-predictions-panel>
 
   <app-detailed-records
     [records]="records()"

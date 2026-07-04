@@ -1,6 +1,9 @@
 // Polish chart translations
 export const chart = {
   CHART: {
+    SHOW_PAST_FORECAST: 'Pokaż przeszłą prognozę',
+    PAST_FORECAST: 'Przeszła prognoza',
+    CONSUMPTION_PREDICTION: 'Prognoza zużycia',
     AXIS_DATE: 'Data',
     AXIS_LITERS: 'Litry',
     AXIS_KWH: 'kWh',
@@ -51,6 +54,7 @@ export const chart = {
     TRENDLINE: 'Linia Trendu',
     SHOW_TRENDLINE: 'Pokaż Linię Trendu',
     SHOW_AVERAGE: 'Pokaż Średnią',
+    SHOW_PREDICTIONS: 'Pokaż prognozy',
     YOU_VS_AVERAGE: 'Ty kontra Średnia',
     COUNTRY_AVERAGE: 'Średnia Krajowa',
     AVERAGE_REQUIRES_FAMILY: 'Dodaj domowników w Ustawieniach, aby włączyć porównanie',

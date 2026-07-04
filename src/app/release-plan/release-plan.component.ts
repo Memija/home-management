@@ -16,6 +16,7 @@ import {
   Mic,
   Languages,
   StickyNote,
+  Trophy,
 } from 'lucide-angular';
 
 type FeatureTag = 'new' | 'enhancement' | 'smart';
@@ -46,15 +47,6 @@ export class ReleasePlanComponent {
 
   // Upcoming features
   readonly features: Feature[] = [
-    // Smart
-    {
-      id: 3,
-      titleKey: 'RELEASE_PLAN.FEATURE_3_TITLE',
-      descKey: 'RELEASE_PLAN.FEATURE_3_DESC',
-      icon: TrendingUp,
-      tag: 'smart',
-      colorClass: 'prediction-feature',
-    },
     // Quality/Performance
     {
       id: 5,
@@ -110,6 +102,14 @@ export class ReleasePlanComponent {
       titleKey: 'RELEASE_PLAN.FEATURE_11_TITLE',
       descKey: 'RELEASE_PLAN.FEATURE_11_DESC',
       icon: StickyNote,
+      tag: 'enhancement',
+      colorClass: 'enhancement-feature',
+    },
+    {
+      id: 12,
+      titleKey: 'RELEASE_PLAN.FEATURE_12_TITLE',
+      descKey: 'RELEASE_PLAN.FEATURE_12_DESC',
+      icon: Trophy,
       tag: 'enhancement',
       colorClass: 'enhancement-feature',
     },

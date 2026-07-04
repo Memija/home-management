@@ -3,6 +3,63 @@
  *
  * Per coding-principles.md: "For shared type definitions, use src/app/models/"
  */
+import type { ChartDataset, ChartTypeRegistry, BubbleDataPoint, Point } from 'chart.js';
+
+/**
+ * Extension of Chart.js ChartDataset with custom metadata properties
+ * used for grouping, trendline association, and prediction display.
+ *
+ * Explicitly parameterized to match the element type of
+ * `ChartConfiguration['data']['datasets']`, making it directly assignable
+ * without type-unsafe casts.
+ */
+export type AppChartDataset = ChartDataset<
+  keyof ChartTypeRegistry,
+  (number | [number, number] | Point | BubbleDataPoint | null)[]
+> & {
+  /**
+   * Explicitly re-declared from ChartDataset to resolve TypeScript excess property
+   * checking failures caused by `keyof ChartTypeRegistry` resolving to a large
+   * discriminated union where `data` and `label` become ambiguous at object literal sites.
+   */
+  label?: string;
+  /** Re-declared to unblock excess property checking on object literals */
+  data: (number | [number, number] | Point | BubbleDataPoint | null)[];
+  // ─── Visual properties re-declared to fix excess-property-checking at object
+  //     literal sites. When ChartDataset is parameterized with `keyof ChartTypeRegistry`
+  //     TypeScript intersects all chart-type variants; properties that only exist on
+  //     some variants (e.g. borderColor on 'line' but not 'bar') are dropped from the
+  //     intersection, causing "does not exist in type" errors in object literals. ───
+  /** Border/stroke color of the dataset */
+  borderColor?: string | string[];
+  /** Fill/background color of the dataset */
+  backgroundColor?: string | string[];
+  /** Point fill color (line charts) */
+  pointBackgroundColor?: string | string[];
+  /** Point stroke color (line charts) */
+  pointBorderColor?: string | string[];
+  /** Whether to fill the area under the line */
+  fill?: boolean | string | number;
+  /** Bézier curve tension (0 = straight lines) */
+  tension?: number;
+  /** Stroke width in pixels */
+  borderWidth?: number;
+  /** Dash pattern for dashed lines */
+  borderDash?: number[];
+  /** Radius of data-point dots (0 = hidden) */
+  pointRadius?: number | number[];
+  /** Chart type override for mixed charts */
+  type?: keyof ChartTypeRegistry;
+  // ─── Custom app-level metadata ───────────────────────────────────────────
+  /** Groups this dataset with a logical category (e.g. room ID, water type) */
+  categoryId?: string;
+  /** Links a trendline dataset back to its source dataset's category */
+  trendlineFor?: string;
+  /** Marks a dataset as a prediction extension (hidden from legend) */
+  isPredictionExtension?: boolean;
+  /** Normalized values for incremental-mode tooltip display */
+  normalizedData?: (number | null)[];
+};
 
 /**
  * Water consumption record with readings by room and temperature

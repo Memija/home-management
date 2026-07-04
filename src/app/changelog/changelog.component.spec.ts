@@ -85,8 +85,8 @@ describe('ChangelogComponent', () => {
       // which can trigger ExpressionChangedAfterItHasBeenCheckedError in tests
       if (component.versions.length === 0) {
         component.versions.push({
-          version: '1.2.0',
-          labelKey: 'CHANGELOG.V1_2_0_LABEL',
+          version: '1.1.0',
+          labelKey: 'CHANGELOG.V1_1_0_LABEL',
           entries: []
         });
       } else {

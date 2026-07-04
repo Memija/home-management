@@ -3,6 +3,7 @@ import { ChartConfiguration } from 'chart.js';
 import { LanguageService } from './language.service';
 import { ChartCalculationService } from './chart-calculation.service';
 import {
+  AppChartDataset,
   ConsumptionRecord,
   DynamicHeatingRecord,
   CombinedData,
@@ -210,7 +211,7 @@ export class ChartDataService {
         };
       case 'by-room':
         // Build datasets dynamically based on configured rooms
-        const datasets: ChartConfiguration['data']['datasets'] = [];
+        const datasets: AppChartDataset[] = [];
 
         const roomIds = params.roomIds || [];
 
@@ -245,8 +246,8 @@ export class ChartDataService {
             backgroundColor: colors.bg,
             fill: true,
             tension: 0.4,
-            // @ts-expect-error - Custom property for tooltip access
             normalizedData: mode === 'incremental' ? normalizedData : undefined,
+            categoryId: roomId,
           });
 
           // Add trendline for each room if enabled and has data
@@ -261,7 +262,8 @@ export class ChartDataService {
               borderDash: [3, 3],
               pointRadius: 0,
               fill: false,
-            });
+              trendlineFor: roomId,
+            } as AppChartDataset);
           }
         }
 

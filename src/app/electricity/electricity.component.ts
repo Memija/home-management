@@ -61,6 +61,8 @@ import {
 import { DemoTourComponent } from '../shared/demo-tour/demo-tour.component';
 
 import { SmartImportModalComponent } from '../shared/smart-import-modal/smart-import-modal.component';
+import { PredictionService } from '../services/prediction.service';
+import { PredictionsPanelComponent } from '../shared/predictions-panel/predictions-panel.component';
 
 @Component({
   selector: 'app-electricity',
@@ -80,6 +82,7 @@ import { SmartImportModalComponent } from '../shared/smart-import-modal/smart-im
     SmartImportModalComponent,
     DemoWizardComponent,
     DemoTourComponent,
+    PredictionsPanelComponent,
   ],
   templateUrl: './electricity.component.html',
   styleUrl: './electricity.component.scss',
@@ -96,6 +99,7 @@ export class ElectricityComponent implements OnInit {
   private formService = inject(ElectricityFormService);
   private dataService = inject(ElectricityDataService);
   private meterService = inject(ElectricityMeterService);
+  private predictionService = inject(PredictionService);
 
   ngOnInit() {
     if (this.demoService.isDemoMode()) {
@@ -105,9 +109,15 @@ export class ElectricityComponent implements OnInit {
 
   // Signals
   protected records = this.dataService.records;
+  protected electricityPrediction = computed(() => this.predictionService.predictElectricity(this.records()));
   protected chartView = this.preferencesService.electricityChartView;
   protected displayMode = this.preferencesService.electricityDisplayMode;
   protected effectiveComparisonCountryCode = signal('DE');
+  protected selectedPredictionPeriod = signal<30 | 90 | 180 | 365 | 3650>(30);
+
+  protected onPredictionPeriodChange(period: 30 | 90 | 180 | 365 | 3650): void {
+    this.selectedPredictionPeriod.set(period);
+  }
 
   private syncCountryFromAddress = effect(() => {
     const address = this.householdService.address();

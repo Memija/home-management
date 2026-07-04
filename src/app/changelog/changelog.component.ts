@@ -7,6 +7,7 @@ import {
   History,
   Droplets,
   Maximize2,
+  Brain,
   LucideIconData,
 } from 'lucide-angular';
 
@@ -54,6 +55,13 @@ export class ChangelogComponent {
           descKey: 'RELEASE_PLAN.FEATURE_2_DESC',
           icon: Maximize2,
           colorClass: 'enhancement-feature',
+        },
+        {
+          id: 4,
+          titleKey: 'RELEASE_PLAN.FEATURE_3_TITLE',
+          descKey: 'RELEASE_PLAN.FEATURE_3_DESC',
+          icon: Brain,
+          colorClass: 'prediction-feature',
         },
       ],
     },

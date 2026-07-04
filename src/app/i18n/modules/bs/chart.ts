@@ -1,6 +1,9 @@
 // Bosnian chart translations
 export const chart = {
   CHART: {
+    SHOW_PAST_FORECAST: 'Prikaži prošlu prognozu',
+    PAST_FORECAST: 'Prošla prognoza',
+    CONSUMPTION_PREDICTION: 'Predikcija potrošnje',
     AXIS_DATE: 'Datum',
     AXIS_LITERS: 'Litri',
     AXIS_KWH: 'kWh',
@@ -51,6 +54,7 @@ export const chart = {
     TRENDLINE: 'Linija trenda',
     SHOW_TRENDLINE: 'Prikaži liniju trenda',
     SHOW_AVERAGE: 'Prikaži prosjek',
+    SHOW_PREDICTIONS: 'Prikaži predviđanja',
     YOU_VS_AVERAGE: 'Vi u odnosu na prosjek',
     COUNTRY_AVERAGE: 'Prosjek države',
     AVERAGE_REQUIRES_FAMILY: 'Dodajte članove porodice u Postavkama da biste omogućili poređenje',

@@ -1,6 +1,9 @@
 // Indonesian chart translations
 export const chart = {
   CHART: {
+    SHOW_PAST_FORECAST: 'Tampilkan Prediksi Masa Lalu',
+    PAST_FORECAST: 'Prediksi Masa Lalu',
+    CONSUMPTION_PREDICTION: 'Prediksi konsumsi',
     AXIS_DATE: 'Tanggal',
     AXIS_LITERS: 'Liter',
     AXIS_KWH: 'kWh',
@@ -51,6 +54,7 @@ export const chart = {
     TRENDLINE: 'Garis Tren',
     SHOW_TRENDLINE: 'Tampilkan Garis Tren',
     SHOW_AVERAGE: 'Tampilkan Rata-rata',
+    SHOW_PREDICTIONS: 'Tampilkan Prediksi',
     YOU_VS_AVERAGE: 'Anda vs. Rata-rata',
     COUNTRY_AVERAGE: 'Rata-rata Negara',
     AVERAGE_REQUIRES_FAMILY: 'Tambahkan anggota keluarga di Pengaturan untuk mengaktifkan perbandingan',

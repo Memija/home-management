@@ -57,7 +57,7 @@ describe('ReleasePlanComponent', () => {
   it('should filter features by "enhancement"', () => {
     component.setFilter('enhancement');
     const filtered = component.filteredFeatures();
-    expect(filtered.length).toBe(3);
+    expect(filtered.length).toBe(4);
     filtered.forEach((feature) => {
       expect(feature.tag).toBe('enhancement');
     });
@@ -66,7 +66,7 @@ describe('ReleasePlanComponent', () => {
   it('should filter features by "smart"', () => {
     component.setFilter('smart');
     const filtered = component.filteredFeatures();
-    expect(filtered.length).toBe(3);
+    expect(filtered.length).toBe(2);
     expect(filtered[0].tag).toBe('smart');
   });
 
@@ -74,8 +74,8 @@ describe('ReleasePlanComponent', () => {
     const counts = component.filterOptions();
     expect(counts['all']).toBe(8);
     expect(counts['new']).toBe(2);
-    expect(counts['enhancement']).toBe(3);
-    expect(counts['smart']).toBe(3);
+    expect(counts['enhancement']).toBe(4);
+    expect(counts['smart']).toBe(2);
   });
 
   it('should return correct translation key for tags', () => {

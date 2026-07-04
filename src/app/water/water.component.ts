@@ -46,6 +46,8 @@ import { HouseholdService } from '../services/household.service';
 import { ConsumptionPreferencesService } from '../services/consumption-preferences.service';
 import { ConsumptionFormService } from '../services/consumption-form.service';
 import { ConsumptionDataService } from '../services/consumption-data.service';
+import { PredictionService } from '../services/prediction.service';
+import { PredictionsPanelComponent } from '../shared/predictions-panel/predictions-panel.component';
 import { ExcelSettingsService } from '../services/excel-settings.service';
 import { ChartCalculationService } from '../services/chart-calculation.service';
 import { LocalStorageService } from '../services/local-storage.service';
@@ -77,6 +79,7 @@ import { DemoTourComponent } from '../shared/demo-tour/demo-tour.component';
     ErrorModalComponent,
     DemoWizardComponent,
     DemoTourComponent,
+    PredictionsPanelComponent,
   ],
   templateUrl: './water.component.html',
   styleUrl: './water.component.scss',
@@ -107,6 +110,7 @@ export class WaterComponent implements OnInit {
   private preferencesService = inject(ConsumptionPreferencesService);
   private formService = inject(ConsumptionFormService);
   private dataService = inject(ConsumptionDataService);
+  private predictionService = inject(PredictionService);
 
   ngOnInit() {
     if (this.demoService.isDemoMode()) {
@@ -116,6 +120,7 @@ export class WaterComponent implements OnInit {
 
   // Signals
   protected records = this.dataService.records;
+  protected waterPrediction = computed(() => this.predictionService.predictWater(this.records()));
   protected adjustedRecords = computed(() => {
     const recs = this.records();
     const changes = this.confirmedMeterChanges();
@@ -126,6 +131,22 @@ export class WaterComponent implements OnInit {
   protected chartView = this.preferencesService.chartView;
   protected displayMode = this.preferencesService.displayMode;
   protected effectiveComparisonCountryCode = signal('DE'); // Default
+  protected selectedPredictionPeriod = signal<30 | 90 | 180 | 365 | 3650>(30);
+
+  protected onPredictionPeriodChange(period: 30 | 90 | 180 | 365 | 3650): void {
+    this.selectedPredictionPeriod.set(period);
+  }
+
+  protected waterCategoryNames = computed(() => ({
+    kitchenWarm: 'CHART.KITCHEN_WARM',
+    kitchenCold: 'CHART.KITCHEN_COLD',
+    bathroomWarm: 'CHART.BATHROOM_WARM',
+    bathroomCold: 'CHART.BATHROOM_COLD',
+    kitchenTotal: 'CHART.KITCHEN_TOTAL',
+    bathroomTotal: 'CHART.BATHROOM_TOTAL',
+    warmTotal: 'CHART.WARM_WATER_TOTAL',
+    coldTotal: 'CHART.COLD_WATER_TOTAL',
+  }));
 
   private syncCountryFromAddress = effect(() => {
     const address = this.householdService.address();

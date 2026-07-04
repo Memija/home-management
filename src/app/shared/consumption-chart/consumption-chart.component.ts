@@ -17,9 +17,6 @@ import {
   Chart,
   ChartConfiguration,
   registerables,
-  ChartEvent,
-  LegendItem,
-  LegendElement,
 } from 'chart.js';
 import { TranslatePipe } from '../../pipes/translate.pipe';
 import { LanguageService } from '../../services/language.service';
@@ -39,6 +36,8 @@ import {
   Maximize2,
   Minimize2,
   SlidersHorizontal,
+  Brain,
+  Target,
 } from 'lucide-angular';
 import { HelpModalComponent, HelpStep } from '../help-modal/help-modal.component';
 import 'hammerjs';
@@ -50,6 +49,11 @@ import {
 } from '../../models/records.model';
 import { registerChartPlugins } from './chart-plugins';
 import { ChartDataPoint, ChartConfig } from './consumption-chart.models';
+import { MultiPredictionResult } from '../../models/prediction.models';
+import { generateSmartLabels } from './chart-labels.utils';
+import { buildChartOptions } from './chart-options.builder';
+import { ChartToggleState } from './chart-toggle.state';
+import { appendPredictionDatasets, PredictionPeriod } from './chart-prediction.builder';
 
 // Re-export types for consumers
 export type { ChartView, DisplayMode } from '../../services/chart-data.service';
@@ -83,6 +87,9 @@ export class ConsumptionChartComponent implements OnInit, OnDestroy {
   roomIds = input<string[]>([]); // For heating chart: actual room IDs
   roomColors = input<Array<{ border: string; bg: string }>>([]); // For heating chart: room-specific colors
   ignoredSpikes = input<{ date: string; roomId: string }[]>([]); // For heating chart: confirmed spikes to ignore in incremental mode
+  prediction = input<MultiPredictionResult | null>(null);
+  /** Number of days for the prediction projection */
+  predictionPeriod = input<PredictionPeriod>(30);
 
   private languageService = inject(LanguageService);
   private chartDataService = inject(ChartDataService);
@@ -100,6 +107,8 @@ export class ConsumptionChartComponent implements OnInit, OnDestroy {
   protected readonly Maximize2Icon = Maximize2;
   protected readonly Minimize2Icon = Minimize2;
   protected readonly SlidersHorizontalIcon = SlidersHorizontal;
+  protected readonly SmartIcon = Brain;
+  protected readonly TargetIcon = Target;
 
   // Fullscreen state — synced from the native fullscreenchange event
   protected isFullscreen = signal<boolean>(false);
@@ -123,8 +132,17 @@ export class ConsumptionChartComponent implements OnInit, OnDestroy {
   // Average comparison visibility toggle - initialized in ngOnInit after chartType is set
   protected showAverageComparison = signal<boolean>(true);
 
+  // Predictions visibility toggle - initialized in ngOnInit after chartType is set
+  protected showPredictions = signal<boolean>(true);
+
+  // Past forecast visibility toggle
+  protected showPastForecast = signal<boolean>(false);
+
   // Help modal state
   protected showHelpModal = signal(false);
+
+  /** Toggle/preference helper (initialized in ngOnInit once chartType is available) */
+  private toggleState!: ChartToggleState;
 
   // Computed property to check if there's enough data for features
   protected hasSufficientDataForTrendline = computed(() => {
@@ -140,51 +158,18 @@ export class ConsumptionChartComponent implements OnInit, OnDestroy {
 
   protected currentLang = computed(() => this.languageService.currentLang());
 
-  // Helper to generate smart labels - adapts format based on data density and language
-  private generateSmartLabels(recs: ChartDataPoint[]): string[] {
-    if (recs.length === 0) return [];
-
-    const dates = recs.map((r) => new Date(r.date));
-    const years = new Set(dates.map((d) => d.getFullYear()));
-    const spansMultipleYears = years.size > 1;
-    const dataPointCount = recs.length;
-
-    // Use language-aware locale
-    const locale = this.languageService.currentLocale();
-
-    // Determine label format based on data density
-    // Many data points (>20): show just month (Chart.js will auto-skip duplicates)
-    // Medium/Few data points (<=20): show month and day
-    return dates.map((date) => {
-      const year = date.getFullYear().toString().slice(-2);
-
-      if (dataPointCount > 20) {
-        // High density: show just month name
-        if (spansMultipleYears) {
-          return this.languageService.formatDate(date, { month: 'short', year: 'numeric' });
-        }
-        return this.languageService.formatDate(date, { month: 'short' });
-      } else {
-        // Low/medium density: show month and day
-        if (spansMultipleYears) {
-          return this.languageService.formatDate(date, { month: 'short', day: 'numeric', year: 'numeric' });
-        }
-        return this.languageService.formatDate(date, { month: 'short', day: 'numeric' });
-      }
-    });
-  }
-
   protected chartData = computed<ChartConfiguration['data']>(() => {
-    // Cast to internal record types for service compatibility
-    // This is safe because ChartDataPoint is compatible with ConsumptionRecord/HeatingRecord base structure for date
     const recs = this.data();
-    const labels = this.generateSmartLabels(this.data());
+    const labels = generateSmartLabels(recs, this.languageService);
     const view = this.currentView();
     const mode = this.displayMode();
     // Reactive to language, country, and toggle changes
     this.currentLang();
     this.showTrendline();
     this.showAverageComparison();
+    this.showPredictions();
+    this.showPastForecast();
+    this.predictionPeriod();
 
     // Process data based on display mode
     const processedData =
@@ -192,8 +177,10 @@ export class ConsumptionChartComponent implements OnInit, OnDestroy {
         ? this.chartDataService.calculateIncrementalData(recs, this.ignoredSpikes())
         : recs;
 
+    let resultData: ChartConfiguration['data'];
+
     if (this.chartType === 'water') {
-      return this.chartDataService.getWaterChartData({
+      resultData = this.chartDataService.getWaterChartData({
         records: processedData as ConsumptionRecord[],
         originalRecords: recs as ConsumptionRecord[],
         labels,
@@ -205,7 +192,7 @@ export class ConsumptionChartComponent implements OnInit, OnDestroy {
         familySize: this.familySize() ?? 0,
       });
     } else if (this.chartType === 'electricity') {
-      return this.chartDataService.getElectricityChartData({
+      resultData = this.chartDataService.getElectricityChartData({
         records: processedData as unknown as ElectricityRecord[],
         originalRecords: recs as unknown as ElectricityRecord[],
         labels,
@@ -217,7 +204,7 @@ export class ConsumptionChartComponent implements OnInit, OnDestroy {
         familySize: this.familySize() ?? 0,
       });
     } else if (this.chartType === 'home') {
-      return this.chartDataService.getWaterChartData({
+      resultData = this.chartDataService.getWaterChartData({
         records: processedData as ConsumptionRecord[],
         originalRecords: recs as ConsumptionRecord[],
         labels,
@@ -229,7 +216,7 @@ export class ConsumptionChartComponent implements OnInit, OnDestroy {
         familySize: 0,
       });
     } else {
-      return this.chartDataService.getHeatingChartData({
+      resultData = this.chartDataService.getHeatingChartData({
         records: processedData as unknown as DynamicHeatingRecord[],
         originalRecords: recs as unknown as DynamicHeatingRecord[],
         labels,
@@ -243,6 +230,21 @@ export class ConsumptionChartComponent implements OnInit, OnDestroy {
         country: this.country() ?? 'DE',
       });
     }
+
+    if (mode !== 'incremental') {
+      return resultData;
+    }
+
+    return appendPredictionDatasets(resultData, {
+      languageService: this.languageService,
+      chartType: this.chartType,
+      currentView: () => this.currentView(),
+      getData: () => this.data(),
+      prediction: this.prediction(),
+      predictionPeriod: this.predictionPeriod(),
+      showPredictions: this.showPredictions(),
+      showPastForecast: this.showPastForecast(),
+    });
   });
 
   constructor() {
@@ -250,205 +252,36 @@ export class ConsumptionChartComponent implements OnInit, OnDestroy {
       this.chartData();
       this.chart?.update();
     });
+
+    effect(() => {
+      const view = this.currentView();
+      if (this.toggleState) {
+        this.showPredictions.set(this.toggleState.getPredictionsVisibility(view));
+        this.showPastForecast.set(this.toggleState.getPastForecastVisibility(view));
+      }
+    }, { allowSignalWrites: true });
   }
 
   ngOnInit(): void {
-    // Initialize toggle states after chartType input is available
-    this.showTrendline.set(this.getStoredTrendlineVisibility());
-    this.showAverageComparison.set(this.getStoredAverageComparisonVisibility());
-    // Listen for native fullscreen changes (e.g. user presses Escape)
+    this.toggleState = new ChartToggleState(this.localStorageService, this.chartType);
+    this.showTrendline.set(this.toggleState.getTrendlineVisibility());
+    this.showAverageComparison.set(this.toggleState.getAverageComparisonVisibility());
+    // Initialize prediction visibility for current view now that toggleState exists
+    this.showPredictions.set(this.toggleState.getPredictionsVisibility(this.currentView()));
+    this.showPastForecast.set(this.toggleState.getPastForecastVisibility(this.currentView()));
     document.addEventListener('fullscreenchange', this.onFullscreenChange);
   }
 
   protected chartOptions = computed<ChartConfiguration['options']>(() => {
     this.currentLang();
-
-    return {
-      responsive: true,
-      maintainAspectRatio: false,
-      plugins: {
-        legend: {
-          display: true,
-          position: 'top',
-          onClick: (e: ChartEvent, legendItem: LegendItem, legend: LegendElement<any>) => {
-            const chart = legend.chart;
-            const clickedIndex = legendItem.datasetIndex;
-
-            if (clickedIndex === undefined) return;
-
-            const clickedDataset = chart.data.datasets[clickedIndex];
-            const clickedLabel = clickedDataset.label || '';
-
-            // Default toggle behavior for the clicked item
-            const isHidden = !chart.isDatasetVisible(clickedIndex);
-            chart.setDatasetVisibility(clickedIndex, isHidden);
-
-            // Keywords that identify trendlines and averages
-            const trendlineKeywords = ['Trendline', 'Trendlinie'];
-            const averageKeywords = [
-              'Average',
-              'Durchschnitt',
-              'Landesdurchschnitt',
-              'Country Average',
-            ];
-            const suffixKeywords = [...trendlineKeywords, ...averageKeywords];
-
-            // Check if clicked label is a main data line (not a trendline or average)
-            const isTrendlineOrAverage = suffixKeywords.some((kw) => clickedLabel.includes(kw));
-
-            if (!isTrendlineOrAverage) {
-              // Special case for Total view: "Total Weekly Consumption" / "Gesamtverbrauch pro Woche"
-              // These have standalone "Trendline" and "Country Average" labels (no shared prefix)
-              const totalViewLabels = [
-                'Total Weekly Consumption',
-                'Gesamtverbrauch pro Woche',
-                'Gesamtverbrauch',
-              ];
-              const isTotalView = totalViewLabels.some(
-                (lbl) => clickedLabel.includes(lbl) || clickedLabel.startsWith(lbl.split(' ')[0]),
-              );
-
-              if (isTotalView) {
-                // In Total view, hide/show all standalone trendline and average datasets
-                chart.data.datasets.forEach(
-                  (dataset: ChartConfiguration['data']['datasets'][0], index: number) => {
-                    if (index === clickedIndex) return;
-                    const label = dataset.label || '';
-                    // Match standalone "Trendline" or "Country Average" (not prefixed with category)
-                    if (
-                      trendlineKeywords.includes(label) ||
-                      averageKeywords.some(
-                        (kw) =>
-                          label === kw || label.includes('Country') || label.includes('Landes'),
-                      )
-                    ) {
-                      chart.setDatasetVisibility(index, isHidden);
-                    }
-                  },
-                );
-              } else {
-                // For other views, extract category from label
-                const suffixesToRemove = [' Total', ' Gesamt', ' Warm', ' Kalt', ' Cold'];
-                let category = clickedLabel;
-                for (const suffix of suffixesToRemove) {
-                  if (category.endsWith(suffix)) {
-                    category = category.slice(0, -suffix.length);
-                    break;
-                  }
-                }
-
-                // For detailed view labels like "Kitchen Warm", keep the full label as category
-                if (
-                  clickedLabel.includes(' Warm') ||
-                  clickedLabel.includes(' Cold') ||
-                  clickedLabel.includes(' Kalt')
-                ) {
-                  category = clickedLabel;
-                }
-
-                // Find related trendlines and averages
-                chart.data.datasets.forEach(
-                  (dataset: ChartConfiguration['data']['datasets'][0], index: number) => {
-                    if (index === clickedIndex) return;
-
-                    const label = dataset.label || '';
-                    const isRelatedTrendlineOrAverage = suffixKeywords.some((kw) =>
-                      label.includes(kw),
-                    );
-
-                    if (isRelatedTrendlineOrAverage) {
-                      // Check if this dataset belongs to the same category
-                      if (label.startsWith(category)) {
-                        chart.setDatasetVisibility(index, isHidden);
-                      }
-                    }
-                  },
-                );
-              }
-            }
-
-            chart.update();
-          },
-        },
-        tooltip: {
-          callbacks: {
-            // Show full date in tooltip title
-            title: (tooltipItems) => {
-              if (tooltipItems.length > 0) {
-                const item = tooltipItems[0];
-                const rawDateStr = this.data()[item.dataIndex].date;
-                const date = new Date(rawDateStr);
-                const locale = this.languageService.currentLocale();
-                return this.languageService.formatDate(date, {
-                  weekday: 'long',
-                  year: 'numeric',
-                  month: 'long',
-                  day: 'numeric',
-                });
-              }
-              return '';
-            },
-            label: (context) => {
-              const unit =
-                this.chartType === 'heating' || this.chartType === 'electricity' ? 'kWh' : 'L';
-              let label = `${context.dataset.label}: ${context.parsed.y} ${unit}`;
-
-              const normalizedData = (context.dataset as any).normalizedData;
-              if (normalizedData && normalizedData[context.dataIndex]) {
-                const normInfo = normalizedData[context.dataIndex];
-                if (normInfo && normInfo.days) {
-                  const days = Number(normInfo.days).toFixed(1);
-                  const estMsg = this.languageService.translate('CHART.ESTIMATED_MONTHLY', {
-                    days,
-                  });
-                  label += ` ${estMsg}`;
-                }
-              }
-              return label;
-            },
-          },
-        },
-        zoom: {
-          pan: {
-            enabled: true,
-            mode: 'x',
-          },
-          zoom: {
-            wheel: { enabled: true },
-            pinch: { enabled: true },
-            mode: 'x',
-          },
-        },
-        summerSun: {
-          enabled: this.chartType === 'heating',
-          records: this.chartType === 'heating' ? this.data() : [],
-        },
-        newYearMarker: {
-          enabled: true, // Enable for all types effectively
-          records: this.data(),
-        },
-      },
-      scales: {
-        y: {
-          beginAtZero: true,
-          title: {
-            display: true,
-            text:
-              this.chartType === 'heating' || this.chartType === 'electricity'
-                ? this.languageService.translate('CHART.AXIS_KWH')
-                : this.languageService.translate('CHART.AXIS_LITERS'),
-          },
-        },
-        x: {
-          title: { display: true, text: this.languageService.translate('CHART.AXIS_DATE') },
-          ticks: {
-            maxRotation: 45,
-            minRotation: 0,
-          },
-        },
-      },
-    };
+    return buildChartOptions({
+      languageService: this.languageService,
+      chartType: this.chartType,
+      getData: () => this.data(),
+    });
   });
+
+  // ─── View / display mode ──────────────────────────────────────────────────
 
   protected setView(view: ChartView): void {
     this.onViewChange(view);
@@ -458,49 +291,49 @@ export class ConsumptionChartComponent implements OnInit, OnDestroy {
     this.onDisplayModeChange(mode);
   }
 
+  // ─── Toggle handlers ──────────────────────────────────────────────────────
+
   protected toggleTrendline(): void {
     this.showTrendline.update((value) => !value);
-    this.saveTrendlineVisibility(this.showTrendline());
-  }
-
-  private getStoredTrendlineVisibility(): boolean {
-    const key = `${this.chartType}_chart_trendline_visible`;
-    const stored = this.localStorageService.getPreference(key);
-    return stored === null ? true : stored === 'true';
-  }
-
-  private saveTrendlineVisibility(visible: boolean): void {
-    const key = `${this.chartType}_chart_trendline_visible`;
-    this.localStorageService.setPreference(key, visible.toString());
+    this.toggleState.saveTrendlineVisibility(this.showTrendline());
   }
 
   protected toggleAverageComparison(): void {
     this.showAverageComparison.update((value) => !value);
-    this.saveAverageComparisonVisibility(this.showAverageComparison());
+    this.toggleState.saveAverageComparisonVisibility(this.showAverageComparison());
   }
 
-  private getStoredAverageComparisonVisibility(): boolean {
-    const key = `${this.chartType}_chart_average_visible`;
-    const stored = this.localStorageService.getPreference(key);
-    // Default: true for water, false for others
-    if (stored === null) {
-      return this.chartType === 'water';
+  protected togglePredictions(): void {
+    const newVal = !this.showPredictions();
+    this.showPredictions.set(newVal);
+    this.toggleState.savePredictionsVisibility(this.currentView(), newVal);
+    if (newVal && this.displayMode() !== 'incremental') {
+      this.setDisplayMode('incremental');
     }
-    return stored === 'true';
+    setTimeout(() => this.chart?.update(), 50);
   }
 
-  private saveAverageComparisonVisibility(visible: boolean): void {
-    const key = `${this.chartType}_chart_average_visible`;
-    this.localStorageService.setPreference(key, visible.toString());
+  protected togglePastForecast(): void {
+    const newVal = !this.showPastForecast();
+    this.showPastForecast.set(newVal);
+    this.toggleState.savePastForecastVisibility(this.currentView(), newVal);
+    if (newVal && this.displayMode() !== 'incremental') {
+      this.setDisplayMode('incremental');
+    }
+    setTimeout(() => this.chart?.update(), 50);
   }
 
-  protected showHelp() {
+  // ─── Help modal ───────────────────────────────────────────────────────────
+
+  protected showHelp(): void {
     this.showHelpModal.set(true);
   }
 
-  protected closeHelp() {
+  protected closeHelp(): void {
     this.showHelpModal.set(false);
   }
+
+  // ─── Zoom / fullscreen / controls ─────────────────────────────────────────
 
   protected resetZoom(): void {
     this.chart?.chart?.resetZoom();
@@ -508,7 +341,6 @@ export class ConsumptionChartComponent implements OnInit, OnDestroy {
 
   protected toggleFullscreen(): void {
     if (!document.fullscreenElement) {
-      // Enter fullscreen on the wrapper element
       this.chartWrapperRef?.nativeElement.requestFullscreen().catch((err) => {
         console.error('Failed to enter fullscreen:', err);
       });

@@ -1,5 +1,6 @@
 {
   "hosting": {
+    "site": "home-management-be965",
     "public": "dist/home-management/browser",
     "ignore": [
       "firebase.json",

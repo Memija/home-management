@@ -8,10 +8,12 @@ A modern, comprehensive web application for managing household resource consumpt
 
 ## ✨ Features
 
-- **💧 Water Tracking**: Record and monitor water consumption with granular detail. Track **Warm and Cold** water usage separately for both **Kitchen and Bathroom** to identify where your usage is highest.
+- **💧 Water Tracking**: Record and monitor water consumption with granular detail. Track **Warm and Cold** water usage separately for both **Kitchen and Bathroom**, or use **Cold Water Only** mode if you don't have separate meters.
 - **⚡ Electricity Monitoring**: Keep an eye on your home's power usage by logging kilowatt-hour (kWh) readings. Stay informed about your energy footprint and track consumption over time.
 - **🔥 Heating Management**: Track heating energy across different rooms with a **dynamic room-based system**. Monitor exactly how much energy each part of your home is using to optimize heating efficiency.
-- **📊 Interactive Charts**: Visualize your trends over time with high-performance, interactive charts (powered by Chart.js). Features include **multi-series comparison**, **trendline analysis**, and **zoomable timeframes** for deep insights.
+- **📊 Interactive Charts**: Visualize your trends over time with high-performance, interactive charts (powered by Chart.js). Features include **multi-series comparison**, **trendline analysis**, **zoomable timeframes**, and **full-screen mode** for deep insights.
+- **📸 Image-Based Meter Reading**: Simply take a photo of your meter and let the app automatically recognize the numbers using OCR. No more manual entry—just snap a picture!
+- **🧠 Smart Usage Predictions**: Let the app analyze your historical consumption data and provide intelligent predictions for future usage to help you plan ahead and set better budgets.
 - **☁️ Cloud Sync**: Securely sync your data with **Firebase** or keep it entirely local. A **hybrid storage model** allows you to work offline using LocalStorage and manually or automatically sync your data for multi-device access.
 - **🌍 Internationalization**: Built for a global audience with full support for multiple languages, including **English and German**. The app respects local formatting for dates, numbers, and units of measurement.
 

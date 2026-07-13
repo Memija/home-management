@@ -50,6 +50,11 @@ export default defineConfig({
     environment: 'jsdom',
     setupFiles: ['src/test-setup-vitest.ts'],
     include: ['src/**/*.spec.ts', 'scripts/**/*.spec.js'],
+    coverage: {
+      provider: 'v8',
+      reporter: ['lcov', 'text-summary'],
+      reportsDirectory: './coverage/home-management'
+    },
   },
   resolve: {
     alias: {

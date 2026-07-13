@@ -10,6 +10,7 @@
     "build": "ng build home-management && copy dist\\home-management\\browser\\index.csr.html dist\\home-management\\browser\\index.html",
     "watch": "ng build home-management --watch --configuration development",
     "test": "ng test home-management",
+    "test:coverage": "ng test home-management --coverage --coverage-reporters=lcovonly --coverage-reporters=text-summary --watch=false",
     "serve:ssr:home-management": "node dist/home-management/server/server.mjs"
   },
   "prettier": {
@@ -61,11 +62,13 @@
     "@types/express": "^5.0.1",
     "@types/jasmine": "^5.1.13",
     "@types/node": "^20.17.19",
+    "@vitest/coverage-v8": "^4.1.10",
     "baseline-browser-mapping": "^2.9.17",
     "jasmine-core": "^5.12.1",
     "jsdom": "^27.1.0",
     "karma": "^6.4.4",
     "karma-chrome-launcher": "^3.2.0",
+    "karma-coverage": "^2.2.1",
     "karma-jasmine": "^5.1.0",
     "karma-jasmine-html-reporter": "^2.1.0",
     "typescript": "~5.9.2",

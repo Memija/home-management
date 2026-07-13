@@ -6,4 +6,11 @@ import {
   platformBrowserDynamicTesting,
 } from '@angular/platform-browser-dynamic/testing';
 
+Object.defineProperty(window, 'navigator', {
+  value: {
+    userAgent: 'node.js',
+  },
+  writable: true,
+});
+
 getTestBed().initTestEnvironment(BrowserDynamicTestingModule, platformBrowserDynamicTesting());

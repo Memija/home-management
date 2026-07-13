@@ -55,6 +55,10 @@ export default defineConfig({
       reporter: ['lcov', 'text-summary'],
       reportsDirectory: './coverage/home-management'
     },
+    reporters: ['default', 'vitest-sonar-reporter'],
+    outputFile: {
+      'vitest-sonar-reporter': './coverage/home-management/sonar-report.xml',
+    },
   },
   resolve: {
     alias: {

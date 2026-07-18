@@ -661,7 +661,10 @@ describe('ConsumptionChartComponent', () => {
       const requestFullscreenSpy = vi.fn().mockResolvedValue(undefined);
 
       (component as any).chartWrapperRef = {
-        nativeElement: { requestFullscreen: requestFullscreenSpy }
+        nativeElement: { 
+          requestFullscreen: requestFullscreenSpy,
+          classList: { contains: vi.fn().mockReturnValue(false), remove: vi.fn(), add: vi.fn() }
+        }
       };
 
       // Mock document.fullscreenElement to be null
@@ -682,10 +685,14 @@ describe('ConsumptionChartComponent', () => {
       document.exitFullscreen = exitFullscreenSpy;
 
       // Mock document.fullscreenElement to be truthy
+      const mockElement = document.createElement('div');
       Object.defineProperty(document, 'fullscreenElement', {
-        value: document.createElement('div'),
+        value: mockElement,
         configurable: true
       });
+      (component as any).chartWrapperRef = {
+        nativeElement: mockElement
+      };
 
       (component as any).toggleFullscreen();
       expect(exitFullscreenSpy).toHaveBeenCalled();

@@ -1,9 +1,10 @@
-import { ApplicationConfig, provideBrowserGlobalErrorListeners } from '@angular/core';
+import { ApplicationConfig, ErrorHandler, provideBrowserGlobalErrorListeners } from '@angular/core';
 import { provideClientHydration, withEventReplay } from '@angular/platform-browser';
 import { provideRouter, Routes, CanDeactivateFn } from '@angular/router';
 
 import { STORAGE_SERVICE } from './services/storage.service';
 import { HybridStorageService } from './services/hybrid-storage.service';
+import { GlobalErrorHandlerService } from './services/global-error-handler.service';
 
 // CanDeactivate guard for settings - lazy loaded component
 const canDeactivateSettings: CanDeactivateFn<any> = (component) => {
@@ -66,6 +67,9 @@ export const appConfig: ApplicationConfig = {
     provideBrowserGlobalErrorListeners(),
     provideClientHydration(withEventReplay()),
     provideRouter(routes),
+    // Suppress browser-extension errors (e.g. chrome.runtime.lastError) that
+    // Angular 21's global error listeners would otherwise forward to the console.
+    { provide: ErrorHandler, useExisting: GlobalErrorHandlerService },
     // Firebase SDK will be lazy-loaded on demand
     // Use hybrid storage (cache-first with optional cloud sync)
     { provide: STORAGE_SERVICE, useExisting: HybridStorageService },

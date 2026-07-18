@@ -239,7 +239,18 @@ export class MeterReaderService {
       return this.tesseractWorker;
     }
 
-    const { createWorker } = await import('tesseract.js');
+    // tesseract.js v7's ESM bundle (`tesseract.esm.min.js`) only exposes a
+    // default export wrapping the CJS object. When Angular's production bundler
+    // resolves the dynamic import it picks up the ESM file, so named-export
+    // destructuring `{ createWorker }` yields `undefined` → "t is not a function".
+    // We therefore check the default export first and fall back to the module
+    // root, which handles both CommonJS and ESM interop.
+    const tesseractModule = await import('tesseract.js');
+    const createWorker: typeof tesseractModule.createWorker =
+      // ESM default-export path (production build)
+      (tesseractModule.default as typeof tesseractModule)?.createWorker ??
+      // Named-export path (dev build / CJS interop)
+      tesseractModule.createWorker;
 
     const worker = await createWorker('eng', 1, {
       workerPath: '/assets/tesseract/worker.min.js',

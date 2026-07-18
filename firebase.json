@@ -4,7 +4,8 @@
     "public": "dist/home-management/browser",
     "ignore": [
       "firebase.json",
-      "**/.*",
+      "**/.git/**",
+      "**/.github/**",
       "**/node_modules/**"
     ],
     "headers": [
@@ -80,6 +81,10 @@
     ],
     "rewrites": [
       {
+        "source": "/.well-known/**",
+        "destination": "/.well-known/**"
+      },
+      {
         "source": "**/.*",
         "destination": "/404.html"
       },
@@ -91,6 +96,7 @@
         "source": "**",
         "destination": "/index.html"
       }
-    ]
+    ],
+    "cleanUrls": true
   }
 }

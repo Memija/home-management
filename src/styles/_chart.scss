@@ -102,3 +102,54 @@
     }
   }
 }
+
+// ==========================================================================
+// CSS Fake Fullscreen — fallback for browsers without the Fullscreen API
+// (primarily iOS Safari which has never supported requestFullscreen)
+// ==========================================================================
+
+.chart-fake-fullscreen {
+  position: fixed !important;
+  inset: 0 !important;
+  z-index: 9999;
+  display: flex !important;
+  align-items: stretch;
+  background: var(--bg-secondary, #f0f2f5);
+  padding: 16px;
+  box-sizing: border-box;
+
+  .chart-section {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 0;
+    border-radius: 16px;
+    overflow: hidden;
+  }
+
+  .chart-header {
+    flex-shrink: 0;
+    margin-bottom: 16px;
+  }
+
+  .chart-container {
+    flex: 1;
+    height: auto !important;
+    min-height: 0;
+  }
+
+  .zoom-hint {
+    flex-shrink: 0;
+    padding-bottom: 8px;
+  }
+}
+
+@media (max-width: 768px) {
+  .chart-fake-fullscreen {
+    padding: 8px;
+
+    .chart-section {
+      border-radius: 10px;
+    }
+  }
+}

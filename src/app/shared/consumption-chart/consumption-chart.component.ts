@@ -116,8 +116,24 @@ export class ConsumptionChartComponent implements OnInit, OnDestroy {
   // Hide controls state (used to maximize chart canvas inside fullscreen)
   protected isControlsHidden = signal<boolean>(false);
 
+  /**
+   * Returns true when the native Fullscreen API is supported on the current element.
+   * iOS Safari does not support it at all; most Android browsers do.
+   */
+  private get isNativeFullscreenSupported(): boolean {
+    const el = this.chartWrapperRef?.nativeElement;
+    return !!(
+      el &&
+      (el.requestFullscreen ||
+        (el as any).webkitRequestFullscreen ||
+        (el as any).mozRequestFullScreen ||
+        (el as any).msRequestFullscreen)
+    );
+  }
+
   private readonly onFullscreenChange = () => {
-    const isFS = !!document.fullscreenElement;
+    // Support both standard and webkit-prefixed fullscreenElement (Android Chrome)
+    const isFS = !!(document.fullscreenElement || (document as any).webkitFullscreenElement);
     this.isFullscreen.set(isFS);
     if (!isFS) {
       this.isControlsHidden.set(false); // Reset controls visibility when exiting fullscreen
@@ -270,6 +286,8 @@ export class ConsumptionChartComponent implements OnInit, OnDestroy {
     this.showPredictions.set(this.toggleState.getPredictionsVisibility(this.currentView()));
     this.showPastForecast.set(this.toggleState.getPastForecastVisibility(this.currentView()));
     document.addEventListener('fullscreenchange', this.onFullscreenChange);
+    // webkit prefix required for Android Chrome and some other mobile browsers
+    document.addEventListener('webkitfullscreenchange', this.onFullscreenChange);
   }
 
   protected chartOptions = computed<ChartConfiguration['options']>(() => {
@@ -340,13 +358,56 @@ export class ConsumptionChartComponent implements OnInit, OnDestroy {
   }
 
   protected toggleFullscreen(): void {
-    if (!document.fullscreenElement) {
-      this.chartWrapperRef?.nativeElement.requestFullscreen().catch((err) => {
-        console.error('Failed to enter fullscreen:', err);
-      });
-    } else {
-      document.exitFullscreen();
+    const isCurrentlyFake = this.isFullscreen() && !document.fullscreenElement && !(document as any).webkitFullscreenElement;
+    const isCurrentlyNative = !!(document.fullscreenElement || (document as any).webkitFullscreenElement);
+
+    if (isCurrentlyNative) {
+      // Exit native fullscreen
+      if (document.exitFullscreen) {
+        document.exitFullscreen();
+      } else if ((document as any).webkitExitFullscreen) {
+        (document as any).webkitExitFullscreen();
+      }
+      return;
     }
+
+    if (isCurrentlyFake) {
+      // Exit CSS fake fullscreen
+      this.chartWrapperRef?.nativeElement.classList.remove('chart-fake-fullscreen');
+      this.isFullscreen.set(false);
+      this.isControlsHidden.set(false);
+      document.body.style.overflow = '';
+      setTimeout(() => this.chart?.update(), 100);
+      return;
+    }
+
+    // Enter fullscreen — try native first, fall back to CSS fake fullscreen
+    if (this.isNativeFullscreenSupported) {
+      const el = this.chartWrapperRef?.nativeElement;
+      const request: (() => Promise<void>) | undefined =
+        el?.requestFullscreen?.bind(el) ??
+        (el as any)?.webkitRequestFullscreen?.bind(el) ??
+        (el as any)?.mozRequestFullScreen?.bind(el) ??
+        (el as any)?.msRequestFullscreen?.bind(el);
+
+      if (request) {
+        request().catch((err) => {
+          console.error('Failed to enter fullscreen, falling back to CSS mode:', err);
+          this.enterFakeFullscreen();
+        });
+        return;
+      }
+    }
+
+    // Native API unavailable (e.g. iOS Safari) — use CSS fake fullscreen
+    this.enterFakeFullscreen();
+  }
+
+  private enterFakeFullscreen(): void {
+    this.chartWrapperRef?.nativeElement.classList.add('chart-fake-fullscreen');
+    this.isFullscreen.set(true);
+    document.body.style.overflow = 'hidden';
+    setTimeout(() => this.chart?.update(), 100);
   }
 
   protected toggleControls(): void {
@@ -355,18 +416,39 @@ export class ConsumptionChartComponent implements OnInit, OnDestroy {
   }
 
   // Escape key is handled natively by the browser when in fullscreen.
-  // This handler catches it if the user presses Escape while NOT in native fullscreen.
+  // This handler also catches fake-fullscreen (CSS overlay mode) on mobile.
   @HostListener('document:keydown.escape')
   protected onEscapeKey(): void {
-    if (document.fullscreenElement) {
-      document.exitFullscreen();
+    if (document.fullscreenElement || (document as any).webkitFullscreenElement) {
+      // Native fullscreen — browser handles Escape, but we call exit to sync state
+      if (document.exitFullscreen) {
+        document.exitFullscreen();
+      } else if ((document as any).webkitExitFullscreen) {
+        (document as any).webkitExitFullscreen();
+      }
+    } else if (this.isFullscreen()) {
+      // CSS fake fullscreen — handle Escape manually
+      this.toggleFullscreen();
     }
   }
 
   ngOnDestroy(): void {
     document.removeEventListener('fullscreenchange', this.onFullscreenChange);
-    if (document.fullscreenElement) {
-      document.exitFullscreen();
+    document.removeEventListener('webkitfullscreenchange', this.onFullscreenChange);
+
+    // Clean up native fullscreen
+    if (document.fullscreenElement || (document as any).webkitFullscreenElement) {
+      if (document.exitFullscreen) {
+        document.exitFullscreen();
+      } else if ((document as any).webkitExitFullscreen) {
+        (document as any).webkitExitFullscreen();
+      }
+    }
+
+    // Clean up CSS fake fullscreen
+    if (this.chartWrapperRef?.nativeElement.classList.contains('chart-fake-fullscreen')) {
+      this.chartWrapperRef.nativeElement.classList.remove('chart-fake-fullscreen');
+      document.body.style.overflow = '';
     }
   }
 }

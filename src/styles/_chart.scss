@@ -91,14 +91,36 @@
   }
 }
 
+// Small screens: tighten padding
 @media (max-width: 768px) {
-
   .chart-fullscreen-wrapper:fullscreen,
   .chart-fullscreen-wrapper:-webkit-full-screen {
     padding: 8px;
 
     .chart-section {
       border-radius: 10px;
+    }
+  }
+
+  .chart-fake-fullscreen {
+    padding: 8px;
+
+    .chart-section {
+      border-radius: 10px;
+    }
+  }
+}
+
+// Touch/mobile devices: hide controls in fullscreen regardless of orientation.
+// Using (pointer: coarse) instead of a width breakpoint means this rule holds
+// even after rotating to landscape (where width may exceed 768px).
+@media (pointer: coarse) {
+  .chart-fullscreen-wrapper:fullscreen,
+  .chart-fullscreen-wrapper:-webkit-full-screen,
+  .chart-fake-fullscreen {
+    .chart-controls,
+    .toggle-controls-btn {
+      display: none !important;
     }
   }
 }
@@ -144,12 +166,3 @@
   }
 }
 
-@media (max-width: 768px) {
-  .chart-fake-fullscreen {
-    padding: 8px;
-
-    .chart-section {
-      border-radius: 10px;
-    }
-  }
-}

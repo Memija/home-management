@@ -32,14 +32,16 @@
       @if (!isControlsHidden()) {
       <div class="chart-controls">
         <div class="display-mode-toggle">
-          <button type="button" [class.active]="displayMode() === 'total'" (click)="setDisplayMode('total')">
+          <button type="button" [class.active]="displayMode() === 'total'" (click)="setDisplayMode('total')"
+            title="{{ 'CHART.DISPLAY_MODE_TOTAL' | translate }}" aria-label="{{ 'CHART.DISPLAY_MODE_TOTAL' | translate }}">
             <lucide-icon [img]="BarChart3Icon" size="16"></lucide-icon>
-            {{ 'CHART.DISPLAY_MODE_TOTAL' | translate }}
+            <span class="control-text">{{ 'CHART.DISPLAY_MODE_TOTAL' | translate }}</span>
           </button>
           <button type="button" [class.active]="displayMode() === 'incremental'"
-            (click)="setDisplayMode('incremental')">
+            (click)="setDisplayMode('incremental')"
+            title="{{ 'CHART.DISPLAY_MODE_INCREMENTAL' | translate }}" aria-label="{{ 'CHART.DISPLAY_MODE_INCREMENTAL' | translate }}">
             <lucide-icon [img]="TrendingUpIcon" size="16"></lucide-icon>
-            {{ 'CHART.DISPLAY_MODE_INCREMENTAL' | translate }}
+            <span class="control-text">{{ 'CHART.DISPLAY_MODE_INCREMENTAL' | translate }}</span>
           </button>
         </div>
         @if (
@@ -47,11 +49,12 @@
         displayMode() === 'incremental') ||
         chartType === 'heating'
         ) {
-        <label class="trendline-toggle" for="show-trendline" [class.disabled]="!hasSufficientDataForTrendline()">
+        <label class="trendline-toggle" for="show-trendline" [class.disabled]="!hasSufficientDataForTrendline()"
+          title="{{ 'CHART.SHOW_TRENDLINE' | translate }}">
           <input id="show-trendline" type="checkbox" [checked]="showTrendline()" (change)="toggleTrendline()"
             [disabled]="!hasSufficientDataForTrendline()" />
           <lucide-icon [img]="ActivityIcon" size="16"></lucide-icon>
-          {{ 'CHART.SHOW_TRENDLINE' | translate }}
+          <span class="control-text">{{ 'CHART.SHOW_TRENDLINE' | translate }}</span>
           @if (!hasSufficientDataForTrendline()) {
           <span class="info-tooltip-container">
             <lucide-icon [img]="InfoIcon" size="14" class="info-icon"></lucide-icon>
@@ -66,11 +69,12 @@
         (chartType === 'water' || chartType === 'electricity') && displayMode() === 'incremental'
         ) {
         <label class="trendline-toggle" for="show-average-comparison"
-          [class.disabled]="familySize() === 0 || !hasSufficientDataForComparison()">
+          [class.disabled]="familySize() === 0 || !hasSufficientDataForComparison()"
+          title="{{ 'CHART.SHOW_AVERAGE' | translate }}">
           <input id="show-average-comparison" type="checkbox" [checked]="showAverageComparison()"
             (change)="toggleAverageComparison()" [disabled]="familySize() === 0 || !hasSufficientDataForComparison()" />
           <lucide-icon [img]="BarChart3Icon" size="16"></lucide-icon>
-          {{ 'CHART.SHOW_AVERAGE' | translate }}
+          <span class="control-text">{{ 'CHART.SHOW_AVERAGE' | translate }}</span>
           @if (familySize() === 0) {
           <span class="info-tooltip-container">
             <lucide-icon [img]="InfoIcon" size="14" class="info-icon"></lucide-icon>
@@ -85,11 +89,12 @@
         </label>
         }
         @if (chartType === 'heating' && displayMode() === 'incremental') {
-        <label class="trendline-toggle" for="show-heating-average" [class.disabled]="!hasSufficientDataForComparison()">
+        <label class="trendline-toggle" for="show-heating-average" [class.disabled]="!hasSufficientDataForComparison()"
+          title="{{ 'CHART.SHOW_AVERAGE' | translate }}">
           <input id="show-heating-average" type="checkbox" [checked]="showAverageComparison()"
             (change)="toggleAverageComparison()" [disabled]="!hasSufficientDataForComparison()" />
           <lucide-icon [img]="BarChart3Icon" size="16"></lucide-icon>
-          {{ 'CHART.SHOW_AVERAGE' | translate }}
+          <span class="control-text">{{ 'CHART.SHOW_AVERAGE' | translate }}</span>
           <span class="info-tooltip-container">
             <lucide-icon [img]="InfoIcon" size="14" class="info-icon"></lucide-icon>
             <span class="info-tooltip info-tooltip-wide">{{
@@ -105,42 +110,46 @@
         </label>
         }
         @if (prediction() && displayMode() === 'incremental') {
-        <label class="trendline-toggle" for="show-predictions">
+        <label class="trendline-toggle" for="show-predictions" title="{{ 'CHART.SHOW_PREDICTIONS' | translate }}">
           <input id="show-predictions" type="checkbox" [checked]="showPredictions()" (change)="togglePredictions()" />
           <lucide-icon [img]="SmartIcon" size="16"></lucide-icon>
-          {{ 'CHART.SHOW_PREDICTIONS' | translate }}
+          <span class="control-text">{{ 'CHART.SHOW_PREDICTIONS' | translate }}</span>
         </label>
-        <label class="trendline-toggle" for="show-past-forecast">
+        <label class="trendline-toggle" for="show-past-forecast" title="{{ 'CHART.SHOW_PAST_FORECAST' | translate }}">
           <input id="show-past-forecast" type="checkbox" [checked]="showPastForecast()" (change)="togglePastForecast()" />
           <lucide-icon [img]="TargetIcon" size="16"></lucide-icon>
-          {{ 'CHART.SHOW_PAST_FORECAST' | translate }}
+          <span class="control-text">{{ 'CHART.SHOW_PAST_FORECAST' | translate }}</span>
         </label>
         }
         @if (chartType !== 'electricity') {
         <div class="chart-filters">
-          <button type="button" [class.active]="currentView() === 'total'" (click)="setView('total')">
+          <button type="button" [class.active]="currentView() === 'total'" (click)="setView('total')"
+            title="{{ 'HOME.FILTERS.TOTAL' | translate }}" aria-label="{{ 'HOME.FILTERS.TOTAL' | translate }}">
             <lucide-icon [img]="BarChart3Icon" size="16"></lucide-icon>
-            {{ 'HOME.FILTERS.TOTAL' | translate }}
+            <span class="control-text">{{ 'HOME.FILTERS.TOTAL' | translate }}</span>
           </button>
-          <button type="button" [class.active]="currentView() === 'by-room'" (click)="setView('by-room')">
+          <button type="button" [class.active]="currentView() === 'by-room'" (click)="setView('by-room')"
+            title="{{ 'HOME.FILTERS.BY_ROOM' | translate }}" aria-label="{{ 'HOME.FILTERS.BY_ROOM' | translate }}">
             <lucide-icon [img]="DoorOpenIcon" size="16"></lucide-icon>
-            {{ 'HOME.FILTERS.BY_ROOM' | translate }}
+            <span class="control-text">{{ 'HOME.FILTERS.BY_ROOM' | translate }}</span>
           </button>
           @if (chartType === 'water' || chartType === 'home') {
-          <button type="button" [class.active]="currentView() === 'by-type'" (click)="setView('by-type')">
+          <button type="button" [class.active]="currentView() === 'by-type'" (click)="setView('by-type')"
+            title="{{ 'HOME.FILTERS.BY_TYPE' | translate }}" aria-label="{{ 'HOME.FILTERS.BY_TYPE' | translate }}">
             <lucide-icon [img]="DropletIcon" size="16"></lucide-icon>
-            {{ 'HOME.FILTERS.BY_TYPE' | translate }}
+            <span class="control-text">{{ 'HOME.FILTERS.BY_TYPE' | translate }}</span>
           </button>
-          <button type="button" [class.active]="currentView() === 'detailed'" (click)="setView('detailed')">
+          <button type="button" [class.active]="currentView() === 'detailed'" (click)="setView('detailed')"
+            title="{{ 'HOME.FILTERS.DETAILED' | translate }}" aria-label="{{ 'HOME.FILTERS.DETAILED' | translate }}">
             <lucide-icon [img]="Grid3x3Icon" size="16"></lucide-icon>
-            {{ 'HOME.FILTERS.DETAILED' | translate }}
+            <span class="control-text">{{ 'HOME.FILTERS.DETAILED' | translate }}</span>
           </button>
           }
         </div>
         }
-        <button type="button" class="reset-zoom-btn" (click)="resetZoom()" title="{{ 'CHART.RESET_ZOOM' | translate }}">
+        <button type="button" class="reset-zoom-btn" (click)="resetZoom()" title="{{ 'CHART.RESET_ZOOM' | translate }}" aria-label="{{ 'CHART.RESET_ZOOM' | translate }}">
           <lucide-icon [img]="ZoomInIcon" size="16"></lucide-icon>
-          {{ 'CHART.RESET_ZOOM' | translate }}
+          <span class="control-text">{{ 'CHART.RESET_ZOOM' | translate }}</span>
         </button>
       </div>
       }

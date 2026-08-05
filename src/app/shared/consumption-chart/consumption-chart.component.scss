@@ -247,25 +247,50 @@
 
   .chart-controls {
     width: 100%;
-  }
+    gap: 8px;
 
-  .display-mode-toggle {
-    display: block;
-    width: 100%;
-
-    button {
-      flex: 1;
-      justify-content: center;
+    .control-text {
+      display: none;
     }
-  }
 
-  .chart-filters {
-    width: 100%;
+    .display-mode-toggle {
+      display: flex;
+      width: auto;
 
-    button {
-      flex: 1;
-      justify-content: center;
-      min-width: calc(50% - 4px);
+      button {
+        flex: none;
+        padding: 8px 14px;
+        justify-content: center;
+      }
+    }
+
+    .trendline-toggle {
+      padding: 6px 12px;
+      gap: 6px;
+
+      .control-text {
+        display: inline;
+      }
+
+      lucide-icon {
+        margin: 0;
+      }
+    }
+
+    .chart-filters {
+      width: auto;
+      gap: 6px;
+
+      button {
+        flex: none;
+        min-width: 0;
+        padding: 8px 14px;
+        justify-content: center;
+      }
+    }
+
+    .reset-zoom-btn {
+      padding: 8px 14px;
     }
   }
 

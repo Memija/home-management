@@ -11,6 +11,7 @@ Object.defineProperty(window, 'navigator', {
     userAgent: 'node.js',
   },
   writable: true,
+  configurable: true,
 });
 
 getTestBed().initTestEnvironment(BrowserDynamicTestingModule, platformBrowserDynamicTesting());

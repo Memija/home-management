@@ -29,6 +29,55 @@ function buildLegendFilter(languageService: LanguageService) {
   };
 }
 
+export function escapeRegExp(str: string): string {
+  return str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+}
+
+/**
+ * Replaces occurrences of a translated label (with optional leading separators like " - " or " ("
+ * and optional closing parens) with a compact icon symbol.
+ */
+export function replaceLabelWithIcon(text: string, label: string, icon: string): string {
+  if (!label || !new RegExp(escapeRegExp(label), 'i').test(text)) return text;
+  const pattern = new RegExp(`(\\s*[-—–(（\\[]\\s*)?${escapeRegExp(label)}(\\s*[)）\\]])?`, 'gi');
+  return text.replace(pattern, ` ${icon}`).trim();
+}
+
+/**
+ * Generates compact legend labels on mobile screens by substituting lengthy suffix strings
+ * (e.g., " - Consumption prediction" or " (Daily Average Consumption)") with concise symbols/icons.
+ */
+function buildGenerateLabels(languageService: LanguageService) {
+  return (chart: any): LegendItem[] => {
+    const defaultGenerator = Chart.defaults.plugins.legend.labels.generateLabels;
+    const items = defaultGenerator(chart);
+
+    if (typeof window !== 'undefined' && window.innerWidth <= 768) {
+      const replacements: Array<[string, string]> = [
+        [languageService.translate('CHART.CONSUMPTION_PREDICTION'), '🔮'],
+        [languageService.translate('CHART.TRENDLINE'), '📈'],
+        [languageService.translate('CHART.COUNTRY_AVERAGE'), '🌐'],
+        [languageService.translate('CHART.PAST_FORECAST'), '🎯'],
+        [languageService.translate('CHART.INCREMENTAL_CONSUMPTION'), '📅'],
+        [languageService.translate('CHART.DISPLAY_MODE_INCREMENTAL'), '📅'],
+        [languageService.translate('CHART.TOTAL_WEEKLY_CONSUMPTION'), '∑'],
+        [languageService.translate('CHART.DISPLAY_MODE_TOTAL'), '∑'],
+        [languageService.translate('CHART.TOTAL_CONSUMPTION'), '∑'],
+      ];
+
+      items.forEach((item) => {
+        let text = item.text || '';
+        for (const [label, icon] of replacements) {
+          text = replaceLabelWithIcon(text, label, icon);
+        }
+        item.text = text;
+      });
+    }
+
+    return items;
+  };
+}
+
 /**
  * Handles legend-item clicks so that clicking a main data series also
  * toggles its related trendline, country-average, and prediction datasets.
@@ -257,6 +306,7 @@ export function buildChartOptions(deps: ChartOptionsBuilderDeps): ChartConfigura
         position: 'top',
         labels: {
           filter: buildLegendFilter(languageService),
+          generateLabels: buildGenerateLabels(languageService),
         },
         onClick: buildLegendClickHandler(languageService),
       },

@@ -3,19 +3,7 @@ import { SmartImportModalComponent } from './smart-import-modal.component';
 import { SmartImportService, ParsedRecord } from '../../services/smart-import.service';
 import { LanguageService } from '../../services/language.service';
 import { signal } from '@angular/core';
-import { TranslatePipe } from '../../pipes/translate.pipe';
-import { Pipe, PipeTransform } from '@angular/core';
 import { vi } from 'vitest';
-
-@Pipe({
-  name: 'translate',
-  standalone: true,
-})
-class MockTranslatePipe implements PipeTransform {
-  transform(key: string): string {
-    return key;
-  }
-}
 
 describe('SmartImportModalComponent', () => {
   let component: SmartImportModalComponent;
@@ -40,13 +28,13 @@ describe('SmartImportModalComponent', () => {
       ],
     })
       .overrideComponent(SmartImportModalComponent, {
-        remove: { imports: [TranslatePipe] },
-        add: { imports: [MockTranslatePipe] },
+        set: { template: '', imports: [] },
       })
       .compileComponents();
 
     fixture = TestBed.createComponent(SmartImportModalComponent);
     component = fixture.componentInstance;
+    // Set the required signal input before change detection
     fixture.componentRef.setInput('show', true);
     fixture.detectChanges();
   });

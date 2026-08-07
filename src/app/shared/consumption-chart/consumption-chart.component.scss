@@ -1,3 +1,7 @@
+@use 'variables' as *;
+
+$trendline-purple: #9b59b6;
+
 .chart-section {
   background: var(--card-bg);
   border-radius: 12px;
@@ -14,12 +18,6 @@
   margin-bottom: 24px;
   flex-wrap: wrap;
   gap: 16px;
-
-  h2 {
-    margin: 0;
-    color: var(--text-primary);
-    font-size: 1.5rem;
-  }
 }
 
 .title-with-help {
@@ -30,6 +28,8 @@
 
   h2 {
     margin: 0;
+    color: var(--text-primary);
+    font-size: 1.5rem;
   }
 }
 
@@ -39,25 +39,102 @@
   gap: 4px;
 }
 
-// Expand to fullscreen and toggle controls icon buttons
+// Shared interactive control styles (reduces compiled CSS bundle size)
+.display-mode-toggle button,
+.trendline-toggle,
+.chart-filters button,
+.reset-zoom-btn,
+.expand-chart-btn,
+.toggle-controls-btn {
+  display: flex;
+  align-items: center;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s;
+  font-size: 0.875rem;
+  gap: 6px;
+}
+
+.display-mode-toggle button,
+.trendline-toggle,
+.reset-zoom-btn {
+  padding: 6px 12px;
+  color: var(--text-secondary);
+}
+
+.expand-chart-btn,
+.toggle-controls-btn {
+  padding: 5px;
+  color: var(--text-secondary);
+  justify-content: center;
+}
+
+.display-mode-toggle button,
 .expand-chart-btn,
 .toggle-controls-btn {
   background: transparent;
   border: 1px solid transparent;
-  padding: 5px;
-  color: var(--text-secondary);
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 6px;
-  transition: all 0.2s ease;
+}
 
-  &:hover {
-    background: var(--bg-secondary);
-    border-color: var(--border-color);
-    color: #007bff;
-  }
+.trendline-toggle,
+.chart-filters button,
+.reset-zoom-btn {
+  border: 1px solid var(--border-color);
+}
+
+.chart-filters button,
+.reset-zoom-btn {
+  background: var(--card-bg);
+}
+
+.chart-filters button {
+  padding: 8px 16px;
+  color: var(--text-primary);
+}
+
+.trendline-toggle {
+  background: var(--bg-secondary);
+}
+
+button lucide-icon {
+  flex-shrink: 0;
+}
+
+// Hover and active states
+.expand-chart-btn:hover,
+.toggle-controls-btn:hover {
+  background: var(--bg-secondary);
+  border-color: var(--border-color);
+  color: $primary;
+}
+
+.display-mode-toggle button:hover {
+  background: var(--card-bg);
+  color: $primary;
+}
+
+.chart-filters button:hover {
+  background: var(--bg-secondary);
+  border-color: $primary;
+}
+
+.reset-zoom-btn:hover {
+  background: var(--bg-secondary);
+  border-color: $primary;
+  color: $primary;
+}
+
+.display-mode-toggle button.active {
+  background: var(--card-bg);
+  color: $primary;
+  border-color: $primary;
+  box-shadow: 0 1px 3px rgba($primary, 0.2);
+}
+
+.chart-filters button.active {
+  background: $primary;
+  color: white;
+  border-color: $primary;
 }
 
 .chart-controls {
@@ -73,64 +150,22 @@
   background: var(--bg-secondary);
   border-radius: 8px;
   border: 1px solid var(--border-color);
-
-  button {
-    padding: 6px 12px;
-    border: 1px solid transparent;
-    background: transparent;
-    border-radius: 6px;
-    cursor: pointer;
-    transition: all 0.2s;
-    font-size: 0.875rem;
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    color: var(--text-secondary);
-
-    lucide-icon {
-      flex-shrink: 0;
-    }
-
-    &:hover {
-      background: var(--card-bg);
-      color: #007bff;
-    }
-
-    &.active {
-      background: var(--card-bg);
-      color: #007bff;
-      border-color: #007bff;
-      box-shadow: 0 1px 3px rgba(0, 123, 255, 0.2);
-    }
-  }
 }
 
 .trendline-toggle {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  padding: 6px 12px;
-  background: var(--bg-secondary);
-  border: 1px solid var(--border-color);
-  border-radius: 6px;
-  font-size: 0.875rem;
-  color: var(--text-secondary);
-  cursor: pointer;
-  transition: all 0.2s;
-
   input[type='checkbox'] {
     margin: 0;
     cursor: pointer;
   }
 
   lucide-icon {
-    color: #9b59b6;
+    color: $trendline-purple;
   }
 
   &:hover:not(.disabled) {
     background: var(--card-bg);
-    border-color: #9b59b6;
-    color: #9b59b6;
+    border-color: $trendline-purple;
+    color: $trendline-purple;
   }
 
   &.disabled {
@@ -142,31 +177,8 @@
     }
 
     lucide-icon {
-      color: #adb5bd;
+      color: $gray-500;
     }
-  }
-
-  // Override info-tooltip-container positioning for this component
-  .info-tooltip-container {
-    margin-left: auto;
-
-    // Position tooltip to the right to prevent overflow on mobile
-    .info-tooltip {
-      left: auto;
-      right: 0;
-      transform: none;
-      max-width: 280px;
-
-      &::after {
-        left: auto;
-        right: 8px;
-        transform: none;
-      }
-    }
-  }
-
-  .info-icon.warning {
-    color: #ffc107;
   }
 }
 
@@ -174,61 +186,34 @@
   display: flex;
   gap: 8px;
   flex-wrap: wrap;
+}
 
-  button {
-    padding: 8px 16px;
-    border: 1px solid var(--border-color);
-    background: var(--card-bg);
-    border-radius: 6px;
-    cursor: pointer;
-    transition: all 0.2s;
-    font-size: 0.875rem;
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    color: var(--text-primary);
+// Info tooltips (flattened hierarchy to avoid deep attribute selector generation)
+.info-tooltip-container {
+  margin-left: auto;
+}
 
-    lucide-icon {
-      flex-shrink: 0;
-    }
+.info-tooltip {
+  left: auto;
+  right: 0;
+  transform: none;
+  max-width: 280px;
 
-    &:hover {
-      background: var(--bg-secondary);
-      border-color: #007bff;
-    }
-
-    &.active {
-      background: #007bff;
-      color: white;
-      border-color: #007bff;
-    }
+  &::after {
+    left: auto;
+    right: 8px;
+    transform: none;
   }
+}
+
+.info-icon.warning {
+  color: $warning;
 }
 
 .chart-container {
   position: relative;
   height: 300px;
   width: 100%;
-}
-
-.reset-zoom-btn {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  padding: 6px 12px;
-  border: 1px solid var(--border-color);
-  background: var(--card-bg);
-  border-radius: 6px;
-  cursor: pointer;
-  transition: all 0.2s;
-  font-size: 0.875rem;
-  color: var(--text-secondary);
-
-  &:hover {
-    background: var(--bg-secondary);
-    border-color: #007bff;
-    color: #007bff;
-  }
 }
 
 .zoom-hint {
@@ -248,49 +233,51 @@
   .chart-controls {
     width: 100%;
     gap: 8px;
+  }
 
+  .control-text {
+    display: none;
+  }
+
+  .display-mode-toggle {
+    width: auto;
+  }
+
+  .display-mode-toggle button,
+  .chart-filters button {
+    padding: 8px 14px;
+  }
+
+  .reset-zoom-btn {
+    padding: 8px 14px;
+    
     .control-text {
-      display: none;
+      display: inline;
+    }
+  }
+
+  .display-mode-toggle button,
+  .chart-filters button {
+    flex: none;
+    justify-content: center;
+  }
+
+  .trendline-toggle {
+    .control-text {
+      display: inline;
     }
 
-    .display-mode-toggle {
-      display: flex;
-      width: auto;
-
-      button {
-        flex: none;
-        padding: 8px 14px;
-        justify-content: center;
-      }
+    lucide-icon {
+      margin: 0;
     }
+  }
 
-    .trendline-toggle {
-      padding: 6px 12px;
-      gap: 6px;
+  .chart-filters {
+    width: auto;
+    gap: 6px;
 
-      .control-text {
-        display: inline;
-      }
-
-      lucide-icon {
-        margin: 0;
-      }
-    }
-
-    .chart-filters {
-      width: auto;
-      gap: 6px;
-
-      button {
-        flex: none;
-        min-width: 0;
-        padding: 8px 14px;
-        justify-content: center;
-      }
-    }
-
-    .reset-zoom-btn {
-      padding: 8px 14px;
+    button {
+      min-width: 0;
     }
   }
 

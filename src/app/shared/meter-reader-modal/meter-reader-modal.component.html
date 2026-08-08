@@ -68,7 +68,7 @@
             </div>
             <span class="option-label">{{ 'METER_READER.UPLOAD_IMAGE' | translate }}</span>
             <span class="option-hint">{{ 'METER_READER.UPLOAD_HINT' | translate }}</span>
-            <input type="file" id="meter-image-upload" accept="image/*" [attr.capture]="'environment'"
+            <input type="file" id="meter-image-upload" accept="image/*"
               (change)="onFileSelected($event)" class="hidden-input" />
           </label>
         </div>

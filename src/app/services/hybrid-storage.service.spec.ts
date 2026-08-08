@@ -31,6 +31,8 @@ describe('HybridStorageService', () => {
     exportAll: Mock;
     importAll: Mock;
     importRecords: Mock;
+    getCloudUpdateTimestamp: Mock;
+    updateCloudTimestamp: Mock;
   };
   let authServiceSpy: { isAuthenticated: Mock };
   let demoServiceSpy: { isDemoMode: Mock };
@@ -74,6 +76,8 @@ describe('HybridStorageService', () => {
       exportAll: vi.fn(),
       importAll: vi.fn(),
       importRecords: vi.fn(),
+      getCloudUpdateTimestamp: vi.fn(),
+      updateCloudTimestamp: vi.fn(),
     };
     authServiceSpy = { isAuthenticated: vi.fn() };
     demoServiceSpy = { isDemoMode: vi.fn() };
@@ -90,6 +94,10 @@ describe('HybridStorageService', () => {
     });
 
     service = TestBed.inject(HybridStorageService);
+    
+    // Set default mock returns for new timestamp methods
+    firebaseStorageSpy.getCloudUpdateTimestamp.mockResolvedValue(0);
+    firebaseStorageSpy.updateCloudTimestamp.mockResolvedValue(undefined);
     // Spies are already assigned above, no need to re-inject and cast unless testing provider logic explicitly
   });
 
@@ -450,6 +458,52 @@ describe('HybridStorageService', () => {
     it('should handle empty localStorage', () => {
       service.refreshLocalContentStatus();
       expect(service.hasUserContent()).toBe(false);
+    });
+  });
+  describe('smartSync()', () => {
+    beforeEach(() => {
+      service.mode.set('cloud');
+      authServiceSpy.isAuthenticated.mockReturnValue(true);
+      demoServiceSpy.isDemoMode.mockReturnValue(false);
+    });
+
+    it('should pull from cloud if cloud is newer', async () => {
+      firebaseStorageSpy.getCloudUpdateTimestamp.mockResolvedValue(100);
+      localStorageSpy.getPreference.mockReturnValue('50'); // local timestamp
+      
+      const pullSpy = vi.spyOn(service, 'pullFromCloud').mockResolvedValue(undefined);
+      const migrateSpy = vi.spyOn(service, 'migrateLocalToCloud').mockResolvedValue(undefined);
+
+      await service.smartSync();
+
+      expect(pullSpy).toHaveBeenCalled();
+      expect(migrateSpy).not.toHaveBeenCalled();
+    });
+
+    it('should push to cloud if local is newer', async () => {
+      firebaseStorageSpy.getCloudUpdateTimestamp.mockResolvedValue(50);
+      localStorageSpy.getPreference.mockReturnValue('100');
+      
+      const pullSpy = vi.spyOn(service, 'pullFromCloud').mockResolvedValue(undefined);
+      const migrateSpy = vi.spyOn(service, 'migrateLocalToCloud').mockResolvedValue(undefined);
+
+      await service.smartSync();
+
+      expect(pullSpy).not.toHaveBeenCalled();
+      expect(migrateSpy).toHaveBeenCalled();
+    });
+
+    it('should do nothing if timestamps are equal', async () => {
+      firebaseStorageSpy.getCloudUpdateTimestamp.mockResolvedValue(100);
+      localStorageSpy.getPreference.mockReturnValue('100');
+      
+      const pullSpy = vi.spyOn(service, 'pullFromCloud').mockResolvedValue(undefined);
+      const migrateSpy = vi.spyOn(service, 'migrateLocalToCloud').mockResolvedValue(undefined);
+
+      await service.smartSync();
+
+      expect(pullSpy).not.toHaveBeenCalled();
+      expect(migrateSpy).not.toHaveBeenCalled();
     });
   });
 });

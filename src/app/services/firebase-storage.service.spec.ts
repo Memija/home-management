@@ -265,4 +265,39 @@ describe('FirebaseStorageService', () => {
       expect(mockDeleteDoc).toHaveBeenCalledWith('ref2');
     });
   });
+  describe('Sync Metadata', () => {
+    it('should update cloud timestamp', async () => {
+      mockDoc.mockReturnValue('doc-ref');
+      const timestamp = 123456789;
+
+      await service.updateCloudTimestamp(timestamp);
+
+      expect(mockDoc).toHaveBeenCalledWith(firestoreMock, 'users/test-uid/data/_sync_metadata');
+      expect(mockSetDoc).toHaveBeenCalledWith('doc-ref', { last_cloud_update: timestamp }, { merge: true });
+    });
+
+    it('should get cloud timestamp if doc exists', async () => {
+      mockDoc.mockReturnValue('doc-ref');
+      mockGetDoc.mockResolvedValue({
+        exists: () => true,
+        data: () => ({ last_cloud_update: 123456789 }),
+      });
+
+      const result = await service.getCloudUpdateTimestamp();
+
+      expect(mockDoc).toHaveBeenCalledWith(firestoreMock, 'users/test-uid/data/_sync_metadata');
+      expect(mockGetDoc).toHaveBeenCalledWith('doc-ref');
+      expect(result).toBe(123456789);
+    });
+
+    it('should return null if metadata doc does not exist', async () => {
+      mockDoc.mockReturnValue('doc-ref');
+      mockGetDoc.mockResolvedValue({
+        exists: () => false,
+      });
+
+      const result = await service.getCloudUpdateTimestamp();
+      expect(result).toBeNull();
+    });
+  });
 });

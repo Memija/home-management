@@ -18,6 +18,7 @@ export type StorageMode = 'local' | 'cloud';
 
 const STORAGE_MODE_KEY = 'storage_mode';
 const LAST_SYNC_KEY = 'last_sync_timestamp';
+const LAST_LOCAL_UPDATE_KEY = 'last_local_update_timestamp';
 
 // Core settings keys that don't follow a simple pattern
 const CORE_SETTINGS_KEYS = [
@@ -118,26 +119,25 @@ export class HybridStorageService extends StorageService {
       this.loadStoredMode();
       this.refreshLocalContentStatus();
 
-      // Enable cloud mode automatically if user signs in and there's no local data
+      // Handle cloud sync automatically on startup if user signs in
       effect(() => {
         const authenticated = this.authService.isAuthenticated();
-        const noLocalContent = !this.hasUserContent();
+        const currentMode = untracked(() => this.mode());
+        const isDemo = untracked(() => this.demoService.isDemoMode());
+        const noLocalContent = untracked(() => !this.hasUserContent());
 
-        if (authenticated && noLocalContent) {
-          // Check other conditions untracked to avoid unnecessary dependencies
-          const currentMode = untracked(() => this.mode());
-          const isDemo = untracked(() => this.demoService.isDemoMode());
-
-          if (currentMode === 'local' && !isDemo) {
-            console.info(
-              '[HybridStorage] Auto-enabling cloud mode (User signed in + No local data)',
-            );
+        if (authenticated && !isDemo) {
+          if (noLocalContent && currentMode === 'local') {
             untracked(() => {
               this.setMode('cloud');
-              // If we just enabled cloud mode because there was no data,
-              // we should pull whatever is in the cloud to this device
               this.pullFromCloud().catch((err) =>
                 console.error('[HybridStorage] Auto-pull failed:', err),
+              );
+            });
+          } else if (currentMode === 'cloud') {
+            untracked(() => {
+              this.smartSync().catch(err => 
+                console.error('[HybridStorage] Smart sync failed:', err)
               );
             });
           }
@@ -193,17 +193,19 @@ export class HybridStorageService extends StorageService {
    * Save data - always writes to localStorage, optionally syncs to cloud
    */
   async save<T>(key: string, data: T): Promise<void> {
+    const ts = Date.now();
+    this.updateLocalTimestamp(ts);
     // Always save to localStorage first (cache-first)
     await this.localStorage.save(key, data);
 
     // If cloud mode is active, sync in background
     if (this.isCloudMode()) {
       if (isSettingsKey(key)) {
-        this.firebaseStorage.updateSettings({ [key]: data }).catch((error) => {
+        this.firebaseStorage.updateSettings({ [key]: data }).then(() => this.firebaseStorage.updateCloudTimestamp(ts)).catch((error) => {
           console.error(`Background settings sync failed for key ${key}:`, error);
         });
       } else {
-        this.syncToCloud(key, data).catch((error) => {
+        this.syncToCloud(key, data).then(() => this.firebaseStorage.updateCloudTimestamp(ts)).catch((error) => {
           console.error(`Background sync failed for key ${key}:`, error);
         });
       }
@@ -223,15 +225,17 @@ export class HybridStorageService extends StorageService {
    * Delete data - deletes from localStorage, optionally from cloud
    */
   async delete(key: string): Promise<void> {
+    const ts = Date.now();
+    this.updateLocalTimestamp(ts);
     await this.localStorage.delete(key);
 
     if (this.isCloudMode()) {
       if (isSettingsKey(key)) {
-        this.firebaseStorage.deleteSetting(key).catch((error) => {
+        this.firebaseStorage.deleteSetting(key).then(() => this.firebaseStorage.updateCloudTimestamp(ts)).catch((error) => {
           console.error(`Background cloud setting delete failed for key ${key}:`, error);
         });
       } else {
-        this.firebaseStorage.delete(key).catch((error) => {
+        this.firebaseStorage.delete(key).then(() => this.firebaseStorage.updateCloudTimestamp(ts)).catch((error) => {
           console.error(`Background cloud delete failed for key ${key}:`, error);
         });
       }
@@ -258,10 +262,12 @@ export class HybridStorageService extends StorageService {
    * Import all data to localStorage, optionally sync to cloud
    */
   async importAll(data: Record<string, unknown>): Promise<void> {
+    const ts = Date.now();
+    this.updateLocalTimestamp(ts);
     await this.localStorage.importAll(data);
 
     if (this.isCloudMode()) {
-      this.firebaseStorage.importAll(data).catch((error) => {
+      this.firebaseStorage.importAll(data).then(() => this.firebaseStorage.updateCloudTimestamp(ts)).catch((error) => {
         console.error('Background cloud import failed:', error);
       });
     }
@@ -280,10 +286,12 @@ export class HybridStorageService extends StorageService {
    * Import records to localStorage, optionally sync to cloud
    */
   async importRecords(recordKey: string, records: unknown[]): Promise<void> {
+    const ts = Date.now();
+    this.updateLocalTimestamp(ts);
     await this.localStorage.importRecords(recordKey, records);
 
     if (this.isCloudMode()) {
-      this.firebaseStorage.importRecords(recordKey, records).catch((error) => {
+      this.firebaseStorage.importRecords(recordKey, records).then(() => this.firebaseStorage.updateCloudTimestamp(ts)).catch((error) => {
         console.error(`Background cloud record import failed for ${recordKey}:`, error);
       });
     }
@@ -314,6 +322,43 @@ export class HybridStorageService extends StorageService {
     this.lastSyncTime.set(now);
     if (this.isBrowser) {
       this.localStorage.setPreference(LAST_SYNC_KEY, now.toISOString());
+    }
+  }
+
+  private updateLocalTimestamp(timestamp: number): void {
+    if (this.isBrowser) {
+      this.localStorage.setPreference(LAST_LOCAL_UPDATE_KEY, timestamp.toString());
+    }
+  }
+
+  private getLocalTimestamp(): number {
+    if (!this.isBrowser) return 0;
+    const val = this.localStorage.getPreference(LAST_LOCAL_UPDATE_KEY);
+    return val ? parseInt(val, 10) : 0;
+  }
+
+  async smartSync(): Promise<void> {
+    if (!this.canUseCloud()) return;
+
+    this.isDownloading.set(true);
+    try {
+      const cloudTs = await this.firebaseStorage.getCloudUpdateTimestamp();
+      const localTs = this.getLocalTimestamp();
+
+      const cTime = cloudTs || 0;
+      const lTime = localTs || 0;
+
+      if (cTime > lTime) {
+        await this.pullFromCloud();
+      } else if (lTime > cTime) {
+        await this.migrateLocalToCloud();
+      } else {
+        // They are equal; no action needed
+      }
+    } catch (error) {
+      console.error('[HybridStorage] Smart sync failed:', error);
+    } finally {
+      this.isDownloading.set(false);
     }
   }
 
@@ -367,6 +412,7 @@ export class HybridStorageService extends StorageService {
       }
 
       this.updateLastSyncTime();
+      await this.firebaseStorage.updateCloudTimestamp(this.getLocalTimestamp());
     } catch (error) {
       console.error('Migration to cloud failed:', error);
       throw error;
@@ -430,6 +476,10 @@ export class HybridStorageService extends StorageService {
 
       this.loadStoredMode(); // Refresh mode signal from imported data
       this.updateLastSyncTime();
+      const cloudTs = await this.firebaseStorage.getCloudUpdateTimestamp();
+      if (cloudTs) {
+        this.updateLocalTimestamp(cloudTs);
+      }
     } catch (error) {
       console.error('Pull from cloud failed:', error);
       throw error;
@@ -475,6 +525,7 @@ export class HybridStorageService extends StorageService {
       if (this.isBrowser) {
         this.localStorage.removePreference(LAST_SYNC_KEY);
       }
+      await this.firebaseStorage.updateCloudTimestamp(0);
     } catch (error) {
       console.error('Clear cloud data failed:', error);
       throw error;
@@ -487,6 +538,7 @@ export class HybridStorageService extends StorageService {
    */
   async clearLocalData(): Promise<void> {
     await this.localStorage.clearAll();
+    this.updateLocalTimestamp(0);
     this.refreshLocalContentStatus();
   }
 

@@ -43,7 +43,10 @@ describe('HeaderComponent', () => {
   beforeEach(async () => {
     // Create spies for services
     const routerSpy = { navigate: vi.fn().mockResolvedValue(true) };
-    const demoSpy = { deactivateDemo: vi.fn() };
+    const demoSpy = { 
+      deactivateDemo: vi.fn(),
+      isDemoMode: vi.fn().mockReturnValue(false)
+    };
 
     // NotificationService mock
     const notificationSpy = {

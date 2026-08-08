@@ -129,8 +129,16 @@ service cloud.firestore {
         && isValidSettings()
         && request.resource.size() < 1048576;
     }
+    
+    // 2. Sync Metadata
+    match /users/{userId}/data/_sync_metadata {
+      allow read: if isOwner(userId);
+      allow write: if isOwner(userId)
+        && request.resource.data.keys().hasAll(['last_cloud_update'])
+        && request.resource.data.last_cloud_update is number;
+    }
 
-    // 2. Consumption Records (Large Data)
+    // 3. Consumption Records (Large Data)
     match /users/{userId}/data/{document} {
       // Allow reading if owner
       allow read: if isOwner(userId);

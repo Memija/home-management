@@ -128,6 +128,8 @@ export class FirebaseStorageService extends StorageService {
 
       const data: Record<string, unknown> = {};
       querySnapshot.forEach((docSnap: import('firebase/firestore').QueryDocumentSnapshot) => {
+        if (docSnap.id === '_sync_metadata') return; // Skip sync metadata
+
         const docData = docSnap.data();
         if (docSnap.id === 'user_settings') {
           // Settings are stored as direct fields, not wrapped in 'value'
@@ -227,6 +229,40 @@ export class FirebaseStorageService extends StorageService {
       await Promise.all(deletePromises);
     } catch (error) {
       console.error('Error deleting all user data from Firestore:', error);
+      throw error;
+    }
+  }
+
+  async getCloudUpdateTimestamp(): Promise<number | null> {
+    if (!this.isBrowser || !this.uid) return null;
+
+    try {
+      const fs = await this.getFirestore();
+      const { doc, getDoc } = await import('firebase/firestore');
+      const docRef = doc(fs, this.getDocPath('_sync_metadata'));
+      const docSnap = await getDoc(docRef);
+
+      if (docSnap.exists()) {
+        const data = docSnap.data();
+        return data['last_cloud_update'] as number;
+      }
+      return null;
+    } catch (error) {
+      console.error('Error loading sync metadata from Firestore:', error);
+      return null;
+    }
+  }
+
+  async updateCloudTimestamp(timestamp: number): Promise<void> {
+    if (!this.isBrowser || !this.uid) return;
+
+    try {
+      const fs = await this.getFirestore();
+      const { doc, setDoc } = await import('firebase/firestore');
+      const docRef = doc(fs, this.getDocPath('_sync_metadata'));
+      await setDoc(docRef, { last_cloud_update: timestamp }, { merge: true });
+    } catch (error) {
+      console.error('Error updating sync metadata in Firestore:', error);
       throw error;
     }
   }

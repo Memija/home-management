@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { STABLE_THRESHOLD } from '../models/prediction.models';
+import { STABLE_THRESHOLD, HEATING_OFF_SEASON_THRESHOLD } from '../models/prediction.models';
 
 /**
  * Pure statistical helper functions used by PredictionCalculationService.
@@ -218,5 +218,41 @@ export class PredictionStatsService {
         max: format(avg + effectiveSd),
       };
     });
+  }
+
+  /**
+   * Detect heating off-season months from historical data.
+   * Groups daily rates by calendar month and flags any month whose average rate
+   * is below HEATING_OFF_SEASON_THRESHOLD (5%) of the peak month's rate.
+   * Requires at least 6 months with data to avoid false detection.
+   * Works for both hemispheres since detection is purely data-driven.
+   */
+  detectOffSeasonMonths(ratesWithMonths: { rate: number; month: number }[]): Set<number> {
+    const monthBuckets: number[][] = Array.from({ length: 12 }, () => []);
+    for (const { rate, month } of ratesWithMonths) {
+      monthBuckets[month].push(rate);
+    }
+
+    const monthsWithData = monthBuckets.filter(b => b.length > 0).length;
+    if (monthsWithData < 6) return new Set();
+
+    const monthlyAvgs = monthBuckets.map(bucket =>
+      bucket.length > 0 ? bucket.reduce((s, v) => s + v, 0) / bucket.length : null,
+    );
+
+    const validAvgs = monthlyAvgs.filter((v): v is number => v !== null && v > 0);
+    if (validAvgs.length === 0) return new Set();
+
+    const peakRate = Math.max(...validAvgs);
+    const offSeasonMonths = new Set<number>();
+
+    for (let m = 0; m < 12; m++) {
+      const avg = monthlyAvgs[m];
+      if (avg !== null && avg < peakRate * HEATING_OFF_SEASON_THRESHOLD) {
+        offSeasonMonths.add(m);
+      }
+    }
+
+    return offSeasonMonths;
   }
 }

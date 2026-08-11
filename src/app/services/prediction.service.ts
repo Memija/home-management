@@ -135,7 +135,7 @@ export class PredictionService {
       validRecords, incrementalData, 'total',
     );
     const total = this.predictionCalculation.buildPrediction(
-      dailyRates, ratesWithMonths, validRecords, 'kWh', accuracyData,
+      dailyRates, ratesWithMonths, validRecords, 'kWh', accuracyData, true,
     );
 
     // Category predictions (rooms)
@@ -158,7 +158,7 @@ export class PredictionService {
           validRecords, incrementalData, roomId,
         );
         categories[roomId] = this.predictionCalculation.buildPrediction(
-          catDailyRates, catRatesWithMonths, validRecords, 'kWh', catAccuracy,
+          catDailyRates, catRatesWithMonths, validRecords, 'kWh', catAccuracy, true,
         );
       }
     }

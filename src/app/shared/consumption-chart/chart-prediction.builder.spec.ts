@@ -357,4 +357,103 @@ describe('appendPredictionDatasets', () => {
       expect(result.datasets.length).toBeGreaterThan(1);
     });
   });
+
+  describe('heating off-season in chart predictions', () => {
+    it('should force prediction values to zero for months flagged as off-season in monthlyRates', () => {
+      // Mock seasonal monthly rates: 0 for May-Sep (4-8), 50 for all other months
+      const monthlyRates = Array.from({ length: 12 }, (_, i) => ({
+        expected: [4, 5, 6, 7, 8].includes(i) ? 0 : 50,
+        min: [4, 5, 6, 7, 8].includes(i) ? 0 : 40,
+        max: [4, 5, 6, 7, 8].includes(i) ? 0 : 60,
+      }));
+
+      // Use a yearly prediction (12 future months) so we cover all calendar months
+      const pred = makeMultiPrediction({
+        dailyYear: 50,
+        dailyYearMin: 40,
+        dailyYearMax: 60,
+        averageDaily: 48,
+        unit: 'kWh',
+        monthlyRates,
+      });
+
+      // Start data in January so future months cover Feb through Jan next year
+      const getData = () => [
+        { ...makeRec('2024-01-15'), date: new Date(2024, 0, 15) },
+        { ...makeRec('2024-02-15'), date: new Date(2024, 1, 15) },
+      ];
+      const chartData = makeChartData([10, 20]);
+      const deps = makeDeps({
+        chartType: 'heating',
+        prediction: pred,
+        predictionPeriod: 365,
+        showPredictions: true,
+        getData,
+      });
+
+      const result = appendPredictionDatasets(chartData, deps);
+
+      // Find the expected prediction dataset
+      const expectedDs = result.datasets.find((ds) =>
+        (ds as any).label?.includes('CHART.CONSUMPTION_PREDICTION'),
+      );
+      expect(expectedDs).toBeDefined();
+
+      // The prediction dataset has: [null, anchor(20), then 12 future months]
+      // Future months start from March 2024 (index 2) through Feb 2025 (index 13)
+      // March=2, April=3, May=4(idx 4), Jun=5(idx 5), Jul=6(idx 6), Aug=7(idx 7), Sep=8(idx 8)
+      // The future date for index i is Feb 2024 + (i - 1) months
+      const data = expectedDs!.data as (number | null)[];
+
+      // Check that off-season months have zero values
+      // Index 2 = Mar, 3 = Apr, 4 = May, 5 = Jun, 6 = Jul, 7 = Aug, 8 = Sep, 9 = Oct, etc.
+      for (let i = 2; i < data.length; i++) {
+        if (data[i] === null) continue;
+        const futureDate = new Date(2024, 1, 15); // last record date
+        futureDate.setMonth(futureDate.getMonth() + (i - 1));
+        const calMonth = futureDate.getMonth();
+
+        if ([4, 5, 6, 7, 8].includes(calMonth)) {
+          expect(data[i]).toBe(0);
+        } else {
+            expect(data[i]).toBeGreaterThan(0);
+        }
+      }
+    });
+
+    it('should NOT force prediction values to zero if monthlyRates are not zero (e.g. water)', () => {
+      // Mock seasonal monthly rates: all > 0
+      const monthlyRates = Array.from({ length: 12 }, (_, i) => ({
+        expected: 50,
+        min: 40,
+        max: 60,
+      }));
+
+      const pred = makeMultiPrediction({
+        dailyYear: 50,
+        dailyYearMin: 40,
+        dailyYearMax: 60,
+        averageDaily: 48,
+        monthlyRates,
+      });
+      const chartData = makeChartData([10, 20]);
+      const deps = makeDeps({
+        chartType: 'water',
+        prediction: pred,
+        predictionPeriod: 365,
+        showPredictions: true,
+      });
+
+      const result = appendPredictionDatasets(chartData, deps);
+      const expectedDs = result.datasets.find((ds) =>
+        (ds as any).label?.includes('CHART.CONSUMPTION_PREDICTION'),
+      );
+      expect(expectedDs).toBeDefined();
+
+      const data = expectedDs!.data as (number | null)[];
+      // All future prediction values should be non-zero
+      const futureValues = data.slice(2).filter(v => v !== null) as number[];
+      expect(futureValues.every(v => v > 0)).toBe(true);
+    });
+  });
 });

@@ -201,6 +201,130 @@ describe('Chart Plugins', () => {
       });
     });
 
+    describe('Predicted zero-consumption periods', () => {
+      it('should draw predicted summer period when prediction values are zero', () => {
+        const chart = createMockChart(3);
+        const records = makeHeatingRecords([100, 200, 300]); // Historical: no flat period
+        (chart as any).data = {
+          labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul'],
+          datasets: [
+            {
+              label: 'Prediction',
+              data: [null, null, 300, 15, 0, 0, 12],
+              borderDash: [4, 4],
+            },
+          ],
+        };
+
+        summerSunPlugin.beforeDatasetsDraw(chart, {}, { enabled: true, records });
+
+        const ctx = chart.ctx as any;
+        expect(ctx.save).toHaveBeenCalled();
+        expect(ctx.fillRect).toHaveBeenCalled();
+
+        // Check that predicted dash [3, 3] was used
+        expect(ctx.setLineDash).toHaveBeenCalledWith([3, 3]);
+
+        // Check that predicted sun symbol ☼ was drawn with amber color
+        const sunCall = ctx.fillText.mock.calls.find((c: any[]) => c[0] === '☼');
+        expect(sunCall).toBeTruthy();
+      });
+
+      it('should draw single-month predicted zero period with centered padding', () => {
+        const chart = createMockChart(3);
+        const records = makeHeatingRecords([100, 200, 300]);
+        (chart as any).data = {
+          labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May'],
+          datasets: [
+            {
+              label: 'Prediction',
+              data: [null, null, 300, 0, 12],
+              borderDash: [4, 4],
+            },
+          ],
+        };
+
+        summerSunPlugin.beforeDatasetsDraw(chart, {}, { enabled: true, records });
+
+        const ctx = chart.ctx as any;
+        expect(ctx.save).toHaveBeenCalled();
+        expect(ctx.fillRect).toHaveBeenCalled();
+      });
+
+      it('should not draw predicted period when all predicted values are greater than zero', () => {
+        const chart = createMockChart(3);
+        const records = makeHeatingRecords([100, 200, 300]);
+        (chart as any).data = {
+          labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
+          datasets: [
+            {
+              label: 'Prediction',
+              data: [null, null, 300, 15, 20, 25],
+              borderDash: [4, 4],
+            },
+          ],
+        };
+
+        summerSunPlugin.beforeDatasetsDraw(chart, {}, { enabled: true, records });
+
+        const ctx = chart.ctx as any;
+        expect(ctx.fillRect).not.toHaveBeenCalled();
+      });
+
+      it('should draw separate historical and predicted periods when separated by active heating', () => {
+        const chart = createMockChart(4);
+        // Historical flat period at index 1-2, heating active at index 3 (last record)
+        const records = makeHeatingRecords([100, 200, 200, 300]);
+        (chart as any).data = {
+          labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul'],
+          datasets: [
+            {
+              label: 'Prediction',
+              data: [null, null, null, 300, 0, 0, 10],
+              borderDash: [4, 4],
+            },
+          ],
+        };
+
+        summerSunPlugin.beforeDatasetsDraw(chart, {}, { enabled: true, records });
+
+        const ctx = chart.ctx as any;
+        // 1 historical period + 1 predicted period = 2 periods drawn
+        expect(ctx.save).toHaveBeenCalledTimes(2);
+        expect(ctx.fillRect).toHaveBeenCalledTimes(2);
+      });
+
+      it('should merge current historical off-season with predicted off-season into a single continuous period with 1 sun', () => {
+        const chart = createMockChart(4);
+        // Historical flat period reaches the end: index 2 to 3 (last record)
+        const records = makeHeatingRecords([100, 200, 300, 300]);
+        (chart as any).data = {
+          labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul'],
+          datasets: [
+            {
+              label: 'Prediction',
+              // Prediction immediately continues off-season at index 4 and 5
+              data: [null, null, null, 300, 0, 0, 10],
+              borderDash: [4, 4],
+            },
+          ],
+        };
+
+        summerSunPlugin.beforeDatasetsDraw(chart, {}, { enabled: true, records });
+
+        const ctx = chart.ctx as any;
+        // Merged into 1 unified period with single save/restore block
+        expect(ctx.save).toHaveBeenCalledTimes(1);
+
+        // Fills both historical yellow and predicted amber (2 fillRect calls within the 1 merged period, flush with 0 white gap)
+        expect(ctx.fillRect).toHaveBeenCalledTimes(2);
+
+        // Only ONE sun symbol ☼ is drawn for the entire ongoing summer season
+        const sunCalls = ctx.fillText.mock.calls.filter((c: any[]) => c[0] === '☼');
+        expect(sunCalls.length).toBe(1);
+      });
+    });
+
     describe('Record type handling', () => {
       it('should handle records without rooms property (getTotal returns 0)', () => {
         const chart = createMockChart(3);

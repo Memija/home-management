@@ -171,6 +171,7 @@ export class PredictionCalculationService {
     records: { date: Date | string }[],
     unit: string,
     accuracyData?: { accuracy: number | null; correctionFactor: number; historicalPredictions: (number | null)[] },
+    isHeating: boolean = false,
   ): PredictionResult {
     // Use linear regression on daily rates to extrapolate trend
     const { slope, intercept } = this.calculationService.calculateLinearRegression(dailyRates);
@@ -229,6 +230,14 @@ export class PredictionCalculationService {
 
     // Build seasonal monthly factors from historical data
     const monthlyRates = this.statsService.calculateMonthlyRates(ratesWithMonths, ratesMean, ratesSd);
+
+    // Zero out off-season months for heating based on user's historical data
+    if (isHeating) {
+      const offSeasonMonths = this.statsService.detectOffSeasonMonths(ratesWithMonths);
+      for (const m of offSeasonMonths) {
+        monthlyRates[m] = { expected: 0, min: 0, max: 0 };
+      }
+    }
 
     // Calculate trend
     const { trend, trendPercentage } = this.statsService.calculateTrend(dailyRates);

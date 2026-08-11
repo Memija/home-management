@@ -52,3 +52,10 @@ export const MIN_RECORDS_FOR_PREDICTION = 4;
 
 /** Threshold percentage for trend classification */
 export const STABLE_THRESHOLD = 3;
+
+/**
+ * If a month's average daily heating rate is below this fraction of the peak
+ * monthly rate, that month is considered off-season (heating turned off).
+ * Derived from the user's own historical data — works for both hemispheres.
+ */
+export const HEATING_OFF_SEASON_THRESHOLD = 0.05;

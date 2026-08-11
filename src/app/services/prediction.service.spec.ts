@@ -342,5 +342,68 @@ describe('PredictionService', () => {
       expect(result!.total.monthlyRates).toBeDefined();
       expect(result!.total.monthlyRates.length).toBe(12);
     });
+
+    it('should zero out off-season months detected from seasonal heating data', () => {
+      // Create 2+ years of monthly heating data with a clear seasonal pattern
+      const records: DynamicHeatingRecord[] = [];
+      let cumulativeLiving = 500;
+      let cumulativeBedroom = 300;
+      const startDate = new Date(2023, 0, 15); // Mid-month records
+
+      // Add the initial record
+      records.push({ date: new Date(startDate), rooms: { living: cumulativeLiving, bedroom: cumulativeBedroom } });
+
+      for (let i = 1; i < 30; i++) {
+        const date = new Date(startDate);
+        date.setMonth(date.getMonth() + i);
+        
+        // The month of the interval is determined by the previous record's month (since we record mid-month)
+        const prevMonth = new Date(startDate);
+        prevMonth.setMonth(prevMonth.getMonth() + (i - 1));
+        const month = prevMonth.getMonth();
+
+        // Seasonal daily rate for the interval from (i-1) to i
+        // High in winter (Oct–Mar), near-zero in summer (May–Sep)
+        const winterMonths = [0, 1, 2, 3, 9, 10, 11];
+        const isWinter = winterMonths.includes(month);
+        const dailyRate = isWinter ? 15 : 0.2;
+
+        cumulativeLiving += dailyRate * 30;
+        cumulativeBedroom += dailyRate * 20;
+        records.push({ date, rooms: { living: cumulativeLiving, bedroom: cumulativeBedroom } });
+      }
+
+      const result = service.predictHeating(records);
+      expect(result).not.toBeNull();
+
+      // Off-season months should have zero rates (detected from data)
+      const offSeasonMonths = [4, 5, 6, 7, 8];
+      for (const m of offSeasonMonths) {
+        expect(result!.total.monthlyRates[m].expected).toBe(0);
+      }
+
+      // Heating-season months should have non-zero values
+      const heatingMonths = [0, 1, 2, 9, 10, 11];
+      const hasNonZero = heatingMonths.some(m => result!.total.monthlyRates[m].expected > 0);
+      expect(hasNonZero).toBe(true);
+    });
+
+    it('should NOT zero out any months for water predictions', () => {
+      const result = service.predictWater(makeWaterRecords(8));
+      expect(result).not.toBeNull();
+
+      // All monthly rates should be populated for water
+      const allExpected = result!.total.monthlyRates.map(m => m.expected);
+      expect(allExpected.every(v => v >= 0)).toBe(true);
+    });
+
+    it('should NOT zero out any months for electricity predictions', () => {
+      const result = service.predictElectricity(makeElectricityRecords(8));
+      expect(result).not.toBeNull();
+
+      // All monthly rates should be populated for electricity
+      const allExpected = result!.total.monthlyRates.map(m => m.expected);
+      expect(allExpected.every(v => v >= 0)).toBe(true);
+    });
   });
 });

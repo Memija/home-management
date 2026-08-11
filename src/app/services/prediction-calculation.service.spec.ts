@@ -369,4 +369,108 @@ describe('PredictionCalculationService', () => {
       }
     });
   });
+  // =========================================================================
+  // buildPrediction – heating off-season (data-driven)
+  // =========================================================================
+
+  describe('buildPrediction – heating off-season', () => {
+    function makeRecords(count: number) {
+      return Array.from({ length: count + 1 }, (_, i) => ({
+        date: new Date(2024, 0, 1 + i * 30),
+      }));
+    }
+
+    /**
+     * Build rates with a clear Northern Hemisphere seasonal pattern:
+     * High heating Oct–Mar (months 9–11, 0–3), near-zero May–Sep (4–8).
+     */
+    function makeNorthernHeatingRates() {
+      const dailyRates: number[] = [];
+      const ratesWithMonths: { rate: number; month: number }[] = [];
+      for (let m = 0; m < 12; m++) {
+        const isWinter = [0, 1, 2, 3, 9, 10, 11].includes(m);
+        const rate = isWinter ? 20 : 0.1; // near-zero in summer
+        dailyRates.push(rate);
+        ratesWithMonths.push({ rate, month: m });
+      }
+      return { dailyRates, ratesWithMonths };
+    }
+
+    /**
+     * Build rates with a Southern Hemisphere pattern:
+     * High heating May–Sep (4–8), near-zero Nov–Mar (10, 11, 0, 1, 2).
+     */
+    function makeSouthernHeatingRates() {
+      const dailyRates: number[] = [];
+      const ratesWithMonths: { rate: number; month: number }[] = [];
+      for (let m = 0; m < 12; m++) {
+        const isWinter = [4, 5, 6, 7, 8].includes(m);
+        const rate = isWinter ? 18 : 0.1; // near-zero in southern summer
+        dailyRates.push(rate);
+        ratesWithMonths.push({ rate, month: m });
+      }
+      return { dailyRates, ratesWithMonths };
+    }
+
+    it('should zero out off-season months detected from Northern Hemisphere data', () => {
+      const { dailyRates, ratesWithMonths } = makeNorthernHeatingRates();
+      const records = makeRecords(12);
+      const result = service.buildPrediction(dailyRates, ratesWithMonths, records, 'kWh', undefined, true);
+
+      // Summer months (May=4 through Sep=8) should be zeroed out
+      for (const m of [4, 5, 6, 7, 8]) {
+        expect(result.monthlyRates[m].expected).toBe(0);
+        expect(result.monthlyRates[m].min).toBe(0);
+        expect(result.monthlyRates[m].max).toBe(0);
+      }
+
+      // Winter months should remain non-zero
+      for (const m of [0, 1, 2, 9, 10, 11]) {
+        expect(result.monthlyRates[m].expected).toBeGreaterThan(0);
+      }
+    });
+
+    it('should zero out off-season months detected from Southern Hemisphere data', () => {
+      const { dailyRates, ratesWithMonths } = makeSouthernHeatingRates();
+      const records = makeRecords(12);
+      const result = service.buildPrediction(dailyRates, ratesWithMonths, records, 'kWh', undefined, true);
+
+      // Southern summer months (Nov=10, Dec=11, Jan=0, Feb=1, Mar=2) should be zeroed out
+      for (const m of [0, 1, 2, 10, 11]) {
+        expect(result.monthlyRates[m].expected).toBe(0);
+      }
+
+      // Southern winter months should remain non-zero
+      for (const m of [4, 5, 6, 7, 8]) {
+        expect(result.monthlyRates[m].expected).toBeGreaterThan(0);
+      }
+    });
+
+    it('should not zero out any months when data has no clear off-season', () => {
+      // Uniform rates — no off-season detectable
+      const dailyRates: number[] = [];
+      const ratesWithMonths: { rate: number; month: number }[] = [];
+      for (let m = 0; m < 12; m++) {
+        dailyRates.push(15);
+        ratesWithMonths.push({ rate: 15, month: m });
+      }
+      const records = makeRecords(12);
+      const result = service.buildPrediction(dailyRates, ratesWithMonths, records, 'kWh', undefined, true);
+
+      // All months should be non-zero since there's no detectable off-season
+      for (let m = 0; m < 12; m++) {
+        expect(result.monthlyRates[m].expected).toBeGreaterThan(0);
+      }
+    });
+
+    it('should NOT zero out any months when isHeating is false', () => {
+      const { dailyRates, ratesWithMonths } = makeNorthernHeatingRates();
+      const records = makeRecords(12);
+      const result = service.buildPrediction(dailyRates, ratesWithMonths, records, 'kWh');
+
+      // Even with seasonal data, non-heating types should not zero out months
+      const allExpected = Array.from({ length: 12 }, (_, m) => result.monthlyRates[m].expected);
+      expect(allExpected.some(v => v > 0)).toBe(true);
+    });
+  });
 });

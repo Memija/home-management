@@ -198,7 +198,8 @@ function generatePredictionData(
   originalLabelsLength: number,
   predictionMonths: number,
   lastRecordDate: Date,
-  predictionPeriod: PredictionPeriod
+  predictionPeriod: PredictionPeriod,
+  chartType: string = 'water',
 ) {
   let lastValueIndex = -1;
   let lastValue = 0;
@@ -256,6 +257,13 @@ function generatePredictionData(
         predDataMin[i] = Math.round(dailyRateMin * 10) / 10;
         predDataMax[i] = Math.round(dailyRateMax * 10) / 10;
       }
+
+      // Force zero for heating months identified as off-season by the prediction model
+      if (chartType === 'heating' && hasSeasonalData && singlePred.monthlyRates![calendarMonth].expected === 0) {
+        predDataExpected[i] = 0;
+        predDataMin[i] = 0;
+        predDataMax[i] = 0;
+      }
     }
   }
 
@@ -287,7 +295,8 @@ function drawTotalPredictions(
     originalLabelsLength,
     predictionMonths,
     lastRecordDate,
-    deps.predictionPeriod
+    deps.predictionPeriod,
+    deps.chartType,
   );
 
   if (deps.showPredictions) {
@@ -412,7 +421,8 @@ function drawSubcategoryPredictions(
         originalLabelsLength,
         predictionMonths,
         lastRecordDate,
-        deps.predictionPeriod
+        deps.predictionPeriod,
+        deps.chartType,
       );
 
       if (deps.showPredictions) {

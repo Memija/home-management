@@ -4,11 +4,15 @@ $trendline-purple: #9b59b6;
 
 .chart-section {
   background: var(--card-bg);
-  border-radius: 12px;
+  border: 1px solid var(--card-border);
+  border-radius: 16px;
   padding: 24px;
-  box-shadow: var(--shadow);
+  box-shadow: var(--shadow-card);
   margin-bottom: 32px;
-  transition: background 0.3s ease;
+  transition:
+    background 0.3s ease,
+    border-color 0.2s ease,
+    box-shadow 0.3s ease;
 }
 
 .chart-header {
@@ -30,6 +34,8 @@ $trendline-purple: #9b59b6;
     margin: 0;
     color: var(--text-primary);
     font-size: 1.5rem;
+    font-weight: 700;
+    letter-spacing: -0.02em;
   }
 }
 
@@ -39,120 +45,85 @@ $trendline-purple: #9b59b6;
   gap: 4px;
 }
 
-// Shared interactive control styles (reduces compiled CSS bundle size)
-.display-mode-toggle button,
-.trendline-toggle,
-.chart-filters button,
-.reset-zoom-btn,
-.expand-chart-btn,
-.toggle-controls-btn {
-  display: flex;
-  align-items: center;
-  border-radius: 6px;
-  cursor: pointer;
-  transition: all 0.2s;
-  font-size: 0.875rem;
-  gap: 6px;
-}
-
-.display-mode-toggle button,
-.trendline-toggle,
-.reset-zoom-btn {
-  padding: 6px 12px;
-  color: var(--text-secondary);
-}
-
-.expand-chart-btn,
-.toggle-controls-btn {
-  padding: 5px;
-  color: var(--text-secondary);
-  justify-content: center;
-}
-
-.display-mode-toggle button,
-.expand-chart-btn,
-.toggle-controls-btn {
-  background: transparent;
-  border: 1px solid transparent;
-}
-
-.trendline-toggle,
-.chart-filters button,
-.reset-zoom-btn {
-  border: 1px solid var(--border-color);
-}
-
-.chart-filters button,
-.reset-zoom-btn {
-  background: var(--card-bg);
-}
-
-.chart-filters button {
-  padding: 8px 16px;
-  color: var(--text-primary);
-}
-
-.trendline-toggle {
-  background: var(--bg-secondary);
-}
-
-button lucide-icon {
-  flex-shrink: 0;
-}
-
-// Hover and active states
-.expand-chart-btn:hover,
-.toggle-controls-btn:hover {
-  background: var(--bg-secondary);
-  border-color: var(--border-color);
-  color: $primary;
-}
-
-.display-mode-toggle button:hover {
-  background: var(--card-bg);
-  color: $primary;
-}
-
-.chart-filters button:hover {
-  background: var(--bg-secondary);
-  border-color: $primary;
-}
-
-.reset-zoom-btn:hover {
-  background: var(--bg-secondary);
-  border-color: $primary;
-  color: $primary;
-}
-
-.display-mode-toggle button.active {
-  background: var(--card-bg);
-  color: $primary;
-  border-color: $primary;
-  box-shadow: 0 1px 3px rgba($primary, 0.2);
-}
-
-.chart-filters button.active {
-  background: $primary;
-  color: white;
-  border-color: $primary;
-}
-
 .chart-controls {
   display: flex;
   flex-direction: column;
   gap: 12px;
 }
 
-.display-mode-toggle {
-  display: flex;
-  gap: 8px;
+.display-mode-toggle,
+.chart-filters {
+  display: inline-flex;
+  gap: 4px;
   padding: 4px;
   background: var(--bg-secondary);
-  border-radius: 8px;
+  border-radius: 10px;
   border: 1px solid var(--border-color);
+  flex-wrap: wrap;
+}
+
+.display-mode-toggle button,
+.chart-filters button,
+.reset-zoom-btn,
+.trendline-toggle,
+.expand-chart-btn,
+.toggle-controls-btn {
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  font-size: 0.85rem;
+  font-weight: 500;
+  gap: 6px;
+
+  &:active {
+    transform: scale(0.97);
+  }
+}
+
+.display-mode-toggle button,
+.chart-filters button {
+  padding: 6px 14px;
+  border: 1px solid transparent;
+  background: transparent;
+  color: var(--text-secondary);
+  border-radius: 7px;
+
+  &:hover:not(.active) {
+    color: var(--text-primary);
+    background: rgba(var(--card-bg-rgb), 0.5);
+  }
+
+  &.active {
+    background: var(--card-bg);
+    color: var(--theme-primary, $primary);
+    font-weight: 600;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08);
+    border-color: rgba(var(--theme-primary-rgb, 0, 92, 191), 0.25);
+  }
+}
+
+.reset-zoom-btn {
+  padding: 6px 12px;
+  color: var(--text-secondary);
+  border: 1px solid var(--border-color);
+  background: var(--card-bg);
+  border-radius: 8px;
+
+  &:hover {
+    background: var(--bg-secondary);
+    border-color: var(--theme-primary, $primary);
+    color: var(--theme-primary, $primary);
+  }
 }
 
 .trendline-toggle {
+  padding: 6px 12px;
+  color: var(--text-secondary);
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+
   input[type='checkbox'] {
     margin: 0;
     cursor: pointer;
@@ -182,13 +153,22 @@ button lucide-icon {
   }
 }
 
-.chart-filters {
-  display: flex;
-  gap: 8px;
-  flex-wrap: wrap;
+.expand-chart-btn,
+.toggle-controls-btn {
+  padding: 6px;
+  color: var(--text-secondary);
+  justify-content: center;
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: 8px;
+
+  &:hover {
+    background: var(--bg-secondary);
+    border-color: var(--border-color);
+    color: var(--theme-primary, $primary);
+  }
 }
 
-// Info tooltips (flattened hierarchy to avoid deep attribute selector generation)
 .info-tooltip-container {
   margin-left: auto;
 }
@@ -239,46 +219,16 @@ button lucide-icon {
     display: none;
   }
 
-  .display-mode-toggle {
-    width: auto;
-  }
-
   .display-mode-toggle button,
-  .chart-filters button {
-    padding: 8px 14px;
-  }
-
+  .chart-filters button,
   .reset-zoom-btn {
     padding: 8px 14px;
-    
-    .control-text {
-      display: inline;
-    }
-  }
-
-  .display-mode-toggle button,
-  .chart-filters button {
-    flex: none;
     justify-content: center;
   }
 
-  .trendline-toggle {
-    .control-text {
-      display: inline;
-    }
-
-    lucide-icon {
-      margin: 0;
-    }
-  }
-
-  .chart-filters {
-    width: auto;
-    gap: 6px;
-
-    button {
-      min-width: 0;
-    }
+  .reset-zoom-btn .control-text,
+  .trendline-toggle .control-text {
+    display: inline;
   }
 
   .chart-container {

@@ -5,6 +5,8 @@ import { TranslatePipe } from '../../pipes/translate.pipe';
 import { Pipe, PipeTransform, signal } from '@angular/core';
 import { vi, afterEach } from 'vitest';
 import { By } from '@angular/platform-browser';
+import { DatePickerHarness } from './date-picker.harness';
+import { getHarness } from '../../../testing';
 
 @Pipe({ name: 'translate', standalone: true })
 class MockTranslatePipe implements PipeTransform {
@@ -16,7 +18,7 @@ class MockTranslatePipe implements PipeTransform {
 describe('DatePickerComponent', () => {
   let component: DatePickerComponent;
   let fixture: ComponentFixture<DatePickerComponent>;
-  let languageServiceMock: any;
+  let languageServiceMock: unknown;
 
   beforeEach(async () => {
     languageServiceMock = {
@@ -48,19 +50,19 @@ describe('DatePickerComponent', () => {
     });
 
     it('should have empty date by default', () => {
-      expect(component.date()).toBe('');
+      expect(component.date).toBe('');
     });
 
     it('should have empty maxDate by default', () => {
-      expect(component.maxDate()).toBe('');
+      expect(component.maxDate).toBe('');
     });
 
     it('should have default placeholder', () => {
-      expect(component.placeholder()).toBe('Select date');
+      expect(component.placeholder).toBe('Select date');
     });
 
     it('should not be disabled by default', () => {
-      expect(component.disabled()).toBe(false);
+      expect(component.disabled).toBe(false);
     });
 
     it('should be closed by default', () => {
@@ -85,7 +87,7 @@ describe('DatePickerComponent', () => {
     });
 
     it('should not open when disabled', () => {
-      fixture.componentRef.setInput('disabled', true);
+      component.disabled = true;
       fixture.detectChanges();
 
       component.toggleCalendar();
@@ -93,7 +95,7 @@ describe('DatePickerComponent', () => {
     });
 
     it('should set viewDate to current date when opening with a date set', () => {
-      fixture.componentRef.setInput('date', '2024-06-15');
+      component.date = '2024-06-15';
       fixture.detectChanges();
 
       component.toggleCalendar();
@@ -104,7 +106,7 @@ describe('DatePickerComponent', () => {
     });
 
     it('should not update viewDate when opening without a date', () => {
-      fixture.componentRef.setInput('date', '');
+      component.date = '';
       fixture.detectChanges();
 
       const viewDateBefore = component.viewDate();
@@ -191,7 +193,7 @@ describe('DatePickerComponent', () => {
     });
 
     it('should not emit if day exceeds maxDate', () => {
-      fixture.componentRef.setInput('maxDate', '2024-06-10');
+      component.maxDate = '2024-06-10';
       fixture.detectChanges();
 
       const spy = vi.fn();
@@ -203,7 +205,7 @@ describe('DatePickerComponent', () => {
     });
 
     it('should emit if day equals maxDate', () => {
-      fixture.componentRef.setInput('maxDate', '2024-06-15');
+      component.maxDate = '2024-06-15';
       fixture.detectChanges();
 
       const spy = vi.fn();
@@ -215,7 +217,7 @@ describe('DatePickerComponent', () => {
     });
 
     it('should emit if day is before maxDate', () => {
-      fixture.componentRef.setInput('maxDate', '2024-06-20');
+      component.maxDate = '2024-06-20';
       fixture.detectChanges();
 
       const spy = vi.fn();
@@ -410,22 +412,22 @@ describe('DatePickerComponent', () => {
     });
 
     it('should return true for dates after maxDate', () => {
-      fixture.componentRef.setInput('maxDate', '2024-06-15');
+      component.maxDate = '2024-06-15';
       expect(component.isDisabled(new Date(2024, 5, 16))).toBe(true);
     });
 
     it('should return false for dates on maxDate', () => {
-      fixture.componentRef.setInput('maxDate', '2024-06-15');
+      component.maxDate = '2024-06-15';
       expect(component.isDisabled(new Date(2024, 5, 15))).toBe(false);
     });
 
     it('should return false for dates before maxDate', () => {
-      fixture.componentRef.setInput('maxDate', '2024-06-15');
+      component.maxDate = '2024-06-15';
       expect(component.isDisabled(new Date(2024, 5, 14))).toBe(false);
     });
 
     it('should compare only date parts, ignoring time', () => {
-      fixture.componentRef.setInput('maxDate', '2024-06-15');
+      component.maxDate = '2024-06-15';
       // Same day but with time set — should still be valid
       const d = new Date(2024, 5, 15, 23, 59, 59);
       expect(component.isDisabled(d)).toBe(false);
@@ -438,7 +440,7 @@ describe('DatePickerComponent', () => {
 
       // June 2024: 30 days, starts on Saturday (day 6, padding = 5)
       component.viewDate.set(new Date(2024, 5, 1));
-      const days = (component as any).calendarDays();
+      const days = component['calendarDays']();
 
       // Should have 5 null padding + 30 days = 35
       const nullDays = days.filter((d: unknown) => d === null).length;
@@ -451,7 +453,7 @@ describe('DatePickerComponent', () => {
       fixture.detectChanges();
 
       component.viewDate.set(new Date(2024, 1, 1)); // Feb 2024 (leap year)
-      const days = (component as any).calendarDays();
+      const days = component['calendarDays']();
 
       const realDays = days.filter((d: unknown) => d !== null).length;
       expect(realDays).toBe(29);
@@ -461,7 +463,7 @@ describe('DatePickerComponent', () => {
       fixture.detectChanges();
 
       component.viewDate.set(new Date(2023, 1, 1)); // Feb 2023
-      const days = (component as any).calendarDays();
+      const days = component['calendarDays']();
 
       const realDays = days.filter((d: unknown) => d !== null).length;
       expect(realDays).toBe(28);
@@ -472,7 +474,7 @@ describe('DatePickerComponent', () => {
 
       // January 2025 starts on Wednesday (day 3, so 2 null paddings: Mon, Tue)
       component.viewDate.set(new Date(2025, 0, 1));
-      const days = (component as any).calendarDays();
+      const days = component['calendarDays']();
 
       expect(days[0]).toBeNull();
       expect(days[1]).toBeNull();
@@ -484,10 +486,10 @@ describe('DatePickerComponent', () => {
 
       // July 2024 starts on Monday
       component.viewDate.set(new Date(2024, 6, 1));
-      const days = (component as any).calendarDays();
+      const days = component['calendarDays']();
 
       expect(days[0]).not.toBeNull();
-      expect(days[0].getDate()).toBe(1);
+      expect(days[0]!.getDate()).toBe(1);
     });
 
     it('should have 6 padding days when month starts on Sunday', () => {
@@ -495,7 +497,7 @@ describe('DatePickerComponent', () => {
 
       // September 2024 starts on Sunday
       component.viewDate.set(new Date(2024, 8, 1));
-      const days = (component as any).calendarDays();
+      const days = component['calendarDays']();
 
       const nullDays = days.filter((d: unknown) => d === null).length;
       expect(nullDays).toBe(6); // Mon-Sat are null, Sun is first day
@@ -505,13 +507,13 @@ describe('DatePickerComponent', () => {
   describe('weekDays', () => {
     it('should return 7 days', () => {
       fixture.detectChanges();
-      const days = (component as any).weekDays();
+      const days = component['weekDays']();
       expect(days.length).toBe(7);
     });
 
     it('should start from Monday (ISO 8601)', () => {
       fixture.detectChanges();
-      const days = (component as any).weekDays();
+      const days = component['weekDays']();
       // All values should be non-null strings
       days.forEach((d: unknown) => expect(d).toBeTruthy());
     });
@@ -519,17 +521,17 @@ describe('DatePickerComponent', () => {
 
   describe('formattedDate', () => {
     it('should return empty string when date is empty', () => {
-      fixture.componentRef.setInput('date', '');
+      component.date = '';
       fixture.detectChanges();
 
-      expect((component as any).formattedDate()).toBe('');
+      expect(component['formattedDate']()).toBe('');
     });
 
     it('should return formatted date when date is set', () => {
-      fixture.componentRef.setInput('date', '2024-06-15');
+      component.date = '2024-06-15';
       fixture.detectChanges();
 
-      const formatted = (component as any).formattedDate();
+      const formatted = component['formattedDate']();
       expect(formatted).toBeTruthy();
       expect(formatted).not.toBe('');
     });
@@ -653,7 +655,7 @@ describe('DatePickerComponent', () => {
     });
 
     it('should not toggle when disabled even after multiple attempts', () => {
-      fixture.componentRef.setInput('disabled', true);
+      component.disabled = true;
       fixture.detectChanges();
 
       component.toggleCalendar();
@@ -673,7 +675,7 @@ describe('DatePickerComponent', () => {
     });
 
     it('should show placeholder when no date is set', () => {
-      fixture.componentRef.setInput('date', '');
+      component.date = '';
       fixture.detectChanges();
 
       const display = fixture.debugElement.query(By.css('.date-display'));
@@ -681,7 +683,7 @@ describe('DatePickerComponent', () => {
     });
 
     it('should not show placeholder when date is set', () => {
-      fixture.componentRef.setInput('date', '2024-06-15');
+      component.date = '2024-06-15';
       fixture.detectChanges();
 
       const display = fixture.debugElement.query(By.css('.date-display'));
@@ -689,7 +691,7 @@ describe('DatePickerComponent', () => {
     });
 
     it('should apply disabled class when disabled', () => {
-      fixture.componentRef.setInput('disabled', true);
+      component.disabled = true;
       fixture.detectChanges();
 
       const wrapper = fixture.debugElement.query(By.css('.input-wrapper'));
@@ -744,6 +746,62 @@ describe('DatePickerComponent', () => {
 
       const weekdays = fixture.debugElement.queryAll(By.css('.weekday'));
       expect(weekdays.length).toBe(7);
+    });
+  });
+
+  describe('Using DatePickerHarness', () => {
+    let harness: DatePickerHarness;
+
+    beforeEach(async () => {
+      fixture.componentRef.setInput('placeholder', 'Select date');
+      harness = await getHarness(fixture, DatePickerHarness);
+    });
+
+    it('should read placeholder when no date is selected', async () => {
+      fixture.componentRef.setInput('date', '');
+      expect(await harness.getDisplayText()).toBe('Select date');
+    });
+
+    it('should open and close calendar on clicking wrapper via harness', async () => {
+      expect(await harness.isCalendarOpen()).toBe(false);
+      await harness.toggleCalendar();
+      expect(await harness.isCalendarOpen()).toBe(true);
+      await harness.toggleCalendar();
+      expect(await harness.isCalendarOpen()).toBe(false);
+    });
+
+    it('should navigate months via harness', async () => {
+      await harness.toggleCalendar();
+      const currentMonth = await harness.getMonthYearText();
+      expect(currentMonth).toBeTruthy();
+
+      await harness.clickNextMonth();
+      const nextMonth = await harness.getMonthYearText();
+      expect(nextMonth).not.toBe(currentMonth);
+
+      await harness.clickPrevMonth();
+      const backMonth = await harness.getMonthYearText();
+      expect(backMonth).toBe(currentMonth);
+    });
+
+    it('should select today via harness', async () => {
+      const dateSpy = vi.fn();
+      component.dateChange.subscribe(dateSpy);
+
+      await harness.toggleCalendar();
+      await harness.clickToday();
+      expect(dateSpy).toHaveBeenCalled();
+    });
+
+    it('should clear date via harness', async () => {
+      fixture.componentRef.setInput('date', '2026-06-15');
+
+      const dateSpy = vi.fn();
+      component.dateChange.subscribe(dateSpy);
+
+      await harness.toggleCalendar();
+      await harness.clickClear();
+      expect(dateSpy).toHaveBeenCalledWith('');
     });
   });
 });

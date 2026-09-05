@@ -68,7 +68,7 @@ export class ChartCalculationService {
         });
 
         // Add rooms to incremental data
-        (incremental as any).rooms = incRooms;
+        incremental['rooms'] = incRooms;
       } else {
         // Handle flat records (ConsumptionRecord or ElectricityRecord)
         const currentObj = current as unknown as Record<string, unknown>;
@@ -482,7 +482,7 @@ export class ChartCalculationService {
       let daysDiff = (endDate - startDate) / (1000 * 3600 * 24);
       if (daysDiff <= 0.5) daysDiff = 1;
 
-      const record = normalized[i] as any;
+      const record = normalized[i] as CombinedData;
       record.normalized = { days: daysDiff };
 
       // Apply type-specific normalization
@@ -512,7 +512,10 @@ export class ChartCalculationService {
   /**
    * Normalize a single electricity record to daily average
    */
-  private normalizeElectricityRecord(record: { value?: unknown; normalized?: Record<string, unknown>; [key: string]: unknown }, daysDiff: number): void {
+  private normalizeElectricityRecord(
+    record: { value?: unknown; normalized?: Record<string, unknown>; [key: string]: unknown },
+    daysDiff: number,
+  ): void {
     const val = record['value'];
     if (typeof val === 'number') {
       const dailyAvg = val / daysDiff;
@@ -525,7 +528,10 @@ export class ChartCalculationService {
   /**
    * Normalize a single water record to daily average
    */
-  private normalizeWaterRecord(record: { normalized?: Record<string, unknown>; [key: string]: unknown }, daysDiff: number): void {
+  private normalizeWaterRecord(
+    record: { normalized?: Record<string, unknown>; [key: string]: unknown },
+    daysDiff: number,
+  ): void {
     const fields = ['kitchenWarm', 'kitchenCold', 'bathroomWarm', 'bathroomCold'];
     fields.forEach((field) => {
       if (typeof record[field] === 'number') {
@@ -540,7 +546,14 @@ export class ChartCalculationService {
   /**
    * Normalize a single heating record to daily average
    */
-  private normalizeHeatingRecord(record: { rooms?: Record<string, unknown>; normalized?: Record<string, unknown>; [key: string]: unknown }, daysDiff: number): void {
+  private normalizeHeatingRecord(
+    record: {
+      rooms?: Record<string, unknown>;
+      normalized?: Record<string, unknown>;
+      [key: string]: unknown;
+    },
+    daysDiff: number,
+  ): void {
     const rooms = record.rooms;
     if (rooms) {
       Object.keys(rooms).forEach((roomId) => {

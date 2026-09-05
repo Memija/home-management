@@ -6,16 +6,17 @@ import { describe, it, expect, beforeEach, vi, afterEach } from 'vitest';
 
 describe('ElectricityMeterService', () => {
   let service: ElectricityMeterService;
-  let mockLocalStorageService: any;
+  let mockLocalStorageService: {
+    getPreference: ReturnType<typeof vi.fn>;
+    setPreference: ReturnType<typeof vi.fn>;
+  };
 
   beforeEach(() => {
-    // 1. Create the mock object
     mockLocalStorageService = {
       getPreference: vi.fn(),
       setPreference: vi.fn(),
     };
 
-    // 2. Configure the TestBed
     TestBed.configureTestingModule({
       providers: [
         ElectricityMeterService,
@@ -30,7 +31,6 @@ describe('ElectricityMeterService', () => {
 
   describe('Initialization', () => {
     it('should be created', () => {
-      // Need to inject inside test or beforeEach after configureTestingModule
       service = TestBed.inject(ElectricityMeterService);
       expect(service).toBeTruthy();
     });

@@ -4,10 +4,47 @@ import { ExcelSettingsService } from './excel-settings.service';
 import { LanguageService } from './language.service';
 import { describe, it, expect, beforeEach, vi, afterEach } from 'vitest';
 
+interface MockUtils {
+  book_new: ReturnType<typeof vi.fn>;
+  book_append_sheet: ReturnType<typeof vi.fn>;
+  sheet_to_json: ReturnType<typeof vi.fn>;
+  json_to_sheet: ReturnType<typeof vi.fn>;
+}
+
+interface MockXLSX {
+  utils: MockUtils;
+  read: ReturnType<typeof vi.fn>;
+  writeFile: ReturnType<typeof vi.fn>;
+}
+
 describe('ExcelService', () => {
   let service: ExcelService;
-  let mockExcelSettingsService: any;
-  let mockXLSX: any;
+  let mockExcelSettingsService: {
+    getWaterMapping: ReturnType<typeof vi.fn>;
+    getHeatingMapping: ReturnType<typeof vi.fn>;
+    getElectricityMapping: ReturnType<typeof vi.fn>;
+  };
+  let mockXLSX: MockXLSX;
+
+  const mockFileReader = (data: unknown) => {
+    const originalFileReader = window.FileReader;
+    window.FileReader = class {
+      readAsBinaryString() {
+        setTimeout(() => {
+          if (this.onload) {
+            this.onload({
+              target: { result: data },
+            } as unknown as ProgressEvent<FileReader>);
+          }
+        }, 0);
+      }
+      onload: ((ev: ProgressEvent<FileReader>) => void) | null = null;
+      onerror: ((ev: ProgressEvent<FileReader>) => void) | null = null;
+    } as unknown as typeof FileReader;
+    return () => {
+      window.FileReader = originalFileReader;
+    };
+  };
 
   beforeEach(() => {
     mockExcelSettingsService = {
@@ -35,10 +72,10 @@ describe('ExcelService', () => {
 
     mockXLSX = {
       utils: {
-        json_to_sheet: vi.fn(),
         book_new: vi.fn(),
         book_append_sheet: vi.fn(),
         sheet_to_json: vi.fn(),
+        json_to_sheet: vi.fn(),
       },
       read: vi.fn(),
       writeFile: vi.fn(),
@@ -58,13 +95,7 @@ describe('ExcelService', () => {
     });
 
     service = TestBed.inject(ExcelService);
-
-    // Mock dynamic import of xlsx
-    // We can spy on the private getXLSX method or mock import.
-    // Since getXLSX is private, we can use (service as any) or spy on it if we could.
-    // But dynamic import mocking is hard.
-    // Instead, let's just populate the xlsxModule private property if possible?
-    (service as any).xlsxModule = mockXLSX;
+    service['xlsxModule'] = mockXLSX as unknown as typeof import('xlsx');
   });
 
   afterEach(() => {
@@ -111,24 +142,13 @@ describe('ExcelService', () => {
         {
           date: new Date('2023-01-01'),
           rooms: {
-            room_1: 10,
-            room_2: 20,
-            room_3: 30,
-            room_4: 40,
+            livingRoom: 10,
+            bedroom: 20,
+            kitchen: 30,
+            bathroom: 40,
           },
         },
       ];
-
-      // Mock the mapping to match the room keys used in records
-      mockExcelSettingsService.getHeatingMapping.mockReturnValue({
-        date: 'Date',
-        rooms: {
-          room_1: 'Living Room',
-          room_2: 'Bedroom',
-          room_3: 'Kitchen',
-          room_4: 'Bathroom',
-        },
-      });
 
       mockXLSX.utils.json_to_sheet.mockReturnValue('sheet');
       mockXLSX.utils.book_new.mockReturnValue('book');
@@ -144,6 +164,8 @@ describe('ExcelService', () => {
           Bathroom: 40,
         },
       ]);
+      expect(mockXLSX.utils.book_append_sheet).toHaveBeenCalledWith('book', 'sheet', 'Data');
+      expect(mockXLSX.writeFile).toHaveBeenCalledWith('book', 'test.xlsx');
     });
   });
 
@@ -171,23 +193,6 @@ describe('ExcelService', () => {
   });
 
   describe('importWaterFromExcel', () => {
-    // Helper to mock FileReader behavior
-    const mockFileReader = (data: any) => {
-      const originalFileReader = window.FileReader;
-      window.FileReader = class {
-        readAsBinaryString() {
-          setTimeout(() => {
-            if (this.onload) this.onload({ target: { result: data } } as any);
-          }, 0);
-        }
-        onload: any;
-        onerror: any;
-      } as any;
-      return () => {
-        window.FileReader = originalFileReader;
-      };
-    };
-
     it('should import valid records', async () => {
       const sheetData = [
         {
@@ -248,9 +253,6 @@ describe('ExcelService', () => {
       await expect(service.importWaterFromExcel(file)).rejects.toThrow(
         'ERROR.IMPORT_INVALID_DATE_VALUE',
       );
-      // It might also have number error but logic skips row if date invalid?
-      // Code: "if (!date) { ... continue; }"
-      // So only invalid date error.
       cleanup();
     });
 
@@ -268,9 +270,6 @@ describe('ExcelService', () => {
       await expect(service.importWaterFromExcel(file)).rejects.toThrow(
         'ERROR.IMPORT_DUPLICATE_DATE',
       );
-      await expect(service.importWaterFromExcel(file)).rejects.toThrow(
-        'ERROR.IMPORT_DUPLICATE_DATE',
-      );
       cleanup();
     });
 
@@ -285,7 +284,6 @@ describe('ExcelService', () => {
       const result = await service.importWaterFromExcel(file);
       cleanup();
 
-      // Kitchen Cold, Bathroom Warm, Bathroom Cold are missing
       expect(result.missingColumns).toContain('Kitchen Cold');
       expect(result.missingColumns).toContain('Bathroom Warm');
       expect(result.missingColumns).toContain('Bathroom Cold');
@@ -307,24 +305,7 @@ describe('ExcelService', () => {
   });
 
   describe('importHeatingFromExcel', () => {
-    // Similar logic, just test success case
     it('should import valid records', async () => {
-      const mockFileReader = (data: any) => {
-        const originalFileReader = window.FileReader;
-        window.FileReader = class {
-          readAsBinaryString() {
-            setTimeout(() => {
-              if (this.onload) this.onload({ target: { result: data } } as any);
-            }, 0);
-          }
-          onload: any;
-          onerror: any;
-        } as any;
-        return () => {
-          window.FileReader = originalFileReader;
-        };
-      };
-
       const sheetData = [{ Date: '2023-01-01', 'Living Room': 10 }];
 
       mockExcelSettingsService.getHeatingMapping.mockReturnValue({
@@ -348,22 +329,6 @@ describe('ExcelService', () => {
     });
 
     it('should return missing columns', async () => {
-      const mockFileReader = (data: any) => {
-        const originalFileReader = window.FileReader;
-        window.FileReader = class {
-          readAsBinaryString() {
-            setTimeout(() => {
-              if (this.onload) this.onload({ target: { result: data } } as any);
-            }, 0);
-          }
-          onload: any;
-          onerror: any;
-        } as any;
-        return () => {
-          window.FileReader = originalFileReader;
-        };
-      };
-
       const sheetData = [{ Date: '2023-01-01' }];
 
       mockExcelSettingsService.getHeatingMapping.mockReturnValue({
@@ -387,23 +352,6 @@ describe('ExcelService', () => {
   });
 
   describe('importElectricityFromExcel', () => {
-    // Helper to mock FileReader behavior (reused)
-    const mockFileReader = (data: any) => {
-      const originalFileReader = window.FileReader;
-      window.FileReader = class {
-        readAsBinaryString() {
-          setTimeout(() => {
-            if (this.onload) this.onload({ target: { result: data } } as any);
-          }, 0);
-        }
-        onload: any;
-        onerror: any;
-      } as any;
-      return () => {
-        window.FileReader = originalFileReader;
-      };
-    };
-
     it('should import valid records', async () => {
       const sheetData = [{ Date: '2023-01-01', 'Electricity Consumption (kWh)': 100 }];
 
@@ -465,7 +413,7 @@ describe('ExcelService', () => {
       const sheetData = [
         { Date: 'invalid', 'Electricity Consumption (kWh)': '100' },
         { Date: '2023-01-01', 'Electricity Consumption (kWh)': 'NaN' },
-        { Date: '2023-01-01', 'Electricity Consumption (kWh)': '200' }, // Duplicate date
+        { Date: '2023-01-01', 'Electricity Consumption (kWh)': '200' },
       ];
       mockXLSX.read.mockReturnValue({ SheetNames: ['Sheet1'], Sheets: { Sheet1: {} } });
       mockXLSX.utils.sheet_to_json.mockReturnValue(sheetData);
@@ -481,8 +429,7 @@ describe('ExcelService', () => {
   });
 
   describe('parseDate', () => {
-    // Helper to call private method
-    const parseDate = (val: any) => (service as any).parseDate(val);
+    const parseDate = (val: unknown) => service['parseDate'](val);
 
     it('should parse ISO date string', () => {
       expect(parseDate('2023-01-01')?.toISOString()).toContain('2023-01-01');
@@ -496,13 +443,6 @@ describe('ExcelService', () => {
     });
 
     it('should parse Excel serial number', () => {
-      // 1 = 1900-01-01.
-      // 45000 approx 2023.
-      // Let's use 2 (1900-01-01 is usually 1, but Excel has leap year bug for 1900).
-      // 1900-01-01 is day 1. JS Date UTC(1900,0,1).
-      // Code: excelEpoch + (value - 2) * 24*60*60*1000.
-      // value=2 -> 1900-01-01.
-
       const d = parseDate(2);
       expect(d?.toISOString()).toContain('1900-01-01');
     });
@@ -515,9 +455,7 @@ describe('ExcelService', () => {
     });
 
     it('should return null for logically invalid date', () => {
-      // Month 13 is invalid
       expect(parseDate('01.13.2023')).toBeNull();
-      // Day 32 is invalid
       expect(parseDate('32.01.2023')).toBeNull();
     });
 

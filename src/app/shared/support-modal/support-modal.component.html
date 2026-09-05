@@ -1,5 +1,10 @@
-<div class="modal-overlay" (click)="onClose()">
-  <div class="modal-container" (click)="$event.stopPropagation()">
+<div class="modal-overlay" (click)="onClose()" tabindex="0" (keyup.enter)="onClose()">
+  <div
+    class="modal-container"
+    (click)="$event.stopPropagation()"
+    tabindex="0"
+    (keyup.enter)="$event.stopPropagation()"
+  >
     <div class="modal-header">
       <div class="header-title">
         <lucide-icon [img]="HeartIcon" class="header-icon" size="24"></lucide-icon>

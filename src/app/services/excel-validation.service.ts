@@ -24,7 +24,8 @@ export class ExcelValidationService {
     // Excel forbidden characters for sheet names apply to column headers usually too to be safe,
     // but here we just want to avoid special chars that might cause issues.
     // [ ] * / \ ? : are standard forbidden chars in Excel sheet names/paths
-    const invalidChars = /[\[\]\*\/\\\?\:]/;
+
+    const invalidChars = /[[\]*/\\?:]/;
     if (invalidChars.test(name)) return false;
 
     return true;
@@ -43,7 +44,8 @@ export class ExcelValidationService {
     if (name !== name.trim()) {
       return this.languageService.translate('EXCEL.VALIDATION_NO_WHITESPACE');
     }
-    const invalidChars = /[\[\]\*\/\\\?\:]/;
+
+    const invalidChars = /[[\]*/\\?:]/;
     if (invalidChars.test(name)) {
       return this.languageService.translate('EXCEL.VALIDATION_INVALID_CHARS');
     }

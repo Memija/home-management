@@ -1,4 +1,4 @@
-import { Component, input, output, inject, signal } from '@angular/core';
+import { Component, Input, Output, EventEmitter, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { LucideAngularModule, X, Clipboard, ArrowRight } from 'lucide-angular';
@@ -15,9 +15,16 @@ import { SmartImportService, ParsedRecord } from '../../services/smart-import.se
 export class SmartImportModalComponent {
   private smartImportService = inject(SmartImportService);
 
-  show = input.required<boolean>();
-  close = output<void>();
-  import = output<ParsedRecord[]>();
+  @Input() set show(val: boolean) {
+    this.showSignal.set(val);
+  }
+  get show(): boolean {
+    return this.showSignal();
+  }
+  protected showSignal = signal<boolean>(false);
+
+  @Output() closeModal = new EventEmitter<void>();
+  @Output() import = new EventEmitter<ParsedRecord[]>();
 
   protected ClipboardIcon = Clipboard;
   protected XIcon = X;
@@ -38,7 +45,7 @@ export class SmartImportModalComponent {
   protected confirmImport() {
     this.import.emit(this.parsedRecords());
     this.reset();
-    this.close.emit();
+    this.closeModal.emit();
   }
 
   private reset() {

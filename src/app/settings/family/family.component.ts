@@ -141,6 +141,14 @@ export class FamilyComponent {
   // Individual member edit state
   protected editingMemberId = signal<string | null>(null);
 
+  // Computed signal for the member currently being edited
+  protected editingMember = computed(() => {
+    const id = this.editingMemberId();
+    if (!id) return null;
+    const list = this.draftMembers().length > 0 ? this.draftMembers() : this.safeMembers();
+    return list.find((m) => m.id === id) ?? null;
+  });
+
   // Draft state for editing
   protected draftMembers = signal<HouseholdMember[]>([]);
 
@@ -306,6 +314,10 @@ export class FamilyComponent {
       };
 
       this.draftMembers.update((members) => [...members, newMember]);
+      if (!this.isEditing()) {
+        this.householdService.updateMembers(this.draftMembers());
+        this.showTemporarySaveConfirmation();
+      }
       this.resetForm();
     }
   }
@@ -321,6 +333,9 @@ export class FamilyComponent {
   }
 
   removeMember(id: string) {
+    if (this.draftMembers().length === 0) {
+      this.draftMembers.set([...this.householdService.members()]);
+    }
     this.memberToDelete.set(id);
     this.showDeleteModal.set(true);
   }
@@ -329,6 +344,10 @@ export class FamilyComponent {
     const memberId = this.memberToDelete();
     if (memberId) {
       this.draftMembers.update((members) => members.filter((m) => m.id !== memberId));
+      if (!this.isEditing()) {
+        this.householdService.updateMembers(this.draftMembers());
+        this.showTemporarySaveConfirmation();
+      }
     }
     this.showDeleteModal.set(false);
     this.memberToDelete.set(null);
@@ -343,12 +362,44 @@ export class FamilyComponent {
     this.selectedAvatar.set(avatar);
   }
 
+  openAddMemberModal() {
+    if (this.isAtMaxMembers()) {
+      this.showMaxMembersError.set(true);
+      return;
+    }
+    if (this.draftMembers().length === 0) {
+      this.draftMembers.set([...this.householdService.members()]);
+    }
+    this.showAddMemberForm.set(true);
+  }
+
+  closeAddMemberModal() {
+    this.showAddMemberForm.set(false);
+    this.resetForm();
+  }
+
   startEditMember(member: HouseholdMember) {
-    this.editingMemberId.set(member.id);
+    if (this.draftMembers().length === 0) {
+      this.draftMembers.set([...this.householdService.members()]);
+    }
+    const id = member.id || crypto.randomUUID();
+    member.id = id;
+    this.draftMembers.update((list) =>
+      list.map((m) =>
+        m === member || (!m.id && m.name === member.name && m.surname === member.surname)
+          ? { ...m, id }
+          : m,
+      ),
+    );
+    this.editingMemberId.set(id);
   }
 
   cancelEditMember() {
     this.editingMemberId.set(null);
+  }
+
+  trackMember(index: number, member: HouseholdMember): string {
+    return member.id || `${member.name}-${member.surname}-${index}`;
   }
 
   onMemberEditorSave(data: MemberEditData) {
@@ -366,6 +417,10 @@ export class FamilyComponent {
           : m,
       ),
     );
+    if (!this.isEditing()) {
+      this.householdService.updateMembers(this.draftMembers());
+      this.showTemporarySaveConfirmation();
+    }
     this.editingMemberId.set(null);
   }
 

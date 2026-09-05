@@ -92,7 +92,7 @@ export const africaFacts = {
     'Alžir (grad) dobija vodu iz brane Taksebt u planinama.',
     'Alžir reciklira tretiranu otpadnu vodu za poljoprivrednu upotrebu.',
     'Zemlja ima značajne rezerve fosilnih podzemnih voda.',
-    'Crteži na stijenama Tassili n\'Ajjer prikazuju drevne izvore vode.',
+    "Crteži na stijenama Tassili n'Ajjer prikazuju drevne izvore vode.",
     'Alžir izvozi datule uzgojene u pustinjskim oazama.',
   ],
 

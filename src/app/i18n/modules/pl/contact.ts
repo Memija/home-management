@@ -18,15 +18,20 @@ export const contact = {
     INVALID_EMAIL: 'Wprowadź poprawny adres e-mail',
     HELP_TITLE: 'Jak się z nami skontaktować',
     HELP_STEP_1_TITLE: 'Dlaczego warto pisać?',
-    HELP_STEP_1_DESC: 'Skontaktuj się z nami w dowolnym celu! 🐛 Zgłoś błąd, 💡 poproś o nową funkcję, ⭐ pochwal nas lub 📝 podziel się konstruktywną krytyką.',
+    HELP_STEP_1_DESC:
+      'Skontaktuj się z nami w dowolnym celu! 🐛 Zgłoś błąd, 💡 poproś o nową funkcję, ⭐ pochwal nas lub 📝 podziel się konstruktywną krytyką.',
     HELP_STEP_2_TITLE: 'Wypełnij swoje dane',
-    HELP_STEP_2_DESC: 'Wprowadź swoje imię i adres e-mail, abyśmy mogli Ci odpowiedzieć. Upewnij się, że format e-mail jest poprawny!',
+    HELP_STEP_2_DESC:
+      'Wprowadź swoje imię i adres e-mail, abyśmy mogli Ci odpowiedzieć. Upewnij się, że format e-mail jest poprawny!',
     HELP_STEP_3_TITLE: 'Opisz swoją sprawę',
-    HELP_STEP_3_DESC: 'Dodaj temat podsumowujący Twoje pytanie lub opinię, a następnie napisz wiadomość ze wszystkimi szczegółami.',
+    HELP_STEP_3_DESC:
+      'Dodaj temat podsumowujący Twoje pytanie lub opinię, a następnie napisz wiadomość ze wszystkimi szczegółami.',
     HELP_STEP_4_TITLE: 'Wybierz klienta poczty',
-    HELP_STEP_4_DESC: 'Wybierz preferowanego klienta poczty (systemowy, Outlook lub Gmail). Otworzymy e-mail do przejrzenia przed wysłaniem.',
+    HELP_STEP_4_DESC:
+      'Wybierz preferowanego klienta poczty (systemowy, Outlook lub Gmail). Otworzymy e-mail do przejrzenia przed wysłaniem.',
     HELP_STEP_5_TITLE: 'Przejrzyj i wyślij',
-    HELP_STEP_5_DESC: 'Kliknij "Zredaguj", aby otworzyć klienta poczty z wstępnie wypełnioną wiadomością. Przejrzyj ją i wyślij!',
+    HELP_STEP_5_DESC:
+      'Kliknij "Zredaguj", aby otworzyć klienta poczty z wstępnie wypełnioną wiadomością. Przejrzyj ją i wyślij!',
     HELP_PREVIOUS: 'Poprzedni',
     HELP_NEXT: 'Następny',
     HELP_DONE: 'Rozumiem!',

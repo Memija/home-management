@@ -35,13 +35,13 @@ export class ConfirmationModalComponent {
   });
 
   @Output() confirm = new EventEmitter<void>();
-  @Output() cancel = new EventEmitter<void>();
+  @Output() cancelModal = new EventEmitter<void>();
 
   onConfirm() {
     this.confirm.emit();
   }
 
   onCancel() {
-    this.cancel.emit();
+    this.cancelModal.emit();
   }
 }

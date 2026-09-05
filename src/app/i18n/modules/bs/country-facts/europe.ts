@@ -44,7 +44,7 @@ export const europeFacts = {
     'Snabdijevanje Züricha vodom dolazi iz Ciriškog jezera bez potrebe za tretmanom.',
     'Švicarska izvozi vodu susjednim zemljama u periodima suše.',
     'Švicarski glečeri su izgubili 30% svog volumena od 1970. godine.',
-    'Čuvena fontana Jet d\'Eau u Ženevi izbacuje vodu 140 metara u visinu.',
+    "Čuvena fontana Jet d'Eau u Ženevi izbacuje vodu 140 metara u visinu.",
     'Švicarski građevinski propisi zahtijevaju prikupljanje kišnice za nove objekte.',
   ],
 
@@ -155,7 +155,7 @@ export const europeFacts = {
     'Zaljev Galway obezbjeđuje vodu za uzgoj školjki.',
     'Irske litice Moher izložene su stalnom prskanju Atlantika.',
     'Tradicionalni irski bunari smatrani su svetim mjestima.',
-    'Giant\'s Causeway pokazuje drevno vulkansko hlađenje vodom.',
+    "Giant's Causeway pokazuje drevno vulkansko hlađenje vodom.",
     'Rijeka Lee u Corku protiče kroz najstariju pijacu putera u Evropi.',
     'Irska planira investirati 13 milijardi eura u vodovodnu infrastrukturu.',
   ],

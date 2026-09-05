@@ -1,9 +1,10 @@
 import {
   Component,
+  Input,
+  Output,
+  EventEmitter,
   signal,
   computed,
-  input,
-  output,
   effect,
   inject,
   ContentChild,
@@ -23,7 +24,8 @@ import {
   ChevronLeft,
   ChevronRight,
   CalendarDays,
-  ArrowUpDown,
+  CalendarFold,
+  ListFilter,
   HelpCircle,
   RotateCcw,
 } from 'lucide-angular';
@@ -92,27 +94,119 @@ export class DetailedRecordsComponent {
   protected readonly ChevronLeftIcon = ChevronLeft;
   protected readonly ChevronRightIcon = ChevronRight;
   protected readonly CalendarDaysIcon = CalendarDays;
-  protected readonly ArrowUpDownIcon = ArrowUpDown;
+  protected readonly CalendarFoldIcon = CalendarFold;
+  protected readonly SortIcon = ListFilter;
+  protected readonly ArrowUpDownIcon = ListFilter;
   protected readonly HelpIcon = HelpCircle;
   protected readonly ResetIcon = RotateCcw;
   protected readonly ChevronUpIcon = ChevronUp;
 
   // Inputs - generic to support any record type with date
-  records = input.required<GenericRecord[]>();
-  defaultSortOption = input<SortOption>('date-desc');
-  showSearchDate = input<boolean>(true);
-  showYearMonth = input<boolean>(true);
-  showEditDelete = input<boolean>(true);
-  recordType = input<string>('water');
-  helpTitleKey = input<string>('HOME.RECORDS_HELP_TITLE');
-  helpSteps = input<HelpStep[]>([]);
-  showTotal = input<boolean>(true);
-  totalLabelKey = input<string>('HOME.TOTAL');
-  hasDetails = input<boolean>(true);
-  allowCollapse = input<boolean>(true);
+  @Input() set records(val: GenericRecord[]) {
+    this.recordsSignal.set(val || []);
+  }
+  get records(): GenericRecord[] {
+    return this.recordsSignal();
+  }
+  protected recordsSignal = signal<GenericRecord[]>([]);
+
+  @Input() set defaultSortOption(val: SortOption) {
+    this.defaultSortOptionSignal.set(val || 'date-desc');
+    this.sortOption.set(val || 'date-desc');
+  }
+  get defaultSortOption(): SortOption {
+    return this.defaultSortOptionSignal();
+  }
+  protected defaultSortOptionSignal = signal<SortOption>('date-desc');
+
+  @Input() set showSearchDate(val: boolean) {
+    this.showSearchDateSignal.set(val);
+  }
+  get showSearchDate(): boolean {
+    return this.showSearchDateSignal();
+  }
+  protected showSearchDateSignal = signal<boolean>(true);
+
+  @Input() set showYearMonth(val: boolean) {
+    this.showYearMonthSignal.set(val);
+  }
+  get showYearMonth(): boolean {
+    return this.showYearMonthSignal();
+  }
+  protected showYearMonthSignal = signal<boolean>(true);
+
+  @Input() set showEditDelete(val: boolean) {
+    this.showEditDeleteSignal.set(val);
+  }
+  get showEditDelete(): boolean {
+    return this.showEditDeleteSignal();
+  }
+  protected showEditDeleteSignal = signal<boolean>(true);
+
+  @Input() set recordType(val: string) {
+    this.recordTypeSignal.set(val || 'water');
+  }
+  get recordType(): string {
+    return this.recordTypeSignal();
+  }
+  protected recordTypeSignal = signal<string>('water');
+
+  @Input() set helpTitleKey(val: string) {
+    this.helpTitleKeySignal.set(val || 'HOME.RECORDS_HELP_TITLE');
+  }
+  get helpTitleKey(): string {
+    return this.helpTitleKeySignal();
+  }
+  protected helpTitleKeySignal = signal<string>('HOME.RECORDS_HELP_TITLE');
+
+  @Input() set helpSteps(val: HelpStep[]) {
+    this.helpStepsSignal.set(val || []);
+  }
+  get helpSteps(): HelpStep[] {
+    return this.helpStepsSignal();
+  }
+  protected helpStepsSignal = signal<HelpStep[]>([]);
+
+  @Input() set showTotal(val: boolean) {
+    this.showTotalSignal.set(val);
+  }
+  get showTotal(): boolean {
+    return this.showTotalSignal();
+  }
+  protected showTotalSignal = signal<boolean>(true);
+
+  @Input() set totalLabelKey(val: string) {
+    this.totalLabelKeySignal.set(val || 'HOME.TOTAL');
+  }
+  get totalLabelKey(): string {
+    return this.totalLabelKeySignal();
+  }
+  protected totalLabelKeySignal = signal<string>('HOME.TOTAL');
+
+  @Input() set hasDetails(val: boolean) {
+    this.hasDetailsSignal.set(val);
+  }
+  get hasDetails(): boolean {
+    return this.hasDetailsSignal();
+  }
+  protected hasDetailsSignal = signal<boolean>(true);
+
+  @Input() set allowCollapse(val: boolean) {
+    this.allowCollapseSignal.set(val);
+  }
+  get allowCollapse(): boolean {
+    return this.allowCollapseSignal();
+  }
+  protected allowCollapseSignal = signal<boolean>(true);
 
   // Configurable sort options - parent provides these
-  sortOptions = input<SortOptionConfig[]>([
+  @Input() set sortOptions(val: SortOptionConfig[]) {
+    this.sortOptionsSignal.set(val || []);
+  }
+  get sortOptions(): SortOptionConfig[] {
+    return this.sortOptionsSignal();
+  }
+  protected sortOptionsSignal = signal<SortOptionConfig[]>([
     { value: 'date-desc', labelKey: 'HOME.SORT.DATE_DESC', direction: '↓' },
     { value: 'date-asc', labelKey: 'HOME.SORT.DATE_ASC', direction: '↑' },
     { value: 'total-desc', labelKey: 'HOME.SORT.TOTAL_DESC', direction: '↓' },
@@ -124,20 +218,32 @@ export class DetailedRecordsComponent {
   ]);
 
   // Callback for calculating total - parent provides record-specific logic
-  calculateTotalFn = input<(record: GenericRecord) => number>(() => 0);
+  @Input() set calculateTotalFn(val: (record: GenericRecord) => number) {
+    this.calculateTotalFnSignal.set(val || (() => 0));
+  }
+  get calculateTotalFn(): (record: GenericRecord) => number {
+    return this.calculateTotalFnSignal();
+  }
+  protected calculateTotalFnSignal = signal<(record: GenericRecord) => number>(() => 0);
 
   // Configurable note about values (e.g., "All values in liters" vs "All values in kWh")
-  valuesNoteKey = input<string>('HOME.ALL_VALUES_IN_LITERS');
+  @Input() set valuesNoteKey(val: string) {
+    this.valuesNoteKeySignal.set(val || 'HOME.ALL_VALUES_IN_LITERS');
+  }
+  get valuesNoteKey(): string {
+    return this.valuesNoteKeySignal();
+  }
+  protected valuesNoteKeySignal = signal<string>('HOME.ALL_VALUES_IN_LITERS');
 
   // Content projection for record details template
   @ContentChild('recordDetails') recordDetailsTemplate!: TemplateRef<{ $implicit: GenericRecord }>;
 
   // Outputs - generic
-  editRecord = output<GenericRecord>();
-  deleteRecord = output<GenericRecord>();
-  deleteAllRecords = output<GenericRecord[]>();
-  filteredRecordsChange = output<GenericRecord[]>();
-  filterStateChange = output<{
+  @Output() editRecord = new EventEmitter<GenericRecord>();
+  @Output() deleteRecord = new EventEmitter<GenericRecord>();
+  @Output() deleteAllRecords = new EventEmitter<GenericRecord[]>();
+  @Output() filteredRecordsChange = new EventEmitter<GenericRecord[]>();
+  @Output() filterStateChange = new EventEmitter<{
     year: number | null;
     month: number | null;
     startDate: string | null;
@@ -156,12 +262,9 @@ export class DetailedRecordsComponent {
   protected isCollapsed = signal(true); // Will be initialized in constructor
 
   constructor() {
-    // Initialize sort option from input
-    this.sortOption.set(this.defaultSortOption());
-
     // Reactively load collapsed state when recordType changes
     effect(() => {
-      const type = this.recordType();
+      const type = this.recordTypeSignal();
       untracked(() => {
         const key = `detailed_records_for_${type}_are_collapsed`;
         const stored = this.localStorageService.getPreference(key);
@@ -192,7 +295,7 @@ export class DetailedRecordsComponent {
   protected currentLang = computed(() => this.languageService.currentLang());
 
   protected availableYears = computed(() => {
-    const years = new Set(this.records().map((r) => new Date(r.date).getFullYear()));
+    const years = new Set(this.recordsSignal().map((r) => new Date(r.date).getFullYear()));
     return Array.from(years).sort((a, b) => b - a);
   });
 
@@ -201,7 +304,7 @@ export class DetailedRecordsComponent {
     const endDate = this.endDate();
     const searchYear = this.searchYear();
     const searchMonth = this.searchMonth();
-    let records = this.records();
+    let records = this.recordsSignal();
 
     if (startDate) {
       records = records.filter((r) => {
@@ -242,7 +345,7 @@ export class DetailedRecordsComponent {
   protected displayedRecords = computed(() => {
     const records = [...this.filteredRecords()];
     const sortOption = this.sortOption();
-    const calculateTotal = this.calculateTotalFn();
+    const calculateTotal = this.calculateTotalFnSignal();
 
     // Sort records using generic approach
     records.sort((a, b) => {
@@ -456,7 +559,7 @@ export class DetailedRecordsComponent {
 
   protected toggleCollapse() {
     this.isCollapsed.update((v) => !v);
-    const key = `detailed_records_for_${this.recordType()}_are_collapsed`;
+    const key = `detailed_records_for_${this.recordTypeSignal()}_are_collapsed`;
     this.localStorageService.setPreference(key, String(this.isCollapsed()));
   }
 

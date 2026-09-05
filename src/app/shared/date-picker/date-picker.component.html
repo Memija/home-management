@@ -1,8 +1,14 @@
 <div class="date-picker-container">
-  <div class="input-wrapper" (click)="toggleCalendar()" [class.disabled]="disabled()">
+  <div
+    class="input-wrapper"
+    (click)="toggleCalendar()"
+    [class.disabled]="disabledSignal()"
+    tabindex="0"
+    (keyup.enter)="toggleCalendar()"
+  >
     <lucide-icon [img]="CalendarIcon" size="18" class="calendar-icon"></lucide-icon>
-    <span class="date-display" [class.placeholder]="!date()">
-      {{ formattedDate() || (placeholder() | translate) }}
+    <span class="date-display" [class.placeholder]="!dateSignal()">
+      {{ formattedDate() || (placeholderSignal() | translate) }}
     </span>
   </div>
 
@@ -30,7 +36,7 @@
               type="button"
               class="day-cell"
               [class.empty]="!day"
-              [class.selected]="isSameDay(day, date())"
+              [class.selected]="isSameDay(day, dateSignal())"
               [class.today]="isToday(day)"
               [class.sunday]="isSunday(day)"
               [class.disabled]="isDisabled(day)"

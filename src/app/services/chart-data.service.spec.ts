@@ -5,14 +5,19 @@ import { ChartCalculationService } from './chart-calculation.service';
 import { WaterChartService, ChartDataParams } from './water-chart.service';
 import { HeatingAveragesService } from './heating-averages.service';
 import { vi, describe, it, expect, beforeEach } from 'vitest';
-import { ConsumptionRecord, DynamicHeatingRecord } from '../models/records.model';
+import {
+  ConsumptionRecord,
+  DynamicHeatingRecord,
+  ElectricityRecord,
+  AppChartDataset,
+} from '../models/records.model';
 
 describe('ChartDataService', () => {
   let service: ChartDataService;
-  let languageServiceMock: any;
-  let calculationServiceMock: any;
-  let waterChartServiceMock: any;
-  let heatingAveragesServiceMock: any;
+  let languageServiceMock: Record<string, import('vitest').Mock>;
+  let calculationServiceMock: Record<string, import('vitest').Mock>;
+  let waterChartServiceMock: Record<string, import('vitest').Mock>;
+  let heatingAveragesServiceMock: Record<string, import('vitest').Mock>;
 
   beforeEach(() => {
     languageServiceMock = {
@@ -28,13 +33,18 @@ describe('ChartDataService', () => {
           (_, i) => data[0] + i * ((data[data.length - 1] - data[0]) / (data.length - 1 || 1)),
         );
       }),
-      calculateDailyAverage: vi.fn((incrementalData: any[], _originalData: any[], type: string) => {
-        // Return data with normalized metadata based on type
-        if (type === 'electricity') {
-          return incrementalData.map((r) => ({ ...r, normalized: { days: 7, raw: r.value } }));
-        }
-        return incrementalData.map((r) => ({ ...r, normalized: { days: 7 } }));
-      }),
+      calculateDailyAverage: vi.fn(
+        (incrementalData: Record<string, unknown>[], _originalData: unknown[], type: string) => {
+          // Return data with normalized metadata based on type
+          if (type === 'electricity') {
+            return incrementalData.map((r) => ({
+              ...r,
+              normalized: { days: 7, raw: r['value'] },
+            }));
+          }
+          return incrementalData.map((r) => ({ ...r, normalized: { days: 7 } }));
+        },
+      ),
       generateElectricityComparisonData: vi.fn(() => []),
       getTrendColor: vi.fn(() => '#000000'),
     };
@@ -74,7 +84,7 @@ describe('ChartDataService', () => {
     it('should call calculationService.calculateIncrementalData', () => {
       const records: ConsumptionRecord[] = [];
       service.calculateIncrementalData(records);
-      expect(calculationServiceMock.calculateIncrementalData).toHaveBeenCalledWith(
+      expect(calculationServiceMock['calculateIncrementalData']).toHaveBeenCalledWith(
         records,
         undefined,
       );
@@ -85,7 +95,11 @@ describe('ChartDataService', () => {
     it('should call calculationService.generateComparisonData', () => {
       const records: ConsumptionRecord[] = [];
       service.generateComparisonData(records, 4, 'DE');
-      expect(calculationServiceMock.generateComparisonData).toHaveBeenCalledWith(records, 4, 'DE');
+      expect(calculationServiceMock['generateComparisonData']).toHaveBeenCalledWith(
+        records,
+        4,
+        'DE',
+      );
     });
   });
 
@@ -98,7 +112,7 @@ describe('ChartDataService', () => {
         mode: 'total',
       };
       service.getWaterChartData(params);
-      expect(waterChartServiceMock.getWaterChartData).toHaveBeenCalledWith(params);
+      expect(waterChartServiceMock['getWaterChartData']).toHaveBeenCalledWith(params);
     });
   });
 
@@ -233,7 +247,7 @@ describe('ChartDataService', () => {
 
         expect(result.datasets.length).toBe(2); // Data + trendline
         expect(result.datasets[1].label).toBe('CHART.TRENDLINE');
-        expect(calculationServiceMock.generateTrendlineData).toHaveBeenCalled();
+        expect(calculationServiceMock['generateTrendlineData']).toHaveBeenCalled();
       });
 
       it('should not add trendline when showTrendline is false', () => {
@@ -273,7 +287,7 @@ describe('ChartDataService', () => {
       // Issue reproduction tests
       describe('incremental mode label alignment', () => {
         it('should return N labels for N electricity records', () => {
-          const records: any[] = [
+          const records: ElectricityRecord[] = [
             { date: new Date('2023-01-01'), value: 100 },
             { date: new Date('2023-01-08'), value: 110 },
             { date: new Date('2023-01-15'), value: 125 },
@@ -281,13 +295,13 @@ describe('ChartDataService', () => {
           const labels = ['Jan 1', 'Jan 8', 'Jan 15'];
 
           // Mock calc service to return difference - NOW INCLUDES FIRST POINT (from 0)
-          calculationServiceMock.calculateIncrementalData.mockReturnValue([
+          calculationServiceMock['calculateIncrementalData'].mockReturnValue([
             { date: '2023-01-01', value: 100 }, // First point
             { date: '2023-01-08', value: 10 },
             { date: '2023-01-15', value: 15 },
           ]);
 
-          const params: ChartDataParams<any> = {
+          const params: ChartDataParams<ElectricityRecord> = {
             records,
             labels,
             view: 'total',
@@ -302,7 +316,7 @@ describe('ChartDataService', () => {
         });
 
         it('should delegate water chart data generation', () => {
-          const params: ChartDataParams<any> = {
+          const params: ChartDataParams<ConsumptionRecord> = {
             records: [],
             labels: ['A', 'B'],
             view: 'total',
@@ -311,23 +325,23 @@ describe('ChartDataService', () => {
 
           service.getWaterChartData(params);
 
-          expect(waterChartServiceMock.getWaterChartData).toHaveBeenCalledWith(params);
+          expect(waterChartServiceMock['getWaterChartData']).toHaveBeenCalledWith(params);
         });
 
         it('should return N labels for N heating records in incremental mode', () => {
-          const records: any[] = [
+          const records: DynamicHeatingRecord[] = [
             { date: new Date(), rooms: { r1: 10 } },
             { date: new Date(), rooms: { r1: 20 } },
           ];
           const labels = ['Jan 1', 'Jan 8'];
 
           // Mock N items
-          calculationServiceMock.calculateIncrementalData.mockReturnValue([
+          calculationServiceMock['calculateIncrementalData'].mockReturnValue([
             { date: 'Jan 1', rooms: { r1: 10 } },
             { date: 'Jan 8', rooms: { r1: 10 } },
           ]);
 
-          const params: ChartDataParams<any> = {
+          const params: ChartDataParams<DynamicHeatingRecord> = {
             records,
             labels,
             view: 'total',
@@ -364,7 +378,7 @@ describe('ChartDataService', () => {
         // Find the country average dataset
         const avgDataset = result.datasets.find((d) => d.label === 'CHART.COUNTRY_AVERAGE');
         expect(avgDataset).toBeDefined();
-        expect(heatingAveragesServiceMock.getAverageKwhPerYear).toHaveBeenCalledWith('DE');
+        expect(heatingAveragesServiceMock['getAverageKwhPerYear']).toHaveBeenCalledWith('DE');
       });
 
       it('should not add country average in total mode', () => {
@@ -399,7 +413,7 @@ describe('ChartDataService', () => {
 
         service.getHeatingChartData(paramsDE);
 
-        expect(heatingAveragesServiceMock.getAverageKwhPerYear).toHaveBeenCalledWith('FI');
+        expect(heatingAveragesServiceMock['getAverageKwhPerYear']).toHaveBeenCalledWith('FI');
       });
     });
 
@@ -449,12 +463,12 @@ describe('ChartDataService', () => {
 
         const result = service.getHeatingChartData(params);
 
-        expect(calculationServiceMock.calculateDailyAverage).toHaveBeenCalled();
-        expect((result.datasets[0] as any).normalizedData).toBeDefined();
+        expect(calculationServiceMock['calculateDailyAverage']).toHaveBeenCalled();
+        expect((result.datasets[0] as AppChartDataset).normalizedData).toBeDefined();
       });
 
       it('should not call normalization in total mode', () => {
-        calculationServiceMock.calculateDailyAverage.mockClear();
+        calculationServiceMock['calculateDailyAverage'].mockClear();
 
         const params: ChartDataParams<DynamicHeatingRecord> = {
           records: mockHeatingRecords,
@@ -467,14 +481,14 @@ describe('ChartDataService', () => {
 
         service.getHeatingChartData(params);
 
-        expect(calculationServiceMock.calculateDailyAverage).not.toHaveBeenCalled();
+        expect(calculationServiceMock['calculateDailyAverage']).not.toHaveBeenCalled();
       });
     });
   });
 
   describe('getWaterChartData normalization', () => {
     it('should call calculateDailyAverageForWater in incremental mode', () => {
-      const records: any[] = [
+      const records: ConsumptionRecord[] = [
         {
           date: new Date('2023-01-01'),
           kitchenWarm: 10,
@@ -491,7 +505,7 @@ describe('ChartDataService', () => {
         },
       ];
 
-      waterChartServiceMock.getWaterChartData.mockReturnValue({
+      waterChartServiceMock['getWaterChartData'].mockReturnValue({
         labels: ['Jan 1', 'Jan 8'],
         datasets: [{ label: 'Test', data: [1, 2] }],
       });
@@ -505,16 +519,16 @@ describe('ChartDataService', () => {
 
       const result = service.getWaterChartData(params);
 
-      expect(calculationServiceMock.calculateDailyAverage).toHaveBeenCalled();
-      expect((result.datasets[0] as any).normalizedData).toBeDefined();
+      expect(calculationServiceMock['calculateDailyAverage']).toHaveBeenCalled();
+      expect((result.datasets[0] as AppChartDataset).normalizedData).toBeDefined();
     });
 
     it('should pass through to waterChartService in total mode', () => {
-      waterChartServiceMock.getWaterChartData.mockReturnValue({
+      waterChartServiceMock['getWaterChartData'].mockReturnValue({
         labels: ['Jan 1'],
         datasets: [{ label: 'Test', data: [1] }],
       });
-      calculationServiceMock.calculateDailyAverage.mockClear();
+      calculationServiceMock['calculateDailyAverage'].mockClear();
 
       const params: ChartDataParams = {
         records: [
@@ -533,19 +547,19 @@ describe('ChartDataService', () => {
 
       service.getWaterChartData(params);
 
-      expect(calculationServiceMock.calculateDailyAverage).not.toHaveBeenCalled();
-      expect(waterChartServiceMock.getWaterChartData).toHaveBeenCalledWith(params);
+      expect(calculationServiceMock['calculateDailyAverage']).not.toHaveBeenCalled();
+      expect(waterChartServiceMock['getWaterChartData']).toHaveBeenCalledWith(params);
     });
   });
 
   describe('getElectricityChartData normalization', () => {
     it('should call calculateDailyAverageForElectricity in incremental mode', () => {
-      const records: any[] = [
+      const records: ElectricityRecord[] = [
         { date: new Date('2023-01-01'), value: 100 },
         { date: new Date('2023-01-08'), value: 110 },
       ];
 
-      const params: ChartDataParams<any> = {
+      const params: ChartDataParams<ElectricityRecord> = {
         records,
         labels: ['Jan 1', 'Jan 8'],
         view: 'total',
@@ -554,16 +568,16 @@ describe('ChartDataService', () => {
 
       const result = service.getElectricityChartData(params);
 
-      expect(calculationServiceMock.calculateDailyAverage).toHaveBeenCalled();
-      expect((result.datasets[0] as any).normalizedData).toBeDefined();
+      expect(calculationServiceMock['calculateDailyAverage']).toHaveBeenCalled();
+      expect((result.datasets[0] as AppChartDataset).normalizedData).toBeDefined();
     });
 
     it('should not call normalization in total mode', () => {
-      calculationServiceMock.calculateDailyAverage.mockClear();
+      calculationServiceMock['calculateDailyAverage'].mockClear();
 
-      const records: any[] = [{ date: new Date('2023-01-01'), value: 100 }];
+      const records: ElectricityRecord[] = [{ date: new Date('2023-01-01'), value: 100 }];
 
-      const params: ChartDataParams<any> = {
+      const params: ChartDataParams<ElectricityRecord> = {
         records,
         labels: ['Jan 1'],
         view: 'total',
@@ -572,12 +586,12 @@ describe('ChartDataService', () => {
 
       const result = service.getElectricityChartData(params);
 
-      expect(calculationServiceMock.calculateDailyAverage).not.toHaveBeenCalled();
-      expect((result.datasets[0] as any).normalizedData).toBeUndefined();
+      expect(calculationServiceMock['calculateDailyAverage']).not.toHaveBeenCalled();
+      expect((result.datasets[0] as AppChartDataset).normalizedData).toBeUndefined();
     });
 
     it('should handle empty records in incremental mode', () => {
-      const params: ChartDataParams<any> = {
+      const params: ChartDataParams<ElectricityRecord> = {
         records: [],
         labels: [],
         view: 'total',

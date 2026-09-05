@@ -29,7 +29,11 @@ export function generateSmartLabels(
     } else {
       // Low / medium density: show month and day
       if (spansMultipleYears) {
-        return languageService.formatDate(date, { month: 'short', day: 'numeric', year: 'numeric' });
+        return languageService.formatDate(date, {
+          month: 'short',
+          day: 'numeric',
+          year: 'numeric',
+        });
       }
       return languageService.formatDate(date, { month: 'short', day: 'numeric' });
     }

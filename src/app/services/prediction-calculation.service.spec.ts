@@ -9,7 +9,9 @@ import { ChartCalculationService } from './chart-calculation.service';
 
 /** Build a simple two-record water incremental array with given deltas */
 function waterInc(kw: number, kc: number, bw: number, bc: number) {
-  return [{ date: new Date(), kitchenWarm: kw, kitchenCold: kc, bathroomWarm: bw, bathroomCold: bc }];
+  return [
+    { date: new Date(), kitchenWarm: kw, kitchenCold: kc, bathroomWarm: bw, bathroomCold: bc },
+  ];
 }
 
 /** Build a simple two-record electricity incremental array */
@@ -26,7 +28,7 @@ function heatingInc(rooms: Record<string, number>) {
 function twoRecords(startYear = 2025) {
   return [
     { date: new Date(startYear, 0, 1) },
-    { date: new Date(startYear, 1, 1) },  // ~31 days later
+    { date: new Date(startYear, 1, 1) }, // ~31 days later
   ];
 }
 
@@ -43,17 +45,6 @@ function makeWaterRecords(count: number) {
       bathroomWarm: 150 + i * 45,
       bathroomCold: 250 + i * 90,
     });
-  }
-  return records;
-}
-
-/** N records each 30 days apart, with cumulative electricity values */
-function makeElectricityRecords(count: number) {
-  const records = [];
-  for (let i = 0; i < count; i++) {
-    const date = new Date(2024, 0, 1);
-    date.setDate(date.getDate() + i * 30);
-    records.push({ date, value: 1000 + i * 300 });
   }
   return records;
 }
@@ -77,7 +68,6 @@ describe('PredictionCalculationService', () => {
   // =========================================================================
 
   describe('calculateDailyRatesWithMonths', () => {
-
     // --- Water: total -------------------------------------------------------
 
     it('should sum all four water fields for category "total"', () => {
@@ -222,10 +212,7 @@ describe('PredictionCalculationService', () => {
 
     it('should assign the midpoint month correctly', () => {
       // Jan 15 → Mar 15: midpoint is ~Feb 15 (month index 1)
-      const records = [
-        { date: new Date(2025, 0, 15) },
-        { date: new Date(2025, 2, 15) },
-      ];
+      const records = [{ date: new Date(2025, 0, 15) }, { date: new Date(2025, 2, 15) }];
       const inc = waterInc(60, 60, 60, 60);
 
       const result = service.calculateDailyRatesWithMonths(records, inc, 'total');
@@ -249,11 +236,14 @@ describe('PredictionCalculationService', () => {
   // =========================================================================
 
   describe('calculateHistoricalAccuracy', () => {
-
     it('should return accuracy:null and correctionFactor:1.0 when records < MIN + 2 (i.e. < 6)', () => {
       const records = makeWaterRecords(5); // 5 < 4+2=6
-      const inc = records.slice(1).map((_, i) => ({
-        kitchenWarm: 30, kitchenCold: 60, bathroomWarm: 45, bathroomCold: 90,
+
+      const inc = records.slice(1).map(() => ({
+        kitchenWarm: 30,
+        kitchenCold: 60,
+        bathroomWarm: 45,
+        bathroomCold: 90,
       }));
 
       const result = service.calculateHistoricalAccuracy(records, inc, 'total');
@@ -261,7 +251,7 @@ describe('PredictionCalculationService', () => {
       expect(result.accuracy).toBeNull();
       expect(result.correctionFactor).toBe(1.0);
       expect(result.historicalPredictions.length).toBe(5);
-      expect(result.historicalPredictions.every(v => v === null)).toBe(true);
+      expect(result.historicalPredictions.every((v) => v === null)).toBe(true);
     });
 
     it('should return accuracy:null and correctionFactor:1.0 when evaluations remains 0', () => {
@@ -272,7 +262,10 @@ describe('PredictionCalculationService', () => {
       }));
       // All deltas are zero → actualRate = 0 → the `if (actualRate > 0)` guard skips every eval
       const inc = Array.from({ length: count - 1 }, () => ({
-        kitchenWarm: 0, kitchenCold: 0, bathroomWarm: 0, bathroomCold: 0,
+        kitchenWarm: 0,
+        kitchenCold: 0,
+        bathroomWarm: 0,
+        bathroomCold: 0,
       }));
 
       const result = service.calculateHistoricalAccuracy(records, inc, 'total');
@@ -293,7 +286,13 @@ describe('PredictionCalculationService', () => {
         // Last 5 readings: tiny increments (actual rate << model prediction)
         const delta = i < 5 ? 9000 : 1;
         cumulative += delta;
-        records.push({ date, kitchenWarm: cumulative, kitchenCold: 0, bathroomWarm: 0, bathroomCold: 0 });
+        records.push({
+          date,
+          kitchenWarm: cumulative,
+          kitchenCold: 0,
+          bathroomWarm: 0,
+          bathroomCold: 0,
+        });
       }
       const inc = records.slice(1).map((r, i) => ({
         kitchenWarm: i < 4 ? 9000 : 1,
@@ -316,7 +315,13 @@ describe('PredictionCalculationService', () => {
         const date = new Date(2024, 0, 1 + i * 30);
         const delta = i < 5 ? 1 : 9000;
         cumulative += delta;
-        records.push({ date, kitchenWarm: cumulative, kitchenCold: 0, bathroomWarm: 0, bathroomCold: 0 });
+        records.push({
+          date,
+          kitchenWarm: cumulative,
+          kitchenCold: 0,
+          bathroomWarm: 0,
+          bathroomCold: 0,
+        });
       }
       const inc = records.slice(1).map((r, i) => ({
         kitchenWarm: i < 4 ? 1 : 9000,
@@ -333,7 +338,10 @@ describe('PredictionCalculationService', () => {
     it('should return accuracy in [0, 100] range with sufficient data', () => {
       const records = makeWaterRecords(10);
       const inc = records.slice(1).map(() => ({
-        kitchenWarm: 30, kitchenCold: 60, bathroomWarm: 45, bathroomCold: 90,
+        kitchenWarm: 30,
+        kitchenCold: 60,
+        bathroomWarm: 45,
+        bathroomCold: 90,
       }));
 
       const result = service.calculateHistoricalAccuracy(records, inc, 'total');
@@ -347,7 +355,10 @@ describe('PredictionCalculationService', () => {
     it('should return historicalPredictions with same length as records', () => {
       const records = makeWaterRecords(8);
       const inc = records.slice(1).map(() => ({
-        kitchenWarm: 30, kitchenCold: 60, bathroomWarm: 45, bathroomCold: 90,
+        kitchenWarm: 30,
+        kitchenCold: 60,
+        bathroomWarm: 45,
+        bathroomCold: 90,
       }));
 
       const result = service.calculateHistoricalAccuracy(records, inc, 'total');
@@ -358,7 +369,10 @@ describe('PredictionCalculationService', () => {
     it('should leave early indices of historicalPredictions as null', () => {
       const records = makeWaterRecords(8);
       const inc = records.slice(1).map(() => ({
-        kitchenWarm: 30, kitchenCold: 60, bathroomWarm: 45, bathroomCold: 90,
+        kitchenWarm: 30,
+        kitchenCold: 60,
+        bathroomWarm: 45,
+        bathroomCold: 90,
       }));
 
       const result = service.calculateHistoricalAccuracy(records, inc, 'total');
@@ -415,7 +429,14 @@ describe('PredictionCalculationService', () => {
     it('should zero out off-season months detected from Northern Hemisphere data', () => {
       const { dailyRates, ratesWithMonths } = makeNorthernHeatingRates();
       const records = makeRecords(12);
-      const result = service.buildPrediction(dailyRates, ratesWithMonths, records, 'kWh', undefined, true);
+      const result = service.buildPrediction(
+        dailyRates,
+        ratesWithMonths,
+        records,
+        'kWh',
+        undefined,
+        true,
+      );
 
       // Summer months (May=4 through Sep=8) should be zeroed out
       for (const m of [4, 5, 6, 7, 8]) {
@@ -433,7 +454,14 @@ describe('PredictionCalculationService', () => {
     it('should zero out off-season months detected from Southern Hemisphere data', () => {
       const { dailyRates, ratesWithMonths } = makeSouthernHeatingRates();
       const records = makeRecords(12);
-      const result = service.buildPrediction(dailyRates, ratesWithMonths, records, 'kWh', undefined, true);
+      const result = service.buildPrediction(
+        dailyRates,
+        ratesWithMonths,
+        records,
+        'kWh',
+        undefined,
+        true,
+      );
 
       // Southern summer months (Nov=10, Dec=11, Jan=0, Feb=1, Mar=2) should be zeroed out
       for (const m of [0, 1, 2, 10, 11]) {
@@ -455,7 +483,14 @@ describe('PredictionCalculationService', () => {
         ratesWithMonths.push({ rate: 15, month: m });
       }
       const records = makeRecords(12);
-      const result = service.buildPrediction(dailyRates, ratesWithMonths, records, 'kWh', undefined, true);
+      const result = service.buildPrediction(
+        dailyRates,
+        ratesWithMonths,
+        records,
+        'kWh',
+        undefined,
+        true,
+      );
 
       // All months should be non-zero since there's no detectable off-season
       for (let m = 0; m < 12; m++) {
@@ -470,7 +505,7 @@ describe('PredictionCalculationService', () => {
 
       // Even with seasonal data, non-heating types should not zero out months
       const allExpected = Array.from({ length: 12 }, (_, m) => result.monthlyRates[m].expected);
-      expect(allExpected.some(v => v > 0)).toBe(true);
+      expect(allExpected.some((v) => v > 0)).toBe(true);
     });
   });
 });

@@ -2,14 +2,17 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { SmartImportModalComponent } from './smart-import-modal.component';
 import { SmartImportService, ParsedRecord } from '../../services/smart-import.service';
 import { LanguageService } from '../../services/language.service';
-import { signal } from '@angular/core';
-import { vi } from 'vitest';
+import { signal, WritableSignal } from '@angular/core';
+import { describe, it, expect, beforeEach, vi } from 'vitest';
 
 describe('SmartImportModalComponent', () => {
   let component: SmartImportModalComponent;
   let fixture: ComponentFixture<SmartImportModalComponent>;
-  let mockSmartImportService: any;
-  let mockLanguageService: any;
+  let mockSmartImportService: { parseRawText: ReturnType<typeof vi.fn> };
+  let mockLanguageService: {
+    currentLang: WritableSignal<string>;
+    translate: ReturnType<typeof vi.fn>;
+  };
 
   beforeEach(async () => {
     mockSmartImportService = {
@@ -34,8 +37,7 @@ describe('SmartImportModalComponent', () => {
 
     fixture = TestBed.createComponent(SmartImportModalComponent);
     component = fixture.componentInstance;
-    // Set the required signal input before change detection
-    fixture.componentRef.setInput('show', true);
+    component.show = true;
     fixture.detectChanges();
   });
 
@@ -45,13 +47,12 @@ describe('SmartImportModalComponent', () => {
 
   describe('analyzeText', () => {
     it('should not process if rawText is empty', () => {
-      const compAsAny = component as any;
-      compAsAny.rawText.set('');
+      component['rawText'].set('');
 
-      compAsAny.analyzeText();
+      component['analyzeText']();
 
       expect(mockSmartImportService.parseRawText).not.toHaveBeenCalled();
-      expect(compAsAny.step()).toBe('input');
+      expect(component['step']()).toBe('input');
     });
 
     it('should parse text, set records and change step to preview if text exists', () => {
@@ -60,27 +61,25 @@ describe('SmartImportModalComponent', () => {
       ];
       mockSmartImportService.parseRawText.mockReturnValue(mockRecords);
 
-      const compAsAny = component as any;
-      compAsAny.rawText.set('some raw text');
+      component['rawText'].set('some raw text');
 
-      compAsAny.analyzeText();
+      component['analyzeText']();
 
       expect(mockSmartImportService.parseRawText).toHaveBeenCalledWith('some raw text');
-      expect(compAsAny.parsedRecords()).toEqual(mockRecords);
-      expect(compAsAny.step()).toBe('preview');
+      expect(component['parsedRecords']()).toEqual(mockRecords);
+      expect(component['step']()).toBe('preview');
     });
 
     it('should handle returned empty parsed records properly', () => {
       mockSmartImportService.parseRawText.mockReturnValue([]);
 
-      const compAsAny = component as any;
-      compAsAny.rawText.set('invalid text');
+      component['rawText'].set('invalid text');
 
-      compAsAny.analyzeText();
+      component['analyzeText']();
 
       expect(mockSmartImportService.parseRawText).toHaveBeenCalledWith('invalid text');
-      expect(compAsAny.parsedRecords()).toEqual([]);
-      expect(compAsAny.step()).toBe('preview');
+      expect(component['parsedRecords']()).toEqual([]);
+      expect(component['step']()).toBe('preview');
     });
   });
 
@@ -89,55 +88,52 @@ describe('SmartImportModalComponent', () => {
       const mockRecords: ParsedRecord[] = [
         { date: new Date(), value: 200, originalLine: 'test line 2' },
       ];
-      const compAsAny = component as any;
-      compAsAny.parsedRecords.set(mockRecords);
-      compAsAny.step.set('preview');
-      compAsAny.rawText.set('some old text');
+      component['parsedRecords'].set(mockRecords);
+      component['step'].set('preview');
+      component['rawText'].set('some old text');
 
       vi.spyOn(component.import, 'emit');
-      vi.spyOn(component.close, 'emit');
+      vi.spyOn(component.closeModal, 'emit');
 
-      compAsAny.confirmImport();
+      component['confirmImport']();
 
       // Check emissions
       expect(component.import.emit).toHaveBeenCalledWith(mockRecords);
-      expect(component.close.emit).toHaveBeenCalled();
+      expect(component.closeModal.emit).toHaveBeenCalled();
 
       // Check reset state
-      expect(compAsAny.step()).toBe('input');
-      expect(compAsAny.rawText()).toBe('');
-      expect(compAsAny.parsedRecords()).toEqual([]);
+      expect(component['step']()).toBe('input');
+      expect(component['rawText']()).toBe('');
+      expect(component['parsedRecords']()).toEqual([]);
     });
 
     it('should handle confirming empty records if no text could be parsed', () => {
-      const compAsAny = component as any;
-      compAsAny.parsedRecords.set([]);
+      component['parsedRecords'].set([]);
 
       vi.spyOn(component.import, 'emit');
-      vi.spyOn(component.close, 'emit');
+      vi.spyOn(component.closeModal, 'emit');
 
-      compAsAny.confirmImport();
+      component['confirmImport']();
 
       expect(component.import.emit).toHaveBeenCalledWith([]);
-      expect(component.close.emit).toHaveBeenCalled();
+      expect(component.closeModal.emit).toHaveBeenCalled();
     });
   });
 
   describe('reset functionality (private method)', () => {
     it('should correctly reset to initial state', () => {
-      const compAsAny = component as any;
       // Setup dirty state
-      compAsAny.step.set('preview');
-      compAsAny.rawText.set('dirty text');
-      compAsAny.parsedRecords.set([{ date: new Date(), value: 1, originalLine: '1' }]);
+      component['step'].set('preview');
+      component['rawText'].set('dirty text');
+      component['parsedRecords'].set([{ date: new Date(), value: 1, originalLine: '1' }]);
 
       // Call private method
-      compAsAny.reset();
+      (component as unknown as { reset: () => void })['reset']();
 
       // Verify reset state
-      expect(compAsAny.step()).toBe('input');
-      expect(compAsAny.rawText()).toBe('');
-      expect(compAsAny.parsedRecords()).toEqual([]);
+      expect(component['step']()).toBe('input');
+      expect(component['rawText']()).toBe('');
+      expect(component['parsedRecords']()).toEqual([]);
     });
   });
 });

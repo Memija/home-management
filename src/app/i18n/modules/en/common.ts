@@ -7,6 +7,8 @@ export const common = {
     TITLE: 'Water Consumption Tracker',
     SETTINGS: 'Settings',
     BACK: 'Back to Home',
+    LOADING_CHART: 'Loading chart...',
+    LOADING_RECORDS: 'Loading records...',
   },
   ACTIONS: {
     CLOSE: 'Close',
@@ -26,7 +28,8 @@ export const common = {
   DASHBOARD: {
     TITLE: 'Home Management',
     SUBTITLE: 'Select a tracker to manage your consumption',
-    CONFIDENCE_INFO: 'Indicates how reliable the prediction is based on the consistency of your historical data and the amount of data available.',
+    CONFIDENCE_INFO:
+      'Indicates how reliable the prediction is based on the consistency of your historical data and the amount of data available.',
     WATER_TRACKER: 'Water Consumption',
     WATER_DESC: 'Track your water usage',
     HEATING_TRACKER: 'Heating Consumption',
@@ -51,7 +54,8 @@ export const common = {
   CHANGELOG: {
     TITLE: 'Changelog',
     SUBTITLE: 'A record of all notable changes shipped in each release',
-    CONFIDENCE_INFO: 'Indicates how reliable the prediction is based on the consistency of your historical data and the amount of data available.',
+    CONFIDENCE_INFO:
+      'Indicates how reliable the prediction is based on the consistency of your historical data and the amount of data available.',
     V1_1_0_LABEL: 'Version 1.1.0',
     SHIPPED: 'Shipped',
   },
@@ -283,7 +287,8 @@ export const common = {
   },
   METER_READER: {
     TITLE: 'Meter Reading from Photo',
-    INSTRUCTION: 'Photograph or upload an image of your meter to automatically scan the reading. Please verify the detected numbers, as Optical Character Recognition (OCR) accuracy can vary depending on image quality.',
+    INSTRUCTION:
+      'Photograph or upload an image of your meter to automatically scan the reading. Please verify the detected numbers, as Optical Character Recognition (OCR) accuracy can vary depending on image quality.',
     TAKE_PHOTO: 'Take Photo',
     CAMERA_HINT: 'Use your camera',
     UPLOAD_IMAGE: 'Upload Image',
@@ -355,12 +360,15 @@ export const common = {
   PREDICTIONS: {
     BREAKDOWN: 'Category Breakdown',
     ACCURACY: 'Historical Accuracy',
-    ACCURACY_INFO: "Shows how accurately the system's predictions performed across your entire history of readings.",
+    ACCURACY_INFO:
+      "Shows how accurately the system's predictions performed across your entire history of readings.",
     AUTO_CORRECTED: 'Auto-corrected by {{percent}}% based on past trends',
-    AUTO_CORRECTED_INFO: 'The system compares past predictions against your actual recorded consumption. It detects historical biases (such as consistently underestimating) and automatically adjusts future forecasts by that exact percentage to reflect your true habits.',
+    AUTO_CORRECTED_INFO:
+      'The system compares past predictions against your actual recorded consumption. It detects historical biases (such as consistently underestimating) and automatically adjusts future forecasts by that exact percentage to reflect your true habits.',
     TITLE: 'Smart Predictions',
     SUBTITLE: 'Based on your consumption history',
-    CONFIDENCE_INFO: 'Indicates how reliable the prediction is based on the consistency of your historical data and the amount of data available.',
+    CONFIDENCE_INFO:
+      'Indicates how reliable the prediction is based on the consistency of your historical data and the amount of data available.',
     NEXT_30_DAYS: '30 Days',
     NEXT_90_DAYS: '90 Days',
     HALF_YEAR: 'Half Year',
@@ -373,13 +381,15 @@ export const common = {
     TREND_RISING: 'Usage is trending up',
     TREND_FALLING: 'Usage is trending down',
     TREND_STABLE: 'Usage is stable',
-    TREND_INFO: 'Compares your recent consumption against your older historical data to identify changes in habits.',
+    TREND_INFO:
+      'Compares your recent consumption against your older historical data to identify changes in habits.',
     CONFIDENCE: 'Confidence',
     CONFIDENCE_HIGH: 'High',
     CONFIDENCE_MEDIUM: 'Medium',
     CONFIDENCE_LOW: 'Low',
     DAILY_AVERAGE: 'Daily Average',
-    AVERAGE_DAILY_INFO: 'Your overall average daily consumption calculated across your entire recorded history.',
+    AVERAGE_DAILY_INFO:
+      'Your overall average daily consumption calculated across your entire recorded history.',
     DAILY_UNIT: ' / day',
     NOT_ENOUGH_DATA: 'Add at least 4 readings to unlock smart predictions',
   },

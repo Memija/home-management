@@ -1,13 +1,16 @@
 import { TestBed } from '@angular/core/testing';
 import { ElectricityCountryFactsService } from './electricity-country-facts.service';
 import { LanguageService } from './language.service';
+import { signal, WritableSignal } from '@angular/core';
 import { describe, it, expect, beforeEach, vi } from 'vitest';
-import { signal } from '@angular/core';
 
 describe('ElectricityCountryFactsService', () => {
   let service: ElectricityCountryFactsService;
-  let mockLanguageService: any;
-  let mockCurrentLangSignal: ReturnType<typeof signal<string>>;
+  let mockLanguageService: {
+    currentLang: WritableSignal<string>;
+    translate: import('vitest').Mock<(key: string) => string>;
+  };
+  let mockCurrentLangSignal: WritableSignal<string>;
 
   beforeEach(() => {
     mockCurrentLangSignal = signal('en');
@@ -78,7 +81,6 @@ describe('ElectricityCountryFactsService', () => {
     it('should return different facts for different indices', () => {
       const fact0 = service.getFactByIndex(100, 0, 'historical');
       const fact1 = service.getFactByIndex(100, 1, 'historical');
-      // They could be the same if only one fact exists, but generally should differ
       expect(fact0).not.toBeNull();
       expect(fact1).not.toBeNull();
     });
@@ -91,10 +93,9 @@ describe('ElectricityCountryFactsService', () => {
 
     it('should wrap around for large indices (modulo behavior)', () => {
       const fact0 = service.getFactByIndex(100, 0, 'historical');
-      // WORLD facts exist, so we can test modulo
       const factLarge = service.getFactByIndex(100, 1000, 'historical');
+      expect(fact0).not.toBeNull();
       expect(factLarge).not.toBeNull();
-      // The fact at index 1000 should equal fact at index (1000 % factsCount)
     });
 
     it('should ignore kWh parameter (reserved for future use)', () => {
@@ -133,15 +134,12 @@ describe('ElectricityCountryFactsService', () => {
 
     it('should fallback to DEFAULT facts for unknown country', () => {
       const fact = service.getFactByIndex(100, 0, 'country', 'XX');
-      // Should get DEFAULT facts, not null
       expect(fact).not.toBeNull();
       expect(fact!.message.length).toBeGreaterThan(0);
     });
 
     it('should return null when no countryCode and no DEFAULT facts exist', () => {
-      // Undefined country code should fallback to DEFAULT
       const fact = service.getFactByIndex(100, 0, 'country', undefined);
-      // DEFAULT facts exist so should not be null
       expect(fact).not.toBeNull();
     });
 
@@ -177,7 +175,6 @@ describe('ElectricityCountryFactsService', () => {
       mockCurrentLangSignal.set('fr');
       const fact = service.getFactByIndex(100, 0, 'historical');
       expect(fact).not.toBeNull();
-      // Should fallback to English since 'fr' is not supported
       expect(fact!.title).toBe('Did you know?');
     });
   });
@@ -195,14 +192,11 @@ describe('ElectricityCountryFactsService', () => {
 
     it('should handle empty string country code', () => {
       const fact = service.getFactByIndex(100, 0, 'country', '');
-      // Empty string is falsy, so should fallback to DEFAULT
       expect(fact).not.toBeNull();
     });
 
     it('should handle whitespace country code', () => {
       const fact = service.getFactByIndex(100, 0, 'country', '  ');
-      // Whitespace when uppercased won't match any country
-      // Should fallback to DEFAULT
       expect(fact).not.toBeNull();
     });
 
@@ -219,8 +213,6 @@ describe('ElectricityCountryFactsService', () => {
     it('should return different facts for different countries', () => {
       const factDE = service.getFactByIndex(100, 0, 'country', 'DE');
       const factUS = service.getFactByIndex(100, 0, 'country', 'US');
-      // Countries should have different facts at same index
-      // (unless they happen to have the same first fact)
       expect(factDE).not.toBeNull();
       expect(factUS).not.toBeNull();
     });
@@ -240,8 +232,6 @@ describe('ElectricityCountryFactsService', () => {
 
   describe('Fallback behavior', () => {
     it('should use translation service for fallback message', () => {
-      // This tests that when no facts exist, the fallback uses translation
-      // We can't easily force empty facts, but we can verify the mock is set up
       expect(mockLanguageService.translate('FACTS.ELECTRICITY_FALLBACK')).toBe(
         'Electricity has revolutionized modern life.',
       );

@@ -26,8 +26,10 @@ export const auth = {
     PULL_ERROR: 'Gagal mengunduh data dari cloud',
     SYNC_ERROR: 'Sinkronisasi awal gagal',
     PULL_CONFIRM_TITLE: 'Unduh dari Cloud?',
-    PULL_CONFIRM_MESSAGE: 'Ini akan menimpa data lokal Anda dengan data dari cloud. Tindakan ini tidak dapat dibatalkan.',
-    CLOUD_DESCRIPTION: 'Saat diaktifkan, data Anda dicadangkan ke cloud dan disinkronkan antar perangkat.',
+    PULL_CONFIRM_MESSAGE:
+      'Ini akan menimpa data lokal Anda dengan data dari cloud. Tindakan ini tidak dapat dibatalkan.',
+    CLOUD_DESCRIPTION:
+      'Saat diaktifkan, data Anda dicadangkan ke cloud dan disinkronkan antar perangkat.',
     LOCAL_DESCRIPTION: 'Data hanya tersimpan di perangkat ini. Tidak perlu akun.',
     SIGN_IN_REQUIRED: 'Masuk untuk mengaktifkan sinkronisasi cloud',
     DEMO_MODE_WARNING: 'Sinkronisasi cloud dinonaktifkan dalam mode demo.',
@@ -44,7 +46,8 @@ export const auth = {
     HELP_STEP3_TITLE: 'Privasi & Keamanan',
     HELP_STEP3_DESC: 'Data Anda disimpan di Firebase dan dilindungi oleh aturan keamanan.',
     CLEAR_LOCAL_TITLE: 'Hapus data lokal?',
-    CLEAR_LOCAL_MESSAGE: 'Sinkronisasi cloud telah dinonaktifkan. Apakah Anda ingin menghapus semua data lokal?',
+    CLEAR_LOCAL_MESSAGE:
+      'Sinkronisasi cloud telah dinonaktifkan. Apakah Anda ingin menghapus semua data lokal?',
     KEEP_LOCAL: 'Simpan data lokal',
     CLEAR_LOCAL: 'Hapus data lokal',
     CLEAR_LOCAL_DEMO_DISABLED: 'Penghapusan data lokal dinonaktifkan dalam mode demo.',

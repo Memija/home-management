@@ -2,6 +2,7 @@ import { Injectable, inject, signal } from '@angular/core';
 import { STORAGE_SERVICE } from './storage.service';
 import { ChartView, DisplayMode } from '../shared/consumption-chart/consumption-chart.component';
 
+export type { ChartView, DisplayMode };
 export type ChartType = 'water' | 'heating' | 'home' | 'electricity';
 
 @Injectable({
@@ -79,13 +80,19 @@ export class ConsumptionPreferencesService {
     // Update signals based on type
     if (type === 'water') {
       if (storedView) this.chartView.set(storedView);
+      else if (defaultView) this.chartView.set(defaultView);
       if (storedMode) this.displayMode.set(storedMode);
+      else if (defaultMode) this.displayMode.set(defaultMode);
     } else if (type === 'heating') {
       if (storedView) this.heatingChartView.set(storedView);
+      else if (defaultView) this.heatingChartView.set(defaultView);
       if (storedMode) this.heatingDisplayMode.set(storedMode);
+      else if (defaultMode) this.heatingDisplayMode.set(defaultMode);
     } else if (type === 'electricity') {
       if (storedView) this.electricityChartView.set(storedView);
+      else if (defaultView) this.electricityChartView.set(defaultView);
       if (storedMode) this.electricityDisplayMode.set(storedMode);
+      else if (defaultMode) this.electricityDisplayMode.set(defaultMode);
     }
   }
 

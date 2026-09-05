@@ -45,6 +45,7 @@
       <div class="toggle-group">
         <button
           type="button"
+          class="toggle-btn toggle-adult"
           [class.active]="editType() === 'adult'"
           (click)="editType.set('adult')"
           title="{{ 'SETTINGS.TYPES.ADULT' | translate }}"
@@ -54,6 +55,7 @@
         </button>
         <button
           type="button"
+          class="toggle-btn toggle-kid"
           [class.active]="editType() === 'kid'"
           (click)="editType.set('kid')"
           title="{{ 'SETTINGS.TYPES.KID' | translate }}"
@@ -68,6 +70,7 @@
       <div class="toggle-group">
         <button
           type="button"
+          class="toggle-btn toggle-male"
           [class.active]="editGender() === 'male'"
           (click)="editGender.set('male')"
           title="{{ 'SETTINGS.GENDERS.MALE' | translate }}"
@@ -77,6 +80,7 @@
         </button>
         <button
           type="button"
+          class="toggle-btn toggle-female"
           [class.active]="editGender() === 'female'"
           (click)="editGender.set('female')"
           title="{{ 'SETTINGS.GENDERS.FEMALE' | translate }}"
@@ -88,10 +92,10 @@
     </div>
   </div>
   <div class="form-group">
-    <span class="form-label">{{ 'SETTINGS.UPLOAD_PICTURE' | translate }}</span>
+    <span class="form-label">{{ 'SETTINGS.CUSTOM_PICTURE' | translate }}</span>
     <label class="upload-btn">
-      <lucide-icon [img]="ImportIcon" size="16"></lucide-icon>
-      {{ 'SETTINGS.UPLOAD_PICTURE' | translate }}
+      <lucide-icon [img]="ImportIcon" size="14"></lucide-icon>
+      <span class="btn-text">{{ 'SETTINGS.UPLOAD_PICTURE' | translate }}</span>
       <input
         type="file"
         id="edit-member-file"
@@ -110,13 +114,15 @@
   <div class="form-group">
     <span class="form-label">{{ 'SETTINGS.OR_SELECT_AVATAR' | translate }}</span>
     <div class="avatar-grid">
-      @for (avatar of avatars(); track avatar; let i = $index) {
+      @for (avatar of avatars; track avatar; let i = $index) {
         <img
           [src]="avatar"
           [class.selected]="editAvatar() === avatar && !customPicturePreview()"
           alt="Avatar option {{ i + 1 }}"
           (click)="selectAvatar(avatar)"
           title="{{ 'SETTINGS.SELECT_AVATAR' | translate }}"
+          tabindex="0"
+          (keyup.enter)="selectAvatar(avatar)"
         />
       }
     </div>

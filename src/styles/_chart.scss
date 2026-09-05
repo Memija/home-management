@@ -3,9 +3,14 @@
 .chart-section {
   margin-bottom: 2rem;
   padding: 1.5rem;
-  background: white;
-  border-radius: 8px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  background: var(--card-bg);
+  border: 1px solid var(--card-border);
+  border-radius: 12px;
+  box-shadow: var(--shadow-card);
+  transition:
+    background 0.3s ease,
+    border-color 0.2s ease,
+    box-shadow 0.3s ease;
 
   .chart-header {
     display: flex;
@@ -17,7 +22,7 @@
 
     h2 {
       margin: 0;
-      color: #2c3e50;
+      color: var(--text-primary);
     }
 
     .chart-filters {
@@ -27,14 +32,19 @@
 
       button {
         padding: 0.5rem 1rem;
-        border: 2px solid #dee2e6;
-        background: white;
-        color: #495057;
-        border-radius: 4px;
+        border: 1px solid var(--border-color);
+        background: var(--card-bg);
+        color: var(--text-primary);
+        border-radius: 6px;
         cursor: pointer;
         font-size: 0.9rem;
         font-weight: 500;
-        transition: all 0.2s;
+        transition: all 0.2s ease;
+
+        &:hover {
+          background: var(--bg-secondary);
+          border-color: var(--theme-primary, #005cbf);
+        }
       }
     }
   }
@@ -165,4 +175,3 @@
     padding-bottom: 8px;
   }
 }
-

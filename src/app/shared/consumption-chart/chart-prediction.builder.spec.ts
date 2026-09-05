@@ -5,14 +5,26 @@ import { LanguageService } from '../../services/language.service';
 import { PredictionResult, MultiPredictionResult } from '../../models/prediction.models';
 import { ConsumptionRecord } from '../../models/records.model';
 
+interface ExtendedDataset {
+  label?: string;
+  data?: (number | null)[];
+  borderColor?: string;
+  borderDash?: number[];
+  borderWidth?: number;
+  isPredictionExtension?: boolean;
+  categoryId?: string;
+}
+
 // ─── Test helpers ─────────────────────────────────────────────────────────────
 
 const makeLangService = (): LanguageService =>
   ({
     translate: vi.fn().mockImplementation((key: string) => key),
-    formatDate: vi.fn().mockImplementation((_d: Date, opts: Intl.DateTimeFormatOptions) =>
-      opts.year ? 'Feb 2024' : 'Feb',
-    ),
+    formatDate: vi
+      .fn()
+      .mockImplementation((_d: Date, opts: Intl.DateTimeFormatOptions) =>
+        opts.year ? 'Feb 2024' : 'Feb',
+      ),
   }) as unknown as LanguageService;
 
 const makeRec = (dateStr: string): ConsumptionRecord => ({
@@ -53,14 +65,15 @@ const makeMultiPrediction = (overrides?: Partial<PredictionResult>): MultiPredic
 });
 
 /** Minimal chart data with a single bar dataset */
-const makeChartData = (dataValues: (number | null)[], labels?: string[]): ChartConfiguration['data'] => ({
+const makeChartData = (
+  dataValues: (number | null)[],
+  labels?: string[],
+): ChartConfiguration['data'] => ({
   labels: labels ?? dataValues.map((_, i) => `Label${i}`),
   datasets: [{ data: dataValues, label: 'Total' }],
 });
 
-const makeDeps = (
-  overrides: Partial<PredictionBuilderDeps> = {},
-): PredictionBuilderDeps => ({
+const makeDeps = (overrides: Partial<PredictionBuilderDeps> = {}): PredictionBuilderDeps => ({
   languageService: makeLangService(),
   chartType: 'water',
   currentView: () => 'total',
@@ -144,10 +157,10 @@ describe('appendPredictionDatasets', () => {
         chartData,
         makeDeps({ chartType: 'electricity', currentView: () => 'total' }),
       );
-      const expectedDataset = result.datasets.find((ds) =>
-        (ds as any).label?.includes('CHART.CONSUMPTION_PREDICTION'),
+      const expectedDataset = (result.datasets as ExtendedDataset[]).find((ds) =>
+        ds.label?.includes('CHART.CONSUMPTION_PREDICTION'),
       );
-      expect((expectedDataset as any)?.borderColor).toBe('#ffc107');
+      expect(expectedDataset?.borderColor).toBe('#ffc107');
     });
 
     it('should use orange color for heating chart predictions', () => {
@@ -156,57 +169,57 @@ describe('appendPredictionDatasets', () => {
         chartData,
         makeDeps({ chartType: 'heating', currentView: () => 'total' }),
       );
-      const expectedDataset = result.datasets.find((ds) =>
-        (ds as any).label?.includes('CHART.CONSUMPTION_PREDICTION'),
+      const expectedDataset = (result.datasets as ExtendedDataset[]).find((ds) =>
+        ds.label?.includes('CHART.CONSUMPTION_PREDICTION'),
       );
-      expect((expectedDataset as any)?.borderColor).toBe('#f57c00');
+      expect(expectedDataset?.borderColor).toBe('#f57c00');
     });
 
     it('should use blue color for water chart predictions', () => {
       const chartData = makeChartData([10, 20]);
       const result = appendPredictionDatasets(chartData, makeDeps({ chartType: 'water' }));
-      const expectedDataset = result.datasets.find((ds) =>
-        (ds as any).label?.includes('CHART.CONSUMPTION_PREDICTION'),
+      const expectedDataset = (result.datasets as ExtendedDataset[]).find((ds) =>
+        ds.label?.includes('CHART.CONSUMPTION_PREDICTION'),
       );
-      expect((expectedDataset as any)?.borderColor).toBe('#1976d2');
+      expect(expectedDataset?.borderColor).toBe('#1976d2');
     });
 
     it('expected dataset should have dashed border [4, 4]', () => {
       const chartData = makeChartData([10, 20]);
       const result = appendPredictionDatasets(chartData, makeDeps());
-      const expectedDataset = result.datasets.find((ds) =>
-        (ds as any).label?.includes('CHART.CONSUMPTION_PREDICTION'),
+      const expectedDataset = (result.datasets as ExtendedDataset[]).find((ds) =>
+        ds.label?.includes('CHART.CONSUMPTION_PREDICTION'),
       );
-      expect((expectedDataset as any)?.borderDash).toEqual([4, 4]);
+      expect(expectedDataset?.borderDash).toEqual([4, 4]);
     });
 
     it('min dataset should be transparent', () => {
       const chartData = makeChartData([10, 20]);
       const result = appendPredictionDatasets(chartData, makeDeps());
-      const minDataset = result.datasets.find((ds) =>
-        (ds as any).label?.includes('PREDICTIONS.MIN'),
+      const minDataset = (result.datasets as ExtendedDataset[]).find((ds) =>
+        ds.label?.includes('PREDICTIONS.MIN'),
       );
-      expect((minDataset as any)?.borderColor).toBe('rgba(0, 0, 0, 0)');
+      expect(minDataset?.borderColor).toBe('rgba(0, 0, 0, 0)');
     });
 
     it('prediction data arrays should start with null for past positions', () => {
       const chartData = makeChartData([10, 20]);
       const result = appendPredictionDatasets(chartData, makeDeps({ predictionPeriod: 30 }));
-      const expectedDataset = result.datasets.find((ds) =>
-        (ds as any).label?.includes('CHART.CONSUMPTION_PREDICTION'),
+      const expectedDataset = (result.datasets as ExtendedDataset[]).find((ds) =>
+        ds.label?.includes('CHART.CONSUMPTION_PREDICTION'),
       );
       // First element at index 0 should be null (only index 1 = last actual, index 2 = future)
-      expect((expectedDataset?.data as any[])[0]).toBeNull();
+      expect((expectedDataset?.data as unknown[])[0]).toBeNull();
     });
 
     it('should anchor prediction at last actual data value', () => {
       const chartData = makeChartData([10, 20]);
       const result = appendPredictionDatasets(chartData, makeDeps({ predictionPeriod: 30 }));
-      const expectedDataset = result.datasets.find((ds) =>
-        (ds as any).label?.includes('CHART.CONSUMPTION_PREDICTION'),
+      const expectedDataset = (result.datasets as ExtendedDataset[]).find((ds) =>
+        ds.label?.includes('CHART.CONSUMPTION_PREDICTION'),
       );
       // Index 1 = last actual value anchor
-      expect((expectedDataset?.data as any[])[1]).toBe(20);
+      expect((expectedDataset?.data as unknown[])[1]).toBe(20);
     });
   });
 
@@ -219,7 +232,7 @@ describe('appendPredictionDatasets', () => {
         chartData,
         makeDeps({ prediction: pred, showPredictions: false, showPastForecast: true }),
       );
-      expect(result.datasets.some((ds) => (ds as any).label?.includes('CHART.PAST_FORECAST'))).toBe(true);
+      expect(result.datasets.some((ds) => ds.label?.includes('CHART.PAST_FORECAST'))).toBe(true);
     });
 
     it('should not add past forecast dataset when historicalPredictions are not available', () => {
@@ -230,7 +243,7 @@ describe('appendPredictionDatasets', () => {
         chartData,
         makeDeps({ prediction: pred, showPredictions: false, showPastForecast: true }),
       );
-      expect(result.datasets.every((ds) => !(ds as any).label?.includes('CHART.PAST_FORECAST'))).toBe(true);
+      expect(result.datasets.every((ds) => !ds.label?.includes('CHART.PAST_FORECAST'))).toBe(true);
     });
 
     it('past forecast dataset should use purple color', () => {
@@ -241,10 +254,10 @@ describe('appendPredictionDatasets', () => {
         chartData,
         makeDeps({ prediction: pred, showPredictions: false, showPastForecast: true }),
       );
-      const pastDataset = result.datasets.find((ds) =>
-        (ds as any).label?.includes('CHART.PAST_FORECAST'),
+      const pastDataset = (result.datasets as ExtendedDataset[]).find((ds) =>
+        ds.label?.includes('CHART.PAST_FORECAST'),
       );
-      expect((pastDataset as any)?.borderColor).toBe('#9333ea');
+      expect(pastDataset?.borderColor).toBe('#9333ea');
     });
 
     it('should align historicalPredictions by slicing from index 1', () => {
@@ -256,12 +269,12 @@ describe('appendPredictionDatasets', () => {
         chartData,
         makeDeps({ prediction: pred, showPredictions: false, showPastForecast: true }),
       );
-      const pastDataset = result.datasets.find((ds) =>
-        (ds as any).label?.includes('CHART.PAST_FORECAST'),
+      const pastDataset = (result.datasets as ExtendedDataset[]).find((ds) =>
+        ds.label?.includes('CHART.PAST_FORECAST'),
       );
       // Sliced from index 1: [45, 48], padded to labels.length (2) → [45, 48]
-      expect((pastDataset?.data as any[])[0]).toBe(45);
-      expect((pastDataset?.data as any[])[1]).toBe(48);
+      expect((pastDataset?.data as unknown[])[0]).toBe(45);
+      expect((pastDataset?.data as unknown[])[1]).toBe(48);
     });
   });
 
@@ -285,10 +298,14 @@ describe('appendPredictionDatasets', () => {
         showPredictions: true,
       });
       // Make translate return the key so trendline detection works
-      (deps.languageService.translate as ReturnType<typeof vi.fn>).mockImplementation((k: string) => k);
+      (deps.languageService.translate as ReturnType<typeof vi.fn>).mockImplementation(
+        (k: string) => k,
+      );
 
       const result = appendPredictionDatasets(chartData, deps);
-      const extensions = result.datasets.filter((ds) => (ds as any).isPredictionExtension);
+      const extensions = (result.datasets as ExtendedDataset[]).filter(
+        (ds) => ds.isPredictionExtension,
+      );
       expect(extensions).toHaveLength(1);
     });
 
@@ -306,11 +323,13 @@ describe('appendPredictionDatasets', () => {
         ],
       };
       const deps = makeDeps({ predictionPeriod: 30 });
-      (deps.languageService.translate as ReturnType<typeof vi.fn>).mockImplementation((k: string) => k);
+      (deps.languageService.translate as ReturnType<typeof vi.fn>).mockImplementation(
+        (k: string) => k,
+      );
 
       const result = appendPredictionDatasets(chartData, deps);
-      const ext = result.datasets.find((ds) => (ds as any).isPredictionExtension);
-      expect((ext as any)?.borderColor).toBe('#ff000080');
+      const ext = (result.datasets as ExtendedDataset[]).find((ds) => ds.isPredictionExtension);
+      expect(ext?.borderColor).toBe('#ff000080');
     });
 
     it('trendline extension should use wider dash pattern [3, 6]', () => {
@@ -322,11 +341,13 @@ describe('appendPredictionDatasets', () => {
         ],
       };
       const deps = makeDeps({ predictionPeriod: 30 });
-      (deps.languageService.translate as ReturnType<typeof vi.fn>).mockImplementation((k: string) => k);
+      (deps.languageService.translate as ReturnType<typeof vi.fn>).mockImplementation(
+        (k: string) => k,
+      );
 
       const result = appendPredictionDatasets(chartData, deps);
-      const ext = result.datasets.find((ds) => (ds as any).isPredictionExtension);
-      expect((ext as any)?.borderDash).toEqual([3, 6]);
+      const ext = (result.datasets as ExtendedDataset[]).find((ds) => ds.isPredictionExtension);
+      expect(ext?.borderDash).toEqual([3, 6]);
     });
   });
 
@@ -352,7 +373,10 @@ describe('appendPredictionDatasets', () => {
       }));
       const pred = makeMultiPrediction({ monthlyRates, averageDaily: 48 });
       const chartData = makeChartData([10, 20]);
-      const result = appendPredictionDatasets(chartData, makeDeps({ prediction: pred, predictionPeriod: 30 }));
+      const result = appendPredictionDatasets(
+        chartData,
+        makeDeps({ prediction: pred, predictionPeriod: 30 }),
+      );
       // Should have prediction datasets added — seasonal path taken
       expect(result.datasets.length).toBeGreaterThan(1);
     });
@@ -360,7 +384,6 @@ describe('appendPredictionDatasets', () => {
 
   describe('heating off-season in chart predictions', () => {
     it('should force prediction values to zero for months flagged as off-season in monthlyRates', () => {
-      // Mock seasonal monthly rates: 0 for May-Sep (4-8), 50 for all other months
       const monthlyRates = Array.from({ length: 12 }, (_, i) => ({
         expected: [4, 5, 6, 7, 8].includes(i) ? 0 : 50,
         min: [4, 5, 6, 7, 8].includes(i) ? 0 : 40,
@@ -394,8 +417,8 @@ describe('appendPredictionDatasets', () => {
       const result = appendPredictionDatasets(chartData, deps);
 
       // Find the expected prediction dataset
-      const expectedDs = result.datasets.find((ds) =>
-        (ds as any).label?.includes('CHART.CONSUMPTION_PREDICTION'),
+      const expectedDs = (result.datasets as ExtendedDataset[]).find((ds) =>
+        ds.label?.includes('CHART.CONSUMPTION_PREDICTION'),
       );
       expect(expectedDs).toBeDefined();
 
@@ -406,7 +429,6 @@ describe('appendPredictionDatasets', () => {
       const data = expectedDs!.data as (number | null)[];
 
       // Check that off-season months have zero values
-      // Index 2 = Mar, 3 = Apr, 4 = May, 5 = Jun, 6 = Jul, 7 = Aug, 8 = Sep, 9 = Oct, etc.
       for (let i = 2; i < data.length; i++) {
         if (data[i] === null) continue;
         const futureDate = new Date(2024, 1, 15); // last record date
@@ -416,14 +438,14 @@ describe('appendPredictionDatasets', () => {
         if ([4, 5, 6, 7, 8].includes(calMonth)) {
           expect(data[i]).toBe(0);
         } else {
-            expect(data[i]).toBeGreaterThan(0);
+          expect(data[i]).toBeGreaterThan(0);
         }
       }
     });
 
     it('should NOT force prediction values to zero if monthlyRates are not zero (e.g. water)', () => {
       // Mock seasonal monthly rates: all > 0
-      const monthlyRates = Array.from({ length: 12 }, (_, i) => ({
+      const monthlyRates = Array.from({ length: 12 }, () => ({
         expected: 50,
         min: 40,
         max: 60,
@@ -445,15 +467,15 @@ describe('appendPredictionDatasets', () => {
       });
 
       const result = appendPredictionDatasets(chartData, deps);
-      const expectedDs = result.datasets.find((ds) =>
-        (ds as any).label?.includes('CHART.CONSUMPTION_PREDICTION'),
+      const expectedDs = (result.datasets as ExtendedDataset[]).find((ds) =>
+        ds.label?.includes('CHART.CONSUMPTION_PREDICTION'),
       );
       expect(expectedDs).toBeDefined();
 
       const data = expectedDs!.data as (number | null)[];
       // All future prediction values should be non-zero
-      const futureValues = data.slice(2).filter(v => v !== null) as number[];
-      expect(futureValues.every(v => v > 0)).toBe(true);
+      const futureValues = data.slice(2).filter((v) => v !== null) as number[];
+      expect(futureValues.every((v) => v > 0)).toBe(true);
     });
   });
 });

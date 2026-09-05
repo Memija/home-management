@@ -33,7 +33,8 @@ export const settings = {
     FAMILY_SAVED: 'Porodica je uspješno sačuvana!',
     EDIT_MEMBER: 'Uredi',
     SAVE_MEMBER: 'Sačuvaj promjene',
-    UPLOAD_PICTURE: 'Otpremi sliku',
+    UPLOAD_PICTURE: 'Izaberi',
+    CUSTOM_PICTURE: 'Vlastita slika',
     OR_SELECT_AVATAR: 'Ili izaberite avatara',
     EXPORT_FAMILY: 'Izvezi porodicu',
     IMPORT_FAMILY: 'Uvezi porodicu',
@@ -45,7 +46,8 @@ export const settings = {
     UNSAVED_CHANGES_TITLE: 'Nesačuvane promjene',
     UNSAVED_CHANGES_MESSAGE:
       'Imate nesačuvane promjene kod članova porodice. Ako izađete sada, promjene će biti izgubljene.',
-    UNSAVED_CHANGES_MESSAGE_GENERIC: 'Imate nesačuvane promjene. Ako odete, promjene će biti izgubljene.',
+    UNSAVED_CHANGES_MESSAGE_GENERIC:
+      'Imate nesačuvane promjene. Ako odete, promjene će biti izgubljene.',
     UNSAVED_CHANGES_LEAVE: 'Izađi bez čuvanja',
     UNSAVED_CHANGES_STAY: 'Ostani i sačuvaj',
     TYPES: {
@@ -98,7 +100,8 @@ export const settings = {
     IMPORT_FAMILY_ERROR_MISSING_SURNAME: 'Polje prezime ne smije biti prazno.',
     IMPORT_FAMILY_ERROR_INVALID_TYPE: 'Vrsta člana mora biti: "adult", "kid" ili "other".',
     IMPORT_FAMILY_ERROR_INVALID_GENDER: 'Spol člana mora biti: "male", "female" ili "other".',
-    IMPORT_FAMILY_ERROR_NO_VALID_MEMBERS: 'U datoteci nisu pronađeni validni članovi porodice za uvoz.',
+    IMPORT_FAMILY_ERROR_NO_VALID_MEMBERS:
+      'U datoteci nisu pronađeni validni članovi porodice za uvoz.',
     IMPORT_ADDRESS_CONFIRM_TITLE: 'Potvrda uvoza adrese',
     IMPORT_ADDRESS_CONFIRM_MESSAGE:
       'Ovaj uvoz će prepisati vašu trenutnu adresu. Jeste li sigurni da želite nastaviti?',
@@ -148,16 +151,19 @@ export const settings = {
       'Mapiranje grijanja ("heatingMapping") mora sadržavati "rooms" objekat sa ID-ovima soba.',
     IMPORT_EXCEL_SETTINGS_INVALID_FORMAT:
       'Nije moguće uvesti postavke. Datoteka ne sadrži važeće Excel postavke.',
-    IMPORT_ADDRESS_INVALID_FILE_TYPE: 'Nevažeći tip datoteke. Molimo izaberite .json datoteku za uvoz adrese.',
+    IMPORT_ADDRESS_INVALID_FILE_TYPE:
+      'Nevažeći tip datoteke. Molimo izaberite .json datoteku za uvoz adrese.',
     IMPORT_ADDRESS_INVALID_FILE_TYPE_INSTRUCTION_1: 'Osigurajte da datoteka ima .json ekstenziju',
     IMPORT_ADDRESS_INVALID_FILE_TYPE_INSTRUCTION_2:
       'Prvo izvezite podatke adrese kako biste dobili ispravan JSON format',
     IMPORT_EXCEL_SETTINGS_INVALID_FILE_TYPE:
       'Nevažeći tip datoteke. Molimo odaberite .json datoteku za uvoz Excel postavki.',
-    IMPORT_EXCEL_SETTINGS_INVALID_FILE_TYPE_INSTRUCTION_1: 'Osigurajte da datoteka ima .json ekstenziju',
+    IMPORT_EXCEL_SETTINGS_INVALID_FILE_TYPE_INSTRUCTION_1:
+      'Osigurajte da datoteka ima .json ekstenziju',
     IMPORT_EXCEL_SETTINGS_INVALID_FILE_TYPE_INSTRUCTION_2:
       'Prvo izvezite Excel postavke kako biste dobili ispravan JSON format',
-    IMPORT_EXCEL_CROSS_SECTION_DUPLICATES: 'Konflikt imena kolone: {{columns}} se koristi u više sekcija',
+    IMPORT_EXCEL_CROSS_SECTION_DUPLICATES:
+      'Konflikt imena kolone: {{columns}} se koristi u više sekcija',
     IMPORT_EXCEL_CROSS_SECTION_DUPLICATES_HINT: 'Svako ime kolone mora biti jedinstveno.',
     IMPORT_EXCEL_MISSING_ROOMS: 'Nedostaje "rooms" objekat u mapiranju grijanja',
     IMPORT_EXCEL_MISSING_ROOMS_HINT: 'Mapiranje grijanja mora sadržavati listu soba.',
@@ -178,13 +184,17 @@ export const settings = {
     FAMILY_HELP_STEP_2_DESC:
       'Pratite potrošnju vode, struje i grijanja po članu porodice kako biste otkrili gdje možete uštedjeti.',
     FAMILY_HELP_STEP_3_TITLE: 'Korak 1: uređivanje',
-    FAMILY_HELP_STEP_3_DESC: 'Kliknite na dugme "Uredi porodicu" da započnete dodavanje ili izmjenu članova.',
+    FAMILY_HELP_STEP_3_DESC:
+      'Kliknite na dugme "Uredi porodicu" da započnete dodavanje ili izmjenu članova.',
     FAMILY_HELP_STEP_4_TITLE: 'Korak 2: unos podataka',
-    FAMILY_HELP_STEP_4_DESC: 'Unesite ime, prezime, vrstu korisnika i spol za svakog člana porodice.',
+    FAMILY_HELP_STEP_4_DESC:
+      'Unesite ime, prezime, vrstu korisnika i spol za svakog člana porodice.',
     FAMILY_HELP_STEP_5_TITLE: 'Korak 3: avatari i slike',
-    FAMILY_HELP_STEP_5_DESC: 'Izaberite jedan od ponuđenih avatara ili otpremite sopstvenu fotografiju.',
+    FAMILY_HELP_STEP_5_DESC:
+      'Izaberite jedan od ponuđenih avatara ili otpremite sopstvenu fotografiju.',
     FAMILY_HELP_STEP_6_TITLE: 'Korak 4: čuvanje',
-    FAMILY_HELP_STEP_6_DESC: 'Ne zaboravite kliknuti na "Sačuvaj porodicu" kako biste primijenili promjene.',
+    FAMILY_HELP_STEP_6_DESC:
+      'Ne zaboravite kliknuti na "Sačuvaj porodicu" kako biste primijenili promjene.',
     FAMILY_HELP_STEP_7_TITLE: 'Korak 5: izvoz i uvoz',
     FAMILY_HELP_STEP_7_DESC:
       'Koristite "Izvezi" za kreiranje sigurnosne kopije, a "Uvezi" za vraćanje podataka iz datoteke.',

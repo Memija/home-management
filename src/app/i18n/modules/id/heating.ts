@@ -25,7 +25,8 @@ export const heating = {
     SUCCESS_TITLE: 'Berhasil',
     RECORD_SAVED: 'Catatan konsumsi pemanas berhasil disimpan!',
     NEW_ROOM_DETECTED_TITLE: 'Ruangan Baru Terdeteksi',
-    NEW_ROOM_DETECTED_MESSAGE: 'Terdeteksi peningkatan konsumsi mendadak untuk {{room}} pada {{date}}.',
+    NEW_ROOM_DETECTED_MESSAGE:
+      'Terdeteksi peningkatan konsumsi mendadak untuk {{room}} pada {{date}}.',
     CONFIRM_NEW_ROOM: 'Ya, sesuaikan grafik',
     DISMISS_NEW_ROOM: 'Tidak, biarkan',
     RECORD_CONSUMPTION: 'Catat Pemanas',
@@ -59,7 +60,8 @@ export const heating = {
       'Ruangan ini memiliki data pemanas yang tersimpan. Mengubah namanya dapat menyebabkan ketidakkonsistenan data.',
     UNLOCK_BUTTON: 'Buka Kunci',
     DISCARD_WARNING_TITLE: 'Buang perubahan?',
-    DISCARD_WARNING_MESSAGE: 'Anda memiliki perubahan yang belum disimpan. Apakah Anda yakin ingin keluar?',
+    DISCARD_WARNING_MESSAGE:
+      'Anda memiliki perubahan yang belum disimpan. Apakah Anda yakin ingin keluar?',
     DISCARD_BUTTON: 'Buang',
     RECORD_HELP_TITLE: 'Cara Mencatat Konsumsi Pemanas',
     RECORD_HELP_STEP_1_TITLE: 'Konfigurasi Ruangan',
@@ -107,7 +109,8 @@ export const heating = {
     HELP: {
       TITLE: 'Bantuan Ruangan',
       ROOM_MANAGEMENT_TITLE: 'Manajemen Ruangan',
-      ROOM_MANAGEMENT_DESC: 'Anda dapat menambahkan hingga 10 ruangan dan memberi mereka nama khusus.',
+      ROOM_MANAGEMENT_DESC:
+        'Anda dapat menambahkan hingga 10 ruangan dan memberi mereka nama khusus.',
       LOCKED_ROOMS_TITLE: 'Ruangan Terkunci (🔒)',
       LOCKED_ROOMS_DESC: 'Ruangan terkunci secara otomatis jika berisi data.',
       IMPORT_EXPORT_TITLE: 'Ekspor dan Impor Pengaturan',

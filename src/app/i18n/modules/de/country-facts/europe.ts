@@ -44,7 +44,7 @@ export const europeFacts = {
     'Zürichs Wasserversorgung kommt aus dem Zürichsee, ohne Aufbereitung nötig.',
     'Die Schweiz exportiert Wasser an Nachbarländer in Dürrezeiten.',
     'Schweizer Gletscher haben seit 1970 30% ihres Volumens verloren.',
-    'Genfs berühmte Jet d\'Eau Fontäne schießt Wasser 140 Meter hoch.',
+    "Genfs berühmte Jet d'Eau Fontäne schießt Wasser 140 Meter hoch.",
     'Schweizer Bauvorschriften erfordern Regenwassernutzung für Neubauten.',
   ],
 
@@ -155,7 +155,7 @@ export const europeFacts = {
     'Die Galway Bay versorgt die Muschelzucht mit Wasser.',
     'Irlands Cliffs of Moher sind ständigem Atlantik-Spray ausgesetzt.',
     'Traditionelle irische Brunnen galten als heilige Stätten.',
-    'Der Giant\'s Causeway zeigt uralte vulkanische Wasserabkühlung.',
+    "Der Giant's Causeway zeigt uralte vulkanische Wasserabkühlung.",
     'Corks Lee-Fluss fließt durch Europas ältesten Buttermarkt.',
     'Irland plant 13 Milliarden Euro in Wasserinfrastruktur zu investieren.',
   ],

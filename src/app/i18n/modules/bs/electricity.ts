@@ -17,37 +17,52 @@ export const electricity = {
     RECORD_SAVED: 'Zapis o potrošnji struje je uspješno sačuvan!',
     ERROR_TITLE: 'Greška',
     DELETE_CONFIRM_TITLE: 'Potvrdi brisanje',
-    DELETE_CONFIRM_MESSAGE: 'Da li ste sigurni da želite obrisati ovaj zapis? Ova akcija se ne može poništiti.',
+    DELETE_CONFIRM_MESSAGE:
+      'Da li ste sigurni da želite obrisati ovaj zapis? Ova akcija se ne može poništiti.',
     DELETE_ALL_CONFIRM_TITLE: 'Obriši sve zapise',
-    DELETE_ALL_CONFIRM_MESSAGE_SINGULAR: 'Da li ste sigurni da želite obrisati ovaj filtrirani zapis? Ova akcija se ne može poništiti.',
-    DELETE_ALL_CONFIRM_MESSAGE_PLURAL: 'Da li ste sigurni da želite obrisati svih {{count}} filtriranih zapisa? Ova akcija se ne može poništiti.',
+    DELETE_ALL_CONFIRM_MESSAGE_SINGULAR:
+      'Da li ste sigurni da želite obrisati ovaj filtrirani zapis? Ova akcija se ne može poništiti.',
+    DELETE_ALL_CONFIRM_MESSAGE_PLURAL:
+      'Da li ste sigurni da želite obrisati svih {{count}} filtriranih zapisa? Ova akcija se ne može poništiti.',
     RECORD_HELP_TITLE: 'Bilježenje potrošnje struje',
     RECORD_HELP_STEP_1_TITLE: 'Zašto pratiti struju?',
-    RECORD_HELP_STEP_1_DESC: 'Praćenje potrošnje pomaže vam da prepoznate periode visoke potrošnje, optimizirate energetsku efikasnost i smanjite račune.',
+    RECORD_HELP_STEP_1_DESC:
+      'Praćenje potrošnje pomaže vam da prepoznate periode visoke potrošnje, optimizirate energetsku efikasnost i smanjite račune.',
     RECORD_HELP_STEP_2_TITLE: 'Odaberite datum',
-    RECORD_HELP_STEP_2_DESC: 'Odaberite datum očitavanja brojila. Redovna očitavanja (npr. mjesečna) daju najbolje rezultate.',
+    RECORD_HELP_STEP_2_DESC:
+      'Odaberite datum očitavanja brojila. Redovna očitavanja (npr. mjesečna) daju najbolje rezultate.',
     RECORD_HELP_STEP_3_TITLE: 'Unesite stanje',
     RECORD_HELP_STEP_3_DESC: 'Unesite vrijednost sa vašeg brojila za struju u kWh.',
     RECORD_HELP_STEP_4_TITLE: 'Sačuvajte zapis',
-    RECORD_HELP_STEP_4_DESC: 'Kliknite Sačuvaj da pohranite zapis. Polje za datum će se resetovati kako biste mogli brzo unijeti više zapisa.',
+    RECORD_HELP_STEP_4_DESC:
+      'Kliknite Sačuvaj da pohranite zapis. Polje za datum će se resetovati kako biste mogli brzo unijeti više zapisa.',
     CHART_HELP_STEP_1_TITLE: 'Šta grafikon prikazuje',
-    CHART_HELP_STEP_1_DESC: 'Grafikon vizualizira vašu potrošnju struje u kWh tokom vremena. Pomaže vam da uočite trendove i periode visoke potrošnje.',
+    CHART_HELP_STEP_1_DESC:
+      'Grafikon vizualizira vašu potrošnju struje u kWh tokom vremena. Pomaže vam da uočite trendove i periode visoke potrošnje.',
     CHART_HELP_STEP_2_TITLE: 'Načini prikaza',
-    CHART_HELP_STEP_2_DESC: 'Prebacujte između "Ukupnog Stanja Brojila" (sirove vrijednosti) i "Dnevnog Prosjeka Potrošnje" (izračunata prosječna potrošnja po danu između očitavanja).',
+    CHART_HELP_STEP_2_DESC:
+      'Prebacujte između "Ukupnog Stanja Brojila" (sirove vrijednosti) i "Dnevnog Prosjeka Potrošnje" (izračunata prosječna potrošnja po danu između očitavanja).',
     CHART_HELP_STEP_3_TITLE: 'Poređenje',
-    CHART_HELP_STEP_3_DESC: 'U režimu Dnevnog Prosjeka, uključite "Prikaži Prosjek" da uporedite svoju potrošnju sa nacionalnim prosjekom za domaćinstvo vaše veličine.',
+    CHART_HELP_STEP_3_DESC:
+      'U režimu Dnevnog Prosjeka, uključite "Prikaži Prosjek" da uporedite svoju potrošnju sa nacionalnim prosjekom za domaćinstvo vaše veličine.',
     CHART_HELP_STEP_4_TITLE: 'Interakcija',
-    CHART_HELP_STEP_4_DESC: 'Koristite točkić miša za zumiranje. Prevucite za pomjeranje kroz vremensku liniju. Kliknite "Resetuj Zum" za povratak na puni prikaz.',
+    CHART_HELP_STEP_4_DESC:
+      'Koristite točkić miša za zumiranje. Prevucite za pomjeranje kroz vremensku liniju. Kliknite "Resetuj Zum" za povratak na puni prikaz.',
     RECORDS_HELP_STEP_1_TITLE: 'Filtriranje zapisa',
-    RECORDS_HELP_STEP_1_DESC: 'Koristite filtere za raspon datuma, godinu ili mjesec da pronađete određene zapise. Kliknite "Resetuj Filtere" da očistite sve aktivne filtere.',
+    RECORDS_HELP_STEP_1_DESC:
+      'Koristite filtere za raspon datuma, godinu ili mjesec da pronađete određene zapise. Kliknite "Resetuj Filtere" da očistite sve aktivne filtere.',
     RECORDS_HELP_STEP_2_TITLE: 'Sortiranje i paginacija',
-    RECORDS_HELP_STEP_2_DESC: 'Sortirajte zapise po datumu ili vrijednosti potrošnje. Kontrolišite broj prikaza po stranici (5, 10, 20 ili 50) i navigirajte pomoću dugmadi Prethodna/Sljedeća.',
+    RECORDS_HELP_STEP_2_DESC:
+      'Sortirajte zapise po datumu ili vrijednosti potrošnje. Kontrolišite broj prikaza po stranici (5, 10, 20 ili 50) i navigirajte pomoću dugmadi Prethodna/Sljedeća.',
     RECORDS_HELP_STEP_3_TITLE: 'Uređivanje i brisanje',
-    RECORDS_HELP_STEP_3_DESC: 'Kliknite na ikonu za uređivanje (✏️) da izmijenite zapis ili na kantu (🗑️) da ga obrišete. Možete obrisati i sve vidljive filtrirane zapise odjednom.',
+    RECORDS_HELP_STEP_3_DESC:
+      'Kliknite na ikonu za uređivanje (✏️) da izmijenite zapis ili na kantu (🗑️) da ga obrišete. Možete obrisati i sve vidljive filtrirane zapise odjednom.',
     RECORDS_HELP_STEP_4_TITLE: 'Izvoz i uvoz',
-    RECORDS_HELP_STEP_4_DESC: 'Izvezite podatke kao JSON, Excel ili PDF datoteke. Uvezite ranije izvezene datoteke da vratite svoje zapise. Uvoze se samo zapisi koji nisu nula.',
+    RECORDS_HELP_STEP_4_DESC:
+      'Izvezite podatke kao JSON, Excel ili PDF datoteke. Uvezite ranije izvezene datoteke da vratite svoje zapise. Uvoze se samo zapisi koji nisu nula.',
     RECORDS_HELP_STEP_5_TITLE: 'Pametni uvoz',
-    RECORDS_HELP_STEP_5_DESC: 'Koristite Pametni Uvoz da zalijepite podatke direktno iz tabela ili teksta. Automatski detektuje datume i stanja brojila prije potvrde uvoza.',
+    RECORDS_HELP_STEP_5_DESC:
+      'Koristite Pametni Uvoz da zalijepite podatke direktno iz tabela ili teksta. Automatski detektuje datume i stanja brojila prije potvrde uvoza.',
     ALL_VALUES_IN_KWH: 'Sve vrijednosti su u kWh',
   },
 };

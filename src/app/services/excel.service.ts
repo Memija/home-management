@@ -1,9 +1,5 @@
 import { Injectable, inject } from '@angular/core';
-import {
-  ExcelSettingsService,
-  WaterColumnMapping,
-  HeatingColumnMapping,
-} from './excel-settings.service';
+import { ExcelSettingsService } from './excel-settings.service';
 import { LanguageService } from './language.service';
 import { WaterRecord, DynamicHeatingRecord, ElectricityRecord } from '../models/records.model';
 
@@ -33,7 +29,7 @@ export class ExcelService {
    */
   async exportWaterToExcel(
     records: WaterRecord[],
-    filename: string = 'water-consumption.xlsx',
+    filename = 'water-consumption.xlsx',
   ): Promise<void> {
     const mapping = this.excelSettings.getWaterMapping();
 
@@ -55,7 +51,7 @@ export class ExcelService {
    */
   async exportHeatingToExcel(
     records: DynamicHeatingRecord[],
-    filename: string = 'heating-consumption.xlsx',
+    filename = 'heating-consumption.xlsx',
   ): Promise<void> {
     const mapping = this.excelSettings.getHeatingMapping();
     const roomIds = Object.keys(mapping.rooms);
@@ -327,7 +323,7 @@ export class ExcelService {
           }
 
           resolve(allData);
-        } catch (error) {
+        } catch {
           reject(new Error('Failed to parse Excel file'));
         }
       };
@@ -434,7 +430,7 @@ export class ExcelService {
    */
   async exportElectricityToExcel(
     records: ElectricityRecord[],
-    filename: string = 'electricity-consumption.xlsx',
+    filename = 'electricity-consumption.xlsx',
   ): Promise<void> {
     const mapping = this.excelSettings.getElectricityMapping();
 

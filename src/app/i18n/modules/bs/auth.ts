@@ -26,25 +26,33 @@ export const auth = {
     PULL_ERROR: 'Nije uspjelo preuzimanje podataka iz oblaka',
     SYNC_ERROR: 'Početna sinhronizacija nije uspjela',
     PULL_CONFIRM_TITLE: 'Preuzeti iz oblaka?',
-    PULL_CONFIRM_MESSAGE: 'Ovo će prepisati vaše trenutne lokalne podatke podacima iz oblaka. Ova akcija se ne može poništiti.',
-    CLOUD_DESCRIPTION: 'Kada je omogućeno, vaši podaci se sigurnosno kopiraju u oblaku i sinhronizuju na svim uređajima.',
+    PULL_CONFIRM_MESSAGE:
+      'Ovo će prepisati vaše trenutne lokalne podatke podacima iz oblaka. Ova akcija se ne može poništiti.',
+    CLOUD_DESCRIPTION:
+      'Kada je omogućeno, vaši podaci se sigurnosno kopiraju u oblaku i sinhronizuju na svim uređajima.',
     LOCAL_DESCRIPTION: 'Podaci ostaju samo na ovom uređaju. Račun nije potreban.',
     SIGN_IN_REQUIRED: 'Prijavite se kako biste omogućili sinhronizaciju u oblaku',
     DEMO_MODE_WARNING: 'Sinhronizacija u oblaku je onemogućena u demo režimu.',
     DELETE_CLOUD_DATA: 'Obriši podatke iz oblaka',
     DELETE_CLOUD_TITLE: 'Obriši podatke iz oblaka?',
-    DELETE_CLOUD_MESSAGE: 'Ovo će trajno obrisati sve vaše podatke iz oblaka. Vaši lokalni podaci će ostati sigurni. Ova akcija se ne može poništiti.',
-    DELETE_SUCCESS: 'Podaci iz oblaka su uspješno obrisani. Vaši podaci više nisu u oblaku, ali ostaju na ovom uređaju.',
+    DELETE_CLOUD_MESSAGE:
+      'Ovo će trajno obrisati sve vaše podatke iz oblaka. Vaši lokalni podaci će ostati sigurni. Ova akcija se ne može poništiti.',
+    DELETE_SUCCESS:
+      'Podaci iz oblaka su uspješno obrisani. Vaši podaci više nisu u oblaku, ali ostaju na ovom uređaju.',
     DELETE_ERROR: 'Brisanje podataka iz oblaka nije uspjelo',
     HELP_TITLE: 'O sinhronizaciji u oblaku',
     HELP_STEP1_TITLE: 'Šta je sinhronizacija u oblaku?',
-    HELP_STEP1_DESC: 'Sinhronizacija u oblaku sigurno kopira vaše podatke o domaćinstvu u oblaku. Kada je omogućena, podaci se automatski sinhronizuju kako biste im mogli pristupiti sa bilo kojeg uređaja na koji ste prijavljeni istim Google računom.',
+    HELP_STEP1_DESC:
+      'Sinhronizacija u oblaku sigurno kopira vaše podatke o domaćinstvu u oblaku. Kada je omogućena, podaci se automatski sinhronizuju kako biste im mogli pristupiti sa bilo kojeg uređaja na koji ste prijavljeni istim Google računom.',
     HELP_STEP2_TITLE: 'Slanje i preuzimanje',
-    HELP_STEP2_DESC: 'Koristite "Prenesi u oblak" da postavite lokalne podatke. "Preuzmi iz oblaka" vraća podatke na ovaj uređaj, prepisujući trenutne lokalne podatke.',
+    HELP_STEP2_DESC:
+      'Koristite "Prenesi u oblak" da postavite lokalne podatke. "Preuzmi iz oblaka" vraća podatke na ovaj uređaj, prepisujući trenutne lokalne podatke.',
     HELP_STEP3_TITLE: 'Privatnost i sigurnost',
-    HELP_STEP3_DESC: 'Vaši podaci su pohranjeni u Firebase-u i zaštićeni sigurnosnim pravilima. Možete ih obrisati u bilo kojem trenutku. Lokalni podaci uvijek ostaju na vašem uređaju.',
+    HELP_STEP3_DESC:
+      'Vaši podaci su pohranjeni u Firebase-u i zaštićeni sigurnosnim pravilima. Možete ih obrisati u bilo kojem trenutku. Lokalni podaci uvijek ostaju na vašem uređaju.',
     CLEAR_LOCAL_TITLE: 'Izbrisati lokalne podatke?',
-    CLEAR_LOCAL_MESSAGE: 'Sinhronizacija je onemogućena. Želite li izbrisati sve lokalne podatke sa ovog uređaja? Ova akcija se ne može poništiti.',
+    CLEAR_LOCAL_MESSAGE:
+      'Sinhronizacija je onemogućena. Želite li izbrisati sve lokalne podatke sa ovog uređaja? Ova akcija se ne može poništiti.',
     KEEP_LOCAL: 'Zadrži lokalne podatke',
     CLEAR_LOCAL: 'Obriši lokalne podatke',
     CLEAR_LOCAL_DEMO_DISABLED: 'Brisanje lokalnih podataka je onemogućeno u demo režimu.',

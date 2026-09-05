@@ -1,16 +1,9 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { vi } from 'vitest';
+import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { MeterReaderModalComponent } from './meter-reader-modal.component';
 import { MeterReaderService } from '../../services/meter-reader.service';
-import { Pipe, PipeTransform, signal } from '@angular/core';
-import { TranslatePipe } from '../../pipes/translate.pipe';
-
-@Pipe({ name: 'translate', standalone: true })
-class MockTranslatePipe implements PipeTransform {
-  transform(value: string): string {
-    return value;
-  }
-}
+import { signal } from '@angular/core';
+import { LanguageService } from '../../services/language.service';
 
 class MockMeterReaderService {
   isProcessing = signal(false);
@@ -19,7 +12,7 @@ class MockMeterReaderService {
     value: 1234,
     rawText: '1234',
     confidence: 90,
-    candidates: [1234]
+    candidates: [1234],
   });
 }
 
@@ -29,14 +22,17 @@ describe('MeterReaderModalComponent', () => {
   let meterReaderService: MockMeterReaderService;
 
   beforeEach(async () => {
+    const mockLanguageService = {
+      currentLang: signal('en'),
+      translate: vi.fn((key: string) => key),
+    };
+
     await TestBed.configureTestingModule({
-      imports: [MeterReaderModalComponent, MockTranslatePipe],
+      imports: [MeterReaderModalComponent],
       providers: [
-        { provide: MeterReaderService, useClass: MockMeterReaderService }
-      ]
-    }).overrideComponent(MeterReaderModalComponent, {
-      remove: { imports: [TranslatePipe] },
-      add: { imports: [MockTranslatePipe] }
+        { provide: MeterReaderService, useClass: MockMeterReaderService },
+        { provide: LanguageService, useValue: mockLanguageService },
+      ],
     }).compileComponents();
 
     fixture = TestBed.createComponent(MeterReaderModalComponent);
@@ -44,10 +40,8 @@ describe('MeterReaderModalComponent', () => {
     meterReaderService = TestBed.inject(MeterReaderService) as unknown as MockMeterReaderService;
 
     // Set required inputs
-    fixture.componentRef.setInput('show', true);
-    fixture.componentRef.setInput('fields', [
-      { key: 'water', label: 'Water' }
-    ]);
+    component.show = true;
+    component.fields = [{ key: 'water', label: 'Water' }];
 
     fixture.detectChanges();
   });
@@ -61,10 +55,12 @@ describe('MeterReaderModalComponent', () => {
       const originalGetUserMedia = navigator.mediaDevices?.getUserMedia;
 
       if (!navigator.mediaDevices) {
-        (navigator as any).mediaDevices = {};
+        (navigator as unknown as { mediaDevices: Partial<MediaDevices> }).mediaDevices = {};
       }
 
-      navigator.mediaDevices.getUserMedia = vi.fn().mockRejectedValue(new Error('Permission denied')) as any;
+      navigator.mediaDevices.getUserMedia = vi
+        .fn()
+        .mockRejectedValue(new Error('Permission denied'));
 
       await component['startCamera']();
 
@@ -77,44 +73,50 @@ describe('MeterReaderModalComponent', () => {
     });
   });
 
-  describe('Image Processing', () => {
+  describe('OCR Processing Flow', () => {
     it('should process image and move to result step', async () => {
-      await component['processImage']('fake-data-url', false);
+      await component['processImage']('data:image/png;base64,sample', false);
 
-      expect(meterReaderService.readMeter).toHaveBeenCalledWith('fake-data-url', false);
+      expect(meterReaderService.readMeter).toHaveBeenCalledWith(
+        'data:image/png;base64,sample',
+        false,
+      );
       expect(component['step']()).toBe('result');
       expect(component['selectedValue']()).toBe(1234);
       expect(component['editedValue']()).toBe('1234');
     });
 
     it('should handle OCR returning null value', async () => {
-      meterReaderService.readMeter.mockResolvedValue({
+      meterReaderService.readMeter.mockResolvedValueOnce({
         value: null,
-        rawText: 'abc',
-        confidence: 10,
-        candidates: []
+        confidence: 0,
+        rawText: '',
       });
 
-      await component['processImage']('fake-data-url', false);
+      await component['processImage']('data:image/png;base64,sample', false);
 
+      expect(component['step']()).toBe('result');
       expect(component['selectedValue']()).toBeNull();
       expect(component['editedValue']()).toBe('');
-      expect(component['step']()).toBe('result');
     });
-  });
 
-  describe('Value Editing', () => {
     it('should filter non-numeric input when editing value', () => {
-      const event = { target: { value: '12a3b4' } } as unknown as Event;
-      component['onValueEdit'](event);
+      const mockEvent = {
+        target: { value: '123a45b' },
+      } as unknown as Event;
 
-      expect(component['editedValue']()).toBe('1234');
-      expect(component['selectedValue']()).toBe(1234);
+      component['onValueEdit'](mockEvent);
+
+      expect(component['editedValue']()).toBe('12345');
+      expect(component['selectedValue']()).toBe(12345);
     });
 
     it('should set selectedValue to null when input is empty or invalid', () => {
-      const event = { target: { value: 'abc' } } as unknown as Event;
-      component['onValueEdit'](event);
+      const mockEvent = {
+        target: { value: '' },
+      } as unknown as Event;
+
+      component['onValueEdit'](mockEvent);
 
       expect(component['editedValue']()).toBe('');
       expect(component['selectedValue']()).toBeNull();
@@ -124,21 +126,21 @@ describe('MeterReaderModalComponent', () => {
   describe('Field Selection and Emission', () => {
     it('should emit reading and close for single field', () => {
       vi.spyOn(component.reading, 'emit');
-      vi.spyOn(component.close, 'emit');
+      vi.spyOn(component.closeModal, 'emit');
 
       component['selectedValue'].set(456);
       component['confirmValue']();
 
       expect(component.reading.emit).toHaveBeenCalledWith({ fieldKey: 'water', value: 456 });
-      expect(component.close.emit).toHaveBeenCalled();
+      expect(component.closeModal.emit).toHaveBeenCalled();
     });
 
     it('should go to select-field step if multiple fields exist', () => {
       vi.spyOn(component.reading, 'emit');
-      fixture.componentRef.setInput('fields', [
+      component.fields = [
         { key: 'water1', label: 'Water 1' },
-        { key: 'water2', label: 'Water 2' }
-      ]);
+        { key: 'water2', label: 'Water 2' },
+      ];
       fixture.detectChanges();
 
       component['selectedValue'].set(456);
@@ -149,7 +151,7 @@ describe('MeterReaderModalComponent', () => {
     });
 
     it('should go to select-field step if no fields exist (empty state)', () => {
-      fixture.componentRef.setInput('fields', []);
+      component.fields = [];
       fixture.detectChanges();
 
       component['selectedValue'].set(456);
@@ -198,20 +200,22 @@ describe('MeterReaderModalComponent', () => {
       component['cropRect'].set({ x: 10, y: 10, width: 50, height: 50 });
 
       const mockEvent = new MouseEvent('mouseup');
-      vi.spyOn<any, any>(component, 'drawCropCanvas');
+      const compAny = component as unknown as Record<string, (...args: unknown[]) => unknown>;
+      vi.spyOn(compAny, 'drawCropCanvas');
       component['onCropEnd'](mockEvent);
 
       expect(component['cropRect']()).toEqual({ x: 10, y: 10, width: 50, height: 50 });
     });
 
     it('should process full image if confirmCrop is called without crop rect', () => {
-      vi.spyOn<any, any>(component, 'processImage');
+      const compAny = component as unknown as Record<string, (...args: unknown[]) => unknown>;
+      vi.spyOn(compAny, 'processImage');
       component['capturedImage'].set('fake-image-data');
       component['cropRect'].set(null);
 
       component['confirmCrop']();
 
-      expect(component['processImage']).toHaveBeenCalledWith('fake-image-data', false);
+      expect(compAny['processImage']).toHaveBeenCalledWith('fake-image-data', false);
     });
   });
 });

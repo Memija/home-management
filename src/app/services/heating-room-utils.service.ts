@@ -84,7 +84,7 @@ export class HeatingRoomUtilsService {
   private guessLegacyIcon(name: string): LucideIconData {
     const lower = name.toLowerCase();
 
-    const patternMapping: Array<{ patternKey: string; icon: LucideIconData }> = [
+    const patternMapping: { patternKey: string; icon: LucideIconData }[] = [
       { patternKey: 'HEATING.ROOM_PATTERNS_LIVING', icon: Armchair },
       { patternKey: 'HEATING.ROOM_PATTERNS_BEDROOM', icon: Bed },
       { patternKey: 'HEATING.ROOM_PATTERNS_BATHROOM', icon: Bath },
@@ -113,7 +113,7 @@ export class HeatingRoomUtilsService {
   private guessLegacyColor(name: string): { border: string; bg: string } {
     const lower = name.toLowerCase();
 
-    const patternMapping: Array<{ patternKey: string; roomType: string }> = [
+    const patternMapping: { patternKey: string; roomType: string }[] = [
       { patternKey: 'HEATING.ROOM_PATTERNS_LIVING', roomType: 'HEATING.ROOM_LIVING_ROOM' },
       { patternKey: 'HEATING.ROOM_PATTERNS_BEDROOM', roomType: 'HEATING.ROOM_BEDROOM' },
       { patternKey: 'HEATING.ROOM_PATTERNS_BATHROOM', roomType: 'HEATING.ROOM_BATHROOM' },

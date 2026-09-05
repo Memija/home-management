@@ -1,32 +1,57 @@
 <div class="language-switcher-container">
   <div class="dropdown">
-    <button class="dropdown-trigger" (click)="toggleDropdown()" [title]="'LANGUAGE.CHOOSE' | translate"
-      [aria-label]="'LANGUAGE.CHOOSE' | translate">
+    <button
+      class="dropdown-trigger"
+      (click)="toggleDropdown()"
+      [title]="'LANGUAGE.CHOOSE' | translate"
+      [aria-label]="'LANGUAGE.CHOOSE' | translate"
+    >
       <div class="flag-wrapper" aria-hidden="true">
-        <img [src]="'flags/' + flagCodes[languageService.currentLang()] + '.png'" alt="" class="flag-icon">
+        <img
+          [src]="'flags/' + flagCodes[languageService.currentLang()] + '.png'"
+          alt=""
+          class="flag-icon"
+        />
       </div>
       <span class="current-lang">{{ languageService.currentLang().toUpperCase() }}</span>
-      <lucide-icon [img]="ChevronDownIcon" size="14" class="chevron" [class.open]="isDropdownOpen()"
-        aria-hidden="true"></lucide-icon>
+      <lucide-icon
+        [img]="ChevronDownIcon"
+        size="14"
+        class="chevron"
+        [class.open]="isDropdownOpen()"
+        aria-hidden="true"
+      ></lucide-icon>
     </button>
 
     <div class="dropdown-menu" [class.show]="isDropdownOpen()" role="menu">
       @for (lang of languages; track lang) {
-      <button class="dropdown-item" [class.active]="languageService.currentLang() === lang"
-        (click)="selectLanguage(lang)" role="menuitem" [aria-label]="languageNames[lang]">
-        <div class="lang-info">
+        <button
+          class="dropdown-item"
+          [class.active]="languageService.currentLang() === lang"
+          (click)="selectLanguage(lang)"
+          role="menuitem"
+          [aria-label]="languageNames[lang]"
+        >
           <div class="lang-title">
             <div class="flag-wrapper small" aria-hidden="true">
-              <img [src]="'flags/' + flagCodes[lang] + '.png'" alt="" class="flag-icon">
+              <img
+                [src]="'flags/' + flagCodes[lang] + '.png'"
+                alt=""
+                class="flag-icon"
+                loading="lazy"
+              />
             </div>
             <span class="lang-name">{{ languageNames[lang] }}</span>
           </div>
-          <span class="lang-code">{{ lang.toUpperCase() }}</span>
-        </div>
-        @if (languageService.currentLang() === lang) {
-        <lucide-icon [img]="CheckIcon" size="16" class="check-icon" aria-hidden="true"></lucide-icon>
-        }
-      </button>
+          @if (languageService.currentLang() === lang) {
+            <lucide-icon
+              [img]="CheckIcon"
+              size="16"
+              class="check-icon"
+              aria-hidden="true"
+            ></lucide-icon>
+          }
+        </button>
       }
     </div>
   </div>

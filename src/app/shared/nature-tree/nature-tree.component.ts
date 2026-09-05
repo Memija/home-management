@@ -67,7 +67,7 @@ interface Raindrop {
 }
 
 /** Maximum tree depth */
-const MAX_DEPTH = 5;
+const MAX_DEPTH = 4;
 /** Maximum snowflakes — reduced from 250 for performance */
 const MAX_SNOWFLAKES = 50;
 /** Maximum raindrops — reduced from 120 for performance */
@@ -152,8 +152,8 @@ export class NatureTreeComponent {
       requestAnimationFrame(measureFrame);
     };
 
-    // Delay start slightly to let the tree render first
-    setTimeout(() => requestAnimationFrame(measureFrame), 200);
+    // Delay start until initial hydration and page settle
+    setTimeout(() => requestAnimationFrame(measureFrame), 1500);
   }
 
   private resetAndGenerate() {
@@ -281,7 +281,7 @@ export class NatureTreeComponent {
     // Spread angle becomes wider as depth decrements
     const angleSpread = 40 + this.random() * 50;
 
-    let angleDeltas: number[] = [];
+    let angleDeltas: number[];
     if (numBranches === 2) {
       angleDeltas = [
         -angleSpread / 2 + (this.random() * 15 - 7.5),

@@ -1,4 +1,13 @@
-import { Component, input, output, signal, computed, inject, effect } from '@angular/core';
+import {
+  Component,
+  Input,
+  Output,
+  EventEmitter,
+  signal,
+  computed,
+  inject,
+  effect,
+} from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import {
@@ -42,10 +51,37 @@ export class HeatingRoomsModalComponent {
   protected readonly HelpIcon = HelpCircle;
 
   // Inputs
-  show = input.required<boolean>();
-  rooms = input.required<HeatingRoomConfig[]>();
-  maxRooms = input<number>(10);
-  roomsWithDataArray = input<string[]>([]); // Room IDs that have data
+  @Input() set show(val: boolean) {
+    this.showSignal.set(val);
+  }
+  get show(): boolean {
+    return this.showSignal();
+  }
+  protected showSignal = signal(false);
+
+  @Input() set rooms(val: HeatingRoomConfig[]) {
+    this.roomsSignal.set(val || []);
+  }
+  get rooms(): HeatingRoomConfig[] {
+    return this.roomsSignal();
+  }
+  protected roomsSignal = signal<HeatingRoomConfig[]>([]);
+
+  @Input() set maxRooms(val: number) {
+    this.maxRoomsSignal.set(val);
+  }
+  get maxRooms(): number {
+    return this.maxRoomsSignal();
+  }
+  protected maxRoomsSignal = signal<number>(10);
+
+  @Input() set roomsWithDataArray(val: string[]) {
+    this.roomsWithDataArraySignal.set(val || []);
+  }
+  get roomsWithDataArray(): string[] {
+    return this.roomsWithDataArraySignal();
+  }
+  protected roomsWithDataArraySignal = signal<string[]>([]);
 
   // Cached version of roomsWithData - stored when modal opens to avoid reactivity issues
   private cachedRoomsWithData = signal<Set<string>>(new Set());
@@ -53,8 +89,8 @@ export class HeatingRoomsModalComponent {
   readonly MAX_ROOM_NAME_LENGTH = 125;
 
   // Outputs
-  save = output<HeatingRoomConfig[]>();
-  cancel = output<void>();
+  @Output() save = new EventEmitter<HeatingRoomConfig[]>();
+  @Output() cancelModal = new EventEmitter<void>();
 
   // Local editing state (copy of rooms for editing)
   protected editingRooms = signal<HeatingRoomConfig[]>([]);
@@ -85,7 +121,7 @@ export class HeatingRoomsModalComponent {
   ];
 
   // Computed
-  protected canAddRoom = computed(() => this.editingRooms().length < this.maxRooms());
+  protected canAddRoom = computed(() => this.editingRooms().length < this.maxRoomsSignal());
 
   protected canRemoveRoom = computed(() => this.editingRooms().length > 0);
 
@@ -142,7 +178,7 @@ export class HeatingRoomsModalComponent {
   constructor() {
     // Initialize editingRooms when modal opens (show becomes true)
     effect(() => {
-      if (this.show()) {
+      if (this.showSignal()) {
         this.onModalShow();
       }
     });
@@ -165,10 +201,10 @@ export class HeatingRoomsModalComponent {
   // Reset editing state when modal opens
   protected onModalShow(): void {
     // Cache roomsWithData before any other state changes - the input may get reset
-    const dataArray = this.roomsWithDataArray();
+    const dataArray = this.roomsWithDataArraySignal();
     this.cachedRoomsWithData.set(new Set(dataArray));
 
-    this.editingRooms.set([...this.rooms().map((r) => ({ ...r }))]);
+    this.editingRooms.set([...this.roomsSignal().map((r) => ({ ...r }))]);
     this.hasChanges.set(false);
     this.unlockedRooms.set(new Set()); // Reset unlock state when modal opens
     this.pendingUnlockRoomId.set(null);
@@ -176,7 +212,7 @@ export class HeatingRoomsModalComponent {
 
   // Tooltip message for disabled add button
   protected maxRoomsMessage = computed(() =>
-    this.languageService.translate('HEATING.MAX_ROOMS_REACHED', { max: this.maxRooms() }),
+    this.languageService.translate('HEATING.MAX_ROOMS_REACHED', { max: this.maxRoomsSignal() }),
   );
 
   protected addRoom(): void {
@@ -248,13 +284,13 @@ export class HeatingRoomsModalComponent {
     if (this.hasChanges()) {
       this.showDiscardWarning.set(true);
     } else {
-      this.cancel.emit();
+      this.cancelModal.emit();
     }
   }
 
   protected confirmDiscard(): void {
     this.showDiscardWarning.set(false);
-    this.cancel.emit();
+    this.cancelModal.emit();
   }
 
   protected cancelDiscard(): void {

@@ -11,7 +11,8 @@ export const excel = {
     DEFAULT_KITCHEN: 'Kuhinja',
     DEFAULT_BATHROOM: 'Kupatilo',
     VALIDATION_REQUIRED: 'Naziv kolone je obavezan',
-    VALIDATION_REQUIRED_HINT: 'Nazivi kolona moraju biti tekstualni, ne brojevi ili logičke vrijednosti',
+    VALIDATION_REQUIRED_HINT:
+      'Nazivi kolona moraju biti tekstualni, ne brojevi ili logičke vrijednosti',
     VALIDATION_MUST_BE_STRING: 'mora biti tekstualni string',
     VALIDATION_GOT_BOOLEAN: 'dobijena logička vrijednost (true/false) umjesto teksta',
     VALIDATION_GOT_NUMBER: 'dobijen broj umjesto teksta',

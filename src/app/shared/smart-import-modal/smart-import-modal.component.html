@@ -1,10 +1,25 @@
-@if (show()) {
-  <div class="modal-overlay" (click)="close.emit()">
-    <div class="modal-content" (click)="$event.stopPropagation()">
+@if (showSignal()) {
+  <div
+    class="modal-overlay"
+    (click)="closeModal.emit()"
+    tabindex="0"
+    (keyup.enter)="closeModal.emit()"
+  >
+    <div
+      class="modal-content"
+      (click)="$event.stopPropagation()"
+      tabindex="0"
+      (keyup.enter)="$event.stopPropagation()"
+    >
       <div class="modal-header modal-header-premium">
         <lucide-icon [img]="ClipboardIcon" size="24" class="header-icon"></lucide-icon>
         <h3>{{ 'SMART_IMPORT.TITLE' | translate }}</h3>
-        <button class="close-btn" (click)="close.emit()" title="Close" aria-label="Close modal">
+        <button
+          class="close-btn"
+          (click)="closeModal.emit()"
+          title="Close"
+          aria-label="Close modal"
+        >
           <lucide-icon [img]="XIcon" size="20"></lucide-icon>
         </button>
       </div>
@@ -58,7 +73,7 @@
 
       <div class="modal-footer">
         @if (step() === 'input') {
-          <button class="btn-secondary" (click)="close.emit()">
+          <button class="btn-secondary" (click)="closeModal.emit()">
             {{ 'HOME.CANCEL' | translate }}
           </button>
           <button class="btn-primary" [disabled]="!rawText().trim()" (click)="analyzeText()">

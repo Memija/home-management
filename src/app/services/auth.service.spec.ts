@@ -17,29 +17,29 @@ const mockSignInWithPopup = vi.fn();
 const mockSignOut = vi.fn();
 const mockOnAuthStateChanged = vi.fn();
 
-let globalAuthMock: any = {};
+let globalAuthMock: unknown = {};
 
 vi.mock('firebase/auth', () => ({
   Auth: class {},
   GoogleAuthProvider: class {},
   getAuth: () => globalAuthMock,
-  signInWithPopup: (...args: any[]) => mockSignInWithPopup(...args),
-  signOut: (...args: any[]) => mockSignOut(...args),
-  onAuthStateChanged: (...args: any[]) => mockOnAuthStateChanged(...args),
+  signInWithPopup: (...args: unknown[]) => mockSignInWithPopup(...args),
+  signOut: (...args: unknown[]) => mockSignOut(...args),
+  onAuthStateChanged: (...args: unknown[]) => mockOnAuthStateChanged(...args),
 }));
 
 vi.mock('@firebase/auth', () => ({
   Auth: class {},
   GoogleAuthProvider: class {},
   getAuth: () => globalAuthMock,
-  signInWithPopup: (...args: any[]) => mockSignInWithPopup(...args),
-  signOut: (...args: any[]) => mockSignOut(...args),
-  onAuthStateChanged: (...args: any[]) => mockOnAuthStateChanged(...args),
+  signInWithPopup: (...args: unknown[]) => mockSignInWithPopup(...args),
+  signOut: (...args: unknown[]) => mockSignOut(...args),
+  onAuthStateChanged: (...args: unknown[]) => mockOnAuthStateChanged(...args),
 }));
 
 describe('AuthService', () => {
   let service: AuthService;
-  let authMock: any;
+  let authMock: Record<string, import('vitest').Mock>;
 
   beforeEach(() => {
     authMock = {};
@@ -55,7 +55,6 @@ describe('AuthService', () => {
       getApp: vi.fn(),
     }));
 
-    // Clear mocks before each test
     vi.clearAllMocks();
   });
 
@@ -63,7 +62,7 @@ describe('AuthService', () => {
     vi.restoreAllMocks();
   });
 
-  const setupTestBed = (platformId: string = 'browser') => {
+  const setupTestBed = (platformId = 'browser') => {
     TestBed.resetTestingModule();
     TestBed.configureTestingModule({
       providers: [
@@ -77,10 +76,7 @@ describe('AuthService', () => {
 
   describe('constructor and initAuthListener', () => {
     it('should initialize auth listener and be loading in browser platform', async () => {
-      // Don't call the callback immediately
-      mockOnAuthStateChanged.mockImplementation((auth, callback) => {
-        // Just register it
-      });
+      mockOnAuthStateChanged.mockImplementation(() => undefined);
 
       setupTestBed('browser');
       await waitFor(() => mockOnAuthStateChanged.mock.calls.length > 0);
@@ -105,14 +101,15 @@ describe('AuthService', () => {
         photoURL: 'mock-photo-url.jpg',
       };
 
-      mockOnAuthStateChanged.mockImplementation((auth, callback) => {
-        callback(mockFirebaseUser);
-      });
+      mockOnAuthStateChanged.mockImplementation(
+        (_auth: unknown, callback: (user: unknown) => void) => {
+          callback(mockFirebaseUser);
+        },
+      );
 
       setupTestBed('browser');
       await waitFor(() => service.isAuthenticated() === true);
 
-      // manually verify state
       expect(service.user()).toEqual({
         uid: 'test-uid',
         email: 'test@example.com',
@@ -125,9 +122,11 @@ describe('AuthService', () => {
     });
 
     it('should clear user when firebase user is null', async () => {
-      mockOnAuthStateChanged.mockImplementation((auth, callback) => {
-        callback(null);
-      });
+      mockOnAuthStateChanged.mockImplementation(
+        (_auth: unknown, callback: (user: unknown) => void) => {
+          callback(null);
+        },
+      );
 
       setupTestBed('browser');
       await waitFor(() => service.isLoading() === false);
@@ -142,10 +141,10 @@ describe('AuthService', () => {
   describe('signInWithGoogle', () => {
     beforeEach(async () => {
       setupTestBed('browser');
-      await waitFor(() => mockOnAuthStateChanged.mock.calls.length > 0); // Wait for initialization to pass
+      await waitFor(() => mockOnAuthStateChanged.mock.calls.length > 0);
     });
 
-    it('should returning user data on successful sign in', async () => {
+    it('should return user data on successful sign in', async () => {
       mockSignInWithPopup.mockResolvedValue({
         user: {
           uid: 'new-uid',
@@ -169,7 +168,7 @@ describe('AuthService', () => {
     it('should throw and console.error on sign in failure', async () => {
       const error = new Error('Sign in failed');
       mockSignInWithPopup.mockRejectedValue(error);
-      const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
+      const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => undefined);
 
       await expect(service.signInWithGoogle()).rejects.toThrow('Sign in failed');
       expect(consoleSpy).toHaveBeenCalledWith('Google sign-in failed:', error);
@@ -193,7 +192,7 @@ describe('AuthService', () => {
     it('should throw and console.error on sign out failure', async () => {
       const error = new Error('Sign out failed');
       mockSignOut.mockRejectedValue(error);
-      const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
+      const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => undefined);
 
       await expect(service.signOut()).rejects.toThrow('Sign out failed');
       expect(consoleSpy).toHaveBeenCalledWith('Sign out failed:', error);
@@ -202,9 +201,11 @@ describe('AuthService', () => {
 
   describe('getCurrentUid', () => {
     it('should return null when not authenticated', async () => {
-      mockOnAuthStateChanged.mockImplementation((auth, callback) => {
-        callback(null);
-      });
+      mockOnAuthStateChanged.mockImplementation(
+        (_auth: unknown, callback: (user: unknown) => void) => {
+          callback(null);
+        },
+      );
       setupTestBed('browser');
       await waitFor(() => service.isLoading() === false);
 
@@ -212,13 +213,14 @@ describe('AuthService', () => {
     });
 
     it('should return uid when authenticated', async () => {
-      mockOnAuthStateChanged.mockImplementation((auth, callback) => {
-        callback({ uid: 'my-uid' });
-      });
+      mockOnAuthStateChanged.mockImplementation(
+        (_auth: unknown, callback: (user: unknown) => void) => {
+          callback({ uid: 'my-uid' });
+        },
+      );
       setupTestBed('browser');
       await waitFor(() => service.isLoading() === false);
 
-      // Wait for the synchronous behavior Subject updates behind the mock to settle
       expect(service.getCurrentUid()).toBe('my-uid');
     });
   });

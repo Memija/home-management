@@ -2,25 +2,29 @@ import { TestBed } from '@angular/core/testing';
 import { CountryService } from './country.service';
 import { LanguageService } from './language.service';
 import { describe, it, expect, beforeEach, vi } from 'vitest';
-import { signal } from '@angular/core';
+import { signal, WritableSignal } from '@angular/core';
 
 describe('CountryService', () => {
   let service: CountryService;
-  let mockLanguageService: any;
-  let mockCurrentLangSignal: any;
+  let mockLanguageService: {
+    currentLang: WritableSignal<string>;
+    translate: ReturnType<typeof vi.fn>;
+    translateForLanguage: ReturnType<typeof vi.fn>;
+  };
+  let mockCurrentLangSignal: WritableSignal<string>;
 
   beforeEach(() => {
     mockCurrentLangSignal = signal('en');
     mockLanguageService = {
       currentLang: mockCurrentLangSignal,
-      translate: vi.fn().mockImplementation((key) => {
+      translate: vi.fn().mockImplementation((key: string) => {
         // Simple mock translation: keys ending in .GERMANY -> 'Germany'
         if (key === 'COUNTRIES.GERMANY') return 'Germany';
         if (key === 'COUNTRIES.FRANCE') return 'France';
         if (key === 'COUNTRIES.USA') return 'USA';
         return key;
       }),
-      translateForLanguage: vi.fn().mockImplementation((key, lang) => {
+      translateForLanguage: vi.fn().mockImplementation((key: string, lang: string) => {
         if (lang === 'de') {
           if (key === 'COUNTRIES.GERMANY') return 'Deutschland';
           if (key === 'COUNTRIES.USA') return 'Vereinigte Staaten';
@@ -132,14 +136,6 @@ describe('CountryService', () => {
     });
 
     it('should handle underscores in key name match', () => {
-      // Test a country with underscore in key if any (e.g. SOUTH_AFRICA)
-      // We need to ensure we have a test case for it or just trust the logic.
-      // Let's add South Africa to our mock translations if needed,
-      // or rely on the logic: key.replace('COUNTRIES.', '').toLowerCase().replace(/_/g, ' ')
-
-      // Let's assume SOUTH_AFRICA is in the list (it is in the real service).
-      // We don't need to mock translate for this particular check as it checks the key itself.
-
       // 'COUNTRIES.SOUTH_AFRICA' -> 'south africa'
       const info = service.getCountryInfoByNameAnyLanguage('south africa');
       expect(info?.code).toBe('za');

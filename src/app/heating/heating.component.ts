@@ -1,4 +1,13 @@
-import { Component, signal, computed, inject, effect, OnInit } from '@angular/core';
+import {
+  Component,
+  signal,
+  computed,
+  inject,
+  effect,
+  OnInit,
+  HostListener,
+  ElementRef,
+} from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { TranslatePipe } from '../pipes/translate.pipe';
@@ -33,7 +42,6 @@ import {
 } from '../shared/consumption-chart/consumption-chart.component';
 import {
   ConsumptionInputComponent,
-  type ConsumptionData,
   type ConsumptionGroup,
 } from '../shared/consumption-input/consumption-input.component';
 import { ErrorModalComponent } from '../shared/error-modal/error-modal.component';
@@ -122,9 +130,45 @@ export class HeatingComponent implements OnInit {
   protected readonly RefreshCwIcon = RefreshCw;
   protected readonly LightbulbIcon = Lightbulb;
 
+  // Dropdown state
+  protected isExportMenuOpen = signal(false);
+  protected isImportMenuOpen = signal(false);
+
+  private elementRef = inject(ElementRef, { optional: true });
+
+  @HostListener('document:click', ['$event'])
+  onDocumentClick(event: MouseEvent): void {
+    const target = event.target as HTMLElement | null;
+    if (!target?.closest('.action-dropdown')) {
+      this.isExportMenuOpen.set(false);
+      this.isImportMenuOpen.set(false);
+    }
+  }
+
+  toggleExportMenu(event: MouseEvent): void {
+    event.stopPropagation();
+    const next = !this.isExportMenuOpen();
+    this.isExportMenuOpen.set(next);
+    this.isImportMenuOpen.set(false);
+  }
+
+  toggleImportMenu(event: MouseEvent): void {
+    event.stopPropagation();
+    const next = !this.isImportMenuOpen();
+    this.isImportMenuOpen.set(next);
+    this.isExportMenuOpen.set(false);
+  }
+
+  closeMenus(): void {
+    this.isExportMenuOpen.set(false);
+    this.isImportMenuOpen.set(false);
+  }
+
   // State delegation to HeatingDataService
   protected records = this.dataService.records;
-  protected heatingPrediction = computed(() => this.predictionService.predictHeating(this.records()));
+  protected heatingPrediction = computed(() =>
+    this.predictionService.predictHeating(this.records()),
+  );
   protected isExporting = this.dataService.isExporting;
   protected isImporting = this.dataService.isImporting;
   protected showImportConfirmModal = this.dataService.showImportConfirmModal;
@@ -274,7 +318,11 @@ export class HeatingComponent implements OnInit {
     const spike = this.unconfirmedSpike();
     if (!spike) return '';
     const date = new Date(spike.date);
-    return this.languageService.formatDate(date, { year: 'numeric', month: 'long', day: 'numeric' });
+    return this.languageService.formatDate(date, {
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric',
+    });
   });
 
   protected adjustedRecords = computed(() => {
@@ -383,6 +431,7 @@ export class HeatingComponent implements OnInit {
 
   // ===== Delegations to DataService =====
   protected importData(event: Event) {
+    this.closeMenus();
     this.dataService.importData(event);
   }
   protected confirmImport() {
@@ -392,6 +441,7 @@ export class HeatingComponent implements OnInit {
     this.dataService.cancelImport();
   }
   protected importFromExcel(event: Event) {
+    this.closeMenus();
     this.dataService.importFromExcel(event);
   }
   protected exportData() {
@@ -411,7 +461,7 @@ export class HeatingComponent implements OnInit {
   }
 
   // Form handlers
-  protected onConsumptionSave(data: ConsumptionData) {
+  protected onConsumptionSave() {
     const newRecord = this.formService.createRecordFromState();
     if (newRecord) {
       this.dataService.saveRecord(newRecord, this.editingRecord());

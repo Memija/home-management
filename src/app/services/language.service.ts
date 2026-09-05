@@ -3,10 +3,67 @@ import { Injectable, signal, inject, ApplicationRef, computed } from '@angular/c
 export type Language = 'en' | 'de' | 'bs' | 'sr' | 'id' | 'pl';
 
 /** All supported languages - update this when adding a new language */
-export const SUPPORTED_LANGUAGES: readonly Language[] = ['id', 'bs', 'de', 'en', 'pl', 'sr'] as const;
+export const SUPPORTED_LANGUAGES: readonly Language[] = [
+  'id',
+  'bs',
+  'de',
+  'en',
+  'pl',
+  'sr',
+] as const;
 
 /** Storage key for user's preferred language (hm = homemanagement) */
 const LANGUAGE_STORAGE_KEY = 'hm_preferred_language';
+
+/** BCP 47 locale mappings per language */
+const LANGUAGE_LOCALES: Record<Language, string | string[]> = {
+  de: 'de-DE',
+  bs: ['bs-Latn-BA', 'hr-HR', 'sr-Latn-RS'],
+  sr: 'sr-RS',
+  id: 'id-ID',
+  pl: 'pl-PL',
+  en: 'en-US',
+};
+
+/** Languages that use a dot / period after day numbers and abbreviated dates */
+const DOT_LANGUAGES: readonly Language[] = ['de', 'bs', 'sr', 'pl'] as const;
+
+/** Translation keys for days of the week matching Date.getDay() (0 = Sunday) */
+const DAYS_OF_WEEK = [
+  'SUNDAY',
+  'MONDAY',
+  'TUESDAY',
+  'WEDNESDAY',
+  'THURSDAY',
+  'FRIDAY',
+  'SATURDAY',
+] as const;
+
+/** Translation keys for months of the year matching Date.getMonth() (0 = January) */
+const MONTHS_OF_YEAR = [
+  'JANUARY',
+  'FEBRUARY',
+  'MARCH',
+  'APRIL',
+  'MAY',
+  'JUNE',
+  'JULY',
+  'AUGUST',
+  'SEPTEMBER',
+  'OCTOBER',
+  'NOVEMBER',
+  'DECEMBER',
+] as const;
+
+/** Dynamic loaders for each supported language */
+const LANGUAGE_LOADERS: Record<Language, () => Promise<Record<string, unknown>>> = {
+  en: () => import('../i18n/en'),
+  de: () => import('../i18n/de'),
+  bs: () => import('../i18n/bs'),
+  sr: () => import('../i18n/sr'),
+  id: () => import('../i18n/id'),
+  pl: () => import('../i18n/pl'),
+};
 
 @Injectable({
   providedIn: 'root',
@@ -18,14 +75,9 @@ export class LanguageService {
   readonly isLoading = signal<boolean>(false);
 
   // Store loaded translations
-  private translations: Record<string, Record<string, unknown>> = {
-    en: {},
-    de: {},
-    bs: {},
-    sr: {},
-    id: {},
-    pl: {},
-  };
+  private translations: Record<string, Record<string, unknown>> = Object.fromEntries(
+    SUPPORTED_LANGUAGES.map((lang) => [lang, {}]),
+  );
 
   // Signal to notify when translations are loaded/updated
   private readonly translationChanged = signal(0);
@@ -38,27 +90,17 @@ export class LanguageService {
   private getStoredLanguage(): Language {
     if (typeof window !== 'undefined' && typeof localStorage !== 'undefined') {
       // 1. Check local storage (explicit user preference)
-      const stored = localStorage.getItem(LANGUAGE_STORAGE_KEY);
-      if (stored === 'en' || stored === 'de' || stored === 'bs' || stored === 'sr' || stored === 'id' || stored === 'pl') {
+      const stored = localStorage.getItem(LANGUAGE_STORAGE_KEY) as Language | null;
+      if (stored && (SUPPORTED_LANGUAGES as readonly string[]).includes(stored)) {
         return stored;
       }
 
       // 2. Check browser language (sr-RS, sr-Cyrl, etc)
-      const browserLang = navigator.language;
-      if (browserLang.startsWith('de')) {
-        return 'de';
-      }
-      if (browserLang.startsWith('bs')) {
-        return 'bs';
-      }
-      if (browserLang.startsWith('sr')) {
-        return 'sr';
-      }
-      if (browserLang.startsWith('id')) {
-        return 'id';
-      }
-      if (browserLang.startsWith('pl')) {
-        return 'pl';
+      const browserLang =
+        typeof navigator !== 'undefined' && navigator?.language ? navigator.language : '';
+      const matchedLang = SUPPORTED_LANGUAGES.find((lang) => browserLang.startsWith(lang));
+      if (matchedLang) {
+        return matchedLang;
       }
     }
     // 3. Default to English
@@ -88,25 +130,12 @@ export class LanguageService {
     meta.setAttribute('content', localeStr);
   }
 
-  /** Gets the BCP 47 locale for a given language */
-  /** Gets the BCP 47 locale for a given language. 
+  /**
+   * Gets the BCP 47 locale for a given language.
    * Returns an array for Bosnian to ensure Latin Slavic fallback if browser data is missing.
    */
   getLocale(lang: Language): string | string[] {
-    switch (lang) {
-      case 'de':
-        return 'de-DE';
-      case 'bs':
-        return ['bs-Latn-BA', 'hr-HR', 'sr-Latn-RS'];
-      case 'sr':
-        return 'sr-RS';
-      case 'id':
-        return 'id-ID';
-      case 'pl':
-        return 'pl-PL';
-      default:
-        return 'en-US';
-    }
+    return LANGUAGE_LOCALES[lang] ?? LANGUAGE_LOCALES.en;
   }
 
   /** Capitalizes the first letter of a string */
@@ -119,42 +148,48 @@ export class LanguageService {
    * Formats a date using translated day and month names.
    * Ensures consistency across browsers and handles environments with incomplete locale data.
    */
-  formatDate(date: Date, options: { weekday?: 'long' | 'short'; month?: 'long' | 'short'; day?: 'numeric'; year?: 'numeric' } = {}): string {
+  formatDate(
+    date: Date,
+    options: {
+      weekday?: 'long' | 'short';
+      month?: 'long' | 'short';
+      day?: 'numeric';
+      year?: 'numeric';
+    } = {},
+  ): string {
     const lang = this.currentLang();
     const locale = this.currentLocale();
-    
+
     // If not using weekday or month names, use native locale formatting for numbers/order
     if (!options.weekday && !options.month) {
       return date.toLocaleDateString(locale, options);
     }
 
     let result = '';
-    
+    const needsDot = DOT_LANGUAGES.includes(lang);
+
     // This is a simplified localized formatter that works for the app's current needs.
     // In a larger app, we might use a library, but here we want to avoid extra weight.
-    if (options.weekday === 'long') {
-      const days = ['SUNDAY', 'MONDAY', 'TUESDAY', 'WEDNESDAY', 'THURSDAY', 'FRIDAY', 'SATURDAY'];
-      result += this.capitalize(this.translate(`DAYS.${days[date.getDay()]}`)) + ', ';
-    } else if (options.weekday === 'short') {
-      const days = ['SUNDAY', 'MONDAY', 'TUESDAY', 'WEDNESDAY', 'THURSDAY', 'FRIDAY', 'SATURDAY'];
-      const dayName = this.translate(`DAYS.${days[date.getDay()]}`);
-      result += this.capitalize(dayName.substring(0, 3)) + (['de', 'bs', 'sr', 'pl'].includes(lang) ? '.' : '') + ', ';
+    if (options.weekday) {
+      const dayName = this.translate(`DAYS.${DAYS_OF_WEEK[date.getDay()]}`);
+      const formattedDay =
+        options.weekday === 'long'
+          ? this.capitalize(dayName)
+          : `${this.capitalize(dayName.substring(0, 3))}${needsDot ? '.' : ''}`;
+      result += `${formattedDay}, `;
     }
 
     if (options.day === 'numeric') {
       const day = date.getDate();
       // Slavic languages often use dot after the day number
-      const needsDot = ['de', 'bs', 'sr', 'pl'].includes(lang);
-      result += day + (needsDot ? '. ' : ' ');
+      result += `${day}${needsDot ? '. ' : ' '}`;
     }
 
-    if (options.month === 'long') {
-      const months = ['JANUARY', 'FEBRUARY', 'MARCH', 'APRIL', 'MAY', 'JUNE', 'JULY', 'AUGUST', 'SEPTEMBER', 'OCTOBER', 'NOVEMBER', 'DECEMBER'];
-      result += this.translate(`MONTHS.${months[date.getMonth()]}`) + ' ';
-    } else if (options.month === 'short') {
-      const months = ['JANUARY', 'FEBRUARY', 'MARCH', 'APRIL', 'MAY', 'JUNE', 'JULY', 'AUGUST', 'SEPTEMBER', 'OCTOBER', 'NOVEMBER', 'DECEMBER'];
-      const monthName = this.translate(`MONTHS.${months[date.getMonth()]}`);
-      result += monthName.substring(0, 3) + (['de', 'bs', 'sr', 'pl'].includes(lang) ? '.' : '') + ' ';
+    if (options.month) {
+      const monthName = this.translate(`MONTHS.${MONTHS_OF_YEAR[date.getMonth()]}`);
+      const formattedMonth =
+        options.month === 'long' ? monthName : `${monthName.substring(0, 3)}${needsDot ? '.' : ''}`;
+      result += `${formattedMonth} `;
     }
 
     if (options.year === 'numeric') {
@@ -172,26 +207,12 @@ export class LanguageService {
 
     this.isLoading.set(true);
     try {
-      let module;
-      if (lang === 'de') {
-        module = await import('../i18n/de');
-        this.translations['de'] = module.de as Record<string, unknown>;
-      } else if (lang === 'bs') {
-        module = await import('../i18n/bs');
-        this.translations['bs'] = module.bs as Record<string, unknown>;
-      } else if (lang === 'sr') {
-        module = await import('../i18n/sr');
-        this.translations['sr'] = module.sr as Record<string, unknown>;
-      } else if (lang === 'id') {
-        module = await import('../i18n/id');
-        this.translations['id'] = module.id as Record<string, unknown>;
-      } else if (lang === 'pl') {
-        module = await import('../i18n/pl');
-        this.translations['pl'] = module.pl as Record<string, unknown>;
-      } else {
-        module = await import('../i18n/en');
-        this.translations['en'] = module.en as Record<string, unknown>;
+      const loader = LANGUAGE_LOADERS[lang];
+      if (!loader) {
+        throw new Error(`Unsupported language: ${lang}`);
       }
+      const module = await loader();
+      this.translations[lang] = (module[lang] ?? module['en']) as Record<string, unknown>;
 
       // Notify signals that translations have changed
       this.translationChanged.update((v) => v + 1);

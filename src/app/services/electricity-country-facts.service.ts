@@ -51,9 +51,11 @@ export class ElectricityCountryFactsService {
   ): ElectricityFact | null {
     const lang = this.languageService.currentLang();
     const translations = lang === 'de' ? de : lang === 'bs' ? bs : en;
-    const countryFacts = lang === 'de' ? deElectricityFacts : lang === 'bs' ? bsElectricityFacts : enElectricityFacts;
+    const countryFacts =
+      lang === 'de' ? deElectricityFacts : lang === 'bs' ? bsElectricityFacts : enElectricityFacts;
     // Fallback title if translation missing
-    const didYouKnow = (translations.FACTS as any)?.DID_YOU_KNOW || 'Did you know?';
+    const didYouKnow =
+      (translations.FACTS as Record<string, string>)?.['DID_YOU_KNOW'] || 'Did you know?';
 
     if (mode === 'historical') {
       return this.getHistoricalFact(didYouKnow, index, countryFacts);

@@ -31,7 +31,9 @@ describe('ImportValidationService', () => {
     });
 
     it('should error if not array', () => {
-      expect(service.validateDataArray({} as any)).toContain('ERROR.IMPORT_INVALID_DATA_FORMAT');
+      expect(service.validateDataArray({} as unknown)).toContain(
+        'ERROR.IMPORT_INVALID_DATA_FORMAT',
+      );
     });
 
     it('should error if empty array', () => {
@@ -140,7 +142,7 @@ describe('ImportValidationService', () => {
       const result = service.validateHeatingJsonImport(data);
       expect(result.validRecords.length).toBe(1);
       expect(result.errors.length).toBe(0);
-      expect((result.validRecords[0] as any).rooms['room_1']).toBe(10);
+      expect(result.validRecords[0].rooms['room_1']).toBe(10);
     });
 
     it('should validate against expected room IDs', () => {

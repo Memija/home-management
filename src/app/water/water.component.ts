@@ -1,4 +1,13 @@
-import { Component, computed, inject, signal, effect, OnInit } from '@angular/core';
+import {
+  Component,
+  computed,
+  inject,
+  signal,
+  effect,
+  OnInit,
+  HostListener,
+  ElementRef,
+} from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 
@@ -20,10 +29,10 @@ import {
   Lightbulb,
   ToggleLeft,
   ToggleRight,
+  ChevronDown,
 } from 'lucide-angular';
 import {
   ConsumptionInputComponent,
-  type ConsumptionData,
   type ConsumptionGroup,
 } from '../shared/consumption-input/consumption-input.component';
 import { DeleteConfirmationModalComponent } from '../shared/delete-confirmation-modal/delete-confirmation-modal.component';
@@ -52,7 +61,7 @@ import { ExcelSettingsService } from '../services/excel-settings.service';
 import { ChartCalculationService } from '../services/chart-calculation.service';
 import { LocalStorageService } from '../services/local-storage.service';
 import { LanguageService } from '../services/language.service';
-import { WaterFactsService, WaterFact } from '../services/water-facts.service';
+import { WaterFactsService } from '../services/water-facts.service';
 import {
   CHART_HELP_STEPS,
   RECORD_HELP_STEPS,
@@ -98,6 +107,41 @@ export class WaterComponent implements OnInit {
   protected readonly LightbulbIcon = Lightbulb;
   protected readonly ToggleLeftIcon = ToggleLeft;
   protected readonly ToggleRightIcon = ToggleRight;
+  protected readonly ChevronDownIcon = ChevronDown;
+
+  // Dropdown state
+  protected isExportMenuOpen = signal(false);
+  protected isImportMenuOpen = signal(false);
+
+  private elementRef = inject(ElementRef, { optional: true });
+
+  @HostListener('document:click', ['$event'])
+  onDocumentClick(event: MouseEvent): void {
+    const target = event.target as HTMLElement | null;
+    if (!target?.closest('.action-dropdown')) {
+      this.isExportMenuOpen.set(false);
+      this.isImportMenuOpen.set(false);
+    }
+  }
+
+  toggleExportMenu(event: MouseEvent): void {
+    event.stopPropagation();
+    const next = !this.isExportMenuOpen();
+    this.isExportMenuOpen.set(next);
+    this.isImportMenuOpen.set(false);
+  }
+
+  toggleImportMenu(event: MouseEvent): void {
+    event.stopPropagation();
+    const next = !this.isImportMenuOpen();
+    this.isImportMenuOpen.set(next);
+    this.isExportMenuOpen.set(false);
+  }
+
+  closeMenus(): void {
+    this.isExportMenuOpen.set(false);
+    this.isImportMenuOpen.set(false);
+  }
 
   // Services
   protected excelSettings = inject(ExcelSettingsService);
@@ -298,7 +342,10 @@ export class WaterComponent implements OnInit {
     const records = this.records();
     const chartView = this.chartView();
     const mode = this.displayMode();
-    const lang = this.languageService.currentLang();
+
+    if (!this.languageService.currentLang()) {
+      return null;
+    }
     const seed = this.factRandomSeed();
 
     if (mode !== 'total' || records.length === 0) {
@@ -316,8 +363,9 @@ export class WaterComponent implements OnInit {
     const factIndex = Math.floor(seed * 20);
 
     type FactContext = 'total' | 'kitchen' | 'bathroom' | 'warm' | 'cold';
-    let context: FactContext = 'total';
-    let liters = totalLiters;
+
+    let context: FactContext;
+    let liters: number;
 
     switch (chartView) {
       case 'by-room':
@@ -382,15 +430,17 @@ export class WaterComponent implements OnInit {
     this.dataService.updateFilterState(state);
   }
 
-  protected onFilteredRecordsChange(records: unknown[]) {
+  protected onFilteredRecordsChange() {
     // Optional
   }
 
   // Delegations to DataService
   protected importData(event: Event) {
+    this.closeMenus();
     this.dataService.importData(event);
   }
   protected importFromExcel(event: Event) {
+    this.closeMenus();
     this.dataService.importFromExcel(event);
   }
 
@@ -467,7 +517,7 @@ export class WaterComponent implements OnInit {
     }
   }
 
-  protected onConsumptionSave(data: ConsumptionData) {
+  protected onConsumptionSave() {
     const newRecord = this.formService.createRecordFromState();
     if (newRecord) {
       this.dataService.saveRecord(newRecord);

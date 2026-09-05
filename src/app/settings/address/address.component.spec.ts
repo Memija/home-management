@@ -21,7 +21,7 @@ import { vi, afterEach } from 'vitest';
 // --- Stub Components & Pipes ---
 @Component({ selector: 'lucide-icon', template: '', standalone: true })
 class StubLucideIconComponent {
-  @Input() img: any;
+  @Input() img: unknown;
 }
 
 @Component({ selector: 'app-confirmation-modal', template: '', standalone: true })
@@ -31,9 +31,9 @@ class StubConfirmationModalComponent {
   @Input() messageKey = '';
   @Input() confirmKey = '';
   @Input() cancelKey = '';
-  @Input() icon: any;
+  @Input() icon: unknown;
   @Output() confirm = new EventEmitter<void>();
-  @Output() cancel = new EventEmitter<void>();
+  @Output() cancelModal = new EventEmitter<void>();
 }
 
 @Component({ selector: 'app-delete-confirmation-modal', template: '', standalone: true })
@@ -43,9 +43,9 @@ class StubDeleteConfirmationModalComponent {
   @Input() messageKey = '';
   @Input() deleteKey = '';
   @Input() cancelKey = '';
-  @Input() icon: any;
+  @Input() icon: unknown;
   @Output() confirm = new EventEmitter<void>();
-  @Output() cancel = new EventEmitter<void>();
+  @Output() cancelModal = new EventEmitter<void>();
 }
 
 @Component({ selector: 'app-error-modal', template: '', standalone: true })
@@ -54,16 +54,16 @@ class StubErrorModalComponent {
   @Input() title = '';
   @Input() message = '';
   @Input() details = '';
-  @Input() instructions: any[] = [];
-  @Output() cancel = new EventEmitter<void>();
+  @Input() instructions: unknown[] = [];
+  @Output() cancelModal = new EventEmitter<void>();
 }
 
 @Component({ selector: 'app-help-modal', template: '', standalone: true })
 class StubHelpModalComponent {
   @Input() show = false;
   @Input() titleKey = '';
-  @Input() steps: any[] = [];
-  @Output() close = new EventEmitter<void>();
+  @Input() steps: unknown[] = [];
+  @Output() closeModal = new EventEmitter<void>();
 }
 
 @Component({ selector: 'app-country-selector', template: '', standalone: true })
@@ -78,7 +78,7 @@ import { Pipe, PipeTransform } from '@angular/core';
 
 @Pipe({ name: 'translate', standalone: true })
 class StubTranslatePipe implements PipeTransform {
-  transform(value: string, ...args: any[]): string {
+  transform(value: string): string {
     return value;
   }
 }
@@ -86,14 +86,31 @@ class StubTranslatePipe implements PipeTransform {
 describe('AddressComponent', () => {
   let component: AddressComponent;
   let fixture: ComponentFixture<AddressComponent>;
+  let mockHouseholdService: {
+    address: import('@angular/core').WritableSignal<unknown>;
+    updateAddress: ReturnType<typeof vi.fn>;
+  };
+  let mockLanguageService: {
+    currentLang: import('@angular/core').WritableSignal<string>;
+    translate: ReturnType<typeof vi.fn>;
+  };
+  let mockFileStorageService: {
+    exportToFile: ReturnType<typeof vi.fn>;
+    importFromFile: ReturnType<typeof vi.fn>;
+  };
+  let mockCountryService: {
+    getCountryInfoByCode: ReturnType<typeof vi.fn>;
+    getCountryInfoByNameAnyLanguage: ReturnType<typeof vi.fn>;
+  };
+  let mockFormValidationService: {
+    getStreetNameError: ReturnType<typeof vi.fn>;
+    getStreetNumberError: ReturnType<typeof vi.fn>;
+    getCityError: ReturnType<typeof vi.fn>;
+    getZipCodeError: ReturnType<typeof vi.fn>;
+    getCountryError: ReturnType<typeof vi.fn>;
+  };
 
-  let mockHouseholdService: any;
-  let mockLanguageService: any;
-  let mockFileStorageService: any;
-  let mockCountryService: any;
-  let mockFormValidationService: any;
-
-  let addressSignal: any;
+  let addressSignal: import('@angular/core').WritableSignal<unknown>;
 
   beforeEach(async () => {
     addressSignal = signal(null);
@@ -189,12 +206,12 @@ describe('AddressComponent', () => {
     it('should initialize empty when no address in service', () => {
       fixture.detectChanges();
 
-      expect((component as any).streetName()).toBe('');
-      expect((component as any).streetNumber()).toBe('');
-      expect((component as any).city()).toBe('');
-      expect((component as any).zipCode()).toBe('');
-      expect((component as any).country()).toBe('');
-      expect((component as any).isEditingAddress()).toBe(true);
+      expect(component['streetName']()).toBe('');
+      expect(component['streetNumber']()).toBe('');
+      expect(component['city']()).toBe('');
+      expect(component['zipCode']()).toBe('');
+      expect(component['country']()).toBe('');
+      expect(component['isEditingAddress']()).toBe(true);
     });
 
     it('should populate fields and set isEditingAddress to false when address exists', () => {
@@ -208,12 +225,12 @@ describe('AddressComponent', () => {
 
       fixture.detectChanges();
 
-      expect((component as any).streetName()).toBe('Test St');
-      expect((component as any).streetNumber()).toBe('123');
-      expect((component as any).city()).toBe('Test City');
-      expect((component as any).zipCode()).toBe('12345');
-      expect((component as any).country()).toBe('de');
-      expect((component as any).isEditingAddress()).toBe(false);
+      expect(component['streetName']()).toBe('Test St');
+      expect(component['streetNumber']()).toBe('123');
+      expect(component['city']()).toBe('Test City');
+      expect(component['zipCode']()).toBe('12345');
+      expect(component['country']()).toBe('de');
+      expect(component['isEditingAddress']()).toBe(false);
     });
 
     it('should populate country code correctly for legacy country name', () => {
@@ -229,7 +246,7 @@ describe('AddressComponent', () => {
 
       fixture.detectChanges();
 
-      expect((component as any).country()).toBe('fr');
+      expect(component['country']()).toBe('fr');
       expect(mockCountryService.getCountryInfoByNameAnyLanguage).toHaveBeenCalledWith('France');
     });
   });
@@ -243,26 +260,26 @@ describe('AddressComponent', () => {
       mockFormValidationService.getStreetNameError.mockReturnValue(['error']);
       component.onStreetNameChange('New St');
 
-      expect((component as any).streetName()).toBe('New St');
-      expect((component as any).streetNameError()).toEqual(['error']);
+      expect(component['streetName']()).toBe('New St');
+      expect(component['streetNameError']()).toEqual(['error']);
       expect(mockFormValidationService.getStreetNameError).toHaveBeenCalledWith('New St');
     });
 
     it('should validate form correctly when all fields are valid', () => {
-      (component as any).streetName.set('Test St');
-      (component as any).streetNumber.set('123');
-      (component as any).city.set('Test City');
-      (component as any).zipCode.set('12345');
-      (component as any).country.set('de');
+      component['streetName'].set('Test St');
+      component['streetNumber'].set('123');
+      component['city'].set('Test City');
+      component['zipCode'].set('12345');
+      component['country'].set('de');
 
       mockCountryService.getCountryInfoByCode.mockReturnValue({ code: 'de' });
 
-      expect((component as any).isAddressFormValid()).toBe(true);
+      expect(component['isAddressFormValid']()).toBe(true);
     });
 
     it('should return invalid when required fields are empty', () => {
-      (component as any).streetName.set('');
-      expect((component as any).isAddressFormValid()).toBe(false);
+      component['streetName'].set('');
+      expect(component['isAddressFormValid']()).toBe(false);
     });
   });
 
@@ -272,13 +289,13 @@ describe('AddressComponent', () => {
     });
 
     it('should report no unsaved changes when not editing', () => {
-      (component as any).isEditingAddress.set(false);
+      component['isEditingAddress'].set(false);
       expect(component.hasUnsavedChanges()).toBe(false);
     });
 
     it('should report unsaved changes when fields have content and no saved address', () => {
-      (component as any).isEditingAddress.set(true);
-      (component as any).streetName.set('Test St');
+      component['isEditingAddress'].set(true);
+      component['streetName'].set('Test St');
 
       expect(component.hasUnsavedChanges()).toBe(true);
     });
@@ -292,8 +309,8 @@ describe('AddressComponent', () => {
         country: 'de',
       });
 
-      (component as any).isEditingAddress.set(true);
-      (component as any).city.set('New City');
+      component['isEditingAddress'].set(true);
+      component['city'].set('New City');
 
       expect(component.hasUnsavedChanges()).toBe(true);
     });
@@ -305,19 +322,19 @@ describe('AddressComponent', () => {
       const result = component.triggerNavigationWarning(onLeave);
 
       expect(result).toBe(true);
-      expect((component as any).pendingNavigation()).toBe(onLeave);
-      expect((component as any).showUnsavedChangesModal()).toBe(true);
+      expect(component['pendingNavigation']()).toBe(onLeave);
+      expect(component['showUnsavedChangesModal']()).toBe(true);
     });
 
     it('should resolve pending navigation on leave without saving confirmation', () => {
       const onLeave = vi.fn();
-      (component as any).pendingNavigation.set(onLeave);
+      component['pendingNavigation'].set(onLeave);
 
       component.confirmLeaveWithoutSaving();
 
       expect(onLeave).toHaveBeenCalled();
-      expect((component as any).pendingNavigation()).toBeNull();
-      expect((component as any).showUnsavedChangesModal()).toBe(false);
+      expect(component['pendingNavigation']()).toBeNull();
+      expect(component['showUnsavedChangesModal']()).toBe(false);
     });
 
     it('should handle cancelEdit with unsaved changes', () => {
@@ -334,7 +351,7 @@ describe('AddressComponent', () => {
 
       component.cancelEdit();
 
-      expect((component as any).isEditingAddress()).toBe(false);
+      expect(component['isEditingAddress']()).toBe(false);
     });
   });
 
@@ -344,17 +361,17 @@ describe('AddressComponent', () => {
     });
 
     it('should start editing', () => {
-      (component as any).isEditingAddress.set(false);
-      (component as any).showSaveConfirmation.set(true);
+      component['isEditingAddress'].set(false);
+      component['showSaveConfirmation'].set(true);
 
       component.editAddress();
 
-      expect((component as any).isEditingAddress()).toBe(true);
-      expect((component as any).showSaveConfirmation()).toBe(false);
+      expect(component['isEditingAddress']()).toBe(true);
+      expect(component['showSaveConfirmation']()).toBe(false);
     });
 
     it('should not save if form is invalid', () => {
-      (component as any).streetName.set(''); // Empty name makes it invalid
+      component['streetName'].set(''); // Empty name makes it invalid
 
       component.saveAddress();
 
@@ -363,11 +380,11 @@ describe('AddressComponent', () => {
 
     it('should save address if valid', () => {
       vi.useFakeTimers();
-      (component as any).streetName.set('Test St');
-      (component as any).streetNumber.set('123');
-      (component as any).city.set('Test City');
-      (component as any).zipCode.set('12345');
-      (component as any).country.set('de');
+      component['streetName'].set('Test St');
+      component['streetNumber'].set('123');
+      component['city'].set('Test City');
+      component['zipCode'].set('12345');
+      component['country'].set('de');
 
       mockCountryService.getCountryInfoByCode.mockReturnValue({ code: 'de' });
 
@@ -381,12 +398,12 @@ describe('AddressComponent', () => {
         country: 'de',
       });
 
-      expect((component as any).isEditingAddress()).toBe(false);
-      expect((component as any).showSaveConfirmation()).toBe(true);
+      expect(component['isEditingAddress']()).toBe(false);
+      expect(component['showSaveConfirmation']()).toBe(true);
 
       vi.advanceTimersByTime(3000); // Fast-forward time for timeout
 
-      expect((component as any).showSaveConfirmation()).toBe(false);
+      expect(component['showSaveConfirmation']()).toBe(false);
       vi.useRealTimers();
     });
   });
@@ -416,22 +433,22 @@ describe('AddressComponent', () => {
 
     it('should set file for import on valid selection', async () => {
       const file = new File([''], 'address.json', { type: 'application/json' });
-      const mockEvent = { target: { files: [file], value: 'test' } } as any;
+      const mockEvent = { target: { files: [file], value: 'test' } } as unknown as Event;
 
       await component.importAddress(mockEvent);
 
-      expect((component as any).pendingImportFile()).toBe(file);
-      expect((component as any).showImportConfirmModal()).toBe(true);
+      expect(component['pendingImportFile']()).toBe(file);
+      expect(component['showImportConfirmModal']()).toBe(true);
     });
 
     it('should reject non-json import files', async () => {
       const file = new File([''], 'address.txt', { type: 'text/plain' });
-      (component as any).pendingImportFile.set(file);
+      component['pendingImportFile'].set(file);
 
       await component.confirmImportAddress();
 
-      expect((component as any).showImportErrorModal()).toBe(true);
-      expect((component as any).importErrorMessage()).toContain(
+      expect(component['showImportErrorModal']()).toBe(true);
+      expect(component['importErrorMessage']()).toContain(
         'SETTINGS.IMPORT_ADDRESS_INVALID_FILE_TYPE',
       );
     });
@@ -449,7 +466,7 @@ describe('AddressComponent', () => {
       mockFileStorageService.importFromFile.mockResolvedValue(address);
 
       const file = new File([''], 'address.json', { type: 'application/json' });
-      (component as any).pendingImportFile.set(file);
+      component['pendingImportFile'].set(file);
 
       await component.confirmImportAddress();
 
@@ -460,12 +477,12 @@ describe('AddressComponent', () => {
       mockFileStorageService.importFromFile.mockRejectedValue(new Error('Import failed'));
 
       const file = new File([''], 'address.json', { type: 'application/json' });
-      (component as any).pendingImportFile.set(file);
+      component['pendingImportFile'].set(file);
 
       await component.confirmImportAddress();
 
-      expect((component as any).showImportErrorModal()).toBe(true);
-      expect((component as any).importErrorMessage()).toContain('Import failed');
+      expect(component['showImportErrorModal']()).toBe(true);
+      expect(component['importErrorMessage']()).toContain('Import failed');
     });
   });
 });

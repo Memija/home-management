@@ -39,7 +39,6 @@
 }
 
 @media (max-width: 480px) {
-
   .field-options,
   .capture-options {
     grid-template-columns: 1fr;
@@ -201,7 +200,11 @@
 
   &.camera-gradient,
   &.upload-gradient {
-    background: linear-gradient(135deg, var(--theme-primary, #3b82f6), var(--theme-primary-dark, #1d4ed8));
+    background: linear-gradient(
+      135deg,
+      var(--theme-primary, #3b82f6),
+      var(--theme-primary-dark, #1d4ed8)
+    );
   }
 }
 
@@ -376,7 +379,6 @@
 }
 
 @keyframes pulse {
-
   0%,
   100% {
     opacity: 1;

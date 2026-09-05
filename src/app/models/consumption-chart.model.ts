@@ -1,8 +1,4 @@
-import {
-  ConsumptionRecord,
-  DynamicHeatingRecord,
-  ElectricityRecord,
-} from './records.model';
+import { ConsumptionRecord, DynamicHeatingRecord, ElectricityRecord } from './records.model';
 
 // Re-export types for consumers
 export type { ChartView, DisplayMode } from '../services/chart-data.service';

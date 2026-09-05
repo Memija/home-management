@@ -26,13 +26,17 @@ export class SeasonService {
   readonly disabled = signal(false);
 
   /**
-   * Determine the natural season based on the current month (Northern Hemisphere).
+   * Determine the natural season based on astronomical seasons (Northern Hemisphere).
+   * - Spring: March 20 – June 20
+   * - Summer: June 21 – September 22
+   * - Autumn: September 23 – December 20
+   * - Winter: December 21 – March 19
    */
-  private getNaturalSeason(): Season {
-    const month = new Date().getMonth();
-    if (month >= 2 && month <= 4) return 'spring';
-    if (month >= 5 && month <= 7) return 'summer';
-    if (month >= 8 && month <= 10) return 'autumn';
+  private getNaturalSeason(date: Date = new Date()): Season {
+    const md = (date.getMonth() + 1) * 100 + date.getDate();
+    if (md >= 320 && md <= 620) return 'spring';
+    if (md >= 621 && md <= 922) return 'summer';
+    if (md >= 923 && md <= 1220) return 'autumn';
     return 'winter';
   }
 

@@ -14,10 +14,10 @@ import { TranslatePipe } from '../../pipes/translate.pipe';
 export class LanguageSwitcherComponent {
   protected languageService = inject(LanguageService);
   private elementRef = inject(ElementRef);
-  
+
   protected readonly languages = SUPPORTED_LANGUAGES;
   protected isDropdownOpen = signal(false);
-  
+
   // Lucide icons
   protected readonly GlobeIcon = Globe;
   protected readonly ChevronDownIcon = ChevronDown;
@@ -27,9 +27,9 @@ export class LanguageSwitcherComponent {
     en: 'English',
     de: 'Deutsch',
     bs: 'Bosanski',
-    sr: 'Srpski',
+    sr: 'Српски',
     id: 'Bahasa Indonesia',
-    pl: 'Polski'
+    pl: 'Polski',
   };
 
   protected readonly flagCodes: Record<Language, string> = {
@@ -38,11 +38,11 @@ export class LanguageSwitcherComponent {
     bs: 'ba',
     sr: 'rs',
     id: 'id',
-    pl: 'pl'
+    pl: 'pl',
   };
 
   toggleDropdown() {
-    this.isDropdownOpen.update(v => !v);
+    this.isDropdownOpen.update((v) => !v);
   }
 
   @HostListener('document:click', ['$event'])

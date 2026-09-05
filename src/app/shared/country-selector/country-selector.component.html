@@ -18,7 +18,9 @@
   @if (filteredCountries().length > 0) {
     <ul class="country-dropdown">
       @for (country of filteredCountries(); track trackByCountry($index, country)) {
-        <li (click)="selectCountry(country)">{{ country }}</li>
+        <li (click)="selectCountry(country)" tabindex="0" (keyup.enter)="selectCountry(country)">
+          {{ country }}
+        </li>
       }
     </ul>
   }

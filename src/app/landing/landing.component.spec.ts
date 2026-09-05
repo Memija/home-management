@@ -4,14 +4,25 @@ import { ThemeService, Theme } from '../services/theme.service';
 import { LanguageService } from '../services/language.service';
 import { PLATFORM_ID, signal } from '@angular/core';
 import { provideRouter } from '@angular/router';
-import { vi, afterEach } from 'vitest';
+import { vi, afterEach, describe, it, expect, beforeEach } from 'vitest';
 
 describe('LandingComponent', () => {
   let component: LandingComponent;
   let fixture: ComponentFixture<LandingComponent>;
-  let themeServiceMock: any;
-  let languageServiceMock: any;
-  let intersectionObserverMock: any;
+  let themeServiceMock: {
+    setTheme: ReturnType<typeof vi.fn>;
+    currentTheme: import('@angular/core').WritableSignal<Theme>;
+    resolvedTheme: import('@angular/core').WritableSignal<Theme>;
+  };
+  let languageServiceMock: {
+    translate: ReturnType<typeof vi.fn>;
+    currentLang: import('@angular/core').WritableSignal<string>;
+  };
+  let intersectionObserverMock: {
+    observe: (target: Element) => void;
+    unobserve: (target: Element) => void;
+    disconnect: () => void;
+  };
 
   // To handle the intersection observer callback
   let observerCallback: IntersectionObserverCallback;
@@ -35,12 +46,26 @@ describe('LandingComponent', () => {
     };
 
     // Mock IntersectionObserver
-    (window as any).IntersectionObserver = function (callback: IntersectionObserverCallback) {
-      observerCallback = callback;
-      this.observe = intersectionObserverMock.observe;
-      this.unobserve = intersectionObserverMock.unobserve;
-      this.disconnect = intersectionObserverMock.disconnect;
-    };
+    class MockIntersectionObserver implements IntersectionObserver {
+      readonly root: Element | Document | null = null;
+      readonly rootMargin: string = '';
+      readonly thresholds: readonly number[] = [];
+      observe = (target: Element): void => {
+        intersectionObserverMock.observe(target);
+      };
+      unobserve = (target: Element): void => {
+        intersectionObserverMock.unobserve(target);
+      };
+      disconnect = (): void => {
+        intersectionObserverMock.disconnect();
+      };
+      takeRecords = (): IntersectionObserverEntry[] => [];
+      constructor(callback: IntersectionObserverCallback) {
+        observerCallback = callback;
+      }
+    }
+    window.IntersectionObserver =
+      MockIntersectionObserver as unknown as typeof IntersectionObserver;
 
     await TestBed.configureTestingModule({
       imports: [LandingComponent],
@@ -66,52 +91,106 @@ describe('LandingComponent', () => {
 
   describe('Theme Management', () => {
     it('should cycle theme from light to dark', () => {
-      // Mock the current theme
-      (themeServiceMock as any).currentTheme = signal<Theme>('light');
+      themeServiceMock.currentTheme = signal<Theme>('light');
       component['cycleTheme']();
       expect(themeServiceMock.setTheme).toHaveBeenCalledWith('dark');
     });
 
     it('should cycle theme from dark to system', () => {
-      (themeServiceMock as any).currentTheme = signal<Theme>('dark');
+      themeServiceMock.currentTheme = signal<Theme>('dark');
       component['cycleTheme']();
       expect(themeServiceMock.setTheme).toHaveBeenCalledWith('system');
     });
 
     it('should cycle theme from system to light', () => {
-      (themeServiceMock as any).currentTheme = signal<Theme>('system');
+      themeServiceMock.currentTheme = signal<Theme>('system');
       component['cycleTheme']();
       expect(themeServiceMock.setTheme).toHaveBeenCalledWith('light');
     });
 
     it('should return correct theme icon for light theme', () => {
-      (themeServiceMock as any).currentTheme = signal<Theme>('light');
-      (themeServiceMock as any).resolvedTheme = signal<Theme>('light');
+      themeServiceMock.currentTheme = signal<Theme>('light');
+      themeServiceMock.resolvedTheme = signal<Theme>('light');
       expect(component['getThemeIcon']()).toBe('☀️');
     });
 
     it('should return correct theme icon for dark theme', () => {
-      (themeServiceMock as any).currentTheme = signal<Theme>('dark');
-      (themeServiceMock as any).resolvedTheme = signal<Theme>('dark');
+      themeServiceMock.currentTheme = signal<Theme>('dark');
+      themeServiceMock.resolvedTheme = signal<Theme>('dark');
       expect(component['getThemeIcon']()).toBe('🌙');
     });
 
     it('should return system icon if theme is system', () => {
-      (themeServiceMock as any).currentTheme = signal<Theme>('system');
+      themeServiceMock.currentTheme = signal<Theme>('system');
       expect(component['getThemeIcon']()).toBe('🖥️');
     });
 
     it('should return correct title for light theme', () => {
-      (themeServiceMock as any).currentTheme = signal<Theme>('light');
+      themeServiceMock.currentTheme = signal<Theme>('light');
       expect(component['getThemeTitle']()).toBe('translated_SETTINGS.THEME_LIGHT');
     });
 
     it('should return correct title for system theme based on resolved theme', () => {
-      (themeServiceMock as any).currentTheme = signal<Theme>('system');
-      (themeServiceMock as any).resolvedTheme = signal<Theme>('dark');
+      themeServiceMock.currentTheme = signal<Theme>('system');
+      themeServiceMock.resolvedTheme = signal<Theme>('dark');
       expect(component['getThemeTitle']()).toBe(
         'translated_SETTINGS.THEME_SYSTEM (translated_SETTINGS.THEME_DARK)',
       );
+    });
+  });
+
+  describe('Hero Highlights Grid', () => {
+    it('should have 4 highlight cards configured', () => {
+      expect(component['highlightKeys'].length).toBe(4);
+      expect(component['highlightKeys'][0].titleKey).toBe('LANDING.HIGHLIGHTS.LOCAL_TITLE');
+      expect(component['highlightKeys'][1].titleKey).toBe('LANDING.HIGHLIGHTS.PREDICT_TITLE');
+      expect(component['highlightKeys'][2].titleKey).toBe('LANDING.HIGHLIGHTS.UNIFIED_TITLE');
+      expect(component['highlightKeys'][3].titleKey).toBe('LANDING.HIGHLIGHTS.PRIVACY_TITLE');
+    });
+
+    it('should render highlight cards with titles and tags', () => {
+      fixture.detectChanges();
+      const compiled = fixture.nativeElement as HTMLElement;
+      const cards = compiled.querySelectorAll('.highlight-card');
+      expect(cards.length).toBe(4);
+    });
+  });
+
+  describe('Road Accessibility Navigation', () => {
+    it('should scroll on Enter keydown', () => {
+      Object.defineProperty(document.documentElement, 'scrollHeight', {
+        value: 2000,
+        writable: true,
+        configurable: true,
+      });
+      Object.defineProperty(window, 'innerHeight', {
+        value: 800,
+        writable: true,
+        configurable: true,
+      });
+      vi.spyOn(window, 'scrollTo').mockImplementation(() => {
+        /* noop */
+      });
+
+      const enterEvt = new KeyboardEvent('keydown', { key: 'Enter' });
+      vi.spyOn(enterEvt, 'preventDefault');
+
+      component['onRoadKeydown'](enterEvt);
+
+      expect(enterEvt.preventDefault).toHaveBeenCalled();
+      expect(window.scrollTo).toHaveBeenCalledWith({
+        top: 200,
+        behavior: 'smooth',
+      } as ScrollToOptions);
+    });
+
+    it('should not scroll on other keys', () => {
+      vi.spyOn(window, 'scrollTo').mockImplementation(() => {
+        /* noop */
+      });
+      const escapeEvt = new KeyboardEvent('keydown', { key: 'Escape' });
+      component['onRoadKeydown'](escapeEvt);
+      expect(window.scrollTo).not.toHaveBeenCalled();
     });
   });
 
@@ -169,7 +248,7 @@ describe('LandingComponent', () => {
 
     it('should update scrollY and roadProgress on window scroll', () => {
       fixture.detectChanges();
-      vi.spyOn<any, any>(component, 'updateRoadProgress');
+      vi.spyOn(component as unknown as { updateRoadProgress: () => void }, 'updateRoadProgress');
 
       // We can directly call the handler to prevent flakiness
       Object.defineProperty(window, 'scrollY', { value: 100, writable: true });
@@ -190,8 +269,12 @@ describe('LandingComponent', () => {
       fixture.detectChanges();
 
       const evt = new MouseEvent('mousedown');
-      vi.spyOn(evt, 'preventDefault').mockImplementation(() => {});
-      vi.spyOn(evt, 'stopPropagation').mockImplementation(() => {});
+      vi.spyOn(evt, 'preventDefault').mockImplementation(() => {
+        /* noop */
+      });
+      vi.spyOn(evt, 'stopPropagation').mockImplementation(() => {
+        /* noop */
+      });
       vi.spyOn(document, 'addEventListener');
 
       component['onRoadDragStart'](evt);
@@ -223,8 +306,10 @@ describe('LandingComponent', () => {
         width: 100,
         x: 0,
         y: 0,
-        toJSON: () => {},
-      } as any);
+        toJSON: () => {
+          /* noop */
+        },
+      });
 
       // Mock querySelector to return our controlled element
       vi.spyOn(document, 'querySelector').mockImplementation((selector: string) => {
@@ -243,7 +328,9 @@ describe('LandingComponent', () => {
         writable: true,
         configurable: true,
       });
-      vi.spyOn(window, 'scrollTo').mockImplementation(() => {});
+      vi.spyOn(window, 'scrollTo').mockImplementation(() => {
+        /* noop */
+      });
 
       component['isDragging'] = true;
       const mouseMoveEvt = new MouseEvent('mousemove', { clientY: 50 });
@@ -251,11 +338,13 @@ describe('LandingComponent', () => {
       component['onDragMove'](mouseMoveEvt);
 
       // Percentage is 50 / 100 = 0.5. Max scroll is 1000 - 500 = 500. Expected top: 0.5 * 500 = 250
-      (expect(window.scrollTo) as any).toHaveBeenCalledWith({ top: 250 } as ScrollToOptions);
+      expect(window.scrollTo).toHaveBeenCalledWith({ top: 250 } as ScrollToOptions);
     });
 
     it('should not update scroll on mouse move if not dragging', () => {
-      vi.spyOn(window, 'scrollTo').mockImplementation(() => {});
+      vi.spyOn(window, 'scrollTo').mockImplementation(() => {
+        /* noop */
+      });
       component['isDragging'] = false;
 
       const mouseMoveEvt = new MouseEvent('mousemove', { clientY: 50 });
@@ -292,8 +381,10 @@ describe('LandingComponent', () => {
         width: 100,
         x: 0,
         y: 0,
-        toJSON: () => {},
-      } as any);
+        toJSON: () => {
+          /* noop */
+        },
+      });
 
       const evt = {
         currentTarget: roadEl,
@@ -310,11 +401,13 @@ describe('LandingComponent', () => {
         writable: true,
         configurable: true,
       });
-      vi.spyOn(window, 'scrollTo').mockImplementation(() => {});
+      vi.spyOn(window, 'scrollTo').mockImplementation(() => {
+        /* noop */
+      });
 
       component['onRoadClick'](evt);
 
-      (expect(window.scrollTo) as any).toHaveBeenCalledWith({
+      expect(window.scrollTo).toHaveBeenCalledWith({
         top: 250,
         behavior: 'smooth',
       } as ScrollToOptions);
@@ -337,7 +430,12 @@ describe('LandingComponent', () => {
       const fixtureServer = TestBed.createComponent(LandingComponent);
       const componentServer = fixtureServer.componentInstance;
 
-      vi.spyOn<any, any>(componentServer, 'setupIntersectionObserver').mockImplementation(() => {});
+      vi.spyOn(
+        componentServer as unknown as { setupIntersectionObserver: () => void },
+        'setupIntersectionObserver',
+      ).mockImplementation(() => {
+        /* noop */
+      });
 
       fixtureServer.detectChanges(); // calls ngOnInit
 

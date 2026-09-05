@@ -1,4 +1,4 @@
-import { Component, input, output, signal, computed } from '@angular/core';
+import { Component, Input, Output, EventEmitter, signal, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import {
   LucideAngularModule,
@@ -26,12 +26,20 @@ export type DemoWizardTheme = 'water' | 'heating' | 'electricity' | 'settings';
   styleUrl: './demo-wizard.component.scss',
 })
 export class DemoWizardComponent {
-  show = input.required<boolean>();
-  steps = input.required<DemoWizardStep[]>();
-  theme = input<DemoWizardTheme>('water');
-  titleKey = input<string>('DEMO.WIZARD_TITLE');
+  @Input() show = false;
 
-  close = output<void>();
+  @Input() set steps(val: DemoWizardStep[]) {
+    this._steps.set(val || []);
+  }
+  get steps(): DemoWizardStep[] {
+    return this._steps();
+  }
+  private _steps = signal<DemoWizardStep[]>([]);
+
+  @Input() theme: DemoWizardTheme = 'water';
+  @Input() titleKey = 'DEMO.WIZARD_TITLE';
+
+  @Output() closeModal = new EventEmitter<void>();
 
   // Icons
   protected readonly CloseIcon = X;
@@ -42,10 +50,10 @@ export class DemoWizardComponent {
   // Current step index
   protected currentStep = signal(0);
 
-  protected totalSteps = computed(() => this.steps().length);
+  protected totalSteps = computed(() => this._steps().length);
 
   protected currentStepData = computed(() => {
-    const stepsArray = this.steps();
+    const stepsArray = this._steps();
     const index = this.currentStep();
     return stepsArray[index] || null;
   });
@@ -81,6 +89,6 @@ export class DemoWizardComponent {
 
   onClose(): void {
     this.currentStep.set(0);
-    this.close.emit();
+    this.closeModal.emit();
   }
 }

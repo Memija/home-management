@@ -39,7 +39,7 @@ export class ThemeService {
    * Get stored theme preference from localStorage
    */
   private getStoredTheme(): Theme {
-    if (!this.isBrowser) return 'light';
+    if (!this.isBrowser) return 'system';
 
     const stored = localStorage.getItem(THEME_STORAGE_KEY);
     if (stored === 'light' || stored === 'dark' || stored === 'system') {

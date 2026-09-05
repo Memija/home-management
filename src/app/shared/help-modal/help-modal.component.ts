@@ -1,4 +1,4 @@
-import { Component, input, output, signal, computed } from '@angular/core';
+import { Component, Input, Output, EventEmitter, signal, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { LucideAngularModule, X, ChevronLeft, ChevronRight, HelpCircle } from 'lucide-angular';
 import { TranslatePipe } from '../../pipes/translate.pipe';
@@ -17,11 +17,18 @@ export interface HelpStep {
   styleUrl: './help-modal.component.scss',
 })
 export class HelpModalComponent {
-  show = input.required<boolean>();
-  titleKey = input<string>('');
-  steps = input.required<HelpStep[]>();
+  @Input() show = false;
+  @Input() titleKey = '';
 
-  close = output<void>();
+  @Input() set steps(val: HelpStep[]) {
+    this._steps.set(val || []);
+  }
+  get steps(): HelpStep[] {
+    return this._steps();
+  }
+  private _steps = signal<HelpStep[]>([]);
+
+  @Output() closeModal = new EventEmitter<void>();
 
   // Icons
   protected readonly CloseIcon = X;
@@ -32,10 +39,10 @@ export class HelpModalComponent {
   // Current step index
   protected currentStep = signal(0);
 
-  protected totalSteps = computed(() => this.steps().length);
+  protected totalSteps = computed(() => this._steps().length);
 
   protected currentStepData = computed(() => {
-    const stepsArray = this.steps();
+    const stepsArray = this._steps();
     const index = this.currentStep();
     return stepsArray[index] || null;
   });
@@ -45,20 +52,20 @@ export class HelpModalComponent {
     () => this.totalSteps() === 0 || this.currentStep() === this.totalSteps() - 1,
   );
 
-  previousStep() {
+  previousStep(): void {
     if (!this.isFirstStep()) {
       this.currentStep.update((v) => v - 1);
     }
   }
 
-  nextStep() {
+  nextStep(): void {
     if (!this.isLastStep()) {
       this.currentStep.update((v) => v + 1);
     }
   }
 
-  onClose() {
+  onClose(): void {
     this.currentStep.set(0); // Reset to first step when closing
-    this.close.emit();
+    this.closeModal.emit();
   }
 }

@@ -16,16 +16,23 @@ export const chart = {
     YOUR_FAMILY: 'Twoja Rodzina',
     AVERAGE_FAMILY: 'Średnia (Ta Sama Wielkość)',
     COMPARISON_NOTE: 'Porównanie oparte na rodzinach {{size}}-osobowych pod tym adresem',
-    COMPARISON_NOTE_CITY: 'Porównanie oparte na średniej dla {{city}} (128 litrów na osobę) dla rodzin {{size}}-osobowych',
-    COMPARISON_NOTE_COUNTRY: 'Porównanie oparte na średniej dla {{country}} ({{average}} litrów na osobę) dla rodzin {{size}}-osobowych',
-    COMPARISON_NOTE_COUNTRY_HEATING: 'Porównanie oparte na średniej dla {{country}} ({{average}} kWh na gospodarstwo rocznie)',
-    COMPARISON_NOTE_COUNTRY_ELECTRICITY: 'Porównanie oparte na średniej dla {{country}} ({{average}} kWh na osobę rocznie) dla rodzin {{size}}-osobowych',
+    COMPARISON_NOTE_CITY:
+      'Porównanie oparte na średniej dla {{city}} (128 litrów na osobę) dla rodzin {{size}}-osobowych',
+    COMPARISON_NOTE_COUNTRY:
+      'Porównanie oparte na średniej dla {{country}} ({{average}} litrów na osobę) dla rodzin {{size}}-osobowych',
+    COMPARISON_NOTE_COUNTRY_HEATING:
+      'Porównanie oparte na średniej dla {{country}} ({{average}} kWh na gospodarstwo rocznie)',
+    COMPARISON_NOTE_COUNTRY_ELECTRICITY:
+      'Porównanie oparte na średniej dla {{country}} ({{average}} kWh na osobę rocznie) dla rodzin {{size}}-osobowych',
     HISTORY_TITLE: 'Historia Zużycia',
     CHART_ELECTRICITY: 'Zużycie Energii Elektrycznej',
     COMPARE_WITH: 'Porównaj z',
-    COMPARE_WITH_INFO_WATER: 'Dane o średnim zużyciu wody pochodzą z krajowych statystyk i raportów przedsiębiorstw wodociągowych.',
-    COMPARE_WITH_INFO_ELECTRICITY: 'Dane o średnim zużyciu energii pochodzą z krajowych statystyk i raportów energetycznych.',
-    COMPARE_WITH_INFO_HEATING: 'Dane o średnim zużyciu ciepła pochodzą z krajowych statystyk i ankiet gospodarstw domowych.',
+    COMPARE_WITH_INFO_WATER:
+      'Dane o średnim zużyciu wody pochodzą z krajowych statystyk i raportów przedsiębiorstw wodociągowych.',
+    COMPARE_WITH_INFO_ELECTRICITY:
+      'Dane o średnim zużyciu energii pochodzą z krajowych statystyk i raportów energetycznych.',
+    COMPARE_WITH_INFO_HEATING:
+      'Dane o średnim zużyciu ciepła pochodzą z krajowych statystyk i ankiet gospodarstw domowych.',
     COMPARISON_REQUIRES_DATA: 'Wymagane są co najmniej 3 wpisy do porównania krajowego',
     KITCHEN_TOTAL: 'Zużycie w Kuchni',
     BATHROOM_TOTAL: 'Zużycie w Łazience',
@@ -59,14 +66,17 @@ export const chart = {
     COUNTRY_AVERAGE: 'Średnia Krajowa',
     AVERAGE_REQUIRES_FAMILY: 'Dodaj domowników w Ustawieniach, aby włączyć porównanie',
     AVERAGE_REQUIRES_DATA: 'Wymagane są co najmniej 2 punkty danych do porównania',
-    HEATING_AVERAGE_INFO: 'Porównanie średniej krajowej opiera się na wartościach kWh. Jeśli Twój licznik używa innych jednostek, porównanie może być niedokładne.',
+    HEATING_AVERAGE_INFO:
+      'Porównanie średniej krajowej opiera się na wartościach kWh. Jeśli Twój licznik używa innych jednostek, porównanie może być niedokładne.',
     TRENDLINE_REQUIRES_DATA: 'Wymagane są co najmniej 2 punkty danych dla linii trendu',
-    TRENDLINE_REQUIRES_DATA_INCREMENTAL: 'Wymagane są co najmniej 3 wpisy dla linii trendu w trybie przyrostowym',
+    TRENDLINE_REQUIRES_DATA_INCREMENTAL:
+      'Wymagane są co najmniej 3 wpisy dla linii trendu w trybie przyrostowym',
     COUNTRY_FLAG_ALT: 'Flaga kraju: {{country}}',
     DID_YOU_KNOW: 'Czy wiesz, że?',
     NEW_FACT: 'Inna ciekawostka',
     METER_CHANGE_DETECTED: 'Wykryto Wymianę Licznika',
-    METER_CHANGE_MESSAGE: 'Zarejestrowano spadek odczytów w dniu {{date}}. Dzieje się tak zazwyczaj przy wymianie licznika. Czy chcesz dostosować wykres?',
+    METER_CHANGE_MESSAGE:
+      'Zarejestrowano spadek odczytów w dniu {{date}}. Dzieje się tak zazwyczaj przy wymianie licznika. Czy chcesz dostosować wykres?',
     CONFIRM_METER_CHANGE: 'Tak, dostosuj wykres',
     DISMISS_METER_CHANGE: 'Nie, zostaw bez zmian',
     RESET_ZOOM: 'Resetuj Widok',

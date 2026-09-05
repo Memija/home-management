@@ -1,6 +1,10 @@
 <div class="input-section" id="input-section">
   <div class="title-with-help">
-    <h2>{{ editingMode() ? (editTitleKey() | translate) : (titleKey() | translate) }}</h2>
+    <h2>
+      {{
+        editingModeSignal() ? (editTitleKeySignal() | translate) : (titleKeySignal() | translate)
+      }}
+    </h2>
     <div class="header-actions">
       <ng-content select="[header-actions]"></ng-content>
       <button
@@ -12,12 +16,12 @@
       >
         <lucide-icon [img]="CameraIcon" size="20"></lucide-icon>
       </button>
-      @if (helpSteps().length > 0) {
+      @if (helpStepsSignal().length > 0) {
         <button
           type="button"
           class="help-btn"
           (click)="showHelp()"
-          title="{{ helpTitleKey() | translate }}"
+          title="{{ helpTitleKeySignal() | translate }}"
         >
           <lucide-icon [img]="HelpIcon" size="20"></lucide-icon>
         </button>
@@ -27,28 +31,28 @@
 
   <div class="date-selection">
     <div class="input-pair">
-      <span class="form-label">{{ readingsForKey() | translate }}</span>
+      <span class="form-label">{{ readingsForKeySignal() | translate }}</span>
       <app-date-picker
-        [date]="selectedDate()"
+        [date]="selectedDateSignal()"
         (dateChange)="onDateChange($event)"
-        [disabled]="editingMode()"
-        [maxDate]="maxDate()"
+        [disabled]="editingModeSignal()"
+        [maxDate]="maxDateSignal()"
         [placeholder]="'HOME.SELECT_DATE' | translate"
       >
       </app-date-picker>
     </div>
-    @if (dateExists()) {
+    @if (dateExistsSignal()) {
       <div class="warning-message">
         <lucide-icon [img]="TriangleAlertIcon" size="24" class="warning-icon"></lucide-icon>
-        <span>{{ dateWarningKey() | translate }}</span>
+        <span>{{ dateWarningKeySignal() | translate }}</span>
       </div>
     }
   </div>
 
   <!-- Grouped Layout (Water style - groups with titles) -->
-  @if (layoutMode() === 'grouped') {
+  @if (layoutModeSignal() === 'grouped') {
     <div class="readings-grid grouped">
-      @for (group of groups(); track group.title) {
+      @for (group of groupsSignal(); track group.title) {
         <div class="reading-group">
           <h3>{{ group.title | translate }}</h3>
           @for (field of group.fields; track field.key) {
@@ -73,9 +77,9 @@
   }
 
   <!-- Flat Layout (Heating style - room cards in grid with icons) -->
-  @if (layoutMode() === 'flat') {
+  @if (layoutModeSignal() === 'flat') {
     <div class="readings-grid flat">
-      @for (group of groups(); track group.title) {
+      @for (group of groupsSignal(); track group.title) {
         @for (field of group.fields; track field.key) {
           <div class="input-pair room-field">
             <label [for]="field.key">
@@ -107,23 +111,23 @@
   }
 
   <div class="button-group">
-    @if (editingMode()) {
+    @if (editingModeSignal()) {
       <button type="button" class="cancel-btn" (click)="onCancel()">
-        {{ cancelKey() | translate }}
+        {{ cancelKeySignal() | translate }}
       </button>
     }
     <button type="button" class="save-btn" (click)="onSave()">
-      {{ editingMode() ? (updateKey() | translate) : (saveKey() | translate) }}
+      {{ editingModeSignal() ? (updateKeySignal() | translate) : (saveKeySignal() | translate) }}
     </button>
   </div>
 </div>
 
-@if (helpSteps().length > 0) {
+@if (helpStepsSignal().length > 0) {
   <app-help-modal
     [show]="showHelpModal()"
-    [titleKey]="helpTitleKey()"
-    [steps]="helpSteps()"
-    (close)="closeHelp()"
+    [titleKey]="helpTitleKeySignal()"
+    [steps]="helpStepsSignal()"
+    (closeModal)="closeHelp()"
   >
   </app-help-modal>
 }
@@ -131,7 +135,7 @@
 <app-meter-reader-modal
   [show]="showMeterReader()"
   [fields]="meterReaderFields()"
-  (close)="closeMeterReader()"
+  (closeModal)="closeMeterReader()"
   (reading)="onMeterReading($event)"
 >
 </app-meter-reader-modal>

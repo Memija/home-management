@@ -1,9 +1,9 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { ContactModalComponent, EmailClient } from './contact-modal.component';
 import { TranslatePipe } from '../../pipes/translate.pipe';
-import { HelpModalComponent } from '../help-modal/help-modal.component';
+import { HelpModalComponent, HelpStep } from '../help-modal/help-modal.component';
 import { Pipe, PipeTransform, Component, Input, Output, EventEmitter } from '@angular/core';
-import { vi, afterEach } from 'vitest';
+import { vi, describe, it, expect, beforeEach, afterEach } from 'vitest';
 import { By } from '@angular/platform-browser';
 
 @Pipe({ name: 'translate', standalone: true })
@@ -17,8 +17,8 @@ class MockTranslatePipe implements PipeTransform {
 class MockHelpModalComponent {
   @Input() show = false;
   @Input() titleKey = '';
-  @Input() steps: any[] = [];
-  @Output() close = new EventEmitter<void>();
+  @Input() steps: HelpStep[] = [];
+  @Output() closeModal = new EventEmitter<void>();
 }
 
 describe('ContactModalComponent', () => {
@@ -78,96 +78,96 @@ describe('ContactModalComponent', () => {
     });
 
     it('should have 5 help steps defined', () => {
-      expect((component as any).helpSteps.length).toBe(5);
+      expect(component['helpSteps'].length).toBe(5);
     });
 
     it('should have help modal hidden by default', () => {
-      expect((component as any).showHelpModal()).toBe(false);
+      expect(component['showHelpModal']()).toBe(false);
     });
   });
 
   describe('Email Validation', () => {
     it('should accept valid email addresses', () => {
-      expect((component as any).validateEmail('user@example.com')).toBe(true);
-      expect((component as any).validateEmail('test.name@domain.org')).toBe(true);
-      expect((component as any).validateEmail('a@b.co')).toBe(true);
+      expect(component['validateEmail']('user@example.com')).toBe(true);
+      expect(component['validateEmail']('test.name@domain.org')).toBe(true);
+      expect(component['validateEmail']('a@b.co')).toBe(true);
     });
 
     it('should reject invalid email addresses', () => {
-      expect((component as any).validateEmail('')).toBe(false);
-      expect((component as any).validateEmail('no-at-sign')).toBe(false);
-      expect((component as any).validateEmail('@missing-local.com')).toBe(false);
-      expect((component as any).validateEmail('missing@domain')).toBe(false);
-      expect((component as any).validateEmail('spaces in@email.com')).toBe(false);
+      expect(component['validateEmail']('')).toBe(false);
+      expect(component['validateEmail']('no-at-sign')).toBe(false);
+      expect(component['validateEmail']('@missing-local.com')).toBe(false);
+      expect(component['validateEmail']('missing@domain')).toBe(false);
+      expect(component['validateEmail']('spaces in@email.com')).toBe(false);
     });
 
     it('should reject email with no domain extension', () => {
-      expect((component as any).validateEmail('user@domain')).toBe(false);
+      expect(component['validateEmail']('user@domain')).toBe(false);
     });
 
     it('should reject email with spaces', () => {
-      expect((component as any).validateEmail('user @example.com')).toBe(false);
-      expect((component as any).validateEmail('user@ example.com')).toBe(false);
+      expect(component['validateEmail']('user @example.com')).toBe(false);
+      expect(component['validateEmail']('user@ example.com')).toBe(false);
     });
   });
 
   describe('onEmailChange', () => {
     it('should update the email signal', () => {
-      (component as any).onEmailChange('test@example.com');
+      component['onEmailChange']('test@example.com');
       expect(component.email()).toBe('test@example.com');
     });
 
     it('should set emailError to true for invalid email', () => {
-      (component as any).onEmailChange('invalid-email');
+      component['onEmailChange']('invalid-email');
       expect(component.emailError()).toBe(true);
     });
 
     it('should clear emailError for valid email', () => {
-      (component as any).onEmailChange('invalid-email');
+      component['onEmailChange']('invalid-email');
       expect(component.emailError()).toBe(true);
 
-      (component as any).onEmailChange('valid@email.com');
+      component['onEmailChange']('valid@email.com');
       expect(component.emailError()).toBe(false);
     });
 
     it('should clear emailError when email is empty', () => {
-      (component as any).onEmailChange('invalid-email');
+      component['onEmailChange']('invalid-email');
       expect(component.emailError()).toBe(true);
 
-      (component as any).onEmailChange('');
+      component['onEmailChange']('');
       expect(component.emailError()).toBe(false);
     });
   });
 
   describe('toggleDropdown', () => {
     it('should open dropdown when closed', () => {
-      (component as any).toggleDropdown();
+      component['toggleDropdown']();
       expect(component.dropdownOpen()).toBe(true);
     });
 
     it('should close dropdown when open', () => {
-      (component as any).toggleDropdown();
-      (component as any).toggleDropdown();
+      component['toggleDropdown']();
+      component['toggleDropdown']();
       expect(component.dropdownOpen()).toBe(false);
     });
   });
 
   describe('selectEmailClient', () => {
     it('should set the email client', () => {
-      (component as any).selectEmailClient('gmail');
+      component['selectEmailClient']('gmail');
       expect(component.emailClient()).toBe('gmail');
     });
 
     it('should close the dropdown after selection', () => {
       component.dropdownOpen.set(true);
-      (component as any).selectEmailClient('outlook');
+      component['selectEmailClient']('outlook');
       expect(component.dropdownOpen()).toBe(false);
     });
 
     it('should handle all client types', () => {
       const clients: EmailClient[] = ['default', 'outlook', 'gmail'];
       clients.forEach((client) => {
-        (component as any).selectEmailClient(client);
+        component['selectEmailClient'](client);
         expect(component.emailClient()).toBe(client);
       });
     });
@@ -175,38 +175,38 @@ describe('ContactModalComponent', () => {
 
   describe('getClientIcon', () => {
     it('should return LaptopIcon for default', () => {
-      expect((component as any).getClientIcon('default')).toBe((component as any).LaptopIcon);
+      expect(component['getClientIcon']('default')).toBe(component['LaptopIcon']);
     });
 
     it('should return MailIcon for outlook', () => {
-      expect((component as any).getClientIcon('outlook')).toBe((component as any).MailIcon);
+      expect(component['getClientIcon']('outlook')).toBe(component['MailIcon']);
     });
 
     it('should return AtSignIcon for gmail', () => {
-      expect((component as any).getClientIcon('gmail')).toBe((component as any).AtSignIcon);
+      expect(component['getClientIcon']('gmail')).toBe(component['AtSignIcon']);
     });
   });
 
   describe('getClientLabel', () => {
     it('should return "Outlook" for outlook', () => {
-      expect((component as any).getClientLabel('outlook')).toBe('Outlook');
+      expect(component['getClientLabel']('outlook')).toBe('Outlook');
     });
 
     it('should return "Gmail" for gmail', () => {
-      expect((component as any).getClientLabel('gmail')).toBe('Gmail');
+      expect(component['getClientLabel']('gmail')).toBe('Gmail');
     });
 
     it('should return empty string for default', () => {
-      expect((component as any).getClientLabel('default')).toBe('');
+      expect(component['getClientLabel']('default')).toBe('');
     });
   });
 
   describe('onClose', () => {
     it('should emit close event', () => {
       const spy = vi.fn();
-      component.close.subscribe(spy);
+      component.closeModal.subscribe(spy);
 
-      (component as any).onClose();
+      component['onClose']();
       expect(spy).toHaveBeenCalledTimes(1);
     });
   });
@@ -227,7 +227,7 @@ describe('ContactModalComponent', () => {
       component.subject.set('Test');
       component.message.set('Content');
 
-      (component as any).onCompose();
+      component['onCompose']();
       expect(spy).not.toHaveBeenCalled();
     });
 
@@ -239,7 +239,7 @@ describe('ContactModalComponent', () => {
       component.subject.set('Test');
       component.message.set('Content');
 
-      (component as any).onCompose();
+      component['onCompose']();
       expect(spy).not.toHaveBeenCalled();
     });
 
@@ -251,7 +251,7 @@ describe('ContactModalComponent', () => {
       component.email.set('john@example.com');
       component.message.set('Content');
 
-      (component as any).onCompose();
+      component['onCompose']();
       expect(spy).not.toHaveBeenCalled();
     });
 
@@ -263,7 +263,7 @@ describe('ContactModalComponent', () => {
       component.email.set('john@example.com');
       component.subject.set('Test');
 
-      (component as any).onCompose();
+      component['onCompose']();
       expect(spy).not.toHaveBeenCalled();
     });
 
@@ -276,7 +276,7 @@ describe('ContactModalComponent', () => {
       component.subject.set('Test');
       component.message.set('Content');
 
-      (component as any).onCompose();
+      component['onCompose']();
       expect(spy).not.toHaveBeenCalled();
       expect(component.emailError()).toBe(true);
     });
@@ -286,7 +286,7 @@ describe('ContactModalComponent', () => {
       component.compose.subscribe(spy);
 
       fillForm();
-      (component as any).onCompose();
+      component['onCompose']();
 
       expect(spy).toHaveBeenCalledWith({
         name: 'John Doe',
@@ -303,7 +303,7 @@ describe('ContactModalComponent', () => {
 
       fillForm();
       component.emailClient.set('gmail');
-      (component as any).onCompose();
+      component['onCompose']();
 
       expect(spy).toHaveBeenCalledWith({
         name: 'John Doe',
@@ -320,7 +320,7 @@ describe('ContactModalComponent', () => {
 
       fillForm();
       component.emailClient.set('outlook');
-      (component as any).onCompose();
+      component['onCompose']();
 
       expect(component.name()).toBe('');
       expect(component.email()).toBe('');
@@ -334,11 +334,11 @@ describe('ContactModalComponent', () => {
     it('should emit close after successful compose', () => {
       const closeSpy = vi.fn();
       const composeSpy = vi.fn();
-      component.close.subscribe(closeSpy);
+      component.closeModal.subscribe(closeSpy);
       component.compose.subscribe(composeSpy);
 
       fillForm();
-      (component as any).onCompose();
+      component['onCompose']();
 
       expect(composeSpy).toHaveBeenCalledTimes(1);
       expect(closeSpy).toHaveBeenCalledTimes(1);
@@ -350,7 +350,7 @@ describe('ContactModalComponent', () => {
       component.subject.set('Test');
       component.message.set('Content');
 
-      (component as any).onCompose();
+      component['onCompose']();
 
       // Form should NOT be reset since validation failed
       expect(component.name()).toBe('John');
@@ -361,18 +361,18 @@ describe('ContactModalComponent', () => {
 
   describe('Help Modal', () => {
     it('should open help modal', () => {
-      (component as any).showHelpModal.set(true);
-      expect((component as any).showHelpModal()).toBe(true);
+      component['showHelpModal'].set(true);
+      expect(component['showHelpModal']()).toBe(true);
     });
 
     it('should close help modal', () => {
-      (component as any).showHelpModal.set(true);
-      (component as any).showHelpModal.set(false);
-      expect((component as any).showHelpModal()).toBe(false);
+      component['showHelpModal'].set(true);
+      component['showHelpModal'].set(false);
+      expect(component['showHelpModal']()).toBe(false);
     });
 
     it('should have correct help step keys', () => {
-      const steps = (component as any).helpSteps;
+      const steps = component['helpSteps'];
       expect(steps[0].titleKey).toBe('CONTACT.HELP_STEP_1_TITLE');
       expect(steps[0].descriptionKey).toBe('CONTACT.HELP_STEP_1_DESC');
       expect(steps[4].titleKey).toBe('CONTACT.HELP_STEP_5_TITLE');
@@ -382,30 +382,30 @@ describe('ContactModalComponent', () => {
 
   describe('Edge Cases', () => {
     it('should handle email with valid format but unusual TLD', () => {
-      expect((component as any).validateEmail('user@example.museum')).toBe(true);
+      expect(component['validateEmail']('user@example.museum')).toBe(true);
     });
 
     it('should handle email with subdomain', () => {
-      expect((component as any).validateEmail('user@mail.example.com')).toBe(true);
+      expect(component['validateEmail']('user@mail.example.com')).toBe(true);
     });
 
     it('should handle email with plus addressing', () => {
-      expect((component as any).validateEmail('user+tag@example.com')).toBe(true);
+      expect(component['validateEmail']('user+tag@example.com')).toBe(true);
     });
 
     it('should handle rapid email client switching', () => {
-      (component as any).selectEmailClient('gmail');
-      (component as any).selectEmailClient('outlook');
-      (component as any).selectEmailClient('default');
-      (component as any).selectEmailClient('gmail');
+      component['selectEmailClient']('gmail');
+      component['selectEmailClient']('outlook');
+      component['selectEmailClient']('default');
+      component['selectEmailClient']('gmail');
       expect(component.emailClient()).toBe('gmail');
     });
 
     it('should handle rapid dropdown toggling', () => {
-      (component as any).toggleDropdown();
-      (component as any).toggleDropdown();
-      (component as any).toggleDropdown();
-      (component as any).toggleDropdown();
+      component['toggleDropdown']();
+      component['toggleDropdown']();
+      component['toggleDropdown']();
+      component['toggleDropdown']();
       expect(component.dropdownOpen()).toBe(false);
     });
 
@@ -413,28 +413,26 @@ describe('ContactModalComponent', () => {
       const spy = vi.fn();
       component.compose.subscribe(spy);
 
-      // Whitespace-only name still passes the truthy check
       component.name.set('   ');
       component.email.set('test@test.com');
       component.subject.set('   ');
       component.message.set('   ');
 
-      (component as any).onCompose();
-      // Whitespace-only strings are truthy, so compose should emit
+      component['onCompose']();
       expect(spy).toHaveBeenCalledTimes(1);
     });
 
     it('should handle email validation then correction', () => {
-      (component as any).onEmailChange('bad');
+      component['onEmailChange']('bad');
       expect(component.emailError()).toBe(true);
 
-      (component as any).onEmailChange('bad@');
+      component['onEmailChange']('bad@');
       expect(component.emailError()).toBe(true);
 
-      (component as any).onEmailChange('bad@email');
+      component['onEmailChange']('bad@email');
       expect(component.emailError()).toBe(true);
 
-      (component as any).onEmailChange('bad@email.com');
+      component['onEmailChange']('bad@email.com');
       expect(component.emailError()).toBe(false);
     });
 
@@ -442,19 +440,17 @@ describe('ContactModalComponent', () => {
       const composeSpy = vi.fn();
       component.compose.subscribe(composeSpy);
 
-      // First compose
       component.name.set('John');
       component.email.set('john@test.com');
       component.subject.set('Subject 1');
       component.message.set('Message 1');
-      (component as any).onCompose();
+      component['onCompose']();
 
-      // Form is reset, fill again
       component.name.set('Jane');
       component.email.set('jane@test.com');
       component.subject.set('Subject 2');
       component.message.set('Message 2');
-      (component as any).onCompose();
+      component['onCompose']();
 
       expect(composeSpy).toHaveBeenCalledTimes(2);
     });
@@ -510,7 +506,7 @@ describe('ContactModalComponent', () => {
 
     it('should emit close when overlay is clicked', () => {
       const spy = vi.fn();
-      component.close.subscribe(spy);
+      component.closeModal.subscribe(spy);
 
       const overlay = fixture.debugElement.query(By.css('.modal-overlay'));
       overlay.triggerEventHandler('click', null);
@@ -520,7 +516,7 @@ describe('ContactModalComponent', () => {
 
     it('should not emit close when modal container is clicked (stopPropagation)', () => {
       const spy = vi.fn();
-      component.close.subscribe(spy);
+      component.closeModal.subscribe(spy);
 
       const container = fixture.debugElement.query(By.css('.modal-container'));
       const mockEvent = { stopPropagation: vi.fn() };
@@ -544,6 +540,57 @@ describe('ContactModalComponent', () => {
     it('should not show email error message by default', () => {
       const errorMsg = fixture.debugElement.query(By.css('.error-message'));
       expect(errorMsg).toBeNull();
+    });
+
+    it('should have dropup class on email client selector', () => {
+      const selector = fixture.debugElement.query(By.css('.custom-select'));
+      expect(selector.nativeElement.classList.contains('dropup')).toBe(true);
+    });
+
+    it('should update aria-expanded when dropdown opens and closes', () => {
+      const selector = fixture.debugElement.query(By.css('.custom-select'));
+      expect(selector.nativeElement.getAttribute('aria-expanded')).toBe('false');
+
+      component['toggleDropdown']();
+      fixture.detectChanges();
+      expect(selector.nativeElement.getAttribute('aria-expanded')).toBe('true');
+
+      component['toggleDropdown']();
+      fixture.detectChanges();
+      expect(selector.nativeElement.getAttribute('aria-expanded')).toBe('false');
+    });
+
+    it('should select email client and close dropdown', () => {
+      component['dropdownOpen'].set(true);
+      fixture.detectChanges();
+
+      component['selectEmailClient']('outlook');
+      expect(component.emailClient()).toBe('outlook');
+      expect(component.dropdownOpen()).toBe(false);
+
+      component['selectEmailClient']('gmail');
+      expect(component.emailClient()).toBe('gmail');
+      expect(component.dropdownOpen()).toBe(false);
+    });
+
+    it('should close dropdown on escape key when open', () => {
+      component['dropdownOpen'].set(true);
+      fixture.detectChanges();
+
+      component['onEscape']();
+      expect(component.dropdownOpen()).toBe(false);
+    });
+
+    it('should close dropdown on document click outside .custom-select', () => {
+      component['dropdownOpen'].set(true);
+      fixture.detectChanges();
+
+      const mockEvent = {
+        target: document.createElement('div'),
+      } as unknown as MouseEvent;
+      component['onDocumentClick'](mockEvent);
+
+      expect(component.dropdownOpen()).toBe(false);
     });
   });
 });

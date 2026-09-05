@@ -1,4 +1,4 @@
-import { Chart, ChartConfiguration, ChartEvent, LegendItem, LegendElement, TooltipItem } from 'chart.js';
+import { Chart, ChartConfiguration, ChartEvent, LegendItem, TooltipItem } from 'chart.js';
 import { LanguageService } from '../../services/language.service';
 import { AppChartDataset } from '../../models/records.model';
 import { ChartDataPoint } from '../../models/consumption-chart.model';
@@ -48,12 +48,12 @@ export function replaceLabelWithIcon(text: string, label: string, icon: string):
  * (e.g., " - Consumption prediction" or " (Daily Average Consumption)") with concise symbols/icons.
  */
 function buildGenerateLabels(languageService: LanguageService) {
-  return (chart: any): LegendItem[] => {
+  return (chart: Chart): LegendItem[] => {
     const defaultGenerator = Chart.defaults.plugins.legend.labels.generateLabels;
     const items = defaultGenerator(chart);
 
     if (typeof window !== 'undefined' && window.innerWidth <= 768) {
-      const replacements: Array<[string, string]> = [
+      const replacements: [string, string][] = [
         [languageService.translate('CHART.CONSUMPTION_PREDICTION'), '🔮'],
         [languageService.translate('CHART.TRENDLINE'), '📈'],
         [languageService.translate('CHART.COUNTRY_AVERAGE'), '🌐'],
@@ -86,12 +86,13 @@ function buildGenerateLabels(languageService: LanguageService) {
  * in all supported languages.
  */
 function buildLegendClickHandler(languageService: LanguageService) {
-  return (_e: ChartEvent, legendItem: LegendItem, legend: LegendElement<any>): void => {
+  return (_e: ChartEvent, legendItem: LegendItem, legend: { chart: Chart }): void => {
     const chart = legend.chart;
     const clickedIndex = legendItem.datasetIndex;
     if (clickedIndex === undefined) return;
 
     const clickedDataset = chart.data.datasets[clickedIndex];
+    if (!clickedDataset) return;
     const clickedLabel = clickedDataset.label || '';
 
     // Default toggle behavior for the clicked item
@@ -138,17 +139,19 @@ function syncPredictionBand(
 ): void {
   const minLabel = languageService.translate('PREDICTIONS.MIN');
   const maxLabel = languageService.translate('PREDICTIONS.MAX');
-  const clickedCategoryId = (clickedDataset as any).categoryId;
+  const clickedCategoryId = (clickedDataset as AppChartDataset | undefined)?.categoryId;
 
-  chart.data.datasets.forEach((dataset: ChartConfiguration['data']['datasets'][0], index: number) => {
-    const label = dataset.label || '';
-    if (label === minLabel || label === maxLabel) {
-      // In total mode there is no categoryId. In by-room mode, match categoryId.
-      if (!clickedCategoryId || (dataset as any).categoryId === clickedCategoryId) {
-        chart.setDatasetVisibility(index, isHidden);
+  chart.data.datasets.forEach(
+    (dataset: ChartConfiguration['data']['datasets'][0], index: number) => {
+      const label = dataset.label || '';
+      if (label === minLabel || label === maxLabel) {
+        // In total mode there is no categoryId. In by-room mode, match categoryId.
+        if (!clickedCategoryId || (dataset as AppChartDataset).categoryId === clickedCategoryId) {
+          chart.setDatasetVisibility(index, isHidden);
+        }
       }
-    }
-  });
+    },
+  );
 }
 
 /**
@@ -211,8 +214,7 @@ function syncRelatedDatasets(
     (dataset: ChartConfiguration['data']['datasets'][0], index: number) => {
       if (index === clickedIndex) return;
       const label = dataset.label || '';
-      const isRelated =
-        label.includes(trendlineLabel) || label.includes(countryAverageLabel);
+      const isRelated = label.includes(trendlineLabel) || label.includes(countryAverageLabel);
       if (isRelated && label.startsWith(category)) {
         chart.setDatasetVisibility(index, isHidden);
       }
@@ -230,7 +232,7 @@ function buildTooltipTitleCallback(
   languageService: LanguageService,
   getData: () => ChartDataPoint[],
 ) {
-  return (tooltipItems: TooltipItem<any>[]): string => {
+  return (tooltipItems: TooltipItem<keyof import('chart.js').ChartTypeRegistry>[]): string => {
     if (tooltipItems.length === 0) return '';
 
     const item = tooltipItems[0];
@@ -272,14 +274,20 @@ function buildTooltipLabelCallback(
   languageService: LanguageService,
   chartType: ChartOptionsBuilderDeps['chartType'],
 ) {
-  return (context: TooltipItem<any>): string => {
+  return (context: TooltipItem<keyof import('chart.js').ChartTypeRegistry>): string => {
     const unit = chartType === 'heating' || chartType === 'electricity' ? 'kWh' : 'L';
-    const val = Math.round(Number(context.parsed.y));
-    let label = `${context.dataset.label}: ${val} ${unit}`;
+    const parsedY =
+      typeof context.parsed === 'object' && context.parsed !== null && 'y' in context.parsed
+        ? Number((context.parsed as { y: number }).y)
+        : Number(context.parsed);
+    const val = Math.round(parsedY);
+    const datasetLabel = context.dataset?.label ?? '';
+    let label = `${datasetLabel}: ${val} ${unit}`;
 
-    const normalizedData = (context.dataset as any).normalizedData;
-    if (normalizedData?.[context.dataIndex]?.days) {
-      const days = Number(normalizedData[context.dataIndex].days).toFixed(1);
+    const normalizedData = (context.dataset as AppChartDataset).normalizedData;
+    const itemNorm = normalizedData?.[context.dataIndex] as { days?: number } | undefined;
+    if (itemNorm?.days) {
+      const days = Number(itemNorm.days).toFixed(1);
       label += ` ${languageService.translate('CHART.ESTIMATED_MONTHLY', { days })}`;
     }
 
@@ -324,8 +332,8 @@ export function buildChartOptions(deps: ChartOptionsBuilderDeps): ChartConfigura
           mode: 'x',
         },
       },
-      // Custom plugins — cast to any since their keys aren't in Chart.js's generated types
-      ...(({
+      // Custom plugins — cast to Record<string, unknown> since their keys aren't in Chart.js's generated types
+      ...({
         summerSun: {
           enabled: chartType === 'heating',
           records: chartType === 'heating' ? getData() : [],
@@ -334,7 +342,7 @@ export function buildChartOptions(deps: ChartOptionsBuilderDeps): ChartConfigura
           enabled: true,
           records: getData(),
         },
-      }) as any),
+      } as Record<string, unknown>),
     },
     scales: {
       y: {

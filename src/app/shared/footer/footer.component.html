@@ -52,8 +52,8 @@
       'FOOTER.VERSION' | translate: { version: appVersion }
     }}</span>
   </div>
-
-  @if (showSupportModal) {
-    <app-support-modal (close)="showSupportModal = false"></app-support-modal>
-  }
 </footer>
+
+@if (showSupportModal) {
+  <app-support-modal (closeModal)="showSupportModal = false"></app-support-modal>
+}

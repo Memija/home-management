@@ -9,7 +9,7 @@ export class ChartToggleState {
   constructor(
     private readonly localStorageService: LocalStorageService,
     private readonly chartType: ChartTypeKey,
-  ) { }
+  ) {}
 
   // ─── Trendline ────────────────────────────────────────────────────────────
 

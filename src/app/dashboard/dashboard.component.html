@@ -31,7 +31,10 @@
   </div>
 
   <!-- Try Demo Section (conditionally moved) -->
-  @if (!demoService.isDemoMode() && (authService.isAuthenticated() || hybridStorageService.hasUserContent())) {
+  @if (
+    !demoService.isDemoMode() &&
+    (authService.isAuthenticated() || hybridStorageService.hasUserContent())
+  ) {
     <ng-container *ngTemplateOutlet="demoContent"></ng-container>
   }
 </div>

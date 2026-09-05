@@ -99,8 +99,7 @@ export class PredictionStatsService {
 
     // Factor 3: Recency (how recent is the last data point)
     const lastDate = new Date(records[records.length - 1].date);
-    const daysSinceLastRecord =
-      (Date.now() - lastDate.getTime()) / (1000 * 3600 * 24);
+    const daysSinceLastRecord = (Date.now() - lastDate.getTime()) / (1000 * 3600 * 24);
     const recencyScore = daysSinceLastRecord < 45 ? 3 : daysSinceLastRecord < 90 ? 2 : 1;
 
     const totalScore = dataScore + varianceScore + recencyScore;
@@ -121,7 +120,7 @@ export class PredictionStatsService {
     ratesWithMonths: { rate: number; month: number }[],
     overallMean: number,
     overallSd: number,
-  ): Array<{ expected: number; min: number; max: number }> {
+  ): { expected: number; min: number; max: number }[] {
     const format = (v: number): number => {
       if (v < 100) return Math.round(v * 10) / 10;
       return Math.round(v);
@@ -134,15 +133,12 @@ export class PredictionStatsService {
     }
 
     // Count how many months have data
-    const monthsWithData = monthBuckets.filter(b => b.length > 0).length;
+    const monthsWithData = monthBuckets.filter((b) => b.length > 0).length;
 
     // If fewer than 6 months have data, seasonal patterns aren't reliable —
     // fall back to flat rate for all months
     if (monthsWithData < 6) {
-      const effectiveSd = Math.min(
-        Math.max(overallSd, overallMean * 0.1),
-        overallMean * 0.5,
-      );
+      const effectiveSd = Math.min(Math.max(overallSd, overallMean * 0.1), overallMean * 0.5);
       return Array.from({ length: 12 }, () => ({
         expected: format(overallMean),
         min: format(Math.max(0, overallMean - effectiveSd)),
@@ -151,10 +147,8 @@ export class PredictionStatsService {
     }
 
     // Compute raw monthly averages (null for months with no data)
-    const rawMonthlyAvg: (number | null)[] = monthBuckets.map(bucket =>
-      bucket.length > 0
-        ? bucket.reduce((s, v) => s + v, 0) / bucket.length
-        : null,
+    const rawMonthlyAvg: (number | null)[] = monthBuckets.map((bucket) =>
+      bucket.length > 0 ? bucket.reduce((s, v) => s + v, 0) / bucket.length : null,
     );
 
     // Interpolate missing months from nearest neighbors (circular)
@@ -207,10 +201,7 @@ export class PredictionStatsService {
       }
 
       // Clamp the SD
-      const effectiveSd = Math.min(
-        Math.max(monthSd, avg * 0.1),
-        avg * 0.5,
-      );
+      const effectiveSd = Math.min(Math.max(monthSd, avg * 0.1), avg * 0.5);
 
       return {
         expected: format(avg),
@@ -233,10 +224,10 @@ export class PredictionStatsService {
       monthBuckets[month].push(rate);
     }
 
-    const monthsWithData = monthBuckets.filter(b => b.length > 0).length;
+    const monthsWithData = monthBuckets.filter((b) => b.length > 0).length;
     if (monthsWithData < 6) return new Set();
 
-    const monthlyAvgs = monthBuckets.map(bucket =>
+    const monthlyAvgs = monthBuckets.map((bucket) =>
       bucket.length > 0 ? bucket.reduce((s, v) => s + v, 0) / bucket.length : null,
     );
 

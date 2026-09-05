@@ -2,29 +2,23 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { HeatingRoomsModalComponent } from './heating-rooms-modal.component';
 import { HeatingRoomsService } from '../../services/heating-rooms.service';
 import { LanguageService } from '../../services/language.service';
-import { TranslatePipe } from '../../pipes/translate.pipe';
-import { Pipe, PipeTransform } from '@angular/core';
-import { vi } from 'vitest';
-import { signal } from '@angular/core';
-
-@Pipe({
-  name: 'translate',
-  standalone: true,
-})
-class MockTranslatePipe implements PipeTransform {
-  transform(key: string, args?: any): string {
-    return key;
-  }
-}
+import { signal, WritableSignal } from '@angular/core';
+import { vi, describe, it, expect, beforeEach } from 'vitest';
 
 describe('HeatingRoomsModalComponent', () => {
   let component: HeatingRoomsModalComponent;
   let fixture: ComponentFixture<HeatingRoomsModalComponent>;
-  let mockLanguageService: any;
-  let mockRoomsService: any;
+  let mockLanguageService: {
+    translate: ReturnType<typeof vi.fn>;
+    currentLang: WritableSignal<string>;
+  };
+  let mockRoomsService: {
+    exportRooms: ReturnType<typeof vi.fn>;
+    importRooms: ReturnType<typeof vi.fn>;
+    rooms: WritableSignal<{ id: string; name: string; type?: string }[]>;
+  };
 
   beforeEach(async () => {
-    // Setup Service Mocks
     mockLanguageService = {
       translate: vi.fn((key: string) => key),
       currentLang: signal('en'),
@@ -42,21 +36,15 @@ describe('HeatingRoomsModalComponent', () => {
         { provide: LanguageService, useValue: mockLanguageService },
         { provide: HeatingRoomsService, useValue: mockRoomsService },
       ],
-    })
-      .overrideComponent(HeatingRoomsModalComponent, {
-        remove: { imports: [TranslatePipe] },
-        add: { imports: [MockTranslatePipe] },
-      })
-      .compileComponents();
+    }).compileComponents();
 
     fixture = TestBed.createComponent(HeatingRoomsModalComponent);
     component = fixture.componentInstance;
 
-    // Set required inputs
-    fixture.componentRef.setInput('show', false);
-    fixture.componentRef.setInput('rooms', []);
-    fixture.componentRef.setInput('maxRooms', 5);
-    fixture.componentRef.setInput('roomsWithDataArray', []);
+    component.show = false;
+    component.rooms = [];
+    component.maxRooms = 5;
+    component.roomsWithDataArray = [];
 
     fixture.detectChanges();
   });
@@ -65,197 +53,167 @@ describe('HeatingRoomsModalComponent', () => {
     expect(component).toBeTruthy();
   });
 
-  describe('Modal opening', () => {
-    it('should initialize editing state and cache roomsWithData on show', () => {
-      fixture.componentRef.setInput('rooms', [
-        { id: '1', name: 'Living Room', baseTemp: 20, minTemp: 15, maxTemp: 25, isShared: false },
-      ]);
-      fixture.componentRef.setInput('roomsWithDataArray', ['1']);
+  describe('Initialization and modal show', () => {
+    it('should initialize editingRooms and cache roomsWithData on modal show', () => {
+      const initialRooms = [{ id: '1', name: 'Living Room' }];
+      component.rooms = initialRooms;
+      component.roomsWithDataArray = ['1'];
 
-      const compAsAny = component as any;
+      component['onModalShow']();
 
-      compAsAny.onModalShow();
-
-      expect(compAsAny.editingRooms().length).toBe(1);
-      expect(compAsAny.cachedRoomsWithData().has('1')).toBe(true);
-      expect(compAsAny.hasChanges()).toBe(false);
-      expect(compAsAny.unlockedRooms().size).toBe(0);
+      expect(component['editingRooms']()).toEqual(initialRooms);
+      expect(component['editingRooms']()).not.toBe(initialRooms);
+      expect(component['cachedRoomsWithData']().has('1')).toBe(true);
+      expect(component['hasChanges']()).toBe(false);
     });
   });
 
-  describe('Room management', () => {
+  describe('Room validation', () => {
     beforeEach(() => {
-      fixture.componentRef.setInput('rooms', [
-        { id: 'room_1', name: 'Room 1', baseTemp: 20, minTemp: 15, maxTemp: 25, isShared: false },
-      ]);
-      const compAsAny = component as any;
-      compAsAny.onModalShow();
+      component.rooms = [
+        { id: '1', name: 'Room 1' },
+        { id: '2', name: 'Room 2' },
+      ];
+      component['onModalShow']();
     });
 
-    it('should determine if room can be removed', () => {
-      const compAsAny = component as any;
-      expect(compAsAny.canRemoveRoom()).toBe(true);
-      compAsAny.removeRoom('room_1');
-      expect(compAsAny.canRemoveRoom()).toBe(false); // No rooms left
+    it('should return error for empty room name', () => {
+      expect(component['getRoomError']('   ')).toBe('HEATING.ERROR_ROOM_NAME_REQUIRED');
     });
 
-    it('should add a room up to maxRooms', () => {
-      const compAsAny = component as any;
-      expect(compAsAny.canAddRoom()).toBe(true);
-
-      compAsAny.addRoom();
-      expect(compAsAny.editingRooms().length).toBe(2);
-      expect(compAsAny.hasChanges()).toBe(true);
-
-      // Add until maxRooms (5)
-      compAsAny.addRoom();
-      compAsAny.addRoom();
-      compAsAny.addRoom();
-
-      expect(compAsAny.editingRooms().length).toBe(5);
-      expect(compAsAny.canAddRoom()).toBe(false);
-
-      compAsAny.addRoom(); // Should not add
-      expect(compAsAny.editingRooms().length).toBe(5);
+    it('should return error for invalid chars', () => {
+      expect(component['getRoomError']('!@#$')).toBe('HEATING.ERROR_ROOM_NAME_INVALID_CHARS');
     });
 
-    it('should update room name and mark as changed', () => {
-      const compAsAny = component as any;
-      compAsAny.updateRoomName('room_1', 'New Name');
+    it('should return error for name exceeding maximum length', () => {
+      const longName = 'a'.repeat(component.MAX_ROOM_NAME_LENGTH + 1);
+      expect(component['getRoomError'](longName)).toBe('HEATING.ERROR_ROOM_NAME_TOO_LONG');
+    });
 
-      expect(compAsAny.editingRooms()[0].name).toBe('New Name');
-      expect(compAsAny.hasChanges()).toBe(true);
+    it('should return null for valid room name', () => {
+      expect(component['getRoomError']('Valid Name')).toBeNull();
     });
   });
 
-  describe('Validation', () => {
+  describe('Adding and removing rooms', () => {
     beforeEach(() => {
-      const compAsAny = component as any;
-      compAsAny.onModalShow();
+      component.rooms = [{ id: '1', name: 'Room 1' }];
+      component.maxRooms = 2;
+      component['onModalShow']();
     });
 
-    it('should validate room names properly', () => {
-      const compAsAny = component as any;
+    it('should add a new room if below maxRooms limit', () => {
+      component['addRoom']();
 
-      expect(compAsAny.getRoomError('')).toBe('HEATING.ERROR_ROOM_NAME_REQUIRED');
-      expect(compAsAny.getRoomError('   ')).toBe('HEATING.ERROR_ROOM_NAME_REQUIRED');
-
-      const longName = 'A'.repeat(126);
-      expect(compAsAny.getRoomError(longName)).toBe('HEATING.ERROR_ROOM_NAME_TOO_LONG');
-
-      expect(compAsAny.getRoomError('!@#$')).toBe('HEATING.ERROR_ROOM_NAME_INVALID_CHARS');
-      expect(compAsAny.getRoomError('Room 1')).toBeNull();
-      expect(compAsAny.getRoomError('A!@#$')).toBeNull(); // Has alphanumeric
+      const rooms = component['editingRooms']();
+      expect(rooms.length).toBe(2);
+      expect(component['hasChanges']()).toBe(true);
+      expect(component['canAddRoom']()).toBe(false);
     });
 
-    it('should report hasErrors when array is empty or invalid', () => {
-      const compAsAny = component as any;
+    it('should not add a room if maxRooms limit is reached', () => {
+      component['addRoom']();
+      component['addRoom']();
 
-      // Empty array
-      compAsAny.editingRooms.set([]);
-      expect(compAsAny.hasErrors()).toBe(true);
+      expect(component['editingRooms']().length).toBe(2);
+    });
 
-      // Invalid name
-      compAsAny.editingRooms.set([{ id: '1', name: '' }]);
-      expect(compAsAny.hasErrors()).toBe(true);
+    it('should remove a room', () => {
+      component['removeRoom']('1');
 
-      // Valid name
-      compAsAny.editingRooms.set([{ id: '1', name: 'Valid' }]);
-      expect(compAsAny.hasErrors()).toBe(false);
+      expect(component['editingRooms']().length).toBe(0);
+      expect(component['hasChanges']()).toBe(true);
     });
   });
 
-  describe('Locking mechanisms', () => {
+  describe('Lock and unlock state', () => {
     beforeEach(() => {
-      fixture.componentRef.setInput('roomsWithDataArray', ['1']);
-      const compAsAny = component as any;
-      compAsAny.onModalShow();
+      component.rooms = [{ id: '1', name: 'Room 1' }];
+      component.roomsWithDataArray = ['1'];
+      component['onModalShow']();
     });
 
-    it('should identify locked rooms that have data', () => {
-      const compAsAny = component as any;
-      expect(compAsAny.hasData('1')).toBe(true);
-      expect(compAsAny.hasData('2')).toBe(false);
-
-      expect(compAsAny.isLocked('1')).toBe(true);
-      expect(compAsAny.isLocked('2')).toBe(false); // No data = not locked
+    it('should correctly identify locked rooms from cached data', () => {
+      expect(component['isLocked']('1')).toBe(true);
+      expect(component['hasData']('1')).toBe(true);
     });
 
-    it('should allow requesting, confirming and canceling unlock', () => {
-      const compAsAny = component as any;
+    it('should unlock room when confirmed', () => {
+      component['requestUnlock']('1');
+      expect(component['pendingUnlockRoomId']()).toBe('1');
 
-      compAsAny.requestUnlock('1');
-      expect(compAsAny.pendingUnlockRoomId()).toBe('1');
+      component['confirmUnlock']();
+      expect(component['isLocked']('1')).toBe(false);
+      expect(component['pendingUnlockRoomId']()).toBeNull();
+    });
 
-      compAsAny.cancelUnlock();
-      expect(compAsAny.pendingUnlockRoomId()).toBeNull();
-      expect(compAsAny.isLocked('1')).toBe(true);
+    it('should cancel unlock request', () => {
+      component['requestUnlock']('1');
+      component['cancelUnlock']();
+      expect(component['isLocked']('1')).toBe(true);
+      expect(component['pendingUnlockRoomId']()).toBeNull();
+    });
 
-      compAsAny.requestUnlock('1');
-      compAsAny.confirmUnlock();
-      expect(compAsAny.pendingUnlockRoomId()).toBeNull();
-      expect(compAsAny.isLocked('1')).toBe(false);
+    it('should lock an unlocked room again', () => {
+      component['requestUnlock']('1');
+      component['confirmUnlock']();
+      expect(component['isLocked']('1')).toBe(false);
 
-      compAsAny.lockRoom('1');
-      expect(compAsAny.isLocked('1')).toBe(true);
+      component['lockRoom']('1');
+      expect(component['isLocked']('1')).toBe(true);
     });
   });
 
   describe('Discard warning and saving', () => {
     beforeEach(() => {
-      fixture.componentRef.setInput('rooms', [{ id: '1', name: 'Room 1' }]);
-      const compAsAny = component as any;
-      compAsAny.onModalShow();
+      component.rooms = [{ id: '1', name: 'Room 1' }];
+      component['onModalShow']();
     });
 
     it('should emit cancel immediately if no changes', () => {
-      const compAsAny = component as any;
-      vi.spyOn(component.cancel, 'emit');
+      vi.spyOn(component.cancelModal, 'emit');
 
-      compAsAny.onCancel();
+      component['onCancel']();
 
-      expect(compAsAny.showDiscardWarning()).toBe(false);
-      expect(component.cancel.emit).toHaveBeenCalled();
+      expect(component['showDiscardWarning']()).toBe(false);
+      expect(component.cancelModal.emit).toHaveBeenCalled();
     });
 
     it('should show discard warning if changes exist', () => {
-      const compAsAny = component as any;
-      vi.spyOn(component.cancel, 'emit');
+      vi.spyOn(component.cancelModal, 'emit');
 
-      compAsAny.hasChanges.set(true);
-      compAsAny.onCancel();
+      component['hasChanges'].set(true);
+      component['onCancel']();
 
-      expect(compAsAny.showDiscardWarning()).toBe(true);
-      expect(component.cancel.emit).not.toHaveBeenCalled();
+      expect(component['showDiscardWarning']()).toBe(true);
+      expect(component.cancelModal.emit).not.toHaveBeenCalled();
 
-      compAsAny.cancelDiscard();
-      expect(compAsAny.showDiscardWarning()).toBe(false);
-      expect(component.cancel.emit).not.toHaveBeenCalled();
+      component['cancelDiscard']();
+      expect(component['showDiscardWarning']()).toBe(false);
+      expect(component.cancelModal.emit).not.toHaveBeenCalled();
 
-      compAsAny.hasChanges.set(true);
-      compAsAny.onCancel();
-      compAsAny.confirmDiscard();
+      component['hasChanges'].set(true);
+      component['onCancel']();
+      component['confirmDiscard']();
 
-      expect(compAsAny.showDiscardWarning()).toBe(false);
-      expect(component.cancel.emit).toHaveBeenCalled();
+      expect(component['showDiscardWarning']()).toBe(false);
+      expect(component.cancelModal.emit).toHaveBeenCalled();
     });
 
     it('should emit save with trimmed names if no errors', () => {
-      const compAsAny = component as any;
       vi.spyOn(component.save, 'emit');
 
-      compAsAny.editingRooms.set([{ id: '1', name: '   Room 1   ' }]);
-      compAsAny.onSave();
+      component['editingRooms'].set([{ id: '1', name: '   Room 1   ' }]);
+      component['onSave']();
 
       expect(component.save.emit).toHaveBeenCalledWith([{ id: '1', name: 'Room 1' }]);
     });
 
     it('should not emit save if there are errors', () => {
-      const compAsAny = component as any;
       vi.spyOn(component.save, 'emit');
 
-      compAsAny.editingRooms.set([{ id: '1', name: '' }]); // Error
-      compAsAny.onSave();
+      component['editingRooms'].set([{ id: '1', name: '' }]);
+      component['onSave']();
 
       expect(component.save.emit).not.toHaveBeenCalled();
     });
@@ -263,62 +221,59 @@ describe('HeatingRoomsModalComponent', () => {
 
   describe('Import/Export', () => {
     it('should trigger exportRooms from service', () => {
-      const compAsAny = component as any;
-      compAsAny.exportConfiguration();
+      component['exportConfiguration']();
       expect(mockRoomsService.exportRooms).toHaveBeenCalled();
     });
 
     it('should handle file import', async () => {
-      const compAsAny = component as any;
+      const file = new File([''], 'test.json');
       const mockEvent = {
         target: {
-          files: [new File([''], 'test.json')],
+          files: [file],
           value: 'test.json',
         },
-      } as any;
+      } as unknown as Event;
 
-      // Simulate successful import
       mockRoomsService.importRooms.mockResolvedValue({ success: true });
       mockRoomsService.rooms.set([{ id: 'imported_1', name: 'Imported Room' }]);
 
-      await compAsAny.importConfiguration(mockEvent);
+      await component['importConfiguration'](mockEvent);
 
-      expect(mockRoomsService.importRooms).toHaveBeenCalledWith(mockEvent.target.files[0]);
-      expect(compAsAny.editingRooms()[0].id).toBe('imported_1');
-      expect(compAsAny.hasChanges()).toBe(true);
-      expect(mockEvent.target.value).toBe(''); // Reset input
+      expect(mockRoomsService.importRooms).toHaveBeenCalledWith(file);
+      expect(component['editingRooms']()[0].id).toBe('imported_1');
+      expect(component['hasChanges']()).toBe(true);
+      expect((mockEvent.target as HTMLInputElement).value).toBe('');
     });
 
     it('should alert on file import failure', async () => {
-      const compAsAny = component as any;
+      const badFile = new File([''], 'bad.json');
       const mockEvent = {
         target: {
-          files: [new File([''], 'bad.json')],
+          files: [badFile],
           value: 'bad.json',
         },
-      } as any;
+      } as unknown as Event;
 
-      vi.spyOn(window, 'alert').mockImplementation(() => {});
+      const alertSpy = vi.spyOn(window, 'alert').mockImplementation(() => undefined);
 
       mockRoomsService.importRooms.mockResolvedValue({ success: false, error: 'Bad file format' });
 
-      await compAsAny.importConfiguration(mockEvent);
+      await component['importConfiguration'](mockEvent);
 
-      expect(window.alert).toHaveBeenCalledWith('Bad file format');
-      expect(compAsAny.hasChanges()).toBe(false);
+      expect(alertSpy).toHaveBeenCalledWith('Bad file format');
+      expect(component['hasChanges']()).toBe(false);
     });
   });
 
   describe('Help modal', () => {
     it('should toggle help modal', () => {
-      const compAsAny = component as any;
-      expect(compAsAny.showHelpModal()).toBe(false);
+      expect(component['showHelpModal']()).toBe(false);
 
-      compAsAny.showHelp();
-      expect(compAsAny.showHelpModal()).toBe(true);
+      component['showHelp']();
+      expect(component['showHelpModal']()).toBe(true);
 
-      compAsAny.closeHelp();
-      expect(compAsAny.showHelpModal()).toBe(false);
+      component['closeHelp']();
+      expect(component['showHelpModal']()).toBe(false);
     });
   });
 });

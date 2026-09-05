@@ -50,7 +50,7 @@ class MockNatureTreeComponent {}
 class MockSeasonSwitcherComponent {}
 
 @Component({
-  selector: 'router-outlet',
+  selector: 'app-router-outlet, router-outlet',
   standalone: true,
   template: '<div class="mock-router-outlet"></div>',
 })
@@ -59,11 +59,11 @@ class MockRouterOutletComponent {}
 describe('AppLayoutComponent', () => {
   let component: AppLayoutComponent;
   let fixture: ComponentFixture<AppLayoutComponent>;
-  let mockThemeService: any;
-  let mockDemoService: any;
-  let mockAuthService: any;
-  let mockHybridStorageService: any;
-  let mockRouter: any;
+  let mockThemeService: unknown;
+  let mockDemoService: unknown;
+  let mockAuthService: unknown;
+  let mockHybridStorageService: unknown;
+  let mockRouter: unknown;
 
   beforeEach(async () => {
     TestBed.resetTestingModule();
@@ -76,7 +76,7 @@ describe('AppLayoutComponent', () => {
       isAuthenticated: signal(false),
     };
     mockHybridStorageService = {
-      hasUserContent: signal(true), // Set to true so season switcher is shown
+      hasUserContent: signal(true),
     };
     mockRouter = {
       url: '/dashboard',
@@ -126,8 +126,6 @@ describe('AppLayoutComponent', () => {
   });
 
   it('should initialize ThemeService on component creation', () => {
-    // If it creates successfully without throwing an injection error, it has injected our mocked ThemeService
-    // We can verify this via dependency injection
     const injectedService = TestBed.inject(ThemeService);
     expect(injectedService).toBe(mockThemeService);
   });
@@ -136,7 +134,6 @@ describe('AppLayoutComponent', () => {
     fixture.detectChanges();
     const compiled = fixture.nativeElement as HTMLElement;
 
-    // Header, Menu Bar, Season Switcher, and Router Outlet are not deferred
     expect(compiled.querySelector('.mock-header')).toBeTruthy();
     expect(compiled.querySelector('.mock-menu-bar')).toBeTruthy();
     expect(compiled.querySelector('.mock-season-switcher')).toBeTruthy();
@@ -146,10 +143,8 @@ describe('AppLayoutComponent', () => {
   it('should render deferred nature tree and footer components when blocks resolve', async () => {
     const deferBlocks = await fixture.getDeferBlocks();
 
-    // There are 2 defer blocks in the template: <app-nature-tree> and <app-footer>
     expect(deferBlocks.length).toBe(2);
 
-    // Complete the defer blocks
     await deferBlocks[0].render(DeferBlockState.Complete);
     await deferBlocks[1].render(DeferBlockState.Complete);
 

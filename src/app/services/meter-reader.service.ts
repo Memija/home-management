@@ -1,5 +1,12 @@
 import { Injectable, signal } from '@angular/core';
 
+interface TesseractWorker {
+  setParameters(p: Record<string, unknown>): Promise<unknown>;
+  recognize(
+    i: unknown,
+  ): Promise<{ data: { text: string; confidence: number; words: TesseractWord[] } }>;
+}
+
 /**
  * Result from OCR meter reading
  */
@@ -62,7 +69,10 @@ export class MeterReaderService {
     this.progress.set(0);
 
     try {
-      const { imageData, imgWidth, imgHeight } = await this.prepareImageData(imageSource, isCropped);
+      const { imageData, imgWidth, imgHeight } = await this.prepareImageData(
+        imageSource,
+        isCropped,
+      );
 
       const ocrResults = isCropped
         ? await this.runCroppedMode(imageData)
@@ -70,10 +80,14 @@ export class MeterReaderService {
 
       this.progress.set(95);
 
-      const { candidates, bestRawText, bestOverallConfidence } = this.aggregateOcrResults(ocrResults, imgWidth, imgHeight);
+      const { candidates, bestRawText, bestOverallConfidence } = this.aggregateOcrResults(
+        ocrResults,
+        imgWidth,
+        imgHeight,
+      );
 
       const value = this.scoreAndSelectBest(candidates, isCropped);
-      const uniqueValues = [...new Set(candidates.map(c => c.value))].sort((a, b) => b - a);
+      const uniqueValues = [...new Set(candidates.map((c) => c.value))].sort((a, b) => b - a);
 
       return {
         value,
@@ -83,7 +97,12 @@ export class MeterReaderService {
       };
     } catch (error: unknown) {
       console.error('Meter reading OCR failed:', error);
-      return { value: null, rawText: `ERROR: ${(error as Error)?.message || error}`, confidence: 0, candidates: [] };
+      return {
+        value: null,
+        rawText: `ERROR: ${(error as Error)?.message || error}`,
+        confidence: 0,
+        candidates: [],
+      };
     } finally {
       this.isProcessing.set(false);
       this.progress.set(100);
@@ -94,7 +113,10 @@ export class MeterReaderService {
    * Prepares the image data and calculates its dimensions.
    * Upscales the image if it is pre-cropped.
    */
-  private async prepareImageData(imageSource: File | string, isCropped: boolean): Promise<{ imageData: string, imgWidth: number, imgHeight: number }> {
+  private async prepareImageData(
+    imageSource: File | string,
+    isCropped: boolean,
+  ): Promise<{ imageData: string; imgWidth: number; imgHeight: number }> {
     let imageData: string;
     if (imageSource instanceof File) {
       imageData = await this.fileToDataUrl(imageSource);
@@ -154,7 +176,11 @@ export class MeterReaderService {
   /**
    * Aggregates OCR results from multiple passes, extracting numerical candidates.
    */
-  private aggregateOcrResults(passes: OcrPassResult[], imgWidth: number, imgHeight: number): { candidates: ScoredCandidate[], bestRawText: string, bestOverallConfidence: number } {
+  private aggregateOcrResults(
+    passes: OcrPassResult[],
+    imgWidth: number,
+    imgHeight: number,
+  ): { candidates: ScoredCandidate[]; bestRawText: string; bestOverallConfidence: number } {
     const candidates: ScoredCandidate[] = [];
     let bestRawText = '';
     let bestOverallConfidence = 0;
@@ -166,7 +192,7 @@ export class MeterReaderService {
       }
 
       if (pass.words.length > 0) {
-        pass.words.forEach(word => {
+        pass.words.forEach((word) => {
           const numbers = this.extractNumbers(word.text);
           if (numbers.length > 0) {
             const centerX = (word.bbox.x0 + word.bbox.x1) / 2;
@@ -174,11 +200,15 @@ export class MeterReaderService {
             const width = word.bbox.x1 - word.bbox.x0;
             const height = word.bbox.y1 - word.bbox.y0;
 
-            numbers.forEach(val => {
+            numbers.forEach((val) => {
               candidates.push({
-                value: val, text: word.text, confidence: word.confidence,
-                centerX: centerX / imgWidth, centerY: centerY / imgHeight,
-                width: width / imgWidth, height: height / imgHeight
+                value: val,
+                text: word.text,
+                confidence: word.confidence,
+                centerX: centerX / imgWidth,
+                centerY: centerY / imgHeight,
+                width: width / imgWidth,
+                height: height / imgHeight,
               });
             });
           }
@@ -186,10 +216,15 @@ export class MeterReaderService {
       } else {
         // Fallback: no word bboxes — extract from raw text, place at center
         const numbers = this.extractNumbers(pass.text);
-        numbers.forEach(val => {
+        numbers.forEach((val) => {
           candidates.push({
-            value: val, text: String(val), confidence: pass.confidence,
-            centerX: 0.5, centerY: 0.5, width: 0.2, height: 0.1
+            value: val,
+            text: String(val),
+            confidence: pass.confidence,
+            centerX: 0.5,
+            centerY: 0.5,
+            width: 0.2,
+            height: 0.1,
           });
         });
       }
@@ -211,30 +246,34 @@ export class MeterReaderService {
   /**
    * Run a single OCR pass on an image.
    */
-  private async runOcrPass(imageData: string, whitelist?: string, psm?: string): Promise<OcrPassResult> {
+  private async runOcrPass(
+    imageData: string,
+    whitelist?: string,
+    psm?: string,
+  ): Promise<OcrPassResult> {
     const worker = await this.getWorker();
 
-    await worker.setParameters({
+    await (worker as unknown as TesseractWorker).setParameters({
       tessedit_char_whitelist: whitelist ?? '0123456789.,OolISsBbZz',
-      tessedit_pageseg_mode: (psm ?? '11') as any,
+      tessedit_pageseg_mode: (psm ?? '11') as unknown,
     });
 
-    const result = await worker.recognize(imageData);
+    const result = await (worker as unknown as TesseractWorker).recognize(imageData);
     return {
       text: result.data.text,
       confidence: result.data.confidence,
       words: (result.data.words ?? []).map((w: TesseractWord) => ({
         text: w.text,
         confidence: w.confidence,
-        bbox: w.bbox
-      }))
+        bbox: w.bbox,
+      })),
     };
   }
 
   /**
    * Lazy-load and initialize the Tesseract worker.
    */
-  private async getWorker(): Promise<any> {
+  private async getWorker(): Promise<unknown> {
     if (this.tesseractWorker) {
       return this.tesseractWorker;
     }
@@ -268,8 +307,8 @@ export class MeterReaderService {
     // PSM.SPARSE_TEXT (11) works best for finding numbers scattered across a meter face.
     // user_defined_dpi prevents Tesseract from estimating image resolution, which suppresses
     // the noisy "Estimating resolution as XXX" log that Tesseract prints to the worker console.
-    await worker.setParameters({
-      tessedit_pageseg_mode: '11' as any,
+    await (worker as unknown as TesseractWorker).setParameters({
+      tessedit_pageseg_mode: '11' as unknown,
       tessedit_char_whitelist: '0123456789.,OolISsBbZz',
       preserve_interword_spaces: '1',
       user_defined_dpi: '70',
@@ -282,13 +321,16 @@ export class MeterReaderService {
   /**
    * Helper to scale canvas context and draw image
    */
-  private setupCanvas(img: HTMLImageElement): { canvas: HTMLCanvasElement; ctx: CanvasRenderingContext2D } {
+  private setupCanvas(img: HTMLImageElement): {
+    canvas: HTMLCanvasElement;
+    ctx: CanvasRenderingContext2D;
+  } {
     const canvas = document.createElement('canvas');
     const MAX_DIMENSION = 1000; // Tesseract works best when characters aren't too massive
-    
+
     let width = img.width;
     let height = img.height;
-    
+
     if (width > height && width > MAX_DIMENSION) {
       height *= MAX_DIMENSION / width;
       width = MAX_DIMENSION;
@@ -301,7 +343,7 @@ export class MeterReaderService {
     canvas.height = Math.round(height);
     const ctx = canvas.getContext('2d', { willReadFrequently: true })!;
     ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-    
+
     return { canvas, ctx };
   }
 
@@ -363,7 +405,7 @@ export class MeterReaderService {
           totalBrightness += data[i] * 0.299 + data[i + 1] * 0.587 + data[i + 2] * 0.114;
         }
         const avgBrightness = totalBrightness / (data.length / 4);
-        
+
         // Create a temporary array for morphological operation
         const grayData = new Uint8Array(data.length / 4);
         for (let i = 0; i < data.length; i += 4) {
@@ -381,7 +423,7 @@ export class MeterReaderService {
           for (let x = 0; x < w; x++) {
             const idx = y * w + x;
             let minVal = grayData[idx];
-            
+
             // Check vertical neighbors
             if (y > 0) minVal = Math.min(minVal, grayData[idx - w]);
             if (y < h - 1) minVal = Math.min(minVal, grayData[idx + w]);
@@ -389,7 +431,7 @@ export class MeterReaderService {
             dilatedData[idx] = minVal;
           }
         }
-        
+
         // Use a threshold slightly lower than average to catch faint LCD segments
         const threshold = avgBrightness * 0.95;
 
@@ -399,7 +441,7 @@ export class MeterReaderService {
             const gray = dilatedData[idx];
             // Strict binary: black or white
             const val = gray > threshold ? 255 : 0;
-            
+
             const dataIdx = idx * 4;
             data[dataIdx] = val;
             data[dataIdx + 1] = val;
@@ -436,7 +478,7 @@ export class MeterReaderService {
         for (let i = 0; i < data.length; i += 4) {
           const gray = data[i] * 0.299 + data[i + 1] * 0.587 + data[i + 2] * 0.114;
           // Invert and binary threshold
-          const val = (255 - gray) > (255 - avgBrightness * 1.1) ? 255 : 0;
+          const val = 255 - gray > 255 - avgBrightness * 1.1 ? 255 : 0;
           data[i] = val;
           data[i + 1] = val;
           data[i + 2] = val;
@@ -459,7 +501,7 @@ export class MeterReaderService {
     if (!text) return [];
 
     // Pre-clean: fix common OCR misreads
-    let cleaned = text
+    const cleaned = text
       .replace(/[oO]/g, '0') // O → 0
       .replace(/[lI|]/g, '1') // l, I, | → 1
       .replace(/[zZ]/g, '2') // Z → 2
@@ -478,11 +520,19 @@ export class MeterReaderService {
         const dots = (normalized.match(/\./g) || []).length;
 
         // If European format "1.234,56" or "12,34"
-        if (commas === 1 && dots <= 1 && normalized.lastIndexOf(',') > normalized.lastIndexOf('.')) {
+        if (
+          commas === 1 &&
+          dots <= 1 &&
+          normalized.lastIndexOf(',') > normalized.lastIndexOf('.')
+        ) {
           normalized = normalized.replace(/\./g, '').replace(',', '.');
-        } 
+        }
         // If US format "1,234.56" or "12.34"
-        else if (dots === 1 && commas <= 1 && normalized.lastIndexOf('.') > normalized.lastIndexOf(',')) {
+        else if (
+          dots === 1 &&
+          commas <= 1 &&
+          normalized.lastIndexOf('.') > normalized.lastIndexOf(',')
+        ) {
           normalized = normalized.replace(/,/g, '');
         }
         // If multiple of same separator, assume thousand separators "1,234,567" or "1.234.567"
@@ -501,17 +551,17 @@ export class MeterReaderService {
     if (isCropped) {
       // In cropped mode the image IS the reading — just return highest-confidence candidate.
       // De-duplicate by value and pick the one Tesseract was most confident about.
-      const best = candidates.reduce((max, c) => c.confidence > max.confidence ? c : max);
+      const best = candidates.reduce((max, c) => (c.confidence > max.confidence ? c : max));
       return best.value;
     }
 
-    const scored = candidates.map(c => {
+    const scored = candidates.map((c) => {
       let score = c.confidence;
 
       // Centrality: distance from center (0.5, 0.5)
       const distFromCenter = Math.sqrt(Math.pow(c.centerX - 0.5, 2) + Math.pow(c.centerY - 0.5, 2));
       const centralityFactor = 1 - Math.min(distFromCenter * 2, 1);
-      score *= (1 + centralityFactor);
+      score *= 1 + centralityFactor;
 
       // Length heuristic: meter readings are typically 4-7 digits
       const digits = Math.floor(c.value).toString().length;

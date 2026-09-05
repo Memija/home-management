@@ -16,7 +16,7 @@ export const water = {
       'Gagal mengimpor data JSON. Silakan periksa detail di bawah dan ikuti petunjuknya.',
     IMPORT_FILTER_WARNING_TITLE: 'Data di Luar Filter',
     IMPORT_FILTER_WARNING_MESSAGE:
-      "Beberapa catatan di file ini berada di luar rentang filter Anda. Mereka akan tetap diimpor tetapi tidak akan terlihat sampai Anda membersihkan atau menyesuaikan filter.",
+      'Beberapa catatan di file ini berada di luar rentang filter Anda. Mereka akan tetap diimpor tetapi tidak akan terlihat sampai Anda membersihkan atau menyesuaikan filter.',
     IMPORT_FILTER_WARNING_COUNT: '{{count}} catatan di luar filter',
     IMPORT_CONTINUE: 'Tetap Impor',
     IMPORT_CANCEL: 'Batal',
@@ -27,7 +27,8 @@ export const water = {
     TOTAL_LABEL: 'Total',
     COLD_ONLY_MODE_TOGGLE: 'Aktifkan Mode Hanya Air Dingin',
     COLD_ONLY_NO_VALUES_ERROR: 'Silakan masukkan konsumsi air untuk setidaknya satu ruangan.',
-    COLD_ONLY_INCOMPLETE_ERROR: 'Silakan lengkapi entri konsumsi air untuk semua ruangan yang dimulai.',
+    COLD_ONLY_INCOMPLETE_ERROR:
+      'Silakan lengkapi entri konsumsi air untuk semua ruangan yang dimulai.',
   },
   HOME: {
     HISTORY_TITLE: 'Riwayat Konsumsi',
@@ -50,8 +51,7 @@ export const water = {
     RECORD_HELP_STEP_2_TITLE: 'Pilih Tanggal',
     RECORD_HELP_STEP_2_DESC: 'Pilih tanggal saat Anda mengambil pembacaan meteran air.',
     RECORD_HELP_STEP_3_TITLE: 'Masukkan Pembacaan',
-    RECORD_HELP_STEP_3_DESC:
-      'Masukkan nilai meteran untuk air panas dan dingin di setiap ruangan.',
+    RECORD_HELP_STEP_3_DESC: 'Masukkan nilai meteran untuk air panas dan dingin di setiap ruangan.',
     RECORD_HELP_STEP_4_TITLE: 'Simpan Catatan',
     RECORD_HELP_STEP_4_DESC: 'Klik tombol Simpan untuk menyimpan catatan konsumsi Anda.',
     CHART_HELP_TITLE: 'Memahami Grafik',
@@ -62,15 +62,13 @@ export const water = {
     CHART_HELP_STEP_2_DESC:
       'Beralih antara mode Total (pembacaan kumulatif) dan Inkremental (konsumsi harian).',
     CHART_HELP_STEP_3_TITLE: 'Perbandingan Negara',
-    CHART_HELP_STEP_3_DESC:
-      'Bandingkan penggunaan Anda dengan 64 negara di seluruh dunia.',
+    CHART_HELP_STEP_3_DESC: 'Bandingkan penggunaan Anda dengan 64 negara di seluruh dunia.',
     CHART_HELP_STEP_4_TITLE: 'Fakta Negara & Refresh',
     CHART_HELP_STEP_4_DESC:
       'Kartu fakta negara menampilkan informasi kontekstual khusus untuk negara yang dipilih.',
     RECORDS_HELP_TITLE: 'Mengelola Catatan',
     RECORDS_HELP_STEP_1_TITLE: 'Ikhtisar',
-    RECORDS_HELP_STEP_1_DESC:
-      'Bagian ini menunjukkan semua catatan konsumsi air yang Anda simpan.',
+    RECORDS_HELP_STEP_1_DESC: 'Bagian ini menunjukkan semua catatan konsumsi air yang Anda simpan.',
     RECORDS_HELP_STEP_2_TITLE: 'Memfilter Catatan',
     RECORDS_HELP_STEP_2_DESC:
       'Gunakan pemilih tanggal, filter tahun, dan bulan untuk menemukan catatan tertentu.',
@@ -78,8 +76,7 @@ export const water = {
     RECORDS_HELP_STEP_3_DESC:
       'Klik ikon edit untuk mengubah catatan, atau ikon sampah untuk menghapusnya.',
     RECORDS_HELP_STEP_4_TITLE: 'Impor dan Ekspor',
-    RECORDS_HELP_STEP_4_DESC:
-      'Ekspor data Anda dalam berbagai format: JSON, Excel, atau PDF.',
+    RECORDS_HELP_STEP_4_DESC: 'Ekspor data Anda dalam berbagai format: JSON, Excel, atau PDF.',
     READINGS_FOR: 'Pembacaan untuk',
     KITCHEN: 'Dapur',
     BATHROOM: 'Kamar Mandi',
@@ -90,15 +87,15 @@ export const water = {
     TOTAL: 'Total',
     SUCCESS_TITLE: 'Berhasil',
     RECORD_SAVED: 'Catatan konsumsi air berhasil disimpan!',
-    DATE_EXISTS_WARNING:
-      'Catatan untuk tanggal ini sudah ada. Silakan ubah yang sudah ada.',
+    DATE_EXISTS_WARNING: 'Catatan untuk tanggal ini sudah ada. Silakan ubah yang sudah ada.',
     EDIT_RECORD: 'Ubah Catatan',
     UPDATE_RECORD: 'Perbarui Catatan',
     CANCEL: 'Batal',
     SEARCH_DATE: 'Cari berdasarkan tanggal',
     SELECT_DATE: 'Pilih tanggal',
     SELECT_DATE_ERROR: 'Silakan pilih tanggal.',
-    PARTIAL_INPUT_ERROR: 'Silakan masukkan nilai air Panas dan Dingin setidaknya untuk satu ruangan.',
+    PARTIAL_INPUT_ERROR:
+      'Silakan masukkan nilai air Panas dan Dingin setidaknya untuk satu ruangan.',
     INCOMPLETE_ROOM_ERROR:
       'Silakan lengkapi entri air Panas dan Dingin untuk semua ruangan yang dimulai.',
     LOAD_MORE_RECORDS: 'Muat Lebih Banyak Catatan',
@@ -120,7 +117,8 @@ export const water = {
       'Apakah Anda yakin ingin menghapus catatan ini? Tindakan ini tidak dapat dibatalkan.',
     DELETE_BUTTON: 'Hapus',
     DELETE_ALL_CONFIRM_TITLE: 'Hapus Semua Catatan',
-    DELETE_ALL_CONFIRM_MESSAGE_SINGULAR: 'Apakah Anda yakin ingin menghapus catatan yang difilter ini?',
+    DELETE_ALL_CONFIRM_MESSAGE_SINGULAR:
+      'Apakah Anda yakin ingin menghapus catatan yang difilter ini?',
     DELETE_ALL_CONFIRM_MESSAGE_PLURAL:
       'Apakah Anda yakin ingin menghapus semua {{count}} catatan yang difilter?',
     DELETE_ALL_BUTTON: 'Hapus Semua',
@@ -129,8 +127,7 @@ export const water = {
       'Mengimpor data akan menggabungkan dengan catatan yang ada. Apakah Anda yakin ingin melanjutkan?',
     IMPORT_BUTTON: 'Impor',
     IMPORT_INVALID_DATA: 'File yang dipilih tidak berisi data valid untuk bagian ini.',
-    IMPORT_INVALID_FORMAT:
-      'Gagal mengimpor. File mungkin rusak atau dalam format yang salah.',
+    IMPORT_INVALID_FORMAT: 'Gagal mengimpor. File mungkin rusak atau dalam format yang salah.',
     IMPORT_ERROR_INSTRUCTION_1: 'Pastikan Anda mengimpor file yang benar untuk bagian ini',
     IMPORT_ERROR_INSTRUCTION_2: 'Verifikasi file diekspor dari aplikasi ini',
     IMPORT_ERROR_INSTRUCTION_3: 'Coba ekspor cadangan baru dan impor lagi',
@@ -163,8 +160,7 @@ export const water = {
       DECEMBER: 'Desember',
     },
     IMPORT_WARNING_TITLE: 'Kolom Tidak Cocok',
-    IMPORT_WARNING_MESSAGE:
-      'Data berhasil diimpor, tetapi kolom tertentu tidak ditemukan di file.',
+    IMPORT_WARNING_MESSAGE: 'Data berhasil diimpor, tetapi kolom tertentu tidak ditemukan di file.',
     MISSING_COLUMNS: 'Kolom yang Hilang',
     IMPORT_PLACEHOLDER_SKIPPED_SINGULAR: 'Catatan kosong dilewati.',
     IMPORT_PLACEHOLDER_SKIPPED_PLURAL: '{{count}} catatan kosong dilewati.',

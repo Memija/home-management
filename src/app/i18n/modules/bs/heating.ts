@@ -9,11 +9,14 @@ export const heating = {
     EXPORT_PDF: 'Izvezi u PDF',
     EXPORT_DISABLED_TOOLTIP: 'Nema zapisa za izvoz',
     ENERGY_FACTS_FOR: 'Energetske činjenice za {{country}}',
-    SELECT_COUNTRY_INFO: 'Odaberite državu da vidite činjenice o energiji i grijanju specifične za tu regiju',
+    SELECT_COUNTRY_INFO:
+      'Odaberite državu da vidite činjenice o energiji i grijanju specifične za tu regiju',
     EXCEL_IMPORT_ERROR_TITLE: 'Uvoz iz Excela nije uspio',
-    EXCEL_IMPORT_ERROR: 'Nije uspio uvoz podataka iz Excela. Molimo provjerite detalje ispod i slijedite upute za ispravku.',
+    EXCEL_IMPORT_ERROR:
+      'Nije uspio uvoz podataka iz Excela. Molimo provjerite detalje ispod i slijedite upute za ispravku.',
     JSON_IMPORT_ERROR_TITLE: 'Uvoz iz JSON-a nije uspio',
-    JSON_IMPORT_ERROR: 'Nije uspio uvoz podataka iz JSON-a. Molimo provjerite detalje ispod i slijedite upute za ispravku.',
+    JSON_IMPORT_ERROR:
+      'Nije uspio uvoz podataka iz JSON-a. Molimo provjerite detalje ispod i slijedite upute za ispravku.',
     LIVING_AREAS: 'Stambeni prostori',
     SERVICE_AREAS: 'Pomoćni prostori',
     LIVING_ROOM: 'Dnevni boravak',
@@ -23,7 +26,8 @@ export const heating = {
     SUCCESS_TITLE: 'Uspješno',
     RECORD_SAVED: 'Zapis o potrošnji grijanja je uspješno sačuvan!',
     NEW_ROOM_DETECTED_TITLE: 'Otkrivena Nova Prostorija',
-    NEW_ROOM_DETECTED_MESSAGE: 'Detektovan je značajan skok u potrošnji za prostoriju {{room}} na dan {{date}}. Ovo se obično dešava kada se nova prostorija doda usred sezone. Želite li prilagoditi grafikon da ignoriše početno očitavanje?',
+    NEW_ROOM_DETECTED_MESSAGE:
+      'Detektovan je značajan skok u potrošnji za prostoriju {{room}} na dan {{date}}. Ovo se obično dešava kada se nova prostorija doda usred sezone. Želite li prilagoditi grafikon da ignoriše početno očitavanje?',
     CONFIRM_NEW_ROOM: 'Da, prilagodi grafikon',
     DISMISS_NEW_ROOM: 'Ne, zadrži kako jeste',
     RECORD_CONSUMPTION: 'Zabilježi potrošnju grijanja',
@@ -31,7 +35,8 @@ export const heating = {
     IMPORT_PLACEHOLDER_SKIPPED_PLURAL: 'Preskočeno {{count}} praznih zapisa.',
     READINGS_BY_ROOM: 'Dodijeli očitavanje sobi',
     ROOMS_SETTINGS_TITLE: 'Postavke prostorija',
-    ROOMS_SETTINGS_DESCRIPTION: 'Konfigurišite koje prostorije želite pratiti za potrošnju grijanja.',
+    ROOMS_SETTINGS_DESCRIPTION:
+      'Konfigurišite koje prostorije želite pratiti za potrošnju grijanja.',
     ROOM_NAME_PLACEHOLDER: 'Unesite naziv prostorije',
     ADD_ROOM: 'Dodaj prostoriju',
     REMOVE_ROOM: 'Ukloni prostoriju',
@@ -53,30 +58,40 @@ export const heating = {
     ROOM_LOCKED_TOOLTIP: 'Ova prostorija ima snimljene podatke i zaključana je',
     ROOM_UNLOCKED_TOOLTIP: 'Kliknite da zaključate ovu prostoriju',
     UNLOCK_WARNING_TITLE: 'Otključati prostoriju?',
-    UNLOCK_WARNING_MESSAGE: 'Ova prostorija ima povezane podatke o grijanju. Modifikovanje ili brisanje može uzrokovati probleme u prikazu podataka.',
+    UNLOCK_WARNING_MESSAGE:
+      'Ova prostorija ima povezane podatke o grijanju. Modifikovanje ili brisanje može uzrokovati probleme u prikazu podataka.',
     UNLOCK_BUTTON: 'Otključaj',
     DISCARD_WARNING_TITLE: 'Odbaci izmjene?',
     DISCARD_WARNING_MESSAGE: 'Imate nesačuvane izmjene. Da li ste sigurni da želite odustati?',
     DISCARD_BUTTON: 'Odbaci',
     RECORD_HELP_TITLE: 'Kako bilježiti potrošnju grijanja',
     RECORD_HELP_STEP_1_TITLE: 'Konfigurišite prostorije',
-    RECORD_HELP_STEP_1_DESC: 'Kliknite na ikonu postavki (⚙️) da dodate ili izmijenite prostorije. Možete dodati do 10 prostorija s vlastitim nazivima.',
+    RECORD_HELP_STEP_1_DESC:
+      'Kliknite na ikonu postavki (⚙️) da dodate ili izmijenite prostorije. Možete dodati do 10 prostorija s vlastitim nazivima.',
     RECORD_HELP_STEP_2_TITLE: 'Odaberite datum',
-    RECORD_HELP_STEP_2_DESC: 'Odaberite datum očitavanja. Kalendar ograničava buduće datume radi tačnosti zapisa.',
+    RECORD_HELP_STEP_2_DESC:
+      'Odaberite datum očitavanja. Kalendar ograničava buduće datume radi tačnosti zapisa.',
     RECORD_HELP_STEP_3_TITLE: 'Unesite očitavanja',
-    RECORD_HELP_STEP_3_DESC: 'Unesite očitavanje za svaku prostoriju. Ne morate popuniti sve - djelimični unosi su dozvoljeni!',
+    RECORD_HELP_STEP_3_DESC:
+      'Unesite očitavanje za svaku prostoriju. Ne morate popuniti sve - djelimični unosi su dozvoljeni!',
     RECORD_HELP_STEP_4_TITLE: 'Sačuvajte zapis',
-    RECORD_HELP_STEP_4_DESC: 'Kliknite na "Sačuvaj" da pohranite podatke. Zapis će se pojaviti u historiji iznad.',
+    RECORD_HELP_STEP_4_DESC:
+      'Kliknite na "Sačuvaj" da pohranite podatke. Zapis će se pojaviti u historiji iznad.',
     RECORD_HELP_STEP_5_TITLE: 'Zaključane prostorije',
-    RECORD_HELP_STEP_5_DESC: 'Prostorije s podacima su zaključane kako bi se spriječile slučajne promjene. Možete ih otključati u postavkama (⚙️) ako je potrebno.',
+    RECORD_HELP_STEP_5_DESC:
+      'Prostorije s podacima su zaključane kako bi se spriječile slučajne promjene. Možete ih otključati u postavkama (⚙️) ako je potrebno.',
     CHART_HELP_STEP_1_TITLE: 'Šta grafikon prikazuje',
-    CHART_HELP_STEP_1_DESC: 'Grafikon vizualizira vašu potrošnju grijanja kroz vrijeme. Pomaže u identifikaciji perioda visoke potrošnje i sezonskih trendova.',
+    CHART_HELP_STEP_1_DESC:
+      'Grafikon vizualizira vašu potrošnju grijanja kroz vrijeme. Pomaže u identifikaciji perioda visoke potrošnje i sezonskih trendova.',
     CHART_HELP_STEP_2_TITLE: 'Načini prikaza i pogledi',
-    CHART_HELP_STEP_2_DESC: 'Prebacujte između "Ukupnog Kumulativnog" (sirova očitavanja) i "Dnevnog Prosjeka" (potrošnja po danu). Koristite filtere da vidite podjelu po prostorijama.',
+    CHART_HELP_STEP_2_DESC:
+      'Prebacujte između "Ukupnog Kumulativnog" (sirova očitavanja) i "Dnevnog Prosjeka" (potrošnja po danu). Koristite filtere da vidite podjelu po prostorijama.',
     CHART_HELP_STEP_3_TITLE: 'Poređenje',
-    CHART_HELP_STEP_3_DESC: 'U načinu Dnevnog Prosjeka, uključite "Prikaži Prosjek" da uporedite svoju potrošnju sa nacionalnim prosjekom za domaćinstvo vaše veličine.',
+    CHART_HELP_STEP_3_DESC:
+      'U načinu Dnevnog Prosjeka, uključite "Prikaži Prosjek" da uporedite svoju potrošnju sa nacionalnim prosjekom za domaćinstvo vaše veličine.',
     CHART_HELP_STEP_4_TITLE: 'Interakcija',
-    CHART_HELP_STEP_4_DESC: 'Koristite točkić miša za zumiranje. Prevucite za pomjeranje. Kliknite "Resetuj Zum" za povratak na puni prikaz.',
+    CHART_HELP_STEP_4_DESC:
+      'Koristite točkić miša za zumiranje. Prevucite za pomjeranje. Kliknite "Resetuj Zum" za povratak na puni prikaz.',
     ALL_VALUES_IN_UNIT: 'Sve vrijednosti su u kWh',
     NO_VALUES_ERROR: 'Molimo unesite vrijednost za barem jednu prostoriju.',
     INCOMPLETE_ROOM_ERROR: 'Molimo popunite sve započete prostorije.',
@@ -92,21 +107,28 @@ export const heating = {
     EXPORT_ROOMS: 'Izvezi',
     IMPORT_ROOMS: 'Uvezi',
     RECORDS_HELP_STEP_1_TITLE: 'Filtriranje zapisa',
-    RECORDS_HELP_STEP_1_DESC: 'Koristite filtere za raspon datuma, godinu ili mjesec da pronađete zapise. Kliknite "Resetuj Filtere" da očistite sve aktivne filtere.',
+    RECORDS_HELP_STEP_1_DESC:
+      'Koristite filtere za raspon datuma, godinu ili mjesec da pronađete zapise. Kliknite "Resetuj Filtere" da očistite sve aktivne filtere.',
     RECORDS_HELP_STEP_2_TITLE: 'Sortiranje i paginacija',
-    RECORDS_HELP_STEP_2_DESC: 'Sortirajte zapise po datumu ili ukupnoj potrošnji. Kontrolišite broj prikaza po stranici (5, 10, 20 ili 50).',
+    RECORDS_HELP_STEP_2_DESC:
+      'Sortirajte zapise po datumu ili ukupnoj potrošnji. Kontrolišite broj prikaza po stranici (5, 10, 20 ili 50).',
     RECORDS_HELP_STEP_3_TITLE: 'Uređivanje i brisanje',
-    RECORDS_HELP_STEP_3_DESC: 'Kliknite na ikonu za uređivanje (✏️) da izmijenite zapis ili na kantu (🗑️) da ga obrišete. Možete obrisati i sve filtrirane zapise odjednom.',
+    RECORDS_HELP_STEP_3_DESC:
+      'Kliknite na ikonu za uređivanje (✏️) da izmijenite zapis ili na kantu (🗑️) da ga obrišete. Možete obrisati i sve filtrirane zapise odjednom.',
     RECORDS_HELP_STEP_4_TITLE: 'Izvoz i uvoz',
-    RECORDS_HELP_STEP_4_DESC: 'Izvezite svoje podatke kao JSON, Excel ili PDF. Uvezite ranije izvezene datoteke da vratite svoje zapise o grijanju.',
+    RECORDS_HELP_STEP_4_DESC:
+      'Izvezite svoje podatke kao JSON, Excel ili PDF. Uvezite ranije izvezene datoteke da vratite svoje zapise o grijanju.',
     HELP: {
       TITLE: 'Pomoć za postavke prostorija',
       ROOM_MANAGEMENT_TITLE: 'Upravljanje prostorijama',
-      ROOM_MANAGEMENT_DESC: 'Dodajte, uredi ili uklonite prostorije. Možete imati do 10 prostorija. Svaki naziv mora biti jedinstven i sadržavati barem jedno slovo ili broj.',
+      ROOM_MANAGEMENT_DESC:
+        'Dodajte, uredi ili uklonite prostorije. Možete imati do 10 prostorija. Svaki naziv mora biti jedinstven i sadržavati barem jedno slovo ili broj.',
       LOCKED_ROOMS_TITLE: 'Zaključane prostorije (🔒)',
-      LOCKED_ROOMS_DESC: 'Prostorije s postojećim podacima su automatski zaključane kako bi se spriječile slučajne promjene. Možete ih otključati ako je potrebno.',
+      LOCKED_ROOMS_DESC:
+        'Prostorije s postojećim podacima su automatski zaključane kako bi se spriječile slučajne promjene. Možete ih otključati ako je potrebno.',
       IMPORT_EXPORT_TITLE: 'Izvoz i uvoz konfiguracije',
-      IMPORT_EXPORT_DESC: 'Sačuvajte svoju konfiguraciju prostorija kao JSON da je prebacite na drugi uređaj ili napravite rezervnu kopiju.',
+      IMPORT_EXPORT_DESC:
+        'Sačuvajte svoju konfiguraciju prostorija kao JSON da je prebacite na drugi uređaj ili napravite rezervnu kopiju.',
     },
   },
 };

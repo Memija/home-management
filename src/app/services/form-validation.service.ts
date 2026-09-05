@@ -43,7 +43,8 @@ export class FormValidationService {
 
     if (value.trim() === '') return [];
     if (value.length > 10) errors.push('SETTINGS.ERRORS.NUMBER_TOO_LONG');
-    if (!/^[a-zA-Z0-9\s\-\/]+$/.test(value)) errors.push('SETTINGS.ERRORS.INVALID_STREET_NUMBER');
+
+    if (!/^[a-zA-Z0-9\s\-/]+$/.test(value)) errors.push('SETTINGS.ERRORS.INVALID_STREET_NUMBER');
     return errors;
   }
 

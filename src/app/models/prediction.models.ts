@@ -23,7 +23,7 @@ export interface PredictionResult {
   dailyDecadeMin: number;
   dailyDecadeMax: number;
   /** Monthly seasonal factors: index 0=Jan … 11=Dec, each with expected/min/max daily rate */
-  monthlyRates: Array<{ expected: number; min: number; max: number }>;
+  monthlyRates: { expected: number; min: number; max: number }[];
   /** Direction of the consumption trend */
   trend: 'rising' | 'falling' | 'stable';
   /** Percentage change over the last few readings */

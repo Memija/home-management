@@ -6,10 +6,7 @@ import {
   ElectricityRecord,
   DynamicHeatingRecord,
 } from '../models/records.model';
-import {
-  MultiPredictionResult,
-  MIN_RECORDS_FOR_PREDICTION,
-} from '../models/prediction.models';
+import { MultiPredictionResult, MIN_RECORDS_FOR_PREDICTION } from '../models/prediction.models';
 
 // Re-export models so existing consumers keep their import paths unchanged.
 export type { PredictionResult, MultiPredictionResult } from '../models/prediction.models';
@@ -33,45 +30,65 @@ export class PredictionService {
   predictWater(records: ConsumptionRecord[]): MultiPredictionResult | null {
     if (records.length < MIN_RECORDS_FOR_PREDICTION) return null;
 
-    const validRecords = records.filter(
-      (r) => r && r.date && !isNaN(new Date(r.date).getTime()),
-    );
+    const validRecords = records.filter((r) => r && r.date && !isNaN(new Date(r.date).getTime()));
     if (validRecords.length < MIN_RECORDS_FOR_PREDICTION) return null;
 
     const incrementalData = this.calculationService.calculateIncrementalData(validRecords);
 
     // Total prediction
     const ratesWithMonths = this.predictionCalculation.calculateDailyRatesWithMonths(
-      validRecords, incrementalData, 'total',
+      validRecords,
+      incrementalData,
+      'total',
     );
-    const dailyRates = ratesWithMonths.map(r => r.rate);
+    const dailyRates = ratesWithMonths.map((r) => r.rate);
     if (dailyRates.length < 2) return null;
 
     const accuracyData = this.predictionCalculation.calculateHistoricalAccuracy(
-      validRecords, incrementalData, 'total',
+      validRecords,
+      incrementalData,
+      'total',
     );
     const total = this.predictionCalculation.buildPrediction(
-      dailyRates, ratesWithMonths, validRecords, 'L', accuracyData,
+      dailyRates,
+      ratesWithMonths,
+      validRecords,
+      'L',
+      accuracyData,
     );
 
     // Category predictions
     const categories: MultiPredictionResult['categories'] = {};
     const keys = [
-      'bathroomWarm', 'kitchenWarm', 'bathroomCold', 'kitchenCold',
-      'bathroomTotal', 'kitchenTotal', 'warmTotal', 'coldTotal',
+      'bathroomWarm',
+      'kitchenWarm',
+      'bathroomCold',
+      'kitchenCold',
+      'bathroomTotal',
+      'kitchenTotal',
+      'warmTotal',
+      'coldTotal',
     ];
 
     for (const key of keys) {
       const catRatesWithMonths = this.predictionCalculation.calculateDailyRatesWithMonths(
-        validRecords, incrementalData, key,
+        validRecords,
+        incrementalData,
+        key,
       );
-      const catDailyRates = catRatesWithMonths.map(r => r.rate);
+      const catDailyRates = catRatesWithMonths.map((r) => r.rate);
       if (catDailyRates.length >= 2) {
         const catAccuracy = this.predictionCalculation.calculateHistoricalAccuracy(
-          validRecords, incrementalData, key,
+          validRecords,
+          incrementalData,
+          key,
         );
         categories[key] = this.predictionCalculation.buildPrediction(
-          catDailyRates, catRatesWithMonths, validRecords, 'L', catAccuracy,
+          catDailyRates,
+          catRatesWithMonths,
+          validRecords,
+          'L',
+          catAccuracy,
         );
       }
     }
@@ -87,24 +104,30 @@ export class PredictionService {
   predictElectricity(records: ElectricityRecord[]): MultiPredictionResult | null {
     if (records.length < MIN_RECORDS_FOR_PREDICTION) return null;
 
-    const validRecords = records.filter(
-      (r) => r && r.date && !isNaN(new Date(r.date).getTime()),
-    );
+    const validRecords = records.filter((r) => r && r.date && !isNaN(new Date(r.date).getTime()));
     if (validRecords.length < MIN_RECORDS_FOR_PREDICTION) return null;
 
     const incrementalData = this.calculationService.calculateIncrementalData(validRecords);
     const ratesWithMonths = this.predictionCalculation.calculateDailyRatesWithMonths(
-      validRecords, incrementalData, 'total',
+      validRecords,
+      incrementalData,
+      'total',
     );
-    const dailyRates = ratesWithMonths.map(r => r.rate);
+    const dailyRates = ratesWithMonths.map((r) => r.rate);
 
     if (dailyRates.length < 2) return null;
 
     const accuracyData = this.predictionCalculation.calculateHistoricalAccuracy(
-      validRecords, incrementalData, 'total',
+      validRecords,
+      incrementalData,
+      'total',
     );
     const total = this.predictionCalculation.buildPrediction(
-      dailyRates, ratesWithMonths, validRecords, 'kWh', accuracyData,
+      dailyRates,
+      ratesWithMonths,
+      validRecords,
+      'kWh',
+      accuracyData,
     );
     return { total };
   }
@@ -117,48 +140,64 @@ export class PredictionService {
   predictHeating(records: DynamicHeatingRecord[]): MultiPredictionResult | null {
     if (records.length < MIN_RECORDS_FOR_PREDICTION) return null;
 
-    const validRecords = records.filter(
-      (r) => r && r.date && !isNaN(new Date(r.date).getTime()),
-    );
+    const validRecords = records.filter((r) => r && r.date && !isNaN(new Date(r.date).getTime()));
     if (validRecords.length < MIN_RECORDS_FOR_PREDICTION) return null;
 
     const incrementalData = this.calculationService.calculateIncrementalData(validRecords);
 
     // Total prediction
     const ratesWithMonths = this.predictionCalculation.calculateDailyRatesWithMonths(
-      validRecords, incrementalData, 'total',
+      validRecords,
+      incrementalData,
+      'total',
     );
-    const dailyRates = ratesWithMonths.map(r => r.rate);
+    const dailyRates = ratesWithMonths.map((r) => r.rate);
     if (dailyRates.length < 2) return null;
 
     const accuracyData = this.predictionCalculation.calculateHistoricalAccuracy(
-      validRecords, incrementalData, 'total',
+      validRecords,
+      incrementalData,
+      'total',
     );
     const total = this.predictionCalculation.buildPrediction(
-      dailyRates, ratesWithMonths, validRecords, 'kWh', accuracyData, true,
+      dailyRates,
+      ratesWithMonths,
+      validRecords,
+      'kWh',
+      accuracyData,
+      true,
     );
 
     // Category predictions (rooms)
     const categories: MultiPredictionResult['categories'] = {};
 
     const roomIds = new Set<string>();
-    validRecords.forEach(r => {
+    validRecords.forEach((r) => {
       if (r.rooms) {
-        Object.keys(r.rooms).forEach(id => roomIds.add(id));
+        Object.keys(r.rooms).forEach((id) => roomIds.add(id));
       }
     });
 
     for (const roomId of roomIds) {
       const catRatesWithMonths = this.predictionCalculation.calculateDailyRatesWithMonths(
-        validRecords, incrementalData, roomId,
+        validRecords,
+        incrementalData,
+        roomId,
       );
-      const catDailyRates = catRatesWithMonths.map(r => r.rate);
+      const catDailyRates = catRatesWithMonths.map((r) => r.rate);
       if (catDailyRates.length >= 2) {
         const catAccuracy = this.predictionCalculation.calculateHistoricalAccuracy(
-          validRecords, incrementalData, roomId,
+          validRecords,
+          incrementalData,
+          roomId,
         );
         categories[roomId] = this.predictionCalculation.buildPrediction(
-          catDailyRates, catRatesWithMonths, validRecords, 'kWh', catAccuracy, true,
+          catDailyRates,
+          catRatesWithMonths,
+          validRecords,
+          'kWh',
+          catAccuracy,
+          true,
         );
       }
     }

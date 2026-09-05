@@ -1,5 +1,5 @@
 import { Injectable, signal, effect, inject, untracked } from '@angular/core';
-import { STORAGE_SERVICE, StorageService } from './storage.service';
+import { STORAGE_SERVICE } from './storage.service';
 import { HeatingRoomsService } from './heating-rooms.service';
 
 export interface WaterColumnMapping {

@@ -1,4 +1,4 @@
-import { Component, Input, Output, EventEmitter, computed, signal } from '@angular/core';
+import { Component, Input, Output, EventEmitter, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { LucideAngularModule, LucideIconData } from 'lucide-angular';
 import { TranslatePipe } from '../../pipes/translate.pipe';
@@ -35,13 +35,13 @@ export class DeleteConfirmationModalComponent {
   });
 
   @Output() confirm = new EventEmitter<void>();
-  @Output() cancel = new EventEmitter<void>();
+  @Output() cancelModal = new EventEmitter<void>();
 
   onConfirm() {
     this.confirm.emit();
   }
 
   onCancel() {
-    this.cancel.emit();
+    this.cancelModal.emit();
   }
 }

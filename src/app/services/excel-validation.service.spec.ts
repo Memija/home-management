@@ -5,7 +5,7 @@ import { describe, it, expect, beforeEach, vi, afterEach } from 'vitest';
 
 describe('ExcelValidationService', () => {
   let service: ExcelValidationService;
-  let mockLanguageService: any;
+  let mockLanguageService: { translate: ReturnType<typeof vi.fn> };
 
   beforeEach(() => {
     mockLanguageService = {
@@ -38,7 +38,7 @@ describe('ExcelValidationService', () => {
 
     it('should invalidate empty or null', () => {
       expect(service.isValidColumnName('')).toBe(false);
-      expect(service.isValidColumnName(null as any)).toBe(false);
+      expect(service.isValidColumnName(null as unknown as string)).toBe(false);
     });
 
     it('should invalidate too long name', () => {
@@ -126,9 +126,6 @@ describe('ExcelValidationService', () => {
     });
 
     it('should return valid if same name used in different categories (allowed?)', () => {
-      // Logic checks duplicates within waterColumns separately from heatingColumns?
-      // new Set(waterColumns) vs new Set(heatingColumns).
-      // Yes.
       const water = ['A', 'B'];
       const heating = ['A', 'C'];
       const result = service.validateMappings(water, heating);

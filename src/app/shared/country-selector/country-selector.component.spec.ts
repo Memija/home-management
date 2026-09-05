@@ -17,8 +17,16 @@ class MockTranslatePipe implements PipeTransform {
 describe('CountrySelectorComponent', () => {
   let component: CountrySelectorComponent;
   let fixture: ComponentFixture<CountrySelectorComponent>;
-  let countryServiceMock: any;
-  let languageServiceMock: any;
+  let countryServiceMock: {
+    getCountries: ReturnType<typeof vi.fn>;
+    getCountryInfoByCode: ReturnType<typeof vi.fn>;
+    getCountryInfoByName: ReturnType<typeof vi.fn>;
+    getAllCountryData: ReturnType<typeof vi.fn>;
+  };
+  let languageServiceMock: {
+    currentLang: import('@angular/core').WritableSignal<string>;
+    translate: ReturnType<typeof vi.fn>;
+  };
 
   const mockCountries: CountryInfo[] = [
     { code: 'de', translationKey: 'COUNTRIES.GERMANY' },
@@ -100,19 +108,19 @@ describe('CountrySelectorComponent', () => {
     });
 
     it('should have empty search field by default', () => {
-      expect((component as any)._countrySearch()).toBe('');
+      expect(component['_countrySearch']()).toBe('');
     });
   });
 
   describe('countryCode setter', () => {
     it('should set the internal country code signal', () => {
       component.countryCode = 'de';
-      expect((component as any)._countryCode()).toBe('de');
+      expect(component['_countryCode']()).toBe('de');
     });
 
     it('should update search field with translated country name', () => {
       component.countryCode = 'de';
-      expect((component as any)._countrySearch()).toBe('Germany');
+      expect(component['_countrySearch']()).toBe('Germany');
     });
 
     it('should call countryService.getCountryInfoByCode', () => {
@@ -122,13 +130,13 @@ describe('CountrySelectorComponent', () => {
 
     it('should not update search if code is empty', () => {
       component.countryCode = '';
-      expect((component as any)._countrySearch()).toBe('');
+      expect(component['_countrySearch']()).toBe('');
     });
 
     it('should not update search if code is not found', () => {
       countryServiceMock.getCountryInfoByCode.mockReturnValue(undefined);
       component.countryCode = 'xx';
-      expect((component as any)._countrySearch()).toBe('');
+      expect(component['_countrySearch']()).toBe('');
     });
 
     it('should return the country code via getter', () => {
@@ -144,12 +152,12 @@ describe('CountrySelectorComponent', () => {
 
     it('should update the search signal', () => {
       component.onSearchChange('Germany');
-      expect((component as any)._countrySearch()).toBe('Germany');
+      expect(component['_countrySearch']()).toBe('Germany');
     });
 
     it('should set country code when exact match found', () => {
       component.onSearchChange('Germany');
-      expect((component as any)._countryCode()).toBe('de');
+      expect(component['_countryCode']()).toBe('de');
     });
 
     it('should emit countryCodeChange on exact match', () => {
@@ -171,7 +179,7 @@ describe('CountrySelectorComponent', () => {
     it('should clear country code when no match found', () => {
       component.countryCode = 'de';
       component.onSearchChange('NonExistentCountry');
-      expect((component as any)._countryCode()).toBe('');
+      expect(component['_countryCode']()).toBe('');
     });
 
     it('should emit empty string for countryCodeChange when no match', () => {
@@ -214,12 +222,12 @@ describe('CountrySelectorComponent', () => {
 
     it('should set country code when valid country is selected', () => {
       component.selectCountry('Germany');
-      expect((component as any)._countryCode()).toBe('de');
+      expect(component['_countryCode']()).toBe('de');
     });
 
     it('should update search field with selected country name', () => {
       component.selectCountry('France');
-      expect((component as any)._countrySearch()).toBe('France');
+      expect(component['_countrySearch']()).toBe('France');
     });
 
     it('should emit countryCodeChange with the country code', () => {
@@ -245,8 +253,8 @@ describe('CountrySelectorComponent', () => {
       component.countryCodeChange.subscribe(spy);
 
       component.selectCountry('UnknownCountry');
-      expect((component as any)._countryCode()).toBe('UnknownCountry');
-      expect((component as any)._countrySearch()).toBe('UnknownCountry');
+      expect(component['_countryCode']()).toBe('UnknownCountry');
+      expect(component['_countrySearch']()).toBe('UnknownCountry');
       expect(spy).toHaveBeenCalledWith('UnknownCountry');
     });
   });
@@ -257,31 +265,31 @@ describe('CountrySelectorComponent', () => {
     });
 
     it('should return empty array when search is empty', () => {
-      (component as any)._countrySearch.set('');
-      expect((component as any).filteredCountries()).toEqual([]);
+      component['_countrySearch'].set('');
+      expect(component['filteredCountries']()).toEqual([]);
     });
 
     it('should return empty array when search is only whitespace', () => {
-      (component as any)._countrySearch.set('   ');
-      expect((component as any).filteredCountries()).toEqual([]);
+      component['_countrySearch'].set('   ');
+      expect(component['filteredCountries']()).toEqual([]);
     });
 
     it('should return matching countries for partial search', () => {
-      (component as any)._countrySearch.set('ger');
-      const results = (component as any).filteredCountries();
+      component['_countrySearch'].set('ger');
+      const results = component['filteredCountries']();
       expect(results.length).toBeGreaterThan(0);
       expect(results.some((c: string) => c.toLowerCase().includes('ger'))).toBe(true);
     });
 
     it('should be case-insensitive', () => {
-      (component as any)._countrySearch.set('GER');
-      const results = (component as any).filteredCountries();
+      component['_countrySearch'].set('GER');
+      const results = component['filteredCountries']();
       expect(results.length).toBeGreaterThan(0);
     });
 
     it('should return empty array when exact match exists (already selected)', () => {
-      (component as any)._countrySearch.set('Germany');
-      const results = (component as any).filteredCountries();
+      component['_countrySearch'].set('Germany');
+      const results = component['filteredCountries']();
       expect(results).toEqual([]);
     });
 
@@ -290,17 +298,17 @@ describe('CountrySelectorComponent', () => {
       countryServiceMock.getCountries.mockReturnValue(
         Array.from({ length: 20 }, (_, i) => `Country ${i}`),
       );
-      (component as any)._countrySearch.set('Country');
-      const results = (component as any).filteredCountries();
+      component['_countrySearch'].set('Country');
+      const results = component['filteredCountries']();
       expect(results.length).toBeLessThanOrEqual(10);
     });
 
     it('should exclude the currently selected country from results', () => {
       // Set a country code first
-      (component as any)._countryCode.set('de');
+      component['_countryCode'].set('de');
       // Search for something that would match Germany
-      (component as any)._countrySearch.set('ger');
-      const results = (component as any).filteredCountries();
+      component['_countrySearch'].set('ger');
+      const results = component['filteredCountries']();
       // Germany should be excluded since it's the current display name
       const hasGermany = results.some((c: string) => c.toLowerCase() === 'germany');
       expect(hasGermany).toBe(false);
@@ -310,35 +318,35 @@ describe('CountrySelectorComponent', () => {
   describe('displayName', () => {
     it('should return empty string when no country code is set', () => {
       fixture.detectChanges();
-      expect((component as any).displayName()).toBe('');
+      expect(component['displayName']()).toBe('');
     });
 
     it('should return translated name for valid country code', () => {
-      (component as any)._countryCode.set('de');
+      component['_countryCode'].set('de');
       fixture.detectChanges();
 
-      expect((component as any).displayName()).toBe('Germany');
+      expect(component['displayName']()).toBe('Germany');
     });
 
     it('should return code as fallback when country info not found', () => {
       countryServiceMock.getCountryInfoByCode.mockReturnValue(undefined);
-      (component as any)._countryCode.set('xx');
+      component['_countryCode'].set('xx');
       fixture.detectChanges();
 
-      expect((component as any).displayName()).toBe('xx');
+      expect(component['displayName']()).toBe('xx');
     });
 
     it('should react to language changes', () => {
-      (component as any)._countryCode.set('de');
+      component['_countryCode'].set('de');
       fixture.detectChanges();
 
       // First call with 'en'
-      (component as any).displayName();
+      component['displayName']();
 
       // Simulate language change
       languageServiceMock.currentLang.set('de');
       // displayName re-evaluates due to signal dependency
-      (component as any).displayName();
+      component['displayName']();
 
       // translate should have been called with the translation key
       expect(languageServiceMock.translate).toHaveBeenCalledWith('COUNTRIES.GERMANY');
@@ -363,13 +371,13 @@ describe('CountrySelectorComponent', () => {
 
     it('should handle setting countryCode multiple times', () => {
       component.countryCode = 'de';
-      expect((component as any)._countrySearch()).toBe('Germany');
+      expect(component['_countrySearch']()).toBe('Germany');
 
       component.countryCode = 'fr';
-      expect((component as any)._countrySearch()).toBe('France');
+      expect(component['_countrySearch']()).toBe('France');
 
       component.countryCode = 'us';
-      expect((component as any)._countrySearch()).toBe('United States');
+      expect(component['_countrySearch']()).toBe('United States');
     });
 
     it('should handle rapid search changes', () => {
@@ -378,7 +386,7 @@ describe('CountrySelectorComponent', () => {
       component.onSearchChange('Germ');
       component.onSearchChange('Germany');
 
-      expect((component as any)._countryCode()).toBe('de');
+      expect(component['_countryCode']()).toBe('de');
     });
 
     it('should handle search followed by clear', () => {
@@ -397,11 +405,11 @@ describe('CountrySelectorComponent', () => {
 
     it('should handle selecting country then typing partial text', () => {
       component.selectCountry('Germany');
-      expect((component as any)._countryCode()).toBe('de');
+      expect(component['_countryCode']()).toBe('de');
 
       component.onSearchChange('Aust');
       // Partial text — no match, code should be cleared
-      expect((component as any)._countryCode()).toBe('');
+      expect(component['_countryCode']()).toBe('');
     });
 
     it('should handle hasError input', () => {
@@ -423,7 +431,7 @@ describe('CountrySelectorComponent', () => {
     it('should handle special characters in search', () => {
       component.onSearchChange('Österreich');
       // No match expected in our mock, but should not throw
-      expect((component as any)._countrySearch()).toBe('Österreich');
+      expect(component['_countrySearch']()).toBe('Österreich');
     });
 
     it('should handle country code case insensitivity via getter', () => {

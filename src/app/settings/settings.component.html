@@ -28,7 +28,7 @@
   [steps]="demoWizardSteps"
   [theme]="'settings'"
   [titleKey]="'DEMO.WIZARD_TITLE'"
-  (close)="showDemoWizard.set(false)"
+  (closeModal)="showDemoWizard.set(false)"
 >
 </app-demo-wizard>
 
@@ -36,6 +36,6 @@
   [show]="showDemoTour()"
   [steps]="demoTourSteps"
   [theme]="'settings'"
-  (close)="showDemoTour.set(false)"
+  (closeModal)="showDemoTour.set(false)"
 >
 </app-demo-tour>

@@ -14,7 +14,7 @@ import {
   RefreshCcw,
   Info,
 } from 'lucide-angular';
-import { MultiPredictionResult, PredictionResult } from '../../services/prediction.service';
+import { MultiPredictionResult } from '../../services/prediction.service';
 
 @Component({
   selector: 'app-predictions-panel',
@@ -38,7 +38,7 @@ export class PredictionsPanelComponent {
     const names = this.categoryNames();
     return Object.entries(cats).map(([key, value]) => ({
       key: names[key] || key,
-      value
+      value,
     }));
   });
 

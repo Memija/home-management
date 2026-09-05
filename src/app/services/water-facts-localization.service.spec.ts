@@ -5,7 +5,7 @@ import { describe, it, expect, beforeEach, vi } from 'vitest';
 
 describe('WaterFactsService (Multi-language Localization)', () => {
   let service: WaterFactsService;
-  let mockLanguageService: any;
+  let mockLanguageService: Record<string, import('vitest').Mock>;
 
   beforeEach(() => {
     mockLanguageService = {
@@ -14,10 +14,7 @@ describe('WaterFactsService (Multi-language Localization)', () => {
     };
 
     TestBed.configureTestingModule({
-      providers: [
-        WaterFactsService,
-        { provide: LanguageService, useValue: mockLanguageService }
-      ],
+      providers: [WaterFactsService, { provide: LanguageService, useValue: mockLanguageService }],
     });
     service = TestBed.inject(WaterFactsService);
   });
@@ -41,7 +38,7 @@ describe('WaterFactsService (Multi-language Localization)', () => {
     });
 
     it('should convert days to years (Jahre)', () => {
-      // Divisor index 11 is 30 (TOILET_PER_DAY). 
+      // Divisor index 11 is 30 (TOILET_PER_DAY).
       // 40000 / 30 = 1333 days -> 3 Jahre
       const result = service.getFactByIndex(40000, 11, 'total');
       expect(result?.message).toContain('3 Jahre');

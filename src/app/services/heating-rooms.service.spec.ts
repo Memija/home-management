@@ -3,12 +3,18 @@ import { HeatingRoomsService } from './heating-rooms.service';
 import { STORAGE_SERVICE } from './storage.service';
 import { LanguageService } from './language.service';
 import { describe, it, expect, beforeEach, vi } from 'vitest';
-import { signal } from '@angular/core';
+import { signal, WritableSignal } from '@angular/core';
 
 describe('HeatingRoomsService', () => {
   let service: HeatingRoomsService;
-  let mockStorageService: any;
-  let mockLanguageService: any;
+  let mockStorageService: {
+    load: ReturnType<typeof vi.fn>;
+    save: ReturnType<typeof vi.fn>;
+  };
+  let mockLanguageService: {
+    translate: ReturnType<typeof vi.fn>;
+    currentLang: WritableSignal<string>;
+  };
 
   // Helper to wait for the async loadRooms to complete
   const waitForInit = async () => {
@@ -22,7 +28,7 @@ describe('HeatingRoomsService', () => {
     };
 
     mockLanguageService = {
-      translate: vi.fn().mockImplementation((key) => key),
+      translate: vi.fn().mockImplementation((key: string) => key),
       currentLang: signal('en'),
     };
 
@@ -153,7 +159,9 @@ describe('HeatingRoomsService', () => {
         .spyOn(document.body, 'removeChild')
         .mockImplementation(() => document.body);
       const mockClick = vi.fn();
-      const mockRevokeObjectURL = vi.spyOn(URL, 'revokeObjectURL').mockImplementation(() => {});
+      const mockRevokeObjectURL = vi.spyOn(URL, 'revokeObjectURL').mockImplementation(() => {
+        /* noop */
+      });
       const mockCreateObjectURL = vi.spyOn(URL, 'createObjectURL').mockReturnValue('blob:test');
 
       mockCreateElement.mockReturnValue({

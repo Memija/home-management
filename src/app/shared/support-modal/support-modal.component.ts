@@ -1,4 +1,4 @@
-import { Component, output } from '@angular/core';
+import { Component, inject, output } from '@angular/core';
 import { TranslatePipe } from '../../pipes/translate.pipe';
 import { LucideAngularModule, X, Heart } from 'lucide-angular';
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
@@ -11,20 +11,18 @@ import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
   styleUrl: './support-modal.component.scss',
 })
 export class SupportModalComponent {
+  private sanitizer = inject(DomSanitizer);
+
   readonly XIcon = X;
   readonly HeartIcon = Heart;
 
-  close = output<void>();
+  closeModal = output<void>();
 
-  kofiUrl: SafeResourceUrl;
-
-  constructor(private sanitizer: DomSanitizer) {
-    this.kofiUrl = this.sanitizer.bypassSecurityTrustResourceUrl(
-      'https://ko-fi.com/memija/?hidefeed=true&widget=true&embed=true&preview=true',
-    );
-  }
+  kofiUrl: SafeResourceUrl = this.sanitizer.bypassSecurityTrustResourceUrl(
+    'https://ko-fi.com/memija/?hidefeed=true&widget=true&embed=true&preview=true',
+  );
 
   onClose() {
-    this.close.emit();
+    this.closeModal.emit();
   }
 }

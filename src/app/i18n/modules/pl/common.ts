@@ -7,6 +7,8 @@ export const common = {
     TITLE: 'Licznik Zużycia Wody',
     SETTINGS: 'Ustawienia',
     BACK: 'Powrót do strony głównej',
+    LOADING_CHART: 'Ładowanie wykresu...',
+    LOADING_RECORDS: 'Ładowanie rekordów...',
   },
   ACTIONS: {
     CLOSE: 'Zamknij',
@@ -26,7 +28,8 @@ export const common = {
   DASHBOARD: {
     TITLE: 'Zarządzanie Domem',
     SUBTITLE: 'Wybierz licznik, aby zarządzać zużyciem',
-    CONFIDENCE_INFO: 'Wskazuje, jak wiarygodna jest prognoza na podstawie spójności danych historycznych i ilości dostępnych danych.',
+    CONFIDENCE_INFO:
+      'Wskazuje, jak wiarygodna jest prognoza na podstawie spójności danych historycznych i ilości dostępnych danych.',
     WATER_TRACKER: 'Zużycie Wody',
     WATER_DESC: 'Śledź swoje zużycie wody',
     HEATING_TRACKER: 'Zużycie Ogrzewania',
@@ -51,7 +54,8 @@ export const common = {
   CHANGELOG: {
     TITLE: 'Historia zmian',
     SUBTITLE: 'Zestawienie wszystkich istotnych zmian w każdej wersji',
-    CONFIDENCE_INFO: 'Wskazuje, jak wiarygodna jest prognoza na podstawie spójności danych historycznych i ilości dostępnych danych.',
+    CONFIDENCE_INFO:
+      'Wskazuje, jak wiarygodna jest prognoza na podstawie spójności danych historycznych i ilości dostępnych danych.',
     V1_1_0_LABEL: 'Wersja 1.1.0',
     SHIPPED: 'Wydano',
   },
@@ -64,21 +68,29 @@ export const common = {
     SMART: 'Smart',
     FILTER_ALL: 'Wszystkie',
     FEATURE_1_TITLE: 'Tryb Tylko Zimnej Wody',
-    FEATURE_1_DESC: 'Nie każdy ma osobny licznik ciepłej wody. Wkrótce będziesz mógł rejestrować całkowite zużycie wody nawet wtedy, gdy śledzenie ciepłej wody nie jest dostępne.',
+    FEATURE_1_DESC:
+      'Nie każdy ma osobny licznik ciepłej wody. Wkrótce będziesz mógł rejestrować całkowite zużycie wody nawet wtedy, gdy śledzenie ciepłej wody nie jest dostępne.',
     FEATURE_2_TITLE: 'Wykresy Pełnoekranowe',
-    FEATURE_2_DESC: 'Uzyskaj lepszy widok na swoje dane dzięki możliwości rozszerzenia wykresów do pełnego ekranu. Idealne do szczegółowej analizy i prezentacji.',
+    FEATURE_2_DESC:
+      'Uzyskaj lepszy widok na swoje dane dzięki możliwości rozszerzenia wykresów do pełnego ekranu. Idealne do szczegółowej analizy i prezentacji.',
     FEATURE_3_TITLE: 'Inteligentne Prognozy Zużycia',
-    FEATURE_3_DESC: 'Pozwól aplikacji analizować Twoje historyczne dane i dostarczać inteligentne prognozy przyszłego zużycia. Planuj z wyprzedzeniem i lepiej zarządzaj budżetem.',
+    FEATURE_3_DESC:
+      'Pozwól aplikacji analizować Twoje historyczne dane i dostarczać inteligentne prognozy przyszłego zużycia. Planuj z wyprzedzeniem i lepiej zarządzaj budżetem.',
     FEATURE_4_TITLE: 'Odczyt Licznika na Podstawie Obrazu',
-    FEATURE_4_DESC: 'Po prostu zrób zdjęcie swojego licznika, a aplikacja automatycznie rozpozna cyfry z obrazu. Koniec z ręcznym wpisywaniem danych!',
+    FEATURE_4_DESC:
+      'Po prostu zrób zdjęcie swojego licznika, a aplikacja automatycznie rozpozna cyfry z obrazu. Koniec z ręcznym wpisywaniem danych!',
     FEATURE_5_TITLE: 'Doskonała Wydajność i Jakość',
-    FEATURE_5_DESC: 'Dążymy do perfekcji. Nasza następna aktualizacja ma na celu osiągnięcie 100% wyniku Lighthouse pod względem wydajności, dostępności i SEO.',
+    FEATURE_5_DESC:
+      'Dążymy do perfekcji. Nasza następna aktualizacja ma na celu osiągnięcie 100% wyniku Lighthouse pod względem wydajności, dostępności i SEO.',
     FEATURE_6_TITLE: 'Doskonała Jakość Kodu',
-    FEATURE_6_DESC: 'Zobowiązujemy się do zachowania najwyższych standardów kodu. Skupimy się na głębszej integracji z SonarCloud i rozwiązaniu wszystkich zgłoszonych problemów.',
+    FEATURE_6_DESC:
+      'Zobowiązujemy się do zachowania najwyższych standardów kodu. Skupimy się na głębszej integracji z SonarCloud i rozwiązaniu wszystkich zgłoszonych problemów.',
     FEATURE_7_TITLE: 'Wiadomości Motywacyjne o Zużyciu',
-    FEATURE_7_DESC: 'Otrzymuj spersonalizowane wiadomości motywacyjne na podstawie trendów zużycia. Pozytywne wzmocnienie, gdy oszczędzasz, i delikatne przypomnienia, gdy zużycie rośnie.',
+    FEATURE_7_DESC:
+      'Otrzymuj spersonalizowane wiadomości motywacyjne na podstawie trendów zużycia. Pozytywne wzmocnienie, gdy oszczędzasz, i delikatne przypomnienia, gdy zużycie rośnie.',
     FEATURE_8_TITLE: 'Wnioski Oparte na Pogodzie',
-    FEATURE_8_DESC: 'Aplikacja pobierze aktualne dane pogodowe dla Twojej lokalizacji i dostarczy spersonalizowane wskazówki oraz motywację.',
+    FEATURE_8_DESC:
+      'Aplikacja pobierze aktualne dane pogodowe dla Twojej lokalizacji i dostarczy spersonalizowane wskazówki oraz motywację.',
     FEATURE_9_TITLE: 'Głosowe Wprowadzanie Odczytów',
     FEATURE_9_DESC:
       'Wystarczy powiedzieć odczyt licznika na głos, a aplikacja zrobi resztę. Twój głos jest transkrybowany w czasie rzeczywistym, a inteligentna ekstrakcja wartości automatycznie wypełnia odpowiednie pola, całkowicie wolnoręczna, bez pisania.',
@@ -91,7 +103,8 @@ export const common = {
     FEATURE_12_TITLE: 'Grywalizacja i Osiągnięcia',
     FEATURE_12_DESC:
       'Zmień oszczędzanie w fajną grę! Zdobywaj odznaki za osiąganie celów związanych z oszczędzaniem i bij własne rekordy, aby zarządzanie domem było jeszcze bardziej wciągające.',
-    CTA_TEXT: 'Twoje wsparcie pomaga nam budować te funkcje szybciej. Dziękujemy za bycie częścią naszej społeczności!',
+    CTA_TEXT:
+      'Twoje wsparcie pomaga nam budować te funkcje szybciej. Dziękujemy za bycie częścią naszej społeczności!',
     BACK_TO_HOME: 'Powrót do strony głównej',
   },
   DEMO: {
@@ -107,67 +120,98 @@ export const common = {
     WIZARD_BUTTON: 'Rozpocznij zwiedzanie',
     STEP: 'Krok',
     WATER_STEP_1_TITLE: 'Interaktywne Wykresy',
-    WATER_STEP_1_DESC: 'Przełączaj między widokami: całkowitym, szczegółowym, według pomieszczeń i typu, aby analizować zużycie wody pod różnymi kątami.',
+    WATER_STEP_1_DESC:
+      'Przełączaj między widokami: całkowitym, szczegółowym, według pomieszczeń i typu, aby analizować zużycie wody pod różnymi kątami.',
     WATER_STEP_2_TITLE: 'Śledzenie Kuchni i Łazienki',
-    WATER_STEP_2_DESC: 'Śledź ciepłą i zimną wodę osobno dla kuchni i łazienki. Przewiń w dół do sekcji wprowadzania danych, aby zobaczyć formularz.',
+    WATER_STEP_2_DESC:
+      'Śledź ciepłą i zimną wodę osobno dla kuchni i łazienki. Przewiń w dół do sekcji wprowadzania danych, aby zobaczyć formularz.',
     WATER_STEP_3_TITLE: 'Porównanie Krajowe',
-    WATER_STEP_3_DESC: 'Zobacz, jak Twoje zużycie wypada na tle średniej krajowej. Informacja o porównaniu aktualizuje się na podstawie ustawień Twojego adresu.',
+    WATER_STEP_3_DESC:
+      'Zobacz, jak Twoje zużycie wypada na tle średniej krajowej. Informacja o porównaniu aktualizuje się na podstawie ustawień Twojego adresu.',
     WATER_STEP_4_TITLE: 'Import i Eksport',
-    WATER_STEP_4_DESC: 'Eksportuj swoje dane jako JSON, Excel lub PDF. Możesz również importować dane z plików, aby przenieść lub utworzyć kopię zapasową swoich rekordów.',
+    WATER_STEP_4_DESC:
+      'Eksportuj swoje dane jako JSON, Excel lub PDF. Możesz również importować dane z plików, aby przenieść lub utworzyć kopię zapasową swoich rekordów.',
     TOUR_WATER_CHART_TITLE: 'Interaktywne Wykresy Wody',
-    TOUR_WATER_CHART_DESC: 'Poznaj swoje zużycie tutaj. Użyj przycisków powyżej, aby przełączać widoki. Możesz również klikać elementy w legendzie, aby ukryć lub pokazać konkretne dane na wykresie.',
+    TOUR_WATER_CHART_DESC:
+      'Poznaj swoje zużycie tutaj. Użyj przycisków powyżej, aby przełączać widoki. Możesz również klikać elementy w legendzie, aby ukryć lub pokazać konkretne dane na wykresie.',
     TOUR_WATER_COMPARISON_TITLE: 'Średnie Krajowe',
-    TOUR_WATER_COMPARISON_DESC: 'Ten panel porównuje Twoje zużycie ze średnimi krajowymi. Pomaga to zrozumieć, czy Twoje gospodarstwo oszczędza wodę, czy zużywa więcej niż typowe domy w Twoim regionie.',
+    TOUR_WATER_COMPARISON_DESC:
+      'Ten panel porównuje Twoje zużycie ze średnimi krajowymi. Pomaga to zrozumieć, czy Twoje gospodarstwo oszczędza wodę, czy zużywa więcej niż typowe domy w Twoim regionie.',
     TOUR_WATER_RECORDS_TITLE: 'Historia Odczytów',
-    TOUR_WATER_RECORDS_DESC: 'Każdy wprowadzony odczyt jest tutaj przechowywany. Możesz łatwo filtrować według dat i używać menu akcji do eksportu lub importu nowych rekordów.',
+    TOUR_WATER_RECORDS_DESC:
+      'Każdy wprowadzony odczyt jest tutaj przechowywany. Możesz łatwo filtrować według dat i używać menu akcji do eksportu lub importu nowych rekordów.',
     TOUR_WATER_INPUT_TITLE: 'Dodaj Nowy Odczyt',
-    TOUR_WATER_INPUT_DESC: 'Wprowadź tutaj liczby ze swojego licznika. Jeśli śledzisz zimną i ciepłą wodę osobno, aplikacja obsłuży oba odczyty.',
+    TOUR_WATER_INPUT_DESC:
+      'Wprowadź tutaj liczby ze swojego licznika. Jeśli śledzisz zimną i ciepłą wodę osobno, aplikacja obsłuży oba odczyty.',
     HEATING_STEP_1_TITLE: 'Śledzenie według Pokojów',
-    HEATING_STEP_1_DESC: 'Rejestruj zużycie ogrzewania dla każdego pokoju. Każdy pokój ma własny odczyt licznika, co daje szczegółowy widok na zużycie energii.',
+    HEATING_STEP_1_DESC:
+      'Rejestruj zużycie ogrzewania dla każdego pokoju. Każdy pokój ma własny odczyt licznika, co daje szczegółowy widok na zużycie energii.',
     HEATING_STEP_2_TITLE: 'Konfiguracja Pokojów',
-    HEATING_STEP_2_DESC: 'Kliknij ikonę ustawień w sekcji wprowadzania danych, aby dodawać, zmieniać nazwy lub usuwać pokoje. Każdy pokój otrzymuje własny kolor na wykresie.',
+    HEATING_STEP_2_DESC:
+      'Kliknij ikonę ustawień w sekcji wprowadzania danych, aby dodawać, zmieniać nazwy lub usuwać pokoje. Każdy pokój otrzymuje własny kolor na wykresie.',
     HEATING_STEP_3_TITLE: 'Wykrywanie Skoków',
-    HEATING_STEP_3_DESC: 'Aplikacja automatycznie wykrywa, gdy w Twoich danych pojawia się nowy pokój i powiadamia Cię o tym, aby wykresy pozostały dokładne.',
+    HEATING_STEP_3_DESC:
+      'Aplikacja automatycznie wykrywa, gdy w Twoich danych pojawia się nowy pokój i powiadamia Cię o tym, aby wykresy pozostały dokładne.',
     HEATING_STEP_4_TITLE: 'Widoki Wykresów',
-    HEATING_STEP_4_DESC: 'Przełączaj między widokiem całkowitego ogrzewania a widokiem na pokój. Użyj trybu przyrostowego, aby zobaczyć miesięczne zmiany.',
+    HEATING_STEP_4_DESC:
+      'Przełączaj między widokiem całkowitego ogrzewania a widokiem na pokój. Użyj trybu przyrostowego, aby zobaczyć miesięczne zmiany.',
     TOUR_HEATING_CHART_TITLE: 'Ogrzewanie Pokój po Pokoju',
-    TOUR_HEATING_CHART_DESC: 'Analizuj zużycie energii w każdym pokoju w domu. Kliknij nazwę pokoju w legendzie, aby przełączyć jego widoczność.',
+    TOUR_HEATING_CHART_DESC:
+      'Analizuj zużycie energii w każdym pokoju w domu. Kliknij nazwę pokoju w legendzie, aby przełączyć jego widoczność.',
     TOUR_HEATING_RECORDS_TITLE: 'Historyczne Odczyty',
-    TOUR_HEATING_RECORDS_DESC: 'Ta tabela zawiera listę wszystkich zarejestrowanych odczytów ogrzewania. Możesz łatwo filtrować według dat i zarządzać swoimi rekordami.',
+    TOUR_HEATING_RECORDS_DESC:
+      'Ta tabela zawiera listę wszystkich zarejestrowanych odczytów ogrzewania. Możesz łatwo filtrować według dat i zarządzać swoimi rekordami.',
     TOUR_HEATING_INPUT_TITLE: 'Inteligentny Formularz',
-    TOUR_HEATING_INPUT_DESC: 'Wprowadzaj odczyty dla wszystkich swoich pokojów naraz. Jeśli dodasz lub usuniesz pokoje w ustawieniach, ten formularz automatycznie się zaktualizuje.',
+    TOUR_HEATING_INPUT_DESC:
+      'Wprowadzaj odczyty dla wszystkich swoich pokojów naraz. Jeśli dodasz lub usuniesz pokoje w ustawieniach, ten formularz automatycznie się zaktualizuje.',
     ELECTRICITY_STEP_1_TITLE: 'Proste Śledzenie kWh',
-    ELECTRICITY_STEP_1_DESC: 'Rejestruj odczyt licznika energii elektrycznej jako pojedynczą wartość w kWh. Aplikacja automatycznie oblicza zużycie między odczytami.',
+    ELECTRICITY_STEP_1_DESC:
+      'Rejestruj odczyt licznika energii elektrycznej jako pojedynczą wartość w kWh. Aplikacja automatycznie oblicza zużycie między odczytami.',
     ELECTRICITY_STEP_2_TITLE: 'Analiza Wizualna',
-    ELECTRICITY_STEP_2_DESC: 'Przeglądaj trendy zużycia energii elektrycznej na interaktywnych wykresach. Porównuj zmiany miesięczne i roczne.',
+    ELECTRICITY_STEP_2_DESC:
+      'Przeglądaj trendy zużycia energii elektrycznej na interaktywnych wykresach. Porównuj zmiany miesięczne i roczne.',
     ELECTRICITY_STEP_3_TITLE: 'Alerty o Zmianie Licznika',
-    ELECTRICITY_STEP_3_DESC: 'Gdy wymienisz licznik, aplikacja wykryje spadek wartości i pozwoli Ci potwierdzić zmianę, aby zachować dokładność danych.',
+    ELECTRICITY_STEP_3_DESC:
+      'Gdy wymienisz licznik, aplikacja wykryje spadek wartości i pozwoli Ci potwierdzić zmianę, aby zachować dokładność danych.',
     ELECTRICITY_STEP_4_TITLE: 'Inteligentny Import Tekstu',
-    ELECTRICITY_STEP_4_DESC: 'Wklej dane ze strony swojego dostawcy energii, a aplikacja automatycznie wyodrębni daty i wartości dla szybkiego importu.',
+    ELECTRICITY_STEP_4_DESC:
+      'Wklej dane ze strony swojego dostawcy energii, a aplikacja automatycznie wyodrębni daty i wartości dla szybkiego importu.',
     TOUR_ELECTRICITY_CHART_TITLE: 'Zużycie Energii Elektrycznej',
-    TOUR_ELECTRICITY_CHART_DESC: 'Wizualizuj trendy mocy w czasie. Przełącz na tryb "Przyrostowy", aby zobaczyć dokładnie, ile energii zużyto w każdym miesiącu.',
+    TOUR_ELECTRICITY_CHART_DESC:
+      'Wizualizuj trendy mocy w czasie. Przełącz na tryb "Przyrostowy", aby zobaczyć dokładnie, ile energii zużyto w każdym miesiącu.',
     TOUR_ELECTRICITY_COMPARISON_TITLE: 'Benchmarki Gospodarstwa',
-    TOUR_ELECTRICITY_COMPARISON_DESC: 'Porównaj swoje zużycie energii z typowymi benchmarkami dla domów Twojej wielkości. Pomaga to zidentyfikować nieefektywne urządzenia.',
+    TOUR_ELECTRICITY_COMPARISON_DESC:
+      'Porównaj swoje zużycie energii z typowymi benchmarkami dla domów Twojej wielkości. Pomaga to zidentyfikować nieefektywne urządzenia.',
     TOUR_ELECTRICITY_RECORDS_TITLE: 'Log Zużycia Energii',
-    TOUR_ELECTRICITY_RECORDS_DESC: 'Chronologiczna lista każdego odczytu licznika. Możesz łatwo filtrować rekordy i eksportować historię zużycia.',
+    TOUR_ELECTRICITY_RECORDS_DESC:
+      'Chronologiczna lista każdego odczytu licznika. Możesz łatwo filtrować rekordy i eksportować historię zużycia.',
     TOUR_ELECTRICITY_INPUT_TITLE: 'Funkcje Inteligentnego Licznika',
-    TOUR_ELECTRICITY_INPUT_DESC: 'Wprowadź tutaj swój bieżący odczyt licznika. Jeśli licznik został niedawno wymieniony, aplikacja inteligentnie to wykryje.',
+    TOUR_ELECTRICITY_INPUT_DESC:
+      'Wprowadź tutaj swój bieżący odczyt licznika. Jeśli licznik został niedawno wymieniony, aplikacja inteligentnie to wykryje.',
     SETTINGS_STEP_1_TITLE: 'Konfiguracja Adresu',
-    SETTINGS_STEP_1_DESC: 'Ustaw adres gospodarstwa, aby włączyć porównania zużycia ze średnimi krajowymi na wszystkich stronach liczników.',
+    SETTINGS_STEP_1_DESC:
+      'Ustaw adres gospodarstwa, aby włączyć porównania zużycia ze średnimi krajowymi na wszystkich stronach liczników.',
     SETTINGS_STEP_2_TITLE: 'Członkowie Rodziny',
-    SETTINGS_STEP_2_DESC: 'Dodaj domowników. Pozwala to na obliczenia zużycia na osobę na wykresach.',
+    SETTINGS_STEP_2_DESC:
+      'Dodaj domowników. Pozwala to na obliczenia zużycia na osobę na wykresach.',
     SETTINGS_STEP_3_TITLE: 'Integracja z Excelem',
-    SETTINGS_STEP_3_DESC: 'Włącz import i eksport Excela, aby pracować ze swoimi danymi w arkuszach kalkulacyjnych. Skonfiguruj mapowanie kolumn dla swojego formatu.',
+    SETTINGS_STEP_3_DESC:
+      'Włącz import i eksport Excela, aby pracować ze swoimi danymi w arkuszach kalkulacyjnych. Skonfiguruj mapowanie kolumn dla swojego formatu.',
     SETTINGS_STEP_4_TITLE: 'Przechowywanie Danych',
-    SETTINGS_STEP_4_DESC: 'Wszystko jest domyślnie przechowywane na Twoim urządzeniu. Użyj "Eksportuj", aby zapisać kopię zapasową, lub "Zaloguj się przez Google", aby bezpiecznie synchronizować dane.',
+    SETTINGS_STEP_4_DESC:
+      'Wszystko jest domyślnie przechowywane na Twoim urządzeniu. Użyj "Eksportuj", aby zapisać kopię zapasową, lub "Zaloguj się przez Google", aby bezpiecznie synchronizować dane.',
     TOUR_SETTINGS_STORAGE_TITLE: 'Twoje Dane i Prywatność',
-    TOUR_SETTINGS_STORAGE_DESC: 'Wszystko jest domyślnie przechowywane na Twoim urządzeniu. Użyj "Eksportuj", aby zapisać kopię zapasową, lub "Zaloguj się przez Google", aby bezpiecznie synchronizować dane.',
+    TOUR_SETTINGS_STORAGE_DESC:
+      'Wszystko jest domyślnie przechowywane na Twoim urządzeniu. Użyj "Eksportuj", aby zapisać kopię zapasową, lub "Zaloguj się przez Google", aby bezpiecznie synchronizować dane.',
     TOUR_SETTINGS_ADDRESS_TITLE: 'Lokalizacja i Kontekst',
-    TOUR_SETTINGS_ADDRESS_DESC: 'Podanie adresu umożliwia porównania zużycia ze średnimi krajowymi, zapewniając dokładniejsze wykresy i wgląd.',
+    TOUR_SETTINGS_ADDRESS_DESC:
+      'Podanie adresu umożliwia porównania zużycia ze średnimi krajowymi, zapewniając dokładniejsze wykresy i wgląd.',
     TOUR_SETTINGS_FAMILY_TITLE: 'Członkowie Gospodarstwa',
-    TOUR_SETTINGS_FAMILY_DESC: 'Dodaj wszystkich, którzy z Tobą mieszkają. Pozwala to na widok "Na Osobę" na wykresach, umożliwiając sprawiedliwe porównanie zużycia.',
+    TOUR_SETTINGS_FAMILY_DESC:
+      'Dodaj wszystkich, którzy z Tobą mieszkają. Pozwala to na widok "Na Osobę" na wykresach, umożliwiając sprawiedliwe porównanie zużycia.',
     TOUR_SETTINGS_EXCEL_TITLE: 'Własne Formaty Excela',
-    TOUR_SETTINGS_EXCEL_DESC: 'Mapuj własne kolumny, aby pasowały do eksportów od Twojego dostawcy mediów. Pozwala to na import lat historycznych danych w sekundach.',
+    TOUR_SETTINGS_EXCEL_DESC:
+      'Mapuj własne kolumny, aby pasowały do eksportów od Twojego dostawcy mediów. Pozwala to na import lat historycznych danych w sekundach.',
     TOUR_SKIP: 'Pomiń Zwiedzanie',
   },
   NOTIFICATIONS: {
@@ -176,21 +220,27 @@ export const common = {
     WATER_INITIAL_TITLE: 'Zacznij Śledzić Wodę',
     WATER_INITIAL_MESSAGE: 'Dodaj swój pierwszy odczyt licznika, aby zacząć śledzić zużycie wody.',
     HEATING_INITIAL_TITLE: 'Zacznij Śledzić Ogrzewanie',
-    HEATING_INITIAL_MESSAGE: 'Dodaj swój pierwszy odczyt licznika, aby zacząć śledzić zużycie ogrzewania.',
+    HEATING_INITIAL_MESSAGE:
+      'Dodaj swój pierwszy odczyt licznika, aby zacząć śledzić zużycie ogrzewania.',
     WATER_OVERDUE_TITLE: 'Czas na Odczyt Licznika',
-    WATER_OVERDUE_MESSAGE: 'Minęło {{days}} dni od ostatniego odczytu wody. Dodaj nowy wpis, aby Twoje dane były aktualne.',
+    WATER_OVERDUE_MESSAGE:
+      'Minęło {{days}} dni od ostatniego odczytu wody. Dodaj nowy wpis, aby Twoje dane były aktualne.',
     WATER_DUE_TITLE: 'Czas na Twój Odczyt Wody',
     WATER_DUE_MESSAGE: 'Zgodnie z harmonogramem, czas na odczyt licznika wody.',
     HEATING_OVERDUE_TITLE: 'Czas na Odczyt Ogrzewania',
-    HEATING_OVERDUE_MESSAGE: 'Minęło {{days}} dni od ostatniego odczytu ogrzewania. Dodaj nowy wpis, aby Twoje dane były aktualne.',
+    HEATING_OVERDUE_MESSAGE:
+      'Minęło {{days}} dni od ostatniego odczytu ogrzewania. Dodaj nowy wpis, aby Twoje dane były aktualne.',
     HEATING_DUE_TITLE: 'Czas na Twój Odczyt Ogrzewania',
     HEATING_DUE_MESSAGE: 'Zgodnie z harmonogramem, czas na odczyt licznika ogrzewania.',
     ELECTRICITY_INITIAL_TITLE: 'Zacznij Śledzić Energię',
-    ELECTRICITY_INITIAL_MESSAGE: 'Dodaj swój pierwszy odczyt licznika, aby zacząć śledzić zużycie energii elektrycznej.',
+    ELECTRICITY_INITIAL_MESSAGE:
+      'Dodaj swój pierwszy odczyt licznika, aby zacząć śledzić zużycie energii elektrycznej.',
     ELECTRICITY_OVERDUE_TITLE: 'Czas na Odczyt Energii',
-    ELECTRICITY_OVERDUE_MESSAGE: 'Minęło {{days}} dni od ostatniego odczytu energii. Dodaj nowy wpis, aby Twoje dane były aktualne.',
+    ELECTRICITY_OVERDUE_MESSAGE:
+      'Minęło {{days}} dni od ostatniego odczytu energii. Dodaj nowy wpis, aby Twoje dane były aktualne.',
     ELECTRICITY_DUE_TITLE: 'Czas na Twój Odczyt Energii',
-    ELECTRICITY_DUE_MESSAGE: 'Zgodnie z harmonogramem, czas na odczyt licznika energii elektrycznej.',
+    ELECTRICITY_DUE_MESSAGE:
+      'Zgodnie z harmonogramem, czas na odczyt licznika energii elektrycznej.',
     ADDRESS_MISSING_TITLE: 'Dodaj Swój Adres',
     ADDRESS_MISSING_MESSAGE: 'Skonfiguruj adres gospodarstwa w ustawieniach, aby uzupełnić profil.',
     FAMILY_MISSING_TITLE: 'Dodaj Członków Rodziny',
@@ -210,12 +260,14 @@ export const common = {
   },
   SMART_IMPORT: {
     TITLE: 'Inteligentny Import Tekstu',
-    INSTRUCTION: 'Skopiuj zawartość tabeli ze strony internetowej i wklej ją tutaj. Automatycznie wyodrębnimy daty i wartości.',
+    INSTRUCTION:
+      'Skopiuj zawartość tabeli ze strony internetowej i wklej ją tutaj. Automatycznie wyodrębnimy daty i wartości.',
     PLACEHOLDER: 'Wklej tutaj tekst... (Przykład: 01/01/2023 1,234 kWh)',
     FOUND: 'Znalezione Rekordy',
     DATE: 'Data',
     VALUE: 'Wartość (kWh)',
-    NO_DATA_FOUND: 'W wklejonym tekście nie znaleziono poprawnych danych. Spróbuj skopiować inny format.',
+    NO_DATA_FOUND:
+      'W wklejonym tekście nie znaleziono poprawnych danych. Spróbuj skopiować inny format.',
     ANALYZE: 'Analizuj Tekst',
     BACK: 'Powrót do Wprowadzania',
     IMPORT_BUTTON: 'Importuj Rekordy',
@@ -223,7 +275,8 @@ export const common = {
   METER_READER: {
     TITLE: 'Odczyt Licznika ze Zdjęcia',
     STARTING_CAMERA: 'Uruchamianie aparatu...',
-    INSTRUCTION: 'Sfotografuj lub prześlij zdjęcie swojego licznika, aby automatycznie zeskanować odczyt. Prosimy o zweryfikowanie wykrytych liczb, ponieważ dokładność optycznego rozpoznawania znaków (OCR) może się różnić w zależności od jakości obrazu.',
+    INSTRUCTION:
+      'Sfotografuj lub prześlij zdjęcie swojego licznika, aby automatycznie zeskanować odczyt. Prosimy o zweryfikowanie wykrytych liczb, ponieważ dokładność optycznego rozpoznawania znaków (OCR) może się różnić w zależności od jakości obrazu.',
     TAKE_PHOTO: 'Zrób Zdjęcie',
     CAMERA_HINT: 'Użyj aparatu',
     UPLOAD_IMAGE: 'Prześlij Obraz',
@@ -233,17 +286,20 @@ export const common = {
     DETECTED_VALUE: 'Wykryty Odczyt',
     EDIT_HINT: 'Możesz edytować wartość w razie potrzeby',
     OTHER_VALUES: 'Inne wykryte wartości:',
-    NO_VALUE_FOUND: 'Nie udało się wykryć żadnych liczb. Spróbuj ponownie z wyraźniejszym zdjęciem.',
+    NO_VALUE_FOUND:
+      'Nie udało się wykryć żadnych liczb. Spróbuj ponownie z wyraźniejszym zdjęciem.',
     RETRY: 'Spróbuj Ponownie',
     USE_VALUE: 'Użyj Tej Wartości',
     SELECT_FIELD: 'Do którego licznika należy ten odczyt?',
-    CROP_INSTRUCTION: 'Proszę przyciąć obraz tak, aby widoczne były tylko cyfry, co zapewni lepszą dokładność.',
+    CROP_INSTRUCTION:
+      'Proszę przyciąć obraz tak, aby widoczne były tylko cyfry, co zapewni lepszą dokładność.',
     CROP_DRAG_HINT: 'Kliknij i przeciągnij, aby zaznaczyć cyfry na liczniku.',
     CROP_SELECTED: 'Wybór gotowy — kliknij Skanuj wybór.',
     SKIP_CROP: 'Użyj całego obrazu',
     SCAN_SELECTION: 'Skanuj wybór',
     SCAN_FULL: 'Skanuj cały obraz',
-    NO_FIELDS_CONFIGURED: 'Brak skonfigurowanych liczników. Proszę najpierw skonfigurować pokoje lub liczniki.',
+    NO_FIELDS_CONFIGURED:
+      'Brak skonfigurowanych liczników. Proszę najpierw skonfigurować pokoje lub liczniki.',
     CAMERA_ERROR: 'Nie można uzyskać dostępu do aparatu. Użyj opcji przesyłania zamiast tego.',
   },
   MONTHS: {
@@ -292,12 +348,15 @@ export const common = {
   PREDICTIONS: {
     BREAKDOWN: 'Zestawienie kategorii',
     ACCURACY: 'Dokładność historyczna',
-    ACCURACY_INFO: 'Pokazuje, jak dokładnie prognozy systemu sprawdziły się w całej historii Twoich odczytów.',
+    ACCURACY_INFO:
+      'Pokazuje, jak dokładnie prognozy systemu sprawdziły się w całej historii Twoich odczytów.',
     AUTO_CORRECTED: 'Automatycznie skorygowano o {{percent}}% na podstawie przeszłych trendów',
-    AUTO_CORRECTED_INFO: 'System porównuje wcześniejsze prognozy z Twoim rzeczywistym zużyciem. Wykrywa historyczne odchylenia (takie jak ciągłe zaniżanie) i automatycznie dostosowuje przyszłe prognozy o ten sam procent, aby odzwierciedlić Twoje prawdziwe nawyki.',
+    AUTO_CORRECTED_INFO:
+      'System porównuje wcześniejsze prognozy z Twoim rzeczywistym zużyciem. Wykrywa historyczne odchylenia (takie jak ciągłe zaniżanie) i automatycznie dostosowuje przyszłe prognozy o ten sam procent, aby odzwierciedlić Twoje prawdziwe nawyki.',
     TITLE: 'Inteligentne Prognozy',
     SUBTITLE: 'Na podstawie historii Twojego zużycia',
-    CONFIDENCE_INFO: 'Wskazuje, jak wiarygodna jest prognoza na podstawie spójności danych historycznych i ilości dostępnych danych.',
+    CONFIDENCE_INFO:
+      'Wskazuje, jak wiarygodna jest prognoza na podstawie spójności danych historycznych i ilości dostępnych danych.',
     NEXT_30_DAYS: '30 dni',
     NEXT_90_DAYS: '90 dni',
     HALF_YEAR: 'Pół roku',
@@ -310,13 +369,15 @@ export const common = {
     TREND_RISING: 'Zużycie rośnie',
     TREND_FALLING: 'Zużycie spada',
     TREND_STABLE: 'Zużycie jest stabilne',
-    TREND_INFO: 'Porównuje Twoje ostatnie zużycie z wcześniejszymi danymi historycznymi w celu identyfikacji zmian w nawykach.',
+    TREND_INFO:
+      'Porównuje Twoje ostatnie zużycie z wcześniejszymi danymi historycznymi w celu identyfikacji zmian w nawykach.',
     CONFIDENCE: 'Pewność',
     CONFIDENCE_HIGH: 'Wysoka',
     CONFIDENCE_MEDIUM: 'Średnia',
     CONFIDENCE_LOW: 'Niska',
     DAILY_AVERAGE: 'Średnia dzienna',
-    AVERAGE_DAILY_INFO: 'Twoje ogólne średnie dzienne zużycie obliczone na podstawie całej historii Twoich odczytów.',
+    AVERAGE_DAILY_INFO:
+      'Twoje ogólne średnie dzienne zużycie obliczone na podstawie całej historii Twoich odczytów.',
     DAILY_UNIT: ' / dzień',
     NOT_ENOUGH_DATA: 'Dodaj co najmniej 4 odczyty, aby odblokować inteligentne prognozy',
   },

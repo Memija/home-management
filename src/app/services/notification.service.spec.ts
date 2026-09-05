@@ -7,8 +7,8 @@ import { ConsumptionRecord, ElectricityRecord } from '../models/records.model';
 
 describe('NotificationService', () => {
   let service: NotificationService;
-  let mockStorageService: any;
-  let mockDemoService: any;
+  let mockStorageService: Record<string, import('vitest').Mock>;
+  let mockDemoService: { isDemoMode: import('vitest').Mock };
 
   beforeEach(() => {
     mockStorageService = {
@@ -97,14 +97,14 @@ describe('NotificationService', () => {
         kitchenCold: 0,
         bathroomWarm: 0,
         bathroomCold: 0,
-      },
+      } as Partial<ConsumptionRecord> as ConsumptionRecord,
       {
         date: new Date(now.getTime() - 6 * 24 * 60 * 60 * 1000),
         kitchenWarm: 0,
         kitchenCold: 0,
         bathroomWarm: 0,
         bathroomCold: 0,
-      },
+      } as Partial<ConsumptionRecord> as ConsumptionRecord,
     ];
     // Avg gap: 3 days. Due threshold: floor(3) = 3 days.
     // Days since last (3 days ago) = 3.
@@ -131,14 +131,14 @@ describe('NotificationService', () => {
         kitchenCold: 0,
         bathroomWarm: 0,
         bathroomCold: 0,
-      },
+      } as Partial<ConsumptionRecord> as ConsumptionRecord,
       {
         date: new Date(now.getTime() - 13 * 24 * 60 * 60 * 1000),
         kitchenWarm: 0,
         kitchenCold: 0,
         bathroomWarm: 0,
         bathroomCold: 0,
-      },
+      } as Partial<ConsumptionRecord> as ConsumptionRecord,
     ];
     // Avg gap: 2 days. Overdue threshold: max(3, 10) = 10 days.
     // Days since last (11 days ago) = 11.
@@ -202,14 +202,14 @@ describe('NotificationService', () => {
           kitchenCold: 0,
           bathroomWarm: 0,
           bathroomCold: 0,
-        },
+        } as Partial<ConsumptionRecord> as ConsumptionRecord,
         {
           date: new Date('2026-02-15T12:00:00Z'),
           kitchenWarm: 0,
           kitchenCold: 0,
           bathroomWarm: 0,
           bathroomCold: 0,
-        },
+        } as Partial<ConsumptionRecord> as ConsumptionRecord,
       ];
 
       service.setWaterRecords(records);
@@ -232,14 +232,14 @@ describe('NotificationService', () => {
           kitchenCold: 0,
           bathroomWarm: 0,
           bathroomCold: 0,
-        },
+        } as Partial<ConsumptionRecord> as ConsumptionRecord,
         {
           date: new Date('2026-01-31T12:00:00Z'),
           kitchenWarm: 0,
           kitchenCold: 0,
           bathroomWarm: 0,
           bathroomCold: 0,
-        },
+        } as Partial<ConsumptionRecord> as ConsumptionRecord,
       ];
 
       service.setWaterRecords(records);
@@ -262,14 +262,14 @@ describe('NotificationService', () => {
           kitchenCold: 0,
           bathroomWarm: 0,
           bathroomCold: 0,
-        },
+        } as Partial<ConsumptionRecord> as ConsumptionRecord,
         {
           date: new Date('2026-02-15T12:00:00Z'),
           kitchenWarm: 0,
           kitchenCold: 0,
           bathroomWarm: 0,
           bathroomCold: 0,
-        },
+        } as Partial<ConsumptionRecord> as ConsumptionRecord,
       ];
 
       service.setWaterRecords(records);
@@ -292,14 +292,14 @@ describe('NotificationService', () => {
           kitchenCold: 0,
           bathroomWarm: 0,
           bathroomCold: 0,
-        },
+        } as Partial<ConsumptionRecord> as ConsumptionRecord,
         {
           date: new Date('2026-01-31T12:00:00Z'),
           kitchenWarm: 0,
           kitchenCold: 0,
           bathroomWarm: 0,
           bathroomCold: 0,
-        },
+        } as Partial<ConsumptionRecord> as ConsumptionRecord,
       ];
 
       service.setWaterRecords(records);
@@ -316,8 +316,12 @@ describe('NotificationService', () => {
     const now = new Date();
     // Create records with 3-day average interval
     const records = [
-      { date: new Date(now.getTime() - 3 * 24 * 60 * 60 * 1000) },
-      { date: new Date(now.getTime() - 6 * 24 * 60 * 60 * 1000) },
+      {
+        date: new Date(now.getTime() - 3 * 24 * 60 * 60 * 1000),
+      } as Partial<ConsumptionRecord> as ConsumptionRecord,
+      {
+        date: new Date(now.getTime() - 6 * 24 * 60 * 60 * 1000),
+      } as Partial<ConsumptionRecord> as ConsumptionRecord,
     ];
     // Avg gap: 3 days. Due threshold: 3. Days since last: 3.
 
@@ -333,8 +337,12 @@ describe('NotificationService', () => {
     const now = new Date();
     // Create records with 2-day average interval
     const records = [
-      { date: new Date(now.getTime() - 11 * 24 * 60 * 60 * 1000) },
-      { date: new Date(now.getTime() - 13 * 24 * 60 * 60 * 1000) },
+      {
+        date: new Date(now.getTime() - 11 * 24 * 60 * 60 * 1000),
+      } as Partial<ConsumptionRecord> as ConsumptionRecord,
+      {
+        date: new Date(now.getTime() - 13 * 24 * 60 * 60 * 1000),
+      } as Partial<ConsumptionRecord> as ConsumptionRecord,
     ];
     // Avg gap: 2 days. Overdue threshold: max(3, 10) = 10 days.
     // Days since last: 11. 11 > 10 -> Overdue.
@@ -354,8 +362,14 @@ describe('NotificationService', () => {
     // Create records with 3-day average interval
     // ElectricityRecord has more fields but we only need date for this test
     const records: ElectricityRecord[] = [
-      { date: new Date(now.getTime() - 3 * 24 * 60 * 60 * 1000), value: 100 } as any,
-      { date: new Date(now.getTime() - 6 * 24 * 60 * 60 * 1000), value: 90 } as any,
+      {
+        date: new Date(now.getTime() - 3 * 24 * 60 * 60 * 1000),
+        value: 100,
+      } as Partial<ElectricityRecord> as ElectricityRecord,
+      {
+        date: new Date(now.getTime() - 6 * 24 * 60 * 60 * 1000),
+        value: 90,
+      } as Partial<ElectricityRecord> as ElectricityRecord,
     ];
     // Avg gap: 3 days. Due threshold: 3. Days since last: 3.
 
@@ -371,8 +385,14 @@ describe('NotificationService', () => {
     const now = new Date();
     // Create records with 2-day average interval
     const records: ElectricityRecord[] = [
-      { date: new Date(now.getTime() - 11 * 24 * 60 * 60 * 1000), value: 100 } as any,
-      { date: new Date(now.getTime() - 13 * 24 * 60 * 60 * 1000), value: 90 } as any,
+      {
+        date: new Date(now.getTime() - 11 * 24 * 60 * 60 * 1000),
+        value: 100,
+      } as Partial<ElectricityRecord> as ElectricityRecord,
+      {
+        date: new Date(now.getTime() - 13 * 24 * 60 * 60 * 1000),
+        value: 90,
+      } as Partial<ElectricityRecord> as ElectricityRecord,
     ];
     // Avg gap: 2 days. Overdue threshold: max(3, 10) = 10 days.
     // Days since last: 11. 11 > 10 -> Overdue.

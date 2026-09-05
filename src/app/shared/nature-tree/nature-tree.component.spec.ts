@@ -1,6 +1,6 @@
 import { NatureTreeComponent } from './nature-tree.component';
 import { ThemeService } from '../../services/theme.service';
-import { SeasonService, Season } from '../../services/season.service';
+import { Season } from '../../services/season.service';
 import { signal } from '@angular/core';
 import { describe, it, expect, beforeEach, vi, afterEach } from 'vitest';
 
@@ -46,28 +46,28 @@ describe('NatureTreeComponent', () => {
     it('should generate snowflakes in winter', () => {
       component.season = 'winter';
       // Access private method via bracket notation for testing
-      (component as any).resetAndGenerate();
+      component['resetAndGenerate']();
       expect(component.snowflakes.length).toBeGreaterThan(0);
       expect(component.raindrops.length).toBe(0);
     });
 
     it('should generate raindrops in autumn', () => {
       component.season = 'autumn';
-      (component as any).resetAndGenerate();
+      component['resetAndGenerate']();
       expect(component.raindrops.length).toBeGreaterThan(0);
       expect(component.snowflakes.length).toBe(0);
     });
 
     it('should generate no weather in summer', () => {
       component.season = 'summer';
-      (component as any).resetAndGenerate();
+      component['resetAndGenerate']();
       expect(component.snowflakes.length).toBe(0);
       expect(component.raindrops.length).toBe(0);
     });
 
     it('should generate no weather in spring', () => {
       component.season = 'spring';
-      (component as any).resetAndGenerate();
+      component['resetAndGenerate']();
       expect(component.snowflakes.length).toBe(0);
       expect(component.raindrops.length).toBe(0);
     });
@@ -76,40 +76,46 @@ describe('NatureTreeComponent', () => {
   describe('Tree Generation', () => {
     it('should generate branches', () => {
       component.season = 'summer';
-      (component as any).resetAndGenerate();
+      component['resetAndGenerate']();
       expect(component.branches.length).toBeGreaterThan(0);
       // Main trunk should have children
       expect(component.branches[0].children.length).toBeGreaterThan(0);
     });
 
+    interface BranchLike {
+      children: BranchLike[];
+      leaves?: unknown[];
+      flowers?: unknown[];
+    }
+
     it('should generate flowers only in spring', () => {
       component.season = 'spring';
-      (component as any).resetAndGenerate();
+      component['resetAndGenerate']();
 
       let hasFlowers = false;
-      const scanFlowers = (branches: any[]) => {
+      const scanFlowers = (branches: BranchLike[]) => {
         for (const branch of branches) {
           if (branch.flowers && branch.flowers.length > 0) hasFlowers = true;
           scanFlowers(branch.children);
         }
       };
-      scanFlowers(component.branches);
+      scanFlowers(component.branches as unknown as BranchLike[]);
 
       expect(hasFlowers).toBe(true);
     });
 
     it('should not generate leaves in winter', () => {
       component.season = 'winter';
-      (component as any).resetAndGenerate();
+      component['resetAndGenerate']();
 
       let hasLeaves = false;
-      const scanLeaves = (branches: any[]) => {
+      const scanLeaves = (branches: BranchLike[]) => {
         for (const branch of branches) {
           if (branch.leaves && branch.leaves.length > 0) hasLeaves = true;
           scanLeaves(branch.children);
         }
       };
-      scanLeaves(component.branches);
+      scanLeaves(component.branches as unknown as BranchLike[]);
 
       // Winter should not have leaves
       expect(hasLeaves).toBe(false);
@@ -117,16 +123,16 @@ describe('NatureTreeComponent', () => {
 
     it('should generate leaves in summer', () => {
       component.season = 'summer';
-      (component as any).resetAndGenerate();
+      component['resetAndGenerate']();
 
       let hasLeaves = false;
-      const scanLeaves = (branches: any[]) => {
+      const scanLeaves = (branches: BranchLike[]) => {
         for (const branch of branches) {
           if (branch.leaves && branch.leaves.length > 0) hasLeaves = true;
           scanLeaves(branch.children);
         }
       };
-      scanLeaves(component.branches);
+      scanLeaves(component.branches as unknown as BranchLike[]);
 
       expect(hasLeaves).toBe(true);
     });

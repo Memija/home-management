@@ -1,4 +1,4 @@
-import { Component, output, signal } from '@angular/core';
+import { Component, HostListener, output, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { TranslatePipe } from '../../pipes/translate.pipe';
 import {
@@ -9,6 +9,7 @@ import {
   Laptop,
   TriangleAlert,
   HelpCircle,
+  ChevronDown,
 } from 'lucide-angular';
 import { HelpModalComponent, HelpStep } from '../help-modal/help-modal.component';
 
@@ -23,6 +24,7 @@ export type EmailClient = 'default' | 'outlook' | 'gmail';
 })
 export class ContactModalComponent {
   protected readonly XIcon = X;
+  protected readonly ChevronDownIcon = ChevronDown;
   protected readonly MailIcon = Mail;
   protected readonly AtSignIcon = AtSign;
   protected readonly LaptopIcon = Laptop;
@@ -51,7 +53,7 @@ export class ContactModalComponent {
   dropdownOpen = signal(false);
 
   // Output
-  close = output<void>();
+  closeModal = output<void>();
   compose = output<{
     name: string;
     email: string;
@@ -76,6 +78,23 @@ export class ContactModalComponent {
 
   protected toggleDropdown() {
     this.dropdownOpen.set(!this.dropdownOpen());
+  }
+
+  @HostListener('document:click', ['$event'])
+  protected onDocumentClick(event: MouseEvent) {
+    if (this.dropdownOpen()) {
+      const target = event.target as HTMLElement;
+      if (!target.closest('.custom-select')) {
+        this.dropdownOpen.set(false);
+      }
+    }
+  }
+
+  @HostListener('document:keydown.escape')
+  protected onEscape() {
+    if (this.dropdownOpen()) {
+      this.dropdownOpen.set(false);
+    }
   }
 
   protected selectEmailClient(client: EmailClient) {
@@ -106,7 +125,7 @@ export class ContactModalComponent {
   }
 
   protected onClose() {
-    this.close.emit();
+    this.closeModal.emit();
   }
 
   protected onCompose() {
@@ -140,6 +159,6 @@ export class ContactModalComponent {
     this.dropdownOpen.set(false);
 
     // Close modal
-    this.close.emit();
+    this.closeModal.emit();
   }
 }

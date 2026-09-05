@@ -27,12 +27,11 @@ import {
 import { LanguageService } from '../../services/language.service';
 import { LocalStorageService } from '../../services/local-storage.service';
 import { FileStorageService } from '../../services/file-storage.service';
-import { ExcelSettings } from '../../services/excel-settings.service';
 import { HelpModalComponent, HelpStep } from '../../shared/help-modal/help-modal.component';
 import { ConfirmationModalComponent } from '../../shared/confirmation-modal/confirmation-modal.component';
 import { ErrorModalComponent } from '../../shared/error-modal/error-modal.component';
 import { ExcelValidationService } from '../../services/excel-validation.service';
-import { ExcelImportService, ImportError } from '../../services/excel-import.service';
+import { ExcelImportService } from '../../services/excel-import.service';
 import { DeleteConfirmationModalComponent } from '../../shared/delete-confirmation-modal/delete-confirmation-modal.component';
 import { HeatingRoomsService } from '../../services/heating-rooms.service';
 
@@ -461,7 +460,7 @@ export class ExcelSettingsComponent {
       }
 
       try {
-        const rawData = await this.fileStorage.importFromFile<any>(file);
+        const rawData = await this.fileStorage.importFromFile<unknown>(file);
         const settings = this.importService.validateImportedSettings(rawData);
 
         // Update settings

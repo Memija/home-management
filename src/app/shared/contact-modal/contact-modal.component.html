@@ -1,5 +1,10 @@
-<div class="modal-overlay" (click)="onClose()">
-  <div class="modal-container" (click)="$event.stopPropagation()">
+<div class="modal-overlay" (click)="onClose()" tabindex="0" (keyup.enter)="onClose()">
+  <div
+    class="modal-container"
+    (click)="$event.stopPropagation()"
+    tabindex="0"
+    (keyup.enter)="$event.stopPropagation()"
+  >
     <div class="modal-header">
       <h2>{{ 'CONTACT.TITLE' | translate }}</h2>
       <div class="header-actions">
@@ -89,10 +94,10 @@
 
         <div class="form-group">
           <div
-            class="custom-select"
+            class="custom-select dropup"
             role="combobox"
-            aria-expanded="true"
             title="Email client"
+            aria-expanded="false"
             [attr.aria-expanded]="dropdownOpen() ? 'true' : 'false'"
             aria-haspopup="listbox"
             aria-controls="email-client-dropdown"
@@ -120,7 +125,7 @@
                 </span>
               </div>
               <lucide-icon
-                [img]="XIcon"
+                [img]="ChevronDownIcon"
                 size="16"
                 class="chevron"
                 [style.transform]="dropdownOpen() ? 'rotate(180deg)' : 'rotate(0deg)'"
@@ -134,6 +139,9 @@
                   [attr.aria-selected]="emailClient() === 'default'"
                   [class.selected]="emailClient() === 'default'"
                   (click)="selectEmailClient('default'); $event.stopPropagation()"
+                  tabindex="0"
+                  (keydown.enter)="selectEmailClient('default'); $event.stopPropagation()"
+                  (keydown.space)="selectEmailClient('default'); $event.stopPropagation(); $event.preventDefault()"
                 >
                   <lucide-icon [img]="LaptopIcon" size="20"></lucide-icon>
                   <span>{{ 'CONTACT.DEFAULT_CLIENT' | translate }}</span>
@@ -144,6 +152,9 @@
                   [attr.aria-selected]="emailClient() === 'outlook'"
                   [class.selected]="emailClient() === 'outlook'"
                   (click)="selectEmailClient('outlook'); $event.stopPropagation()"
+                  tabindex="0"
+                  (keydown.enter)="selectEmailClient('outlook'); $event.stopPropagation()"
+                  (keydown.space)="selectEmailClient('outlook'); $event.stopPropagation(); $event.preventDefault()"
                 >
                   <img src="/assets/outlook_logo.png" alt="Outlook" class="logo-icon" />
                   <span>Outlook</span>
@@ -154,6 +165,9 @@
                   [attr.aria-selected]="emailClient() === 'gmail'"
                   [class.selected]="emailClient() === 'gmail'"
                   (click)="selectEmailClient('gmail'); $event.stopPropagation()"
+                  tabindex="0"
+                  (keydown.enter)="selectEmailClient('gmail'); $event.stopPropagation()"
+                  (keydown.space)="selectEmailClient('gmail'); $event.stopPropagation(); $event.preventDefault()"
                 >
                   <img src="/assets/gmail_logo.png" alt="Gmail" class="logo-icon" />
                   <span>Gmail</span>
@@ -184,6 +198,6 @@
   [show]="showHelpModal()"
   [titleKey]="'CONTACT.HELP_TITLE'"
   [steps]="helpSteps"
-  (close)="showHelpModal.set(false)"
+  (closeModal)="showHelpModal.set(false)"
 >
 </app-help-modal>

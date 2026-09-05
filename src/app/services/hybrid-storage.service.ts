@@ -46,14 +46,15 @@ const CORE_SETTINGS_KEYS = [
  */
 function isSettingsKey(key: string): boolean {
   if (CORE_SETTINGS_KEYS.includes(key)) return true;
-  
+
   // Dynamic Chart Views & Display Modes
   if (key.endsWith('_chart_view') || key.endsWith('_display_mode')) return true;
-  
+
   // Dynamic Chart Toggle States
-  if (key.endsWith('_chart_trendline_visible') || key.endsWith('_chart_average_visible')) return true;
+  if (key.endsWith('_chart_trendline_visible') || key.endsWith('_chart_average_visible'))
+    return true;
   if (key.endsWith('_show_predictions') || key.endsWith('_show_past_forecast')) return true;
-  
+
   // Dynamic Collapsed States
   if (key.endsWith('_are_collapsed') || key.endsWith('_is_collapsed')) return true;
 
@@ -136,8 +137,8 @@ export class HybridStorageService extends StorageService {
             });
           } else if (currentMode === 'cloud') {
             untracked(() => {
-              this.smartSync().catch(err => 
-                console.error('[HybridStorage] Smart sync failed:', err)
+              this.smartSync().catch((err) =>
+                console.error('[HybridStorage] Smart sync failed:', err),
               );
             });
           }
@@ -201,13 +202,18 @@ export class HybridStorageService extends StorageService {
     // If cloud mode is active, sync in background
     if (this.isCloudMode()) {
       if (isSettingsKey(key)) {
-        this.firebaseStorage.updateSettings({ [key]: data }).then(() => this.firebaseStorage.updateCloudTimestamp(ts)).catch((error) => {
-          console.error(`Background settings sync failed for key ${key}:`, error);
-        });
+        this.firebaseStorage
+          .updateSettings({ [key]: data })
+          .then(() => this.firebaseStorage.updateCloudTimestamp(ts))
+          .catch((error) => {
+            console.error(`Background settings sync failed for key ${key}:`, error);
+          });
       } else {
-        this.syncToCloud(key, data).then(() => this.firebaseStorage.updateCloudTimestamp(ts)).catch((error) => {
-          console.error(`Background sync failed for key ${key}:`, error);
-        });
+        this.syncToCloud(key, data)
+          .then(() => this.firebaseStorage.updateCloudTimestamp(ts))
+          .catch((error) => {
+            console.error(`Background sync failed for key ${key}:`, error);
+          });
       }
     }
 
@@ -231,13 +237,19 @@ export class HybridStorageService extends StorageService {
 
     if (this.isCloudMode()) {
       if (isSettingsKey(key)) {
-        this.firebaseStorage.deleteSetting(key).then(() => this.firebaseStorage.updateCloudTimestamp(ts)).catch((error) => {
-          console.error(`Background cloud setting delete failed for key ${key}:`, error);
-        });
+        this.firebaseStorage
+          .deleteSetting(key)
+          .then(() => this.firebaseStorage.updateCloudTimestamp(ts))
+          .catch((error) => {
+            console.error(`Background cloud setting delete failed for key ${key}:`, error);
+          });
       } else {
-        this.firebaseStorage.delete(key).then(() => this.firebaseStorage.updateCloudTimestamp(ts)).catch((error) => {
-          console.error(`Background cloud delete failed for key ${key}:`, error);
-        });
+        this.firebaseStorage
+          .delete(key)
+          .then(() => this.firebaseStorage.updateCloudTimestamp(ts))
+          .catch((error) => {
+            console.error(`Background cloud delete failed for key ${key}:`, error);
+          });
       }
     }
 
@@ -267,9 +279,12 @@ export class HybridStorageService extends StorageService {
     await this.localStorage.importAll(data);
 
     if (this.isCloudMode()) {
-      this.firebaseStorage.importAll(data).then(() => this.firebaseStorage.updateCloudTimestamp(ts)).catch((error) => {
-        console.error('Background cloud import failed:', error);
-      });
+      this.firebaseStorage
+        .importAll(data)
+        .then(() => this.firebaseStorage.updateCloudTimestamp(ts))
+        .catch((error) => {
+          console.error('Background cloud import failed:', error);
+        });
     }
 
     this.refreshLocalContentStatus();
@@ -291,9 +306,12 @@ export class HybridStorageService extends StorageService {
     await this.localStorage.importRecords(recordKey, records);
 
     if (this.isCloudMode()) {
-      this.firebaseStorage.importRecords(recordKey, records).then(() => this.firebaseStorage.updateCloudTimestamp(ts)).catch((error) => {
-        console.error(`Background cloud record import failed for ${recordKey}:`, error);
-      });
+      this.firebaseStorage
+        .importRecords(recordKey, records)
+        .then(() => this.firebaseStorage.updateCloudTimestamp(ts))
+        .catch((error) => {
+          console.error(`Background cloud record import failed for ${recordKey}:`, error);
+        });
     }
 
     this.refreshLocalContentStatus();

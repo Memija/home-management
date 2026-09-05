@@ -5,7 +5,9 @@ import { describe, it, expect, beforeEach, vi, afterEach } from 'vitest';
 
 describe('FormValidationService', () => {
   let service: FormValidationService;
-  let mockCountryService: any;
+  let mockCountryService: {
+    getCountryInfoByCode: ReturnType<typeof vi.fn>;
+  };
 
   beforeEach(() => {
     mockCountryService = {

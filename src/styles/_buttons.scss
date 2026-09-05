@@ -14,35 +14,101 @@
 
 // Base button style
 %btn-base {
-  padding: 0.5rem;
+  padding: 0.55rem 0.9rem;
   color: white;
   border: none;
-  border-radius: 4px;
+  border-radius: 8px;
   font-size: 0.85rem;
   font-weight: 500;
   cursor: pointer;
-  display: flex;
+  display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: 0.4rem;
-  transition: background-color 0.2s;
+  gap: 0.45rem;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: var(--shadow-sm);
+
+  &:hover:not(:disabled) {
+    transform: translateY(-1px);
+  }
+
+  &:active:not(:disabled) {
+    transform: translateY(0) scale(0.98);
+  }
 
   &:disabled {
     background: $secondary;
     cursor: not-allowed;
-    opacity: 0.7;
+    opacity: 0.65;
+    box-shadow: none;
+    transform: none;
+  }
+}
+
+// Shared refined surface button for data I/O (Export/Import/Actions)
+%btn-surface {
+  padding: 0.5rem 0.85rem;
+  height: 36px;
+  background: var(--card-bg);
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: var(--text-primary);
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.45rem;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: var(--shadow-sm);
+  white-space: nowrap;
+  flex-shrink: 0;
+
+  &:hover:not(:disabled) {
+    transform: translateY(-1px);
+    box-shadow: var(--shadow);
+  }
+
+  &:active:not(:disabled) {
+    transform: translateY(0) scale(0.98);
+  }
+
+  &:disabled {
+    background: var(--bg-secondary);
+    border-color: var(--border-color);
+    color: var(--text-muted);
+    cursor: not-allowed;
+    opacity: 0.6;
+    box-shadow: none;
+    transform: none;
+
+    lucide-icon {
+      opacity: 0.5;
+    }
   }
 }
 
 .delete-all-btn {
-  @extend %btn-base;
-  background: $danger;
-  width: auto;
-  flex-shrink: 0;
+  @extend %btn-surface;
+  background: rgba(220, 53, 69, 0.08);
+  border-color: rgba(220, 53, 69, 0.25);
+  color: $danger;
 
-  &:hover {
-    background: $danger-dark;
-    box-shadow: 0 2px 8px rgba($danger, 0.3);
+  lucide-icon {
+    color: $danger;
+    transition: color 0.2s ease;
+  }
+
+  &:hover:not(:disabled) {
+    background: $danger;
+    border-color: $danger;
+    color: white;
+    box-shadow: 0 4px 12px rgba($danger, 0.35);
+
+    lucide-icon {
+      color: white;
+    }
   }
 }
 
@@ -76,26 +142,30 @@
 }
 
 .export-btn {
-  @extend %btn-base;
-  background: $success;
-  width: auto;
-  white-space: nowrap;
-  flex-shrink: 0;
+  @extend %btn-surface;
 
-  &:hover {
-    background: color.adjust($success, $lightness: -10%);
+  lucide-icon {
+    color: var(--theme-primary, $primary);
+  }
+
+  &:hover:not(:disabled) {
+    background: rgba(var(--theme-primary-rgb, 0, 92, 191), 0.08);
+    border-color: rgba(var(--theme-primary-rgb, 0, 92, 191), 0.35);
+    color: var(--theme-primary, $primary);
   }
 }
 
 .import-btn {
-  @extend %btn-base;
-  background: $info;
-  width: auto;
-  white-space: nowrap;
-  flex-shrink: 0;
+  @extend %btn-surface;
 
-  &:hover {
-    background: color.adjust($info, $lightness: -10%);
+  lucide-icon {
+    color: var(--theme-primary, $primary);
+  }
+
+  &:hover:not(:disabled) {
+    background: rgba(var(--theme-primary-rgb, 0, 92, 191), 0.08);
+    border-color: rgba(var(--theme-primary-rgb, 0, 92, 191), 0.35);
+    color: var(--theme-primary, $primary);
   }
 }
 
@@ -118,59 +188,105 @@
   }
 }
 
-// Reset filters button - secondary/muted style
+// Reset filters button - subtle secondary style matching filter bar height
 .reset-filters-btn {
-  @extend %btn-base;
-  background: $secondary;
-  width: auto;
-  white-space: nowrap;
-  flex-shrink: 0;
+  @extend %btn-surface;
+  background: var(--bg-secondary);
+  border: 1px dashed var(--border-color);
+  color: var(--text-secondary);
+  height: 38px;
+
+  lucide-icon {
+    color: var(--text-muted);
+  }
 
   &:hover:not(:disabled) {
-    background: color.adjust($secondary, $lightness: -10%);
-    box-shadow: 0 2px 8px rgba($secondary, 0.3);
+    background: var(--card-bg);
+    border-style: solid;
+    border-color: var(--border-color);
+    color: var(--text-primary);
+    box-shadow: var(--shadow-sm);
   }
 }
 
-// PDF export button - distinct from Excel
+// PDF export button - distinct rose accent
 .pdf-btn {
-  @extend %btn-base;
-  background: $danger;
+  @extend %btn-surface;
+
+  lucide-icon {
+    color: $danger;
+  }
 
   &:hover:not(:disabled) {
-    background: $danger-dark;
-    box-shadow: 0 2px 8px rgba($danger, 0.3);
+    background: rgba(220, 53, 69, 0.08);
+    border-color: rgba(220, 53, 69, 0.35);
+    color: #dc3545;
+    box-shadow: 0 2px 8px rgba(220, 53, 69, 0.18);
   }
 }
 
-// Excel button - keep green but ensure consistency
+// Excel button - distinct green accent
 .excel-btn {
-  @extend %btn-base;
-  background: $success;
+  @extend %btn-surface;
+
+  lucide-icon {
+    color: $excel-green;
+  }
 
   &:hover:not(:disabled) {
-    background: color.adjust($success, $lightness: -10%);
+    background: rgba(33, 115, 70, 0.08);
+    border-color: rgba(33, 115, 70, 0.35);
+    color: #217346;
+    box-shadow: 0 2px 8px rgba(33, 115, 70, 0.18);
   }
 }
 
-// JSON button - purple/indigo to distinguish from Excel
+// JSON button - distinct purple/indigo accent
 .json-btn {
-  @extend %btn-base;
-  background: $purple;
+  @extend %btn-surface;
+
+  lucide-icon {
+    color: $purple;
+  }
 
   &:hover:not(:disabled) {
-    background: color.adjust($purple, $lightness: -10%);
-    box-shadow: 0 2px 8px rgba($purple, 0.3);
+    background: rgba(124, 58, 237, 0.08);
+    border-color: rgba(124, 58, 237, 0.35);
+    color: #7c3aed;
+    box-shadow: 0 2px 8px rgba(124, 58, 237, 0.18);
   }
 }
 
+label.upload-btn,
 .upload-btn {
-  @extend %btn-base;
-  background: $info;
-  width: auto;
+  display: inline-flex !important;
+  align-items: center;
+  justify-content: center;
+  gap: 0.45rem;
+  width: fit-content !important;
+  height: 32px;
+  padding: 0.35rem 0.85rem;
+  background: var(--card-bg);
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  font-size: 0.82rem;
+  font-weight: 500;
+  color: var(--text-primary);
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: var(--shadow-sm);
+  margin-bottom: 0;
 
   &:hover {
-    background: color.adjust($info, $lightness: -10%);
+    background: var(--bg-secondary);
+    border-color: var(--theme-primary, $primary);
+    color: var(--theme-primary, $primary);
+    transform: translateY(-1px);
+    box-shadow: var(--shadow);
+  }
+
+  &:active {
+    transform: translateY(0) scale(0.98);
   }
 }
 
@@ -210,21 +326,28 @@
   display: inline-flex;
   align-items: center;
   gap: 0.5rem;
-  padding: 0.5rem 1rem;
-  border: 1px solid $gray-400;
-  background: white;
-  border-radius: 4px;
+  padding: 0.55rem 1rem;
+  border: 1px solid var(--border-color);
+  background: var(--card-bg);
+  border-radius: 8px;
   cursor: pointer;
   font-size: 0.9rem;
   font-weight: 500;
-  color: $gray-700;
+  color: var(--text-primary);
   text-decoration: none;
-  transition: all 0.2s;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
   white-space: nowrap;
   flex-shrink: 0;
+  box-shadow: var(--shadow-sm);
 
   &:hover {
-    background: $border-light;
+    background: var(--bg-secondary);
+    border-color: var(--theme-primary, $primary);
+    transform: translateY(-1px);
+  }
+
+  &:active {
+    transform: translateY(0) scale(0.98);
   }
 }
 
@@ -232,16 +355,19 @@
 .help-btn {
   background: transparent;
   border: none;
-  padding: 0.25rem;
-  color: $gray-700;
+  padding: 0.35rem;
+  color: var(--text-muted);
   cursor: pointer;
-  transition: color 0.2s;
+  transition: all 0.2s ease;
   display: flex;
   align-items: center;
   justify-content: center;
+  border-radius: 50%;
 
   &:hover {
     color: var(--theme-primary, $primary);
+    background: var(--bg-secondary);
+    transform: scale(1.1);
   }
 }
 
@@ -267,6 +393,142 @@
   }
 }
 
+// Action dropdown - Export ▾ / Import ▾ menus in the detailed records toolbar
+.action-dropdown {
+  position: relative;
+  display: inline-flex;
+
+  .action-dropdown-trigger {
+    @extend %btn-surface;
+    gap: 0.4rem;
+    padding: 0 0.85rem;
+    height: 36px;
+
+    .chevron-icon {
+      transition: transform 0.2s ease;
+      color: var(--text-muted);
+      flex-shrink: 0;
+    }
+
+    &.open .chevron-icon {
+      transform: rotate(180deg);
+    }
+  }
+
+  .action-dropdown-menu {
+    position: absolute;
+    top: calc(100% + 6px);
+    left: 0;
+    min-width: 200px;
+    max-width: calc(100vw - 2rem);
+    background: var(--card-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    padding: 0.4rem;
+    box-shadow:
+      0 10px 25px -5px rgba(0, 0, 0, 0.12),
+      0 4px 10px -2px rgba(0, 0, 0, 0.08);
+    z-index: 1000;
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(-6px) scale(0.97);
+    transition:
+      opacity 0.18s ease,
+      transform 0.18s ease,
+      visibility 0.18s ease;
+    pointer-events: none;
+
+    &.open {
+      opacity: 1;
+      visibility: visible;
+      transform: translateY(0) scale(1);
+      pointer-events: all;
+    }
+  }
+
+  &:last-child .action-dropdown-menu,
+  &:nth-child(n + 2) .action-dropdown-menu {
+    @media (max-width: 768px) {
+      left: auto;
+      right: 0;
+    }
+  }
+
+  .action-dropdown-item {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    width: 100%;
+    padding: 0.6rem 0.75rem;
+    border: none;
+    background: transparent;
+    border-radius: 8px;
+    cursor: pointer;
+    color: var(--text-secondary);
+    font-size: 0.85rem;
+    font-weight: 500;
+    text-align: left;
+    transition: all 0.15s ease;
+    white-space: nowrap;
+
+    lucide-icon {
+      flex-shrink: 0;
+      transition: color 0.15s ease;
+    }
+
+    &:hover:not(.disabled):not(:disabled) {
+      background: var(--bg-secondary);
+      color: var(--text-primary);
+    }
+
+    &.disabled,
+    &:disabled {
+      opacity: 0.45;
+      cursor: not-allowed;
+    }
+
+    // Accent variants for items
+    &.json-item lucide-icon {
+      color: $purple;
+    }
+
+    &.excel-item lucide-icon {
+      color: $excel-green;
+    }
+
+    &.pdf-item lucide-icon {
+      color: $danger;
+    }
+
+    &.smart-item lucide-icon {
+      color: var(--theme-primary, $primary);
+    }
+  }
+
+  // Label-as-button (for file inputs)
+  label.action-dropdown-item {
+    cursor: pointer;
+
+    &.disabled {
+      pointer-events: none;
+    }
+
+    input[type='file'] {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      overflow: hidden;
+      clip: rect(0, 0, 0, 0);
+    }
+  }
+
+  .action-dropdown-separator {
+    height: 1px;
+    background: var(--border-light);
+    margin: 0.3rem 0.4rem;
+  }
+}
+
 // Responsive behavior: hide text on small screens, show only icon
 @media (max-width: 880px) {
   .save-btn,
@@ -277,7 +539,6 @@
   .add-btn,
   .upload-btn,
   .btn-outline,
-  .delete-all-btn,
   .reset-filters-btn,
   .btn-cloud-upload,
   .btn-cloud-download,
@@ -298,6 +559,65 @@
       height: 1px;
       overflow: hidden;
       clip: rect(0, 0, 0, 0);
+    }
+  }
+}
+
+// Dark theme overrides for surface action buttons
+[data-theme='dark'] {
+  .delete-all-btn {
+    background: rgba(248, 113, 113, 0.12);
+    border-color: rgba(248, 113, 113, 0.3);
+    color: #f87171;
+
+    lucide-icon {
+      color: #f87171;
+    }
+
+    &:hover:not(:disabled) {
+      background: #dc2626;
+      border-color: #dc2626;
+      color: white;
+
+      lucide-icon {
+        color: white;
+      }
+    }
+  }
+
+  .json-btn {
+    lucide-icon {
+      color: #a78bfa;
+    }
+
+    &:hover:not(:disabled) {
+      background: rgba(167, 139, 250, 0.12);
+      border-color: rgba(167, 139, 250, 0.4);
+      color: #c4b5fd;
+    }
+  }
+
+  .excel-btn {
+    lucide-icon {
+      color: #34d399;
+    }
+
+    &:hover:not(:disabled) {
+      background: rgba(52, 211, 153, 0.12);
+      border-color: rgba(52, 211, 153, 0.4);
+      color: #6ee7b7;
+    }
+  }
+
+  .pdf-btn {
+    lucide-icon {
+      color: #fb7185;
+    }
+
+    &:hover:not(:disabled) {
+      background: rgba(251, 113, 133, 0.12);
+      border-color: rgba(251, 113, 133, 0.4);
+      color: #fda4af;
     }
   }
 }

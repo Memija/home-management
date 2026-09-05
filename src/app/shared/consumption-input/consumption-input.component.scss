@@ -6,10 +6,14 @@
 .input-section {
   padding: 1.5rem;
   background: var(--card-bg);
-  border-radius: 8px;
-  box-shadow: var(--shadow);
+  border: 1px solid var(--card-border);
+  border-radius: 16px;
+  box-shadow: var(--shadow-card);
   margin-bottom: 2rem;
-  transition: background 0.3s ease;
+  transition:
+    background 0.3s ease,
+    border-color 0.2s ease,
+    box-shadow 0.3s ease;
 
   .title-with-help {
     display: flex;
@@ -23,7 +27,9 @@
     h2 {
       margin: 0;
       color: var(--text-primary);
-      font-size: 1.2rem;
+      font-size: 1.25rem;
+      font-weight: 700;
+      letter-spacing: -0.02em;
     }
 
     .header-actions {
@@ -64,15 +70,16 @@
   // Group container for grouped layout
   .reading-group {
     background: var(--bg-secondary);
-    padding: 1rem;
-    border-radius: 6px;
-    border: 1px solid var(--border-light);
+    padding: 1.15rem;
+    border-radius: 10px;
+    border: 1px solid var(--card-border);
 
     h3 {
       margin-top: 0;
       margin-bottom: 1rem;
-      color: $primary;
+      color: var(--text-primary);
       font-size: 1.1rem;
+      font-weight: 600;
     }
 
     .input-pair {
@@ -87,9 +94,9 @@
   // Room field card styling for flat layout
   .room-field {
     background: var(--bg-secondary);
-    padding: 0.875rem;
-    border-radius: 6px;
-    border: 1px solid var(--border-light);
+    padding: 1rem;
+    border-radius: 10px;
+    border: 1px solid var(--card-border);
     margin-bottom: 0;
     transition:
       border-color 0.2s ease,
@@ -100,8 +107,8 @@
     }
 
     &:focus-within {
-      border-color: $primary;
-      box-shadow: 0 0 0 2px rgba($primary, 0.1);
+      border-color: var(--theme-primary, $primary);
+      box-shadow: 0 0 0 3px rgba(0, 92, 191, 0.15);
     }
   }
 
@@ -114,7 +121,7 @@
       font-weight: 500;
       margin-bottom: 0.35rem;
       font-size: 0.9rem;
-      color: var(--text-secondary);
+      color: var(--text-primary);
 
       .room-icon {
         color: var(--theme-primary, $primary);
@@ -124,17 +131,19 @@
 
     input {
       width: 100%;
-      padding: 0.5rem;
+      padding: 0.6rem 0.75rem;
       border: 1px solid var(--border-color);
-      border-radius: 4px;
+      border-radius: 8px;
       font-size: 1rem;
       box-sizing: border-box;
       background: var(--input-bg);
       color: var(--text-primary);
+      transition: all 0.2s ease;
 
       &:focus {
         outline: none;
-        border-color: $primary;
+        border-color: var(--theme-primary, $primary);
+        box-shadow: 0 0 0 3px rgba(0, 92, 191, 0.15);
       }
     }
   }
@@ -147,15 +156,20 @@
     .cancel-btn {
       padding: 0.75rem 2.5rem;
       max-width: 120px;
+      border-radius: 8px;
     }
 
     .save-btn {
       flex: 1;
       padding: 0.75rem 1rem;
       background: var(--theme-primary, $primary);
+      color: #ffffff;
+      border-radius: 8px;
 
       &:hover:not(:disabled) {
         background: var(--theme-primary-dark, $primary-dark);
+        transform: translateY(-1px);
+        box-shadow: 0 4px 12px rgba(0, 92, 191, 0.25);
       }
     }
   }

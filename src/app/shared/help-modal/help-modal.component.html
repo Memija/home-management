@@ -1,9 +1,14 @@
-@if (show()) {
-  <div class="modal-overlay" (click)="onClose()">
-    <div class="modal-content help-modal" (click)="$event.stopPropagation()">
+@if (show) {
+  <div class="modal-overlay" (click)="onClose()" tabindex="0" (keyup.enter)="onClose()">
+    <div
+      class="modal-content help-modal"
+      (click)="$event.stopPropagation()"
+      tabindex="0"
+      (keyup.enter)="$event.stopPropagation()"
+    >
       <div class="modal-header">
         <lucide-icon [img]="HelpIcon" size="28" class="help-icon"></lucide-icon>
-        <h3>{{ titleKey() | translate }}</h3>
+        <h3>{{ titleKey | translate }}</h3>
         <button
           type="button"
           class="close-btn"
@@ -35,7 +40,7 @@
         }
 
         <div class="step-indicator">
-          @for (step of steps(); track $index) {
+          @for (step of steps; track $index) {
             <span class="dot" [class.active]="$index === currentStep()"></span>
           }
         </div>

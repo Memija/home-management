@@ -1,6 +1,11 @@
 @if (show) {
-  <div class="modal-overlay" (click)="onCancel()">
-    <div class="modal-content" (click)="$event.stopPropagation()">
+  <div class="modal-overlay" (click)="onCancel()" tabindex="0" (keyup.enter)="onCancel()">
+    <div
+      class="modal-content"
+      (click)="$event.stopPropagation()"
+      tabindex="0"
+      (keyup.enter)="$event.stopPropagation()"
+    >
       <div class="modal-header">
         <lucide-icon [img]="icon" size="32" class="info-icon"></lucide-icon>
         <h3>{{ titleKey | translate }}</h3>

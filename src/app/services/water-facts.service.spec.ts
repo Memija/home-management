@@ -5,7 +5,7 @@ import { describe, it, expect, beforeEach, vi } from 'vitest';
 
 describe('WaterFactsService', () => {
   let service: WaterFactsService;
-  let mockLanguageService: any;
+  let mockLanguageService: Record<string, import('vitest').Mock>;
 
   beforeEach(() => {
     mockLanguageService = {

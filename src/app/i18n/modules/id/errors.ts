@@ -8,8 +8,10 @@ export const errors = {
     EXCEL_DATE_FIX_1: 'Pastikan tanggal dalam format DD.MM.YYYY (contoh: 14.09.2025)',
     EXCEL_DATE_FIX_2: 'Atau gunakan format DD/MM/YYYY (contoh: 14/09/2025)',
     EXCEL_DATE_FIX_3: 'Atau gunakan format YYYY-MM-DD (contoh: 2025-09-14)',
-    EXCEL_COLUMN_FIX_1: 'Periksa apakah nama kolom Excel Anda cocok dengan nama yang dikonfigurasi di Pengaturan',
-    EXCEL_COLUMN_FIX_2: 'Buka Pengaturan → Integrasi Excel untuk melihat atau memperbarui pemetaan kolom',
+    EXCEL_COLUMN_FIX_1:
+      'Periksa apakah nama kolom Excel Anda cocok dengan nama yang dikonfigurasi di Pengaturan',
+    EXCEL_COLUMN_FIX_2:
+      'Buka Pengaturan → Integrasi Excel untuk melihat atau memperbarui pemetaan kolom',
     EXCEL_GENERIC_FIX_1: 'Verifikasi file Excel Anda dalam format .xlsx',
     EXCEL_GENERIC_FIX_2: 'Pastikan semua kolom yang diperlukan ada dengan tipe data yang benar',
     EXCEL_NUMBER_FIX_1: 'Pastikan semua nilai konsumsi adalah angka',
@@ -23,7 +25,8 @@ export const errors = {
     JSON_DUPLICATE_FIX_1: 'Hapus entri tanggal duplikat dari file JSON Anda',
     JSON_DUPLICATE_FIX_2: 'Setiap tanggal hanya boleh muncul sekali dalam file',
     IMPORT_MISSING_ROOMS_OBJECT: "Catatan ({{date}}): Objek 'rooms' hilang atau tidak valid",
-    IMPORT_INVALID_ROOM_VALUE: "Catatan ({{date}}): Angka '{{value}}' tidak valid untuk ruangan '{{room}}'",
+    IMPORT_INVALID_ROOM_VALUE:
+      "Catatan ({{date}}): Angka '{{value}}' tidak valid untuk ruangan '{{room}}'",
     IMPORT_INVALID_ROOM_TYPE: "Catatan ({{date}}): Tipe nilai tidak valid untuk ruangan '{{room}}'",
     IMPORT_MISSING_ROOM_DATA: "Catatan ({{date}}): Data hilang untuk ruangan '{{room}}'",
     IMPORT_UNKNOWN_ROOM: "Catatan ({{date}}): Ruangan tidak dikenal '{{room}}'",
@@ -31,12 +34,16 @@ export const errors = {
     IMPORT_MISSING_DATE_FIELD: "Catatan {{row}}: Bidang 'date' hilang",
     IMPORT_INVALID_DATE_VALUE: "Catatan {{row}}: Nilai tanggal '{{value}}' tidak valid",
     IMPORT_INVALID_DATE_TYPE: 'Catatan {{row}}: Tipe tanggal tidak valid',
-    IMPORT_DUPLICATE_DATE: "Catatan {{row}}: Tanggal duplikat '{{date}}' (muncul pertama kali di catatan {{firstRow}})",
-    IMPORT_INVALID_NUMBER_VALUE: "Catatan {{row}}: Nilai angka '{{value}}' tidak valid untuk bidang '{{field}}'",
+    IMPORT_DUPLICATE_DATE:
+      "Catatan {{row}}: Tanggal duplikat '{{date}}' (muncul pertama kali di catatan {{firstRow}})",
+    IMPORT_INVALID_NUMBER_VALUE:
+      "Catatan {{row}}: Nilai angka '{{value}}' tidak valid untuk bidang '{{field}}'",
     IMPORT_INVALID_FIELD_TYPE: "Catatan {{row}}: Tipe tidak valid untuk bidang '{{field}}'",
     IMPORT_INVALID_DATA_FORMAT: 'Format data tidak valid: diharapkan array catatan',
     IMPORT_EMPTY_FILE: 'File kosong atau tidak memiliki catatan data.',
-    IMPORT_INVALID_EXCEL_FILE_TYPE: 'Tipe file tidak valid. Diharapkan file Excel (.xlsx, .xls, .csv), mendapatkan {{extension}}',
-    IMPORT_EXCEL_MISSING_DATE_COLUMN: 'Kolom Tanggal yang diperlukan hilang: {{column}}. Silakan periksa file Excel Anda.',
+    IMPORT_INVALID_EXCEL_FILE_TYPE:
+      'Tipe file tidak valid. Diharapkan file Excel (.xlsx, .xls, .csv), mendapatkan {{extension}}',
+    IMPORT_EXCEL_MISSING_DATE_COLUMN:
+      'Kolom Tanggal yang diperlukan hilang: {{column}}. Silakan periksa file Excel Anda.',
   },
 };

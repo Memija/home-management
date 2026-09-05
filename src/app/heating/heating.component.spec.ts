@@ -74,7 +74,7 @@ describe('HeatingComponent', () => {
       saveRecord: vi.fn(),
       deleteRecord: vi.fn(),
       deleteRecords: vi.fn(),
-    } as any;
+    } as never;
 
     mockFormService = {
       selectedDate: signal(''),
@@ -85,12 +85,12 @@ describe('HeatingComponent', () => {
       startEdit: vi.fn(),
       cancelEdit: vi.fn(),
       updateField: vi.fn(),
-    } as any;
+    } as never;
 
     mockRoomsService = {
       rooms: signal<HeatingRoomConfig[]>([createMockRoom('room-1', 'Living Room')]),
       setRooms: vi.fn(),
-    } as any;
+    } as never;
 
     // Fix: Add mode ('historical' | 'country') as 3rd parameter, country as 4th
     mockFactsService = {
@@ -99,42 +99,42 @@ describe('HeatingComponent', () => {
         { code: 'US', nameKey: 'COUNTRY.US' },
       ]),
       getFactByIndex: vi.fn().mockReturnValue({ title: 'Fact', message: 'Message' }),
-    } as any;
+    } as never;
 
     mockPreferencesService = {
       heatingChartView: signal('total'),
       heatingDisplayMode: signal('incremental'),
       setChartView: vi.fn(),
       setDisplayMode: vi.fn(),
-    } as any;
+    } as never;
 
     mockChartCalculationService = {
       detectNewRoomSpikes: vi.fn().mockReturnValue([]),
-      adjustForNewRooms: vi.fn().mockImplementation((recs: any) => recs),
-    } as any;
+      adjustForNewRooms: vi.fn().mockImplementation((recs: DynamicHeatingRecord[]) => recs),
+    } as never;
 
     mockLocalStorageService = {
       getPreference: vi.fn().mockReturnValue(null),
       setPreference: vi.fn(),
-    } as any;
+    } as never;
 
     mockRoomUtilsService = {
       getRoomIcon: vi.fn().mockReturnValue('sofa'),
       getRoomColor: vi.fn().mockReturnValue('#000000'),
-    } as any;
+    } as never;
 
     mockLanguageService = {
       currentLang: signal('en'),
       translate: vi.fn().mockImplementation((key: string) => key),
-    } as any;
+    } as never;
 
     mockExcelSettingsService = {
       settings: signal({ enabled: false }),
-    } as any;
+    } as never;
 
     const mockHouseholdService = {
       address: signal({ country: 'DE' }),
-    } as any;
+    } as never;
 
     TestBed.configureTestingModule({
       providers: [
@@ -173,8 +173,8 @@ describe('HeatingComponent', () => {
 
   describe('Computed Values', () => {
     it('should compute consumptionGroups', () => {
-      (mockFormService.getRoomValue as any).mockReturnValue(50);
-      const groups = (component as any).consumptionGroups();
+      (mockFormService.getRoomValue as import('vitest').Mock).mockReturnValue(50);
+      const groups = component['consumptionGroups']();
       expect(groups).toHaveLength(1);
       expect(groups[0].title).toBe('HEATING.READINGS_BY_ROOM');
       expect(groups[0].fields).toHaveLength(1);
@@ -185,23 +185,23 @@ describe('HeatingComponent', () => {
     });
 
     it('should compute selectedCountryName', () => {
-      (component as any).selectedCountryCode.set('DE');
-      expect((component as any).selectedCountryName()).toBe('COUNTRY.DE');
+      component['selectedCountryCode'].set('DE');
+      expect(component['selectedCountryName']()).toBe('COUNTRY.DE');
     });
 
     it('should fall back to raw selectedCountryCode if country name not found', () => {
-      (component as any).selectedCountryCode.set('FR');
-      expect((component as any).selectedCountryName()).toBe('FR');
+      component['selectedCountryCode'].set('FR');
+      expect(component['selectedCountryName']()).toBe('FR');
     });
 
     it('should calculate total for a dynamic heating record', () => {
       const record = createMockRecord({ rooms: { r1: 10, r2: 20 } });
-      expect((component as any).calculateTotal(record)).toBe(30);
+      expect(component['calculateTotal'](record)).toBe(30);
     });
 
     it('should compute dateExists from form service', () => {
-      (mockFormService.isDateDuplicate as any).mockReturnValue(true);
-      expect((component as any).dateExists()).toBe(true);
+      (mockFormService.isDateDuplicate as import('vitest').Mock).mockReturnValue(true);
+      expect(component['dateExists']()).toBe(true);
     });
   });
 
@@ -209,22 +209,22 @@ describe('HeatingComponent', () => {
 
   describe('Country and Facts', () => {
     it('should compute heatingFact based on current records and mode', () => {
-      (mockDataService.records as WritableSignal<any>).set([createMockRecord()]);
-      const fact = (component as any).heatingFact();
+      (mockDataService.records as WritableSignal<DynamicHeatingRecord[]>).set([createMockRecord()]);
+      const fact = component['heatingFact']();
       expect(fact).toEqual({ title: 'Fact', message: 'Message' });
       expect(mockFactsService.getFactByIndex).toHaveBeenCalled();
     });
 
     it('should update country code and refresh fact onCountryChange', () => {
-      const seedBefore = (component as any).factRandomSeed();
-      (component as any).onCountryChange('US');
-      expect((component as any).selectedCountryCode()).toBe('US');
-      expect((component as any).factRandomSeed()).not.toBe(seedBefore);
+      const seedBefore = component['factRandomSeed']();
+      component['onCountryChange']('US');
+      expect(component['selectedCountryCode']()).toBe('US');
+      expect(component['factRandomSeed']()).not.toBe(seedBefore);
     });
 
     it('should compute heatingFact as null if no records', () => {
-      (mockDataService.records as WritableSignal<any>).set([]);
-      expect((component as any).heatingFact()).toBeNull();
+      (mockDataService.records as WritableSignal<DynamicHeatingRecord[]>).set([]);
+      expect(component['heatingFact']()).toBeNull();
     });
   });
 
@@ -232,67 +232,65 @@ describe('HeatingComponent', () => {
 
   describe('Spike Detection', () => {
     it('should load confirmed/dismissed spikes from local storage', () => {
-      (mockLocalStorageService.getPreference as any).mockImplementation((key: string) => {
-        if (key === 'heating_confirmed_spikes')
-          return JSON.stringify([{ date: '2025-01-01', roomId: 'r1' }]);
-        if (key === 'heating_dismissed_spikes')
-          return JSON.stringify([{ date: '2025-02-01', roomId: 'r2' }]);
-        return null;
-      });
+      (mockLocalStorageService.getPreference as import('vitest').Mock).mockImplementation(
+        (key: string) => {
+          if (key === 'heating_confirmed_spikes')
+            return JSON.stringify([{ date: '2025-01-01', roomId: 'r1' }]);
+          if (key === 'heating_dismissed_spikes')
+            return JSON.stringify([{ date: '2025-02-01', roomId: 'r2' }]);
+          return null;
+        },
+      );
       const newComponent = TestBed.runInInjectionContext(() => new HeatingComponent());
-      expect((newComponent as any).confirmedSpikes()).toEqual([
-        { date: '2025-01-01', roomId: 'r1' },
-      ]);
-      expect((newComponent as any).dismissedSpikes()).toEqual([
-        { date: '2025-02-01', roomId: 'r2' },
-      ]);
+      expect(newComponent['confirmedSpikes']()).toEqual([{ date: '2025-01-01', roomId: 'r1' }]);
+      expect(newComponent['dismissedSpikes']()).toEqual([{ date: '2025-02-01', roomId: 'r2' }]);
     });
 
     it('should detect unconfirmed spikes from calculation service', () => {
-      (mockChartCalculationService.detectNewRoomSpikes as any).mockReturnValue([
+      (mockChartCalculationService.detectNewRoomSpikes as import('vitest').Mock).mockReturnValue([
         { date: '2025-01-01', roomId: 'room-1' },
       ]);
-      expect((component as any).unconfirmedSpike()).toEqual({
+      expect(component['unconfirmedSpike']()).toEqual({
         date: '2025-01-01',
         roomId: 'room-1',
       });
     });
 
     it('should exclude confirmed and dismissed spikes from unconfirmedSpike', () => {
-      (mockChartCalculationService.detectNewRoomSpikes as any).mockReturnValue([
+      (mockChartCalculationService.detectNewRoomSpikes as import('vitest').Mock).mockReturnValue([
         { date: '2025-01-01', roomId: 'r1' },
       ]);
-      (component as any).confirmedSpikes.set([{ date: '2025-01-01', roomId: 'r1' }]);
-      expect((component as any).unconfirmedSpike()).toBeUndefined();
+      component['confirmedSpikes'].set([{ date: '2025-01-01', roomId: 'r1' }]);
+      expect(component['unconfirmedSpike']()).toBeUndefined();
     });
 
     it('should compute unconfirmedSpikeRoomName using translated type', () => {
-      (mockChartCalculationService.detectNewRoomSpikes as any).mockReturnValue([
+      (mockChartCalculationService.detectNewRoomSpikes as import('vitest').Mock).mockReturnValue([
         { date: '2025-01-01', roomId: 'room-1' },
       ]);
-      expect((component as any).unconfirmedSpikeRoomName()).toBe('LIVING_ROOM');
+      expect(component['unconfirmedSpikeRoomName']()).toBe('LIVING_ROOM');
     });
 
     it('should fallback to roomId if unconfirmedSpikeRoomName not found', () => {
-      (mockChartCalculationService.detectNewRoomSpikes as any).mockReturnValue([
+      (mockChartCalculationService.detectNewRoomSpikes as import('vitest').Mock).mockReturnValue([
         { date: '2025-01-01', roomId: 'non-existent' },
       ]);
-      expect((component as any).unconfirmedSpikeRoomName()).toBe('non-existent');
+      expect(component['unconfirmedSpikeRoomName']()).toBe('non-existent');
     });
 
     it('should fallback to room.name if room has no type', () => {
       (mockRoomsService.rooms as WritableSignal<HeatingRoomConfig[]>).set([
         { id: 'room-1', name: 'Custom Room' },
       ]);
-      (mockChartCalculationService.detectNewRoomSpikes as any).mockReturnValue([
+      (mockChartCalculationService.detectNewRoomSpikes as import('vitest').Mock).mockReturnValue([
         { date: '2025-01-01', roomId: 'room-1' },
       ]);
-      expect((component as any).unconfirmedSpikeRoomName()).toBe('Custom Room');
+      expect(component['unconfirmedSpikeRoomName']()).toBe('Custom Room');
     });
 
     it('should dismiss spike and save to local storage', () => {
-      (component as any).dismissSpike({ date: '2025-01-01', roomId: 'r1' });
-      expect((component as any).dismissedSpikes()).toContainEqual({
+      component['dismissSpike']({ date: '2025-01-01', roomId: 'r1' });
+      expect(component['dismissedSpikes']()).toContainEqual({
         date: '2025-01-01',
         roomId: 'r1',
       });
@@ -303,8 +301,8 @@ describe('HeatingComponent', () => {
     });
 
     it('should confirm spike and save to local storage', () => {
-      (component as any).confirmSpike({ date: '2025-01-01', roomId: 'r1' });
-      expect((component as any).confirmedSpikes()).toContainEqual({
+      component['confirmSpike']({ date: '2025-01-01', roomId: 'r1' });
+      expect(component['confirmedSpikes']()).toContainEqual({
         date: '2025-01-01',
         roomId: 'r1',
       });
@@ -320,8 +318,8 @@ describe('HeatingComponent', () => {
   describe('Form Actions & Data', () => {
     it('should save record if valid', () => {
       const mockRecord = createMockRecord();
-      (mockFormService.createRecordFromState as any).mockReturnValue(mockRecord);
-      (component as any).onConsumptionSave({});
+      (mockFormService.createRecordFromState as import('vitest').Mock).mockReturnValue(mockRecord);
+      (component as unknown as { onConsumptionSave: () => void }).onConsumptionSave();
 
       expect(mockDataService.saveRecord).toHaveBeenCalledWith(mockRecord, null);
       expect(mockFormService.cancelEdit).toHaveBeenCalled();
@@ -330,7 +328,11 @@ describe('HeatingComponent', () => {
     });
 
     it('should delegate to onFieldChange', () => {
-      (component as any).onFieldChange({ key: 'room-1', value: 10 });
+      (
+        component as unknown as {
+          onFieldChange: (event: { key: string; value: number | null }) => void;
+        }
+      ).onFieldChange({ key: 'room-1', value: 10 });
       expect(mockFormService.updateField).toHaveBeenCalledWith('room-1', 10);
     });
 
@@ -338,10 +340,12 @@ describe('HeatingComponent', () => {
       const mockScrollIntoView = vi.fn();
       const documentSpy = vi
         .spyOn(document, 'querySelector')
-        .mockReturnValue({ scrollIntoView: mockScrollIntoView } as any);
+        .mockReturnValue({ scrollIntoView: mockScrollIntoView } as unknown as Element);
 
       const record = createMockRecord();
-      (component as any).onEditRecord(record);
+      (component as unknown as { onEditRecord: (r: DynamicHeatingRecord) => void }).onEditRecord(
+        record,
+      );
 
       expect(mockFormService.startEdit).toHaveBeenCalledWith(record);
       expect(documentSpy).toHaveBeenCalledWith('app-consumption-input');
@@ -351,35 +355,65 @@ describe('HeatingComponent', () => {
     it('should not throw if scrollIntoView is unavailable during onEditRecord', () => {
       vi.spyOn(document, 'querySelector').mockReturnValue(null);
       const record = createMockRecord();
-      expect(() => (component as any).onEditRecord(record)).not.toThrow();
+      expect(() =>
+        (component as unknown as { onEditRecord: (r: DynamicHeatingRecord) => void }).onEditRecord(
+          record,
+        ),
+      ).not.toThrow();
     });
 
     it('should set record to delete and show confirm modal', () => {
       const record = createMockRecord();
-      (component as any).onDeleteRecord(record);
-      expect((component as any).recordToDelete()).toEqual(record);
-      expect((component as any).showDeleteModal()).toBe(true);
+      (
+        component as unknown as { onDeleteRecord: (r: DynamicHeatingRecord) => void }
+      ).onDeleteRecord(record);
+      expect(
+        (
+          component as unknown as { recordToDelete: () => DynamicHeatingRecord | null }
+        ).recordToDelete(),
+      ).toEqual(record);
+      expect((component as unknown as { showDeleteModal: () => boolean }).showDeleteModal()).toBe(
+        true,
+      );
     });
 
     it('should confirm delete and reset modal', () => {
       const record = createMockRecord();
-      (component as any).recordToDelete.set(record);
-      (component as any).showDeleteModal.set(true);
-      (component as any).confirmDelete();
+      (
+        component as unknown as {
+          recordToDelete: import('@angular/core').WritableSignal<DynamicHeatingRecord | null>;
+        }
+      ).recordToDelete.set(record);
+      (
+        component as unknown as { showDeleteModal: import('@angular/core').WritableSignal<boolean> }
+      ).showDeleteModal.set(true);
+      (component as unknown as { confirmDelete: () => void }).confirmDelete();
 
       expect(mockDataService.deleteRecord).toHaveBeenCalledWith(record);
-      expect((component as any).showDeleteModal()).toBe(false);
-      expect((component as any).recordToDelete()).toBeNull();
+      expect((component as unknown as { showDeleteModal: () => boolean }).showDeleteModal()).toBe(
+        false,
+      );
+      expect(
+        (
+          component as unknown as { recordToDelete: () => DynamicHeatingRecord | null }
+        ).recordToDelete(),
+      ).toBeNull();
     });
 
     it('should cancel delete and reset modal', () => {
-      (component as any).recordToDelete.set(createMockRecord());
-      (component as any).showDeleteModal.set(true);
-      (component as any).cancelDelete();
+      (
+        component as unknown as {
+          recordToDelete: import('@angular/core').WritableSignal<DynamicHeatingRecord | null>;
+        }
+      ).recordToDelete.set(createMockRecord());
+      (
+        component as unknown as { showDeleteModal: import('@angular/core').WritableSignal<boolean> }
+      ).showDeleteModal.set(true);
+      (component as unknown as { cancelDelete: () => void }).cancelDelete();
 
       expect(mockDataService.deleteRecord).not.toHaveBeenCalled();
-      expect((component as any).showDeleteModal()).toBe(false);
-      expect((component as any).recordToDelete()).toBeNull();
+      expect(component['showDeleteModal']()).toBe(false);
+      expect(component['recordToDelete']()).toBeNull();
     });
   });
 
@@ -388,44 +422,40 @@ describe('HeatingComponent', () => {
   describe('Bulk Delete', () => {
     it('should initiate mass deletion', () => {
       const records = [createMockRecord()];
-      (component as any).onDeleteAllRecords(records);
-      expect((component as any).recordsToDeleteAll()).toEqual(records);
-      expect((component as any).showDeleteAllModal()).toBe(true);
+      component['onDeleteAllRecords'](records);
+      expect(component['recordsToDeleteAll']()).toEqual(records);
+      expect(component['showDeleteAllModal']()).toBe(true);
     });
 
     it('should confirm delete all records', () => {
       const records = [createMockRecord()];
-      (component as any).recordsToDeleteAll.set(records);
-      (component as any).confirmDeleteAll();
+      component['recordsToDeleteAll'].set(records);
+      component['confirmDeleteAll']();
       expect(mockDataService.deleteRecords).toHaveBeenCalledWith(records);
-      expect((component as any).showDeleteAllModal()).toBe(false);
-      expect((component as any).recordsToDeleteAll()).toEqual([]);
+      expect(component['showDeleteAllModal']()).toBe(false);
+      expect(component['recordsToDeleteAll']()).toEqual([]);
     });
 
     it('should cancel delete all records', () => {
       const records = [createMockRecord()];
-      (component as any).recordsToDeleteAll.set(records);
-      (component as any).cancelDeleteAll();
+      component['recordsToDeleteAll'].set(records);
+      component['cancelDeleteAll']();
       expect(mockDataService.deleteRecords).not.toHaveBeenCalled();
-      expect((component as any).showDeleteAllModal()).toBe(false);
-      expect((component as any).recordsToDeleteAll()).toEqual([]);
+      expect(component['showDeleteAllModal']()).toBe(false);
+      expect(component['recordsToDeleteAll']()).toEqual([]);
     });
 
     it('should compute delete all message key correctly', () => {
-      (component as any).recordsToDeleteAll.set([createMockRecord()]);
-      expect((component as any).deleteAllMessageKey()).toBe(
-        'HOME.DELETE_ALL_CONFIRM_MESSAGE_SINGULAR',
-      );
+      component['recordsToDeleteAll'].set([createMockRecord()]);
+      expect(component['deleteAllMessageKey']()).toBe('HOME.DELETE_ALL_CONFIRM_MESSAGE_SINGULAR');
 
-      (component as any).recordsToDeleteAll.set([createMockRecord(), createMockRecord()]);
-      expect((component as any).deleteAllMessageKey()).toBe(
-        'HOME.DELETE_ALL_CONFIRM_MESSAGE_PLURAL',
-      );
+      component['recordsToDeleteAll'].set([createMockRecord(), createMockRecord()]);
+      expect(component['deleteAllMessageKey']()).toBe('HOME.DELETE_ALL_CONFIRM_MESSAGE_PLURAL');
     });
 
     it('should compute delete all message params', () => {
-      (component as any).recordsToDeleteAll.set([createMockRecord(), createMockRecord()]);
-      expect((component as any).deleteAllMessageParams()).toEqual({ count: '2' });
+      component['recordsToDeleteAll'].set([createMockRecord(), createMockRecord()]);
+      expect(component['deleteAllMessageParams']()).toEqual({ count: '2' });
     });
   });
 
@@ -433,28 +463,28 @@ describe('HeatingComponent', () => {
 
   describe('Rooms Configuration', () => {
     it('should open and save rooms', () => {
-      (component as any).openRoomsModal();
-      expect((component as any).showRoomsModal()).toBe(true);
+      component['openRoomsModal']();
+      expect(component['showRoomsModal']()).toBe(true);
 
       const newRooms = [createMockRoom('new', 'New Room')];
-      (component as any).onRoomsSave(newRooms);
+      component['onRoomsSave'](newRooms);
       expect(mockRoomsService.setRooms).toHaveBeenCalledWith(newRooms);
-      expect((component as any).showRoomsModal()).toBe(false);
+      expect(component['showRoomsModal']()).toBe(false);
     });
 
     it('should cancel rooms edit', () => {
-      (component as any).openRoomsModal();
-      (component as any).onRoomsCancel();
-      expect((component as any).showRoomsModal()).toBe(false);
+      component['openRoomsModal']();
+      component['onRoomsCancel']();
+      expect(component['showRoomsModal']()).toBe(false);
       expect(mockRoomsService.setRooms).not.toHaveBeenCalled();
     });
 
     it('should compute roomsWithData correctly', () => {
-      (mockDataService.records as WritableSignal<any>).set([
+      (mockDataService.records as WritableSignal<DynamicHeatingRecord[]>).set([
         createMockRecord({ rooms: { 'room-1': 100 } }),
         createMockRecord({ rooms: { 'room-2': 50 } }),
       ]);
-      const roomsWithData = (component as any).roomsWithData();
+      const roomsWithData = component['roomsWithData']();
       expect(roomsWithData).toContain('room-1');
       expect(roomsWithData).toContain('room-2');
       expect(roomsWithData).toHaveLength(2);
@@ -465,43 +495,43 @@ describe('HeatingComponent', () => {
 
   describe('Chart Setup & Delegations', () => {
     it('should delegate onChartViewChange', () => {
-      (component as any).onChartViewChange('by-room');
+      component['onChartViewChange']('by-room');
       expect(mockPreferencesService.setChartView).toHaveBeenCalledWith('by-room', 'heating');
     });
 
     it('should delegate onDisplayModeChange', () => {
-      (component as any).onDisplayModeChange('total');
+      component['onDisplayModeChange']('total');
       expect(mockPreferencesService.setDisplayMode).toHaveBeenCalledWith('total', 'heating');
     });
 
     it('should delegate to other DataService methods', () => {
       const event = {} as Event;
 
-      (component as any).importData(event);
+      component['importData'](event);
       expect(mockDataService.importData).toHaveBeenCalledWith(event);
 
-      (component as any).confirmImport();
+      component['confirmImport']();
       expect(mockDataService.confirmImport).toHaveBeenCalled();
 
-      (component as any).cancelImport();
+      component['cancelImport']();
       expect(mockDataService.cancelImport).toHaveBeenCalled();
 
-      (component as any).importFromExcel(event);
+      component['importFromExcel'](event);
       expect(mockDataService.importFromExcel).toHaveBeenCalledWith(event);
 
-      (component as any).exportData();
+      component['exportData']();
       expect(mockDataService.exportData).toHaveBeenCalled();
 
-      (component as any).exportToExcel();
+      component['exportToExcel']();
       expect(mockDataService.exportToExcel).toHaveBeenCalled();
 
-      (component as any).exportToPdf();
+      component['exportToPdf']();
       expect(mockDataService.exportToPdf).toHaveBeenCalled();
 
-      (component as any).closeSuccessModal();
+      component['closeSuccessModal']();
       expect(mockDataService.closeSuccessModal).toHaveBeenCalled();
 
-      (component as any).closeErrorModal();
+      component['closeErrorModal']();
       expect(mockDataService.closeErrorModal).toHaveBeenCalled();
     });
   });

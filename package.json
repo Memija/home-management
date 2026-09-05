@@ -13,19 +13,15 @@
     "pretest:coverage": "npm run config:generate",
     "test:coverage": "ng test home-management --coverage --coverage-reporters=lcovonly --coverage-reporters=text-summary --watch=false",
     "sonar": "sonar-scanner",
-    "serve:ssr:home-management": "node dist/home-management/server/server.mjs"
-  },
-  "prettier": {
-    "printWidth": 100,
-    "singleQuote": true,
-    "overrides": [
-      {
-        "files": "*.html",
-        "options": {
-          "parser": "angular"
-        }
-      }
-    ]
+    "serve:ssr:home-management": "node dist/home-management/server/server.mjs",
+    "test:lighthouse:mobile": "lhci autorun",
+    "test:lighthouse:desktop": "lhci autorun --collect.settings.preset=desktop --upload.outputDir=./.lighthouseci/desktop",
+    "test:lighthouse": "npm run test:lighthouse:mobile && npm run test:lighthouse:desktop",
+    "test:lighthouse:flows": "node scripts/lighthouse-flow.mjs",
+    "format": "prettier --write \"src/**/*.{ts,html,scss,json}\"",
+    "format:check": "prettier --check \"src/**/*.{ts,html,scss,json}\"",
+    "validate": "npm run format:check && npm run lint && npm run build && npm run test:coverage && npm run test:lighthouse",
+    "lint": "ng lint"
   },
   "private": true,
   "license": "SEE LICENSE IN LICENSE.md",
@@ -59,17 +55,37 @@
   "devDependencies": {
     "@angular-devkit/build-angular": "21.2.18",
     "@angular/build": "21.2.18",
+    "@angular/cdk": "^21.2.14",
     "@angular/cli": "21.2.18",
     "@angular/compiler-cli": "21.2.18",
+    "@commitlint/cli": "^21.2.2",
+    "@commitlint/config-conventional": "^21.2.2",
+    "@eslint/js": "^10.0.1",
+    "@lhci/cli": "^0.15.1",
+    "@types/compression": "^1.8.1",
     "@types/express": "^5.0.1",
     "@types/node": "^20.17.19",
     "@vitest/coverage-v8": "^4.1.10",
+    "angular-eslint": "22.1.0",
     "baseline-browser-mapping": "^2.9.17",
+    "eslint": "^10.6.0",
     "jsdom": "^27.1.0",
+    "lint-staged": "^17.3.0",
+    "prettier": "^3.9.6",
     "sonarqube-scanner": "^4.3.8",
     "typescript": "~5.9.2",
+    "typescript-eslint": "8.62.1",
     "vitest": "^4.0.8",
     "vitest-sonar-reporter": "^3.0.0",
     "zone.js": "^0.16.0"
+  },
+  "lint-staged": {
+    "src/**/*.{ts,html}": [
+      "eslint --fix",
+      "prettier --write"
+    ],
+    "src/**/*.{scss,json}": [
+      "prettier --write"
+    ]
   }
 }

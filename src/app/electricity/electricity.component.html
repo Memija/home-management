@@ -78,20 +78,26 @@
     </div>
   }
 
-  <app-consumption-chart
-    [data]="adjustedRecords()"
-    [currentView]="chartView()"
-    [onViewChange]="onChartViewChange"
-    [chartType]="'electricity'"
-    [displayMode]="displayMode()"
-    [onDisplayModeChange]="onDisplayModeChange"
-    [familySize]="familySize()"
-    [country]="effectiveComparisonCountryCode()"
-    [helpSteps]="chartHelpSteps"
-    [prediction]="electricityPrediction()"
-    [predictionPeriod]="selectedPredictionPeriod()"
-  >
-  </app-consumption-chart>
+  @defer (on viewport) {
+    <app-consumption-chart
+      [data]="adjustedRecords()"
+      [currentView]="chartView()"
+      [onViewChange]="onChartViewChange"
+      [chartType]="'electricity'"
+      [displayMode]="displayMode()"
+      [onDisplayModeChange]="onDisplayModeChange"
+      [familySize]="familySize()"
+      [country]="effectiveComparisonCountryCode()"
+      [helpSteps]="chartHelpSteps"
+      [prediction]="electricityPrediction()"
+      [predictionPeriod]="selectedPredictionPeriod()"
+    >
+    </app-consumption-chart>
+  } @placeholder {
+    <div class="loading-placeholder loading-placeholder--chart">
+      {{ 'APP.LOADING_CHART' | translate }}
+    </div>
+  }
 
   <app-predictions-panel
     [prediction]="electricityPrediction()"
@@ -100,130 +106,149 @@
     (periodChange)="onPredictionPeriodChange($event)"
   ></app-predictions-panel>
 
-  <app-detailed-records
-    [records]="records()"
-    [defaultSortOption]="'date-desc'"
-    [sortOptions]="sortOptions()"
-    [showSearchDate]="true"
-    [showYearMonth]="true"
-    [showEditDelete]="true"
-    [recordType]="'electricity'"
-    [helpSteps]="recordsHelpSteps"
-    [calculateTotalFn]="calculateTotal"
-    [valuesNoteKey]="'ELECTRICITY.ALL_VALUES_IN_KWH'"
-    [totalLabelKey]="'ELECTRICITY.VALUE'"
-    [hasDetails]="false"
-    (editRecord)="editRecord($event)"
-    (deleteRecord)="deleteRecord($event)"
-    (deleteAllRecords)="deleteAllRecords($event)"
-    (filterStateChange)="onFilterStateChange($event)"
-  >
-    <!-- Custom Record Details Template (Unused when hasDetails=false) -->
-    <ng-template #recordDetails let-record></ng-template>
+  @defer (on viewport) {
+    <app-detailed-records
+      [records]="records()"
+      [defaultSortOption]="'date-desc'"
+      [sortOptions]="sortOptions()"
+      [showSearchDate]="true"
+      [showYearMonth]="true"
+      [showEditDelete]="true"
+      [recordType]="'electricity'"
+      [helpSteps]="recordsHelpSteps"
+      [calculateTotalFn]="calculateTotal"
+      [valuesNoteKey]="'ELECTRICITY.ALL_VALUES_IN_KWH'"
+      [totalLabelKey]="'ELECTRICITY.VALUE'"
+      [hasDetails]="false"
+      (editRecord)="editRecord($event)"
+      (deleteRecord)="deleteRecord($event)"
+      (deleteAllRecords)="deleteAllRecords($event)"
+      (filterStateChange)="onFilterStateChange($event)"
+    >
+      <!-- Custom Record Details Template (Unused when hasDetails=false) -->
+      <ng-template #recordDetails let-record></ng-template>
 
-    <!-- Import/Export buttons projected into detailed-records -->
-    <div slot="action-buttons" class="action-buttons-group">
-      <button
-        type="button"
-        (click)="openSmartImport()"
-        class="export-btn"
-        title="{{ 'SMART_IMPORT.TITLE' | translate }}"
-      >
-        <lucide-icon [img]="ClipboardIcon" size="16"></lucide-icon>
-        <span class="btn-text">{{ 'SMART_IMPORT.TITLE' | translate }}</span>
-      </button>
+      <!-- Import/Export dropdowns projected into detailed-records -->
+      <div slot="action-buttons" class="action-buttons-group">
+        <!-- Export ▾ dropdown -->
+        <div class="action-dropdown">
+          <button
+            type="button"
+            class="action-dropdown-trigger"
+            [class.open]="isExportMenuOpen()"
+            (click)="toggleExportMenu($event)"
+            [disabled]="filteredRecords().length === 0"
+            title="{{
+              (filteredRecords().length === 0 ? 'WATER.EXPORT_DISABLED_TOOLTIP' : 'WATER.EXPORT')
+                | translate
+            }}"
+            aria-label="Export menu"
+          >
+            <lucide-icon [img]="DownloadIcon" size="16"></lucide-icon>
+            {{ 'WATER.EXPORT' | translate }}
+            <lucide-icon [img]="ChevronDownIcon" size="14" class="chevron-icon"></lucide-icon>
+          </button>
+          <div class="action-dropdown-menu" [class.open]="isExportMenuOpen()">
+            <button
+              type="button"
+              class="action-dropdown-item json-item"
+              (click)="exportData(); closeMenus()"
+              [disabled]="isExporting()"
+            >
+              <lucide-icon [img]="DownloadIcon" size="16"></lucide-icon>
+              {{ 'WATER.EXPORT' | translate }} (JSON)
+            </button>
+            @if (excelSettings.isEnabled()) {
+              <button
+                type="button"
+                class="action-dropdown-item excel-item"
+                (click)="exportToExcel(); closeMenus()"
+                [disabled]="isExporting()"
+              >
+                <lucide-icon [img]="FileOutputIcon" size="16"></lucide-icon>
+                {{ 'WATER.EXPORT_EXCEL' | translate }}
+              </button>
+              <button
+                type="button"
+                class="action-dropdown-item pdf-item"
+                (click)="exportToPdf(); closeMenus()"
+                [disabled]="isExporting()"
+              >
+                <lucide-icon [img]="FileTextIcon" size="16"></lucide-icon>
+                {{ 'WATER.EXPORT_PDF' | translate }}
+              </button>
+            }
+          </div>
+        </div>
 
-      <button
-        type="button"
-        (click)="exportData()"
-        class="export-btn json-btn"
-        [disabled]="isExporting() || filteredRecords().length === 0"
-        title="{{
-          (filteredRecords().length === 0 ? 'WATER.EXPORT_DISABLED_TOOLTIP' : 'WATER.EXPORT')
-            | translate
-        }}"
-      >
-        <lucide-icon [img]="DownloadIcon" size="16"></lucide-icon>
-        <span class="btn-text">{{
-          isExporting() ? 'Exporting...' : ('WATER.EXPORT' | translate)
-        }}</span>
-      </button>
-      <label
-        for="import-file"
-        class="import-btn json-btn"
-        [class.disabled]="isImporting()"
-        title="{{ 'WATER.IMPORT' | translate }}"
-      >
-        <lucide-icon [img]="UploadIcon" size="16"></lucide-icon>
-        <span class="btn-text">{{
-          isImporting() ? 'Importing...' : ('WATER.IMPORT' | translate)
-        }}</span>
-        <input
-          type="file"
-          id="import-file"
-          accept=".json"
-          (change)="importData($event)"
-          class="hidden-input"
-          [disabled]="isImporting()"
-        />
-      </label>
-
-      <!-- Excel Export/Import (conditional) -->
-      @if (excelSettings.isEnabled()) {
-        <button
-          type="button"
-          (click)="exportToExcel()"
-          class="export-btn excel-btn"
-          [disabled]="isExporting() || filteredRecords().length === 0"
-          title="{{
-            (filteredRecords().length === 0
-              ? 'WATER.EXPORT_DISABLED_TOOLTIP'
-              : 'WATER.EXPORT_EXCEL'
-            ) | translate
-          }}"
-        >
-          <lucide-icon [img]="FileOutputIcon" size="16"></lucide-icon>
-          <span class="btn-text">{{
-            isExporting() ? 'Exporting...' : ('WATER.EXPORT_EXCEL' | translate)
-          }}</span>
-        </button>
-        <label
-          for="import-excel-file"
-          class="import-btn excel-btn"
-          [class.disabled]="isImporting()"
-          title="{{ 'WATER.IMPORT_EXCEL' | translate }}"
-        >
-          <lucide-icon [img]="FileInputIcon" size="16"></lucide-icon>
-          <span class="btn-text">{{
-            isImporting() ? 'Importing...' : ('WATER.IMPORT_EXCEL' | translate)
-          }}</span>
-          <input
-            type="file"
-            id="import-excel-file"
-            accept=".xlsx,.xls"
-            (change)="importFromExcel($event)"
-            class="hidden-input"
+        <!-- Import ▾ dropdown -->
+        <div class="action-dropdown">
+          <button
+            type="button"
+            class="action-dropdown-trigger"
+            [class.open]="isImportMenuOpen()"
+            (click)="toggleImportMenu($event)"
             [disabled]="isImporting()"
-          />
-        </label>
-        <button
-          type="button"
-          (click)="exportToPdf()"
-          class="export-btn pdf-btn"
-          [disabled]="isExporting() || filteredRecords().length === 0"
-          title="{{
-            (filteredRecords().length === 0 ? 'WATER.EXPORT_DISABLED_TOOLTIP' : 'WATER.EXPORT_PDF')
-              | translate
-          }}"
-        >
-          <lucide-icon [img]="FileTextIcon" size="16"></lucide-icon>
-          <span class="btn-text">{{
-            isExporting() ? 'Exporting...' : ('WATER.EXPORT_PDF' | translate)
-          }}</span>
-        </button>
-      }
+            title="{{ 'WATER.IMPORT' | translate }}"
+            aria-label="Import menu"
+          >
+            <lucide-icon [img]="UploadIcon" size="16"></lucide-icon>
+            {{ 'WATER.IMPORT' | translate }}
+            <lucide-icon [img]="ChevronDownIcon" size="14" class="chevron-icon"></lucide-icon>
+          </button>
+          <div class="action-dropdown-menu" [class.open]="isImportMenuOpen()">
+            <label
+              for="import-file-electricity"
+              class="action-dropdown-item json-item"
+              [class.disabled]="isImporting()"
+            >
+              <lucide-icon [img]="UploadIcon" size="16"></lucide-icon>
+              {{ 'WATER.IMPORT' | translate }} (JSON)
+              <input
+                type="file"
+                id="import-file-electricity"
+                accept=".json"
+                (change)="importData($event)"
+                class="hidden-input"
+                [disabled]="isImporting()"
+              />
+            </label>
+            @if (excelSettings.isEnabled()) {
+              <label
+                for="import-excel-file-electricity"
+                class="action-dropdown-item excel-item"
+                [class.disabled]="isImporting()"
+              >
+                <lucide-icon [img]="FileInputIcon" size="16"></lucide-icon>
+                {{ 'WATER.IMPORT_EXCEL' | translate }}
+                <input
+                  type="file"
+                  id="import-excel-file-electricity"
+                  accept=".xlsx,.xls"
+                  (change)="importFromExcel($event)"
+                  class="hidden-input"
+                  [disabled]="isImporting()"
+                />
+              </label>
+            }
+            <button
+              type="button"
+              class="action-dropdown-item smart-item"
+              (click)="openSmartImport(); closeMenus()"
+              [disabled]="isImporting()"
+            >
+              <lucide-icon [img]="ClipboardIcon" size="16"></lucide-icon>
+              {{ 'SMART_IMPORT.TITLE' | translate }}
+            </button>
+          </div>
+        </div>
+      </div>
+    </app-detailed-records>
+  } @placeholder {
+    <div class="loading-placeholder loading-placeholder--records">
+      {{ 'APP.LOADING_RECORDS' | translate }}
     </div>
-  </app-detailed-records>
+  }
 
   <app-consumption-input
     [groups]="consumptionGroups()"
@@ -238,14 +263,26 @@
     (dateChange)="onDateChange($event)"
     (fieldChange)="onFieldChange($event)"
     (save)="onConsumptionSave($event)"
-    (cancel)="cancelEdit()"
+    (cancelModal)="cancelEdit()"
   >
   </app-consumption-input>
 </div>
 
 @if (showSuccessModal()) {
-  <div class="modal-overlay" (click)="closeSuccessModal()">
-    <div class="modal-content" (click)="$event.stopPropagation()">
+  <div
+    class="modal-overlay"
+    (click)="closeSuccessModal()"
+    (keydown.enter)="closeSuccessModal()"
+    tabindex="0"
+    (keyup.enter)="closeSuccessModal()"
+  >
+    <div
+      class="modal-content"
+      (click)="$event.stopPropagation()"
+      (keydown.enter)="$event.stopPropagation()"
+      tabindex="-1"
+      (keyup.enter)="$event.stopPropagation()"
+    >
       <div class="modal-header">
         <lucide-icon [img]="CheckCircleIcon" size="32" class="success-icon"></lucide-icon>
         <h3>{{ successTitle() | translate }}</h3>
@@ -269,7 +306,7 @@
   [deleteKey]="'HOME.DELETE_BUTTON'"
   [icon]="TrashIcon"
   (confirm)="confirmDelete()"
-  (cancel)="cancelDelete()"
+  (cancelModal)="cancelDelete()"
 >
 </app-delete-confirmation-modal>
 
@@ -282,7 +319,7 @@
   [deleteKey]="'HOME.DELETE_ALL_BUTTON'"
   [icon]="TrashIcon"
   (confirm)="confirmDeleteAll()"
-  (cancel)="cancelDeleteAll()"
+  (cancelModal)="cancelDeleteAll()"
 >
 </app-delete-confirmation-modal>
 
@@ -294,7 +331,7 @@
   [confirmKey]="'HOME.IMPORT_BUTTON'"
   [icon]="UploadIcon"
   (confirm)="confirmImport()"
-  (cancel)="cancelImport()"
+  (cancelModal)="cancelImport()"
 >
 </app-confirmation-modal>
 
@@ -306,7 +343,7 @@
   [confirmKey]="'WATER.IMPORT_CONTINUE'"
   [icon]="AlertTriangleIcon"
   (confirm)="confirmFilterWarningImport()"
-  (cancel)="cancelFilterWarningImport()"
+  (cancelModal)="cancelFilterWarningImport()"
 >
 </app-confirmation-modal>
 
@@ -316,14 +353,14 @@
   [message]="errorMessage()"
   [details]="errorDetails()"
   [instructions]="errorInstructions()"
-  (cancel)="closeErrorModal()"
+  (cancelModal)="closeErrorModal()"
   [type]="errorType()"
 >
 </app-error-modal>
 
 <app-smart-import-modal
   [show]="showSmartImportModal()"
-  (close)="showSmartImportModal.set(false)"
+  (closeModal)="showSmartImportModal.set(false)"
   (import)="onSmartImport($event)"
 ></app-smart-import-modal>
 
@@ -332,7 +369,7 @@
   [steps]="demoWizardSteps"
   [theme]="'electricity'"
   [titleKey]="'DEMO.WIZARD_TITLE'"
-  (close)="showDemoWizard.set(false)"
+  (closeModal)="showDemoWizard.set(false)"
 >
 </app-demo-wizard>
 
@@ -340,6 +377,6 @@
   [show]="showDemoTour()"
   [steps]="demoTourSteps"
   [theme]="'electricity'"
-  (close)="showDemoTour.set(false)"
+  (closeModal)="showDemoTour.set(false)"
 >
 </app-demo-tour>

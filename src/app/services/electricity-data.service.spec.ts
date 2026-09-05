@@ -12,13 +12,13 @@ import { ElectricityRecord } from '../models/records.model';
 
 describe('ElectricityDataService', () => {
   let service: ElectricityDataService;
-  let storageServiceMock: any;
-  let fileStorageServiceMock: any;
-  let excelServiceMock: any;
-  let pdfServiceMock: any;
-  let importValidationServiceMock: any;
-  let languageServiceMock: any;
-  let notificationServiceMock: any;
+  let storageServiceMock: Record<string, import('vitest').Mock>;
+  let fileStorageServiceMock: Record<string, import('vitest').Mock>;
+  let excelServiceMock: Record<string, import('vitest').Mock>;
+  let pdfServiceMock: Record<string, import('vitest').Mock>;
+  let importValidationServiceMock: Record<string, import('vitest').Mock>;
+  let languageServiceMock: Record<string, import('vitest').Mock>;
+  let notificationServiceMock: Record<string, import('vitest').Mock>;
 
   const mockRecords: ElectricityRecord[] = [
     {
@@ -403,7 +403,9 @@ describe('ElectricityDataService', () => {
     });
 
     it('should handle JSON export error gracefully', async () => {
-      const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
+      const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {
+        /* noop */
+      });
       fileStorageServiceMock.exportToFile.mockRejectedValue(new Error('Export failed'));
 
       await service.exportData();
@@ -423,7 +425,9 @@ describe('ElectricityDataService', () => {
     });
 
     it('should handle Excel export error gracefully', async () => {
-      const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
+      const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {
+        /* noop */
+      });
       excelServiceMock.exportElectricityToExcel.mockRejectedValue(new Error('Export failed'));
 
       await service.exportToExcel();
@@ -443,7 +447,9 @@ describe('ElectricityDataService', () => {
     });
 
     it('should handle PDF export error gracefully', async () => {
-      const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
+      const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {
+        /* noop */
+      });
       pdfServiceMock.exportElectricityToPdf.mockRejectedValue(new Error('Export failed'));
 
       await service.exportToPdf();
@@ -642,7 +648,9 @@ describe('ElectricityDataService', () => {
     });
 
     it('should handle Excel import error', async () => {
-      const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
+      const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {
+        /* noop */
+      });
       const file = new File([''], 'test.xlsx');
       const event = { target: { files: [file], value: '' } } as unknown as Event;
 
@@ -796,7 +804,9 @@ describe('ElectricityDataService', () => {
     });
 
     it('should handle errors during import', async () => {
-      const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
+      const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {
+        /* noop */
+      });
       storageServiceMock.save.mockRejectedValue(new Error('Save failed'));
 
       const recordsToImport = [{ date: new Date('2023-03-01'), value: 300 }];

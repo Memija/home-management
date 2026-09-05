@@ -7,8 +7,12 @@ import { describe, it, expect, beforeEach, vi, afterEach } from 'vitest';
 
 describe('ExcelImportService', () => {
   let service: ExcelImportService;
-  let mockLanguageService: any;
-  let mockValidationService: any;
+  let mockLanguageService: {
+    translate: import('vitest').Mock<(key: string) => string>;
+  };
+  let mockValidationService: {
+    getValidationError: import('vitest').Mock<(val: unknown) => string>;
+  };
 
   beforeEach(() => {
     mockLanguageService = {
@@ -68,8 +72,8 @@ describe('ExcelImportService', () => {
       try {
         service.validateImportedSettings('invalid');
         expect(true).toBe(false); // Should not reach here
-      } catch (e: any) {
-        expect(e.message).toBe('SETTINGS.IMPORT_EXCEL_SETTINGS_INVALID_FORMAT');
+      } catch (e: unknown) {
+        expect((e as Error).message).toBe('SETTINGS.IMPORT_EXCEL_SETTINGS_INVALID_FORMAT');
       }
     });
 
@@ -77,8 +81,8 @@ describe('ExcelImportService', () => {
       try {
         service.validateImportedSettings({});
         expect(true).toBe(false);
-      } catch (e: any) {
-        expect(e.message).toBe('SETTINGS.IMPORT_EXCEL_SETTINGS_INVALID_FORMAT');
+      } catch (e: unknown) {
+        expect((e as Error).message).toBe('SETTINGS.IMPORT_EXCEL_SETTINGS_INVALID_FORMAT');
       }
     });
 
@@ -134,9 +138,9 @@ describe('ExcelImportService', () => {
       try {
         service.validateImportedSettings(invalidData);
         expect(true).toBe(false);
-      } catch (e: any) {
-        expect(e.message).toBe('SETTINGS.VALIDATION_FAILED');
-        expect(e.details).toContain('SETTINGS.IMPORT_EXCEL_MISSING_WATER');
+      } catch (e: unknown) {
+        expect((e as Error).message).toBe('SETTINGS.VALIDATION_FAILED');
+        expect((e as ImportError).details).toContain('SETTINGS.IMPORT_EXCEL_MISSING_WATER');
       }
     });
 
@@ -164,9 +168,9 @@ describe('ExcelImportService', () => {
       try {
         service.validateImportedSettings(invalidData);
         expect(true).toBe(false);
-      } catch (e: any) {
-        expect(e.message).toBe('SETTINGS.VALIDATION_FAILED');
-        expect(e.details).toContain('EXCEL.VALIDATION_GOT_NUMBER');
+      } catch (e: unknown) {
+        expect((e as Error).message).toBe('SETTINGS.VALIDATION_FAILED');
+        expect((e as ImportError).details).toContain('EXCEL.VALIDATION_GOT_NUMBER');
       }
     });
 
@@ -194,9 +198,9 @@ describe('ExcelImportService', () => {
       try {
         service.validateImportedSettings(duplicateData);
         expect(true).toBe(false);
-      } catch (e: any) {
-        expect(e.details).toContain('EXCEL.VALIDATION_DUPLICATES');
-        expect(e.details).toContain('Duplicate');
+      } catch (e: unknown) {
+        expect((e as ImportError).details).toContain('EXCEL.VALIDATION_DUPLICATES');
+        expect((e as ImportError).details).toContain('Duplicate');
       }
     });
   });
@@ -250,9 +254,11 @@ describe('ExcelImportService', () => {
       try {
         service.validateImportedSettings(invalidData);
         expect(true).toBe(false);
-      } catch (e: any) {
-        expect(e.message).toBe('SETTINGS.VALIDATION_FAILED');
-        expect(e.details).toContain('SETTINGS.EXCEL_COLUMN_ELECTRICITY_VALUE_NAME');
+      } catch (e: unknown) {
+        expect((e as Error).message).toBe('SETTINGS.VALIDATION_FAILED');
+        expect((e as ImportError).details).toContain(
+          'SETTINGS.EXCEL_COLUMN_ELECTRICITY_VALUE_NAME',
+        );
       }
     });
 
@@ -268,10 +274,10 @@ describe('ExcelImportService', () => {
       try {
         service.validateImportedSettings(duplicateData);
         expect(true).toBe(false);
-      } catch (e: any) {
-        expect(e.message).toBe('SETTINGS.VALIDATION_FAILED');
-        expect(e.details).toContain('EXCEL.VALIDATION_DUPLICATES');
-        expect(e.details).toContain('Same Column');
+      } catch (e: unknown) {
+        expect((e as Error).message).toBe('SETTINGS.VALIDATION_FAILED');
+        expect((e as ImportError).details).toContain('EXCEL.VALIDATION_DUPLICATES');
+        expect((e as ImportError).details).toContain('Same Column');
       }
     });
   });
@@ -301,10 +307,12 @@ describe('ExcelImportService', () => {
       try {
         service.validateImportedSettings(crossDuplicateData);
         expect(true).toBe(false);
-      } catch (e: any) {
-        expect(e.message).toBe('SETTINGS.VALIDATION_FAILED');
-        expect(e.details).toContain('SETTINGS.IMPORT_EXCEL_CROSS_SECTION_DUPLICATES');
-        expect(e.details).toContain('shared date');
+      } catch (e: unknown) {
+        expect((e as Error).message).toBe('SETTINGS.VALIDATION_FAILED');
+        expect((e as ImportError).details).toContain(
+          'SETTINGS.IMPORT_EXCEL_CROSS_SECTION_DUPLICATES',
+        );
+        expect((e as ImportError).details).toContain('shared date');
       }
     });
 
@@ -350,8 +358,8 @@ describe('ExcelImportService', () => {
       try {
         service.validateImportedSettings(invalidData);
         expect(true).toBe(false);
-      } catch (e: any) {
-        expect(e.details).toContain('SETTINGS.IMPORT_EXCEL_INVALID_ENABLED');
+      } catch (e: unknown) {
+        expect((e as ImportError).details).toContain('SETTINGS.IMPORT_EXCEL_INVALID_ENABLED');
       }
     });
   });
@@ -456,8 +464,8 @@ describe('ExcelImportService', () => {
       try {
         service.validateImportedSettings(invalidData);
         expect(true).toBe(false);
-      } catch (e: any) {
-        expect(e.message).toBe('SETTINGS.VALIDATION_FAILED');
+      } catch (e: unknown) {
+        expect((e as Error).message).toBe('SETTINGS.VALIDATION_FAILED');
       }
     });
 
@@ -483,8 +491,8 @@ describe('ExcelImportService', () => {
       try {
         service.validateImportedSettings(invalidData);
         expect(true).toBe(false);
-      } catch (e: any) {
-        expect(e.message).toBe('SETTINGS.VALIDATION_FAILED');
+      } catch (e: unknown) {
+        expect((e as Error).message).toBe('SETTINGS.VALIDATION_FAILED');
       }
     });
     it('should detect unknown rooms (extra room IDs)', () => {
@@ -505,10 +513,10 @@ describe('ExcelImportService', () => {
       try {
         service.validateImportedSettings(invalidData);
         expect(true).toBe(false);
-      } catch (e: any) {
-        expect(e.message).toBe('SETTINGS.VALIDATION_FAILED');
-        expect(e.details).toContain('SETTINGS.IMPORT_EXCEL_UNKNOWN_ROOMS');
-        expect(e.details).toContain('extraRoom');
+      } catch (e: unknown) {
+        expect((e as Error).message).toBe('SETTINGS.VALIDATION_FAILED');
+        expect((e as ImportError).details).toContain('SETTINGS.IMPORT_EXCEL_UNKNOWN_ROOMS');
+        expect((e as ImportError).details).toContain('extraRoom');
       }
     });
 
@@ -528,11 +536,11 @@ describe('ExcelImportService', () => {
       try {
         service.validateImportedSettings(invalidData);
         expect(true).toBe(false);
-      } catch (e: any) {
-        expect(e.message).toBe('SETTINGS.VALIDATION_FAILED');
-        expect(e.details).toContain('SETTINGS.IMPORT_EXCEL_MISSING_ROOM_MAPPINGS');
-        expect(e.details).toContain('Kitchen');
-        expect(e.details).toContain('Bathroom');
+      } catch (e: unknown) {
+        expect((e as Error).message).toBe('SETTINGS.VALIDATION_FAILED');
+        expect((e as ImportError).details).toContain('SETTINGS.IMPORT_EXCEL_MISSING_ROOM_MAPPINGS');
+        expect((e as ImportError).details).toContain('Kitchen');
+        expect((e as ImportError).details).toContain('Bathroom');
       }
     });
 
@@ -554,10 +562,10 @@ describe('ExcelImportService', () => {
       try {
         service.validateImportedSettings(invalidData);
         expect(true).toBe(false);
-      } catch (e: any) {
-        expect(e.message).toBe('SETTINGS.VALIDATION_FAILED');
-        expect(e.details).toContain('SETTINGS.IMPORT_EXCEL_UNEXPECTED_FIELDS');
-        expect(e.details).toContain('unexpectedField');
+      } catch (e: unknown) {
+        expect((e as Error).message).toBe('SETTINGS.VALIDATION_FAILED');
+        expect((e as ImportError).details).toContain('SETTINGS.IMPORT_EXCEL_UNEXPECTED_FIELDS');
+        expect((e as ImportError).details).toContain('unexpectedField');
       }
     });
   });

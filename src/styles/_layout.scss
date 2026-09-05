@@ -9,10 +9,7 @@
   max-width: 800px;
   margin: 0 auto 5% auto;
   padding: 1rem;
-  font-family:
-    system-ui,
-    -apple-system,
-    sans-serif;
+  font-family: inherit;
 }
 
 // Legacy container (for backward compatibility)
@@ -20,10 +17,7 @@
   max-width: 1000px;
   margin: 5rem auto;
   padding: 1rem;
-  font-family:
-    system-ui,
-    -apple-system,
-    sans-serif;
+  font-family: inherit;
 }
 
 // ==========================================================================
@@ -34,12 +28,14 @@
 // Use for: charts, main content areas, cards
 .section-card {
   background: var(--card-bg);
-  border-radius: 8px;
+  border: 1px solid var(--card-border);
+  border-radius: 12px;
   padding: 1.5rem;
   margin-bottom: 2rem;
-  box-shadow: var(--shadow);
+  box-shadow: var(--card-specular), var(--shadow-card);
   transition:
     background 0.3s ease,
+    border-color 0.2s ease,
     box-shadow 0.3s ease;
 }
 
@@ -47,20 +43,30 @@
 // Use for: forms, data entry areas
 .section-input {
   background: var(--bg-secondary);
-  border-radius: 8px;
+  border: 1px solid var(--card-border);
+  border-radius: 12px;
   padding: 1.5rem;
   margin-bottom: 2rem;
-  transition: background 0.3s ease;
+  box-shadow: var(--card-specular);
+  transition:
+    background 0.3s ease,
+    border-color 0.2s ease,
+    box-shadow 0.3s ease;
 }
 
 // Data display section (light gray background)
 // Use for: history/records lists, data tables
 .section-data {
   background: var(--bg-secondary);
-  border-radius: 8px;
+  border: 1px solid var(--card-border);
+  border-radius: 12px;
   padding: 1rem;
   margin-bottom: 2rem;
-  transition: background 0.3s ease;
+  box-shadow: var(--card-specular);
+  transition:
+    background 0.3s ease,
+    border-color 0.2s ease,
+    box-shadow 0.3s ease;
 }
 
 .tracker-header {
@@ -85,18 +91,28 @@
     padding: 0.5rem 1rem;
     border: 1px solid var(--border-color);
     background: var(--card-bg);
-    border-radius: 4px;
+    border-radius: 8px;
     cursor: pointer;
     font-size: 0.9rem;
     font-weight: 500;
-    color: $gray-700;
+    color: var(--text-primary);
     text-decoration: none;
-    transition: all 0.2s;
+    transition: all 0.2s ease;
+    box-shadow: var(--shadow-sm);
+
+    &:hover {
+      background: var(--bg-secondary);
+      border-color: var(--theme-primary, $primary);
+      transform: translateY(-1px);
+    }
   }
 
   h1 {
     margin: 0;
     color: var(--text-primary);
+    font-size: 1.75rem;
+    font-weight: 700;
+    letter-spacing: -0.02em;
   }
 
   .header-actions {
@@ -106,10 +122,10 @@
   }
 
   .action-btn {
-    padding: 0.4rem 0.8rem;
+    padding: 0.45rem 0.9rem;
     border: 1px solid var(--border-color);
     background: var(--card-bg);
-    border-radius: 4px;
+    border-radius: 8px;
     cursor: pointer;
     font-size: 0.85rem;
     font-weight: 500;
@@ -118,11 +134,14 @@
     display: inline-flex;
     align-items: center;
     gap: 0.5rem;
-    transition: all 0.2s;
+    transition: all 0.2s ease;
+    box-shadow: var(--shadow-sm);
 
     &:hover {
       background: var(--bg-tertiary);
       border-color: var(--border-light);
+      color: var(--text-primary);
+      transform: translateY(-1px);
     }
 
     &.settings-btn {
@@ -208,4 +227,21 @@
   text-align: center;
   position: relative;
   z-index: 10;
+}
+
+// ==========================================================================
+// Placeholders
+// ==========================================================================
+.loading-placeholder {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  &.loading-placeholder--chart {
+    min-height: 400px;
+  }
+
+  &.loading-placeholder--records {
+    min-height: 300px;
+  }
 }

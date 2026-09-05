@@ -24,7 +24,7 @@ export class PredictionCalculationService {
   calculateDailyRatesWithMonths(
     records: { date: Date | string }[],
     incrementalData: unknown[],
-    category: string = 'total',
+    category = 'total',
   ): { rate: number; month: number }[] {
     const results: { rate: number; month: number }[] = [];
 
@@ -93,7 +93,11 @@ export class PredictionCalculationService {
     records: { date: Date | string }[],
     incrementalData: unknown[],
     category: string,
-  ): { accuracy: number | null; correctionFactor: number; historicalPredictions: (number | null)[] } {
+  ): {
+    accuracy: number | null;
+    correctionFactor: number;
+    historicalPredictions: (number | null)[];
+  } {
     const historicalPredictions: (number | null)[] = new Array(records.length).fill(null);
 
     if (records.length < MIN_RECORDS_FOR_PREDICTION + 2) {
@@ -108,8 +112,12 @@ export class PredictionCalculationService {
       const pastRecords = records.slice(0, splitIdx + 1);
       const pastIncremental = incrementalData.slice(0, splitIdx);
 
-      const ratesWithMonths = this.calculateDailyRatesWithMonths(pastRecords, pastIncremental, category);
-      const dailyRates = ratesWithMonths.map(r => r.rate);
+      const ratesWithMonths = this.calculateDailyRatesWithMonths(
+        pastRecords,
+        pastIncremental,
+        category,
+      );
+      const dailyRates = ratesWithMonths.map((r) => r.rate);
       if (dailyRates.length < 2) continue;
 
       const { slope, intercept } = this.calculationService.calculateLinearRegression(dailyRates);
@@ -119,7 +127,10 @@ export class PredictionCalculationService {
       const totalDays = (lastDate - firstDate) / (1000 * 3600 * 24);
       const avgInterval = pastRecords.length > 1 ? totalDays / (pastRecords.length - 1) : 7;
 
-      const regRate = Math.max(0, slope * dailyRates.length + intercept + (slope / (avgInterval || 7)) * 30);
+      const regRate = Math.max(
+        0,
+        slope * dailyRates.length + intercept + (slope / (avgInterval || 7)) * 30,
+      );
       const expected30 = this.statsService.weightedMovingAverage(dailyRates, regRate);
 
       // Store the predicted daily rate for the next record (which is at splitIdx + 1)
@@ -170,8 +181,12 @@ export class PredictionCalculationService {
     ratesWithMonths: { rate: number; month: number }[],
     records: { date: Date | string }[],
     unit: string,
-    accuracyData?: { accuracy: number | null; correctionFactor: number; historicalPredictions: (number | null)[] },
-    isHeating: boolean = false,
+    accuracyData?: {
+      accuracy: number | null;
+      correctionFactor: number;
+      historicalPredictions: (number | null)[];
+    },
+    isHeating = false,
   ): PredictionResult {
     // Use linear regression on daily rates to extrapolate trend
     const { slope, intercept } = this.calculationService.calculateLinearRegression(dailyRates);
@@ -229,7 +244,11 @@ export class PredictionCalculationService {
     const rangeDecade = getProjectedRange(3650);
 
     // Build seasonal monthly factors from historical data
-    const monthlyRates = this.statsService.calculateMonthlyRates(ratesWithMonths, ratesMean, ratesSd);
+    const monthlyRates = this.statsService.calculateMonthlyRates(
+      ratesWithMonths,
+      ratesMean,
+      ratesSd,
+    );
 
     // Zero out off-season months for heating based on user's historical data
     if (isHeating) {

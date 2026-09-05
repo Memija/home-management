@@ -304,7 +304,8 @@ export class ImportValidationService {
 
     // Parse and validate date
     const dateValue = rec['date'];
-    let parsedDate: Date | null = null;
+
+    let parsedDate: Date;
 
     if (typeof dateValue === 'string') {
       parsedDate = new Date(dateValue);

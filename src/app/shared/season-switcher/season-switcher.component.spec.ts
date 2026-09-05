@@ -19,7 +19,14 @@ class MockTranslatePipe implements PipeTransform {
 describe('SeasonSwitcherComponent', () => {
   let component: SeasonSwitcherComponent;
   let fixture: ComponentFixture<SeasonSwitcherComponent>;
-  let mockSeasonService: any;
+  let mockSeasonService: {
+    currentSeason: import('@angular/core').WritableSignal<
+      import('../../services/season.service').Season
+    >;
+    disabled: import('@angular/core').WritableSignal<boolean>;
+    previousSeason: import('vitest').Mock;
+    nextSeason: import('vitest').Mock;
+  };
   let currentSeasonSignal: WritableSignal<Season>;
   let disabledSignal: WritableSignal<boolean>;
 

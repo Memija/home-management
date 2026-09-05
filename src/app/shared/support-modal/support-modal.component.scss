@@ -4,8 +4,11 @@
   max-width: 450px;
   width: 95%;
   background: var(--modal-bg);
-  border-radius: 12px;
+  border: 1px solid var(--border-color);
+  border-radius: 16px;
+  box-shadow: var(--shadow-lg);
   overflow: hidden;
+  animation: modalSlideIn 0.3s cubic-bezier(0.16, 1, 0.3, 1);
 
   .modal-header {
     display: flex;

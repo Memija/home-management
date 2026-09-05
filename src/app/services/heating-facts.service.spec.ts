@@ -1,5 +1,5 @@
 import { TestBed } from '@angular/core/testing';
-import { HeatingFactsService, HeatingFact } from './heating-facts.service';
+import { HeatingFactsService } from './heating-facts.service';
 import { LanguageService } from './language.service';
 import { describe, it, expect, beforeEach } from 'vitest';
 import { signal } from '@angular/core';

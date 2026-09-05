@@ -2,28 +2,23 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { ChangelogComponent } from './changelog.component';
 import { LucideAngularModule, Camera, CheckCircle2, History } from 'lucide-angular';
 import { By } from '@angular/platform-browser';
-import { LanguageService } from '../services/language.service';
+import { LanguageService, Language } from '../services/language.service';
 import { signal } from '@angular/core';
 
 describe('ChangelogComponent', () => {
   let component: ChangelogComponent;
   let fixture: ComponentFixture<ChangelogComponent>;
-  let mockLanguageService: any;
+  let mockLanguageService: Partial<LanguageService>;
 
   beforeEach(async () => {
     mockLanguageService = {
-      currentLang: signal('en'),
+      currentLang: signal<Language>('en'),
       translate: (key: string) => key,
     };
 
     await TestBed.configureTestingModule({
-      imports: [
-        ChangelogComponent,
-        LucideAngularModule.pick({ Camera, CheckCircle2, History }),
-      ],
-      providers: [
-        { provide: LanguageService, useValue: mockLanguageService }
-      ]
+      imports: [ChangelogComponent, LucideAngularModule.pick({ Camera, CheckCircle2, History })],
+      providers: [{ provide: LanguageService, useValue: mockLanguageService }],
     }).compileComponents();
 
     fixture = TestBed.createComponent(ChangelogComponent);
@@ -87,7 +82,7 @@ describe('ChangelogComponent', () => {
         component.versions.push({
           version: '1.1.0',
           labelKey: 'CHANGELOG.V1_1_0_LABEL',
-          entries: []
+          entries: [],
         });
       } else {
         component.versions[0].entries = [];
@@ -96,8 +91,11 @@ describe('ChangelogComponent', () => {
       // We wrap detectChanges in try/catch just in case the push above executes and triggers the known lucide-angular test error
       try {
         fixture.detectChanges();
-      } catch (e: any) {
-        if (!e.message.includes('ExpressionChangedAfterItHasBeenCheckedError')) {
+      } catch (e: unknown) {
+        if (
+          !(e instanceof Error) ||
+          !e.message.includes('ExpressionChangedAfterItHasBeenCheckedError')
+        ) {
           throw e;
         }
       }
@@ -111,4 +109,3 @@ describe('ChangelogComponent', () => {
     });
   });
 });
-

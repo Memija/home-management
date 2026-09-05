@@ -107,8 +107,8 @@ export class FamilyImportService {
       avatar?: unknown;
     }
 
-    for (let i = 0; i < data.length; i++) {
-      const item = data[i] as RawMember; // Helper cast
+    for (const rawItem of data) {
+      const item = rawItem as RawMember; // Helper cast
       let hasErrors = false;
 
       // Check if item is an object

@@ -14,17 +14,17 @@ const mockCollection = vi.fn();
 const mockGetDocs = vi.fn();
 const mockDeleteField = vi.fn();
 
-let globalFirestoreMock: any = {};
+let globalFirestoreMock: Record<string, unknown> = {};
 
 vi.mock('firebase/firestore', () => ({
   Firestore: class {},
   getFirestore: () => globalFirestoreMock,
-  doc: (...args: any[]) => mockDoc(...args),
-  setDoc: (...args: any[]) => mockSetDoc(...args),
-  getDoc: (...args: any[]) => mockGetDoc(...args),
-  deleteDoc: (...args: any[]) => mockDeleteDoc(...args),
-  collection: (...args: any[]) => mockCollection(...args),
-  getDocs: (...args: any[]) => mockGetDocs(...args),
+  doc: (...args: unknown[]) => mockDoc(...args),
+  setDoc: (...args: unknown[]) => mockSetDoc(...args),
+  getDoc: (...args: unknown[]) => mockGetDoc(...args),
+  deleteDoc: (...args: unknown[]) => mockDeleteDoc(...args),
+  collection: (...args: unknown[]) => mockCollection(...args),
+  getDocs: (...args: unknown[]) => mockGetDocs(...args),
   deleteField: () => mockDeleteField(),
 }));
 
@@ -36,8 +36,8 @@ vi.mock('firebase/app', () => ({
 
 describe('FirebaseStorageService', () => {
   let service: FirebaseStorageService;
-  let authServiceMock: any;
-  let firestoreMock: any;
+  let authServiceMock: { getCurrentUid: ReturnType<typeof vi.fn> };
+  let firestoreMock: Record<string, unknown>;
 
   beforeEach(() => {
     authServiceMock = {
@@ -182,7 +182,7 @@ describe('FirebaseStorageService', () => {
     it('should export all data', async () => {
       mockCollection.mockReturnValue('col-ref');
       mockGetDocs.mockResolvedValue({
-        forEach: (callback: any) => {
+        forEach: (callback: (doc: { id: string; data: () => Record<string, unknown> }) => void) => {
           callback({ id: 'key1', data: () => ({ value: 'val1' }) });
           callback({ id: 'user_settings', data: () => ({ theme: 'dark' }) });
         },
@@ -253,7 +253,7 @@ describe('FirebaseStorageService', () => {
       const doc2 = { ref: 'ref2' };
 
       mockGetDocs.mockResolvedValue({
-        forEach: (callback: any) => {
+        forEach: (callback: (doc: { ref: string }) => void) => {
           callback(doc1);
           callback(doc2);
         },
@@ -273,7 +273,11 @@ describe('FirebaseStorageService', () => {
       await service.updateCloudTimestamp(timestamp);
 
       expect(mockDoc).toHaveBeenCalledWith(firestoreMock, 'users/test-uid/data/_sync_metadata');
-      expect(mockSetDoc).toHaveBeenCalledWith('doc-ref', { last_cloud_update: timestamp }, { merge: true });
+      expect(mockSetDoc).toHaveBeenCalledWith(
+        'doc-ref',
+        { last_cloud_update: timestamp },
+        { merge: true },
+      );
     });
 
     it('should get cloud timestamp if doc exists', async () => {

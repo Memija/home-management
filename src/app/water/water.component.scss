@@ -6,6 +6,12 @@
 $water-primary: $primary;
 $water-primary-dark: $primary-dark;
 
+:host {
+  --theme-primary: #{$water-primary};
+  --theme-primary-dark: #{$water-primary-dark};
+  --theme-primary-rgb: 0, 92, 191;
+}
+
 .chart-section .chart-header .chart-filters button {
   &:hover {
     border-color: $water-primary;
@@ -25,6 +31,21 @@ $water-primary-dark: $primary-dark;
   gap: 0.5rem;
   flex-wrap: wrap;
 
+  @media (max-width: 768px) {
+    width: 100%;
+    flex-wrap: nowrap;
+
+    .action-dropdown {
+      flex: 1 1 50%;
+      min-width: 0;
+
+      .action-dropdown-trigger {
+        width: 100%;
+        justify-content: center;
+      }
+    }
+  }
+
   button,
   label {
     flex-shrink: 0;
@@ -43,7 +64,9 @@ $water-primary-dark: $primary-dark;
   background: transparent;
   color: var(--text-muted, #9ca3af);
   cursor: pointer;
-  transition: color 0.2s, background 0.2s;
+  transition:
+    color 0.2s,
+    background 0.2s;
 
   &:hover {
     color: $water-primary;

@@ -33,17 +33,21 @@ export const settings = {
     FAMILY_SAVED: 'Породица је успешно сачувана!',
     EDIT_MEMBER: 'Уреди',
     SAVE_MEMBER: 'Сачувај промене',
-    UPLOAD_PICTURE: 'Отпреми слику',
+    UPLOAD_PICTURE: 'Изабери',
+    CUSTOM_PICTURE: 'Сопствена слика',
     OR_SELECT_AVATAR: 'Или изаберите аватара',
     EXPORT_FAMILY: 'Извези породицу',
     IMPORT_FAMILY: 'Увези породицу',
     SHOW_ADD_MEMBER_FORM: 'Додај члана породице',
     DELETE_MEMBER_CONFIRM_TITLE: 'Потврда брисања',
-    DELETE_MEMBER_CONFIRM_MESSAGE: 'Јесте ли сигурни да желите обрисати члана породице? Акција се не може поништити.',
+    DELETE_MEMBER_CONFIRM_MESSAGE:
+      'Јесте ли сигурни да желите обрисати члана породице? Акција се не може поништити.',
     DELETE_MEMBER_BUTTON: 'Уклони члана',
     UNSAVED_CHANGES_TITLE: 'Несачуване промене',
-    UNSAVED_CHANGES_MESSAGE: 'Имате несачуване промене код чланова породице. Ако изађете сада, промене ће бити изгубљене.',
-    UNSAVED_CHANGES_MESSAGE_GENERIC: 'Имате несачуване промене. Ако одете, промене ће бити изгубљене.',
+    UNSAVED_CHANGES_MESSAGE:
+      'Имате несачуване промене код чланова породице. Ако изађете сада, промене ће бити изгубљене.',
+    UNSAVED_CHANGES_MESSAGE_GENERIC:
+      'Имате несачуване промене. Ако одете, промене ће бити изгубљене.',
     UNSAVED_CHANGES_LEAVE: 'Изађи без чувања',
     UNSAVED_CHANGES_STAY: 'Остани и сачувај',
     TYPES: {
@@ -67,32 +71,40 @@ export const settings = {
     EXPORT_ADDRESS: 'Извези адресу',
     IMPORT_ADDRESS: 'Увези адресу',
     IMPORT_SUCCESS: 'Адреса је успешно учитана!',
-    IMPORT_ERROR: 'Учитавање адресе није успело. Датотека не садржи валидне податке (улица, број, град, поштански број).',
+    IMPORT_ERROR:
+      'Учитавање адресе није успело. Датотека не садржи валидне податке (улица, број, град, поштански број).',
     IMPORT_FAMILY_CONFIRM_TITLE: 'Потврда увоза',
-    IMPORT_FAMILY_CONFIRM_MESSAGE: 'Овај увоз ће преписати тренутне чланове породице. Јесте ли сигурни да желите наставити?',
+    IMPORT_FAMILY_CONFIRM_MESSAGE:
+      'Овај увоз ће преписати тренутне чланове породице. Јесте ли сигурни да желите наставити?',
     IMPORT_FAMILY_ERROR_TITLE: 'Грешка при увозу',
     IMPORT_FAMILY_INVALID_FILE_TYPE: 'Дозвољен је само увоз JSON датотека (.json).',
     IMPORT_FAMILY_INVALID_FILE_TYPE_INSTRUCTION_1: 'Осигурајте да датотека има .json екстензију',
-    IMPORT_FAMILY_INVALID_FILE_TYPE_INSTRUCTION_2: 'Прво извезите породицу како бисте добили исправан формат',
+    IMPORT_FAMILY_INVALID_FILE_TYPE_INSTRUCTION_2:
+      'Прво извезите породицу како бисте добили исправан формат',
     DUPLICATE_MEMBER_ERROR: 'Овај члан породице већ постоји.',
     DUPLICATE_MEMBER_NAME: 'Име: {{name}} {{surname}}',
     DUPLICATE_MEMBER_INSTRUCTION_1: 'Користите јединствено име за новог члана',
     DUPLICATE_MEMBER_INSTRUCTION_2: 'Додајте надимак или средње име ако се ради о другој особи',
     DUPLICATE_MEMBER_INSTRUCTION_3: 'Проверите листу тренутних чланова.',
     MAX_MEMBERS_ERROR: 'Досегнут је максималан број чланова',
-    MAX_MEMBERS_MESSAGE: 'Апликација тренутно подржава максимално {{max}} чланова. Избришите некога да бисте додали новог члана.',
+    MAX_MEMBERS_MESSAGE:
+      'Апликација тренутно подржава максимално {{max}} чланова. Избришите некога да бисте додали новог члана.',
     MAX_MEMBERS_INSTRUCTION_1: 'Уклоните неактивне чланове породице',
     MAX_MEMBERS_INSTRUCTION_2: 'Извезите тренутну породицу као архиву пре брисања',
     IMPORT_FAMILY_INVALID_DATA: 'Увезена датотека садржи неисправне податке о члановима породице.',
-    IMPORT_FAMILY_INVALID_FORMAT: 'Формат датотеке није исправан. Проверите да ли су поља име, врста и пол исправно попуњена.',
-    IMPORT_FAMILY_ERROR_NOT_OBJECT: 'Подаци о члану морају бити у облику објекта са атрибутима: име, презиме, врста, пол.',
+    IMPORT_FAMILY_INVALID_FORMAT:
+      'Формат датотеке није исправан. Проверите да ли су поља име, врста и пол исправно попуњена.',
+    IMPORT_FAMILY_ERROR_NOT_OBJECT:
+      'Подаци о члану морају бити у облику објекта са атрибутима: име, презиме, врста, пол.',
     IMPORT_FAMILY_ERROR_MISSING_NAME: 'Поље име не сме бити празно.',
     IMPORT_FAMILY_ERROR_MISSING_SURNAME: 'Поље презиме не сме бити празно.',
     IMPORT_FAMILY_ERROR_INVALID_TYPE: 'Врста члана мора бити: "adult", "kid" или "other".',
     IMPORT_FAMILY_ERROR_INVALID_GENDER: 'Пол члана мора бити: "male", "female" oder "other".',
-    IMPORT_FAMILY_ERROR_NO_VALID_MEMBERS: 'У датотеци нису пронађени валидни чланови породице за увоз.',
+    IMPORT_FAMILY_ERROR_NO_VALID_MEMBERS:
+      'У датотеци нису пронађени валидни чланови породице за увоз.',
     IMPORT_ADDRESS_CONFIRM_TITLE: 'Потврда увоза адресе',
-    IMPORT_ADDRESS_CONFIRM_MESSAGE: 'Овај увоз ће преписати вашу тренутну адресу. Јесте ли сигурни да желите наставити?',
+    IMPORT_ADDRESS_CONFIRM_MESSAGE:
+      'Овај увоз ће преписати вашу тренутну адресу. Јесте ли сигурни да желите наставити?',
     VALIDATION_FAILED: 'Валидација података није успела.',
     GENDERS: {
       MALE: 'Мушко',
@@ -126,22 +138,32 @@ export const settings = {
     IMPORT_EXCEL_SETTINGS_SUCCESS: 'Увоз Excel поставки успешан.',
     IMPORT_EXCEL_SETTINGS_ERROR: 'Грешка при увозу Excel поставки: {{error}}',
     IMPORT_EXCEL_SETTINGS_CONFIRM_TITLE: 'Потврда увоза поставки',
-    IMPORT_EXCEL_SETTINGS_CONFIRM_MESSAGE: 'Овај увоз ће преписати ваше тренутне Excel поставке мапирања. Желите ли наставити?',
+    IMPORT_EXCEL_SETTINGS_CONFIRM_MESSAGE:
+      'Овај увоз ће преписати ваше тренутне Excel поставке мапирања. Желите ли наставити?',
     IMPORT_EXCEL_SETTINGS_ERROR_TITLE: 'Неуспешан увоз',
     IMPORT_EXCEL_INVALID_ENABLED: 'Неважећа поставка за опцију омогући (мора бити boolean)',
     IMPORT_EXCEL_INVALID_ENABLED_HINT: 'Поље "enabled" мора бити true (тачно) или false (нетачно)',
     IMPORT_EXCEL_MISSING_WATER: 'Недостају подаци за мапирање воде',
-    IMPORT_EXCEL_MISSING_WATER_HINT: 'Датотека мора садржавати "waterMapping" објекат са пољима: date, kitchenWarm, kitchenCold, bathroomWarm и bathroomCold',
+    IMPORT_EXCEL_MISSING_WATER_HINT:
+      'Датотека мора садржавати "waterMapping" објекат са пољима: date, kitchenWarm, kitchenCold, bathroomWarm и bathroomCold',
     IMPORT_EXCEL_MISSING_HEATING: 'Недостају подаци за мапирање грејања',
-    IMPORT_EXCEL_MISSING_HEATING_HINT: 'Мапирање грејања ("heatingMapping") мора садржавати "rooms" објекат са ID-овима соба.',
-    IMPORT_EXCEL_SETTINGS_INVALID_FORMAT: 'Није могуће увести поставке. Датотека не садржи важеће Excel поставке.',
-    IMPORT_ADDRESS_INVALID_FILE_TYPE: 'Неважећи тип датотеке. Молимо изаберите .json датотеку за увоз адресе.',
+    IMPORT_EXCEL_MISSING_HEATING_HINT:
+      'Мапирање грејања ("heatingMapping") мора садржавати "rooms" објекат са ID-овима соба.',
+    IMPORT_EXCEL_SETTINGS_INVALID_FORMAT:
+      'Није могуће увести поставке. Датотека не садржи важеће Excel поставке.',
+    IMPORT_ADDRESS_INVALID_FILE_TYPE:
+      'Неважећи тип датотеке. Молимо изаберите .json датотеку за увоз адресе.',
     IMPORT_ADDRESS_INVALID_FILE_TYPE_INSTRUCTION_1: 'Осигурајте да датотека има .json екстензију',
-    IMPORT_ADDRESS_INVALID_FILE_TYPE_INSTRUCTION_2: 'Прво извезите податке адресе како бисте добили исправан JSON формат',
-    IMPORT_EXCEL_SETTINGS_INVALID_FILE_TYPE: 'Неважећи тип датотеке. Молимо одаберите .json датотеку за увоз Excel поставки.',
-    IMPORT_EXCEL_SETTINGS_INVALID_FILE_TYPE_INSTRUCTION_1: 'Осигурајте да датотека има .json екстензију',
-    IMPORT_EXCEL_SETTINGS_INVALID_FILE_TYPE_INSTRUCTION_2: 'Прво извезите Excel поставке како бисте добили исправан JSON формат',
-    IMPORT_EXCEL_CROSS_SECTION_DUPLICATES: 'Конфликт имена колоне: {{columns}} се користи у више секција',
+    IMPORT_ADDRESS_INVALID_FILE_TYPE_INSTRUCTION_2:
+      'Прво извезите податке адресе како бисте добили исправан JSON формат',
+    IMPORT_EXCEL_SETTINGS_INVALID_FILE_TYPE:
+      'Неважећи тип датотеке. Молимо одаберите .json датотеку за увоз Excel поставки.',
+    IMPORT_EXCEL_SETTINGS_INVALID_FILE_TYPE_INSTRUCTION_1:
+      'Осигурајте да датотека има .json екстензију',
+    IMPORT_EXCEL_SETTINGS_INVALID_FILE_TYPE_INSTRUCTION_2:
+      'Прво извезите Excel поставке како бисте добили исправан JSON формат',
+    IMPORT_EXCEL_CROSS_SECTION_DUPLICATES:
+      'Конфликт имена колоне: {{columns}} се користи у више секција',
     IMPORT_EXCEL_CROSS_SECTION_DUPLICATES_HINT: 'Свако име колоне мора бити јединствено.',
     IMPORT_EXCEL_MISSING_ROOMS: 'Недостаје "rooms" објекат у мапирању грејања',
     IMPORT_EXCEL_MISSING_ROOMS_HINT: 'Мапирање грејања мора садржавати листу соба.',
@@ -152,43 +174,59 @@ export const settings = {
     IMPORT_EXCEL_UNKNOWN_ROOMS: 'Непознат ID собе: {{rooms}}',
     IMPORT_EXCEL_UNKNOWN_ROOMS_HINT: 'Прво додајте ове собе у поставкама грејања.',
     IMPORT_EXCEL_MISSING_ROOM_MAPPINGS: 'Недостаје мапирање за собе: {{rooms}}',
-    IMPORT_EXCEL_MISSING_ROOM_MAPPINGS_HINT: 'Увезени фајл мора садржавати мапирање за све конфигурисане собе.',
+    IMPORT_EXCEL_MISSING_ROOM_MAPPINGS_HINT:
+      'Увезени фајл мора садржавати мапирање за све конфигурисане собе.',
     FAMILY_HELP_TITLE: 'Управљање члановима породице',
     FAMILY_HELP_STEP_1_TITLE: 'Зашто додати чланове?',
-    FAMILY_HELP_STEP_1_DESC: 'Додавање чланова породице омогућава поређење ваше потрошње са националним просеком за домаћинство ваше величине.',
+    FAMILY_HELP_STEP_1_DESC:
+      'Додавање чланова породице омогућава поређење ваше потрошње са националним просеком за домаћинство ваше величине.',
     FAMILY_HELP_STEP_2_TITLE: 'Анализа по особи',
-    FAMILY_HELP_STEP_2_DESC: 'Пратите потрошњу воде, струје и грејања по члану породице како бисте открили где можете уштедети.',
+    FAMILY_HELP_STEP_2_DESC:
+      'Пратите потрошњу воде, струје и грејања по члану породице како бисте открили где можете уштедети.',
     FAMILY_HELP_STEP_3_TITLE: 'Корак 1: уређивање',
-    FAMILY_HELP_STEP_3_DESC: 'Клините на дугме "Уреди породицу" да започнете додавање или измену чланова.',
+    FAMILY_HELP_STEP_3_DESC:
+      'Клините на дугме "Уреди породицу" да започнете додавање или измену чланова.',
     FAMILY_HELP_STEP_4_TITLE: 'Корак 2: унос података',
-    FAMILY_HELP_STEP_4_DESC: 'Унесите име, презиме, врсту корисника и пол за сваког члана породице.',
+    FAMILY_HELP_STEP_4_DESC:
+      'Унесите име, презиме, врсту корисника и пол за сваког члана породице.',
     FAMILY_HELP_STEP_5_TITLE: 'Корак 3: аватари и слике',
-    FAMILY_HELP_STEP_5_DESC: 'Изаберите један од понуђених аватара ili отпремите сопствену фотографију.',
+    FAMILY_HELP_STEP_5_DESC:
+      'Изаберите један од понуђених аватара ili отпремите сопствену фотографију.',
     FAMILY_HELP_STEP_6_TITLE: 'Корак 4: чување',
-    FAMILY_HELP_STEP_6_DESC: 'Не заборавите кликнути на "Сачувај породицу" како бисте применили промене.',
+    FAMILY_HELP_STEP_6_DESC:
+      'Не заборавите кликнути на "Сачувај породицу" како бисте применили промене.',
     FAMILY_HELP_STEP_7_TITLE: 'Корак 5: извоз и увоз',
-    FAMILY_HELP_STEP_7_DESC: 'Користите "Извези" за креирање сигурносне копије, а "Увези" за враћање података из датотеке.',
+    FAMILY_HELP_STEP_7_DESC:
+      'Користите "Извези" за креирање сигурносне копије, а "Увези" за враћање података из датотеке.',
     FAMILY_HELP_PREVIOUS: 'Претходни',
     FAMILY_HELP_NEXT: 'Следећи',
     FAMILY_HELP_DONE: 'Завршено!',
     ADDRESS_HELP_TITLE: 'Поставке адресе',
     ADDRESS_HELP_STEP_1_TITLE: 'Зашто је адреса битна?',
-    ADDRESS_HELP_STEP_1_DESC: 'Ваша држава се користи за поређење ваше потрошње са националним просеком на графиконима и извештајима.',
+    ADDRESS_HELP_STEP_1_DESC:
+      'Ваша држава се користи за поређење ваше потрошње са националним просеком на графиконима и извештајима.',
     ADDRESS_HELP_STEP_2_TITLE: 'Корак 1: попуњавање',
-    ADDRESS_HELP_STEP_2_DESC: 'Унесите улицу, број, град и поштански број, те одаберите државу из понуђене листе.',
+    ADDRESS_HELP_STEP_2_DESC:
+      'Унесите улицу, број, град и поштански број, те одаберите државу из понуђене листе.',
     ADDRESS_HELP_STEP_3_TITLE: 'Корак 2: чување',
-    ADDRESS_HELP_STEP_3_DESC: 'Кликните на "Сачувај адресу". Податке можете накнадно мењати кликом на "Уреди адресу".',
+    ADDRESS_HELP_STEP_3_DESC:
+      'Кликните на "Сачувај адресу". Податке можете накнадно мењати кликом на "Уреди адресу".',
     ADDRESS_HELP_STEP_4_TITLE: 'Корак 3: backup',
-    ADDRESS_HELP_STEP_4_DESC: 'Опције извоза и увоза су корисне ако желите пренети податке на други уређај.',
+    ADDRESS_HELP_STEP_4_DESC:
+      'Опције извоза и увоза су корисне ако желите пренети податке на други уређај.',
     HELP: 'Помоћ',
     EXCEL_HELP_TITLE: 'Excel интеграција',
     EXCEL_HELP_STEP_1_TITLE: 'Шта је Excel интеграција?',
-    EXCEL_HELP_STEP_1_DESC: 'Ова опција омогућава увоз података о потрошњи директно из ваших Excel табела, без ручног уноса сваког записа.',
+    EXCEL_HELP_STEP_1_DESC:
+      'Ова опција омогућава увоз података о потрошњи директно из ваших Excel табела, без ручног уноса сваког записа.',
     EXCEL_HELP_STEP_2_TITLE: 'Корак 1: активирање',
-    EXCEL_HELP_STEP_2_DESC: 'Укључите прекидач "Омогући Excel интеграцију" у поставкама. Тада ће се појавити дугме за увоз у модулима.',
+    EXCEL_HELP_STEP_2_DESC:
+      'Укључите прекидач "Омогући Excel интеграцију" у поставкама. Тада ће се појавити дугме за увоз у модулима.',
     EXCEL_HELP_STEP_3_TITLE: 'Корак 2: мапирање колона',
-    EXCEL_HELP_STEP_3_DESC: 'Подесите називе колона сова и медија тако да одговарају вашем Excel фајлу.',
+    EXCEL_HELP_STEP_3_DESC:
+      'Подесите називе колона сова и медија тако да одговарају вашем Excel фајлу.',
     EXCEL_HELP_STEP_4_TITLE: 'Корак 3: увоз података',
-    EXCEL_HELP_STEP_4_DESC: 'У модулима воде, струје или грејања кликните на "Импорт из Excela" и одаберите фајл.',
+    EXCEL_HELP_STEP_4_DESC:
+      'У модулима воде, струје или грејања кликните на "Импорт из Excela" и одаберите фајл.',
   },
 };

@@ -11,7 +11,8 @@ export const excel = {
     DEFAULT_KITCHEN: 'Kuchnia',
     DEFAULT_BATHROOM: 'Łazienka',
     VALIDATION_REQUIRED: 'Nazwa kolumny jest wymagana',
-    VALIDATION_REQUIRED_HINT: 'Nazwy kolumn muszą być ciągami tekstowymi, nie liczbami ani wartościami logicznymi',
+    VALIDATION_REQUIRED_HINT:
+      'Nazwy kolumn muszą być ciągami tekstowymi, nie liczbami ani wartościami logicznymi',
     VALIDATION_MUST_BE_STRING: 'musi być ciągiem tekstowym',
     VALIDATION_GOT_BOOLEAN: 'otrzymano wartość logiczną (prawda/fałsz) zamiast tekstu',
     VALIDATION_GOT_NUMBER: 'otrzymano liczbę zamiast tekstu',
@@ -23,7 +24,8 @@ export const excel = {
     VALIDATION_INVALID_CHARS: 'Nazwa kolumny nie może zawierać: [ ] * / \\ ? :',
     VALIDATION_INVALID_CHARS_HINT: 'Usuń znaki [ ] * / \\ ? : z nazw kolumn',
     VALIDATION_DUPLICATES: 'Nazwy kolumn muszą być unikalne w każdej sekcji',
-    VALIDATION_DUPLICATES_HINT: 'Każda nazwa kolumny musi być inna - sprawdź czy wartości się nie powtarzają',
+    VALIDATION_DUPLICATES_HINT:
+      'Każda nazwa kolumny musi być inna - sprawdź czy wartości się nie powtarzają',
     VALIDATION_FORM_INVALID: 'Popraw błędy walidacji przed zapisaniem',
   },
 };

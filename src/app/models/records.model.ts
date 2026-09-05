@@ -165,7 +165,7 @@ export function parseSafeDate(dateRaw: unknown): Date {
     return dateRaw;
   }
 
-// Check for Firebase Timestamp-like objects
+  // Check for Firebase Timestamp-like objects
   if (typeof dateRaw === 'object' && dateRaw !== null) {
     const rawObj = dateRaw as Record<string, unknown>;
     if (typeof rawObj['toDate'] === 'function') {

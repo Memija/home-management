@@ -9,7 +9,7 @@ export class FileStorageService {
    * @param data The data to export
    * @param filename The name of the file to download
    */
-  exportToFile(data: unknown, filename: string = 'water-consumption-data.json'): void {
+  exportToFile(data: unknown, filename = 'water-consumption-data.json'): void {
     const json = JSON.stringify(data, null, 2);
     const blob = new Blob([json], { type: 'application/json' });
     const url = URL.createObjectURL(blob);
@@ -37,7 +37,7 @@ export class FileStorageService {
           const text = event.target?.result as string;
           const data = JSON.parse(text);
           resolve(data as T);
-        } catch (error) {
+        } catch {
           reject(new Error('Failed to parse JSON file'));
         }
       };
@@ -65,7 +65,7 @@ export class FileStorageService {
    * @returns The parsed data, null if cancelled, or error details
    */
   async importData<T>(
-    acceptAllTypes: boolean = false,
+    acceptAllTypes = false,
   ): Promise<
     { data: T; error?: never } | { data?: never; error: 'invalid_file_type' | 'parse_error' } | null
   > {

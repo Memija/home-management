@@ -24,11 +24,11 @@ describe('DashboardComponent', () => {
     };
 
     mockAuthService = {
-      isAuthenticated: signal(false) as any,
+      isAuthenticated: signal(false),
     };
 
     mockHybridStorageService = {
-      hasUserContent: signal(false) as any,
+      hasUserContent: signal(false),
     };
 
     TestBed.configureTestingModule({
@@ -53,34 +53,34 @@ describe('DashboardComponent', () => {
 
   describe('Icon Initialization', () => {
     it('should have DropletsIcon set to lucide Droplets icon', () => {
-      expect((component as any).DropletsIcon).toBe(Droplets);
+      expect(component['DropletsIcon']).toBe(Droplets);
     });
 
     it('should have FlameIcon set to lucide Flame icon', () => {
-      expect((component as any).FlameIcon).toBe(Flame);
+      expect(component['FlameIcon']).toBe(Flame);
     });
 
     it('should have PlayIcon set to lucide Play icon', () => {
-      expect((component as any).PlayIcon).toBe(Play);
+      expect(component['PlayIcon']).toBe(Play);
     });
 
     it('should have XIcon set to lucide X icon', () => {
-      expect((component as any).XIcon).toBe(X);
+      expect(component['XIcon']).toBe(X);
     });
 
     it('should have ZapIcon set to lucide Zap icon', () => {
-      expect((component as any).ZapIcon).toBe(Zap);
+      expect(component['ZapIcon']).toBe(Zap);
     });
   });
 
   describe('Demo interactions', () => {
     it('should delegate activateDemo to DemoService', () => {
-      (component as any).activateDemo();
+      component['activateDemo']();
       expect(mockDemoService.activateDemo).toHaveBeenCalled();
     });
 
     it('should delegate deactivateDemo to DemoService', () => {
-      (component as any).deactivateDemo();
+      component['deactivateDemo']();
       expect(mockDemoService.deactivateDemo).toHaveBeenCalled();
     });
   });

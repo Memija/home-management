@@ -9,11 +9,14 @@ export const water = {
     EXPORT_PDF: 'Eksportuj do PDF',
     IMPORT_EXCEL: 'Importuj z Excela',
     EXCEL_IMPORT_ERROR_TITLE: 'Import Excel Nieudany',
-    EXCEL_IMPORT_ERROR: 'Nie udało się zaimportować danych z Excela. Sprawdź szczegóły poniżej i postępuj zgodnie z instrukcjami.',
+    EXCEL_IMPORT_ERROR:
+      'Nie udało się zaimportować danych z Excela. Sprawdź szczegóły poniżej i postępuj zgodnie z instrukcjami.',
     JSON_IMPORT_ERROR_TITLE: 'Import JSON Nieudany',
-    JSON_IMPORT_ERROR: 'Nie udało się zaimportować danych JSON. Sprawdź szczegóły poniżej i postępuj zgodnie z instrukcjami.',
+    JSON_IMPORT_ERROR:
+      'Nie udało się zaimportować danych JSON. Sprawdź szczegóły poniżej i postępuj zgodnie z instrukcjami.',
     IMPORT_FILTER_WARNING_TITLE: 'Dane Poza Bieżącym Filtrem',
-    IMPORT_FILTER_WARNING_MESSAGE: "Niektóre rekordy w tym pliku znajdują się poza zakresem bieżącego filtra. Zostaną one zaimportowane, ale nie będą widoczne, dopóki nie wyczyścisz lub nie dostosujesz filtra.",
+    IMPORT_FILTER_WARNING_MESSAGE:
+      'Niektóre rekordy w tym pliku znajdują się poza zakresem bieżącego filtra. Zostaną one zaimportowane, ale nie będą widoczne, dopóki nie wyczyścisz lub nie dostosujesz filtra.',
     IMPORT_FILTER_WARNING_COUNT: 'Liczba rekordów poza filtrem: {{count}}',
     IMPORT_CONTINUE: 'Importuj Mimo To',
     IMPORT_CANCEL: 'Anuluj',
@@ -23,8 +26,10 @@ export const water = {
     COLD: 'Zimna',
     TOTAL_LABEL: 'Łącznie',
     COLD_ONLY_MODE_TOGGLE: 'Przełącz tryb tylko zimnej wody',
-    COLD_ONLY_NO_VALUES_ERROR: 'Wprowadź wartość zużycia wody dla przynajmniej jednego pomieszczenia.',
-    COLD_ONLY_INCOMPLETE_ERROR: 'Uzupełnij wpis zużycia wody dla wszystkich rozpoczętych pomieszczeń.',
+    COLD_ONLY_NO_VALUES_ERROR:
+      'Wprowadź wartość zużycia wody dla przynajmniej jednego pomieszczenia.',
+    COLD_ONLY_INCOMPLETE_ERROR:
+      'Uzupełnij wpis zużycia wody dla wszystkich rozpoczętych pomieszczeń.',
   },
   HOME: {
     HISTORY_TITLE: 'Historia Zużycia',
@@ -42,31 +47,43 @@ export const water = {
     RECORD_CONSUMPTION: 'Zapisz Zużycie',
     RECORD_HELP_TITLE: 'Rejestrowanie Zużycia Wody',
     RECORD_HELP_STEP_1_TITLE: 'Dlaczego warto rejestrować?',
-    RECORD_HELP_STEP_1_DESC: 'Śledzenie zużycia wody pomaga zrozumieć nawyki, identyfikować oszczędności i porównywać się ze średnią w regionie lub na świecie.',
+    RECORD_HELP_STEP_1_DESC:
+      'Śledzenie zużycia wody pomaga zrozumieć nawyki, identyfikować oszczędności i porównywać się ze średnią w regionie lub na świecie.',
     RECORD_HELP_STEP_2_TITLE: 'Wybierz Datę',
-    RECORD_HELP_STEP_2_DESC: 'Wybierz datę wykonania odczytu licznika. Regularne odczyty dają najlepsze wglądy.',
+    RECORD_HELP_STEP_2_DESC:
+      'Wybierz datę wykonania odczytu licznika. Regularne odczyty dają najlepsze wglądy.',
     RECORD_HELP_STEP_3_TITLE: 'Wprowadź Odczyty',
-    RECORD_HELP_STEP_3_DESC: 'Wprowadź wartości liczników dla wody ciepłej i zimnej. Możesz wprowadzić dane dla jednego lub obu pomieszczeń.',
+    RECORD_HELP_STEP_3_DESC:
+      'Wprowadź wartości liczników dla wody ciepłej i zimnej. Możesz wprowadzić dane dla jednego lub obu pomieszczeń.',
     RECORD_HELP_STEP_4_TITLE: 'Zapisz Rekord',
-    RECORD_HELP_STEP_4_DESC: 'Kliknij przycisk Zapisz, aby zachować rekord zużycia. Pole daty zostanie zresetowane dla kolejnych wpisów.',
+    RECORD_HELP_STEP_4_DESC:
+      'Kliknij przycisk Zapisz, aby zachować rekord zużycia. Pole daty zostanie zresetowane dla kolejnych wpisów.',
     CHART_HELP_TITLE: 'Zrozumienie Wykresu',
     CHART_HELP_STEP_1_TITLE: 'Co pokazuje wykres',
-    CHART_HELP_STEP_1_DESC: 'Wykres wizualizuje Twoje zużycie wody w czasie, pomagając identyfikować wzorce i trendy.',
+    CHART_HELP_STEP_1_DESC:
+      'Wykres wizualizuje Twoje zużycie wody w czasie, pomagając identyfikować wzorce i trendy.',
     CHART_HELP_STEP_2_TITLE: 'Tryby i Widoki',
-    CHART_HELP_STEP_2_DESC: 'Przełączaj między trybem Całkowitym a Przyrostowym (dzienne zużycie). Użyj filtrów, aby zobaczyć podział na pokoje lub typy wody.',
+    CHART_HELP_STEP_2_DESC:
+      'Przełączaj między trybem Całkowitym a Przyrostowym (dzienne zużycie). Użyj filtrów, aby zobaczyć podział na pokoje lub typy wody.',
     CHART_HELP_STEP_3_TITLE: 'Porównanie Krajowe',
-    CHART_HELP_STEP_3_DESC: 'W trybie Przyrostowym (3+ rekordy) porównaj swoje zużycie z 64 krajami. Wybierz kraj z listy, aby zobaczyć porównanie i ciekawostki.',
+    CHART_HELP_STEP_3_DESC:
+      'W trybie Przyrostowym (3+ rekordy) porównaj swoje zużycie z 64 krajami. Wybierz kraj z listy, aby zobaczyć porównanie i ciekawostki.',
     CHART_HELP_STEP_4_TITLE: 'Ciekawostki i Odświeżanie',
-    CHART_HELP_STEP_4_DESC: 'Karta ciekawostek wyświetla informacje specyficzne dla kraju. Kliknij odśwież (↻), aby zobaczyć inne fakty. Włącz linię trendu dla lepszej analizy.',
+    CHART_HELP_STEP_4_DESC:
+      'Karta ciekawostek wyświetla informacje specyficzne dla kraju. Kliknij odśwież (↻), aby zobaczyć inne fakty. Włącz linię trendu dla lepszej analizy.',
     RECORDS_HELP_TITLE: 'Zarządzanie Rekordami',
     RECORDS_HELP_STEP_1_TITLE: 'Przegląd',
-    RECORDS_HELP_STEP_1_DESC: 'Ta sekcja pokazuje wszystkie zapisane rekordy zużycia wody z podziałem na pomieszczenia i typy wody.',
+    RECORDS_HELP_STEP_1_DESC:
+      'Ta sekcja pokazuje wszystkie zapisane rekordy zużycia wody z podziałem na pomieszczenia i typy wody.',
     RECORDS_HELP_STEP_2_TITLE: 'Filtrowanie Rekordów',
-    RECORDS_HELP_STEP_2_DESC: 'Użyj kalendarza, filtrów roku i miesiąca, aby znaleźć rekordy. Możesz też sortować po dacie lub wartościach zużycia.',
+    RECORDS_HELP_STEP_2_DESC:
+      'Użyj kalendarza, filtrów roku i miesiąca, aby znaleźć rekordy. Możesz też sortować po dacie lub wartościach zużycia.',
     RECORDS_HELP_STEP_3_TITLE: 'Edycja i Usuwanie',
-    RECORDS_HELP_STEP_3_DESC: 'Kliknij ikonę edycji, aby zmienić rekord lub kosz, aby go usunąć. Użyj "Usuń Wszystko", aby usunąć przefiltrowane dane.',
+    RECORDS_HELP_STEP_3_DESC:
+      'Kliknij ikonę edycji, aby zmienić rekord lub kosz, aby go usunąć. Użyj "Usuń Wszystko", aby usunąć przefiltrowane dane.',
     RECORDS_HELP_STEP_4_TITLE: 'Import i Eksport',
-    RECORDS_HELP_STEP_4_DESC: 'Eksportuj swoje dane w wielu formatach: JSON, Excel lub PDF. Importuj z JSON lub Excela za pomocą przycisków.',
+    RECORDS_HELP_STEP_4_DESC:
+      'Eksportuj swoje dane w wielu formatach: JSON, Excel lub PDF. Importuj z JSON lub Excela za pomocą przycisków.',
     READINGS_FOR: 'Odczyty dla',
     KITCHEN: 'Kuchnia',
     BATHROOM: 'Łazienka',
@@ -84,8 +101,10 @@ export const water = {
     SEARCH_DATE: 'Szukaj po dacie',
     SELECT_DATE: 'Wybierz datę',
     SELECT_DATE_ERROR: 'Proszę wybrać datę.',
-    PARTIAL_INPUT_ERROR: 'Wprowadź wartości dla wody ciepłej i zimnej dla przynajmniej jednego pokoju.',
-    INCOMPLETE_ROOM_ERROR: 'Proszę wypełnić oba pola (Ciepła i Zimna) dla wszystkich rozpoczętych pomieszczeń.',
+    PARTIAL_INPUT_ERROR:
+      'Wprowadź wartości dla wody ciepłej i zimnej dla przynajmniej jednego pokoju.',
+    INCOMPLETE_ROOM_ERROR:
+      'Proszę wypełnić oba pola (Ciepła i Zimna) dla wszystkich rozpoczętych pomieszczeń.',
     LOAD_MORE_RECORDS: 'Załaduj Więcej Rekordów',
     SHOWING_RECORDS: 'Pokazano {{current}} z {{total}} rekordów',
     PAGINATION_SIZE: 'Rekordów na stronę',
@@ -105,13 +124,15 @@ export const water = {
     DELETE_BUTTON: 'Usuń',
     DELETE_ALL_CONFIRM_TITLE: 'Usuń Wszystkie Rekordy',
     DELETE_ALL_CONFIRM_MESSAGE_SINGULAR: 'Czy na pewno chcesz usunąć ten przefiltrowany rekord?',
-    DELETE_ALL_CONFIRM_MESSAGE_PLURAL: 'Czy na pewno chcesz usunąć wszystkie {{count}} przefiltrowane rekordy?',
+    DELETE_ALL_CONFIRM_MESSAGE_PLURAL:
+      'Czy na pewno chcesz usunąć wszystkie {{count}} przefiltrowane rekordy?',
     DELETE_ALL_BUTTON: 'Usuń Wszystko',
     IMPORT_CONFIRM_TITLE: 'Potwierdź Import',
     IMPORT_CONFIRM_MESSAGE: 'Importowanie danych połączy je z obecnymi rekordami. Kontynuować?',
     IMPORT_BUTTON: 'Importuj',
     IMPORT_INVALID_DATA: 'Wybrany plik nie zawiera poprawnych danych dla tej sekcji.',
-    IMPORT_INVALID_FORMAT: 'Import nie powiódł się. Plik może być uszkodzony lub w nieprawidłowym formacie.',
+    IMPORT_INVALID_FORMAT:
+      'Import nie powiódł się. Plik może być uszkodzony lub w nieprawidłowym formacie.',
     IMPORT_ERROR_INSTRUCTION_1: 'Upewnij się, że importujesz poprawny plik dla tej sekcji',
     IMPORT_ERROR_INSTRUCTION_2: 'Sprawdź, czy plik został wyeksportowany z tej aplikacji',
     IMPORT_ERROR_INSTRUCTION_3: 'Spróbuj wyeksportować nową kopię i zaimportować ponownie',
@@ -144,7 +165,8 @@ export const water = {
       DECEMBER: 'Grudzień',
     },
     IMPORT_WARNING_TITLE: 'Niezgodność Kolumn',
-    IMPORT_WARNING_MESSAGE: 'Dane zaimportowane pomyślnie, ale niektóre kolumny nie zostały znalezione w pliku Excel.',
+    IMPORT_WARNING_MESSAGE:
+      'Dane zaimportowane pomyślnie, ale niektóre kolumny nie zostały znalezione w pliku Excel.',
     MISSING_COLUMNS: 'Brakujące kolumny w pliku',
     IMPORT_PLACEHOLDER_SKIPPED_SINGULAR: 'Pominięto 1 pusty rekord.',
     IMPORT_PLACEHOLDER_SKIPPED_PLURAL: 'Pominięto {{count}} pustych rekordów.',

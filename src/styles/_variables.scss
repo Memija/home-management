@@ -2,8 +2,8 @@
 // SCSS Variables (for backward compatibility)
 // ============================================
 
-$primary: #007bff;
-$primary-dark: #0056b3;
+$primary: #005cbf; // Darkened from #007bff to pass contrast
+$primary-dark: #004085;
 $secondary: #6c757d;
 $success: #28a745;
 $danger: #dc3545;
@@ -21,6 +21,26 @@ $text-color: #2c3e50;
 $text-secondary: #6c757d;
 
 $shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+
+// Modern Typography & Interaction Tokens
+$font-family-sans:
+  'Inter',
+  system-ui,
+  -apple-system,
+  BlinkMacSystemFont,
+  'Segoe UI',
+  Roboto,
+  Helvetica,
+  Arial,
+  sans-serif;
+$transition-fast: 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+$transition-base: 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+$transition-smooth: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+$border-radius-sm: 6px;
+$border-radius-base: 8px;
+$border-radius-lg: 12px;
+$border-radius-xl: 16px;
+$border-radius-full: 9999px;
 
 // App Specific
 $primary-light-bg: #e7f3ff;
@@ -54,3 +74,24 @@ $info-bg-light: #eff6ff;
 $info-border-light: #bfdbfe;
 $info-text-dark: #1e40af;
 $info-text-darker: #1e3a8a;
+
+// ============================================
+// Shared Mixins
+// ============================================
+
+/// Hides scrollbars while preserving scroll functionality across all browsers
+/// (Firefox, Chrome 121+, Safari, iOS Safari, and legacy IE/Edge)
+@mixin hide-scrollbar {
+  // Hide scrollbar for WebKit browsers (Chrome, Safari, iOS Safari, Edge, Samsung Internet)
+  &::-webkit-scrollbar {
+    display: none;
+  }
+
+  // Hide scrollbar for IE, Edge legacy
+  -ms-overflow-style: none;
+
+  // Hide scrollbar for modern browsers with feature-query guard & SCSS interpolation
+  @supports (scrollbar-width: none) {
+    #{"scrollbar-width"}: none;
+  }
+}

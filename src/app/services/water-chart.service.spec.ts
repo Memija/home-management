@@ -7,8 +7,8 @@ import { ConsumptionRecord } from '../models/records.model';
 
 describe('WaterChartService', () => {
   let service: WaterChartService;
-  let mockLanguageService: any;
-  let mockCalculationService: any;
+  let mockLanguageService: Record<string, import('vitest').Mock>;
+  let mockCalculationService: Record<string, import('vitest').Mock>;
 
   beforeEach(() => {
     mockLanguageService = {

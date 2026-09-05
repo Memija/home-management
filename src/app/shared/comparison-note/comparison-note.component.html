@@ -14,7 +14,7 @@
           <lucide-icon [img]="InfoIcon" size="14" class="info-icon"></lucide-icon>
           <span class="info-tooltip">{{
             hasSufficientDataForComparison()
-              ? ('CHART.COMPARE_WITH_INFO_' + type().toUpperCase() | translate)
+              ? ('CHART.COMPARE_WITH_INFO_' + typeSignal().toUpperCase() | translate)
               : ('CHART.COMPARISON_REQUIRES_DATA' | translate)
           }}</span>
         </span>
@@ -46,9 +46,9 @@
                 country.code.toLowerCase() === effectiveComparisonCountryCode().toLowerCase()
               "
             >
-              @if (type() === 'water') {
+              @if (typeSignal() === 'water') {
                 {{ country.translationKey | translate }} ({{ country.average }} L)
-              } @else if (type() === 'electricity') {
+              } @else if (typeSignal() === 'electricity') {
                 {{ country.translationKey | translate }} ({{ country.average }} kWh/p/a)
               } @else {
                 {{ country.translationKey | translate }} ({{ country.average }} kWh/a)
@@ -65,9 +65,9 @@
     <div class="country-fact">
       <lucide-icon [img]="LightbulbIcon" class="fact-icon" size="20"></lucide-icon>
       <div class="fact-content">
-        @if (type() === 'heating') {
+        @if (typeSignal() === 'heating') {
           <div class="fact-label">{{ heatingFactTitle() }}</div>
-        } @else if (type() === 'electricity') {
+        } @else if (typeSignal() === 'electricity') {
           <div class="fact-label">{{ electricityFactTitle() }}</div>
         } @else {
           <div class="fact-label">{{ 'CHART.DID_YOU_KNOW' | translate }}</div>

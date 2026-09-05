@@ -5,8 +5,12 @@ import { ApplicationRef } from '@angular/core';
 
 describe('LanguageService', () => {
   let service: LanguageService;
-  let mockLocalStorage: any;
-  let mockApplicationRef: any;
+  let mockLocalStorage: {
+    getItem: ReturnType<typeof vi.fn>;
+    setItem: ReturnType<typeof vi.fn>;
+    removeItem: ReturnType<typeof vi.fn>;
+  };
+  let mockApplicationRef: Record<string, unknown>;
 
   beforeEach(() => {
     // Mock localStorage
@@ -30,6 +34,11 @@ describe('LanguageService', () => {
     document.documentElement.lang = '';
 
     mockApplicationRef = {};
+
+    vi.spyOn(
+      LanguageService.prototype as unknown as { loadLanguage: (lang: string) => Promise<void> },
+      'loadLanguage',
+    ).mockResolvedValue(undefined);
 
     TestBed.configureTestingModule({
       providers: [LanguageService, { provide: ApplicationRef, useValue: mockApplicationRef }],
@@ -63,11 +72,43 @@ describe('LanguageService', () => {
     expect(service.currentLang()).toBe('de');
   });
 
+  it('should detect other supported browser languages (sr, id, pl, bs)', () => {
+    mockLocalStorage.getItem.mockReturnValue(null);
+    const testCases = [
+      { browser: 'sr-RS', expected: 'sr' },
+      { browser: 'id-ID', expected: 'id' },
+      { browser: 'pl-PL', expected: 'pl' },
+      { browser: 'bs-Latn-BA', expected: 'bs' },
+    ];
+
+    for (const { browser, expected } of testCases) {
+      TestBed.resetTestingModule();
+      TestBed.configureTestingModule({
+        providers: [LanguageService, { provide: ApplicationRef, useValue: mockApplicationRef }],
+      });
+      Object.defineProperty(window, 'navigator', {
+        value: { language: browser },
+        writable: true,
+      });
+      const s = TestBed.inject(LanguageService);
+      expect(s.currentLang()).toBe(expected);
+    }
+  });
+
+  it('should fallback to en if stored language is invalid', () => {
+    mockLocalStorage.getItem.mockReturnValue('unsupported-lang');
+    service = TestBed.inject(LanguageService);
+    expect(service.currentLang()).toBe('en');
+  });
+
   it('should set language and update storage and document', async () => {
     service = TestBed.inject(LanguageService);
 
     // Mock loadLanguage to avoid actual import
-    vi.spyOn(service as any, 'loadLanguage').mockResolvedValue(undefined);
+    vi.spyOn(
+      service as unknown as { loadLanguage: (lang: string) => Promise<void> },
+      'loadLanguage',
+    ).mockResolvedValue(undefined);
 
     await service.setLanguage('de');
 
@@ -78,7 +119,10 @@ describe('LanguageService', () => {
 
   it('should create meta tag if not exists', async () => {
     service = TestBed.inject(LanguageService);
-    vi.spyOn(service as any, 'loadLanguage').mockResolvedValue(undefined);
+    vi.spyOn(
+      service as unknown as { loadLanguage: (lang: string) => Promise<void> },
+      'loadLanguage',
+    ).mockResolvedValue(undefined);
     document.head.innerHTML = ''; // Clear head
     await service.setLanguage('de');
     const meta = document.querySelector('meta[http-equiv="Content-Language"]');
@@ -88,7 +132,10 @@ describe('LanguageService', () => {
 
   it('should update existing meta tag', async () => {
     service = TestBed.inject(LanguageService);
-    vi.spyOn(service as any, 'loadLanguage').mockResolvedValue(undefined);
+    vi.spyOn(
+      service as unknown as { loadLanguage: (lang: string) => Promise<void> },
+      'loadLanguage',
+    ).mockResolvedValue(undefined);
     document.head.innerHTML = '<meta http-equiv="Content-Language" content="en-US">';
     await service.setLanguage('de');
     const meta = document.querySelector('meta[http-equiv="Content-Language"]');
@@ -106,7 +153,7 @@ describe('LanguageService', () => {
     service = TestBed.inject(LanguageService);
 
     // Manually inject translations
-    (service as any).translations['en'] = {
+    service['translations']['en'] = {
       TEST: { KEY: 'Test Value' },
     };
 
@@ -115,7 +162,7 @@ describe('LanguageService', () => {
 
   it('should translate with params', () => {
     service = TestBed.inject(LanguageService);
-    (service as any).translations['en'] = {
+    service['translations']['en'] = {
       TEST: { PARAM: 'Value: {{value}}' },
     };
 
@@ -129,8 +176,8 @@ describe('LanguageService', () => {
 
   it('should translate for specific language', () => {
     service = TestBed.inject(LanguageService);
-    (service as any).translations['en'] = { KEY: 'Value EN' };
-    (service as any).translations['de'] = { KEY: 'Value DE' };
+    service['translations']['en'] = { KEY: 'Value EN' };
+    service['translations']['de'] = { KEY: 'Value DE' };
 
     expect(service.translateForLanguage('KEY', 'en')).toBe('Value EN');
     expect(service.translateForLanguage('KEY', 'de')).toBe('Value DE');
@@ -198,15 +245,15 @@ describe('LanguageService', () => {
     beforeEach(() => {
       service = TestBed.inject(LanguageService);
       date = new Date(2026, 0, 5); // Monday, January 5, 2026
-      
+
       // Mock translations needed for formatDate
-      (service as any).translations['en'] = {
+      service['translations']['en'] = {
         DAYS: { MONDAY: 'monday' },
-        MONTHS: { JANUARY: 'january' }
+        MONTHS: { JANUARY: 'january' },
       };
-      (service as any).translations['de'] = {
+      service['translations']['de'] = {
         DAYS: { MONDAY: 'Montag' },
-        MONTHS: { JANUARY: 'Januar' }
+        MONTHS: { JANUARY: 'Januar' },
       };
     });
 
@@ -218,59 +265,91 @@ describe('LanguageService', () => {
 
     it('should format full date in English', () => {
       service.currentLang.set('en');
-      const result = service.formatDate(date, { 
-        weekday: 'long', 
-        day: 'numeric', 
-        month: 'long', 
-        year: 'numeric' 
+      const result = service.formatDate(date, {
+        weekday: 'long',
+        day: 'numeric',
+        month: 'long',
+        year: 'numeric',
       });
       expect(result).toBe('Monday, 5 january 2026');
     });
 
     it('should format short date with dots for German', () => {
       service.currentLang.set('de');
-      const result = service.formatDate(date, { 
-        weekday: 'short', 
-        day: 'numeric', 
-        month: 'short'
+      const result = service.formatDate(date, {
+        weekday: 'short',
+        day: 'numeric',
+        month: 'short',
       });
-      // Montag -> Mon. (first 3 chars + dot)
-      // 5 -> 5.
-      // Januar -> Jan.
       expect(result).toBe('Mon., 5. Jan.');
     });
 
     it('should format date with dots for Bosnian', () => {
       service.currentLang.set('bs');
       // Mock Bosnian translations
-      (service as any).translations['bs'] = {
+      service['translations']['bs'] = {
         DAYS: { MONDAY: 'ponedjeljak' },
-        MONTHS: { JANUARY: 'januar' }
+        MONTHS: { JANUARY: 'januar' },
       };
 
-      const result = service.formatDate(date, { 
-        day: 'numeric', 
-        month: 'long'
+      const result = service.formatDate(date, {
+        day: 'numeric',
+        month: 'long',
       });
-      // 5 -> 5.
-      // januar -> januar
       expect(result).toBe('5. januar');
     });
 
     it('should handle year only', () => {
-      const result = service.formatDate(date, { 
+      const result = service.formatDate(date, {
         year: 'numeric',
-        month: 'long' // Need month to trigger the custom formatter
+        month: 'long',
       });
-      // English: january 2026 (since weekday/day skipped)
       expect(result).toContain('2026');
     });
 
     it('should capitalize translated day names', () => {
       service.currentLang.set('en');
-      // 'monday' -> 'Monday'
       const result = service.formatDate(date, { weekday: 'long' });
       expect(result).toBe('Monday,');
+    });
+  });
+
+  describe('loadLanguage', () => {
+    it('should skip loading if translations for language are already loaded', async () => {
+      service = TestBed.inject(LanguageService);
+      service['translations']['de'] = { ALREADY: 'loaded' };
+
+      // Spy on unmocked loadLanguage by restoring and re-calling
+      vi.restoreAllMocks();
+      const loadMethod = service['loadLanguage'].bind(service);
+      await loadMethod('de');
+
+      expect(service['translations']['de']).toEqual({ ALREADY: 'loaded' });
+    });
+
+    it('should successfully load translations from module', async () => {
+      service = TestBed.inject(LanguageService);
+      service['translations']['de'] = {};
+
+      vi.restoreAllMocks();
+      const loadMethod = service['loadLanguage'].bind(service);
+      await loadMethod('de');
+
+      expect(Object.keys(service['translations']['de']).length).toBeGreaterThan(0);
+    });
+
+    it('should handle error when loading fails gracefully', async () => {
+      service = TestBed.inject(LanguageService);
+      service['translations']['de'] = {};
+
+      vi.restoreAllMocks();
+      const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => undefined);
+
+      // Call with an invalid language to trigger loader catch
+      const loadMethod = service['loadLanguage'].bind(service);
+      await loadMethod('nonexistent' as unknown as import('./language.service').Language);
+
+      expect(consoleSpy).toHaveBeenCalled();
     });
   });
 });

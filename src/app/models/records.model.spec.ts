@@ -56,10 +56,10 @@ describe('Records Model Utils', () => {
     });
 
     it('should handle dynamic heating total with undefined values', () => {
-      const record = {
+      const record: DynamicHeatingRecord = {
         ...dynamicHeatingRecord,
-        rooms: { room1: 10, room2: undefined },
-      } as unknown as DynamicHeatingRecord;
+        rooms: { room1: 10 },
+      };
       expect(calculateDynamicHeatingTotal(record)).toBe(10);
     });
 
@@ -149,14 +149,19 @@ describe('Records Model Utils', () => {
   });
 
   describe('Filtering and Merging', () => {
+    interface TestRecord {
+      date: Date;
+      val: number;
+    }
+
     it('should filter all zero records regardless of date', () => {
-      const records = [
+      const records: TestRecord[] = [
         { date: new Date('2023-01-01'), val: 10 },
         { date: new Date('2023-01-02'), val: 0 }, // Zero - filtered
         { date: new Date('2023-01-03'), val: 5 },
         { date: new Date('2023-01-04'), val: 0 }, // Zero - filtered
       ];
-      const isAllZero = (r: any) => r.val === 0;
+      const isAllZero = (r: TestRecord) => r.val === 0;
 
       const { filtered, skippedCount } = filterZeroPlaceholders(records, isAllZero);
 
@@ -167,11 +172,11 @@ describe('Records Model Utils', () => {
     });
 
     it('should not filter non-zero records', () => {
-      const records = [
+      const records: TestRecord[] = [
         { date: new Date('2023-01-01'), val: 10 },
         { date: new Date('2023-01-02'), val: 5 },
       ];
-      const isAllZero = (r: any) => r.val === 0;
+      const isAllZero = (r: TestRecord) => r.val === 0;
 
       const { filtered, skippedCount } = filterZeroPlaceholders(records, isAllZero);
 
@@ -186,36 +191,36 @@ describe('Records Model Utils', () => {
     });
 
     it('should merge records correctly', () => {
-      const existing = [{ date: new Date('2023-01-01'), val: 1 }];
-      const incoming = [{ date: new Date('2023-01-02'), val: 2 }];
+      const existing: TestRecord[] = [{ date: new Date('2023-01-01'), val: 1 }];
+      const incoming: TestRecord[] = [{ date: new Date('2023-01-02'), val: 2 }];
 
       const result = mergeRecords(existing, incoming);
       expect(result.length).toBe(2);
-      expect((result[0] as any).val).toBe(1);
-      expect((result[1] as any).val).toBe(2);
+      expect(result[0].val).toBe(1);
+      expect(result[1].val).toBe(2);
     });
 
     it('should overwrite existing records with same date', () => {
-      const existing = [{ date: new Date('2023-01-01'), val: 1 }];
-      const incoming = [{ date: new Date('2023-01-01'), val: 2 }];
+      const existing: TestRecord[] = [{ date: new Date('2023-01-01'), val: 1 }];
+      const incoming: TestRecord[] = [{ date: new Date('2023-01-01'), val: 2 }];
 
       const result = mergeRecords(existing, incoming);
       expect(result.length).toBe(1);
-      expect((result[0] as any).val).toBe(2);
+      expect(result[0].val).toBe(2);
     });
 
     it('should sort merged records by date', () => {
-      const existing = [{ date: new Date('2023-01-03'), val: 3 }];
-      const incoming = [
+      const existing: TestRecord[] = [{ date: new Date('2023-01-03'), val: 3 }];
+      const incoming: TestRecord[] = [
         { date: new Date('2023-01-01'), val: 1 },
         { date: new Date('2023-01-02'), val: 2 },
       ];
 
       const result = mergeRecords(existing, incoming);
       expect(result.length).toBe(3);
-      expect((result[0] as any).val).toBe(1);
-      expect((result[1] as any).val).toBe(2);
-      expect((result[2] as any).val).toBe(3);
+      expect(result[0].val).toBe(1);
+      expect(result[1].val).toBe(2);
+      expect(result[2].val).toBe(3);
     });
   });
 });

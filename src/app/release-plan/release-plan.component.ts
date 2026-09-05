@@ -3,7 +3,6 @@ import { TranslatePipe } from '../pipes/translate.pipe';
 import {
   LucideAngularModule,
   Rocket,
-  Maximize2,
   TrendingUp,
   Calendar,
   Sparkles,

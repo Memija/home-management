@@ -69,7 +69,7 @@ export class ChartDataService {
       // Attach normalized metadata to datasets for tooltip access
       if (result.datasets) {
         result.datasets.forEach((ds) => {
-          (ds as any).normalizedData = normalized.map((r) => (r as any).normalized);
+          (ds as AppChartDataset).normalizedData = normalized.map((r) => r.normalized);
         });
       }
       return result;
@@ -94,7 +94,7 @@ export class ChartDataService {
       country,
     } = params;
 
-    let normalizedData: CombinedData[] | undefined;
+    let normalizedData: unknown[] | undefined;
 
     // Normalize incremental heating data if in incremental mode
     if (mode === 'incremental' && heatingRecs.length > 1) {
@@ -110,7 +110,7 @@ export class ChartDataService {
       heatingRecs = normalized as unknown as DynamicHeatingRecord[];
 
       // Store normalized data to attach later
-      normalizedData = normalized.map((r) => (r as any).normalized);
+      normalizedData = normalized.map((r) => r.normalized);
     }
 
     const chartLabels = labels; // Use all labels as we now include first data point
@@ -142,7 +142,7 @@ export class ChartDataService {
     const effectiveShowTrendline = showTrendline ?? false;
 
     switch (view) {
-      case 'total':
+      case 'total': {
         // Calculate total by summing all room values in the dynamic 'rooms' object
         // Note: We need to iterate over all room keys present in the record
         const totalData = heatingRecs.map((r) => {
@@ -209,7 +209,8 @@ export class ChartDataService {
           labels: chartLabels,
           datasets: totalDatasets,
         };
-      case 'by-room':
+      }
+      case 'by-room': {
         // Build datasets dynamically based on configured rooms
         const datasets: AppChartDataset[] = [];
 
@@ -289,6 +290,7 @@ export class ChartDataService {
           labels: chartLabels,
           datasets: this.filterEmptyDatasets(datasets),
         };
+      }
       case 'by-type':
       case 'detailed':
         // For heating, by-type and detailed views are the same as by-room
@@ -339,8 +341,9 @@ export class ChartDataService {
     // Process data based on display mode (handled in component via calculateIncrementalData if needed)
     // But here we need to map records to values
     // NOTE: For electricity, we normalize incremental data to monthly equivalent to avoid "drops" for short intervals
-    let dataPoints: number[] = [];
-    let normalizedData: Array<{ days: number; raw?: number; [key: string]: number | undefined } | undefined> | undefined;
+    let dataPoints: number[];
+    let normalizedData:
+      ({ days: number; raw?: number; [key: string]: number | undefined } | undefined)[] | undefined;
 
     if (mode === 'incremental') {
       // Normalize incremental data to daily averages using original records for accurate date calculations

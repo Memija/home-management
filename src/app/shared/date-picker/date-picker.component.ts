@@ -1,7 +1,8 @@
 import {
   Component,
-  input,
-  output,
+  Input,
+  Output,
+  EventEmitter,
   signal,
   computed,
   inject,
@@ -27,13 +28,40 @@ export class DatePickerComponent {
   private eRef = inject(ElementRef);
 
   // Inputs
-  date = input<string>(''); // YYYY-MM-DD
-  maxDate = input<string>(''); // YYYY-MM-DD
-  placeholder = input<string>('Select date');
-  disabled = input<boolean>(false);
+  @Input() set date(val: string) {
+    this.dateSignal.set(val || '');
+  }
+  get date(): string {
+    return this.dateSignal();
+  }
+  protected dateSignal = signal<string>('');
+
+  @Input() set maxDate(val: string) {
+    this.maxDateSignal.set(val || '');
+  }
+  get maxDate(): string {
+    return this.maxDateSignal();
+  }
+  protected maxDateSignal = signal<string>('');
+
+  @Input() set placeholder(val: string) {
+    this.placeholderSignal.set(val || 'Select date');
+  }
+  get placeholder(): string {
+    return this.placeholderSignal();
+  }
+  protected placeholderSignal = signal<string>('Select date');
+
+  @Input() set disabled(val: boolean) {
+    this.disabledSignal.set(val);
+  }
+  get disabled(): boolean {
+    return this.disabledSignal();
+  }
+  protected disabledSignal = signal<boolean>(false);
 
   // Outputs
-  dateChange = output<string>();
+  @Output() dateChange = new EventEmitter<string>();
 
   // State
   isOpen = signal(false);
@@ -46,13 +74,20 @@ export class DatePickerComponent {
   protected currentLang = computed(() => this.languageService.currentLang());
 
   protected formattedDate = computed(() => {
-    const d = this.date();
+    const d = this.dateSignal();
     if (!d) return '';
     return this.datePipe.transform(d, 'mediumDate', undefined, this.currentLang()) || d;
   });
 
   protected currentMonthName = computed(() => {
-    return this.datePipe.transform(this.viewDate(), 'MMMM yyyy', undefined, this.currentLang());
+    const raw = this.datePipe.transform(
+      this.viewDate(),
+      'MMMM yyyy',
+      undefined,
+      this.currentLang(),
+    );
+    if (!raw) return '';
+    return raw.charAt(0).toUpperCase() + raw.slice(1);
   });
 
   protected weekDays = computed(() => {
@@ -98,18 +133,11 @@ export class DatePickerComponent {
     return days;
   });
 
-  constructor() {
-    // Initialize viewDate from input date if present
-    if (this.date()) {
-      this.viewDate.set(new Date(this.date()));
-    }
-  }
-
   toggleCalendar() {
-    if (!this.disabled()) {
+    if (!this.disabledSignal()) {
       this.isOpen.update((v) => !v);
-      if (this.isOpen() && this.date()) {
-        this.viewDate.set(new Date(this.date()));
+      if (this.isOpen() && this.dateSignal()) {
+        this.viewDate.set(new Date(this.dateSignal()));
       }
     }
   }
@@ -126,8 +154,8 @@ export class DatePickerComponent {
     if (!day) return;
 
     // Check max date
-    if (this.maxDate()) {
-      const max = new Date(this.maxDate());
+    if (this.maxDateSignal()) {
+      const max = new Date(this.maxDateSignal());
       if (day > max) return;
     }
 
@@ -188,8 +216,8 @@ export class DatePickerComponent {
 
   isDisabled(d: Date | null): boolean {
     if (!d) return true;
-    if (this.maxDate()) {
-      const max = new Date(this.maxDate());
+    if (this.maxDateSignal()) {
+      const max = new Date(this.maxDateSignal());
       // Compare only dates, ignore time
       const dTime = new Date(d.getFullYear(), d.getMonth(), d.getDate()).getTime();
       const maxTime = new Date(max.getFullYear(), max.getMonth(), max.getDate()).getTime();

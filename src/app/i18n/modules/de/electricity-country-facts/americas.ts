@@ -13,7 +13,7 @@ export const americasElectricityFacts = {
     'Die Kohlenutzung ist seit 2010 um die Hälfte gesunken.',
     'US-Haushalte verbrauchen im Durchschnitt mehr Strom als Europäer.',
     'Klimaanlagen sind ein wichtiger Treiber der US-Spitzenlast.',
-    'Die USA investieren Milliarden in die Netzmodernisierung.'
+    'Die USA investieren Milliarden in die Netzmodernisierung.',
   ],
 
   // Canada
@@ -29,7 +29,7 @@ export const americasElectricityFacts = {
     'Abgelegene Gemeinden sind oft auf Diesel angewiesen, stellen aber auf Solar um.',
     'Neufundland erzeugt Strom aus massiven Offshore-Öl-/Gas- und Wasserkraftwerken.',
     'Kanada investiert stark in CO2-Abscheidungstechnologie.',
-    'Elektrische Heizung ist in vielen kanadischen Provinzen Standard.'
+    'Elektrische Heizung ist in vielen kanadischen Provinzen Standard.',
   ],
 
   // Mexico
@@ -45,7 +45,7 @@ export const americasElectricityFacts = {
     'Dezentrale Solarstromerzeugung wächst bei Unternehmen.',
     'Mexikos Netz steht vor Zuverlässigkeitsherausforderungen.',
     'Energiereformen haben den Markt für private Investitionen geöffnet.',
-    'Mexiko hat eine wachsende Nachfrage nach Klimaanlagen.'
+    'Mexiko hat eine wachsende Nachfrage nach Klimaanlagen.',
   ],
 
   // Brazil
@@ -61,7 +61,7 @@ export const americasElectricityFacts = {
     'Brasiliens Energiemix gehört zu den saubersten der Welt.',
     'Dezentrale Stromerzeugung ist erlaubt und wächst.',
     'Kernkraft spielt in Brasilien eine kleine Rolle.',
-    'Der Stromverbrauch wächst mit der Wirtschaft.'
+    'Der Stromverbrauch wächst mit der Wirtschaft.',
   ],
 
   // Argentina
@@ -77,6 +77,6 @@ export const americasElectricityFacts = {
     'Gasfelder in Vaca Muerta versorgen Kraftwerke.',
     'Argentinien strebt bis 2025 20% erneuerbare Energien an.',
     'Der Netzausbau ist notwendig, um erneuerbare Energien anzuschließen.',
-    'Gesetze zur dezentralen Stromerzeugung erlauben den Verkauf von Strom.'
-  ]
+    'Gesetze zur dezentralen Stromerzeugung erlauben den Verkauf von Strom.',
+  ],
 };

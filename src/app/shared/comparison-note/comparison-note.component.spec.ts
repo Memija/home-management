@@ -18,7 +18,7 @@ describe('ComparisonNoteComponent', () => {
   // Mocks
   const mockHouseholdService = {
     members: signal(['John', 'Jane']),
-    address: signal({ country: 'DE' }),
+    address: signal<{ country: string }>({ country: 'DE' }),
   };
 
   const mockWaterAveragesService = {
@@ -30,7 +30,7 @@ describe('ComparisonNoteComponent', () => {
   };
 
   const mockLanguageService = {
-    translate: vi.fn((key: string, params?: any) => {
+    translate: vi.fn((key: string, params?: unknown) => {
       if (key === 'COUNTRY.DE') return 'Germany';
       if (key === 'COUNTRY.US') return 'United States';
       if (params) return `${key}:${JSON.stringify(params)}`;
@@ -88,15 +88,11 @@ describe('ComparisonNoteComponent', () => {
     fixture = TestBed.createComponent(ComparisonNoteComponent);
     component = fixture.componentInstance;
 
-    // Set required inputs using componentRef.setInput()
-    fixture.componentRef.setInput('records', [
-      { date: new Date() },
-      { date: new Date() },
-      { date: new Date() },
-    ]);
+    // Set required inputs
+    component.records = [{ date: new Date() }, { date: new Date() }, { date: new Date() }];
 
     // Default type
-    fixture.componentRef.setInput('type', 'water');
+    component.type = 'water';
 
     TestBed.flushEffects();
   });
@@ -119,7 +115,7 @@ describe('ComparisonNoteComponent', () => {
       expect(component['hasSufficientDataForComparison']()).toBe(true);
 
       // Change input to less records
-      fixture.componentRef.setInput('records', [{ date: new Date() }]);
+      component.records = [{ date: new Date() }];
       TestBed.flushEffects();
       expect(component['hasSufficientDataForComparison']()).toBe(false);
     });
@@ -130,13 +126,13 @@ describe('ComparisonNoteComponent', () => {
     });
 
     it('should fallback to DE if user country is missing', () => {
-      mockHouseholdService.address.set({ country: '' } as any);
+      mockHouseholdService.address.set({ country: '' });
       TestBed.flushEffects();
       expect(component['effectiveComparisonCountryCode']()).toBe('DE');
     });
 
     it('should fallback to DE if user country is invalid', () => {
-      mockHouseholdService.address.set({ country: 'INVALID' } as any);
+      mockHouseholdService.address.set({ country: 'INVALID' });
       TestBed.flushEffects();
       expect(component['effectiveComparisonCountryCode']()).toBe('DE');
     });
@@ -160,20 +156,20 @@ describe('ComparisonNoteComponent', () => {
 
   describe('Facts Logic', () => {
     it('should get water fact', () => {
-      fixture.componentRef.setInput('type', 'water');
+      component.type = 'water';
       TestBed.flushEffects();
       expect(component['countryFact']()).toEqual({ message: 'Water fact', title: 'Did you know?' });
     });
 
     it('should get heating fact', () => {
-      fixture.componentRef.setInput('type', 'heating');
+      component.type = 'heating';
       TestBed.flushEffects();
       expect(component['countryFact']()).toBe('Heating fact');
       expect(component['heatingFactTitle']()).toBe('Heating Tip');
     });
 
     it('should get electricity fact', () => {
-      fixture.componentRef.setInput('type', 'electricity');
+      component.type = 'electricity';
       TestBed.flushEffects();
       expect(component['countryFact']()).toBe('Electricity fact');
       expect(component['electricityFactTitle']()).toBe('Power Tip');
@@ -190,7 +186,7 @@ describe('ComparisonNoteComponent', () => {
     it('should refresh fact on chart view change', () => {
       const initialSeed = component['factSeed']();
       vi.advanceTimersByTime(100);
-      fixture.componentRef.setInput('chartView', 'average');
+      component.chartView = 'average';
       TestBed.flushEffects();
       expect(component['factSeed']()).not.toBe(initialSeed);
     });
@@ -198,7 +194,7 @@ describe('ComparisonNoteComponent', () => {
 
   describe(' Comparison Text', () => {
     it('should translate water comparison text with correct params', () => {
-      fixture.componentRef.setInput('type', 'water');
+      component.type = 'water';
       TestBed.flushEffects();
 
       // The mock translator returns the key + params stringified
@@ -210,7 +206,7 @@ describe('ComparisonNoteComponent', () => {
     });
 
     it('should translate heating comparison text', () => {
-      fixture.componentRef.setInput('type', 'heating');
+      component.type = 'heating';
       TestBed.flushEffects();
 
       const text = component['comparisonText']();
@@ -220,7 +216,7 @@ describe('ComparisonNoteComponent', () => {
     });
 
     it('should translate electricity comparison text', () => {
-      fixture.componentRef.setInput('type', 'electricity');
+      component.type = 'electricity';
       TestBed.flushEffects();
 
       const text = component['comparisonText']();

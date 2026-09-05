@@ -1,5 +1,5 @@
 import { Injectable, signal, effect, inject, untracked } from '@angular/core';
-import { STORAGE_SERVICE, StorageService } from './storage.service';
+import { STORAGE_SERVICE } from './storage.service';
 import { NotificationService } from './notification.service';
 import { CountryService } from './country.service';
 
@@ -69,10 +69,18 @@ export class HouseholdService {
     });
   }
 
+  private normalizeMembers(members: HouseholdMember[]): HouseholdMember[] {
+    if (!Array.isArray(members)) return [];
+    return members.map((member) => ({
+      ...member,
+      id: member.id || crypto.randomUUID(),
+    }));
+  }
+
   private async loadData() {
     const members = await this.storage.load<HouseholdMember[]>('household_members');
     if (members) {
-      this.members.set(members);
+      this.members.set(this.normalizeMembers(members));
     }
 
     const address = await this.storage.load<Address>('household_address');
@@ -127,7 +135,7 @@ export class HouseholdService {
   }
 
   updateMembers(members: HouseholdMember[]) {
-    this.members.set(members);
+    this.members.set(this.normalizeMembers(members));
   }
 
   updateMember(id: string, updatedMember: Partial<HouseholdMember>) {

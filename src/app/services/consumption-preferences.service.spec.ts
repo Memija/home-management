@@ -5,7 +5,7 @@ import { describe, it, expect, beforeEach, vi, afterEach } from 'vitest';
 
 describe('ConsumptionPreferencesService', () => {
   let service: ConsumptionPreferencesService;
-  let mockStorageService: any;
+  let mockStorageService: Record<string, import('vitest').Mock>;
 
   // Helper to wait for the async loadPreferences to complete
   const waitForInit = async () => {

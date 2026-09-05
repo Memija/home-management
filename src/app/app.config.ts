@@ -6,9 +6,13 @@ import { STORAGE_SERVICE } from './services/storage.service';
 import { HybridStorageService } from './services/hybrid-storage.service';
 import { GlobalErrorHandlerService } from './services/global-error-handler.service';
 
+interface CanDeactivateComponent {
+  canDeactivate?: () => boolean | Promise<boolean>;
+}
+
 // CanDeactivate guard for settings - lazy loaded component
-const canDeactivateSettings: CanDeactivateFn<any> = (component) => {
-  return component.canDeactivate ? component.canDeactivate() : true;
+const canDeactivateSettings: CanDeactivateFn<CanDeactivateComponent> = (component) => {
+  return typeof component?.canDeactivate === 'function' ? component.canDeactivate() : true;
 };
 
 const routes: Routes = [

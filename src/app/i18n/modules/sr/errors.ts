@@ -8,8 +8,10 @@ export const errors = {
     EXCEL_DATE_FIX_1: 'Осигурајте да су датуми у DD.MM.YYYY формату (нпр. 14.09.2025)',
     EXCEL_DATE_FIX_2: 'Или користите DD/MM/YYYY формат (нпр. 14/09/2025)',
     EXCEL_DATE_FIX_3: 'Или користите YYYY-MM-DD формат (нпр. 2025-09-14)',
-    EXCEL_COLUMN_FIX_1: 'Проверите да ли имена Excel колона одговарају постављеним именима у Поставкама',
-    EXCEL_COLUMN_FIX_2: 'Идите на Поставке → Excel Интеграција за преглед или ажурирање пресликавања колона',
+    EXCEL_COLUMN_FIX_1:
+      'Проверите да ли имена Excel колона одговарају постављеним именима у Поставкама',
+    EXCEL_COLUMN_FIX_2:
+      'Идите на Поставке → Excel Интеграција за преглед или ажурирање пресликавања колона',
     EXCEL_GENERIC_FIX_1: 'Проверите да ли је ваш Excel документ у .xlsx формату',
     EXCEL_GENERIC_FIX_2: 'Осигурајте да су све обавезне колоне присутне уз тачне типове података',
     EXCEL_NUMBER_FIX_1: 'Осигурајте да су све вредности потрошње бројеви',
@@ -31,12 +33,16 @@ export const errors = {
     IMPORT_MISSING_DATE_FIELD: "Запис {{row}}: Недостаје поље 'date'",
     IMPORT_INVALID_DATE_VALUE: "Запис {{row}}: Неважећа вредност датума '{{value}}'",
     IMPORT_INVALID_DATE_TYPE: 'Запис {{row}}: Неважећа врста датума',
-    IMPORT_DUPLICATE_DATE: "Запис {{row}}: Дупли датум '{{date}}' (прво појављивање у запису {{firstRow}})",
-    IMPORT_INVALID_NUMBER_VALUE: "Запис {{row}}: Неважећа бројчана вредност '{{value}}' за поље '{{field}}'",
+    IMPORT_DUPLICATE_DATE:
+      "Запис {{row}}: Дупли датум '{{date}}' (прво појављивање у запису {{firstRow}})",
+    IMPORT_INVALID_NUMBER_VALUE:
+      "Запис {{row}}: Неважећа бројчана вредност '{{value}}' за поље '{{field}}'",
     IMPORT_INVALID_FIELD_TYPE: "Запис {{row}}: Неважећа врста података за поље '{{field}}'",
     IMPORT_INVALID_DATA_FORMAT: 'Неважећи формат података: очекиван је низ записа',
     IMPORT_EMPTY_FILE: 'Датотека је празна или нема записа.',
-    IMPORT_INVALID_EXCEL_FILE_TYPE: 'Неважећи формат датотеке. Очекивана је Екцел датотека (.xlsx, .xls, .csv), добијен је {{extension}}',
-    IMPORT_EXCEL_MISSING_DATE_COLUMN: 'Недостаје обавезна Date колона: {{column}}. Молимо проверите ваш Excel фајл.',
+    IMPORT_INVALID_EXCEL_FILE_TYPE:
+      'Неважећи формат датотеке. Очекивана је Екцел датотека (.xlsx, .xls, .csv), добијен је {{extension}}',
+    IMPORT_EXCEL_MISSING_DATE_COLUMN:
+      'Недостаје обавезна Date колона: {{column}}. Молимо проверите ваш Excel фајл.',
   },
 };

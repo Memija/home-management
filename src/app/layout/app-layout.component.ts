@@ -42,8 +42,14 @@ export class AppLayoutComponent {
     }
 
     // Hide if activation banner is shown on dashboard
-    const isDashboard = this.router.url === '/' || this.router.url === '/dashboard' || this.router.url.startsWith('/dashboard/');
-    const isActivationBannerShown = !this.authService.isAuthenticated() && !this.hybridStorageService.hasUserContent() && isDashboard;
+    const isDashboard =
+      this.router.url === '/' ||
+      this.router.url === '/dashboard' ||
+      this.router.url.startsWith('/dashboard/');
+    const isActivationBannerShown =
+      !this.authService.isAuthenticated() &&
+      !this.hybridStorageService.hasUserContent() &&
+      isDashboard;
 
     return !isActivationBannerShown;
   });

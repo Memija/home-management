@@ -1,4 +1,4 @@
-import { Component, input, output, signal, computed, inject } from '@angular/core';
+import { Component, Input, Output, EventEmitter, signal, computed, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { LanguageService } from '../../services/language.service';
 import { TranslatePipe } from '../../pipes/translate.pipe';
@@ -58,28 +58,153 @@ export class ConsumptionInputComponent {
   protected readonly CameraIcon = Camera;
 
   // Inputs
-  groups = input.required<ConsumptionGroup[]>();
-  selectedDate = input.required<string>();
-  maxDate = input.required<string>();
-  editingMode = input<boolean>(false);
-  dateExists = input<boolean>(false);
-  titleKey = input<string>('HOME.RECORD_CONSUMPTION');
-  editTitleKey = input<string>('HOME.EDIT_RECORD');
-  dateWarningKey = input<string>('HOME.DATE_EXISTS_WARNING');
-  readingsForKey = input<string>('HOME.READINGS_FOR');
-  saveKey = input<string>('HOME.SAVE');
-  updateKey = input<string>('HOME.UPDATE_RECORD');
-  cancelKey = input<string>('HOME.CANCEL');
-  helpTitleKey = input<string>('HOME.RECORD_HELP_TITLE');
-  helpSteps = input<HelpStep[]>([]);
+  @Input() set groups(val: ConsumptionGroup[]) {
+    this.groupsSignal.set(val || []);
+  }
+  get groups(): ConsumptionGroup[] {
+    return this.groupsSignal();
+  }
+  protected groupsSignal = signal<ConsumptionGroup[]>([]);
+
+  @Input() set selectedDate(val: string) {
+    this.selectedDateSignal.set(val || '');
+  }
+  get selectedDate(): string {
+    return this.selectedDateSignal();
+  }
+  protected selectedDateSignal = signal<string>('');
+
+  @Input() set maxDate(val: string) {
+    this.maxDateSignal.set(val || '');
+  }
+  get maxDate(): string {
+    return this.maxDateSignal();
+  }
+  protected maxDateSignal = signal<string>('');
+
+  @Input() set editingMode(val: boolean) {
+    this.editingModeSignal.set(val);
+  }
+  get editingMode(): boolean {
+    return this.editingModeSignal();
+  }
+  protected editingModeSignal = signal<boolean>(false);
+
+  @Input() set dateExists(val: boolean) {
+    this.dateExistsSignal.set(val);
+  }
+  get dateExists(): boolean {
+    return this.dateExistsSignal();
+  }
+  protected dateExistsSignal = signal<boolean>(false);
+
+  @Input() set titleKey(val: string) {
+    this.titleKeySignal.set(val || 'HOME.RECORD_CONSUMPTION');
+  }
+  get titleKey(): string {
+    return this.titleKeySignal();
+  }
+  protected titleKeySignal = signal<string>('HOME.RECORD_CONSUMPTION');
+
+  @Input() set editTitleKey(val: string) {
+    this.editTitleKeySignal.set(val || 'HOME.EDIT_RECORD');
+  }
+  get editTitleKey(): string {
+    return this.editTitleKeySignal();
+  }
+  protected editTitleKeySignal = signal<string>('HOME.EDIT_RECORD');
+
+  @Input() set dateWarningKey(val: string) {
+    this.dateWarningKeySignal.set(val || 'HOME.DATE_EXISTS_WARNING');
+  }
+  get dateWarningKey(): string {
+    return this.dateWarningKeySignal();
+  }
+  protected dateWarningKeySignal = signal<string>('HOME.DATE_EXISTS_WARNING');
+
+  @Input() set readingsForKey(val: string) {
+    this.readingsForKeySignal.set(val || 'HOME.READINGS_FOR');
+  }
+  get readingsForKey(): string {
+    return this.readingsForKeySignal();
+  }
+  protected readingsForKeySignal = signal<string>('HOME.READINGS_FOR');
+
+  @Input() set saveKey(val: string) {
+    this.saveKeySignal.set(val || 'HOME.SAVE');
+  }
+  get saveKey(): string {
+    return this.saveKeySignal();
+  }
+  protected saveKeySignal = signal<string>('HOME.SAVE');
+
+  @Input() set updateKey(val: string) {
+    this.updateKeySignal.set(val || 'HOME.UPDATE_RECORD');
+  }
+  get updateKey(): string {
+    return this.updateKeySignal();
+  }
+  protected updateKeySignal = signal<string>('HOME.UPDATE_RECORD');
+
+  @Input() set cancelKey(val: string) {
+    this.cancelKeySignal.set(val || 'HOME.CANCEL');
+  }
+  get cancelKey(): string {
+    return this.cancelKeySignal();
+  }
+  protected cancelKeySignal = signal<string>('HOME.CANCEL');
+
+  @Input() set helpTitleKey(val: string) {
+    this.helpTitleKeySignal.set(val || 'HOME.RECORD_HELP_TITLE');
+  }
+  get helpTitleKey(): string {
+    return this.helpTitleKeySignal();
+  }
+  protected helpTitleKeySignal = signal<string>('HOME.RECORD_HELP_TITLE');
+
+  @Input() set helpSteps(val: HelpStep[]) {
+    this.helpStepsSignal.set(val || []);
+  }
+  get helpSteps(): HelpStep[] {
+    return this.helpStepsSignal();
+  }
+  protected helpStepsSignal = signal<HelpStep[]>([]);
+
   // When true, individual fields can be saved independently (heating mode)
   // When false, all fields in a group must be complete (water mode)
-  allowPartialGroups = input<boolean>(false);
+  @Input() set allowPartialGroups(val: boolean) {
+    this.allowPartialGroupsSignal.set(val);
+  }
+  get allowPartialGroups(): boolean {
+    return this.allowPartialGroupsSignal();
+  }
+  protected allowPartialGroupsSignal = signal<boolean>(false);
+
   // Layout mode: 'grouped' = show group containers (water), 'flat' = room cards in grid (heating)
-  layoutMode = input<'grouped' | 'flat'>('grouped');
+  @Input() set layoutMode(val: 'grouped' | 'flat') {
+    this.layoutModeSignal.set(val || 'grouped');
+  }
+  get layoutMode(): 'grouped' | 'flat' {
+    return this.layoutModeSignal();
+  }
+  protected layoutModeSignal = signal<'grouped' | 'flat'>('grouped');
+
   // Configurable error message keys for validation
-  noValuesErrorKey = input<string>('HOME.PARTIAL_INPUT_ERROR');
-  incompleteRoomErrorKey = input<string>('HOME.INCOMPLETE_ROOM_ERROR');
+  @Input() set noValuesErrorKey(val: string) {
+    this.noValuesErrorKeySignal.set(val || 'HOME.PARTIAL_INPUT_ERROR');
+  }
+  get noValuesErrorKey(): string {
+    return this.noValuesErrorKeySignal();
+  }
+  protected noValuesErrorKeySignal = signal<string>('HOME.PARTIAL_INPUT_ERROR');
+
+  @Input() set incompleteRoomErrorKey(val: string) {
+    this.incompleteRoomErrorKeySignal.set(val || 'HOME.INCOMPLETE_ROOM_ERROR');
+  }
+  get incompleteRoomErrorKey(): string {
+    return this.incompleteRoomErrorKeySignal();
+  }
+  protected incompleteRoomErrorKeySignal = signal<string>('HOME.INCOMPLETE_ROOM_ERROR');
 
   // State
   protected errorMessage = signal<string | null>(null);
@@ -87,22 +212,22 @@ export class ConsumptionInputComponent {
   protected showMeterReader = signal(false);
 
   // Outputs
-  dateChange = output<string>();
-  fieldChange = output<{ key: string; value: number | null }>();
-  save = output<ConsumptionData>();
-  cancel = output<void>();
+  @Output() dateChange = new EventEmitter<string>();
+  @Output() fieldChange = new EventEmitter<{ key: string; value: number | null }>();
+  @Output() save = new EventEmitter<ConsumptionData>();
+  @Output() cancelModal = new EventEmitter<void>();
 
   protected currentLang = computed(() => this.languageService.currentLang());
 
   protected hasValidInput = computed(() => {
-    const grps = this.groups();
+    const grps = this.groupsSignal();
     const isGroupComplete = (group: ConsumptionGroup) =>
       group.fields.every((f) => f.value !== null);
     const isGroupEmpty = (group: ConsumptionGroup) => group.fields.every((f) => f.value === null);
     const hasAnyValue = (group: ConsumptionGroup) => group.fields.some((f) => f.value !== null);
 
     // In partial groups mode (heating), just need at least one field with a value
-    if (this.allowPartialGroups()) {
+    if (this.allowPartialGroupsSignal()) {
       return grps.some(hasAnyValue);
     }
 
@@ -154,18 +279,18 @@ export class ConsumptionInputComponent {
   }
 
   protected onSave() {
-    if (!this.selectedDate()) {
+    if (!this.selectedDateSignal()) {
       this.errorMessage.set('HOME.SELECT_DATE_ERROR');
       return;
     }
 
-    if (this.dateExists()) {
-      this.errorMessage.set(this.dateWarningKey());
+    if (this.dateExistsSignal()) {
+      this.errorMessage.set(this.dateWarningKeySignal());
       return;
     }
 
     // Check for specific validation failures
-    const grps = this.groups();
+    const grps = this.groupsSignal();
     const isGroupComplete = (group: ConsumptionGroup) =>
       group.fields.every((f) => f.value !== null);
     const isGroupEmpty = (group: ConsumptionGroup) => group.fields.every((f) => f.value === null);
@@ -183,33 +308,33 @@ export class ConsumptionInputComponent {
 
     // Prevent saving records where all values are zero or empty
     if (!hasAnyNonZeroValues) {
-      this.errorMessage.set(this.noValuesErrorKey());
+      this.errorMessage.set(this.noValuesErrorKeySignal());
       return;
     }
 
     // In partial groups mode (heating), allow saving if at least one field has a value
-    if (this.allowPartialGroups()) {
+    if (this.allowPartialGroupsSignal()) {
       if (!hasAnyValues) {
-        this.errorMessage.set(this.noValuesErrorKey());
+        this.errorMessage.set(this.noValuesErrorKeySignal());
         return;
       }
     } else {
       // Standard mode (water): require complete groups
       if (hasPartialGroups) {
         // User started a room but didn't complete it
-        this.errorMessage.set(this.incompleteRoomErrorKey());
+        this.errorMessage.set(this.incompleteRoomErrorKeySignal());
         return;
       }
 
       if (!hasCompleteGroups) {
-        // No room has any data
-        this.errorMessage.set(this.noValuesErrorKey());
+        // No room has unknown data
+        this.errorMessage.set(this.noValuesErrorKeySignal());
         return;
       }
     }
 
     const fields: Record<string, number> = {};
-    this.groups().forEach((group) => {
+    this.groupsSignal().forEach((group) => {
       group.fields.forEach((field) => {
         if (field.value !== null) {
           fields[field.key] = field.value;
@@ -218,13 +343,13 @@ export class ConsumptionInputComponent {
     });
 
     this.save.emit({
-      date: this.selectedDate(),
+      date: this.selectedDateSignal(),
       fields,
     });
   }
 
   protected onCancel() {
-    this.cancel.emit();
+    this.cancelModal.emit();
   }
 
   protected showHelp() {
@@ -237,16 +362,16 @@ export class ConsumptionInputComponent {
 
   // Meter Reader
   protected meterReaderFields = computed<MeterField[]>(() => {
-    const grps = this.groups();
+    const grps = this.groupsSignal();
     const fields: MeterField[] = [];
     grps.forEach((group) => {
       group.fields.forEach((field) => {
-        fields.push({ 
-          key: field.key, 
-          label: field.label, 
+        fields.push({
+          key: field.key,
+          label: field.label,
           groupLabel: group.title,
           currentValue: field.value,
-          icon: field.icon 
+          icon: field.icon,
         });
       });
     });

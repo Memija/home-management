@@ -6,8 +6,14 @@ import { describe, it, expect, beforeEach, vi, afterEach } from 'vitest';
 
 describe('HouseholdService', () => {
   let service: HouseholdService;
-  let mockStorageService: any;
-  let mockNotificationService: any;
+  let mockStorageService: {
+    load: ReturnType<typeof vi.fn>;
+    save: ReturnType<typeof vi.fn>;
+  };
+  let mockNotificationService: {
+    setHouseholdMembers: ReturnType<typeof vi.fn>;
+    setAddress: ReturnType<typeof vi.fn>;
+  };
 
   beforeEach(() => {
     mockStorageService = {

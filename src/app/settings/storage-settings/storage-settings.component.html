@@ -146,7 +146,7 @@
   deleteKey="ACTIONS.DELETE"
   [icon]="AlertIcon"
   (confirm)="onConfirmDelete()"
-  (cancel)="closeDeleteModal()"
+  (cancelModal)="closeDeleteModal()"
 >
 </app-delete-confirmation-modal>
 
@@ -158,7 +158,7 @@
   deleteKey="STORAGE.CLEAR_LOCAL"
   [icon]="AlertIcon"
   (confirm)="onConfirmClearLocal()"
-  (cancel)="onCancelClearLocal()"
+  (cancelModal)="onCancelClearLocal()"
 >
 </app-delete-confirmation-modal>
 
@@ -170,7 +170,7 @@
   [confirmKey]="'STORAGE.PULL_FROM_CLOUD'"
   [icon]="DownloadIcon"
   (confirm)="onConfirmDownload()"
-  (cancel)="closeDownloadModal()"
+  (cancelModal)="closeDownloadModal()"
 >
 </app-confirmation-modal>
 
@@ -178,6 +178,6 @@
   [show]="isHelpModalOpen()"
   [titleKey]="'STORAGE.HELP_TITLE'"
   [steps]="helpSteps"
-  (close)="closeHelp()"
+  (closeModal)="closeHelp()"
 >
 </app-help-modal>

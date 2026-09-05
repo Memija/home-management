@@ -6,18 +6,13 @@ import {
   computed,
   effect,
   inject,
-  input,
   signal,
   OnInit,
   OnDestroy,
   HostListener,
 } from '@angular/core';
 import { BaseChartDirective } from 'ng2-charts';
-import {
-  Chart,
-  ChartConfiguration,
-  registerables,
-} from 'chart.js';
+import { Chart, ChartConfiguration, registerables } from 'chart.js';
 import { TranslatePipe } from '../../pipes/translate.pipe';
 import { LanguageService } from '../../services/language.service';
 import { ChartDataService, ChartView, DisplayMode } from '../../services/chart-data.service';
@@ -48,7 +43,7 @@ import {
   ElectricityRecord,
 } from '../../models/records.model';
 import { registerChartPlugins } from './chart-plugins';
-import { ChartDataPoint, ChartConfig } from '../../models/consumption-chart.model';
+import { ChartDataPoint } from '../../models/consumption-chart.model';
 import { MultiPredictionResult } from '../../models/prediction.models';
 import { generateSmartLabels } from './chart-labels.utils';
 import { buildChartOptions } from './chart-options.builder';
@@ -57,7 +52,21 @@ import { appendPredictionDatasets, PredictionPeriod } from './chart-prediction.b
 
 // Re-export types for consumers
 export type { ChartView, DisplayMode } from '../../services/chart-data.service';
-export type { ChartDataPoint, ChartConfig } from '../../models/consumption-chart.model';
+export type { ChartDataPoint } from '../../models/consumption-chart.model';
+
+export interface FullscreenElement extends HTMLElement {
+  webkitRequestFullscreen?: () => void;
+  mozRequestFullScreen?: () => void;
+  msRequestFullscreen?: () => void;
+}
+export interface FullscreenDocument extends Document {
+  webkitFullscreenElement?: Element;
+  mozFullScreenElement?: Element;
+  msFullscreenElement?: Element;
+  webkitExitFullscreen?: () => void;
+  mozCancelFullScreen?: () => void;
+  msExitFullscreen?: () => void;
+}
 
 Chart.register(...registerables, zoomPlugin);
 registerChartPlugins();
@@ -73,23 +82,115 @@ export class ConsumptionChartComponent implements OnInit, OnDestroy {
   @ViewChild(BaseChartDirective) chart?: BaseChartDirective;
   @ViewChild('chartWrapper') chartWrapperRef?: ElementRef<HTMLDivElement>;
 
-  data = input.required<ChartDataPoint[]>();
-  currentView = input.required<ChartView>();
+  @Input() set data(val: ChartDataPoint[]) {
+    this.dataSignal.set(val || []);
+  }
+  get data(): ChartDataPoint[] {
+    return this.dataSignal();
+  }
+  protected dataSignal = signal<ChartDataPoint[]>([]);
+
+  @Input() set currentView(val: ChartView) {
+    this.currentViewSignal.set(val || 'total');
+  }
+  get currentView(): ChartView {
+    return this.currentViewSignal();
+  }
+  protected currentViewSignal = signal<ChartView>('total');
+
   @Input({ required: true }) onViewChange!: (view: ChartView) => void;
-  @Input({ required: true }) chartType!: 'water' | 'home' | 'heating' | 'electricity';
-  displayMode = input<DisplayMode>('total');
+  @Input({ required: true }) chartType: 'water' | 'home' | 'heating' | 'electricity' = 'water';
+
+  @Input() set displayMode(val: DisplayMode) {
+    this.displayModeSignal.set(val || 'total');
+  }
+  get displayMode(): DisplayMode {
+    return this.displayModeSignal();
+  }
+  protected displayModeSignal = signal<DisplayMode>('total');
+
   @Input({ required: true }) onDisplayModeChange!: (mode: DisplayMode) => void;
-  familySize = input<any>(0);
-  country = input<any>('');
-  helpTitleKey = input<string>('HOME.CHART_HELP_TITLE');
-  helpSteps = input<HelpStep[]>([]);
-  roomNames = input<string[]>([]); // For heating chart: actual room names
-  roomIds = input<string[]>([]); // For heating chart: actual room IDs
-  roomColors = input<Array<{ border: string; bg: string }>>([]); // For heating chart: room-specific colors
-  ignoredSpikes = input<{ date: string; roomId: string }[]>([]); // For heating chart: confirmed spikes to ignore in incremental mode
-  prediction = input<MultiPredictionResult | null>(null);
+
+  @Input() set familySize(val: number) {
+    this.familySizeSignal.set(val || 0);
+  }
+  get familySize(): number {
+    return this.familySizeSignal();
+  }
+  protected familySizeSignal = signal<number>(0);
+
+  @Input() set country(val: string) {
+    this.countrySignal.set(val || '');
+  }
+  get country(): string {
+    return this.countrySignal();
+  }
+  protected countrySignal = signal<string>('');
+
+  @Input() set helpTitleKey(val: string) {
+    this.helpTitleKeySignal.set(val || 'HOME.CHART_HELP_TITLE');
+  }
+  get helpTitleKey(): string {
+    return this.helpTitleKeySignal();
+  }
+  protected helpTitleKeySignal = signal<string>('HOME.CHART_HELP_TITLE');
+
+  @Input() set helpSteps(val: HelpStep[]) {
+    this.helpStepsSignal.set(val || []);
+  }
+  get helpSteps(): HelpStep[] {
+    return this.helpStepsSignal();
+  }
+  protected helpStepsSignal = signal<HelpStep[]>([]);
+
+  @Input() set roomNames(val: string[]) {
+    this.roomNamesSignal.set(val || []);
+  }
+  get roomNames(): string[] {
+    return this.roomNamesSignal();
+  }
+  protected roomNamesSignal = signal<string[]>([]);
+
+  @Input() set roomIds(val: string[]) {
+    this.roomIdsSignal.set(val || []);
+  }
+  get roomIds(): string[] {
+    return this.roomIdsSignal();
+  }
+  protected roomIdsSignal = signal<string[]>([]);
+
+  @Input() set roomColors(val: { border: string; bg: string }[]) {
+    this.roomColorsSignal.set(val || []);
+  }
+  get roomColors(): { border: string; bg: string }[] {
+    return this.roomColorsSignal();
+  }
+  protected roomColorsSignal = signal<{ border: string; bg: string }[]>([]);
+
+  @Input() set ignoredSpikes(val: { date: string; roomId: string }[]) {
+    this.ignoredSpikesSignal.set(val || []);
+  }
+  get ignoredSpikes(): { date: string; roomId: string }[] {
+    return this.ignoredSpikesSignal();
+  }
+  protected ignoredSpikesSignal = signal<{ date: string; roomId: string }[]>([]);
+
+  @Input() set prediction(val: MultiPredictionResult | null) {
+    this.predictionSignal.set(val);
+  }
+  get prediction(): MultiPredictionResult | null {
+    return this.predictionSignal();
+  }
+  protected predictionSignal = signal<MultiPredictionResult | null>(null);
+
   /** Number of days for the prediction projection */
-  predictionPeriod = input<PredictionPeriod>(30);
+  @Input() set predictionPeriod(val: PredictionPeriod) {
+    this.predictionPeriodSignal.set(val || 30);
+  }
+  get predictionPeriod(): PredictionPeriod {
+    return this.predictionPeriodSignal();
+  }
+  protected predictionPeriodSignal = signal<PredictionPeriod>(30);
 
   private languageService = inject(LanguageService);
   private chartDataService = inject(ChartDataService);
@@ -125,15 +226,18 @@ export class ConsumptionChartComponent implements OnInit, OnDestroy {
     return !!(
       el &&
       (el.requestFullscreen ||
-        (el as any).webkitRequestFullscreen ||
-        (el as any).mozRequestFullScreen ||
-        (el as any).msRequestFullscreen)
+        (el as unknown as FullscreenElement).webkitRequestFullscreen ||
+        (el as unknown as FullscreenElement).mozRequestFullScreen ||
+        (el as unknown as FullscreenElement).msRequestFullscreen)
     );
   }
 
   private readonly onFullscreenChange = () => {
     // Support both standard and webkit-prefixed fullscreenElement (Android Chrome)
-    const isFS = !!(document.fullscreenElement || (document as any).webkitFullscreenElement);
+    const isFS = !!(
+      document.fullscreenElement ||
+      (document as unknown as FullscreenDocument).webkitFullscreenElement
+    );
     this.isFullscreen.set(isFS);
     if (!isFS) {
       this.isControlsHidden.set(false); // Reset controls visibility when exiting fullscreen
@@ -162,35 +266,35 @@ export class ConsumptionChartComponent implements OnInit, OnDestroy {
 
   // Computed property to check if there's enough data for features
   protected hasSufficientDataForTrendline = computed(() => {
-    const dataLength = this.data().length;
-    const mode = this.displayMode();
+    const dataLength = this.dataSignal().length;
+    const mode = this.displayModeSignal();
     return mode === 'incremental' ? dataLength >= 3 : dataLength >= 2;
   });
 
   protected hasSufficientDataForComparison = computed(() => {
-    const dataLength = this.data().length;
+    const dataLength = this.dataSignal().length;
     return dataLength >= 3;
   });
 
   protected currentLang = computed(() => this.languageService.currentLang());
 
   protected chartData = computed<ChartConfiguration['data']>(() => {
-    const recs = this.data();
+    const recs = this.dataSignal();
     const labels = generateSmartLabels(recs, this.languageService);
-    const view = this.currentView();
-    const mode = this.displayMode();
+    const view = this.currentViewSignal();
+    const mode = this.displayModeSignal();
     // Reactive to language, country, and toggle changes
     this.currentLang();
     this.showTrendline();
     this.showAverageComparison();
     this.showPredictions();
     this.showPastForecast();
-    this.predictionPeriod();
+    this.predictionPeriodSignal();
 
     // Process data based on display mode
     const processedData =
       mode === 'incremental'
-        ? this.chartDataService.calculateIncrementalData(recs, this.ignoredSpikes())
+        ? this.chartDataService.calculateIncrementalData(recs, this.ignoredSpikesSignal())
         : recs;
 
     let resultData: ChartConfiguration['data'];
@@ -204,8 +308,8 @@ export class ConsumptionChartComponent implements OnInit, OnDestroy {
         mode,
         showTrendline: this.showTrendline(),
         showAverageComparison: this.showAverageComparison(),
-        country: this.country() ?? '',
-        familySize: this.familySize() ?? 0,
+        country: this.countrySignal() ?? '',
+        familySize: this.familySizeSignal() ?? 0,
       });
     } else if (this.chartType === 'electricity') {
       resultData = this.chartDataService.getElectricityChartData({
@@ -216,8 +320,8 @@ export class ConsumptionChartComponent implements OnInit, OnDestroy {
         mode,
         showTrendline: this.showTrendline(),
         showAverageComparison: this.showAverageComparison(),
-        country: this.country() ?? 'DE',
-        familySize: this.familySize() ?? 0,
+        country: this.countrySignal() ?? 'DE',
+        familySize: this.familySizeSignal() ?? 0,
       });
     } else if (this.chartType === 'home') {
       resultData = this.chartDataService.getWaterChartData({
@@ -238,12 +342,12 @@ export class ConsumptionChartComponent implements OnInit, OnDestroy {
         labels,
         view,
         mode,
-        roomNames: this.roomNames(),
-        roomIds: this.roomIds(),
-        roomColors: this.roomColors(),
+        roomNames: this.roomNamesSignal(),
+        roomIds: this.roomIdsSignal(),
+        roomColors: this.roomColorsSignal(),
         showTrendline: this.showTrendline(),
         showAverageComparison: this.showAverageComparison(),
-        country: this.country() ?? 'DE',
+        country: this.countrySignal() ?? 'DE',
       });
     }
 
@@ -254,10 +358,10 @@ export class ConsumptionChartComponent implements OnInit, OnDestroy {
     return appendPredictionDatasets(resultData, {
       languageService: this.languageService,
       chartType: this.chartType,
-      currentView: () => this.currentView(),
-      getData: () => this.data(),
-      prediction: this.prediction(),
-      predictionPeriod: this.predictionPeriod(),
+      currentView: () => this.currentViewSignal(),
+      getData: () => this.dataSignal(),
+      prediction: this.predictionSignal(),
+      predictionPeriod: this.predictionPeriodSignal(),
       showPredictions: this.showPredictions(),
       showPastForecast: this.showPastForecast(),
     });
@@ -270,12 +374,12 @@ export class ConsumptionChartComponent implements OnInit, OnDestroy {
     });
 
     effect(() => {
-      const view = this.currentView();
+      const view = this.currentViewSignal();
       if (this.toggleState) {
         this.showPredictions.set(this.toggleState.getPredictionsVisibility(view));
         this.showPastForecast.set(this.toggleState.getPastForecastVisibility(view));
       }
-    }, { allowSignalWrites: true });
+    });
   }
 
   ngOnInit(): void {
@@ -283,8 +387,8 @@ export class ConsumptionChartComponent implements OnInit, OnDestroy {
     this.showTrendline.set(this.toggleState.getTrendlineVisibility());
     this.showAverageComparison.set(this.toggleState.getAverageComparisonVisibility());
     // Initialize prediction visibility for current view now that toggleState exists
-    this.showPredictions.set(this.toggleState.getPredictionsVisibility(this.currentView()));
-    this.showPastForecast.set(this.toggleState.getPastForecastVisibility(this.currentView()));
+    this.showPredictions.set(this.toggleState.getPredictionsVisibility(this.currentViewSignal()));
+    this.showPastForecast.set(this.toggleState.getPastForecastVisibility(this.currentViewSignal()));
     document.addEventListener('fullscreenchange', this.onFullscreenChange);
     // webkit prefix required for Android Chrome and some other mobile browsers
     document.addEventListener('webkitfullscreenchange', this.onFullscreenChange);
@@ -295,7 +399,7 @@ export class ConsumptionChartComponent implements OnInit, OnDestroy {
     return buildChartOptions({
       languageService: this.languageService,
       chartType: this.chartType,
-      getData: () => this.data(),
+      getData: () => this.dataSignal(),
     });
   });
 
@@ -324,8 +428,8 @@ export class ConsumptionChartComponent implements OnInit, OnDestroy {
   protected togglePredictions(): void {
     const newVal = !this.showPredictions();
     this.showPredictions.set(newVal);
-    this.toggleState.savePredictionsVisibility(this.currentView(), newVal);
-    if (newVal && this.displayMode() !== 'incremental') {
+    this.toggleState.savePredictionsVisibility(this.currentViewSignal(), newVal);
+    if (newVal && this.displayModeSignal() !== 'incremental') {
       this.setDisplayMode('incremental');
     }
     setTimeout(() => this.chart?.update(), 50);
@@ -334,8 +438,8 @@ export class ConsumptionChartComponent implements OnInit, OnDestroy {
   protected togglePastForecast(): void {
     const newVal = !this.showPastForecast();
     this.showPastForecast.set(newVal);
-    this.toggleState.savePastForecastVisibility(this.currentView(), newVal);
-    if (newVal && this.displayMode() !== 'incremental') {
+    this.toggleState.savePastForecastVisibility(this.currentViewSignal(), newVal);
+    if (newVal && this.displayModeSignal() !== 'incremental') {
       this.setDisplayMode('incremental');
     }
     setTimeout(() => this.chart?.update(), 50);
@@ -358,15 +462,21 @@ export class ConsumptionChartComponent implements OnInit, OnDestroy {
   }
 
   protected toggleFullscreen(): void {
-    const isCurrentlyFake = this.isFullscreen() && !document.fullscreenElement && !(document as any).webkitFullscreenElement;
-    const isCurrentlyNative = !!(document.fullscreenElement || (document as any).webkitFullscreenElement);
+    const isCurrentlyFake =
+      this.isFullscreen() &&
+      !document.fullscreenElement &&
+      !(document as unknown as FullscreenDocument).webkitFullscreenElement;
+    const isCurrentlyNative = !!(
+      document.fullscreenElement ||
+      (document as unknown as FullscreenDocument).webkitFullscreenElement
+    );
 
     if (isCurrentlyNative) {
       // Exit native fullscreen
       if (document.exitFullscreen) {
         document.exitFullscreen();
-      } else if ((document as any).webkitExitFullscreen) {
-        (document as any).webkitExitFullscreen();
+      } else if ((document as unknown as FullscreenDocument).webkitExitFullscreen) {
+        (document as unknown as FullscreenDocument).webkitExitFullscreen?.();
       }
       return;
     }
@@ -384,14 +494,14 @@ export class ConsumptionChartComponent implements OnInit, OnDestroy {
     // Enter fullscreen — try native first, fall back to CSS fake fullscreen
     if (this.isNativeFullscreenSupported) {
       const el = this.chartWrapperRef?.nativeElement;
-      const request: (() => Promise<void>) | undefined =
+      const request =
         el?.requestFullscreen?.bind(el) ??
-        (el as any)?.webkitRequestFullscreen?.bind(el) ??
-        (el as any)?.mozRequestFullScreen?.bind(el) ??
-        (el as any)?.msRequestFullscreen?.bind(el);
+        (el as unknown as FullscreenElement)?.webkitRequestFullscreen?.bind(el) ??
+        (el as unknown as FullscreenElement)?.mozRequestFullScreen?.bind(el) ??
+        (el as unknown as FullscreenElement)?.msRequestFullscreen?.bind(el);
 
       if (request) {
-        request().catch((err) => {
+        Promise.resolve(request()).catch((err: unknown) => {
           console.error('Failed to enter fullscreen, falling back to CSS mode:', err);
           this.enterFakeFullscreen();
         });
@@ -411,7 +521,7 @@ export class ConsumptionChartComponent implements OnInit, OnDestroy {
   }
 
   protected toggleControls(): void {
-    this.isControlsHidden.update(v => !v);
+    this.isControlsHidden.update((v) => !v);
     setTimeout(() => this.chart?.update(), 50);
   }
 
@@ -419,12 +529,15 @@ export class ConsumptionChartComponent implements OnInit, OnDestroy {
   // This handler also catches fake-fullscreen (CSS overlay mode) on mobile.
   @HostListener('document:keydown.escape')
   protected onEscapeKey(): void {
-    if (document.fullscreenElement || (document as any).webkitFullscreenElement) {
+    if (
+      document.fullscreenElement ||
+      (document as unknown as FullscreenDocument).webkitFullscreenElement
+    ) {
       // Native fullscreen — browser handles Escape, but we call exit to sync state
       if (document.exitFullscreen) {
         document.exitFullscreen();
-      } else if ((document as any).webkitExitFullscreen) {
-        (document as any).webkitExitFullscreen();
+      } else if ((document as unknown as FullscreenDocument).webkitExitFullscreen) {
+        (document as unknown as FullscreenDocument).webkitExitFullscreen?.();
       }
     } else if (this.isFullscreen()) {
       // CSS fake fullscreen — handle Escape manually
@@ -437,11 +550,14 @@ export class ConsumptionChartComponent implements OnInit, OnDestroy {
     document.removeEventListener('webkitfullscreenchange', this.onFullscreenChange);
 
     // Clean up native fullscreen
-    if (document.fullscreenElement || (document as any).webkitFullscreenElement) {
+    if (
+      document.fullscreenElement ||
+      (document as unknown as FullscreenDocument).webkitFullscreenElement
+    ) {
       if (document.exitFullscreen) {
         document.exitFullscreen();
-      } else if ((document as any).webkitExitFullscreen) {
-        (document as any).webkitExitFullscreen();
+      } else if ((document as unknown as FullscreenDocument).webkitExitFullscreen) {
+        (document as unknown as FullscreenDocument).webkitExitFullscreen?.();
       }
     }
 

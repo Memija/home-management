@@ -1,42 +1,35 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { ErrorModalComponent, ErrorInstruction } from './error-modal.component';
-import { Pipe, PipeTransform } from '@angular/core';
-import { TranslatePipe } from '../../pipes/translate.pipe';
-import { vi } from 'vitest';
-
-@Pipe({
-  name: 'translate',
-  standalone: true,
-})
-class MockTranslatePipe implements PipeTransform {
-  transform(key: string, args?: any): string {
-    if (args) {
-      return `${key} ${JSON.stringify(args)}`;
-    }
-    return key;
-  }
-}
+import { signal } from '@angular/core';
+import { LanguageService } from '../../services/language.service';
+import { describe, it, expect, beforeEach, vi } from 'vitest';
 
 describe('ErrorModalComponent', () => {
   let component: ErrorModalComponent;
   let fixture: ComponentFixture<ErrorModalComponent>;
 
   beforeEach(async () => {
+    const mockLanguageService = {
+      currentLang: signal('en'),
+      translate: vi.fn((key: string, args?: Record<string, unknown>) => {
+        if (args) {
+          return `${key} ${JSON.stringify(args)}`;
+        }
+        return key;
+      }),
+    };
+
     await TestBed.configureTestingModule({
       imports: [ErrorModalComponent],
-    })
-      .overrideComponent(ErrorModalComponent, {
-        remove: { imports: [TranslatePipe] },
-        add: { imports: [MockTranslatePipe] },
-      })
-      .compileComponents();
+      providers: [{ provide: LanguageService, useValue: mockLanguageService }],
+    }).compileComponents();
 
     fixture = TestBed.createComponent(ErrorModalComponent);
     component = fixture.componentInstance;
 
-    // Default required inputs
-    fixture.componentRef.setInput('show', true);
-    fixture.componentRef.setInput('message', 'Default Error Message');
+    // Default inputs
+    component.show = true;
+    component.message = 'Default Error Message';
     fixture.detectChanges();
   });
 
@@ -46,7 +39,7 @@ describe('ErrorModalComponent', () => {
 
   describe('Display and Rendering', () => {
     it('should not render anything when show is false', () => {
-      fixture.componentRef.setInput('show', false);
+      component.show = false;
       fixture.detectChanges();
 
       const overlay = fixture.nativeElement.querySelector('.modal-overlay');
@@ -71,13 +64,13 @@ describe('ErrorModalComponent', () => {
       expect(content.classList.contains('success')).toBe(false);
 
       // Warning type
-      fixture.componentRef.setInput('type', 'warning');
+      component.type = 'warning';
       fixture.detectChanges();
       content = fixture.nativeElement.querySelector('.modal-content');
       expect(content.classList.contains('warning')).toBe(true);
 
       // Success type
-      fixture.componentRef.setInput('type', 'success');
+      component.type = 'success';
       fixture.detectChanges();
       content = fixture.nativeElement.querySelector('.modal-content');
       expect(content.classList.contains('success')).toBe(true);
@@ -86,22 +79,20 @@ describe('ErrorModalComponent', () => {
 
   describe('detailLines computation', () => {
     it('should calculate detailLines correctly from a multiline string', () => {
-      fixture.componentRef.setInput('details', 'Line 1\nLine 2\n\nLine 3\n  \n');
+      component.details = 'Line 1\nLine 2\n\nLine 3\n  \n';
       fixture.detectChanges();
 
-      const compAsAny = component as any;
-      const lines = compAsAny.detailLines();
+      const lines = component.detailLines();
 
       expect(lines.length).toBe(3);
       expect(lines).toEqual(['Line 1', 'Line 2', 'Line 3']);
     });
 
     it('should handle undefined or empty details gracefully', () => {
-      fixture.componentRef.setInput('details', '');
+      component.details = '';
       fixture.detectChanges();
 
-      const compAsAny = component as any;
-      expect(compAsAny.detailLines().length).toBe(0);
+      expect(component.detailLines().length).toBe(0);
 
       // DOM should omit error-details sections
       expect(fixture.nativeElement.querySelector('.error-details')).toBeNull();
@@ -110,10 +101,9 @@ describe('ErrorModalComponent', () => {
 
   describe('instructions formatting', () => {
     it('should identify strings correctly with isString', () => {
-      const compAsAny = component as any;
-      expect(compAsAny.isString('hello')).toBe(true);
-      expect(compAsAny.isString({ key: 'hello' })).toBe(false);
-      expect(compAsAny.isString(null)).toBe(false);
+      expect(component.isString('hello')).toBe(true);
+      expect(component.isString({ key: 'hello' })).toBe(false);
+      expect(component.isString(null)).toBe(false);
     });
 
     it('should render string and object instructions correctly', () => {
@@ -122,7 +112,7 @@ describe('ErrorModalComponent', () => {
         { key: 'OBJECT_INSTRUCTION', params: { code: 123, word: 'fail' } },
       ];
 
-      fixture.componentRef.setInput('instructions', testInstructions);
+      component.instructions = testInstructions;
       fixture.detectChanges();
 
       const instructionElements = fixture.nativeElement.querySelectorAll('.error-instructions li');
@@ -135,7 +125,7 @@ describe('ErrorModalComponent', () => {
     });
 
     it('should not render instructions section if the array is empty', () => {
-      fixture.componentRef.setInput('instructions', []);
+      component.instructions = [];
       fixture.detectChanges();
 
       expect(fixture.nativeElement.querySelector('.error-instructions')).toBeNull();
@@ -144,34 +134,34 @@ describe('ErrorModalComponent', () => {
 
   describe('Events', () => {
     it('should emit cancel event when close button is clicked', () => {
-      vi.spyOn(component.cancel, 'emit');
+      vi.spyOn(component.cancelModal, 'emit');
       const closeBtn = fixture.nativeElement.querySelector('.close-btn');
 
       closeBtn.click();
 
-      expect(component.cancel.emit).toHaveBeenCalled();
+      expect(component.cancelModal.emit).toHaveBeenCalled();
     });
 
     it('should emit cancel event when primary close button is clicked', () => {
-      vi.spyOn(component.cancel, 'emit');
+      vi.spyOn(component.cancelModal, 'emit');
       const primaryBtn = fixture.nativeElement.querySelector('.modal-footer .btn-primary');
 
       primaryBtn.click();
 
-      expect(component.cancel.emit).toHaveBeenCalled();
+      expect(component.cancelModal.emit).toHaveBeenCalled();
     });
 
     it('should emit cancel event when overlay is clicked', () => {
-      vi.spyOn(component.cancel, 'emit');
+      vi.spyOn(component.cancelModal, 'emit');
       const overlay = fixture.nativeElement.querySelector('.modal-overlay');
 
       overlay.click();
 
-      expect(component.cancel.emit).toHaveBeenCalled();
+      expect(component.cancelModal.emit).toHaveBeenCalled();
     });
 
     it('should stop event propagation when modal content is clicked', () => {
-      vi.spyOn(component.cancel, 'emit');
+      vi.spyOn(component.cancelModal, 'emit');
       const content = fixture.nativeElement.querySelector('.modal-content');
 
       const mockEvent = new MouseEvent('click', { bubbles: true });
@@ -181,7 +171,7 @@ describe('ErrorModalComponent', () => {
 
       // Stop propagation should be called, but cancel shouldn't be emitted by the overlay receiving the event
       expect(mockEvent.stopPropagation).toHaveBeenCalled();
-      expect(component.cancel.emit).not.toHaveBeenCalled();
+      expect(component.cancelModal.emit).not.toHaveBeenCalled();
     });
   });
 });

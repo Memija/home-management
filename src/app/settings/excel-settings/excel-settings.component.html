@@ -56,7 +56,12 @@
   <!-- Column Mapping Preview (when enabled and not editing) -->
   @if (enabled()) {
     <div class="column-preview">
-      <div class="preview-header" (click)="togglePreview()">
+      <div
+        class="preview-header"
+        (click)="togglePreview()"
+        tabindex="0"
+        (keyup.enter)="togglePreview()"
+      >
         <h3>{{ 'SETTINGS.EXCEL_COLUMN_MAPPING' | translate }}</h3>
         <button
           class="toggle-preview-btn"
@@ -157,8 +162,13 @@
 
   <!-- Edit Modal -->
   @if (showModal()) {
-    <div class="modal-overlay" (click)="closeModal()">
-      <div class="modal-content modal-lg" (click)="$event.stopPropagation()">
+    <div class="modal-overlay" (click)="closeModal()" tabindex="0" (keyup.enter)="closeModal()">
+      <div
+        class="modal-content modal-lg"
+        (click)="$event.stopPropagation()"
+        tabindex="0"
+        (keyup.enter)="$event.stopPropagation()"
+      >
         <div class="modal-header">
           <h3>{{ 'SETTINGS.EDIT_EXCEL_SETTINGS' | translate }}</h3>
           <button
@@ -632,7 +642,7 @@
     [deleteKey]="'SETTINGS.UNSAVED_CHANGES_LEAVE'"
     [icon]="TriangleAlertIcon"
     (confirm)="confirmLeaveWithoutSaving()"
-    (cancel)="stayAndSave()"
+    (cancelModal)="stayAndSave()"
   >
   </app-delete-confirmation-modal>
 
@@ -644,7 +654,7 @@
     [confirmKey]="'HOME.IMPORT_BUTTON'"
     [icon]="ImportIcon"
     (confirm)="confirmImportSettings()"
-    (cancel)="cancelImportSettings()"
+    (cancelModal)="cancelImportSettings()"
   >
   </app-confirmation-modal>
 
@@ -654,7 +664,7 @@
     [message]="importErrorMessage()"
     [details]="importErrorDetails()"
     [instructions]="importErrorInstructions()"
-    (cancel)="closeImportErrorModal()"
+    (cancelModal)="closeImportErrorModal()"
   >
   </app-error-modal>
 
@@ -662,7 +672,7 @@
     [show]="showHelpModal()"
     [titleKey]="'SETTINGS.EXCEL_HELP_TITLE'"
     [steps]="helpSteps"
-    (close)="showHelpModal.set(false)"
+    (closeModal)="showHelpModal.set(false)"
   >
   </app-help-modal>
 </div>

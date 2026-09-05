@@ -6,7 +6,7 @@ import { describe, it, expect, beforeEach, vi, afterEach } from 'vitest';
 
 describe('ExcelSettingsService', () => {
   let service: ExcelSettingsService;
-  let mockStorageService: any;
+  let mockStorageService: Record<string, import('vitest').Mock>;
 
   beforeEach(() => {
     mockStorageService = {

@@ -1,4 +1,4 @@
-import { Component, input, output, signal } from '@angular/core';
+import { Component, Input, Output, EventEmitter, signal, OnInit, OnChanges } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import {
@@ -31,18 +31,18 @@ export interface MemberEditData {
   templateUrl: './member-editor.component.html',
   styleUrl: './member-editor.component.scss',
 })
-export class MemberEditorComponent {
+export class MemberEditorComponent implements OnInit, OnChanges {
   /** The member being edited */
-  member = input.required<HouseholdMember>();
+  @Input() member?: HouseholdMember;
 
   /** Available avatar options */
-  avatars = input.required<string[]>();
+  @Input() avatars: string[] = [];
 
   /** Emits the updated member data on save */
-  save = output<MemberEditData>();
+  @Output() save = new EventEmitter<MemberEditData>();
 
   /** Emits when editing is cancelled */
-  cancel = output<void>();
+  @Output() cancelModal = new EventEmitter<void>();
 
   // Icons
   protected readonly SaveIcon = Save;
@@ -66,28 +66,23 @@ export class MemberEditorComponent {
 
   private initialized = false;
 
-  constructor() {
-    // Initialize edit state when member input changes
-    // Using a getter pattern since we need to react to input changes
-  }
-
-  ngOnInit() {
+  ngOnInit(): void {
     this.initializeFromMember();
   }
 
-  ngOnChanges() {
+  ngOnChanges(): void {
     if (this.initialized) {
       this.initializeFromMember();
     }
   }
 
-  private initializeFromMember() {
-    const m = this.member();
-    this.editName.set(m.name);
-    this.editSurname.set(m.surname);
-    this.editType.set(m.type);
-    this.editGender.set(m.gender);
-    this.editAvatar.set(m.avatar);
+  private initializeFromMember(): void {
+    if (!this.member) return;
+    this.editName.set(this.member.name);
+    this.editSurname.set(this.member.surname);
+    this.editType.set(this.member.type);
+    this.editGender.set(this.member.gender);
+    this.editAvatar.set(this.member.avatar);
     this.customPicturePreview.set(null);
     this.editNameError.set('');
     this.editSurnameError.set('');
@@ -124,7 +119,7 @@ export class MemberEditorComponent {
     const avatar = this.customPicturePreview() || this.editAvatar();
 
     this.save.emit({
-      id: this.member().id,
+      id: this.member?.id || '',
       name: this.editName(),
       surname: this.editSurname(),
       type: this.editType(),
@@ -134,7 +129,7 @@ export class MemberEditorComponent {
   }
 
   onCancel() {
-    this.cancel.emit();
+    this.cancelModal.emit();
   }
 
   onNameChange(value: string) {

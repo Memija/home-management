@@ -1,7 +1,8 @@
 import {
   Component,
-  input,
-  output,
+  Input,
+  Output,
+  EventEmitter,
   signal,
   computed,
   effect,
@@ -33,11 +34,25 @@ export type DemoTourTheme = 'water' | 'heating' | 'electricity' | 'settings';
   styleUrl: './demo-tour.component.scss',
 })
 export class DemoTourComponent implements OnDestroy {
-  show = input.required<boolean>();
-  steps = input.required<DemoTourStep[]>();
-  theme = input<DemoTourTheme>('water');
+  @Input() set show(val: boolean) {
+    this._show.set(val);
+  }
+  get show(): boolean {
+    return this._show();
+  }
+  private _show = signal(false);
 
-  close = output<void>();
+  @Input() set steps(val: DemoTourStep[]) {
+    this._steps.set(val || []);
+  }
+  get steps(): DemoTourStep[] {
+    return this._steps();
+  }
+  private _steps = signal<DemoTourStep[]>([]);
+
+  @Input() theme: DemoTourTheme = 'water';
+
+  @Output() closeModal = new EventEmitter<void>();
 
   private platformId = inject(PLATFORM_ID);
 
@@ -64,9 +79,9 @@ export class DemoTourComponent implements OnDestroy {
   protected tipPosition = signal<'top' | 'bottom'>('bottom');
 
   // Computeds
-  protected totalSteps = computed(() => this.steps().length);
+  protected totalSteps = computed(() => this._steps().length);
   protected currentStepData = computed(() => {
-    const s = this.steps();
+    const s = this._steps();
     const i = this.currentStep();
     return s[i] ?? null;
   });
@@ -87,7 +102,7 @@ export class DemoTourComponent implements OnDestroy {
 
   constructor() {
     effect(() => {
-      if (this.show()) {
+      if (this._show()) {
         this.startTour();
       } else {
         this.cleanup();
@@ -124,7 +139,7 @@ export class DemoTourComponent implements OnDestroy {
   protected onClose(): void {
     this.cleanup();
     this.currentStep.set(0);
-    this.close.emit();
+    this.closeModal.emit();
   }
 
   // ===== Private =====
@@ -165,7 +180,7 @@ export class DemoTourComponent implements OnDestroy {
   }
 
   private gotoStep(index: number, direction: 1 | -1 = 1): void {
-    const stepsArr = this.steps();
+    const stepsArr = this._steps();
     if (index < 0 || index >= stepsArr.length) {
       this.onClose();
       return;
@@ -213,8 +228,7 @@ export class DemoTourComponent implements OnDestroy {
     const spaceBelow = viewportH - (rect.bottom + padding);
     // Be more realistic with height on mobile where text might wrap more
     const tooltipEstimatedH = viewportW < 480 ? 240 : 190;
-    const position: 'top' | 'bottom' =
-      spaceBelow > tooltipEstimatedH + 20 ? 'bottom' : 'top';
+    const position: 'top' | 'bottom' = spaceBelow > tooltipEstimatedH + 20 ? 'bottom' : 'top';
     this.tipPosition.set(position);
 
     // Tooltip horizontal centering
@@ -227,7 +241,7 @@ export class DemoTourComponent implements OnDestroy {
     this.tipLeft.set(left);
 
     // Tooltip vertical - keep in view
-    let top = 0;
+    let top: number;
     if (position === 'bottom') {
       top = rect.bottom + padding + 14;
     } else {

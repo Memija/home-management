@@ -3,7 +3,17 @@ import { Router } from '@angular/router';
 import { TranslatePipe } from '../../pipes/translate.pipe';
 import { LanguageSwitcherComponent } from '../../components/language-switcher/language-switcher.component';
 import { AuthButtonComponent } from '../../components/auth-button/auth-button.component';
-import { LucideAngularModule, Play, X, Bell, ArrowRight, Sun, Moon, Monitor, CirclePlay } from 'lucide-angular';
+import {
+  LucideAngularModule,
+  Play,
+  X,
+  Bell,
+  ArrowRight,
+  Sun,
+  Moon,
+  Monitor,
+  CirclePlay,
+} from 'lucide-angular';
 import { DemoService } from '../../services/demo.service';
 import { NotificationService, Notification } from '../../services/notification.service';
 import { ThemeService, Theme } from '../../services/theme.service';

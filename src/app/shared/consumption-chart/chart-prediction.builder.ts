@@ -27,7 +27,15 @@ export function appendPredictionDatasets(
   chartData: ChartConfiguration['data'],
   deps: PredictionBuilderDeps,
 ): ChartConfiguration['data'] {
-  const { languageService, chartType, getData, prediction, predictionPeriod, showPredictions, showPastForecast } = deps;
+  const {
+    languageService,
+    chartType,
+    getData,
+    prediction,
+    predictionPeriod,
+    showPredictions,
+    showPastForecast,
+  } = deps;
   const pred = prediction;
 
   if (!pred || (!showPredictions && !showPastForecast)) {
@@ -44,10 +52,10 @@ export function appendPredictionDatasets(
   }
 
   const labels = [...(chartData.labels || [])] as string[];
-  const datasets = chartData.datasets.map(ds => ({
+  const datasets = chartData.datasets.map((ds) => ({
     ...ds,
-    data: [...(ds.data || [])]
-  })) as any[];
+    data: [...(ds.data || [])],
+  })) as AppChartDataset[];
 
   const predictionMonths = getPredictionMonths(predictionPeriod);
 
@@ -71,9 +79,25 @@ export function appendPredictionDatasets(
   const view = deps.currentView();
 
   if (view === 'total' || chartType === 'electricity' || chartType === 'home') {
-    drawTotalPredictions(datasets, labels, pred, deps, originalLabelsLength, predictionMonths, lastRecordDate);
+    drawTotalPredictions(
+      datasets,
+      labels,
+      pred,
+      deps,
+      originalLabelsLength,
+      predictionMonths,
+      lastRecordDate,
+    );
   } else {
-    drawSubcategoryPredictions(datasets, labels, pred, deps, originalLabelsLength, predictionMonths, lastRecordDate);
+    drawSubcategoryPredictions(
+      datasets,
+      labels,
+      pred,
+      deps,
+      originalLabelsLength,
+      predictionMonths,
+      lastRecordDate,
+    );
     reorderDatasets(datasets);
   }
 
@@ -83,14 +107,19 @@ export function appendPredictionDatasets(
 // ─── Helper Functions ────────────────────────────────────────────────────────
 
 function getPredictionMonths(predictionPeriod: PredictionPeriod): number {
-  return predictionPeriod === 30 ? 1 :
-    predictionPeriod === 90 ? 3 :
-      predictionPeriod === 180 ? 6 :
-        predictionPeriod === 3650 ? 120 : 12;
+  return predictionPeriod === 30
+    ? 1
+    : predictionPeriod === 90
+      ? 3
+      : predictionPeriod === 180
+        ? 6
+        : predictionPeriod === 3650
+          ? 120
+          : 12;
 }
 
 function padDatasets(datasets: AppChartDataset[], targetLength: number): void {
-  datasets.forEach(ds => {
+  datasets.forEach((ds) => {
     if (ds.data) {
       const currentLength = ds.data.length;
       if (currentLength < targetLength) {
@@ -102,14 +131,19 @@ function padDatasets(datasets: AppChartDataset[], targetLength: number): void {
 }
 
 function padDatasetsForFuture(datasets: AppChartDataset[], predictionMonths: number): void {
-  datasets.forEach(ds => {
+  datasets.forEach((ds) => {
     if (ds.data) {
       ds.data = [...ds.data, ...Array(predictionMonths).fill(null)];
     }
   });
 }
 
-function extendLabels(labels: string[], lastRecordDate: Date, predictionMonths: number, languageService: LanguageService): void {
+function extendLabels(
+  labels: string[],
+  lastRecordDate: Date,
+  predictionMonths: number,
+  languageService: LanguageService,
+): void {
   for (let m = 1; m <= predictionMonths; m++) {
     const futureDate = new Date(lastRecordDate);
     futureDate.setMonth(futureDate.getMonth() + m);
@@ -118,7 +152,12 @@ function extendLabels(labels: string[], lastRecordDate: Date, predictionMonths: 
   }
 }
 
-function extendTrendlinesAndAverages(datasets: AppChartDataset[], originalLabelsLength: number, predictionMonths: number, languageService: LanguageService): void {
+function extendTrendlinesAndAverages(
+  datasets: AppChartDataset[],
+  originalLabelsLength: number,
+  predictionMonths: number,
+  languageService: LanguageService,
+): void {
   const existingDatasetCount = datasets.length;
   for (let i = 0; i < existingDatasetCount; i++) {
     const ds = datasets[i];
@@ -151,7 +190,9 @@ function extendTrendlinesAndAverages(datasets: AppChartDataset[], originalLabels
 
     // Trendline: extend the linear regression into the predicted portion
     if (isTrendline) {
-      const predTrendData: (number | null)[] = Array(originalLabelsLength + predictionMonths).fill(null);
+      const predTrendData: (number | null)[] = Array(originalLabelsLength + predictionMonths).fill(
+        null,
+      );
       predTrendData[lastActualIdx] = lastActualVal; // anchor at last real point
 
       // The trendline is a straight line — calculate slope from the last two points
@@ -163,23 +204,22 @@ function extendTrendlinesAndAverages(datasets: AppChartDataset[], originalLabels
 
       for (let j = lastActualIdx + 1; j < predTrendData.length; j++) {
         const steps = j - lastActualIdx;
-        const projected = lastActualVal + (slope * steps);
+        const projected = lastActualVal + slope * steps;
         predTrendData[j] = Math.max(0, projected);
       }
 
       // Apply 50% opacity so predicted portion reads as distinct from historical
       const origColor = ds.borderColor as string;
-      const predColor = origColor?.startsWith('#') && origColor.length === 7
-        ? origColor + '80'
-        : origColor;
+      const predColor =
+        origColor?.startsWith('#') && origColor.length === 7 ? origColor + '80' : origColor;
 
       datasets.push({
         label: ds.label, // same label — hidden from legend via isPredictionExtension
-        data: predTrendData as any[],
+        data: predTrendData as unknown[],
         type: 'line',
         borderColor: predColor,
         backgroundColor: 'rgba(0, 0, 0, 0)',
-        borderDash: [3, 6],   // slightly wider gap than historical [3,3] to differentiate
+        borderDash: [3, 6], // slightly wider gap than historical [3,3] to differentiate
         borderWidth: ds.borderWidth ?? 1.5,
         pointRadius: 0,
         fill: false,
@@ -199,7 +239,7 @@ function generatePredictionData(
   predictionMonths: number,
   lastRecordDate: Date,
   predictionPeriod: PredictionPeriod,
-  chartType: string = 'water',
+  chartType = 'water',
 ) {
   let lastValueIndex = -1;
   let lastValue = 0;
@@ -212,7 +252,9 @@ function generatePredictionData(
   }
 
   const hasSeasonalData = singlePred.monthlyRates && singlePred.monthlyRates.length === 12;
-  const predDataExpected: (number | null)[] = Array(originalLabelsLength + predictionMonths).fill(null);
+  const predDataExpected: (number | null)[] = Array(originalLabelsLength + predictionMonths).fill(
+    null,
+  );
   const predDataMin: (number | null)[] = Array(originalLabelsLength + predictionMonths).fill(null);
   const predDataMax: (number | null)[] = Array(originalLabelsLength + predictionMonths).fill(null);
 
@@ -228,20 +270,35 @@ function generatePredictionData(
       const calendarMonth = futureDate.getMonth();
 
       const dailyRate =
-        predictionPeriod === 30 ? singlePred.daily30 :
-          predictionPeriod === 90 ? singlePred.daily90 :
-            predictionPeriod === 180 ? singlePred.dailyHalfYear :
-              predictionPeriod === 3650 ? singlePred.dailyDecade : singlePred.dailyYear;
+        predictionPeriod === 30
+          ? singlePred.daily30
+          : predictionPeriod === 90
+            ? singlePred.daily90
+            : predictionPeriod === 180
+              ? singlePred.dailyHalfYear
+              : predictionPeriod === 3650
+                ? singlePred.dailyDecade
+                : singlePred.dailyYear;
       const dailyRateMin =
-        predictionPeriod === 30 ? singlePred.daily30Min :
-          predictionPeriod === 90 ? singlePred.daily90Min :
-            predictionPeriod === 180 ? singlePred.dailyHalfYearMin :
-              predictionPeriod === 3650 ? singlePred.dailyDecadeMin : singlePred.dailyYearMin;
+        predictionPeriod === 30
+          ? singlePred.daily30Min
+          : predictionPeriod === 90
+            ? singlePred.daily90Min
+            : predictionPeriod === 180
+              ? singlePred.dailyHalfYearMin
+              : predictionPeriod === 3650
+                ? singlePred.dailyDecadeMin
+                : singlePred.dailyYearMin;
       const dailyRateMax =
-        predictionPeriod === 30 ? singlePred.daily30Max :
-          predictionPeriod === 90 ? singlePred.daily90Max :
-            predictionPeriod === 180 ? singlePred.dailyHalfYearMax :
-              predictionPeriod === 3650 ? singlePred.dailyDecadeMax : singlePred.dailyYearMax;
+        predictionPeriod === 30
+          ? singlePred.daily30Max
+          : predictionPeriod === 90
+            ? singlePred.daily90Max
+            : predictionPeriod === 180
+              ? singlePred.dailyHalfYearMax
+              : predictionPeriod === 3650
+                ? singlePred.dailyDecadeMax
+                : singlePred.dailyYearMax;
 
       if (hasSeasonalData) {
         const historicalAvg = singlePred.averageDaily || 1; // avoid division by zero
@@ -249,9 +306,12 @@ function generatePredictionData(
         const scaleFactorMin = dailyRateMin / historicalAvg;
         const scaleFactorMax = dailyRateMax / historicalAvg;
 
-        predDataExpected[i] = Math.round(singlePred.monthlyRates![calendarMonth].expected * scaleFactor * 10) / 10;
-        predDataMin[i] = Math.round(singlePred.monthlyRates![calendarMonth].min * scaleFactorMin * 10) / 10;
-        predDataMax[i] = Math.round(singlePred.monthlyRates![calendarMonth].max * scaleFactorMax * 10) / 10;
+        predDataExpected[i] =
+          Math.round(singlePred.monthlyRates![calendarMonth].expected * scaleFactor * 10) / 10;
+        predDataMin[i] =
+          Math.round(singlePred.monthlyRates![calendarMonth].min * scaleFactorMin * 10) / 10;
+        predDataMax[i] =
+          Math.round(singlePred.monthlyRates![calendarMonth].max * scaleFactorMax * 10) / 10;
       } else {
         predDataExpected[i] = Math.round(dailyRate * 10) / 10;
         predDataMin[i] = Math.round(dailyRateMin * 10) / 10;
@@ -259,7 +319,11 @@ function generatePredictionData(
       }
 
       // Force zero for heating months identified as off-season by the prediction model
-      if (chartType === 'heating' && hasSeasonalData && singlePred.monthlyRates![calendarMonth].expected === 0) {
+      if (
+        chartType === 'heating' &&
+        hasSeasonalData &&
+        singlePred.monthlyRates![calendarMonth].expected === 0
+      ) {
         predDataExpected[i] = 0;
         predDataMin[i] = 0;
         predDataMax[i] = 0;
@@ -277,7 +341,7 @@ function drawTotalPredictions(
   deps: PredictionBuilderDeps,
   originalLabelsLength: number,
   predictionMonths: number,
-  lastRecordDate: Date
+  lastRecordDate: Date,
 ): void {
   let color = '#1976d2';
   let fillBgColor = 'rgba(25, 118, 210, 0.08)';
@@ -302,7 +366,7 @@ function drawTotalPredictions(
   if (deps.showPredictions) {
     datasets.push({
       label: deps.languageService.translate('PREDICTIONS.MIN'),
-      data: predDataMin as any[],
+      data: predDataMin as (number | null)[],
       type: 'line',
       borderColor: 'rgba(0, 0, 0, 0)',
       backgroundColor: 'rgba(0, 0, 0, 0)',
@@ -316,7 +380,7 @@ function drawTotalPredictions(
 
     datasets.push({
       label: deps.languageService.translate('PREDICTIONS.MAX'),
-      data: predDataMax as any[],
+      data: predDataMax as (number | null)[],
       type: 'line',
       borderColor: 'rgba(0, 0, 0, 0)',
       backgroundColor: fillBgColor,
@@ -330,7 +394,7 @@ function drawTotalPredictions(
 
     datasets.push({
       label: deps.languageService.translate('CHART.CONSUMPTION_PREDICTION'),
-      data: predDataExpected as any[],
+      data: predDataExpected as (number | null)[],
       type: 'line',
       borderColor: color,
       backgroundColor: 'rgba(0, 0, 0, 0)',
@@ -358,7 +422,7 @@ function drawTotalPredictions(
 
     datasets.push({
       label: deps.languageService.translate('CHART.PAST_FORECAST'),
-      data: pastData as any[],
+      data: pastData as (number | null)[],
       type: 'line',
       borderColor: '#9333ea', // distinct purple for past forecast
       backgroundColor: 'rgba(0, 0, 0, 0)',
@@ -382,7 +446,7 @@ function drawSubcategoryPredictions(
   deps: PredictionBuilderDeps,
   originalLabelsLength: number,
   predictionMonths: number,
-  lastRecordDate: Date
+  lastRecordDate: Date,
 ): void {
   const categories = pred.categories || {};
 
@@ -426,11 +490,11 @@ function drawSubcategoryPredictions(
       );
 
       if (deps.showPredictions) {
-        const fillBgColor = (ds.backgroundColor as string) || (color + '20');
+        const fillBgColor = (ds.backgroundColor as string) || color + '20';
 
         datasets.push({
           label: deps.languageService.translate('PREDICTIONS.MIN'),
-          data: predDataMin as any[],
+          data: predDataMin as (number | null)[],
           type: 'line',
           borderColor: 'rgba(0, 0, 0, 0)',
           backgroundColor: 'rgba(0, 0, 0, 0)',
@@ -441,11 +505,11 @@ function drawSubcategoryPredictions(
           tension: 0.4,
           spanGaps: true,
           categoryId: categoryKey,
-        } as any);
+        } as AppChartDataset);
 
         datasets.push({
           label: deps.languageService.translate('PREDICTIONS.MAX'),
-          data: predDataMax as any[],
+          data: predDataMax as (number | null)[],
           type: 'line',
           borderColor: 'rgba(0, 0, 0, 0)',
           backgroundColor: fillBgColor,
@@ -456,11 +520,11 @@ function drawSubcategoryPredictions(
           tension: 0.4,
           spanGaps: true,
           categoryId: categoryKey,
-        } as any);
+        } as AppChartDataset);
 
         datasets.push({
           label: `${shortLabel} - ${deps.languageService.translate('CHART.CONSUMPTION_PREDICTION')}`,
-          data: predDataExpected as any[],
+          data: predDataExpected as (number | null)[],
           type: 'line',
           borderColor: color,
           backgroundColor: 'rgba(0, 0, 0, 0)',
@@ -474,7 +538,7 @@ function drawSubcategoryPredictions(
           tension: 0.4,
           spanGaps: true,
           categoryId: categoryKey,
-        } as any);
+        } as AppChartDataset);
       }
 
       if (deps.showPastForecast && categories[categoryKey].historicalPredictions) {
@@ -487,7 +551,7 @@ function drawSubcategoryPredictions(
 
         datasets.push({
           label: `${shortLabel} - ${deps.languageService.translate('CHART.PAST_FORECAST')}`,
-          data: pastData as any[],
+          data: pastData as (number | null)[],
           type: 'line',
           borderColor: color, // matching category color, but thinner with different dash
           backgroundColor: 'rgba(0, 0, 0, 0)',
@@ -501,7 +565,7 @@ function drawSubcategoryPredictions(
           tension: 0.4,
           spanGaps: true,
           categoryId: categoryKey,
-        } as any);
+        } as AppChartDataset);
       }
     }
   }
@@ -514,15 +578,15 @@ function reorderDatasets(datasets: AppChartDataset[]): void {
   const categoryIds = Array.from(
     new Set(
       datasets
-        .map(ds => (ds as AppChartDataset).categoryId || (ds as AppChartDataset).trendlineFor)
+        .map((ds) => (ds as AppChartDataset).categoryId || (ds as AppChartDataset).trendlineFor)
         .filter(Boolean),
     ),
   );
 
-  categoryIds.forEach(catId => {
+  categoryIds.forEach((catId) => {
     groupedDatasets.push(
       ...datasets.filter(
-        ds =>
+        (ds) =>
           (ds as AppChartDataset).categoryId === catId ||
           (ds as AppChartDataset).trendlineFor === catId,
       ),
@@ -531,7 +595,7 @@ function reorderDatasets(datasets: AppChartDataset[]): void {
 
   otherDatasets.push(
     ...datasets.filter(
-      ds => !(ds as AppChartDataset).categoryId && !(ds as AppChartDataset).trendlineFor,
+      (ds) => !(ds as AppChartDataset).categoryId && !(ds as AppChartDataset).trendlineFor,
     ),
   );
 

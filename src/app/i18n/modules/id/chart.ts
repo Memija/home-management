@@ -16,16 +16,22 @@ export const chart = {
     YOUR_FAMILY: 'Keluarga Anda',
     AVERAGE_FAMILY: 'Rata-rata (Ukuran Sama)',
     COMPARISON_NOTE: 'Perbandingan berdasarkan keluarga dengan {{size}} anggota di alamat ini',
-    COMPARISON_NOTE_CITY: 'Perbandingan berdasarkan rata-rata {{city}} untuk keluarga dengan {{size}} anggota',
-    COMPARISON_NOTE_COUNTRY: 'Perbandingan berdasarkan rata-rata {{country}} untuk keluarga dengan {{size}} anggota',
-    COMPARISON_NOTE_COUNTRY_HEATING: 'Perbandingan berdasarkan rata-rata {{country}} ({{average}} kWh per rumah tangga per tahun)',
-    COMPARISON_NOTE_COUNTRY_ELECTRICITY: 'Perbandingan berdasarkan rata-rata {{country}} ({{average}} kWh per orang per tahun)',
+    COMPARISON_NOTE_CITY:
+      'Perbandingan berdasarkan rata-rata {{city}} untuk keluarga dengan {{size}} anggota',
+    COMPARISON_NOTE_COUNTRY:
+      'Perbandingan berdasarkan rata-rata {{country}} untuk keluarga dengan {{size}} anggota',
+    COMPARISON_NOTE_COUNTRY_HEATING:
+      'Perbandingan berdasarkan rata-rata {{country}} ({{average}} kWh per rumah tangga per tahun)',
+    COMPARISON_NOTE_COUNTRY_ELECTRICITY:
+      'Perbandingan berdasarkan rata-rata {{country}} ({{average}} kWh per orang per tahun)',
     HISTORY_TITLE: 'Riwayat Konsumsi',
     CHART_ELECTRICITY: 'Konsumsi Listrik',
     COMPARE_WITH: 'Bandingkan dengan',
     COMPARE_WITH_INFO_WATER: 'Data rata-rata konsumsi air bersumber dari statistik nasional.',
-    COMPARE_WITH_INFO_ELECTRICITY: 'Data rata-rata konsumsi listrik bersumber dari statistik energi nasional.',
-    COMPARE_WITH_INFO_HEATING: 'Data rata-rata konsumsi pemanas bersumber dari statistik energi nasional.',
+    COMPARE_WITH_INFO_ELECTRICITY:
+      'Data rata-rata konsumsi listrik bersumber dari statistik energi nasional.',
+    COMPARE_WITH_INFO_HEATING:
+      'Data rata-rata konsumsi pemanas bersumber dari statistik energi nasional.',
     COMPARISON_REQUIRES_DATA: 'Setidaknya diperlukan 3 entri untuk perbandingan negara',
     KITCHEN_TOTAL: 'Konsumsi Dapur',
     BATHROOM_TOTAL: 'Konsumsi Kamar Mandi',
@@ -57,11 +63,13 @@ export const chart = {
     SHOW_PREDICTIONS: 'Tampilkan Prediksi',
     YOU_VS_AVERAGE: 'Anda vs. Rata-rata',
     COUNTRY_AVERAGE: 'Rata-rata Negara',
-    AVERAGE_REQUIRES_FAMILY: 'Tambahkan anggota keluarga di Pengaturan untuk mengaktifkan perbandingan',
+    AVERAGE_REQUIRES_FAMILY:
+      'Tambahkan anggota keluarga di Pengaturan untuk mengaktifkan perbandingan',
     AVERAGE_REQUIRES_DATA: 'Setidaknya diperlukan 2 titik data untuk perbandingan',
     HEATING_AVERAGE_INFO: 'Perbandingan rata-rata negara didasarkan pada nilai kWh.',
     TRENDLINE_REQUIRES_DATA: 'Setidaknya diperlukan 2 titik data untuk garis tren',
-    TRENDLINE_REQUIRES_DATA_INCREMENTAL: 'Setidaknya diperlukan 3 entri untuk garis tren dalam mode Antar Pengukuran',
+    TRENDLINE_REQUIRES_DATA_INCREMENTAL:
+      'Setidaknya diperlukan 3 entri untuk garis tren dalam mode Antar Pengukuran',
     COUNTRY_FLAG_ALT: 'Bendera negara untuk {{country}}',
     DID_YOU_KNOW: 'Tahukah Anda?',
     NEW_FACT: 'Tampilkan fakta lain',

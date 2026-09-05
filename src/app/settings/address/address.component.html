@@ -242,7 +242,7 @@
   [deleteKey]="'SETTINGS.UNSAVED_CHANGES_LEAVE'"
   [icon]="TriangleAlertIcon"
   (confirm)="confirmLeaveWithoutSaving()"
-  (cancel)="stayAndSave()"
+  (cancelModal)="stayAndSave()"
 >
 </app-delete-confirmation-modal>
 
@@ -254,7 +254,7 @@
   [confirmKey]="'HOME.IMPORT_BUTTON'"
   [icon]="ImportIcon"
   (confirm)="confirmImportAddress()"
-  (cancel)="cancelImportAddress()"
+  (cancelModal)="cancelImportAddress()"
 >
 </app-confirmation-modal>
 
@@ -264,7 +264,7 @@
   [message]="importErrorMessage()"
   [details]="importErrorDetails()"
   [instructions]="importErrorInstructions()"
-  (cancel)="closeImportErrorModal()"
+  (cancelModal)="closeImportErrorModal()"
 >
 </app-error-modal>
 
@@ -272,6 +272,6 @@
   [show]="showHelpModal()"
   [titleKey]="'SETTINGS.ADDRESS_HELP_TITLE'"
   [steps]="helpSteps"
-  (close)="showHelpModal.set(false)"
+  (closeModal)="showHelpModal.set(false)"
 >
 </app-help-modal>

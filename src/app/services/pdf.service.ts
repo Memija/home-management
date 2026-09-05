@@ -52,7 +52,7 @@ export class PdfService {
    */
   async exportWaterToPdf(
     records: ConsumptionRecord[],
-    filename: string = 'water-consumption.pdf',
+    filename = 'water-consumption.pdf',
   ): Promise<void> {
     // Dynamically import jsPDF and autoTable
     const { jsPDF } = await import('jspdf');
@@ -211,9 +211,9 @@ export class PdfService {
    * Export heating consumption records to PDF
    */
   async exportHeatingToPdf(
-    records: Array<{ date: Date; rooms: Record<string, number> }>,
+    records: { date: Date; rooms: Record<string, number> }[],
     roomNames: string[],
-    filename: string = 'heating-consumption.pdf',
+    filename = 'heating-consumption.pdf',
   ): Promise<void> {
     // Dynamically import jsPDF and autoTable
     const { jsPDF } = await import('jspdf');
@@ -310,13 +310,14 @@ export class PdfService {
     });
 
     // Dynamic column styles - use auto width to fit page properly
-    const columnStyles: {
-      [key: string]: {
+    const columnStyles: Record<
+      string,
+      {
         cellWidth?: 'auto' | number;
         halign?: 'right' | 'left' | 'center';
         fontStyle?: 'normal' | 'bold' | 'italic' | 'bolditalic';
-      };
-    } = {
+      }
+    > = {
       '0': { cellWidth: 'auto' }, // Date column
     };
     // Room columns with right alignment
@@ -349,7 +350,13 @@ export class PdfService {
       },
       columnStyles,
       // Add horizontal line when year changes
-      willDrawCell: (data: { section: string; row: { index: number }; column: { index: number }; doc: import('jspdf').jsPDF; cell: { y: number } }) => {
+      willDrawCell: (data: {
+        section: string;
+        row: { index: number };
+        column: { index: number };
+        doc: import('jspdf').jsPDF;
+        cell: { y: number };
+      }) => {
         if (data.section === 'body' && data.row.index > 0 && data.column.index === 0) {
           const currentRecord = sortedRecords[data.row.index];
           const prevRecord = sortedRecords[data.row.index - 1];
@@ -396,7 +403,7 @@ export class PdfService {
    */
   async exportElectricityToPdf(
     records: ElectricityRecord[],
-    filename: string = 'electricity-consumption.pdf',
+    filename = 'electricity-consumption.pdf',
   ): Promise<void> {
     const { jsPDF } = await import('jspdf');
     const autoTable = (await import('jspdf-autotable')).default;

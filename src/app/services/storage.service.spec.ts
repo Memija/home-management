@@ -6,14 +6,14 @@ import { describe, it, expect, beforeEach } from 'vitest';
 describe('StorageService', () => {
   // Concrete implementation for testing the abstract class
   class MockStorageService extends StorageService {
-    private storage: Map<string, any> = new Map();
+    private storage = new Map<string, unknown>();
 
     async save<T>(key: string, data: T): Promise<void> {
       this.storage.set(key, data);
     }
 
     async load<T>(key: string): Promise<T | null> {
-      return this.storage.has(key) ? this.storage.get(key) : null;
+      return this.storage.has(key) ? (this.storage.get(key) as T) : null;
     }
 
     async delete(key: string): Promise<void> {

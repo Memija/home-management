@@ -41,7 +41,7 @@ export const middleEastFacts = {
     'Zemlja je izgradila preko 30 postrojenja za desalinaciju.',
     'Drevni aflaj sistemi navodnjavanja i dalje napajaju palme datula.',
     'Saudijska Arabija je prestala s uzgojem pšenice kako bi uštedjela vodu.',
-    'Rub\' al Khali (Prazna četvrt) je najveća pješčana pustinja na svijetu.',
+    "Rub' al Khali (Prazna četvrt) je najveća pješčana pustinja na svijetu.",
     'Voda u Džedi u potpunosti dolazi od desalinirane morske vode.',
     'Saudijska Arabija reciklira 45% prečišćenih otpadnih voda.',
     'Polje bunara Tobruk obezbjeđuje vodu za Rijad.',

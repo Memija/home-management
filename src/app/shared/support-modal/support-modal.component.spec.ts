@@ -28,10 +28,12 @@ describe('SupportModalComponent', () => {
       sanitize: vi.fn(),
     } as unknown as DomSanitizer;
 
-    TestBed.configureTestingModule({});
+    TestBed.configureTestingModule({
+      providers: [{ provide: DomSanitizer, useValue: mockSanitizer }],
+    });
 
     component = TestBed.runInInjectionContext(() => {
-      return new SupportModalComponent(mockSanitizer);
+      return new SupportModalComponent();
     });
   });
 
@@ -116,7 +118,7 @@ describe('SupportModalComponent', () => {
   describe('Close Output Emission', () => {
     it('should emit close when onClose() is called', () => {
       const closeSpy = vi.fn();
-      component.close.subscribe(closeSpy);
+      component.closeModal.subscribe(closeSpy);
 
       component.onClose();
 
@@ -125,7 +127,7 @@ describe('SupportModalComponent', () => {
 
     it('should emit void (undefined) on close', () => {
       const closeSpy = vi.fn();
-      component.close.subscribe(closeSpy);
+      component.closeModal.subscribe(closeSpy);
 
       component.onClose();
 
@@ -135,7 +137,7 @@ describe('SupportModalComponent', () => {
 
     it('should emit close multiple times for repeated calls', () => {
       const closeSpy = vi.fn();
-      component.close.subscribe(closeSpy);
+      component.closeModal.subscribe(closeSpy);
 
       component.onClose();
       component.onClose();
@@ -151,8 +153,8 @@ describe('SupportModalComponent', () => {
     it('should emit to multiple subscribers independently', () => {
       const spy1 = vi.fn();
       const spy2 = vi.fn();
-      component.close.subscribe(spy1);
-      component.close.subscribe(spy2);
+      component.closeModal.subscribe(spy1);
+      component.closeModal.subscribe(spy2);
 
       component.onClose();
 
@@ -164,7 +166,7 @@ describe('SupportModalComponent', () => {
   describe('Edge Cases', () => {
     it('should handle rapid successive close calls without errors', () => {
       const closeSpy = vi.fn();
-      component.close.subscribe(closeSpy);
+      component.closeModal.subscribe(closeSpy);
 
       for (let i = 0; i < 100; i++) {
         component.onClose();
@@ -195,8 +197,13 @@ describe('SupportModalComponent', () => {
         bypassSecurityTrustResourceUrl: vi.fn().mockReturnValue(altSafeUrl),
       } as unknown as DomSanitizer;
 
+      TestBed.resetTestingModule();
+      TestBed.configureTestingModule({
+        providers: [{ provide: DomSanitizer, useValue: altSanitizer }],
+      });
+
       const altComponent = TestBed.runInInjectionContext(() => {
-        return new SupportModalComponent(altSanitizer);
+        return new SupportModalComponent();
       });
       expect(altComponent.kofiUrl).toBe(altSafeUrl);
     });
@@ -211,11 +218,11 @@ describe('SupportModalComponent', () => {
     });
 
     it('should have the close output defined', () => {
-      expect(component.close).toBeDefined();
+      expect(component.closeModal).toBeDefined();
     });
 
     it('should have the close output as subscribable', () => {
-      expect(typeof component.close.subscribe).toBe('function');
+      expect(typeof component.closeModal.subscribe).toBe('function');
     });
 
     it('should not emit close during construction', () => {
@@ -224,10 +231,15 @@ describe('SupportModalComponent', () => {
         bypassSecurityTrustResourceUrl: vi.fn().mockReturnValue(MOCK_SAFE_URL),
       } as unknown as DomSanitizer;
 
-      const newComponent = TestBed.runInInjectionContext(() => {
-        return new SupportModalComponent(newSanitizer);
+      TestBed.resetTestingModule();
+      TestBed.configureTestingModule({
+        providers: [{ provide: DomSanitizer, useValue: newSanitizer }],
       });
-      newComponent.close.subscribe(spy);
+
+      const newComponent = TestBed.runInInjectionContext(() => {
+        return new SupportModalComponent();
+      });
+      newComponent.closeModal.subscribe(spy);
 
       expect(spy).not.toHaveBeenCalled();
     });

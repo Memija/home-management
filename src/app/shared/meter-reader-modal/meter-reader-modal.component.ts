@@ -1,17 +1,26 @@
 import {
   Component,
-  input,
-  output,
+  Input,
+  Output,
+  EventEmitter,
   signal,
   computed,
   inject,
   OnDestroy,
   ElementRef,
   ViewChild,
-  AfterViewInit
 } from '@angular/core';
 import { TranslatePipe } from '../../pipes/translate.pipe';
-import { LucideAngularModule, Camera, Upload, Check, X, RotateCcw, Crop, type LucideIconData } from 'lucide-angular';
+import {
+  LucideAngularModule,
+  Camera,
+  Upload,
+  Check,
+  X,
+  RotateCcw,
+  Crop,
+  type LucideIconData,
+} from 'lucide-angular';
 import { MeterReaderService, MeterReadingResult } from '../../services/meter-reader.service';
 
 export interface MeterField {
@@ -41,7 +50,7 @@ interface CropRect {
   templateUrl: './meter-reader-modal.component.html',
   styleUrl: './meter-reader-modal.component.scss',
 })
-export class MeterReaderModalComponent implements OnDestroy, AfterViewInit {
+export class MeterReaderModalComponent implements OnDestroy {
   @ViewChild('cropCanvas') cropCanvasRef?: ElementRef<HTMLCanvasElement>;
 
   @ViewChild('cameraVideo') set cameraVideo(video: ElementRef<HTMLVideoElement> | undefined) {
@@ -62,12 +71,37 @@ export class MeterReaderModalComponent implements OnDestroy, AfterViewInit {
   protected readonly CropIcon = Crop;
 
   // Inputs
-  show = input.required<boolean>();
-  fields = input.required<MeterField[]>();
+  @Input() show = false;
+
+  @Input() set fields(val: MeterField[]) {
+    this._fields.set(val || []);
+  }
+  get fields(): MeterField[] {
+    return this._fields();
+  }
+  private _fields = signal<MeterField[]>([]);
 
   // Outputs
-  close = output<void>();
-  reading = output<MeterReadingOutput>();
+  @Output() closeModal = new EventEmitter<void>();
+  @Output() reading = new EventEmitter<MeterReadingOutput>();
+
+  protected hasNoFields = computed(() => this._fields().length === 0);
+  protected isSingleField = computed(() => this._fields().length === 1);
+  protected groupedFields = computed(() => {
+    const groups: { label: string; fields: MeterField[] }[] = [];
+    const groupMap = new Map<string, MeterField[]>();
+
+    for (const field of this._fields()) {
+      const label = field.groupLabel || '';
+      if (!groupMap.has(label)) {
+        groupMap.set(label, []);
+        groups.push({ label, fields: groupMap.get(label)! });
+      }
+      groupMap.get(label)!.push(field);
+    }
+
+    return groups;
+  });
 
   // State
   protected step = signal<'capture' | 'crop' | 'processing' | 'result' | 'select-field'>('capture');
@@ -89,7 +123,9 @@ export class MeterReaderModalComponent implements OnDestroy, AfterViewInit {
   protected isProcessing = this.meterReaderService.isProcessing;
   protected progress = this.meterReaderService.progress;
 
-  constructor() { }
+  constructor() {
+    /* noop */
+  }
 
   protected initCameraStream(video: HTMLVideoElement): void {
     this.cameraVideoElement = video;
@@ -101,7 +137,7 @@ export class MeterReaderModalComponent implements OnDestroy, AfterViewInit {
         video.srcObject = stream;
       }
 
-      video.play().catch(err => console.error('Error playing camera video:', err));
+      video.play().catch((err) => console.error('Error playing camera video:', err));
 
       // Force ready state after a short delay if events don't fire
       setTimeout(() => {
@@ -125,36 +161,11 @@ export class MeterReaderModalComponent implements OnDestroy, AfterViewInit {
     }
   }
 
-  // If only one field, skip field selection
-  protected isSingleField = computed(() => this.fields().length === 1);
-  protected hasNoFields = computed(() => this.fields().length === 0);
-
-  protected groupedFields = computed(() => {
-    const fields = this.fields();
-    const groups: { label: string; fields: MeterField[] }[] = [];
-
-    fields.forEach(field => {
-      const groupLabel = field.groupLabel || '';
-      let group = groups.find(g => g.label === groupLabel);
-      if (!group) {
-        group = { label: groupLabel, fields: [] };
-        groups.push(group);
-      }
-      group.fields.push(field);
-    });
-
-    return groups;
-  });
-
   protected getFieldIconClass(key: string): string {
     const k = key.toLowerCase();
     if (k.includes('warm')) return 'icon-warm';
     if (k.includes('cold')) return 'icon-cold';
     return '';
-  }
-
-  ngAfterViewInit(): void {
-    // Canvas setup happens when entering crop step
   }
 
   ngOnDestroy(): void {
@@ -166,7 +177,7 @@ export class MeterReaderModalComponent implements OnDestroy, AfterViewInit {
       event.preventDefault();
       event.stopPropagation();
     }
-    this.closeModal();
+    this.onClose();
   }
 
   protected onModalClick(event: Event): void {
@@ -182,7 +193,7 @@ export class MeterReaderModalComponent implements OnDestroy, AfterViewInit {
         video: {
           facingMode: 'environment',
           width: { ideal: 1920 },
-          height: { ideal: 1080 }
+          height: { ideal: 1080 },
         },
       });
       this.cameraStream.set(stream);
@@ -300,7 +311,10 @@ export class MeterReaderModalComponent implements OnDestroy, AfterViewInit {
         (rect.y / canvas.height) * this.cropImage.height,
         (rect.width / canvas.width) * this.cropImage.width,
         (rect.height / canvas.height) * this.cropImage.height,
-        rect.x, rect.y, rect.width, rect.height
+        rect.x,
+        rect.y,
+        rect.width,
+        rect.height,
       );
 
       // Selection border
@@ -319,7 +333,9 @@ export class MeterReaderModalComponent implements OnDestroy, AfterViewInit {
         { x: rect.x, y: rect.y + rect.height },
         { x: rect.x + rect.width, y: rect.y + rect.height },
       ];
-      corners.forEach(c => ctx.fillRect(c.x - handleSize / 2, c.y - handleSize / 2, handleSize, handleSize));
+      corners.forEach((c) =>
+        ctx.fillRect(c.x - handleSize / 2, c.y - handleSize / 2, handleSize, handleSize),
+      );
     }
   }
 
@@ -390,8 +406,10 @@ export class MeterReaderModalComponent implements OnDestroy, AfterViewInit {
 
     // Extract the cropped region from the original full-resolution image
     const canvas = document.createElement('canvas');
-    const scaleX = this.cropImage.width / (this.cropCanvasRef?.nativeElement.width ?? this.cropImage.width);
-    const scaleY = this.cropImage.height / (this.cropCanvasRef?.nativeElement.height ?? this.cropImage.height);
+    const scaleX =
+      this.cropImage.width / (this.cropCanvasRef?.nativeElement.width ?? this.cropImage.width);
+    const scaleY =
+      this.cropImage.height / (this.cropCanvasRef?.nativeElement.height ?? this.cropImage.height);
     canvas.width = rect.width * scaleX;
     canvas.height = rect.height * scaleY;
 
@@ -402,7 +420,10 @@ export class MeterReaderModalComponent implements OnDestroy, AfterViewInit {
       rect.y * scaleY,
       canvas.width,
       canvas.height,
-      0, 0, canvas.width, canvas.height
+      0,
+      0,
+      canvas.width,
+      canvas.height,
     );
 
     const croppedDataUrl = canvas.toDataURL('image/png');
@@ -443,9 +464,9 @@ export class MeterReaderModalComponent implements OnDestroy, AfterViewInit {
       // No fields configured — go to select-field to show the empty state message
       this.step.set('select-field');
     } else if (this.isSingleField()) {
-      this.reading.emit({ fieldKey: this.fields()[0].key, value });
+      this.reading.emit({ fieldKey: this._fields()[0].key, value });
       this.resetState();
-      this.close.emit();
+      this.closeModal.emit();
     } else {
       this.step.set('select-field');
     }
@@ -465,7 +486,7 @@ export class MeterReaderModalComponent implements OnDestroy, AfterViewInit {
     this.step.set('capture');
   }
 
-  protected closeModal(event?: Event): void {
+  protected onClose(event?: Event): void {
     if (event) {
       event.preventDefault();
       event.stopPropagation();
@@ -475,7 +496,7 @@ export class MeterReaderModalComponent implements OnDestroy, AfterViewInit {
     } catch (err) {
       console.error('Error stopping camera:', err);
     }
-    this.close.emit();
+    this.closeModal.emit();
   }
 
   private resetState(): void {

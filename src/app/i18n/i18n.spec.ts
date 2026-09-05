@@ -17,13 +17,13 @@ import * as plModules from './modules/pl';
 // Helpers
 // ---------------------------------------------------------------------------
 
-const ALL_LANG_MODULES: Record<string, any> = {
-  en: enModules,
-  de: deModules,
-  bs: bsModules,
-  sr: srModules,
-  id: idModules,
-  pl: plModules,
+const ALL_LANG_MODULES: Record<string, Record<string, Record<string, unknown>>> = {
+  en: enModules as unknown as Record<string, Record<string, unknown>>,
+  de: deModules as unknown as Record<string, Record<string, unknown>>,
+  bs: bsModules as unknown as Record<string, Record<string, unknown>>,
+  sr: srModules as unknown as Record<string, Record<string, unknown>>,
+  id: idModules as unknown as Record<string, Record<string, unknown>>,
+  pl: plModules as unknown as Record<string, Record<string, unknown>>,
 };
 
 /**
@@ -207,7 +207,9 @@ describe('I18n — English as baseline', () => {
             throw new Error(`English export not found for "${modName}" (key: ${exportKey})`);
           }
           if (!langMod) {
-            moduleIssues.push(`Module "${modName}" (export key: ${exportKey}) is missing in ${code}`);
+            moduleIssues.push(
+              `Module "${modName}" (export key: ${exportKey}) is missing in ${code}`,
+            );
             continue;
           }
 
@@ -319,9 +321,10 @@ describe('I18n — English as baseline', () => {
     const { SUPPORTED_LANGUAGES } = await import('../services/language.service');
     const expectedCodes = ['en', 'de', 'bs', 'sr', 'id', 'pl'];
     for (const code of expectedCodes) {
-      expect(SUPPORTED_LANGUAGES, `Language "${code}" is missing from SUPPORTED_LANGUAGES`).toContain(
-        code,
-      );
+      expect(
+        SUPPORTED_LANGUAGES,
+        `Language "${code}" is missing from SUPPORTED_LANGUAGES`,
+      ).toContain(code);
     }
   });
 });

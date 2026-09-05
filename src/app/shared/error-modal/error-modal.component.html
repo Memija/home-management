@@ -1,24 +1,31 @@
-@if (show()) {
-  <div class="modal-overlay" (click)="cancel.emit()">
+@if (showSignal()) {
+  <div
+    class="modal-overlay"
+    (click)="cancelModal.emit()"
+    tabindex="0"
+    (keyup.enter)="cancelModal.emit()"
+  >
     <div
       class="modal-content error-modal"
-      [class.warning]="type() === 'warning'"
-      [class.success]="type() === 'success'"
+      [class.warning]="typeSignal() === 'warning'"
+      [class.success]="typeSignal() === 'success'"
       (click)="$event.stopPropagation()"
+      tabindex="0"
+      (keyup.enter)="$event.stopPropagation()"
     >
       <div class="modal-header error-header">
-        @if (type() === 'warning') {
+        @if (typeSignal() === 'warning') {
           <lucide-icon [img]="AlertTriangleIcon" size="32" class="error-icon warning"></lucide-icon>
-        } @else if (type() === 'success') {
+        } @else if (typeSignal() === 'success') {
           <lucide-icon [img]="CheckCircleIcon" size="32" class="error-icon success"></lucide-icon>
         } @else {
           <lucide-icon [img]="AlertCircleIcon" size="32" class="error-icon"></lucide-icon>
         }
-        <h3>{{ title() | translate }}</h3>
+        <h3>{{ titleSignal() | translate }}</h3>
         <button
           type="button"
           class="close-btn"
-          (click)="cancel.emit()"
+          (click)="cancelModal.emit()"
           title="{{ 'ACTIONS.CLOSE' | translate }}"
           aria-label="{{ 'ACTIONS.CLOSE' | translate }}"
         >
@@ -26,9 +33,9 @@
         </button>
       </div>
       <div class="modal-body">
-        <p class="error-message">{{ message() }}</p>
-        @if (details()) {
-          <div class="error-details" [class.warning]="type() === 'warning'">
+        <p class="error-message">{{ messageSignal() }}</p>
+        @if (detailsSignal()) {
+          <div class="error-details" [class.warning]="typeSignal() === 'warning'">
             <strong>{{ 'ERROR.DETAILS' | translate }}:</strong>
             <div class="error-list">
               @for (line of detailLines(); track $index) {
@@ -40,11 +47,11 @@
             </div>
           </div>
         }
-        @if (instructions().length > 0) {
+        @if (instructionsSignal().length > 0) {
           <div class="error-instructions">
             <strong>{{ 'ERROR.HOW_TO_FIX' | translate }}:</strong>
             <ul>
-              @for (instruction of instructions(); track $index) {
+              @for (instruction of instructionsSignal(); track $index) {
                 @if (isString(instruction)) {
                   <li>{{ instruction | translate }}</li>
                 } @else {
@@ -56,7 +63,7 @@
         }
       </div>
       <div class="modal-footer">
-        <button type="button" class="btn-primary" (click)="cancel.emit()">
+        <button type="button" class="btn-primary" (click)="cancelModal.emit()">
           {{ 'ERROR.CLOSE' | translate }}
         </button>
       </div>

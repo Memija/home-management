@@ -27,7 +27,8 @@ export const water = {
     TOTAL_LABEL: 'Gesamt',
     COLD_ONLY_MODE_TOGGLE: 'Nur-Kaltwasser-Modus umschalten',
     COLD_ONLY_NO_VALUES_ERROR: 'Bitte geben Sie den Wasserverbrauch für mindestens einen Raum ein.',
-    COLD_ONLY_INCOMPLETE_ERROR: 'Bitte vervollständigen Sie die Wasserverbrauchseingabe für alle begonnenen Räume.',
+    COLD_ONLY_INCOMPLETE_ERROR:
+      'Bitte vervollständigen Sie die Wasserverbrauchseingabe für alle begonnenen Räume.',
   },
   HOME: {
     HISTORY_TITLE: 'Verbrauchsverlauf',

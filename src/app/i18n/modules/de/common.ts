@@ -7,6 +7,8 @@ export const common = {
     TITLE: 'Wasserverbrauch Tracker',
     SETTINGS: 'Einstellungen',
     BACK: 'Zurück zur Startseite',
+    LOADING_CHART: 'Diagramm wird geladen...',
+    LOADING_RECORDS: 'Datensätze werden geladen...',
   },
   ACTIONS: {
     CLOSE: 'Schließen',
@@ -26,7 +28,8 @@ export const common = {
   DASHBOARD: {
     TITLE: 'Haushaltsmanagement',
     SUBTITLE: 'Wählen Sie einen Tracker zur Verwaltung Ihres Verbrauchs',
-    CONFIDENCE_INFO: 'Gibt an, wie zuverlässig die Vorhersage basierend auf der Konsistenz Ihrer historischen Daten und der verfügbaren Datenmenge ist.',
+    CONFIDENCE_INFO:
+      'Gibt an, wie zuverlässig die Vorhersage basierend auf der Konsistenz Ihrer historischen Daten und der verfügbaren Datenmenge ist.',
     WATER_TRACKER: 'Wasserverbrauch',
     WATER_DESC: 'Verfolgen Sie Ihren Wasserverbrauch',
     HEATING_TRACKER: 'Heizungsverbrauch',
@@ -51,7 +54,8 @@ export const common = {
   CHANGELOG: {
     TITLE: 'Änderungsprotokoll',
     SUBTITLE: 'Eine Übersicht aller wichtigen Änderungen in jedem Release',
-    CONFIDENCE_INFO: 'Gibt an, wie zuverlässig die Vorhersage basierend auf der Konsistenz Ihrer historischen Daten und der verfügbaren Datenmenge ist.',
+    CONFIDENCE_INFO:
+      'Gibt an, wie zuverlässig die Vorhersage basierend auf der Konsistenz Ihrer historischen Daten und der verfügbaren Datenmenge ist.',
     V1_1_0_LABEL: 'Version 1.1.0',
     SHIPPED: 'Veröffentlicht',
   },
@@ -285,7 +289,8 @@ export const common = {
   },
   METER_READER: {
     TITLE: 'Zählerablesung per Foto',
-    INSTRUCTION: 'Fotografieren oder laden Sie ein Bild Ihres Zählers hoch, um den Stand automatisch zu scannen. Bitte überprüfen Sie die erkannten Zahlen, da die optische Zeichenerkennung (OCR) je nach Bildqualität variieren kann.',
+    INSTRUCTION:
+      'Fotografieren oder laden Sie ein Bild Ihres Zählers hoch, um den Stand automatisch zu scannen. Bitte überprüfen Sie die erkannten Zahlen, da die optische Zeichenerkennung (OCR) je nach Bildqualität variieren kann.',
     TAKE_PHOTO: 'Foto aufnehmen',
     CAMERA_HINT: 'Kamera verwenden',
     UPLOAD_IMAGE: 'Bild hochladen',
@@ -295,18 +300,22 @@ export const common = {
     DETECTED_VALUE: 'Erkannter Wert',
     EDIT_HINT: 'Sie können den Wert bei Bedarf bearbeiten',
     OTHER_VALUES: 'Weitere erkannte Werte:',
-    NO_VALUE_FOUND: 'Es konnten keine Zahlen erkannt werden. Bitte versuchen Sie es mit einem deutlicheren Bild.',
+    NO_VALUE_FOUND:
+      'Es konnten keine Zahlen erkannt werden. Bitte versuchen Sie es mit einem deutlicheren Bild.',
     RETRY: 'Erneut versuchen',
     USE_VALUE: 'Diesen Wert verwenden',
     SELECT_FIELD: 'Zu welchem Zähler gehört diese Ablesung?',
-    CROP_INSTRUCTION: 'Bitte schneiden Sie das Bild so zu, dass nur die Ziffern sichtbar sind, um eine bessere Genauigkeit zu erzielen.',
+    CROP_INSTRUCTION:
+      'Bitte schneiden Sie das Bild so zu, dass nur die Ziffern sichtbar sind, um eine bessere Genauigkeit zu erzielen.',
     CROP_DRAG_HINT: 'Klicken und ziehen Sie, um die Zählerziffern auszuwählen.',
     CROP_SELECTED: 'Auswahl bereit — klicken Sie auf Auswahl scannen.',
     SKIP_CROP: 'Ganzes Bild verwenden',
     SCAN_SELECTION: 'Auswahl scannen',
     SCAN_FULL: 'Ganzes Bild scannen',
-    NO_FIELDS_CONFIGURED: 'Keine Zähler konfiguriert. Bitte richten Sie zuerst Ihre Räume oder Zähler ein.',
-    CAMERA_ERROR: 'Kamera konnte nicht gestartet werden. Bitte verwenden Sie stattdessen die Upload-Option.',
+    NO_FIELDS_CONFIGURED:
+      'Keine Zähler konfiguriert. Bitte richten Sie zuerst Ihre Räume oder Zähler ein.',
+    CAMERA_ERROR:
+      'Kamera konnte nicht gestartet werden. Bitte verwenden Sie stattdessen die Upload-Option.',
     STARTING_CAMERA: 'Kamera wird gestartet...',
   },
   // Month names for date parsing in Smart Import
@@ -357,12 +366,15 @@ export const common = {
   PREDICTIONS: {
     BREAKDOWN: 'Kategorie-Aufschlüsselung',
     ACCURACY: 'Historische Genauigkeit',
-    ACCURACY_INFO: 'Zeigt, wie genau die Prognosen des Systems über Ihre gesamte Ablesehistorie hinweg waren.',
+    ACCURACY_INFO:
+      'Zeigt, wie genau die Prognosen des Systems über Ihre gesamte Ablesehistorie hinweg waren.',
     AUTO_CORRECTED: 'Automatisch korrigiert um {{percent}}% basierend auf vergangenen Trends',
-    AUTO_CORRECTED_INFO: 'Das System vergleicht vergangene Prognosen mit Ihrem tatsächlichen Verbrauch. Es erkennt historische Abweichungen (wie z.B. ständiges Unterschätzen) und passt zukünftige Prognosen automatisch um genau diesen Prozentsatz an, um Ihre wahren Gewohnheiten widerzuspiegeln.',
+    AUTO_CORRECTED_INFO:
+      'Das System vergleicht vergangene Prognosen mit Ihrem tatsächlichen Verbrauch. Es erkennt historische Abweichungen (wie z.B. ständiges Unterschätzen) und passt zukünftige Prognosen automatisch um genau diesen Prozentsatz an, um Ihre wahren Gewohnheiten widerzuspiegeln.',
     TITLE: 'Intelligente Prognosen',
     SUBTITLE: 'Basierend auf Ihrer Verbrauchshistorie',
-    CONFIDENCE_INFO: 'Gibt an, wie zuverlässig die Vorhersage basierend auf der Konsistenz Ihrer historischen Daten und der verfügbaren Datenmenge ist.',
+    CONFIDENCE_INFO:
+      'Gibt an, wie zuverlässig die Vorhersage basierend auf der Konsistenz Ihrer historischen Daten und der verfügbaren Datenmenge ist.',
     NEXT_30_DAYS: '30 Tage',
     NEXT_90_DAYS: '90 Tage',
     HALF_YEAR: 'Halbes Jahr',
@@ -375,15 +387,18 @@ export const common = {
     TREND_RISING: 'Verbrauch steigt',
     TREND_FALLING: 'Verbrauch sinkt',
     TREND_STABLE: 'Verbrauch ist stabil',
-    TREND_INFO: 'Vergleicht Ihren jüngsten Verbrauch mit älteren historischen Daten, um Veränderungen bei den Gewohnheiten zu erkennen.',
+    TREND_INFO:
+      'Vergleicht Ihren jüngsten Verbrauch mit älteren historischen Daten, um Veränderungen bei den Gewohnheiten zu erkennen.',
     CONFIDENCE: 'Zuverlässigkeit',
     CONFIDENCE_HIGH: 'Hoch',
     CONFIDENCE_MEDIUM: 'Mittel',
     CONFIDENCE_LOW: 'Niedrig',
     DAILY_AVERAGE: 'Tagesdurchschnitt',
-    AVERAGE_DAILY_INFO: 'Ihr gesamter durchschnittlicher Tagesverbrauch, berechnet über Ihre gesamte Ablesehistorie.',
+    AVERAGE_DAILY_INFO:
+      'Ihr gesamter durchschnittlicher Tagesverbrauch, berechnet über Ihre gesamte Ablesehistorie.',
     DAILY_UNIT: ' / Tag',
-    NOT_ENOUGH_DATA: 'Fügen Sie mindestens 4 Ablesungen hinzu, um intelligente Prognosen freizuschalten',
+    NOT_ENOUGH_DATA:
+      'Fügen Sie mindestens 4 Ablesungen hinzu, um intelligente Prognosen freizuschalten',
   },
   PDF: {
     GENERATED_ON: 'Erstellt am',

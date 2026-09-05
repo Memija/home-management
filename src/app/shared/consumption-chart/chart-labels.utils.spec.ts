@@ -12,13 +12,14 @@ const makeRecs = (dates: string[]): ConsumptionRecord[] =>
     bathroomCold: 15,
   }));
 
-const makeLangService = (multiYear = false): LanguageService => ({
-  formatDate: vi.fn().mockImplementation((_date: Date, options: Intl.DateTimeFormatOptions) => {
-    if (options.year) return multiYear ? "Jan '24" : 'Jan 1, 2024';
-    if (options.day) return 'Jan 1';
-    return 'Jan';
-  }),
-} as unknown as LanguageService);
+const makeLangService = (multiYear = false): LanguageService =>
+  ({
+    formatDate: vi.fn().mockImplementation((_date: Date, options: Intl.DateTimeFormatOptions) => {
+      if (options.year) return multiYear ? "Jan '24" : 'Jan 1, 2024';
+      if (options.day) return 'Jan 1';
+      return 'Jan';
+    }),
+  }) as unknown as LanguageService;
 
 describe('generateSmartLabels', () => {
   describe('empty input', () => {
@@ -39,17 +40,21 @@ describe('generateSmartLabels', () => {
       const recs = makeRecs(['2024-01-15', '2024-02-15']);
       const svc = makeLangService();
       generateSmartLabels(recs, svc);
-      expect(svc.formatDate).toHaveBeenCalledWith(expect.any(Date), { month: 'short', day: 'numeric' });
+      expect(svc.formatDate).toHaveBeenCalledWith(expect.any(Date), {
+        month: 'short',
+        day: 'numeric',
+      });
     });
 
     it('should call formatDate with month + day + year for multi-year data', () => {
       const recs = makeRecs(['2023-12-15', '2024-01-15']);
       const svc = makeLangService(true);
       generateSmartLabels(recs, svc);
-      expect(svc.formatDate).toHaveBeenCalledWith(
-        expect.any(Date),
-        { month: 'short', day: 'numeric', year: 'numeric' },
-      );
+      expect(svc.formatDate).toHaveBeenCalledWith(expect.any(Date), {
+        month: 'short',
+        day: 'numeric',
+        year: 'numeric',
+      });
     });
   });
 
@@ -89,10 +94,10 @@ describe('generateSmartLabels', () => {
       const recs = makeRecs(dates);
       const svc = makeLangService(true);
       generateSmartLabels(recs, svc);
-      expect(svc.formatDate).toHaveBeenCalledWith(
-        expect.any(Date),
-        { month: 'short', year: 'numeric' },
-      );
+      expect(svc.formatDate).toHaveBeenCalledWith(expect.any(Date), {
+        month: 'short',
+        year: 'numeric',
+      });
     });
   });
 
@@ -114,7 +119,10 @@ describe('generateSmartLabels', () => {
       );
       const svc = makeLangService();
       generateSmartLabels(recs, svc);
-      expect(svc.formatDate).toHaveBeenCalledWith(expect.any(Date), { month: 'short', day: 'numeric' });
+      expect(svc.formatDate).toHaveBeenCalledWith(expect.any(Date), {
+        month: 'short',
+        day: 'numeric',
+      });
     });
 
     it('should switch to month-only at 21 records', () => {

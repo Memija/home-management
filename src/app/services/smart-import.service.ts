@@ -30,9 +30,11 @@ export class SmartImportService {
   private languageService = inject(LanguageService);
 
   // Cache for month-to-index maps per language
-  private monthMapsCache: Map<string, Map<string, number>> = new Map();
+  private monthMapsCache = new Map<string, Map<string, number>>();
 
-  constructor() {}
+  constructor() {
+    /* noop */
+  }
 
   /**
    * Parses raw text to extract date and value pairs.
@@ -95,7 +97,7 @@ export class SmartImportService {
   private parseMultiLineRecords(lines: string[]): ParsedRecord[] {
     const records: ParsedRecord[] = [];
     let pendingDate: Date | null = null;
-    let pendingDateLine: string = '';
+    let pendingDateLine = '';
 
     for (const line of lines) {
       const trimmedLine = line.trim();

@@ -1,4 +1,5 @@
 import { Chart } from 'chart.js';
+import { AppChartDataset } from '../../models/records.model';
 import { DynamicHeatingRecord, calculateDynamicHeatingTotal } from '../../models/records.model';
 
 /**
@@ -50,13 +51,21 @@ export const summerSunPlugin = {
       if (isFlat && histPeriodStart === null) {
         histPeriodStart = i - 1; // Start at previous point
       } else if (!isFlat && histPeriodStart !== null) {
-        historicalPeriods.push({ startIndex: histPeriodStart, endIndex: i - 1, isPrediction: false });
+        historicalPeriods.push({
+          startIndex: histPeriodStart,
+          endIndex: i - 1,
+          isPrediction: false,
+        });
         histPeriodStart = null;
       }
     }
     // Close any open historical period
     if (histPeriodStart !== null) {
-      historicalPeriods.push({ startIndex: histPeriodStart, endIndex: records.length - 1, isPrediction: false });
+      historicalPeriods.push({
+        startIndex: histPeriodStart,
+        endIndex: records.length - 1,
+        isPrediction: false,
+      });
     }
 
     // 2. Find predicted periods with no consumption (expected rate === 0)
@@ -65,10 +74,10 @@ export const summerSunPlugin = {
     const predDatasets = datasets.filter(
       (ds) =>
         ds.data &&
-        (ds as any).borderDash &&
-        (ds as any).borderDash[0] === 4 &&
-        (ds as any).borderDash[1] === 4 &&
-        !(ds as any).isPredictionExtension,
+        (ds as AppChartDataset).borderDash &&
+        (ds as AppChartDataset).borderDash?.[0] === 4 &&
+        (ds as AppChartDataset).borderDash?.[1] === 4 &&
+        !(ds as AppChartDataset).isPredictionExtension,
     );
 
     if (predDatasets.length > 0) {
@@ -79,9 +88,12 @@ export const summerSunPlugin = {
         // Filter for visible prediction datasets if legend toggling is used
         const visiblePredDatasets = predDatasets.filter((ds) => {
           const dsIdx = datasets.indexOf(ds);
-          return typeof chart.isDatasetVisible === 'function' ? chart.isDatasetVisible(dsIdx) : true;
+          return typeof chart.isDatasetVisible === 'function'
+            ? chart.isDatasetVisible(dsIdx)
+            : true;
         });
-        const activePredDatasets = visiblePredDatasets.length > 0 ? visiblePredDatasets : predDatasets;
+        const activePredDatasets =
+          visiblePredDatasets.length > 0 ? visiblePredDatasets : predDatasets;
 
         let predPeriodStart: number | null = null;
 

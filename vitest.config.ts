@@ -17,6 +17,7 @@ function inlineAngularTemplates() {
             const absPath = resolve(dirname(id), url);
             const html = readFileSync(absPath, 'utf-8').replace(/`/g, '\\`').replace(/\$/g, '\\$');
             return `template: \`${html}\``;
+          // eslint-disable-next-line @typescript-eslint/no-unused-vars
           } catch(e) {
             return match;
           }
@@ -32,6 +33,7 @@ function inlineAngularTemplates() {
               return readFileSync(absPath, 'utf-8').replace(/`/g, '\\`').replace(/\$/g, '\\$');
             });
             return `styles: [\`${cssContents.join('')}\`]`;
+          // eslint-disable-next-line @typescript-eslint/no-unused-vars
           } catch(e) {
             return match;
           }

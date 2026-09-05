@@ -1,4 +1,13 @@
-import { Component, computed, inject, signal, effect, OnInit } from '@angular/core';
+import {
+  Component,
+  computed,
+  inject,
+  signal,
+  effect,
+  OnInit,
+  HostListener,
+  ElementRef,
+} from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 
@@ -21,6 +30,7 @@ import {
   Zap,
   RefreshCw,
   Lightbulb,
+  ChevronDown,
 } from 'lucide-angular';
 import {
   ConsumptionInputComponent,
@@ -109,7 +119,9 @@ export class ElectricityComponent implements OnInit {
 
   // Signals
   protected records = this.dataService.records;
-  protected electricityPrediction = computed(() => this.predictionService.predictElectricity(this.records()));
+  protected electricityPrediction = computed(() =>
+    this.predictionService.predictElectricity(this.records()),
+  );
   protected chartView = this.preferencesService.electricityChartView;
   protected displayMode = this.preferencesService.electricityDisplayMode;
   protected effectiveComparisonCountryCode = signal('DE');
@@ -241,6 +253,41 @@ export class ElectricityComponent implements OnInit {
   protected readonly ZapIcon = Zap;
   protected readonly RefreshCwIcon = RefreshCw;
   protected readonly LightbulbIcon = Lightbulb;
+  protected readonly ChevronDownIcon = ChevronDown;
+
+  // Dropdown state
+  protected isExportMenuOpen = signal(false);
+  protected isImportMenuOpen = signal(false);
+
+  private elementRef = inject(ElementRef, { optional: true });
+
+  @HostListener('document:click', ['$event'])
+  onDocumentClick(event: MouseEvent): void {
+    const target = event.target as HTMLElement | null;
+    if (!target?.closest('.action-dropdown')) {
+      this.isExportMenuOpen.set(false);
+      this.isImportMenuOpen.set(false);
+    }
+  }
+
+  toggleExportMenu(event: MouseEvent): void {
+    event.stopPropagation();
+    const next = !this.isExportMenuOpen();
+    this.isExportMenuOpen.set(next);
+    this.isImportMenuOpen.set(false);
+  }
+
+  toggleImportMenu(event: MouseEvent): void {
+    event.stopPropagation();
+    const next = !this.isImportMenuOpen();
+    this.isImportMenuOpen.set(next);
+    this.isExportMenuOpen.set(false);
+  }
+
+  closeMenus(): void {
+    this.isExportMenuOpen.set(false);
+    this.isImportMenuOpen.set(false);
+  }
 
   protected availableElectricityCountries = availableElectricityCountries;
 
@@ -280,15 +327,17 @@ export class ElectricityComponent implements OnInit {
   protected onDisplayModeChange = (mode: DisplayMode) =>
     this.preferencesService.setDisplayMode(mode, 'electricity');
 
-  protected onFilteredRecordsChange(records: unknown[]) {
+  protected onFilteredRecordsChange() {
     // Optional
   }
 
   // Delegations
   protected importData(event: Event) {
+    this.closeMenus();
     this.dataService.importData(event);
   }
   protected importFromExcel(event: Event) {
+    this.closeMenus();
     this.dataService.importFromExcel(event);
   }
 

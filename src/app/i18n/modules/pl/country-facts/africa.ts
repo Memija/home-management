@@ -93,7 +93,7 @@ export const africaFacts = {
     'Algier czerpie wodę z zapory Taksebt w górach.',
     'Kraj posiada znaczne rezerwy kopalnych wód gruntowych.',
     'Algieria eksportuje daktyle uprawiane w oazach pustynnych.',
-    'Sztuka naskalna w Tassili n\\\'Ajjer ukazuje starożytne źródła wody.',
+    "Sztuka naskalna w Tassili n\\'Ajjer ukazuje starożytne źródła wody.",
   ],
 
   // Tunisia

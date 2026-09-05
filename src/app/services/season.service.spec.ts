@@ -1,19 +1,27 @@
 import { TestBed } from '@angular/core/testing';
 import { PLATFORM_ID } from '@angular/core';
 import { SeasonService, Season } from './season.service';
-import { vi } from 'vitest';
+import { vi, describe, it, expect, beforeEach, afterEach } from 'vitest';
 
 describe('SeasonService', () => {
   describe('Browser Platform Environment', () => {
     beforeEach(() => {
-      const mockStorage: any = {
-        store: {} as Record<string, string>,
-        getItem: (key: string) => mockStorage.store[key] || null,
-        setItem: (key: string, value: string) => mockStorage.store[key] = value,
-        removeItem: (key: string) => delete mockStorage.store[key],
-        clear: () => mockStorage.store = {},
-        key: (index: number) => Object.keys(mockStorage.store)[index] || null,
-        get length() { return Object.keys(mockStorage.store).length; }
+      const store: Record<string, string> = {};
+      const mockStorage: Storage = {
+        getItem: (key: string) => store[key] || null,
+        setItem: (key: string, value: string) => {
+          store[key] = value;
+        },
+        removeItem: (key: string) => {
+          delete store[key];
+        },
+        clear: () => {
+          for (const k in store) delete store[k];
+        },
+        key: (index: number) => Object.keys(store)[index] || null,
+        get length() {
+          return Object.keys(store).length;
+        },
       };
       vi.stubGlobal('localStorage', mockStorage);
       localStorage.clear();
@@ -35,14 +43,15 @@ describe('SeasonService', () => {
 
     describe('getNaturalSeason mapping (edge cases)', () => {
       const testCases: { date: Date; expected: Season }[] = [
-        { date: new Date(2023, 1, 28), expected: 'winter' }, // Feb (edge)
-        { date: new Date(2023, 2, 1), expected: 'spring' }, // Mar (edge)
-        { date: new Date(2023, 4, 31), expected: 'spring' }, // May (edge)
-        { date: new Date(2023, 5, 1), expected: 'summer' }, // Jun (edge)
-        { date: new Date(2023, 7, 31), expected: 'summer' }, // Aug (edge)
-        { date: new Date(2023, 8, 1), expected: 'autumn' }, // Sep (edge)
-        { date: new Date(2023, 10, 30), expected: 'autumn' }, // Nov (edge)
-        { date: new Date(2023, 11, 1), expected: 'winter' }, // Dec (edge)
+        { date: new Date(2023, 2, 19), expected: 'winter' }, // Mar 19 (last day of winter)
+        { date: new Date(2023, 2, 20), expected: 'spring' }, // Mar 20 (first day of spring)
+        { date: new Date(2023, 5, 20), expected: 'spring' }, // Jun 20 (last day of spring)
+        { date: new Date(2023, 5, 21), expected: 'summer' }, // Jun 21 (first day of summer)
+        { date: new Date(2023, 8, 2), expected: 'summer' }, // Sep 2 (early September)
+        { date: new Date(2023, 8, 22), expected: 'summer' }, // Sep 22 (last day of summer)
+        { date: new Date(2023, 8, 23), expected: 'autumn' }, // Sep 23 (first day of autumn)
+        { date: new Date(2023, 11, 20), expected: 'autumn' }, // Dec 20 (last day of autumn)
+        { date: new Date(2023, 11, 21), expected: 'winter' }, // Dec 21 (first day of winter)
       ];
 
       testCases.forEach(({ date, expected }) => {
@@ -64,14 +73,14 @@ describe('SeasonService', () => {
       });
 
       it('should fallback to natural season if localStorage has an invalid value', () => {
-        vi.setSystemTime(new Date(2023, 5, 15)); // June -> summer
+        vi.setSystemTime(new Date(2023, 6, 15)); // July -> summer
         localStorage.setItem('hm_season', 'invalid-season');
         const service = TestBed.inject(SeasonService);
         expect(service.currentSeason()).toBe('summer');
       });
 
       it('should fallback to natural season if localStorage is empty', () => {
-        vi.setSystemTime(new Date(2023, 2, 15)); // March -> spring
+        vi.setSystemTime(new Date(2023, 3, 15)); // April -> spring
         const service = TestBed.inject(SeasonService);
         expect(service.currentSeason()).toBe('spring');
       });
@@ -123,8 +132,8 @@ describe('SeasonService', () => {
       });
 
       it('resetToNaturalSeason should set natural season and remove localStorage config', () => {
-        vi.setSystemTime(new Date(2023, 8, 15)); // Sep -> autumn
-        const todayStr = new Date(2023, 8, 15).toISOString().split('T')[0];
+        vi.setSystemTime(new Date(2023, 9, 15)); // Oct -> autumn
+        const todayStr = new Date(2023, 9, 15).toISOString().split('T')[0];
         localStorage.setItem('hm_season', 'summer');
         localStorage.setItem('hm_season_sync', todayStr);
         const service = TestBed.inject(SeasonService);
@@ -138,8 +147,8 @@ describe('SeasonService', () => {
 
       describe('Daily reset functionality', () => {
         it('should reset season to natural if the day has changed', () => {
-          const today = new Date(2023, 2, 15); // March -> spring
-          const yesterday = new Date(2023, 2, 14);
+          const today = new Date(2023, 3, 15); // April -> spring
+          const yesterday = new Date(2023, 3, 14);
           const yesterdayStr = yesterday.toISOString().split('T')[0];
 
           vi.setSystemTime(today);
@@ -199,7 +208,7 @@ describe('SeasonService', () => {
 
     it('resetToNaturalSeason should resolve to active Date mapping without engaging localStorage', () => {
       vi.useFakeTimers();
-      vi.setSystemTime(new Date(2023, 11, 15)); // Dec -> winter
+      vi.setSystemTime(new Date(2023, 11, 25)); // Dec -> winter
 
       const service = TestBed.inject(SeasonService);
       const removeItemSpy = vi.spyOn(Storage.prototype, 'removeItem');

@@ -14,8 +14,17 @@ import { DeleteConfirmationModalComponent } from '../../shared/delete-confirmati
 import { ConfirmationModalComponent } from '../../shared/confirmation-modal/confirmation-modal.component';
 import { ErrorModalComponent } from '../../shared/error-modal/error-modal.component';
 import { HelpModalComponent } from '../../shared/help-modal/help-modal.component';
-import { Pipe, PipeTransform, Component, Input, Output, EventEmitter, signal } from '@angular/core';
-import { vi, afterEach } from 'vitest';
+import {
+  Pipe,
+  PipeTransform,
+  Component,
+  Input,
+  Output,
+  EventEmitter,
+  signal,
+  WritableSignal,
+} from '@angular/core';
+import { vi, afterEach, describe, it, expect, beforeEach } from 'vitest';
 
 // --- Mock Components & Pipes ---
 
@@ -33,9 +42,9 @@ class MockDeleteConfirmationModalComponent {
   @Input() messageKey = '';
   @Input() cancelKey = '';
   @Input() deleteKey = '';
-  @Input() icon: any;
+  @Input() icon: unknown;
   @Output() confirm = new EventEmitter<void>();
-  @Output() cancel = new EventEmitter<void>();
+  @Output() cancelModal = new EventEmitter<void>();
 }
 
 @Component({ selector: 'app-confirmation-modal', standalone: true, template: '' })
@@ -45,9 +54,9 @@ class MockConfirmationModalComponent {
   @Input() messageKey = '';
   @Input() cancelKey = '';
   @Input() confirmKey = '';
-  @Input() icon: any;
+  @Input() icon: unknown;
   @Output() confirm = new EventEmitter<void>();
-  @Output() cancel = new EventEmitter<void>();
+  @Output() cancelModal = new EventEmitter<void>();
 }
 
 @Component({ selector: 'app-error-modal', standalone: true, template: '' })
@@ -57,15 +66,15 @@ class MockErrorModalComponent {
   @Input() message = '';
   @Input() details = '';
   @Input() instructions: string[] = [];
-  @Output() cancel = new EventEmitter<void>();
+  @Output() cancelModal = new EventEmitter<void>();
 }
 
 @Component({ selector: 'app-help-modal', standalone: true, template: '' })
 class MockHelpModalComponent {
   @Input() show = false;
   @Input() titleKey = '';
-  @Input() steps: any[] = [];
-  @Output() close = new EventEmitter<void>();
+  @Input() steps: unknown[] = [];
+  @Output() closeModal = new EventEmitter<void>();
 }
 
 // --- Helpers ---
@@ -100,13 +109,36 @@ const makeSettings = (overrides: Partial<ExcelSettings> = {}): ExcelSettings => 
 describe('ExcelSettingsComponent', () => {
   let component: ExcelSettingsComponent;
   let fixture: ComponentFixture<ExcelSettingsComponent>;
-  let excelSettingsServiceMock: any;
-  let validationServiceMock: any;
-  let importServiceMock: any;
-  let languageServiceMock: any;
-  let localStorageServiceMock: any;
-  let fileStorageServiceMock: any;
-  let heatingRoomsServiceMock: any;
+  let excelSettingsServiceMock: {
+    settings: WritableSignal<ExcelSettings>;
+    updateSettings: ReturnType<typeof vi.fn>;
+    resetToDefaults: ReturnType<typeof vi.fn>;
+  };
+  let validationServiceMock: {
+    validateMappings: ReturnType<typeof vi.fn>;
+    isDuplicate: ReturnType<typeof vi.fn>;
+    isValidColumnName: ReturnType<typeof vi.fn>;
+    getValidationError: ReturnType<typeof vi.fn>;
+  };
+  let importServiceMock: {
+    validateImportedSettings: ReturnType<typeof vi.fn>;
+    mapImportError: ReturnType<typeof vi.fn>;
+  };
+  let languageServiceMock: {
+    currentLang: WritableSignal<string>;
+    translate: ReturnType<typeof vi.fn>;
+  };
+  let localStorageServiceMock: {
+    getPreference: ReturnType<typeof vi.fn>;
+    setPreference: ReturnType<typeof vi.fn>;
+  };
+  let fileStorageServiceMock: {
+    exportData: ReturnType<typeof vi.fn>;
+    importFromFile: ReturnType<typeof vi.fn>;
+  };
+  let heatingRoomsServiceMock: {
+    rooms: WritableSignal<{ id: string; name: string; type?: string }[]>;
+  };
 
   const settingsSignal = signal<ExcelSettings>(makeSettings());
   const roomsSignal = signal<{ id: string; name: string; type?: string }[]>([]);
@@ -206,78 +238,78 @@ describe('ExcelSettingsComponent', () => {
     });
 
     it('should not show edit modal by default', () => {
-      expect((component as any).showModal()).toBe(false);
+      expect(component['showModal']()).toBe(false);
     });
 
     it('should not show save success by default', () => {
-      expect((component as any).showSaveSuccess()).toBe(false);
+      expect(component['showSaveSuccess']()).toBe(false);
     });
 
     it('should not show import success by default', () => {
-      expect((component as any).showImportSuccess()).toBe(false);
+      expect(component['showImportSuccess']()).toBe(false);
     });
 
     it('should have empty validation error by default', () => {
-      expect((component as any).validationError()).toBe('');
+      expect(component['validationError']()).toBe('');
     });
 
     it('should not show import confirm modal by default', () => {
-      expect((component as any).showImportConfirmModal()).toBe(false);
+      expect(component['showImportConfirmModal']()).toBe(false);
     });
 
     it('should have null pending import file by default', () => {
-      expect((component as any).pendingImportFile()).toBeNull();
+      expect(component['pendingImportFile']()).toBeNull();
     });
 
     it('should not show import error modal by default', () => {
-      expect((component as any).showImportErrorModal()).toBe(false);
+      expect(component['showImportErrorModal']()).toBe(false);
     });
 
     it('should have empty import error message by default', () => {
-      expect((component as any).importErrorMessage()).toBe('');
+      expect(component['importErrorMessage']()).toBe('');
     });
 
     it('should have empty import error details by default', () => {
-      expect((component as any).importErrorDetails()).toBe('');
+      expect(component['importErrorDetails']()).toBe('');
     });
 
     it('should have empty import error instructions by default', () => {
-      expect((component as any).importErrorInstructions()).toEqual([]);
+      expect(component['importErrorInstructions']()).toEqual([]);
     });
 
     it('should not show unsaved changes modal by default', () => {
-      expect((component as any).showUnsavedChangesModal()).toBe(false);
+      expect(component['showUnsavedChangesModal']()).toBe(false);
     });
 
     it('should have null pending navigation by default', () => {
-      expect((component as any).pendingNavigation()).toBeNull();
+      expect(component['pendingNavigation']()).toBeNull();
     });
 
     it('should not show help modal by default', () => {
-      expect((component as any).showHelpModal()).toBe(false);
+      expect(component['showHelpModal']()).toBe(false);
     });
 
     it('should have 4 help steps', () => {
-      expect((component as any).helpSteps.length).toBe(4);
+      expect(component['helpSteps'].length).toBe(4);
     });
 
     it('should have enabled set to false by default', () => {
-      expect((component as any).enabled()).toBe(false);
+      expect(component['enabled']()).toBe(false);
     });
 
     it('should initialize local column signals from default settings', () => {
-      expect((component as any).waterDateCol()).toBe('Date');
-      expect((component as any).waterKitchenWarmCol()).toBe('Kitchen Warm Water');
-      expect((component as any).waterKitchenColdCol()).toBe('Kitchen Cold Water');
-      expect((component as any).waterBathroomWarmCol()).toBe('Bathroom Warm Water');
-      expect((component as any).waterBathroomColdCol()).toBe('Bathroom Cold Water');
-      expect((component as any).heatingDateCol()).toBe('Date');
-      expect((component as any).electricityDateCol()).toBe('Date');
-      expect((component as any).electricityValueCol()).toBe('Electricity Consumption (kWh)');
+      expect(component['waterDateCol']()).toBe('Date');
+      expect(component['waterKitchenWarmCol']()).toBe('Kitchen Warm Water');
+      expect(component['waterKitchenColdCol']()).toBe('Kitchen Cold Water');
+      expect(component['waterBathroomWarmCol']()).toBe('Bathroom Warm Water');
+      expect(component['waterBathroomColdCol']()).toBe('Bathroom Cold Water');
+      expect(component['heatingDateCol']()).toBe('Date');
+      expect(component['electricityDateCol']()).toBe('Date');
+      expect(component['electricityValueCol']()).toBe('Electricity Consumption (kWh)');
     });
 
     it('should have empty heating room cols when no rooms configured', () => {
-      expect((component as any).heatingRoomCols()).toEqual({});
+      expect(component['heatingRoomCols']()).toEqual({});
     });
   });
 
@@ -286,7 +318,7 @@ describe('ExcelSettingsComponent', () => {
   // ========================================================================
   describe('Preview Collapsed State', () => {
     it('should start expanded by default when no saved preference', () => {
-      expect((component as any).isPreviewCollapsed()).toBe(false);
+      expect(component['isPreviewCollapsed']()).toBe(false);
     });
 
     it('should save default collapsed state to localStorage when no preference exists', () => {
@@ -304,7 +336,7 @@ describe('ExcelSettingsComponent', () => {
       const newComponent = newFixture.componentInstance;
       newFixture.detectChanges();
 
-      expect((newComponent as any).isPreviewCollapsed()).toBe(true);
+      expect(newComponent['isPreviewCollapsed']()).toBe(true);
     });
 
     it('should load collapsed state as false from localStorage', async () => {
@@ -314,7 +346,7 @@ describe('ExcelSettingsComponent', () => {
       const newComponent = newFixture.componentInstance;
       newFixture.detectChanges();
 
-      expect((newComponent as any).isPreviewCollapsed()).toBe(false);
+      expect(newComponent['isPreviewCollapsed']()).toBe(false);
     });
   });
 
@@ -323,18 +355,18 @@ describe('ExcelSettingsComponent', () => {
   // ========================================================================
   describe('togglePreview', () => {
     it('should toggle from expanded to collapsed', () => {
-      (component as any).togglePreview();
-      expect((component as any).isPreviewCollapsed()).toBe(true);
+      component['togglePreview']();
+      expect(component['isPreviewCollapsed']()).toBe(true);
     });
 
     it('should toggle from collapsed back to expanded', () => {
-      (component as any).isPreviewCollapsed.set(true);
-      (component as any).togglePreview();
-      expect((component as any).isPreviewCollapsed()).toBe(false);
+      component['isPreviewCollapsed'].set(true);
+      component['togglePreview']();
+      expect(component['isPreviewCollapsed']()).toBe(false);
     });
 
     it('should save collapsed state to localStorage', () => {
-      (component as any).togglePreview();
+      component['togglePreview']();
       expect(localStorageServiceMock.setPreference).toHaveBeenCalledWith(
         'excel_preview_is_collapsed',
         'true',
@@ -342,8 +374,8 @@ describe('ExcelSettingsComponent', () => {
     });
 
     it('should save expanded state to localStorage', () => {
-      (component as any).isPreviewCollapsed.set(true);
-      (component as any).togglePreview();
+      component['isPreviewCollapsed'].set(true);
+      component['togglePreview']();
       expect(localStorageServiceMock.setPreference).toHaveBeenCalledWith(
         'excel_preview_is_collapsed',
         'false',
@@ -356,20 +388,20 @@ describe('ExcelSettingsComponent', () => {
   // ========================================================================
   describe('Computed Columns', () => {
     it('should compute waterColumns from signals', () => {
-      (component as any).waterDateCol.set('A');
-      (component as any).waterKitchenWarmCol.set('B');
-      (component as any).waterKitchenColdCol.set('C');
-      (component as any).waterBathroomWarmCol.set('D');
-      (component as any).waterBathroomColdCol.set('E');
+      component['waterDateCol'].set('A');
+      component['waterKitchenWarmCol'].set('B');
+      component['waterKitchenColdCol'].set('C');
+      component['waterBathroomWarmCol'].set('D');
+      component['waterBathroomColdCol'].set('E');
 
-      expect((component as any).waterColumns()).toEqual(['A', 'B', 'C', 'D', 'E']);
+      expect(component['waterColumns']()).toEqual(['A', 'B', 'C', 'D', 'E']);
     });
 
     it('should compute electricityColumns from signals', () => {
-      (component as any).electricityDateCol.set('X');
-      (component as any).electricityValueCol.set('Y');
+      component['electricityDateCol'].set('X');
+      component['electricityValueCol'].set('Y');
 
-      expect((component as any).electricityColumns()).toEqual(['X', 'Y']);
+      expect(component['electricityColumns']()).toEqual(['X', 'Y']);
     });
 
     it('should compute heatingColumns with date and room columns', () => {
@@ -377,19 +409,19 @@ describe('ExcelSettingsComponent', () => {
         { id: 'room_1', name: 'Living Room' },
         { id: 'room_2', name: 'Bedroom' },
       ]);
-      (component as any).heatingDateCol.set('Date');
-      (component as any).heatingRoomCols.set({ room_1: 'LR Col', room_2: 'BR Col' });
+      component['heatingDateCol'].set('Date');
+      component['heatingRoomCols'].set({ room_1: 'LR Col', room_2: 'BR Col' });
 
-      const cols = (component as any).heatingColumns();
+      const cols = component['heatingColumns']();
       expect(cols).toEqual(['Date', 'LR Col', 'BR Col']);
     });
 
     it('should use empty string for rooms without configured columns', () => {
       roomsSignal.set([{ id: 'room_1', name: 'Living Room' }]);
-      (component as any).heatingDateCol.set('Date');
-      (component as any).heatingRoomCols.set({});
+      component['heatingDateCol'].set('Date');
+      component['heatingRoomCols'].set({});
 
-      const cols = (component as any).heatingColumns();
+      const cols = component['heatingColumns']();
       expect(cols).toEqual(['Date', '']);
     });
 
@@ -399,11 +431,11 @@ describe('ExcelSettingsComponent', () => {
         { id: 'room_2', name: 'R2' },
         { id: 'room_3', name: 'R3' },
       ]);
-      expect((component as any).heatingRoomCount()).toBe(3);
+      expect(component['heatingRoomCount']()).toBe(3);
     });
 
     it('should return 0 heatingRoomCount when no rooms', () => {
-      expect((component as any).heatingRoomCount()).toBe(0);
+      expect(component['heatingRoomCount']()).toBe(0);
     });
   });
 
@@ -412,25 +444,25 @@ describe('ExcelSettingsComponent', () => {
   // ========================================================================
   describe('updateRoomCol / getRoomCol', () => {
     it('should update a room column value', () => {
-      (component as any).updateRoomCol('room_1', 'My Column');
-      expect((component as any).heatingRoomCols()['room_1']).toBe('My Column');
+      component['updateRoomCol']('room_1', 'My Column');
+      expect(component['heatingRoomCols']()['room_1']).toBe('My Column');
     });
 
     it('should not overwrite other room columns', () => {
-      (component as any).heatingRoomCols.set({ room_1: 'A', room_2: 'B' });
-      (component as any).updateRoomCol('room_1', 'Updated');
+      component['heatingRoomCols'].set({ room_1: 'A', room_2: 'B' });
+      component['updateRoomCol']('room_1', 'Updated');
 
-      expect((component as any).heatingRoomCols()['room_1']).toBe('Updated');
-      expect((component as any).heatingRoomCols()['room_2']).toBe('B');
+      expect(component['heatingRoomCols']()['room_1']).toBe('Updated');
+      expect(component['heatingRoomCols']()['room_2']).toBe('B');
     });
 
     it('should get a room column value', () => {
-      (component as any).heatingRoomCols.set({ room_1: 'Col A' });
-      expect((component as any).getRoomCol('room_1')).toBe('Col A');
+      component['heatingRoomCols'].set({ room_1: 'Col A' });
+      expect(component['getRoomCol']('room_1')).toBe('Col A');
     });
 
     it('should return empty string for non-existent room column', () => {
-      expect((component as any).getRoomCol('nonexistent')).toBe('');
+      expect(component['getRoomCol']('nonexistent')).toBe('');
     });
   });
 
@@ -440,21 +472,21 @@ describe('ExcelSettingsComponent', () => {
   describe('isFormValid', () => {
     it('should return true when all validations pass', () => {
       validationServiceMock.validateMappings.mockReturnValue({ isValid: true });
-      expect((component as any).isFormValid()).toBe(true);
+      expect(component['isFormValid']()).toBe(true);
     });
 
     it('should return false when water/heating validation fails', () => {
       validationServiceMock.validateMappings
         .mockReturnValueOnce({ isValid: false, errorKey: 'EXCEL.VALIDATION_FORM_INVALID' })
         .mockReturnValueOnce({ isValid: true });
-      expect((component as any).isFormValid()).toBe(false);
+      expect(component['isFormValid']()).toBe(false);
     });
 
     it('should return false when electricity validation fails', () => {
       validationServiceMock.validateMappings
         .mockReturnValueOnce({ isValid: true })
         .mockReturnValueOnce({ isValid: false, errorKey: 'EXCEL.VALIDATION_FORM_INVALID' });
-      expect((component as any).isFormValid()).toBe(false);
+      expect(component['isFormValid']()).toBe(false);
     });
   });
 
@@ -464,33 +496,33 @@ describe('ExcelSettingsComponent', () => {
   describe('Duplicate detection', () => {
     it('isDuplicateWater should delegate to validation service', () => {
       validationServiceMock.isDuplicate.mockReturnValue(true);
-      const result = (component as any).isDuplicateWater('Date');
+      const result = component['isDuplicateWater']('Date');
       expect(validationServiceMock.isDuplicate).toHaveBeenCalled();
       expect(result).toBe(true);
     });
 
     it('isDuplicateHeating should delegate to validation service', () => {
       validationServiceMock.isDuplicate.mockReturnValue(false);
-      const result = (component as any).isDuplicateHeating('Date');
+      const result = component['isDuplicateHeating']('Date');
       expect(validationServiceMock.isDuplicate).toHaveBeenCalled();
       expect(result).toBe(false);
     });
 
     it('isDuplicateElectricity should delegate to validation service', () => {
       validationServiceMock.isDuplicate.mockReturnValue(true);
-      const result = (component as any).isDuplicateElectricity('Date');
+      const result = component['isDuplicateElectricity']('Date');
       expect(validationServiceMock.isDuplicate).toHaveBeenCalled();
       expect(result).toBe(true);
     });
 
     it('isDuplicateWater should pass water columns to validation service', () => {
-      (component as any).waterDateCol.set('A');
-      (component as any).waterKitchenWarmCol.set('B');
-      (component as any).waterKitchenColdCol.set('C');
-      (component as any).waterBathroomWarmCol.set('D');
-      (component as any).waterBathroomColdCol.set('E');
+      component['waterDateCol'].set('A');
+      component['waterKitchenWarmCol'].set('B');
+      component['waterKitchenColdCol'].set('C');
+      component['waterBathroomWarmCol'].set('D');
+      component['waterBathroomColdCol'].set('E');
 
-      (component as any).isDuplicateWater('A');
+      component['isDuplicateWater']('A');
       expect(validationServiceMock.isDuplicate).toHaveBeenCalledWith('A', [
         'A',
         'B',
@@ -501,10 +533,10 @@ describe('ExcelSettingsComponent', () => {
     });
 
     it('isDuplicateElectricity should pass electricity columns to validation service', () => {
-      (component as any).electricityDateCol.set('X');
-      (component as any).electricityValueCol.set('Y');
+      component['electricityDateCol'].set('X');
+      component['electricityValueCol'].set('Y');
 
-      (component as any).isDuplicateElectricity('X');
+      component['isDuplicateElectricity']('X');
       expect(validationServiceMock.isDuplicate).toHaveBeenCalledWith('X', ['X', 'Y']);
     });
   });
@@ -515,20 +547,20 @@ describe('ExcelSettingsComponent', () => {
   describe('onEnabledChange', () => {
     it('should update enabled signal from checkbox event', () => {
       const event = { target: { checked: true } } as unknown as Event;
-      (component as any).onEnabledChange(event);
-      expect((component as any).enabled()).toBe(true);
+      component['onEnabledChange'](event);
+      expect(component['enabled']()).toBe(true);
     });
 
     it('should update enabled signal to false from checkbox event', () => {
-      (component as any).enabled.set(true);
+      component['enabled'].set(true);
       const event = { target: { checked: false } } as unknown as Event;
-      (component as any).onEnabledChange(event);
-      expect((component as any).enabled()).toBe(false);
+      component['onEnabledChange'](event);
+      expect(component['enabled']()).toBe(false);
     });
 
     it('should call updateSettings with current enabled state', () => {
       const event = { target: { checked: true } } as unknown as Event;
-      (component as any).onEnabledChange(event);
+      component['onEnabledChange'](event);
       expect(excelSettingsServiceMock.updateSettings).toHaveBeenCalled();
       const calledWith = excelSettingsServiceMock.updateSettings.mock.calls[0][0];
       expect(calledWith.enabled).toBe(true);
@@ -536,7 +568,7 @@ describe('ExcelSettingsComponent', () => {
 
     it('should preserve existing mappings when toggling enabled', () => {
       const event = { target: { checked: true } } as unknown as Event;
-      (component as any).onEnabledChange(event);
+      component['onEnabledChange'](event);
       const calledWith = excelSettingsServiceMock.updateSettings.mock.calls[0][0];
       expect(calledWith.waterMapping).toEqual(DEFAULT_SETTINGS.waterMapping);
       expect(calledWith.heatingMapping).toEqual(DEFAULT_SETTINGS.heatingMapping);
@@ -544,8 +576,8 @@ describe('ExcelSettingsComponent', () => {
     });
 
     it('should handle call without event', () => {
-      (component as any).enabled.set(true);
-      (component as any).onEnabledChange();
+      component['enabled'].set(true);
+      component['onEnabledChange']();
       expect(excelSettingsServiceMock.updateSettings).toHaveBeenCalled();
       const calledWith = excelSettingsServiceMock.updateSettings.mock.calls[0][0];
       expect(calledWith.enabled).toBe(true);
@@ -557,30 +589,30 @@ describe('ExcelSettingsComponent', () => {
   // ========================================================================
   describe('openModal', () => {
     it('should set showModal to true', () => {
-      (component as any).openModal();
-      expect((component as any).showModal()).toBe(true);
+      component['openModal']();
+      expect(component['showModal']()).toBe(true);
     });
 
     it('should clear validation error', () => {
-      (component as any).validationError.set('Some error');
-      (component as any).openModal();
-      expect((component as any).validationError()).toBe('');
+      component['validationError'].set('Some error');
+      component['openModal']();
+      expect(component['validationError']()).toBe('');
     });
   });
 
   describe('closeModal', () => {
     it('should close directly when no unsaved changes', () => {
-      (component as any).showModal.set(true);
-      (component as any).closeModal();
-      expect((component as any).showModal()).toBe(false);
+      component['showModal'].set(true);
+      component['closeModal']();
+      expect(component['showModal']()).toBe(false);
     });
 
     it('should show unsaved changes modal when there are unsaved changes', () => {
-      (component as any).showModal.set(true);
-      (component as any).waterDateCol.set('Changed');
-      (component as any).closeModal();
+      component['showModal'].set(true);
+      component['waterDateCol'].set('Changed');
+      component['closeModal']();
       // hasUnsavedChanges checks showModal(), and we modified a field
-      expect((component as any).showUnsavedChangesModal()).toBe(true);
+      expect(component['showUnsavedChangesModal']()).toBe(true);
     });
 
     it('should reset local state to saved settings when closing without changes', () => {
@@ -589,24 +621,24 @@ describe('ExcelSettingsComponent', () => {
       );
       fixture.detectChanges();
 
-      (component as any).showModal.set(true);
-      (component as any).closeModal();
+      component['showModal'].set(true);
+      component['closeModal']();
 
-      expect((component as any).waterDateCol()).toBe('CustomDate');
+      expect(component['waterDateCol']()).toBe('CustomDate');
     });
 
     it('should clear save success when closing', () => {
-      (component as any).showSaveSuccess.set(true);
-      (component as any).showModal.set(true);
-      (component as any).closeModal();
-      expect((component as any).showSaveSuccess()).toBe(false);
+      component['showSaveSuccess'].set(true);
+      component['showModal'].set(true);
+      component['closeModal']();
+      expect(component['showSaveSuccess']()).toBe(false);
     });
 
     it('should clear validation error when closing', () => {
-      (component as any).validationError.set('Error');
-      (component as any).showModal.set(true);
-      (component as any).closeModal();
-      expect((component as any).validationError()).toBe('');
+      component['validationError'].set('Error');
+      component['showModal'].set(true);
+      component['closeModal']();
+      expect(component['validationError']()).toBe('');
     });
   });
 
@@ -619,61 +651,61 @@ describe('ExcelSettingsComponent', () => {
     });
 
     it('should return false when modal is open and no fields changed', () => {
-      (component as any).showModal.set(true);
+      component['showModal'].set(true);
       expect(component.hasUnsavedChanges()).toBe(false);
     });
 
     it('should return true when waterDateCol is changed', () => {
-      (component as any).showModal.set(true);
-      (component as any).waterDateCol.set('Changed');
+      component['showModal'].set(true);
+      component['waterDateCol'].set('Changed');
       expect(component.hasUnsavedChanges()).toBe(true);
     });
 
     it('should return true when waterKitchenWarmCol is changed', () => {
-      (component as any).showModal.set(true);
-      (component as any).waterKitchenWarmCol.set('Changed');
+      component['showModal'].set(true);
+      component['waterKitchenWarmCol'].set('Changed');
       expect(component.hasUnsavedChanges()).toBe(true);
     });
 
     it('should return true when waterKitchenColdCol is changed', () => {
-      (component as any).showModal.set(true);
-      (component as any).waterKitchenColdCol.set('Changed');
+      component['showModal'].set(true);
+      component['waterKitchenColdCol'].set('Changed');
       expect(component.hasUnsavedChanges()).toBe(true);
     });
 
     it('should return true when waterBathroomWarmCol is changed', () => {
-      (component as any).showModal.set(true);
-      (component as any).waterBathroomWarmCol.set('Changed');
+      component['showModal'].set(true);
+      component['waterBathroomWarmCol'].set('Changed');
       expect(component.hasUnsavedChanges()).toBe(true);
     });
 
     it('should return true when waterBathroomColdCol is changed', () => {
-      (component as any).showModal.set(true);
-      (component as any).waterBathroomColdCol.set('Changed');
+      component['showModal'].set(true);
+      component['waterBathroomColdCol'].set('Changed');
       expect(component.hasUnsavedChanges()).toBe(true);
     });
 
     it('should return true when heatingDateCol is changed', () => {
-      (component as any).showModal.set(true);
-      (component as any).heatingDateCol.set('Changed');
+      component['showModal'].set(true);
+      component['heatingDateCol'].set('Changed');
       expect(component.hasUnsavedChanges()).toBe(true);
     });
 
     it('should return true when electricityDateCol is changed', () => {
-      (component as any).showModal.set(true);
-      (component as any).electricityDateCol.set('Changed');
+      component['showModal'].set(true);
+      component['electricityDateCol'].set('Changed');
       expect(component.hasUnsavedChanges()).toBe(true);
     });
 
     it('should return true when electricityValueCol is changed', () => {
-      (component as any).showModal.set(true);
-      (component as any).electricityValueCol.set('Changed');
+      component['showModal'].set(true);
+      component['electricityValueCol'].set('Changed');
       expect(component.hasUnsavedChanges()).toBe(true);
     });
 
     it('should detect changes with leading/trailing whitespace', () => {
-      (component as any).showModal.set(true);
-      (component as any).waterDateCol.set('  Date  ');
+      component['showModal'].set(true);
+      component['waterDateCol'].set('  Date  ');
       // trim() of '  Date  ' is 'Date' which matches saved — so no change
       expect(component.hasUnsavedChanges()).toBe(false);
     });
@@ -687,8 +719,8 @@ describe('ExcelSettingsComponent', () => {
       );
       fixture.detectChanges();
 
-      (component as any).showModal.set(true);
-      (component as any).heatingRoomCols.set({ room_1: 'Changed LR' });
+      component['showModal'].set(true);
+      component['heatingRoomCols'].set({ room_1: 'Changed LR' });
       expect(component.hasUnsavedChanges()).toBe(true);
     });
 
@@ -701,8 +733,8 @@ describe('ExcelSettingsComponent', () => {
       );
       fixture.detectChanges();
 
-      (component as any).showModal.set(true);
-      (component as any).heatingRoomCols.set({ room_1: '' });
+      component['showModal'].set(true);
+      component['heatingRoomCols'].set({ room_1: '' });
       expect(component.hasUnsavedChanges()).toBe(false);
     });
   });
@@ -712,8 +744,8 @@ describe('ExcelSettingsComponent', () => {
   // ========================================================================
   describe('onBeforeUnload', () => {
     it('should prevent default when there are unsaved changes', () => {
-      (component as any).showModal.set(true);
-      (component as any).waterDateCol.set('Changed');
+      component['showModal'].set(true);
+      component['waterDateCol'].set('Changed');
 
       const event = new Event('beforeunload') as BeforeUnloadEvent;
       const preventDefaultSpy = vi.spyOn(event, 'preventDefault');
@@ -736,15 +768,15 @@ describe('ExcelSettingsComponent', () => {
   // ========================================================================
   describe('triggerNavigationWarning', () => {
     it('should return true and show modal when there are unsaved changes', () => {
-      (component as any).showModal.set(true);
-      (component as any).waterDateCol.set('Changed');
+      component['showModal'].set(true);
+      component['waterDateCol'].set('Changed');
 
       const onLeave = vi.fn();
       const result = component.triggerNavigationWarning(onLeave);
 
       expect(result).toBe(true);
-      expect((component as any).showUnsavedChangesModal()).toBe(true);
-      expect((component as any).pendingNavigation()).toBe(onLeave);
+      expect(component['showUnsavedChangesModal']()).toBe(true);
+      expect(component['pendingNavigation']()).toBe(onLeave);
     });
 
     it('should return false when no unsaved changes', () => {
@@ -752,47 +784,47 @@ describe('ExcelSettingsComponent', () => {
       const result = component.triggerNavigationWarning(onLeave);
 
       expect(result).toBe(false);
-      expect((component as any).showUnsavedChangesModal()).toBe(false);
+      expect(component['showUnsavedChangesModal']()).toBe(false);
     });
   });
 
   describe('confirmLeaveWithoutSaving', () => {
     it('should execute pending navigation', () => {
       const navFn = vi.fn();
-      (component as any).pendingNavigation.set(navFn);
+      component['pendingNavigation'].set(navFn);
       component.confirmLeaveWithoutSaving();
       expect(navFn).toHaveBeenCalledTimes(1);
     });
 
     it('should hide unsaved changes modal', () => {
-      (component as any).showUnsavedChangesModal.set(true);
+      component['showUnsavedChangesModal'].set(true);
       component.confirmLeaveWithoutSaving();
-      expect((component as any).showUnsavedChangesModal()).toBe(false);
+      expect(component['showUnsavedChangesModal']()).toBe(false);
     });
 
     it('should clear pending navigation', () => {
-      (component as any).pendingNavigation.set(vi.fn());
+      component['pendingNavigation'].set(vi.fn());
       component.confirmLeaveWithoutSaving();
-      expect((component as any).pendingNavigation()).toBeNull();
+      expect(component['pendingNavigation']()).toBeNull();
     });
 
     it('should handle null pending navigation gracefully', () => {
-      (component as any).pendingNavigation.set(null);
+      component['pendingNavigation'].set(null);
       expect(() => component.confirmLeaveWithoutSaving()).not.toThrow();
     });
   });
 
   describe('stayAndSave', () => {
     it('should hide unsaved changes modal', () => {
-      (component as any).showUnsavedChangesModal.set(true);
+      component['showUnsavedChangesModal'].set(true);
       component.stayAndSave();
-      expect((component as any).showUnsavedChangesModal()).toBe(false);
+      expect(component['showUnsavedChangesModal']()).toBe(false);
     });
 
     it('should clear pending navigation', () => {
-      (component as any).pendingNavigation.set(vi.fn());
+      component['pendingNavigation'].set(vi.fn());
       component.stayAndSave();
-      expect((component as any).pendingNavigation()).toBeNull();
+      expect(component['pendingNavigation']()).toBeNull();
     });
   });
 
@@ -801,16 +833,16 @@ describe('ExcelSettingsComponent', () => {
   // ========================================================================
   describe('saveSettings', () => {
     it('should call updateSettings with trimmed values', () => {
-      (component as any).waterDateCol.set('  Trimmed Date  ');
-      (component as any).waterKitchenWarmCol.set('  KW  ');
-      (component as any).waterKitchenColdCol.set('  KC  ');
-      (component as any).waterBathroomWarmCol.set('  BW  ');
-      (component as any).waterBathroomColdCol.set('  BC  ');
-      (component as any).heatingDateCol.set('  HD  ');
-      (component as any).electricityDateCol.set('  ED  ');
-      (component as any).electricityValueCol.set('  EV  ');
+      component['waterDateCol'].set('  Trimmed Date  ');
+      component['waterKitchenWarmCol'].set('  KW  ');
+      component['waterKitchenColdCol'].set('  KC  ');
+      component['waterBathroomWarmCol'].set('  BW  ');
+      component['waterBathroomColdCol'].set('  BC  ');
+      component['heatingDateCol'].set('  HD  ');
+      component['electricityDateCol'].set('  ED  ');
+      component['electricityValueCol'].set('  EV  ');
 
-      (component as any).saveSettings();
+      component['saveSettings']();
 
       expect(excelSettingsServiceMock.updateSettings).toHaveBeenCalled();
       const calledWith = excelSettingsServiceMock.updateSettings.mock.calls[0][0];
@@ -830,7 +862,7 @@ describe('ExcelSettingsComponent', () => {
         errorKey: 'EXCEL.VALIDATION_FORM_INVALID',
       });
 
-      (component as any).saveSettings();
+      component['saveSettings']();
       expect(excelSettingsServiceMock.updateSettings).not.toHaveBeenCalled();
     });
 
@@ -840,45 +872,45 @@ describe('ExcelSettingsComponent', () => {
         errorKey: 'EXCEL.VALIDATION_FORM_INVALID',
       });
 
-      (component as any).saveSettings();
-      expect((component as any).validationError()).toBe('EXCEL.VALIDATION_FORM_INVALID');
+      component['saveSettings']();
+      expect(component['validationError']()).toBe('EXCEL.VALIDATION_FORM_INVALID');
     });
 
     it('should use default error key when validation errorKey is undefined', () => {
       validationServiceMock.validateMappings.mockReturnValue({ isValid: false });
 
-      (component as any).saveSettings();
+      component['saveSettings']();
       expect(languageServiceMock.translate).toHaveBeenCalledWith('EXCEL.VALIDATION_FORM_INVALID');
     });
 
     it('should clear validation error on successful save', () => {
-      (component as any).validationError.set('Previous error');
-      (component as any).saveSettings();
-      expect((component as any).validationError()).toBe('');
+      component['validationError'].set('Previous error');
+      component['saveSettings']();
+      expect(component['validationError']()).toBe('');
     });
 
     it('should show save success on successful save', () => {
-      (component as any).saveSettings();
-      expect((component as any).showSaveSuccess()).toBe(true);
+      component['saveSettings']();
+      expect(component['showSaveSuccess']()).toBe(true);
     });
 
     it('should hide save success after 3 seconds', () => {
       vi.useFakeTimers();
-      (component as any).saveSettings();
-      expect((component as any).showSaveSuccess()).toBe(true);
+      component['saveSettings']();
+      expect(component['showSaveSuccess']()).toBe(true);
 
       vi.advanceTimersByTime(3000);
-      expect((component as any).showSaveSuccess()).toBe(false);
+      expect(component['showSaveSuccess']()).toBe(false);
       vi.useRealTimers();
     });
 
     it('should close modal after 2 seconds', () => {
       vi.useFakeTimers();
-      (component as any).showModal.set(true);
-      (component as any).saveSettings();
+      component['showModal'].set(true);
+      component['saveSettings']();
 
       vi.advanceTimersByTime(2000);
-      expect((component as any).showModal()).toBe(false);
+      expect(component['showModal']()).toBe(false);
       vi.useRealTimers();
     });
 
@@ -887,9 +919,9 @@ describe('ExcelSettingsComponent', () => {
         { id: 'room_1', name: 'Living Room' },
         { id: 'room_2', name: 'Bedroom' },
       ]);
-      (component as any).heatingRoomCols.set({ room_1: '  LR  ', room_2: '  BR  ' });
+      component['heatingRoomCols'].set({ room_1: '  LR  ', room_2: '  BR  ' });
 
-      (component as any).saveSettings();
+      component['saveSettings']();
 
       const calledWith = excelSettingsServiceMock.updateSettings.mock.calls[0][0];
       expect(calledWith.heatingMapping.rooms).toEqual({ room_1: 'LR', room_2: 'BR' });
@@ -897,17 +929,17 @@ describe('ExcelSettingsComponent', () => {
 
     it('should save empty string for unconfigured room columns', () => {
       roomsSignal.set([{ id: 'room_1', name: 'Living Room' }]);
-      (component as any).heatingRoomCols.set({});
+      component['heatingRoomCols'].set({});
 
-      (component as any).saveSettings();
+      component['saveSettings']();
 
       const calledWith = excelSettingsServiceMock.updateSettings.mock.calls[0][0];
       expect(calledWith.heatingMapping.rooms).toEqual({ room_1: '' });
     });
 
     it('should include current enabled state in saved settings', () => {
-      (component as any).enabled.set(true);
-      (component as any).saveSettings();
+      component['enabled'].set(true);
+      component['saveSettings']();
 
       const calledWith = excelSettingsServiceMock.updateSettings.mock.calls[0][0];
       expect(calledWith.enabled).toBe(true);
@@ -919,14 +951,14 @@ describe('ExcelSettingsComponent', () => {
   // ========================================================================
   describe('resetDefaults', () => {
     it('should call resetToDefaults on the service', () => {
-      (component as any).resetDefaults();
+      component['resetDefaults']();
       expect(excelSettingsServiceMock.resetToDefaults).toHaveBeenCalledTimes(1);
     });
 
     it('should clear validation error', () => {
-      (component as any).validationError.set('Error');
-      (component as any).resetDefaults();
-      expect((component as any).validationError()).toBe('');
+      component['validationError'].set('Error');
+      component['resetDefaults']();
+      expect(component['validationError']()).toBe('');
     });
   });
 
@@ -935,7 +967,7 @@ describe('ExcelSettingsComponent', () => {
   // ========================================================================
   describe('exportSettings', () => {
     it('should call fileStorage.exportData with current settings', async () => {
-      await (component as any).exportSettings();
+      await component['exportSettings']();
       expect(fileStorageServiceMock.exportData).toHaveBeenCalledWith(
         DEFAULT_SETTINGS,
         'excel-settings.json',
@@ -944,14 +976,16 @@ describe('ExcelSettingsComponent', () => {
 
     it('should not throw when export fails', async () => {
       fileStorageServiceMock.exportData.mockRejectedValue(new Error('Export failed'));
-      await expect((component as any).exportSettings()).resolves.toBeUndefined();
+      await expect(component['exportSettings']()).resolves.toBeUndefined();
     });
 
     it('should log error when export fails', async () => {
-      const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
+      const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {
+        /* noop */
+      });
       fileStorageServiceMock.exportData.mockRejectedValue(new Error('Export failed'));
 
-      await (component as any).exportSettings();
+      await component['exportSettings']();
       expect(consoleSpy).toHaveBeenCalledWith('Failed to export settings:', expect.any(Error));
     });
   });
@@ -964,10 +998,10 @@ describe('ExcelSettingsComponent', () => {
       const file = new File(['{}'], 'settings.json', { type: 'application/json' });
       const event = { target: { files: [file], value: 'settings.json' } } as unknown as Event;
 
-      (component as any).importSettings(event);
+      component['importSettings'](event);
 
-      expect((component as any).pendingImportFile()).toBe(file);
-      expect((component as any).showImportConfirmModal()).toBe(true);
+      expect(component['pendingImportFile']()).toBe(file);
+      expect(component['showImportConfirmModal']()).toBe(true);
     });
 
     it('should clear input value after selecting file', () => {
@@ -975,24 +1009,24 @@ describe('ExcelSettingsComponent', () => {
       const target = { files: [file], value: 'settings.json' };
       const event = { target } as unknown as Event;
 
-      (component as any).importSettings(event);
+      component['importSettings'](event);
 
       expect(target.value).toBe('');
     });
 
     it('should not show confirm modal when no file selected', () => {
       const event = { target: { files: [], value: '' } } as unknown as Event;
-      (component as any).importSettings(event);
+      component['importSettings'](event);
 
-      expect((component as any).showImportConfirmModal()).toBe(false);
-      expect((component as any).pendingImportFile()).toBeNull();
+      expect(component['showImportConfirmModal']()).toBe(false);
+      expect(component['pendingImportFile']()).toBeNull();
     });
 
     it('should not show confirm modal when files is undefined', () => {
       const event = { target: { files: undefined, value: '' } } as unknown as Event;
-      (component as any).importSettings(event);
+      component['importSettings'](event);
 
-      expect((component as any).showImportConfirmModal()).toBe(false);
+      expect(component['showImportConfirmModal']()).toBe(false);
     });
   });
 
@@ -1001,24 +1035,24 @@ describe('ExcelSettingsComponent', () => {
   // ========================================================================
   describe('confirmImportSettings', () => {
     it('should do nothing when no pending file', async () => {
-      (component as any).pendingImportFile.set(null);
-      await (component as any).confirmImportSettings();
+      component['pendingImportFile'].set(null);
+      await component['confirmImportSettings']();
 
       expect(fileStorageServiceMock.importFromFile).not.toHaveBeenCalled();
-      expect((component as any).showImportConfirmModal()).toBe(false);
+      expect(component['showImportConfirmModal']()).toBe(false);
     });
 
     it('should show error for non-JSON file', async () => {
       const file = new File(['data'], 'settings.txt', { type: 'text/plain' });
-      (component as any).pendingImportFile.set(file);
+      component['pendingImportFile'].set(file);
 
-      await (component as any).confirmImportSettings();
+      await component['confirmImportSettings']();
 
-      expect((component as any).showImportErrorModal()).toBe(true);
+      expect(component['showImportErrorModal']()).toBe(true);
       expect(languageServiceMock.translate).toHaveBeenCalledWith(
         'SETTINGS.IMPORT_EXCEL_SETTINGS_INVALID_FILE_TYPE',
       );
-      expect((component as any).importErrorInstructions()).toEqual([
+      expect(component['importErrorInstructions']()).toEqual([
         'SETTINGS.IMPORT_EXCEL_SETTINGS_INVALID_FILE_TYPE_INSTRUCTION_1',
         'SETTINGS.IMPORT_EXCEL_SETTINGS_INVALID_FILE_TYPE_INSTRUCTION_2',
       ]);
@@ -1026,19 +1060,19 @@ describe('ExcelSettingsComponent', () => {
 
     it('should clear confirm modal when file type is invalid', async () => {
       const file = new File(['data'], 'settings.xlsx', { type: 'application/vnd.ms-excel' });
-      (component as any).pendingImportFile.set(file);
+      component['pendingImportFile'].set(file);
 
-      await (component as any).confirmImportSettings();
+      await component['confirmImportSettings']();
 
-      expect((component as any).showImportConfirmModal()).toBe(false);
-      expect((component as any).pendingImportFile()).toBeNull();
+      expect(component['showImportConfirmModal']()).toBe(false);
+      expect(component['pendingImportFile']()).toBeNull();
     });
 
     it('should accept .JSON (uppercase) file extension', async () => {
       const file = new File(['{}'], 'settings.JSON', { type: 'application/json' });
-      (component as any).pendingImportFile.set(file);
+      component['pendingImportFile'].set(file);
 
-      await (component as any).confirmImportSettings();
+      await component['confirmImportSettings']();
 
       expect(fileStorageServiceMock.importFromFile).toHaveBeenCalledWith(file);
     });
@@ -1048,32 +1082,32 @@ describe('ExcelSettingsComponent', () => {
       importServiceMock.validateImportedSettings.mockReturnValue(newSettings);
 
       const file = new File(['{}'], 'settings.json', { type: 'application/json' });
-      (component as any).pendingImportFile.set(file);
+      component['pendingImportFile'].set(file);
 
-      await (component as any).confirmImportSettings();
+      await component['confirmImportSettings']();
 
       expect(excelSettingsServiceMock.updateSettings).toHaveBeenCalledWith(newSettings);
     });
 
     it('should show import success on successful import', async () => {
       const file = new File(['{}'], 'settings.json', { type: 'application/json' });
-      (component as any).pendingImportFile.set(file);
+      component['pendingImportFile'].set(file);
 
-      await (component as any).confirmImportSettings();
+      await component['confirmImportSettings']();
 
-      expect((component as any).showImportSuccess()).toBe(true);
+      expect(component['showImportSuccess']()).toBe(true);
     });
 
     it('should hide import success after 3 seconds', async () => {
       vi.useFakeTimers();
       const file = new File(['{}'], 'settings.json', { type: 'application/json' });
-      (component as any).pendingImportFile.set(file);
+      component['pendingImportFile'].set(file);
 
-      await (component as any).confirmImportSettings();
+      await component['confirmImportSettings']();
 
-      expect((component as any).showImportSuccess()).toBe(true);
+      expect(component['showImportSuccess']()).toBe(true);
       vi.advanceTimersByTime(3000);
-      expect((component as any).showImportSuccess()).toBe(false);
+      expect(component['showImportSuccess']()).toBe(false);
       vi.useRealTimers();
     });
 
@@ -1087,14 +1121,14 @@ describe('ExcelSettingsComponent', () => {
       });
 
       const file = new File(['bad'], 'settings.json', { type: 'application/json' });
-      (component as any).pendingImportFile.set(file);
+      component['pendingImportFile'].set(file);
 
-      await (component as any).confirmImportSettings();
+      await component['confirmImportSettings']();
 
-      expect((component as any).showImportErrorModal()).toBe(true);
-      expect((component as any).importErrorMessage()).toBe('SETTINGS.IMPORT_ERROR');
-      expect((component as any).importErrorDetails()).toBe('Some detail');
-      expect((component as any).importErrorInstructions()).toEqual(['I1', 'I2']);
+      expect(component['showImportErrorModal']()).toBe(true);
+      expect(component['importErrorMessage']()).toBe('SETTINGS.IMPORT_ERROR');
+      expect(component['importErrorDetails']()).toBe('Some detail');
+      expect(component['importErrorInstructions']()).toEqual(['I1', 'I2']);
     });
 
     it('should show error modal when validateImportedSettings throws', async () => {
@@ -1114,35 +1148,35 @@ describe('ExcelSettingsComponent', () => {
       });
 
       const file = new File(['{}'], 'settings.json', { type: 'application/json' });
-      (component as any).pendingImportFile.set(file);
+      component['pendingImportFile'].set(file);
 
-      await (component as any).confirmImportSettings();
+      await component['confirmImportSettings']();
 
-      expect((component as any).showImportErrorModal()).toBe(true);
+      expect(component['showImportErrorModal']()).toBe(true);
     });
 
     it('should close confirm modal and clear pending file after import', async () => {
       const file = new File(['{}'], 'settings.json', { type: 'application/json' });
-      (component as any).pendingImportFile.set(file);
-      (component as any).showImportConfirmModal.set(true);
+      component['pendingImportFile'].set(file);
+      component['showImportConfirmModal'].set(true);
 
-      await (component as any).confirmImportSettings();
+      await component['confirmImportSettings']();
 
-      expect((component as any).showImportConfirmModal()).toBe(false);
-      expect((component as any).pendingImportFile()).toBeNull();
+      expect(component['showImportConfirmModal']()).toBe(false);
+      expect(component['pendingImportFile']()).toBeNull();
     });
 
     it('should close confirm modal and clear pending file even on error', async () => {
       fileStorageServiceMock.importFromFile.mockRejectedValue(new Error('fail'));
 
       const file = new File(['bad'], 'settings.json', { type: 'application/json' });
-      (component as any).pendingImportFile.set(file);
-      (component as any).showImportConfirmModal.set(true);
+      component['pendingImportFile'].set(file);
+      component['showImportConfirmModal'].set(true);
 
-      await (component as any).confirmImportSettings();
+      await component['confirmImportSettings']();
 
-      expect((component as any).showImportConfirmModal()).toBe(false);
-      expect((component as any).pendingImportFile()).toBeNull();
+      expect(component['showImportConfirmModal']()).toBe(false);
+      expect(component['pendingImportFile']()).toBeNull();
     });
   });
 
@@ -1151,15 +1185,15 @@ describe('ExcelSettingsComponent', () => {
   // ========================================================================
   describe('cancelImportSettings', () => {
     it('should hide import confirm modal', () => {
-      (component as any).showImportConfirmModal.set(true);
-      (component as any).cancelImportSettings();
-      expect((component as any).showImportConfirmModal()).toBe(false);
+      component['showImportConfirmModal'].set(true);
+      component['cancelImportSettings']();
+      expect(component['showImportConfirmModal']()).toBe(false);
     });
 
     it('should clear pending import file', () => {
-      (component as any).pendingImportFile.set(new File([''], 'test.json'));
-      (component as any).cancelImportSettings();
-      expect((component as any).pendingImportFile()).toBeNull();
+      component['pendingImportFile'].set(new File([''], 'test.json'));
+      component['cancelImportSettings']();
+      expect(component['pendingImportFile']()).toBeNull();
     });
   });
 
@@ -1168,27 +1202,27 @@ describe('ExcelSettingsComponent', () => {
   // ========================================================================
   describe('closeImportErrorModal', () => {
     it('should hide import error modal', () => {
-      (component as any).showImportErrorModal.set(true);
-      (component as any).closeImportErrorModal();
-      expect((component as any).showImportErrorModal()).toBe(false);
+      component['showImportErrorModal'].set(true);
+      component['closeImportErrorModal']();
+      expect(component['showImportErrorModal']()).toBe(false);
     });
 
     it('should clear error message', () => {
-      (component as any).importErrorMessage.set('Error');
-      (component as any).closeImportErrorModal();
-      expect((component as any).importErrorMessage()).toBe('');
+      component['importErrorMessage'].set('Error');
+      component['closeImportErrorModal']();
+      expect(component['importErrorMessage']()).toBe('');
     });
 
     it('should clear error details', () => {
-      (component as any).importErrorDetails.set('Details');
-      (component as any).closeImportErrorModal();
-      expect((component as any).importErrorDetails()).toBe('');
+      component['importErrorDetails'].set('Details');
+      component['closeImportErrorModal']();
+      expect(component['importErrorDetails']()).toBe('');
     });
 
     it('should clear error instructions', () => {
-      (component as any).importErrorInstructions.set(['I1']);
-      (component as any).closeImportErrorModal();
-      expect((component as any).importErrorInstructions()).toEqual([]);
+      component['importErrorInstructions'].set(['I1']);
+      component['closeImportErrorModal']();
+      expect(component['importErrorInstructions']()).toEqual([]);
     });
   });
 
@@ -1213,15 +1247,15 @@ describe('ExcelSettingsComponent', () => {
       settingsSignal.set(customSettings);
       fixture.detectChanges();
 
-      expect((component as any).enabled()).toBe(true);
-      expect((component as any).waterDateCol()).toBe('Datum');
-      expect((component as any).waterKitchenWarmCol()).toBe('Küche Warm');
-      expect((component as any).waterKitchenColdCol()).toBe('Küche Kalt');
-      expect((component as any).waterBathroomWarmCol()).toBe('Bad Warm');
-      expect((component as any).waterBathroomColdCol()).toBe('Bad Kalt');
-      expect((component as any).heatingDateCol()).toBe('HD');
-      expect((component as any).electricityDateCol()).toBe('ED');
-      expect((component as any).electricityValueCol()).toBe('EV');
+      expect(component['enabled']()).toBe(true);
+      expect(component['waterDateCol']()).toBe('Datum');
+      expect(component['waterKitchenWarmCol']()).toBe('Küche Warm');
+      expect(component['waterKitchenColdCol']()).toBe('Küche Kalt');
+      expect(component['waterBathroomWarmCol']()).toBe('Bad Warm');
+      expect(component['waterBathroomColdCol']()).toBe('Bad Kalt');
+      expect(component['heatingDateCol']()).toBe('HD');
+      expect(component['electricityDateCol']()).toBe('ED');
+      expect(component['electricityValueCol']()).toBe('EV');
     });
 
     it('should update heating room columns when settings include rooms', () => {
@@ -1236,8 +1270,8 @@ describe('ExcelSettingsComponent', () => {
       );
       fixture.detectChanges();
 
-      expect((component as any).heatingRoomCols()['room_1']).toBe('LR Col');
-      expect((component as any).heatingRoomCols()['room_2']).toBe('BR Col');
+      expect(component['heatingRoomCols']()['room_1']).toBe('LR Col');
+      expect(component['heatingRoomCols']()['room_2']).toBe('BR Col');
     });
 
     it('should default to empty string for rooms not in settings', () => {
@@ -1249,7 +1283,7 @@ describe('ExcelSettingsComponent', () => {
       );
       fixture.detectChanges();
 
-      expect((component as any).heatingRoomCols()['room_1']).toBe('');
+      expect(component['heatingRoomCols']()['room_1']).toBe('');
     });
   });
 
@@ -1262,46 +1296,46 @@ describe('ExcelSettingsComponent', () => {
       settingsSignal.set({
         enabled: false,
         waterMapping: DEFAULT_SETTINGS.waterMapping,
-        heatingMapping: { date: 'Date', rooms: undefined as any },
+        heatingMapping: { date: 'Date', rooms: undefined as unknown as Record<string, string> },
         electricityMapping: DEFAULT_SETTINGS.electricityMapping,
       });
       fixture.detectChanges();
 
       // Should use fallback empty string via ?? operator
-      expect((component as any).heatingRoomCols()['room_1']).toBe('');
+      expect(component['heatingRoomCols']()['room_1']).toBe('');
     });
 
     it('should handle rapid toggle of preview without errors', () => {
       expect(() => {
         for (let i = 0; i < 10; i++) {
-          (component as any).togglePreview();
+          component['togglePreview']();
         }
       }).not.toThrow();
     });
 
     it('should handle empty string column names in save', () => {
-      (component as any).waterDateCol.set('');
-      (component as any).waterKitchenWarmCol.set('');
-      (component as any).waterKitchenColdCol.set('');
-      (component as any).waterBathroomWarmCol.set('');
-      (component as any).waterBathroomColdCol.set('');
-      (component as any).heatingDateCol.set('');
-      (component as any).electricityDateCol.set('');
-      (component as any).electricityValueCol.set('');
+      component['waterDateCol'].set('');
+      component['waterKitchenWarmCol'].set('');
+      component['waterKitchenColdCol'].set('');
+      component['waterBathroomWarmCol'].set('');
+      component['waterBathroomColdCol'].set('');
+      component['heatingDateCol'].set('');
+      component['electricityDateCol'].set('');
+      component['electricityValueCol'].set('');
 
       // Validation would typically fail here, so set it to pass
       validationServiceMock.validateMappings.mockReturnValue({ isValid: true });
 
-      (component as any).saveSettings();
+      component['saveSettings']();
       const calledWith = excelSettingsServiceMock.updateSettings.mock.calls[0][0];
       expect(calledWith.waterMapping.date).toBe('');
     });
 
     it('should handle special characters in column names', () => {
-      (component as any).waterDateCol.set('Datum & Uhrzeit');
+      component['waterDateCol'].set('Datum & Uhrzeit');
       validationServiceMock.validateMappings.mockReturnValue({ isValid: true });
 
-      (component as any).saveSettings();
+      component['saveSettings']();
       const calledWith = excelSettingsServiceMock.updateSettings.mock.calls[0][0];
       expect(calledWith.waterMapping.date).toBe('Datum & Uhrzeit');
     });
@@ -1317,10 +1351,10 @@ describe('ExcelSettingsComponent', () => {
       rooms.forEach((r) => {
         roomCols[r.id] = `Col ${r.name}`;
       });
-      (component as any).heatingRoomCols.set(roomCols);
+      component['heatingRoomCols'].set(roomCols);
 
       validationServiceMock.validateMappings.mockReturnValue({ isValid: true });
-      (component as any).saveSettings();
+      component['saveSettings']();
 
       const calledWith = excelSettingsServiceMock.updateSettings.mock.calls[0][0];
       expect(Object.keys(calledWith.heatingMapping.rooms).length).toBe(10);
@@ -1328,14 +1362,14 @@ describe('ExcelSettingsComponent', () => {
 
     it('should handle concurrent modal operations gracefully', () => {
       // Open modal, try to import, then close
-      (component as any).openModal();
-      expect((component as any).showModal()).toBe(true);
+      component['openModal']();
+      expect(component['showModal']()).toBe(true);
 
-      (component as any).showImportConfirmModal.set(true);
-      (component as any).cancelImportSettings();
-      expect((component as any).showImportConfirmModal()).toBe(false);
+      component['showImportConfirmModal'].set(true);
+      component['cancelImportSettings']();
+      expect(component['showImportConfirmModal']()).toBe(false);
       // Modal should still be open
-      expect((component as any).showModal()).toBe(true);
+      expect(component['showModal']()).toBe(true);
     });
 
     it('should handle close modal resetting room columns from saved settings', () => {
@@ -1347,25 +1381,25 @@ describe('ExcelSettingsComponent', () => {
       );
       fixture.detectChanges();
 
-      (component as any).showModal.set(true);
-      (component as any).heatingRoomCols.set({ room_1: 'Modified' });
+      component['showModal'].set(true);
+      component['heatingRoomCols'].set({ room_1: 'Modified' });
 
       // Close without unsaved changes check (force close)
-      (component as any).showModal.set(false);
+      component['showModal'].set(false);
       // Manually call performCloseModal to test its room reset
-      (component as any).performCloseModal();
+      component['performCloseModal']();
 
-      expect((component as any).heatingRoomCols()['room_1']).toBe('SavedCol');
+      expect(component['heatingRoomCols']()['room_1']).toBe('SavedCol');
     });
 
     it('should handle import of file with .json in the middle of name', async () => {
       // File like "my.json.backup.txt" is NOT a .json file
       const file = new File(['data'], 'my.json.backup.txt', { type: 'text/plain' });
-      (component as any).pendingImportFile.set(file);
+      component['pendingImportFile'].set(file);
 
-      await (component as any).confirmImportSettings();
+      await component['confirmImportSettings']();
 
-      expect((component as any).showImportErrorModal()).toBe(true);
+      expect(component['showImportErrorModal']()).toBe(true);
     });
 
     it('should handle file with .json extension but invalid content', async () => {
@@ -1377,19 +1411,19 @@ describe('ExcelSettingsComponent', () => {
       });
 
       const file = new File(['not json'], 'settings.json', { type: 'application/json' });
-      (component as any).pendingImportFile.set(file);
+      component['pendingImportFile'].set(file);
 
-      await (component as any).confirmImportSettings();
+      await component['confirmImportSettings']();
 
-      expect((component as any).showImportErrorModal()).toBe(true);
-      expect((component as any).importErrorMessage()).toBe('PARSE_ERROR');
+      expect(component['showImportErrorModal']()).toBe(true);
+      expect(component['importErrorMessage']()).toBe('PARSE_ERROR');
     });
 
     it('should handle multiple sequential saves', () => {
       vi.useFakeTimers();
-      (component as any).saveSettings();
+      component['saveSettings']();
       vi.advanceTimersByTime(1000);
-      (component as any).saveSettings();
+      component['saveSettings']();
       vi.advanceTimersByTime(3000);
 
       expect(excelSettingsServiceMock.updateSettings).toHaveBeenCalledTimes(2);
@@ -1397,13 +1431,13 @@ describe('ExcelSettingsComponent', () => {
     });
 
     it('should handle reset defaults followed by immediate save', () => {
-      (component as any).resetDefaults();
+      component['resetDefaults']();
       expect(excelSettingsServiceMock.resetToDefaults).toHaveBeenCalled();
 
       // After reset, the effect should update local signals
       // Then saving should work with the new defaults
       validationServiceMock.validateMappings.mockReturnValue({ isValid: true });
-      (component as any).saveSettings();
+      component['saveSettings']();
       expect(excelSettingsServiceMock.updateSettings).toHaveBeenCalled();
     });
   });
@@ -1413,8 +1447,8 @@ describe('ExcelSettingsComponent', () => {
   // ========================================================================
   describe('Help Modal', () => {
     it('should have correct help step structure', () => {
-      const steps = (component as any).helpSteps;
-      steps.forEach((step: any) => {
+      const steps = component['helpSteps'];
+      steps.forEach((step: { titleKey: string; descriptionKey: string }) => {
         expect(step).toHaveProperty('titleKey');
         expect(step).toHaveProperty('descriptionKey');
         expect(step.titleKey).toContain('SETTINGS.EXCEL_HELP_STEP_');

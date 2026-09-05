@@ -1,4 +1,5 @@
 // Shared Tooltip and Comparison Styles
+@use 'variables' as *;
 
 .info-tooltip-container {
   position: relative;
@@ -7,11 +8,11 @@
   cursor: help;
 
   .info-icon {
-    color: #6c757d;
+    color: var(--text-muted);
     transition: color 0.2s;
 
     &:hover {
-      color: #007bff;
+      color: var(--theme-primary, $primary);
     }
   }
 
@@ -22,10 +23,11 @@
     bottom: 100%;
     left: 50%;
     transform: translateX(-50%);
-    background: #2c3e50;
-    color: white;
-    padding: 0.5rem 0.75rem;
-    border-radius: 6px;
+    background: var(--card-bg);
+    color: var(--text-primary);
+    border: 1px solid var(--border-color);
+    padding: 0.6rem 0.85rem;
+    border-radius: 8px;
     font-size: 0.75rem;
     font-weight: 400;
     white-space: normal;
@@ -33,7 +35,7 @@
     text-align: center;
     z-index: 100;
     margin-bottom: 8px;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+    box-shadow: var(--shadow-lg);
     transition:
       opacity 0.2s,
       visibility 0.2s;
@@ -46,7 +48,7 @@
       transform: translateX(-50%);
       border-width: 6px;
       border-style: solid;
-      border-color: #2c3e50 transparent transparent transparent;
+      border-color: var(--border-color) transparent transparent transparent;
     }
   }
 
@@ -59,12 +61,14 @@
 .comparison-note {
   margin-bottom: 0.1rem;
   padding: 0.75rem 1rem;
-  background: #e9ecef;
-  border-radius: 4px;
+  background: var(--bg-secondary);
+  border: 1px solid var(--card-border);
+  border-radius: 8px;
+  transition: background 0.3s ease;
 
   &.disabled {
-    background: #f8f9fa;
-    border: 1px dashed #dee2e6;
+    background: var(--bg-tertiary);
+    border: 1px dashed var(--border-color);
   }
 
   .comparison-content {
@@ -78,7 +82,7 @@
   p {
     margin: 0;
     font-size: 0.9rem;
-    color: #495057;
+    color: var(--text-secondary);
     font-style: italic;
     flex: 1;
     min-width: 200px;
@@ -87,11 +91,11 @@
       display: flex;
       align-items: center;
       gap: 0.5rem;
-      color: #6c757d;
+      color: var(--text-muted);
       font-style: normal;
 
       .info-icon {
-        color: #6c757d;
+        color: var(--text-muted);
         flex-shrink: 0;
       }
     }
@@ -110,7 +114,7 @@
 
     label {
       font-size: 0.85rem;
-      color: #495057;
+      color: var(--text-secondary);
       font-weight: 500;
       white-space: nowrap;
       display: flex;
@@ -118,7 +122,7 @@
       gap: 0.25rem;
 
       &.disabled {
-        color: #6c757d;
+        color: var(--text-muted);
       }
     }
 
@@ -135,35 +139,36 @@
         width: 24px;
         height: 16px;
         object-fit: cover;
-        border-radius: 2px;
+        border-radius: 3px;
         box-shadow: 0 1px 2px rgba(0, 0, 0, 0.15);
       }
     }
 
     select {
-      padding: 0.35rem 0.75rem;
-      border: 1px solid #ced4da;
-      border-radius: 4px;
+      padding: 0.4rem 0.8rem;
+      border: 1px solid var(--border-color);
+      border-radius: 6px;
       font-size: 0.85rem;
-      background: white;
-      color: #495057;
+      background: var(--input-bg);
+      color: var(--text-primary);
       cursor: pointer;
       min-width: 180px;
+      transition: all 0.2s ease;
 
       &:hover:not(:disabled) {
-        border-color: #007bff;
+        border-color: var(--theme-primary, $primary);
       }
 
       &:focus {
         outline: none;
-        border-color: #007bff;
-        box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.25);
+        border-color: var(--theme-primary, $primary);
+        box-shadow: 0 0 0 3px rgba(0, 92, 191, 0.15);
       }
 
       &:disabled {
-        background: #e9ecef;
+        background: var(--bg-tertiary);
         cursor: not-allowed;
-        color: #6c757d;
+        color: var(--text-muted);
       }
     }
   }

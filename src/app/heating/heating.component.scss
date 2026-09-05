@@ -82,6 +82,7 @@ $heating-primary-light: #fff3e0;
 :host {
   --theme-primary: #{$heating-primary};
   --theme-primary-dark: #{$heating-primary-dark};
+  --theme-primary-rgb: 245, 124, 0;
 }
 
 // Settings button style (projected into consumption input)
@@ -178,8 +179,33 @@ $heating-primary-light: #fff3e0;
   gap: 0.5rem;
   flex-wrap: wrap;
 
+  @media (max-width: 768px) {
+    width: 100%;
+    flex-wrap: nowrap;
+
+    .action-dropdown {
+      flex: 1 1 50%;
+      min-width: 0;
+
+      .action-dropdown-trigger {
+        width: 100%;
+        justify-content: center;
+      }
+    }
+  }
+
   button,
   label {
     flex-shrink: 0;
   }
+}
+
+// Override Save button in consumption-input to ensure black text (contrast)
+:host ::ng-deep app-consumption-input .save-btn {
+  color: black !important;
+}
+
+// Override Pagination buttons in detailed-records to ensure black text (contrast)
+:host ::ng-deep app-detailed-records .pagination-btn {
+  color: black !important;
 }

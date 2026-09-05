@@ -1,4 +1,4 @@
-import { Injectable, inject, Injector, PLATFORM_ID, runInInjectionContext } from '@angular/core';
+import { Injectable, inject, Injector, PLATFORM_ID } from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
 import { Firestore } from 'firebase/firestore';
 import { firebaseConfig } from '../config/firebase.config';

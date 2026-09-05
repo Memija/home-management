@@ -3,14 +3,23 @@ import { PredictionService } from './prediction.service';
 import { PredictionCalculationService } from './prediction-calculation.service';
 import { PredictionStatsService } from './prediction-stats.service';
 import { ChartCalculationService } from './chart-calculation.service';
-import { ConsumptionRecord, ElectricityRecord, DynamicHeatingRecord } from '../models/records.model';
+import {
+  ConsumptionRecord,
+  ElectricityRecord,
+  DynamicHeatingRecord,
+} from '../models/records.model';
 
 describe('PredictionService', () => {
   let service: PredictionService;
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      providers: [PredictionService, PredictionCalculationService, PredictionStatsService, ChartCalculationService],
+      providers: [
+        PredictionService,
+        PredictionCalculationService,
+        PredictionStatsService,
+        ChartCalculationService,
+      ],
     });
     service = TestBed.inject(PredictionService);
   });
@@ -33,7 +42,10 @@ describe('PredictionService', () => {
     return records;
   }
 
-  function makeElectricityRecords(count: number, startDate = new Date(2025, 0, 1)): ElectricityRecord[] {
+  function makeElectricityRecords(
+    count: number,
+    startDate = new Date(2025, 0, 1),
+  ): ElectricityRecord[] {
     const records: ElectricityRecord[] = [];
     for (let i = 0; i < count; i++) {
       const date = new Date(startDate);
@@ -46,7 +58,10 @@ describe('PredictionService', () => {
     return records;
   }
 
-  function makeHeatingRecords(count: number, startDate = new Date(2025, 0, 1)): DynamicHeatingRecord[] {
+  function makeHeatingRecords(
+    count: number,
+    startDate = new Date(2025, 0, 1),
+  ): DynamicHeatingRecord[] {
     const records: DynamicHeatingRecord[] = [];
     for (let i = 0; i < count; i++) {
       const date = new Date(startDate);
@@ -83,10 +98,34 @@ describe('PredictionService', () => {
 
     it('should return null for records with invalid dates', () => {
       const records = [
-        { date: new Date('invalid'), kitchenWarm: 10, kitchenCold: 20, bathroomWarm: 15, bathroomCold: 25 },
-        { date: new Date('invalid'), kitchenWarm: 20, kitchenCold: 30, bathroomWarm: 25, bathroomCold: 35 },
-        { date: new Date('invalid'), kitchenWarm: 30, kitchenCold: 40, bathroomWarm: 35, bathroomCold: 45 },
-        { date: new Date('invalid'), kitchenWarm: 40, kitchenCold: 50, bathroomWarm: 45, bathroomCold: 55 },
+        {
+          date: new Date('invalid'),
+          kitchenWarm: 10,
+          kitchenCold: 20,
+          bathroomWarm: 15,
+          bathroomCold: 25,
+        },
+        {
+          date: new Date('invalid'),
+          kitchenWarm: 20,
+          kitchenCold: 30,
+          bathroomWarm: 25,
+          bathroomCold: 35,
+        },
+        {
+          date: new Date('invalid'),
+          kitchenWarm: 30,
+          kitchenCold: 40,
+          bathroomWarm: 35,
+          bathroomCold: 45,
+        },
+        {
+          date: new Date('invalid'),
+          kitchenWarm: 40,
+          kitchenCold: 50,
+          bathroomWarm: 45,
+          bathroomCold: 55,
+        },
       ];
       expect(service.predictWater(records)).toBeNull();
     });
@@ -124,7 +163,10 @@ describe('PredictionService', () => {
 
     it('should detect a rising trend for increasing data', () => {
       const increasingRecords: ConsumptionRecord[] = [];
-      let kw = 100, kc = 200, bw = 150, bc = 250;
+      let kw = 100,
+        kc = 200,
+        bw = 150,
+        bc = 250;
       for (let i = 0; i < 8; i++) {
         const date = new Date(2025, 0, 1);
         date.setDate(date.getDate() + i * 30);
@@ -162,7 +204,10 @@ describe('PredictionService', () => {
       // For cumulative meters, we need the values to keep going up but with smaller deltas
       // Let's use a different approach: constant base + decreasing additive
       const decreasingRecords: ConsumptionRecord[] = [];
-      let kw = 100, kc = 200, bw = 150, bc = 250;
+      let kw = 100,
+        kc = 200,
+        bw = 150,
+        bc = 250;
       for (let i = 0; i < 8; i++) {
         const date = new Date(2025, 0, 1);
         date.setDate(date.getDate() + i * 30);
@@ -171,7 +216,13 @@ describe('PredictionService', () => {
         kc += delta;
         bw += delta;
         bc += delta;
-        decreasingRecords.push({ date, kitchenWarm: kw, kitchenCold: kc, bathroomWarm: bw, bathroomCold: bc });
+        decreasingRecords.push({
+          date,
+          kitchenWarm: kw,
+          kitchenCold: kc,
+          bathroomWarm: bw,
+          bathroomCold: bc,
+        });
       }
       const result = service.predictWater(decreasingRecords);
       expect(result).not.toBeNull();
@@ -251,12 +302,24 @@ describe('PredictionService', () => {
     it('should detect stable trend for constant consumption', () => {
       // Create records with constant increments
       const records: ConsumptionRecord[] = [];
-      let kw = 100, kc = 200, bw = 150, bc = 250;
+      let kw = 100,
+        kc = 200,
+        bw = 150,
+        bc = 250;
       for (let i = 0; i < 8; i++) {
         const date = new Date(2025, 0, 1);
         date.setDate(date.getDate() + i * 30);
-        kw += 20; kc += 20; bw += 20; bc += 20;
-        records.push({ date, kitchenWarm: kw, kitchenCold: kc, bathroomWarm: bw, bathroomCold: bc });
+        kw += 20;
+        kc += 20;
+        bw += 20;
+        bc += 20;
+        records.push({
+          date,
+          kitchenWarm: kw,
+          kitchenCold: kc,
+          bathroomWarm: bw,
+          bathroomCold: bc,
+        });
       }
       const result = service.predictWater(records);
       expect(result).not.toBeNull();
@@ -351,12 +414,15 @@ describe('PredictionService', () => {
       const startDate = new Date(2023, 0, 15); // Mid-month records
 
       // Add the initial record
-      records.push({ date: new Date(startDate), rooms: { living: cumulativeLiving, bedroom: cumulativeBedroom } });
+      records.push({
+        date: new Date(startDate),
+        rooms: { living: cumulativeLiving, bedroom: cumulativeBedroom },
+      });
 
       for (let i = 1; i < 30; i++) {
         const date = new Date(startDate);
         date.setMonth(date.getMonth() + i);
-        
+
         // The month of the interval is determined by the previous record's month (since we record mid-month)
         const prevMonth = new Date(startDate);
         prevMonth.setMonth(prevMonth.getMonth() + (i - 1));
@@ -384,7 +450,7 @@ describe('PredictionService', () => {
 
       // Heating-season months should have non-zero values
       const heatingMonths = [0, 1, 2, 9, 10, 11];
-      const hasNonZero = heatingMonths.some(m => result!.total.monthlyRates[m].expected > 0);
+      const hasNonZero = heatingMonths.some((m) => result!.total.monthlyRates[m].expected > 0);
       expect(hasNonZero).toBe(true);
     });
 
@@ -393,8 +459,8 @@ describe('PredictionService', () => {
       expect(result).not.toBeNull();
 
       // All monthly rates should be populated for water
-      const allExpected = result!.total.monthlyRates.map(m => m.expected);
-      expect(allExpected.every(v => v >= 0)).toBe(true);
+      const allExpected = result!.total.monthlyRates.map((m) => m.expected);
+      expect(allExpected.every((v) => v >= 0)).toBe(true);
     });
 
     it('should NOT zero out any months for electricity predictions', () => {
@@ -402,8 +468,8 @@ describe('PredictionService', () => {
       expect(result).not.toBeNull();
 
       // All monthly rates should be populated for electricity
-      const allExpected = result!.total.monthlyRates.map(m => m.expected);
-      expect(allExpected.every(v => v >= 0)).toBe(true);
+      const allExpected = result!.total.monthlyRates.map((m) => m.expected);
+      expect(allExpected.every((v) => v >= 0)).toBe(true);
     });
   });
 });

@@ -6,6 +6,8 @@ import { DatePickerComponent } from '../date-picker/date-picker.component';
 import { HelpModalComponent } from '../help-modal/help-modal.component';
 import { Pipe, PipeTransform, Component, Input, Output, EventEmitter, signal } from '@angular/core';
 import { vi, afterEach } from 'vitest';
+import { ConsumptionInputHarness } from './consumption-input.harness';
+import { getHarness } from '../../../testing';
 
 @Pipe({ name: 'translate', standalone: true })
 class MockTranslatePipe implements PipeTransform {
@@ -27,8 +29,8 @@ class MockDatePickerComponent {
 class MockHelpModalComponent {
   @Input() show = false;
   @Input() titleKey = '';
-  @Input() steps: any[] = [];
-  @Output() close = new EventEmitter<void>();
+  @Input() steps: unknown[] = [];
+  @Output() closeModal = new EventEmitter<void>();
 }
 
 const makeGroups = (values: Record<string, number | null>[]): ConsumptionGroup[] => {
@@ -45,7 +47,7 @@ const makeGroups = (values: Record<string, number | null>[]): ConsumptionGroup[]
 describe('ConsumptionInputComponent', () => {
   let component: ConsumptionInputComponent;
   let fixture: ComponentFixture<ConsumptionInputComponent>;
-  let languageServiceMock: any;
+  let languageServiceMock: unknown;
 
   beforeEach(async () => {
     languageServiceMock = {
@@ -80,8 +82,8 @@ describe('ConsumptionInputComponent', () => {
       'groups',
       overrides?.groups ?? makeGroups([{ a: null, b: null }]),
     );
-    fixture.componentRef.setInput('selectedDate', overrides?.selectedDate ?? '2024-06-15');
-    fixture.componentRef.setInput('maxDate', overrides?.maxDate ?? '2024-12-31');
+    component.selectedDate = overrides?.selectedDate ?? '2024-06-15';
+    component.maxDate = overrides?.maxDate ?? '2024-12-31';
     fixture.detectChanges();
   };
 
@@ -93,25 +95,25 @@ describe('ConsumptionInputComponent', () => {
 
     it('should have correct default input values', () => {
       initWithDefaults();
-      expect(component.editingMode()).toBe(false);
-      expect(component.dateExists()).toBe(false);
-      expect(component.titleKey()).toBe('HOME.RECORD_CONSUMPTION');
-      expect(component.editTitleKey()).toBe('HOME.EDIT_RECORD');
-      expect(component.saveKey()).toBe('HOME.SAVE');
-      expect(component.updateKey()).toBe('HOME.UPDATE_RECORD');
-      expect(component.cancelKey()).toBe('HOME.CANCEL');
-      expect(component.allowPartialGroups()).toBe(false);
-      expect(component.layoutMode()).toBe('grouped');
+      expect(component.editingMode).toBe(false);
+      expect(component.dateExists).toBe(false);
+      expect(component.titleKey).toBe('HOME.RECORD_CONSUMPTION');
+      expect(component.editTitleKey).toBe('HOME.EDIT_RECORD');
+      expect(component.saveKey).toBe('HOME.SAVE');
+      expect(component.updateKey).toBe('HOME.UPDATE_RECORD');
+      expect(component.cancelKey).toBe('HOME.CANCEL');
+      expect(component.allowPartialGroups).toBe(false);
+      expect(component.layoutMode).toBe('grouped');
     });
 
     it('should have no error message by default', () => {
       initWithDefaults();
-      expect((component as any).errorMessage()).toBeNull();
+      expect(component['errorMessage']()).toBeNull();
     });
 
     it('should have help modal hidden by default', () => {
       initWithDefaults();
-      expect((component as any).showHelpModal()).toBe(false);
+      expect(component['showHelpModal']()).toBe(false);
     });
   });
 
@@ -122,16 +124,16 @@ describe('ConsumptionInputComponent', () => {
       const spy = vi.fn();
       component.dateChange.subscribe(spy);
 
-      (component as any).onDateChange('2024-07-01');
+      component['onDateChange']('2024-07-01');
       expect(spy).toHaveBeenCalledWith('2024-07-01');
     });
 
     it('should clear error message on date change', () => {
       initWithDefaults();
 
-      (component as any).errorMessage.set('some error');
-      (component as any).onDateChange('2024-07-01');
-      expect((component as any).errorMessage()).toBeNull();
+      component['errorMessage'].set('some error');
+      component['onDateChange']('2024-07-01');
+      expect(component['errorMessage']()).toBeNull();
     });
   });
 
@@ -142,16 +144,16 @@ describe('ConsumptionInputComponent', () => {
       const spy = vi.fn();
       component.fieldChange.subscribe(spy);
 
-      (component as any).onFieldChange('coldWater', 42);
+      component['onFieldChange']('coldWater', 42);
       expect(spy).toHaveBeenCalledWith({ key: 'coldWater', value: 42 });
     });
 
     it('should clear error message on field change', () => {
       initWithDefaults();
 
-      (component as any).errorMessage.set('some error');
-      (component as any).onFieldChange('coldWater', 10);
-      expect((component as any).errorMessage()).toBeNull();
+      component['errorMessage'].set('some error');
+      component['onFieldChange']('coldWater', 10);
+      expect(component['errorMessage']()).toBeNull();
     });
 
     it('should convert negative values to null', () => {
@@ -160,7 +162,7 @@ describe('ConsumptionInputComponent', () => {
       const spy = vi.fn();
       component.fieldChange.subscribe(spy);
 
-      (component as any).onFieldChange('coldWater', -5);
+      component['onFieldChange']('coldWater', -5);
       expect(spy).toHaveBeenCalledWith({ key: 'coldWater', value: null });
     });
 
@@ -170,7 +172,7 @@ describe('ConsumptionInputComponent', () => {
       const spy = vi.fn();
       component.fieldChange.subscribe(spy);
 
-      (component as any).onFieldChange('coldWater', null);
+      component['onFieldChange']('coldWater', null);
       expect(spy).toHaveBeenCalledWith({ key: 'coldWater', value: null });
     });
 
@@ -180,7 +182,7 @@ describe('ConsumptionInputComponent', () => {
       const spy = vi.fn();
       component.fieldChange.subscribe(spy);
 
-      (component as any).onFieldChange('coldWater', 0);
+      component['onFieldChange']('coldWater', 0);
       expect(spy).toHaveBeenCalledWith({ key: 'coldWater', value: 0 });
     });
   });
@@ -189,73 +191,73 @@ describe('ConsumptionInputComponent', () => {
     it('should prevent minus key', () => {
       initWithDefaults();
 
-      const event = { key: '-', preventDefault: vi.fn() } as any;
-      (component as any).onKeyDown(event);
-      expect(event.preventDefault).toHaveBeenCalled();
+      const event = { key: '-', preventDefault: vi.fn() } as unknown as unknown;
+      component['onKeyDown'](event as unknown as KeyboardEvent);
+      expect((event as unknown as Event).preventDefault).toHaveBeenCalled();
     });
 
     it('should prevent plus key', () => {
       initWithDefaults();
 
-      const event = { key: '+', preventDefault: vi.fn() } as any;
-      (component as any).onKeyDown(event);
-      expect(event.preventDefault).toHaveBeenCalled();
+      const event = { key: '+', preventDefault: vi.fn() } as unknown as unknown;
+      component['onKeyDown'](event as unknown as KeyboardEvent);
+      expect((event as unknown as Event).preventDefault).toHaveBeenCalled();
     });
 
     it('should prevent "e" key', () => {
       initWithDefaults();
 
-      const event = { key: 'e', preventDefault: vi.fn() } as any;
-      (component as any).onKeyDown(event);
-      expect(event.preventDefault).toHaveBeenCalled();
+      const event = { key: 'e', preventDefault: vi.fn() } as unknown as unknown;
+      component['onKeyDown'](event as unknown as KeyboardEvent);
+      expect((event as unknown as Event).preventDefault).toHaveBeenCalled();
     });
 
     it('should prevent "E" key', () => {
       initWithDefaults();
 
-      const event = { key: 'E', preventDefault: vi.fn() } as any;
-      (component as any).onKeyDown(event);
-      expect(event.preventDefault).toHaveBeenCalled();
+      const event = { key: 'E', preventDefault: vi.fn() } as unknown as unknown;
+      component['onKeyDown'](event as unknown as KeyboardEvent);
+      expect((event as unknown as Event).preventDefault).toHaveBeenCalled();
     });
 
     it('should prevent decimal point', () => {
       initWithDefaults();
 
-      const event = { key: '.', preventDefault: vi.fn() } as any;
-      (component as any).onKeyDown(event);
-      expect(event.preventDefault).toHaveBeenCalled();
+      const event = { key: '.', preventDefault: vi.fn() } as unknown as unknown;
+      component['onKeyDown'](event as unknown as KeyboardEvent);
+      expect((event as unknown as Event).preventDefault).toHaveBeenCalled();
     });
 
     it('should prevent comma', () => {
       initWithDefaults();
 
-      const event = { key: ',', preventDefault: vi.fn() } as any;
-      (component as any).onKeyDown(event);
-      expect(event.preventDefault).toHaveBeenCalled();
+      const event = { key: ',', preventDefault: vi.fn() } as unknown as unknown;
+      component['onKeyDown'](event as unknown as KeyboardEvent);
+      expect((event as unknown as Event).preventDefault).toHaveBeenCalled();
     });
 
     it('should allow digit keys', () => {
       initWithDefaults();
 
-      const event = { key: '5', preventDefault: vi.fn() } as any;
-      (component as any).onKeyDown(event);
-      expect(event.preventDefault).not.toHaveBeenCalled();
+      const event = { key: '5', preventDefault: vi.fn() } as unknown as unknown;
+      component['onKeyDown'](event as unknown as KeyboardEvent);
+      expect((event as unknown as Event).preventDefault).not.toHaveBeenCalled();
     });
 
     it('should allow Backspace', () => {
       initWithDefaults();
 
-      const event = { key: 'Backspace', preventDefault: vi.fn() } as any;
-      (component as any).onKeyDown(event);
-      expect(event.preventDefault).not.toHaveBeenCalled();
+      const event = { key: 'Backspace', preventDefault: vi.fn() } as unknown as unknown;
+      component['onKeyDown'](event as unknown as KeyboardEvent);
+      expect((event as unknown as Event).preventDefault).not.toHaveBeenCalled();
     });
 
     it('should allow Tab', () => {
       initWithDefaults();
 
-      const event = { key: 'Tab', preventDefault: vi.fn() } as any;
-      (component as any).onKeyDown(event);
-      expect(event.preventDefault).not.toHaveBeenCalled();
+      const event = { key: 'Tab', preventDefault: vi.fn() } as unknown as unknown;
+      component['onKeyDown'](event as unknown as KeyboardEvent);
+      expect((event as unknown as Event).preventDefault).not.toHaveBeenCalled();
     });
   });
 
@@ -266,7 +268,7 @@ describe('ConsumptionInputComponent', () => {
       const input = { value: '12abc34' } as HTMLInputElement;
       const event = { target: input } as unknown as Event;
 
-      (component as any).onInput(event);
+      component['onInput'](event);
       expect(input.value).toBe('1234');
     });
 
@@ -276,7 +278,7 @@ describe('ConsumptionInputComponent', () => {
       const input = { value: '' } as HTMLInputElement;
       const event = { target: input } as unknown as Event;
 
-      (component as any).onInput(event);
+      component['onInput'](event);
       expect(input.value).toBe('');
     });
 
@@ -286,7 +288,7 @@ describe('ConsumptionInputComponent', () => {
       const input = { value: '-5' } as HTMLInputElement;
       const event = { target: input } as unknown as Event;
 
-      (component as any).onInput(event);
+      component['onInput'](event);
       // After stripping non-numeric: '5', parseFloat('5') = 5 which is >= 0, no clear
       expect(input.value).toBe('5');
     });
@@ -297,7 +299,7 @@ describe('ConsumptionInputComponent', () => {
       const input = { value: '12.5' } as HTMLInputElement;
       const event = { target: input } as unknown as Event;
 
-      (component as any).onInput(event);
+      component['onInput'](event);
       expect(input.value).toBe('125');
     });
   });
@@ -305,17 +307,17 @@ describe('ConsumptionInputComponent', () => {
   describe('hasValidInput - Standard mode (water)', () => {
     it('should return false when all fields are null', () => {
       initWithDefaults({ groups: makeGroups([{ a: null, b: null }]) });
-      expect((component as any).hasValidInput()).toBe(false);
+      expect(component['hasValidInput']()).toBe(false);
     });
 
     it('should return true when group is complete', () => {
       initWithDefaults({ groups: makeGroups([{ a: 10, b: 20 }]) });
-      expect((component as any).hasValidInput()).toBe(true);
+      expect(component['hasValidInput']()).toBe(true);
     });
 
     it('should return false when group is partial (incomplete)', () => {
       initWithDefaults({ groups: makeGroups([{ a: 10, b: null }]) });
-      expect((component as any).hasValidInput()).toBe(false);
+      expect(component['hasValidInput']()).toBe(false);
     });
 
     it('should return true with one complete group and one empty group', () => {
@@ -325,7 +327,7 @@ describe('ConsumptionInputComponent', () => {
           { c: null, d: null },
         ]),
       });
-      expect((component as any).hasValidInput()).toBe(true);
+      expect(component['hasValidInput']()).toBe(true);
     });
 
     it('should return false with one partial group and one empty group', () => {
@@ -335,7 +337,7 @@ describe('ConsumptionInputComponent', () => {
           { c: null, d: null },
         ]),
       });
-      expect((component as any).hasValidInput()).toBe(false);
+      expect(component['hasValidInput']()).toBe(false);
     });
 
     it('should return true when all groups are complete', () => {
@@ -345,29 +347,29 @@ describe('ConsumptionInputComponent', () => {
           { c: 30, d: 40 },
         ]),
       });
-      expect((component as any).hasValidInput()).toBe(true);
+      expect(component['hasValidInput']()).toBe(true);
     });
   });
 
   describe('hasValidInput - Partial mode (heating)', () => {
     it('should return true when at least one field has value', () => {
-      fixture.componentRef.setInput('groups', makeGroups([{ a: 10, b: null }]));
-      fixture.componentRef.setInput('selectedDate', '2024-06-15');
-      fixture.componentRef.setInput('maxDate', '2024-12-31');
-      fixture.componentRef.setInput('allowPartialGroups', true);
+      component.groups = makeGroups([{ a: 10, b: null }]);
+      component.selectedDate = '2024-06-15';
+      component.maxDate = '2024-12-31';
+      component.allowPartialGroups = true;
       fixture.detectChanges();
 
-      expect((component as any).hasValidInput()).toBe(true);
+      expect(component['hasValidInput']()).toBe(true);
     });
 
     it('should return false when all fields are null in partial mode', () => {
-      fixture.componentRef.setInput('groups', makeGroups([{ a: null, b: null }]));
-      fixture.componentRef.setInput('selectedDate', '2024-06-15');
-      fixture.componentRef.setInput('maxDate', '2024-12-31');
-      fixture.componentRef.setInput('allowPartialGroups', true);
+      component.groups = makeGroups([{ a: null, b: null }]);
+      component.selectedDate = '2024-06-15';
+      component.maxDate = '2024-12-31';
+      component.allowPartialGroups = true;
       fixture.detectChanges();
 
-      expect((component as any).hasValidInput()).toBe(false);
+      expect(component['hasValidInput']()).toBe(false);
     });
   });
 
@@ -375,40 +377,40 @@ describe('ConsumptionInputComponent', () => {
     it('should set error when no date is selected', () => {
       initWithDefaults({ selectedDate: '', groups: makeGroups([{ a: 10, b: 20 }]) });
 
-      (component as any).onSave();
-      expect((component as any).errorMessage()).toBe('HOME.SELECT_DATE_ERROR');
+      component['onSave']();
+      expect(component['errorMessage']()).toBe('HOME.SELECT_DATE_ERROR');
     });
 
     it('should set error when date already exists', () => {
-      fixture.componentRef.setInput('groups', makeGroups([{ a: 10, b: 20 }]));
-      fixture.componentRef.setInput('selectedDate', '2024-06-15');
-      fixture.componentRef.setInput('maxDate', '2024-12-31');
-      fixture.componentRef.setInput('dateExists', true);
+      component.groups = makeGroups([{ a: 10, b: 20 }]);
+      component.selectedDate = '2024-06-15';
+      component.maxDate = '2024-12-31';
+      component.dateExists = true;
       fixture.detectChanges();
 
-      (component as any).onSave();
-      expect((component as any).errorMessage()).toBe('HOME.DATE_EXISTS_WARNING');
+      component['onSave']();
+      expect(component['errorMessage']()).toBe('HOME.DATE_EXISTS_WARNING');
     });
 
     it('should set error when all values are zero', () => {
       initWithDefaults({ groups: makeGroups([{ a: 0, b: 0 }]) });
 
-      (component as any).onSave();
-      expect((component as any).errorMessage()).toBe('HOME.PARTIAL_INPUT_ERROR');
+      component['onSave']();
+      expect(component['errorMessage']()).toBe('HOME.PARTIAL_INPUT_ERROR');
     });
 
     it('should set error for incomplete room in standard mode', () => {
       initWithDefaults({ groups: makeGroups([{ a: 10, b: null }]) });
 
-      (component as any).onSave();
-      expect((component as any).errorMessage()).toBe('HOME.INCOMPLETE_ROOM_ERROR');
+      component['onSave']();
+      expect(component['errorMessage']()).toBe('HOME.INCOMPLETE_ROOM_ERROR');
     });
 
     it('should set error when no complete groups in standard mode', () => {
       initWithDefaults({ groups: makeGroups([{ a: null, b: null }]) });
 
-      (component as any).onSave();
-      expect((component as any).errorMessage()).toBe('HOME.PARTIAL_INPUT_ERROR');
+      component['onSave']();
+      expect(component['errorMessage']()).toBe('HOME.PARTIAL_INPUT_ERROR');
     });
 
     it('should emit save with correct data when valid', () => {
@@ -417,7 +419,7 @@ describe('ConsumptionInputComponent', () => {
       const spy = vi.fn();
       component.save.subscribe(spy);
 
-      (component as any).onSave();
+      component['onSave']();
       expect(spy).toHaveBeenCalledWith({
         date: '2024-06-15',
         fields: { coldWater: 10, warmWater: 20 },
@@ -435,7 +437,7 @@ describe('ConsumptionInputComponent', () => {
       const spy = vi.fn();
       component.save.subscribe(spy);
 
-      (component as any).onSave();
+      component['onSave']();
       expect(spy).toHaveBeenCalledWith({
         date: '2024-06-15',
         fields: { a: 10, b: 20 },
@@ -443,16 +445,16 @@ describe('ConsumptionInputComponent', () => {
     });
 
     it('should emit save in partial mode with partial group', () => {
-      fixture.componentRef.setInput('groups', makeGroups([{ a: 10, b: null }]));
-      fixture.componentRef.setInput('selectedDate', '2024-06-15');
-      fixture.componentRef.setInput('maxDate', '2024-12-31');
-      fixture.componentRef.setInput('allowPartialGroups', true);
+      component.groups = makeGroups([{ a: 10, b: null }]);
+      component.selectedDate = '2024-06-15';
+      component.maxDate = '2024-12-31';
+      component.allowPartialGroups = true;
       fixture.detectChanges();
 
       const spy = vi.fn();
       component.save.subscribe(spy);
 
-      (component as any).onSave();
+      component['onSave']();
       expect(spy).toHaveBeenCalledWith({
         date: '2024-06-15',
         fields: { a: 10 },
@@ -460,37 +462,37 @@ describe('ConsumptionInputComponent', () => {
     });
 
     it('should use custom error message keys', () => {
-      fixture.componentRef.setInput('groups', makeGroups([{ a: null, b: null }]));
-      fixture.componentRef.setInput('selectedDate', '2024-06-15');
-      fixture.componentRef.setInput('maxDate', '2024-12-31');
-      fixture.componentRef.setInput('noValuesErrorKey', 'CUSTOM.NO_VALUES');
+      component.groups = makeGroups([{ a: null, b: null }]);
+      component.selectedDate = '2024-06-15';
+      component.maxDate = '2024-12-31';
+      component.noValuesErrorKey = 'CUSTOM.NO_VALUES';
       fixture.detectChanges();
 
-      (component as any).onSave();
-      expect((component as any).errorMessage()).toBe('CUSTOM.NO_VALUES');
+      component['onSave']();
+      expect(component['errorMessage']()).toBe('CUSTOM.NO_VALUES');
     });
 
     it('should use custom incomplete room error key', () => {
-      fixture.componentRef.setInput('groups', makeGroups([{ a: 10, b: null }]));
-      fixture.componentRef.setInput('selectedDate', '2024-06-15');
-      fixture.componentRef.setInput('maxDate', '2024-12-31');
-      fixture.componentRef.setInput('incompleteRoomErrorKey', 'CUSTOM.INCOMPLETE');
+      component.groups = makeGroups([{ a: 10, b: null }]);
+      component.selectedDate = '2024-06-15';
+      component.maxDate = '2024-12-31';
+      component.incompleteRoomErrorKey = 'CUSTOM.INCOMPLETE';
       fixture.detectChanges();
 
-      (component as any).onSave();
-      expect((component as any).errorMessage()).toBe('CUSTOM.INCOMPLETE');
+      component['onSave']();
+      expect(component['errorMessage']()).toBe('CUSTOM.INCOMPLETE');
     });
 
     it('should use custom date warning key', () => {
-      fixture.componentRef.setInput('groups', makeGroups([{ a: 10, b: 20 }]));
-      fixture.componentRef.setInput('selectedDate', '2024-06-15');
-      fixture.componentRef.setInput('maxDate', '2024-12-31');
-      fixture.componentRef.setInput('dateExists', true);
-      fixture.componentRef.setInput('dateWarningKey', 'CUSTOM.DATE_WARNING');
+      component.groups = makeGroups([{ a: 10, b: 20 }]);
+      component.selectedDate = '2024-06-15';
+      component.maxDate = '2024-12-31';
+      component.dateExists = true;
+      component.dateWarningKey = 'CUSTOM.DATE_WARNING';
       fixture.detectChanges();
 
-      (component as any).onSave();
-      expect((component as any).errorMessage()).toBe('CUSTOM.DATE_WARNING');
+      component['onSave']();
+      expect(component['errorMessage']()).toBe('CUSTOM.DATE_WARNING');
     });
   });
 
@@ -499,9 +501,9 @@ describe('ConsumptionInputComponent', () => {
       initWithDefaults();
 
       const spy = vi.fn();
-      component.cancel.subscribe(spy);
+      component.cancelModal.subscribe(spy);
 
-      (component as any).onCancel();
+      component['onCancel']();
       expect(spy).toHaveBeenCalledTimes(1);
     });
   });
@@ -509,32 +511,32 @@ describe('ConsumptionInputComponent', () => {
   describe('Help Modal', () => {
     it('should open help modal', () => {
       initWithDefaults();
-      (component as any).showHelp();
-      expect((component as any).showHelpModal()).toBe(true);
+      component['showHelp']();
+      expect(component['showHelpModal']()).toBe(true);
     });
 
     it('should close help modal', () => {
       initWithDefaults();
-      (component as any).showHelp();
-      (component as any).closeHelp();
-      expect((component as any).showHelpModal()).toBe(false);
+      component['showHelp']();
+      component['closeHelp']();
+      expect(component['showHelpModal']()).toBe(false);
     });
   });
 
   describe('Edge Cases', () => {
     it('should handle empty groups array', () => {
       initWithDefaults({ groups: [] });
-      expect((component as any).hasValidInput()).toBe(false);
+      expect(component['hasValidInput']()).toBe(false);
     });
 
     it('should handle groups with empty fields array', () => {
-      fixture.componentRef.setInput('groups', [{ title: 'Empty', fields: [] }]);
-      fixture.componentRef.setInput('selectedDate', '2024-06-15');
-      fixture.componentRef.setInput('maxDate', '2024-12-31');
+      component.groups = [{ title: 'Empty', fields: [] }];
+      component.selectedDate = '2024-06-15';
+      component.maxDate = '2024-12-31';
       fixture.detectChanges();
 
       // Empty group is considered "complete" by every() — vacuous truth
-      expect((component as any).hasValidInput()).toBe(true);
+      expect(component['hasValidInput']()).toBe(true);
     });
 
     it('should handle multiple groups with mixed completeness', () => {
@@ -555,7 +557,7 @@ describe('ConsumptionInputComponent', () => {
         },
       ];
       initWithDefaults({ groups });
-      expect((component as any).hasValidInput()).toBe(true); // Kitchen complete, Bathroom empty
+      expect(component['hasValidInput']()).toBe(true); // Kitchen complete, Bathroom empty
     });
 
     it('should handle value of 0 as a valid non-null value', () => {
@@ -564,16 +566,16 @@ describe('ConsumptionInputComponent', () => {
       // This should fail validation because no non-zero values
       const spy = vi.fn();
       component.save.subscribe(spy);
-      (component as any).onSave();
+      component['onSave']();
       expect(spy).not.toHaveBeenCalled();
-      expect((component as any).errorMessage()).toBeTruthy();
+      expect(component['errorMessage']()).toBeTruthy();
     });
 
     it('should handle fields with value 0 mixed with positive values', () => {
       initWithDefaults({ groups: makeGroups([{ a: 0, b: 5 }]) });
       const spy = vi.fn();
       component.save.subscribe(spy);
-      (component as any).onSave();
+      component['onSave']();
       expect(spy).toHaveBeenCalledWith({
         date: '2024-06-15',
         fields: { a: 0, b: 5 },
@@ -591,7 +593,7 @@ describe('ConsumptionInputComponent', () => {
       initWithDefaults({ groups: makeGroups([{ a: 999999, b: 888888 }]) });
       const spy = vi.fn();
       component.save.subscribe(spy);
-      (component as any).onSave();
+      component['onSave']();
       expect(spy).toHaveBeenCalledWith({
         date: '2024-06-15',
         fields: { a: 999999, b: 888888 },
@@ -601,40 +603,90 @@ describe('ConsumptionInputComponent', () => {
     it('should handle save error then re-save after fixing', () => {
       // First: no date → error
       initWithDefaults({ selectedDate: '', groups: makeGroups([{ a: 10, b: 20 }]) });
-      (component as any).onSave();
-      expect((component as any).errorMessage()).toBe('HOME.SELECT_DATE_ERROR');
+      component['onSave']();
+      expect(component['errorMessage']()).toBe('HOME.SELECT_DATE_ERROR');
 
       // Fix by changing date — should clear error
-      (component as any).onDateChange('2024-06-15');
-      expect((component as any).errorMessage()).toBeNull();
+      component['onDateChange']('2024-06-15');
+      expect(component['errorMessage']()).toBeNull();
     });
 
     it('should handle partial mode with no values', () => {
-      fixture.componentRef.setInput('groups', makeGroups([{ a: null, b: null }]));
-      fixture.componentRef.setInput('selectedDate', '2024-06-15');
-      fixture.componentRef.setInput('maxDate', '2024-12-31');
-      fixture.componentRef.setInput('allowPartialGroups', true);
+      component.groups = makeGroups([{ a: null, b: null }]);
+      component.selectedDate = '2024-06-15';
+      component.maxDate = '2024-12-31';
+      component.allowPartialGroups = true;
       fixture.detectChanges();
 
-      (component as any).onSave();
-      expect((component as any).errorMessage()).toBe('HOME.PARTIAL_INPUT_ERROR');
+      component['onSave']();
+      expect(component['errorMessage']()).toBe('HOME.PARTIAL_INPUT_ERROR');
     });
   });
 
   describe('Layout Modes', () => {
     it('should default to grouped layout', () => {
       initWithDefaults();
-      expect(component.layoutMode()).toBe('grouped');
+      expect(component.layoutMode).toBe('grouped');
     });
 
     it('should accept flat layout', () => {
-      fixture.componentRef.setInput('groups', makeGroups([{ a: null }]));
-      fixture.componentRef.setInput('selectedDate', '2024-06-15');
-      fixture.componentRef.setInput('maxDate', '2024-12-31');
-      fixture.componentRef.setInput('layoutMode', 'flat');
+      component.groups = makeGroups([{ a: null }]);
+      component.selectedDate = '2024-06-15';
+      component.maxDate = '2024-12-31';
+      component.layoutMode = 'flat';
       fixture.detectChanges();
 
-      expect(component.layoutMode()).toBe('flat');
+      expect(component.layoutMode).toBe('flat');
+    });
+  });
+
+  describe('Using ConsumptionInputHarness', () => {
+    let harness: ConsumptionInputHarness;
+
+    beforeEach(async () => {
+      initWithDefaults({
+        groups: makeGroups([
+          { kitchenWarm: 10, kitchenCold: 20 },
+          { bathroomWarm: 15, bathroomCold: 25 },
+        ]),
+      });
+      fixture.componentRef.setInput('titleKey', 'WATER.ENTER_READINGS');
+      harness = await getHarness(fixture, ConsumptionInputHarness);
+    });
+
+    it('should read title text via harness', async () => {
+      expect(await harness.getTitleText()).toBe('WATER.ENTER_READINGS');
+    });
+
+    it('should count number of number input fields via harness', async () => {
+      expect(await harness.getInputCount()).toBe(4);
+    });
+
+    it('should get and set input values via harness', async () => {
+      expect(await harness.getInputValue('kitchenWarm')).toBe('10');
+
+      const fieldSpy = vi.fn();
+      component.fieldChange.subscribe(fieldSpy);
+
+      await harness.setInputValue('kitchenWarm', '25');
+      expect(fieldSpy).toHaveBeenCalledWith({ key: 'kitchenWarm', value: 25 });
+    });
+
+    it('should trigger save event on clicking save button via harness', async () => {
+      const saveSpy = vi.fn();
+      component.save.subscribe(saveSpy);
+
+      await harness.clickSave();
+      expect(saveSpy).toHaveBeenCalledTimes(1);
+    });
+
+    it('should check error message via harness', async () => {
+      expect(await harness.hasError()).toBe(false);
+      component['errorMessage'].set('HOME.INVALID_INPUT');
+      fixture.detectChanges();
+
+      expect(await harness.hasError()).toBe(true);
+      expect(await harness.getErrorText()).toBe('HOME.INVALID_INPUT');
     });
   });
 });

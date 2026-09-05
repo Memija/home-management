@@ -78,23 +78,29 @@
     </div>
   }
 
-  <app-consumption-chart
-    [data]="chartRecords()"
-    [currentView]="chartView()"
-    [onViewChange]="onChartViewChange"
-    [chartType]="'heating'"
-    [displayMode]="displayMode()"
-    [onDisplayModeChange]="onDisplayModeChange"
-    [roomNames]="chartRoomNames()"
-    [roomIds]="chartRoomIds()"
-    [roomColors]="chartRoomColors()"
-    [country]="selectedCountryCode()"
-    [ignoredSpikes]="confirmedSpikes()"
-    [helpSteps]="chartHelpSteps"
-    [prediction]="heatingPrediction()"
-    [predictionPeriod]="selectedPredictionPeriod()"
-  >
-  </app-consumption-chart>
+  @defer (on viewport) {
+    <app-consumption-chart
+      [data]="chartRecords()"
+      [currentView]="chartView()"
+      [onViewChange]="onChartViewChange"
+      [chartType]="'heating'"
+      [displayMode]="displayMode()"
+      [onDisplayModeChange]="onDisplayModeChange"
+      [roomNames]="chartRoomNames()"
+      [roomIds]="chartRoomIds()"
+      [roomColors]="chartRoomColors()"
+      [country]="selectedCountryCode()"
+      [ignoredSpikes]="confirmedSpikes()"
+      [helpSteps]="chartHelpSteps"
+      [prediction]="heatingPrediction()"
+      [predictionPeriod]="selectedPredictionPeriod()"
+    >
+    </app-consumption-chart>
+  } @placeholder {
+    <div class="loading-placeholder loading-placeholder--chart">
+      {{ 'APP.LOADING_CHART' | translate }}
+    </div>
+  }
 
   <app-predictions-panel
     [prediction]="heatingPrediction()"
@@ -104,119 +110,138 @@
     (periodChange)="onPredictionPeriodChange($event)"
   ></app-predictions-panel>
 
-  <app-detailed-records
-    [records]="records()"
-    [calculateTotalFn]="calculateTotal"
-    [valuesNoteKey]="''"
-    [recordType]="'heating'"
-    [sortOptions]="heatingSortOptions"
-    [helpSteps]="recordsHelpSteps"
-    (editRecord)="onEditRecord($event)"
-    (deleteRecord)="onDeleteRecord($event)"
-    (deleteAllRecords)="onDeleteAllRecords($event)"
-  >
-    <!-- Import/Export buttons projected into detailed-records -->
-    <div slot="action-buttons" class="action-buttons-group">
-      <button
-        type="button"
-        (click)="exportData()"
-        class="export-btn json-btn"
-        [disabled]="isExporting() || records().length === 0"
-        title="{{
-          (records().length === 0 ? 'HEATING.EXPORT_DISABLED_TOOLTIP' : 'HEATING.EXPORT')
-            | translate
-        }}"
-      >
-        <lucide-icon [img]="DownloadIcon" size="16"></lucide-icon>
-        <span class="btn-text">{{
-          isExporting() ? 'Exporting...' : ('HEATING.EXPORT' | translate)
-        }}</span>
-      </button>
-      <label
-        for="import-file-heating"
-        class="import-btn json-btn"
-        [class.disabled]="isImporting()"
-        title="{{ 'HEATING.IMPORT' | translate }}"
-      >
-        <lucide-icon [img]="UploadIcon" size="16"></lucide-icon>
-        <span class="btn-text">{{
-          isImporting() ? 'Importing...' : ('HEATING.IMPORT' | translate)
-        }}</span>
-        <input
-          type="file"
-          id="import-file-heating"
-          accept=".json"
-          (change)="importData($event)"
-          class="hidden-input"
-          [disabled]="isImporting()"
-        />
-      </label>
-
-      <!-- Excel Export/Import (conditional) -->
-      @if (excelSettings.isEnabled()) {
-        <button
-          type="button"
-          (click)="exportToExcel()"
-          class="export-btn excel-btn"
-          [disabled]="isExporting() || records().length === 0"
-          title="{{
-            (records().length === 0 ? 'HEATING.EXPORT_DISABLED_TOOLTIP' : 'HEATING.EXPORT_EXCEL')
-              | translate
-          }}"
-        >
-          <lucide-icon [img]="FileSpreadsheetIcon" size="16"></lucide-icon>
-          <span class="btn-text">{{
-            isExporting() ? 'Exporting...' : ('HEATING.EXPORT_EXCEL' | translate)
-          }}</span>
-        </button>
-        <label
-          for="import-excel-file-heating"
-          class="import-btn excel-btn"
-          [class.disabled]="isImporting()"
-          title="{{ 'HEATING.IMPORT_EXCEL' | translate }}"
-        >
-          <lucide-icon [img]="FileSpreadsheetIcon" size="16"></lucide-icon>
-          <span class="btn-text">{{
-            isImporting() ? 'Importing...' : ('HEATING.IMPORT_EXCEL' | translate)
-          }}</span>
-          <input
-            type="file"
-            id="import-excel-file-heating"
-            accept=".xlsx,.xls"
-            (change)="importFromExcel($event)"
-            class="hidden-input"
-            [disabled]="isImporting()"
-          />
-        </label>
-        <button
-          type="button"
-          (click)="exportToPdf()"
-          class="export-btn pdf-btn"
-          [disabled]="isExporting() || records().length === 0"
-          title="{{
-            (records().length === 0 ? 'HEATING.EXPORT_DISABLED_TOOLTIP' : 'HEATING.EXPORT_PDF')
-              | translate
-          }}"
-        >
-          <lucide-icon [img]="FileTextIcon" size="16"></lucide-icon>
-          <span class="btn-text">{{
-            isExporting() ? 'Exporting...' : ('HEATING.EXPORT_PDF' | translate)
-          }}</span>
-        </button>
-      }
-    </div>
-    <!-- Heating-specific record details template -->
-    <ng-template #recordDetails let-record>
-      <div class="room-values-container">
-        @for (room of roomsService.rooms(); track room.id) {
-          <div class="room-value">
-            <span class="room-name">{{ room.name }}</span>
-            <span class="room-reading">{{ record.rooms[room.id] || 0 }}</span>
+  @defer (on viewport) {
+    <app-detailed-records
+      [records]="records()"
+      [calculateTotalFn]="calculateTotal"
+      [valuesNoteKey]="''"
+      [recordType]="'heating'"
+      [sortOptions]="heatingSortOptions"
+      [helpSteps]="recordsHelpSteps"
+      (editRecord)="onEditRecord($event)"
+      (deleteRecord)="onDeleteRecord($event)"
+      (deleteAllRecords)="onDeleteAllRecords($event)"
+    >
+      <!-- Import/Export dropdowns projected into detailed-records -->
+      <div slot="action-buttons" class="action-buttons-group">
+        <!-- Export ▾ dropdown -->
+        <div class="action-dropdown">
+          <button
+            type="button"
+            class="action-dropdown-trigger"
+            [class.open]="isExportMenuOpen()"
+            (click)="toggleExportMenu($event)"
+            [disabled]="records().length === 0"
+            title="{{ (records().length === 0 ? 'HEATING.EXPORT_DISABLED_TOOLTIP' : 'HEATING.EXPORT') | translate }}"
+            aria-label="Export menu"
+          >
+            <lucide-icon [img]="DownloadIcon" size="16"></lucide-icon>
+            {{ 'HEATING.EXPORT' | translate }}
+            <lucide-icon [img]="ChevronDownIcon" size="14" class="chevron-icon"></lucide-icon>
+          </button>
+          <div class="action-dropdown-menu" [class.open]="isExportMenuOpen()">
+            <button
+              type="button"
+              class="action-dropdown-item json-item"
+              (click)="exportData(); closeMenus()"
+              [disabled]="isExporting()"
+            >
+              <lucide-icon [img]="DownloadIcon" size="16"></lucide-icon>
+              {{ 'HEATING.EXPORT' | translate }} (JSON)
+            </button>
+            @if (excelSettings.isEnabled()) {
+              <button
+                type="button"
+                class="action-dropdown-item excel-item"
+                (click)="exportToExcel(); closeMenus()"
+                [disabled]="isExporting()"
+              >
+                <lucide-icon [img]="FileSpreadsheetIcon" size="16"></lucide-icon>
+                {{ 'HEATING.EXPORT_EXCEL' | translate }}
+              </button>
+              <button
+                type="button"
+                class="action-dropdown-item pdf-item"
+                (click)="exportToPdf(); closeMenus()"
+                [disabled]="isExporting()"
+              >
+                <lucide-icon [img]="FileTextIcon" size="16"></lucide-icon>
+                {{ 'HEATING.EXPORT_PDF' | translate }}
+              </button>
+            }
           </div>
-        }
+        </div>
+
+        <!-- Import ▾ dropdown -->
+        <div class="action-dropdown">
+          <button
+            type="button"
+            class="action-dropdown-trigger"
+            [class.open]="isImportMenuOpen()"
+            (click)="toggleImportMenu($event)"
+            [disabled]="isImporting()"
+            title="{{ 'HEATING.IMPORT' | translate }}"
+            aria-label="Import menu"
+          >
+            <lucide-icon [img]="UploadIcon" size="16"></lucide-icon>
+            {{ 'HEATING.IMPORT' | translate }}
+            <lucide-icon [img]="ChevronDownIcon" size="14" class="chevron-icon"></lucide-icon>
+          </button>
+          <div class="action-dropdown-menu" [class.open]="isImportMenuOpen()">
+            <label
+              for="import-file-heating"
+              class="action-dropdown-item json-item"
+              [class.disabled]="isImporting()"
+            >
+              <lucide-icon [img]="UploadIcon" size="16"></lucide-icon>
+              {{ 'HEATING.IMPORT' | translate }} (JSON)
+              <input
+                type="file"
+                id="import-file-heating"
+                accept=".json"
+                (change)="importData($event)"
+                class="hidden-input"
+                [disabled]="isImporting()"
+              />
+            </label>
+            @if (excelSettings.isEnabled()) {
+              <label
+                for="import-excel-file-heating"
+                class="action-dropdown-item excel-item"
+                [class.disabled]="isImporting()"
+              >
+                <lucide-icon [img]="FileSpreadsheetIcon" size="16"></lucide-icon>
+                {{ 'HEATING.IMPORT_EXCEL' | translate }}
+                <input
+                  type="file"
+                  id="import-excel-file-heating"
+                  accept=".xlsx,.xls"
+                  (change)="importFromExcel($event)"
+                  class="hidden-input"
+                  [disabled]="isImporting()"
+                />
+              </label>
+            }
+          </div>
+        </div>
       </div>
-    </ng-template>
-  </app-detailed-records>
+      <!-- Heating-specific record details template -->
+      <ng-template #recordDetails let-record>
+        <div class="room-values-container">
+          @for (room of roomsService.rooms(); track room.id) {
+            <div class="room-value">
+              <span class="room-name">{{ room.name }}</span>
+              <span class="room-reading">{{ record.rooms[room.id] || 0 }}</span>
+            </div>
+          }
+        </div>
+      </ng-template>
+    </app-detailed-records>
+  } @placeholder {
+    <div class="loading-placeholder loading-placeholder--records">
+      {{ 'APP.LOADING_RECORDS' | translate }}
+    </div>
+  }
 
   <app-error-modal
     [show]="showErrorModal()"
@@ -224,7 +249,7 @@
     [message]="errorMessage()"
     [details]="errorDetails()"
     [instructions]="errorInstructions()"
-    (cancel)="closeErrorModal()"
+    (cancelModal)="closeErrorModal()"
     [type]="errorType()"
   >
   </app-error-modal>
@@ -244,8 +269,8 @@
     [incompleteRoomErrorKey]="'HEATING.INCOMPLETE_ROOM_ERROR'"
     (dateChange)="selectedDate.set($event)"
     (fieldChange)="onFieldChange($event)"
-    (save)="onConsumptionSave($event)"
-    (cancel)="cancelEdit()"
+    (save)="onConsumptionSave()"
+    (cancelModal)="cancelEdit()"
   >
     <button
       header-actions
@@ -267,7 +292,7 @@
   [confirmKey]="'HOME.IMPORT_BUTTON'"
   [icon]="UploadIcon"
   (confirm)="confirmImport()"
-  (cancel)="cancelImport()"
+  (cancelModal)="cancelImport()"
 >
 </app-confirmation-modal>
 
@@ -276,12 +301,24 @@
   [rooms]="roomsService.rooms()"
   [roomsWithDataArray]="roomsWithData()"
   (save)="onRoomsSave($event)"
-  (cancel)="onRoomsCancel()"
+  (cancelModal)="onRoomsCancel()"
 >
 </app-heating-rooms-modal>
 @if (showSuccessModal()) {
-  <div class="modal-overlay" (click)="closeSuccessModal()">
-    <div class="modal-content" (click)="$event.stopPropagation()">
+  <div
+    class="modal-overlay"
+    (click)="closeSuccessModal()"
+    (keydown.enter)="closeSuccessModal()"
+    tabindex="0"
+    (keyup.enter)="closeSuccessModal()"
+  >
+    <div
+      class="modal-content"
+      (click)="$event.stopPropagation()"
+      (keydown.enter)="$event.stopPropagation()"
+      tabindex="0"
+      (keyup.enter)="$event.stopPropagation()"
+    >
       <div class="modal-header">
         <lucide-icon [img]="CheckCircleIcon" size="32" class="success-icon"></lucide-icon>
         <h3>{{ successTitle() | translate }}</h3>
@@ -305,7 +342,7 @@
   [deleteKey]="'HOME.DELETE_BUTTON'"
   [icon]="TrashIcon"
   (confirm)="confirmDelete()"
-  (cancel)="cancelDelete()"
+  (cancelModal)="cancelDelete()"
 >
 </app-delete-confirmation-modal>
 
@@ -318,7 +355,7 @@
   [deleteKey]="'HOME.DELETE_ALL_BUTTON'"
   [icon]="TrashIcon"
   (confirm)="confirmDeleteAll()"
-  (cancel)="cancelDeleteAll()"
+  (cancelModal)="cancelDeleteAll()"
 >
 </app-delete-confirmation-modal>
 
@@ -327,7 +364,7 @@
   [steps]="demoWizardSteps"
   [theme]="'heating'"
   [titleKey]="'DEMO.WIZARD_TITLE'"
-  (close)="showDemoWizard.set(false)"
+  (closeModal)="showDemoWizard.set(false)"
 >
 </app-demo-wizard>
 
@@ -335,6 +372,6 @@
   [show]="showDemoTour()"
   [steps]="demoTourSteps"
   [theme]="'heating'"
-  (close)="showDemoTour.set(false)"
+  (closeModal)="showDemoTour.set(false)"
 >
 </app-demo-tour>

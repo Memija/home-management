@@ -16,9 +16,9 @@ describe('GlobalErrorHandlerService', () => {
 
     // Spy on the base ErrorHandler so we can assert delegation without triggering
     // Angular's default behaviour (which re-throws and floods the console).
-    superHandleErrorSpy = vi
-      .spyOn(ErrorHandler.prototype, 'handleError')
-      .mockImplementation(() => { });
+    superHandleErrorSpy = vi.spyOn(ErrorHandler.prototype, 'handleError').mockImplementation(() => {
+      /* noop */
+    });
   });
 
   afterEach(() => {

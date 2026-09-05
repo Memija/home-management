@@ -5,7 +5,13 @@ import { describe, it, expect, beforeEach, vi, afterEach } from 'vitest';
 
 describe('LocalStorageService', () => {
   let service: LocalStorageService;
-  let mockLocalStorage: any;
+  let mockLocalStorage: {
+    getItem: import('vitest').Mock;
+    setItem: import('vitest').Mock;
+    removeItem: import('vitest').Mock;
+    key: import('vitest').Mock;
+    length: number;
+  };
 
   const mockPlatformId = 'browser';
 

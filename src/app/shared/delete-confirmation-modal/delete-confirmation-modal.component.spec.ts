@@ -6,6 +6,8 @@ import { Pipe, PipeTransform, signal } from '@angular/core';
 import { vi, afterEach } from 'vitest';
 import { By } from '@angular/platform-browser';
 import { AlertTriangle } from 'lucide-angular';
+import { DeleteConfirmationModalHarness } from './delete-confirmation-modal.harness';
+import { getHarness } from '../../../testing';
 
 @Pipe({ name: 'translate', standalone: true })
 class MockTranslatePipe implements PipeTransform {
@@ -17,7 +19,10 @@ class MockTranslatePipe implements PipeTransform {
 describe('DeleteConfirmationModalComponent', () => {
   let component: DeleteConfirmationModalComponent;
   let fixture: ComponentFixture<DeleteConfirmationModalComponent>;
-  let languageServiceMock: any;
+  let languageServiceMock: {
+    currentLang: import('@angular/core').WritableSignal<string>;
+    translate: ReturnType<typeof vi.fn>;
+  };
 
   beforeEach(async () => {
     languageServiceMock = {
@@ -146,7 +151,7 @@ describe('DeleteConfirmationModalComponent', () => {
       component.messageParams = {};
       fixture.detectChanges();
 
-      const message = (component as any).translatedMessage();
+      const message = component['translatedMessage']();
       expect(message).toBe('Are you sure you want to delete this?');
       expect(languageServiceMock.translate).toHaveBeenCalledWith('DELETE.MESSAGE');
     });
@@ -158,7 +163,7 @@ describe('DeleteConfirmationModalComponent', () => {
       component.messageParams = { count: '5', source: 'water records' };
       fixture.detectChanges();
 
-      const message = (component as any).translatedMessage();
+      const message = component['translatedMessage']();
       expect(message).toBe('Are you sure you want to delete 5 items from water records?');
     });
 
@@ -167,7 +172,7 @@ describe('DeleteConfirmationModalComponent', () => {
       component.messageParams = {};
       fixture.detectChanges();
 
-      const message = (component as any).translatedMessage();
+      const message = component['translatedMessage']();
       expect(message).toBe('Are you sure you want to delete this?');
     });
 
@@ -176,7 +181,7 @@ describe('DeleteConfirmationModalComponent', () => {
       component.messageParams = {};
       fixture.detectChanges();
 
-      const message = (component as any).translatedMessage();
+      const message = component['translatedMessage']();
       // Falls back to key itself per mock implementation
       expect(message).toBe('UNKNOWN.KEY');
     });
@@ -186,7 +191,7 @@ describe('DeleteConfirmationModalComponent', () => {
       component.messageParams = { count: '3' }; // missing 'source'
       fixture.detectChanges();
 
-      const message = (component as any).translatedMessage();
+      const message = component['translatedMessage']();
       expect(message).toBe('Are you sure you want to delete 3 items from {{source}}?');
     });
 
@@ -196,11 +201,11 @@ describe('DeleteConfirmationModalComponent', () => {
       fixture.detectChanges();
 
       // Access the computed to trigger initial evaluation
-      (component as any).translatedMessage();
+      component['translatedMessage']();
 
       // Simulate language change
       languageServiceMock.currentLang.set('de');
-      const message = (component as any).translatedMessage();
+      expect(component['translatedMessage']()).toBeDefined();
 
       // translate should have been called again (language signal dependency)
       expect(languageServiceMock.translate).toHaveBeenCalledWith('DELETE.MESSAGE');
@@ -211,7 +216,7 @@ describe('DeleteConfirmationModalComponent', () => {
       component.messageParams = { count: '10', source: 'kitchen & bathroom' };
       fixture.detectChanges();
 
-      const message = (component as any).translatedMessage();
+      const message = component['translatedMessage']();
       expect(message).toContain('kitchen & bathroom');
     });
   });
@@ -237,7 +242,7 @@ describe('DeleteConfirmationModalComponent', () => {
 
     it('should emit cancel when onCancel is called', () => {
       const spy = vi.fn();
-      component.cancel.subscribe(spy);
+      component.cancelModal.subscribe(spy);
 
       component.onCancel();
       expect(spy).toHaveBeenCalledTimes(1);
@@ -255,7 +260,7 @@ describe('DeleteConfirmationModalComponent', () => {
 
     it('should emit cancel when secondary button is clicked', () => {
       const spy = vi.fn();
-      component.cancel.subscribe(spy);
+      component.cancelModal.subscribe(spy);
 
       const cancelBtn = fixture.debugElement.query(By.css('.btn-secondary'));
       cancelBtn.triggerEventHandler('click', null);
@@ -265,7 +270,7 @@ describe('DeleteConfirmationModalComponent', () => {
 
     it('should emit cancel when close button is clicked', () => {
       const spy = vi.fn();
-      component.cancel.subscribe(spy);
+      component.cancelModal.subscribe(spy);
 
       const closeBtn = fixture.debugElement.query(By.css('.close-btn'));
       closeBtn.triggerEventHandler('click', null);
@@ -275,7 +280,7 @@ describe('DeleteConfirmationModalComponent', () => {
 
     it('should emit cancel when overlay is clicked', () => {
       const spy = vi.fn();
-      component.cancel.subscribe(spy);
+      component.cancelModal.subscribe(spy);
 
       const overlay = fixture.debugElement.query(By.css('.modal-overlay'));
       overlay.triggerEventHandler('click', null);
@@ -285,7 +290,7 @@ describe('DeleteConfirmationModalComponent', () => {
 
     it('should not emit cancel when modal content is clicked (stopPropagation)', () => {
       const spy = vi.fn();
-      component.cancel.subscribe(spy);
+      component.cancelModal.subscribe(spy);
 
       const content = fixture.debugElement.query(By.css('.modal-content'));
       const mockEvent = { stopPropagation: vi.fn() };
@@ -312,7 +317,7 @@ describe('DeleteConfirmationModalComponent', () => {
       component.messageParams = {};
       fixture.detectChanges();
 
-      const message = (component as any).translatedMessage();
+      const message = component['translatedMessage']();
       expect(message).toBe('');
     });
 
@@ -350,7 +355,7 @@ describe('DeleteConfirmationModalComponent', () => {
       fixture.detectChanges();
 
       const spy = vi.fn();
-      component.cancel.subscribe(spy);
+      component.cancelModal.subscribe(spy);
 
       component.onCancel();
       component.onCancel();
@@ -380,7 +385,7 @@ describe('DeleteConfirmationModalComponent', () => {
       component.messageParams = { count: '', source: '' };
       fixture.detectChanges();
 
-      const message = (component as any).translatedMessage();
+      const message = component['translatedMessage']();
       expect(message).toBe('Are you sure you want to delete  items from ?');
     });
   });
@@ -416,6 +421,77 @@ describe('DeleteConfirmationModalComponent', () => {
       expect(body).toBeTruthy();
       // The message comes from translatedMessage() computed
       expect(body.nativeElement.textContent).toBeTruthy();
+    });
+  });
+
+  describe('Using DeleteConfirmationModalHarness', () => {
+    let harness: DeleteConfirmationModalHarness;
+
+    beforeEach(async () => {
+      harness = await getHarness(fixture, DeleteConfirmationModalHarness);
+    });
+
+    it('should report open state accurately', async () => {
+      fixture.componentRef.setInput('show', false);
+      expect(await harness.isOpen()).toBe(false);
+
+      fixture.componentRef.setInput('icon', AlertTriangle);
+      fixture.componentRef.setInput('show', true);
+      expect(await harness.isOpen()).toBe(true);
+    });
+
+    it('should read title and message text via harness', async () => {
+      fixture.componentRef.setInput('icon', AlertTriangle);
+      fixture.componentRef.setInput('show', true);
+      fixture.componentRef.setInput('titleKey', 'DELETE.TITLE');
+      fixture.componentRef.setInput('messageKey', 'DELETE.MESSAGE');
+
+      expect(await harness.getTitleText()).toBe('DELETE.TITLE');
+      expect(await harness.getMessageText()).toBe('Are you sure you want to delete this?');
+    });
+
+    it('should trigger confirm event on clicking confirm button via harness', async () => {
+      fixture.componentRef.setInput('icon', AlertTriangle);
+      fixture.componentRef.setInput('show', true);
+
+      const confirmSpy = vi.fn();
+      component.confirm.subscribe(confirmSpy);
+
+      await harness.clickConfirm();
+      expect(confirmSpy).toHaveBeenCalledTimes(1);
+    });
+
+    it('should trigger cancel event on clicking cancel button via harness', async () => {
+      fixture.componentRef.setInput('icon', AlertTriangle);
+      fixture.componentRef.setInput('show', true);
+
+      const cancelSpy = vi.fn();
+      component.cancelModal.subscribe(cancelSpy);
+
+      await harness.clickCancel();
+      expect(cancelSpy).toHaveBeenCalledTimes(1);
+    });
+
+    it('should trigger cancel event on clicking close button via harness', async () => {
+      fixture.componentRef.setInput('icon', AlertTriangle);
+      fixture.componentRef.setInput('show', true);
+
+      const cancelSpy = vi.fn();
+      component.cancelModal.subscribe(cancelSpy);
+
+      await harness.clickClose();
+      expect(cancelSpy).toHaveBeenCalledTimes(1);
+    });
+
+    it('should trigger cancel event on clicking overlay via harness', async () => {
+      fixture.componentRef.setInput('icon', AlertTriangle);
+      fixture.componentRef.setInput('show', true);
+
+      const cancelSpy = vi.fn();
+      component.cancelModal.subscribe(cancelSpy);
+
+      await harness.clickOverlay();
+      expect(cancelSpy).toHaveBeenCalledTimes(1);
     });
   });
 });

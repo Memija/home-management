@@ -188,8 +188,13 @@ export class DemoService {
           // Restore storage data
           if (backup.storage) {
             // Protect preference strings from being double-JSONified
-            const stringPrefKeys = ['theme', 'preferred_language', 'storage_mode', 'last_sync_timestamp'];
-            
+            const stringPrefKeys = [
+              'theme',
+              'preferred_language',
+              'storage_mode',
+              'last_sync_timestamp',
+            ];
+
             for (const [key, value] of Object.entries(backup.storage)) {
               if (stringPrefKeys.includes(key) && typeof value === 'string') {
                 this.storage.setPreference(key, value);

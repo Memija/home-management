@@ -19,7 +19,7 @@ export interface ChartDataParams<T = ConsumptionRecord> {
   familySize?: number;
   roomNames?: string[]; // For heating chart: actual room names
   roomIds?: string[]; // For heating chart: actual room IDs to map data
-  roomColors?: Array<{ border: string; bg: string }>; // For heating chart: room-specific colors
+  roomColors?: { border: string; bg: string }[]; // For heating chart: room-specific colors
 }
 
 @Injectable({
@@ -99,7 +99,9 @@ export class WaterChartService {
   ): ChartConfiguration['data'] {
     const datasets: ChartConfiguration['data']['datasets'] = [
       {
-        data: recs.map((r) => this.sumNullable(r.kitchenWarm, r.kitchenCold, r.bathroomWarm, r.bathroomCold)),
+        data: recs.map((r) =>
+          this.sumNullable(r.kitchenWarm, r.kitchenCold, r.bathroomWarm, r.bathroomCold),
+        ),
         label:
           mode === 'incremental'
             ? this.languageService.translate('CHART.INCREMENTAL_CONSUMPTION')
@@ -114,8 +116,8 @@ export class WaterChartService {
 
     if (showComparison && comparisonData.length > 0) {
       datasets.push({
-        data: comparisonData.map(
-          (d) => this.sumNullable(d.kitchenWarm, d.kitchenCold, d.bathroomWarm, d.bathroomCold),
+        data: comparisonData.map((d) =>
+          this.sumNullable(d.kitchenWarm, d.kitchenCold, d.bathroomWarm, d.bathroomCold),
         ),
         label: this.languageService.translate('CHART.COUNTRY_AVERAGE'),
         type: 'line',
@@ -167,7 +169,7 @@ export class WaterChartService {
         ? ` (${this.languageService.translate('CHART.INCREMENTAL_CONSUMPTION')})`
         : '';
 
-    const datasets: ChartConfiguration['data']['datasets'] = [
+    const datasets: AppChartDataset[] = [
       {
         data: kitchenData,
         label: this.languageService.translate('CHART.KITCHEN_TOTAL') + suffix,
@@ -175,8 +177,8 @@ export class WaterChartService {
         borderColor: '#17a2b8',
         borderWidth: 1,
         tension: 0.4,
-        categoryId: 'kitchenTotal'
-      } as any,
+        categoryId: 'kitchenTotal',
+      },
       {
         data: bathroomData,
         label: this.languageService.translate('CHART.BATHROOM_TOTAL') + suffix,
@@ -184,14 +186,16 @@ export class WaterChartService {
         borderColor: '#6c757d',
         borderWidth: 1,
         tension: 0.4,
-        categoryId: 'bathroomTotal'
-      } as any,
+        categoryId: 'bathroomTotal',
+      },
     ];
 
     // Add trendlines for each category if enabled
     if (showTrendline && recs.length >= 2) {
       if (hasKitchenData) {
-        const kitchenTrend = this.calculationService.generateTrendlineData(kitchenData.map(v => v || 0));
+        const kitchenTrend = this.calculationService.generateTrendlineData(
+          kitchenData.map((v) => v || 0),
+        );
         datasets.push({
           data: kitchenTrend,
           label:
@@ -208,7 +212,9 @@ export class WaterChartService {
         } as AppChartDataset);
       }
       if (hasBathroomData) {
-        const bathroomTrend = this.calculationService.generateTrendlineData(bathroomData.map(v => v || 0));
+        const bathroomTrend = this.calculationService.generateTrendlineData(
+          bathroomData.map((v) => v || 0),
+        );
         datasets.push({
           data: bathroomTrend,
           label:
@@ -286,7 +292,7 @@ export class WaterChartService {
         borderColor: '#ffc107',
         borderWidth: 1,
         tension: 0.4,
-        categoryId: 'warmTotal'
+        categoryId: 'warmTotal',
       } as AppChartDataset,
       {
         data: coldData,
@@ -295,14 +301,16 @@ export class WaterChartService {
         borderColor: '#6c757d',
         borderWidth: 1,
         tension: 0.4,
-        categoryId: 'coldTotal'
+        categoryId: 'coldTotal',
       } as AppChartDataset,
     ];
 
     // Add trendlines for each category if enabled
     if (showTrendline && recs.length >= 2) {
       if (hasWarmData) {
-        const warmTrend = this.calculationService.generateTrendlineData(warmData.map(v => v || 0));
+        const warmTrend = this.calculationService.generateTrendlineData(
+          warmData.map((v) => v || 0),
+        );
         datasets.push({
           data: warmTrend,
           label:
@@ -319,7 +327,9 @@ export class WaterChartService {
         } as AppChartDataset);
       }
       if (hasColdData) {
-        const coldTrend = this.calculationService.generateTrendlineData(coldData.map(v => v || 0));
+        const coldTrend = this.calculationService.generateTrendlineData(
+          coldData.map((v) => v || 0),
+        );
         datasets.push({
           data: coldTrend,
           label:
@@ -404,7 +414,7 @@ export class WaterChartService {
         fill: false,
         tension: 0.4,
         pointRadius: recs.length === 1 ? 8 : 3,
-        categoryId: 'bathroomWarm'
+        categoryId: 'bathroomWarm',
       } as AppChartDataset,
       {
         label: this.languageService.translate('CHART.KITCHEN_WARM') + suffix,
@@ -414,7 +424,7 @@ export class WaterChartService {
         fill: false,
         tension: 0.4,
         pointRadius: recs.length === 1 ? 8 : 3,
-        categoryId: 'kitchenWarm'
+        categoryId: 'kitchenWarm',
       } as AppChartDataset,
       {
         label: this.languageService.translate('CHART.BATHROOM_COLD') + suffix,
@@ -424,7 +434,7 @@ export class WaterChartService {
         fill: false,
         tension: 0.4,
         pointRadius: recs.length === 1 ? 8 : 3,
-        categoryId: 'bathroomCold'
+        categoryId: 'bathroomCold',
       } as AppChartDataset,
       {
         label: this.languageService.translate('CHART.KITCHEN_COLD') + suffix,
@@ -434,14 +444,16 @@ export class WaterChartService {
         fill: false,
         tension: 0.4,
         pointRadius: recs.length === 1 ? 8 : 3,
-        categoryId: 'kitchenCold'
+        categoryId: 'kitchenCold',
       } as AppChartDataset,
     ];
 
     // Add trendlines for each category if enabled
     if (showTrendline && recs.length >= 2) {
       if (hasBathroomWarmData) {
-        const trendData = this.calculationService.generateTrendlineData(bathroomWarmData.map(v => v || 0));
+        const trendData = this.calculationService.generateTrendlineData(
+          bathroomWarmData.map((v) => v || 0),
+        );
         datasets.push({
           data: trendData,
           label:
@@ -458,7 +470,9 @@ export class WaterChartService {
         } as AppChartDataset);
       }
       if (hasKitchenWarmData) {
-        const trendData = this.calculationService.generateTrendlineData(kitchenWarmData.map(v => v || 0));
+        const trendData = this.calculationService.generateTrendlineData(
+          kitchenWarmData.map((v) => v || 0),
+        );
         datasets.push({
           data: trendData,
           label:
@@ -475,7 +489,9 @@ export class WaterChartService {
         } as AppChartDataset);
       }
       if (hasBathroomColdData) {
-        const trendData = this.calculationService.generateTrendlineData(bathroomColdData.map(v => v || 0));
+        const trendData = this.calculationService.generateTrendlineData(
+          bathroomColdData.map((v) => v || 0),
+        );
         datasets.push({
           data: trendData,
           label:
@@ -492,7 +508,9 @@ export class WaterChartService {
         } as AppChartDataset);
       }
       if (hasKitchenColdData) {
-        const trendData = this.calculationService.generateTrendlineData(kitchenColdData.map(v => v || 0));
+        const trendData = this.calculationService.generateTrendlineData(
+          kitchenColdData.map((v) => v || 0),
+        );
         datasets.push({
           data: trendData,
           label:
@@ -581,7 +599,9 @@ export class WaterChartService {
   }
 
   private sumNullable(...values: (number | undefined | null)[]): number | null {
-    const valid = values.filter(v => v !== undefined && v !== null && typeof v === 'number' && !isNaN(v));
+    const valid = values.filter(
+      (v) => v !== undefined && v !== null && typeof v === 'number' && !isNaN(v),
+    );
     if (valid.length === 0) return null;
     return valid.reduce((sum, v) => (sum as number) + (v as number), 0) as number;
   }

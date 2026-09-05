@@ -1,11 +1,17 @@
 <div class="section family-section">
   <div class="title-with-help">
-    <h2>{{ 'SETTINGS.FAMILY_TITLE' | translate }}</h2>
+    <div class="title-group">
+      <h2>{{ 'SETTINGS.FAMILY_TITLE' | translate }}</h2>
+      <span class="member-count-badge" [class.max-reached]="isAtMaxMembers()">
+        {{ isEditing() ? draftMembers().length : safeMembers().length }} / {{ MAX_FAMILY_MEMBERS }}
+      </span>
+    </div>
     <button
       type="button"
       class="help-btn"
       (click)="showHelp()"
       title="{{ 'SETTINGS.FAMILY_HELP_TITLE' | translate }}"
+      aria-label="{{ 'SETTINGS.FAMILY_HELP_TITLE' | translate }}"
     >
       <lucide-icon [img]="HelpIcon" size="20"></lucide-icon>
     </button>
@@ -24,10 +30,12 @@
         <p class="empty-state">{{ 'SETTINGS.NO_MEMBERS' | translate }}</p>
       } @else {
         <ul>
-          @for (member of safeMembers(); track member.id) {
-            <li>
+          @for (member of safeMembers(); track trackMember($index, member)) {
+            <li class="member-card">
               <div class="member-info">
-                <img [src]="member.avatar" [alt]="member.name" title="{{ member.name }}" />
+                <div class="avatar-wrapper">
+                  <img [src]="member.avatar" [alt]="member.name" title="{{ member.name }}" />
+                </div>
                 <div class="details">
                   <span class="name">{{ member.name }} {{ member.surname }}</span>
                   <div class="badges">
@@ -56,6 +64,26 @@
                   </div>
                 </div>
               </div>
+              <div class="member-actions">
+                <button
+                  type="button"
+                  class="action-icon-btn edit-action-btn edit-btn"
+                  (click)="startEditMember(member)"
+                  title="{{ 'SETTINGS.EDIT_MEMBER' | translate }}"
+                  aria-label="{{ 'SETTINGS.EDIT_MEMBER' | translate }}"
+                >
+                  <lucide-icon [img]="EditIcon" size="16"></lucide-icon>
+                </button>
+                <button
+                  type="button"
+                  class="action-icon-btn remove-action-btn remove-btn"
+                  (click)="removeMember(member.id)"
+                  title="{{ 'SETTINGS.REMOVE' | translate }}"
+                  aria-label="{{ 'SETTINGS.REMOVE' | translate }}"
+                >
+                  <lucide-icon [img]="DeleteIcon" size="16"></lucide-icon>
+                </button>
+              </div>
             </li>
           }
         </ul>
@@ -66,12 +94,17 @@
     <div class="button-group">
       <button
         type="button"
-        class="edit-btn"
-        (click)="editFamily()"
-        title="{{ 'SETTINGS.EDIT_FAMILY' | translate }}"
+        class="add-btn"
+        (click)="openAddMemberModal()"
+        [disabled]="isAtMaxMembers()"
+        title="{{
+          isAtMaxMembers()
+            ? ('SETTINGS.MAX_MEMBERS_ERROR' | translate)
+            : ('SETTINGS.ADD_MEMBER' | translate)
+        }}"
       >
-        <lucide-icon [img]="EditIcon" size="16"></lucide-icon>
-        <span class="btn-text">{{ 'SETTINGS.EDIT_FAMILY' | translate }}</span>
+        <lucide-icon [img]="AddIcon" size="15"></lucide-icon>
+        <span class="btn-text">{{ 'SETTINGS.ADD_MEMBER' | translate }}</span>
       </button>
       <button
         type="button"
@@ -98,81 +131,189 @@
     <!-- BULK EDIT VIEW -->
     <!-- ============================================ -->
     <div class="members-list editing">
-      <h3>{{ 'SETTINGS.CURRENT_MEMBERS' | translate }}</h3>
+      <div class="list-header">
+        <h3>{{ 'SETTINGS.CURRENT_MEMBERS' | translate }}</h3>
+      </div>
       @if (draftMembers().length === 0) {
         <p class="empty-state">{{ 'SETTINGS.NO_MEMBERS' | translate }}</p>
       } @else {
         <ul>
-          @for (member of draftMembers(); track member.id) {
-            <li>
-              @if (editingMemberId() === member.id) {
-                <!-- Inline edit form using reusable component -->
-                <app-member-editor
-                  [member]="member"
-                  [avatars]="householdService.avatars"
-                  (save)="onMemberEditorSave($event)"
-                  (cancel)="cancelEditMember()"
-                >
-                </app-member-editor>
-              } @else {
-                <!-- Normal member display with edit and remove buttons -->
-                <div class="member-info">
+          @for (member of draftMembers(); track trackMember($index, member)) {
+            <li class="member-card">
+              <div class="member-info">
+                <div class="avatar-wrapper">
                   <img [src]="member.avatar" [alt]="member.name" title="{{ member.name }}" />
-                  <div class="details">
-                    <span class="name">{{ member.name }} {{ member.surname }}</span>
-                    <div class="badges">
-                      @if (member.type && member.type !== 'other') {
-                        <span class="badge" [class.kid]="member.type === 'kid'">
-                          <lucide-icon
-                            [img]="member.type === 'kid' ? KidIcon : AdultIcon"
-                            size="14"
-                          ></lucide-icon>
-                          <span class="badge-text">{{
-                            'SETTINGS.TYPES.' + (member.type | uppercase) | translate
-                          }}</span>
-                        </span>
-                      }
-                      @if (member.gender && member.gender !== 'other') {
-                        <span class="badge gender" [class.female]="member.gender === 'female'">
-                          <lucide-icon
-                            [img]="member.gender === 'female' ? FemaleIcon : MaleIcon"
-                            size="14"
-                          ></lucide-icon>
-                          <span class="badge-text">{{
-                            'SETTINGS.GENDERS.' + (member.gender | uppercase) | translate
-                          }}</span>
-                        </span>
-                      }
-                    </div>
+                </div>
+                <div class="details">
+                  <span class="name">{{ member.name }} {{ member.surname }}</span>
+                  <div class="badges">
+                    @if (member.type && member.type !== 'other') {
+                      <span class="badge" [class.kid]="member.type === 'kid'">
+                        <lucide-icon
+                          [img]="member.type === 'kid' ? KidIcon : AdultIcon"
+                          size="14"
+                        ></lucide-icon>
+                        <span class="badge-text">{{
+                          'SETTINGS.TYPES.' + (member.type | uppercase) | translate
+                        }}</span>
+                      </span>
+                    }
+                    @if (member.gender && member.gender !== 'other') {
+                      <span class="badge gender" [class.female]="member.gender === 'female'">
+                        <lucide-icon
+                          [img]="member.gender === 'female' ? FemaleIcon : MaleIcon"
+                          size="14"
+                        ></lucide-icon>
+                        <span class="badge-text">{{
+                          'SETTINGS.GENDERS.' + (member.gender | uppercase) | translate
+                        }}</span>
+                      </span>
+                    }
                   </div>
                 </div>
-                <div class="member-actions">
-                  <button
-                    class="edit-btn"
-                    (click)="startEditMember(member)"
-                    title="{{ 'SETTINGS.EDIT_MEMBER' | translate }}"
-                  >
-                    <lucide-icon [img]="EditIcon" size="16"></lucide-icon>
-                  </button>
-                  <button
-                    class="remove-btn"
-                    (click)="removeMember(member.id)"
-                    title="{{ 'SETTINGS.REMOVE' | translate }}"
-                  >
-                    <lucide-icon [img]="DeleteIcon" size="16"></lucide-icon>
-                  </button>
-                </div>
-              }
+              </div>
+              <div class="member-actions">
+                <button
+                  type="button"
+                  class="action-icon-btn edit-action-btn edit-btn"
+                  (click)="startEditMember(member)"
+                  title="{{ 'SETTINGS.EDIT_MEMBER' | translate }}"
+                  aria-label="{{ 'SETTINGS.EDIT_MEMBER' | translate }}"
+                >
+                  <lucide-icon [img]="EditIcon" size="16"></lucide-icon>
+                </button>
+                <button
+                  type="button"
+                  class="action-icon-btn remove-action-btn remove-btn"
+                  (click)="removeMember(member.id)"
+                  title="{{ 'SETTINGS.REMOVE' | translate }}"
+                  aria-label="{{ 'SETTINGS.REMOVE' | translate }}"
+                >
+                  <lucide-icon [img]="DeleteIcon" size="16"></lucide-icon>
+                </button>
+              </div>
             </li>
           }
         </ul>
       }
     </div>
 
-    <!-- Add member form (conditional) -->
-    @if (showAddMemberForm()) {
-      <div class="add-member-form">
-        <h3>{{ 'SETTINGS.ADD_MEMBER_TITLE' | translate }}</h3>
+    <!-- Action buttons for bulk edit view -->
+    <div class="button-group">
+      <button
+        type="button"
+        class="add-btn"
+        (click)="isAtMaxMembers() ? showMaxMembersError.set(true) : toggleAddMemberForm()"
+        [class.disabled]="isAtMaxMembers()"
+        title="{{
+          isAtMaxMembers()
+            ? ('SETTINGS.MAX_MEMBERS_ERROR' | translate)
+            : ('SETTINGS.SHOW_ADD_MEMBER_FORM' | translate)
+        }}"
+      >
+        <lucide-icon [img]="AddIcon" size="16"></lucide-icon>
+        <span class="btn-text">{{ 'SETTINGS.SHOW_ADD_MEMBER_FORM' | translate }}</span>
+      </button>
+      <button
+        type="button"
+        class="save-btn"
+        (click)="saveFamily()"
+        title="{{ 'SETTINGS.SAVE_FAMILY' | translate }}"
+      >
+        <lucide-icon [img]="SaveIcon" size="16"></lucide-icon>
+        <span class="btn-text">{{ 'SETTINGS.SAVE_FAMILY' | translate }}</span>
+      </button>
+      <button
+        type="button"
+        class="cancel-btn"
+        (click)="cancelEdit()"
+        title="{{ 'SETTINGS.CANCEL' | translate }}"
+      >
+        <lucide-icon [img]="CancelIcon" size="16"></lucide-icon>
+        <span class="btn-text">{{ 'SETTINGS.CANCEL' | translate }}</span>
+      </button>
+    </div>
+  }
+</div>
+
+<!-- ============================================ -->
+<!-- EDIT MEMBER MODAL -->
+<!-- ============================================ -->
+@if (editingMember(); as memberToEdit) {
+  <div
+    class="modal-overlay"
+    (click)="cancelEditMember()"
+    tabindex="0"
+    (keyup.enter)="cancelEditMember()"
+  >
+    <div
+      class="modal-content member-modal-content"
+      (click)="$event.stopPropagation()"
+      tabindex="0"
+      (keyup.enter)="$event.stopPropagation()"
+    >
+      <div class="modal-header">
+        <div class="modal-title-with-icon">
+          <lucide-icon [img]="EditIcon" size="20" class="header-icon"></lucide-icon>
+          <h3>{{ 'SETTINGS.EDIT_MEMBER' | translate }}: {{ memberToEdit.name }} {{ memberToEdit.surname }}</h3>
+        </div>
+        <button
+          type="button"
+          class="close-btn"
+          (click)="cancelEditMember()"
+          title="{{ 'SETTINGS.CANCEL' | translate }}"
+          aria-label="{{ 'SETTINGS.CANCEL' | translate }}"
+        >
+          &times;
+        </button>
+      </div>
+
+      <div class="modal-body">
+        <app-member-editor
+          [member]="memberToEdit"
+          [avatars]="householdService.avatars"
+          (save)="onMemberEditorSave($event)"
+          (cancelModal)="cancelEditMember()"
+        >
+        </app-member-editor>
+      </div>
+    </div>
+  </div>
+}
+
+<!-- ============================================ -->
+<!-- ADD MEMBER MODAL -->
+<!-- ============================================ -->
+@if (showAddMemberForm()) {
+  <div
+    class="modal-overlay add-member-modal-overlay"
+    (click)="closeAddMemberModal()"
+    tabindex="0"
+    (keyup.enter)="closeAddMemberModal()"
+  >
+    <div
+      class="modal-content member-modal-content add-member-form"
+      (click)="$event.stopPropagation()"
+      tabindex="0"
+      (keyup.enter)="$event.stopPropagation()"
+    >
+      <div class="modal-header">
+        <div class="modal-title-with-icon">
+          <lucide-icon [img]="AddIcon" size="20" class="header-icon"></lucide-icon>
+          <h3>{{ 'SETTINGS.ADD_MEMBER_TITLE' | translate }}</h3>
+        </div>
+        <button
+          type="button"
+          class="close-btn"
+          (click)="closeAddMemberModal()"
+          title="{{ 'SETTINGS.CANCEL' | translate }}"
+          aria-label="{{ 'SETTINGS.CANCEL' | translate }}"
+        >
+          &times;
+        </button>
+      </div>
+
+      <div class="modal-body">
         <div class="form-grid">
           <div class="form-group">
             <label for="new-member-name">{{ 'SETTINGS.NAME' | translate }}</label>
@@ -213,20 +354,30 @@
             }
           </div>
         </div>
+
         <div class="form-grid">
           <div class="form-group">
             <span class="form-label">{{ 'SETTINGS.TYPE' | translate }}</span>
             <div class="toggle-group">
               <button
+                type="button"
+                class="toggle-btn toggle-adult"
                 [class.active]="newMemberType() === 'adult'"
                 (click)="newMemberType.set('adult')"
+                title="{{ 'SETTINGS.TYPES.ADULT' | translate }}"
               >
                 <lucide-icon [img]="AdultIcon" size="16"></lucide-icon>
-                {{ 'SETTINGS.TYPES.ADULT' | translate }}
+                <span class="toggle-text">{{ 'SETTINGS.TYPES.ADULT' | translate }}</span>
               </button>
-              <button [class.active]="newMemberType() === 'kid'" (click)="newMemberType.set('kid')">
+              <button
+                type="button"
+                class="toggle-btn toggle-kid"
+                [class.active]="newMemberType() === 'kid'"
+                (click)="newMemberType.set('kid')"
+                title="{{ 'SETTINGS.TYPES.KID' | translate }}"
+              >
                 <lucide-icon [img]="KidIcon" size="16"></lucide-icon>
-                {{ 'SETTINGS.TYPES.KID' | translate }}
+                <span class="toggle-text">{{ 'SETTINGS.TYPES.KID' | translate }}</span>
               </button>
             </div>
           </div>
@@ -234,27 +385,32 @@
             <span class="form-label">{{ 'SETTINGS.GENDER' | translate }}</span>
             <div class="toggle-group">
               <button
+                type="button"
+                class="toggle-btn toggle-male"
                 [class.active]="newMemberGender() === 'male'"
                 (click)="newMemberGender.set('male')"
+                title="{{ 'SETTINGS.GENDERS.MALE' | translate }}"
               >
                 <lucide-icon [img]="MaleIcon" size="16"></lucide-icon>
-                {{ 'SETTINGS.GENDERS.MALE' | translate }}
+                <span class="toggle-text">{{ 'SETTINGS.GENDERS.MALE' | translate }}</span>
               </button>
               <button
+                type="button"
+                class="toggle-btn toggle-female"
                 [class.active]="newMemberGender() === 'female'"
                 (click)="newMemberGender.set('female')"
+                title="{{ 'SETTINGS.GENDERS.FEMALE' | translate }}"
               >
                 <lucide-icon [img]="FemaleIcon" size="16"></lucide-icon>
-                {{ 'SETTINGS.GENDERS.FEMALE' | translate }}
+                <span class="toggle-text">{{ 'SETTINGS.GENDERS.FEMALE' | translate }}</span>
               </button>
             </div>
           </div>
-        </div>
-        <div class="form-group">
-          <span class="form-label">{{ 'SETTINGS.UPLOAD_PICTURE' | translate }}</span>
+        </div>        <div class="form-group">
+          <span class="form-label">{{ 'SETTINGS.CUSTOM_PICTURE' | translate }}</span>
           <label class="upload-btn">
-            <lucide-icon [img]="ImportIcon" size="16"></lucide-icon>
-            {{ 'SETTINGS.UPLOAD_PICTURE' | translate }}
+            <lucide-icon [img]="ImportIcon" size="14"></lucide-icon>
+            <span class="btn-text">{{ 'SETTINGS.UPLOAD_PICTURE' | translate }}</span>
             <input
               type="file"
               id="new-member-file"
@@ -270,6 +426,7 @@
             </div>
           }
         </div>
+
         <div class="form-group">
           <span class="form-label">{{ 'SETTINGS.SELECT_AVATAR' | translate }}</span>
           <div class="avatar-grid">
@@ -278,70 +435,45 @@
                 [src]="avatar"
                 [class.selected]="selectedAvatar() === avatar"
                 (click)="selectAvatar(avatar)"
-                alt="Avatar option"
                 alt="Hero Avatar"
                 title="{{ 'SETTINGS.SELECT_AVATAR' | translate }}"
+                tabindex="0"
+                (keyup.enter)="selectAvatar(avatar)"
               />
             }
           </div>
         </div>
+      </div>
+
+      <div class="modal-footer">
+        <button type="button" class="btn-secondary cancel-btn" (click)="closeAddMemberModal()">
+          <lucide-icon [img]="CancelIcon" size="15"></lucide-icon>
+          <span class="btn-text">{{ 'SETTINGS.CANCEL' | translate }}</span>
+        </button>
         <button
-          class="add-btn"
+          type="button"
+          class="btn-primary add-btn submit-add-btn"
           (click)="addMember()"
           [disabled]="
             !newMemberName() ||
             !newMemberSurname() ||
+            isAtMaxMembers() ||
             newMemberNameError() ||
             newMemberSurnameError()
           "
           title="{{ 'SETTINGS.ADD_MEMBER' | translate }}"
         >
-          <lucide-icon [img]="AddIcon" size="16"></lucide-icon>
+          <lucide-icon [img]="AddIcon" size="15"></lucide-icon>
           <span class="btn-text">{{ 'SETTINGS.ADD_MEMBER' | translate }}</span>
         </button>
       </div>
-    }
-
-    <!-- Action buttons for bulk edit view -->
-    <div class="button-group">
-      @if (!showAddMemberForm()) {
-        <button
-          type="button"
-          class="add-btn"
-          (click)="isAtMaxMembers() ? showMaxMembersError.set(true) : toggleAddMemberForm()"
-          [class.disabled]="isAtMaxMembers()"
-          title="{{
-            isAtMaxMembers()
-              ? ('SETTINGS.MAX_MEMBERS_ERROR' | translate)
-              : ('SETTINGS.SHOW_ADD_MEMBER_FORM' | translate)
-          }}"
-        >
-          <lucide-icon [img]="AddIcon" size="16"></lucide-icon>
-          <span class="btn-text">{{ 'SETTINGS.SHOW_ADD_MEMBER_FORM' | translate }}</span>
-        </button>
-      }
-      <button
-        type="button"
-        class="save-btn"
-        (click)="saveFamily()"
-        title="{{ 'SETTINGS.SAVE_FAMILY' | translate }}"
-      >
-        <lucide-icon [img]="SaveIcon" size="16"></lucide-icon>
-        <span class="btn-text">{{ 'SETTINGS.SAVE_FAMILY' | translate }}</span>
-      </button>
-      <button
-        type="button"
-        class="cancel-btn"
-        (click)="cancelEdit()"
-        title="{{ 'SETTINGS.CANCEL' | translate }}"
-      >
-        <lucide-icon [img]="CancelIcon" size="16"></lucide-icon>
-        <span class="btn-text">{{ 'SETTINGS.CANCEL' | translate }}</span>
-      </button>
     </div>
-  }
-</div>
+  </div>
+}
 
+<!-- ============================================ -->
+<!-- CONFIRMATION & UTILITY MODALS -->
+<!-- ============================================ -->
 <app-delete-confirmation-modal
   [show]="showDeleteModal()"
   [titleKey]="'SETTINGS.DELETE_MEMBER_CONFIRM_TITLE'"
@@ -350,7 +482,7 @@
   [deleteKey]="'SETTINGS.DELETE_MEMBER_BUTTON'"
   [icon]="DeleteIcon"
   (confirm)="confirmDelete()"
-  (cancel)="cancelDelete()"
+  (cancelModal)="cancelDelete()"
 >
 </app-delete-confirmation-modal>
 
@@ -363,7 +495,7 @@
   [deleteKey]="'SETTINGS.UNSAVED_CHANGES_LEAVE'"
   [icon]="WarningIcon"
   (confirm)="confirmLeaveWithoutSaving()"
-  (cancel)="stayAndSave()"
+  (cancelModal)="stayAndSave()"
 >
 </app-delete-confirmation-modal>
 
@@ -375,7 +507,7 @@
   [confirmKey]="'HOME.IMPORT_BUTTON'"
   [icon]="ImportIcon"
   (confirm)="confirmImportFamily()"
-  (cancel)="cancelImportFamily()"
+  (cancelModal)="cancelImportFamily()"
 >
 </app-confirmation-modal>
 
@@ -384,7 +516,7 @@
   [title]="'SETTINGS.IMPORT_FAMILY_ERROR_TITLE'"
   [message]="importErrorMessage()"
   [instructions]="importErrorInstructions()"
-  (cancel)="closeImportErrorModal()"
+  (cancelModal)="closeImportErrorModal()"
 >
 </app-error-modal>
 
@@ -402,7 +534,7 @@
     'SETTINGS.DUPLICATE_MEMBER_INSTRUCTION_2',
     'SETTINGS.DUPLICATE_MEMBER_INSTRUCTION_3',
   ]"
-  (cancel)="closeDuplicateMemberError()"
+  (cancelModal)="closeDuplicateMemberError()"
 >
 </app-error-modal>
 
@@ -415,7 +547,7 @@
       .replace('{max}', MAX_FAMILY_MEMBERS.toString())
   "
   [instructions]="['SETTINGS.MAX_MEMBERS_INSTRUCTION_1', 'SETTINGS.MAX_MEMBERS_INSTRUCTION_2']"
-  (cancel)="showMaxMembersError.set(false)"
+  (cancelModal)="showMaxMembersError.set(false)"
 >
 </app-error-modal>
 
@@ -423,6 +555,6 @@
   [show]="showHelpModal()"
   [titleKey]="'SETTINGS.FAMILY_HELP_TITLE'"
   [steps]="helpSteps"
-  (close)="closeHelp()"
+  (closeModal)="closeHelp()"
 >
 </app-help-modal>

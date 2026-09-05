@@ -101,7 +101,7 @@ export class CountrySelectorComponent {
   constructor() {
     // Sync search field when language changes
     effect(() => {
-      const lang = this.languageService.currentLang();
+      this.languageService.currentLang();
       const code = this._countryCode();
       if (code) {
         const info = this.countryService.getCountryInfoByCode(code);

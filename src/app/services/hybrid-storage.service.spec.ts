@@ -40,16 +40,23 @@ describe('HybridStorageService', () => {
   beforeEach(() => {
     TestBed.resetTestingModule();
 
-    // Ensure localStorage has the required methods for tests
     if (typeof localStorage === 'undefined' || !localStorage.clear) {
-      const mockStorage: any = {
-        store: {} as Record<string, string>,
-        getItem: (key: string) => mockStorage.store[key] || null,
-        setItem: (key: string, value: string) => mockStorage.store[key] = value,
-        removeItem: (key: string) => delete mockStorage.store[key],
-        clear: () => mockStorage.store = {},
-        key: (index: number) => Object.keys(mockStorage.store)[index] || null,
-        get length() { return Object.keys(mockStorage.store).length; }
+      const store: Record<string, string> = {};
+      const mockStorage = {
+        getItem: (key: string) => store[key] || null,
+        setItem: (key: string, value: string) => {
+          store[key] = value;
+        },
+        removeItem: (key: string) => {
+          delete store[key];
+        },
+        clear: () => {
+          for (const k of Object.keys(store)) delete store[k];
+        },
+        key: (index: number) => Object.keys(store)[index] || null,
+        get length() {
+          return Object.keys(store).length;
+        },
       };
       vi.stubGlobal('localStorage', mockStorage);
     }
@@ -94,7 +101,7 @@ describe('HybridStorageService', () => {
     });
 
     service = TestBed.inject(HybridStorageService);
-    
+
     // Set default mock returns for new timestamp methods
     firebaseStorageSpy.getCloudUpdateTimestamp.mockResolvedValue(0);
     firebaseStorageSpy.updateCloudTimestamp.mockResolvedValue(undefined);
@@ -288,7 +295,7 @@ describe('HybridStorageService', () => {
 
     it('pullFromCloud() should export from firebase and import to local', async () => {
       authServiceSpy.isAuthenticated.mockReturnValue(true);
-      const cloudData: any = {
+      const cloudData: Record<string, unknown> = {
         user_settings: { theme: 'dark', water_chart_view: 'weekly' },
         water_consumption_records: [1, 2, 3],
         storage_mode: 'cloud',
@@ -303,7 +310,7 @@ describe('HybridStorageService', () => {
 
       expect(localStorageSpy.importAll).toHaveBeenCalled();
       // The argument passed to importAll has had keys removed
-      const importedData = localStorageSpy.importAll.mock.calls[0][0] as any;
+      const importedData = localStorageSpy.importAll.mock.calls[0][0] as Record<string, unknown>;
 
       // 'water_consumption_records' should be in importedData
       expect(importedData['water_consumption_records']).toEqual([1, 2, 3]);
@@ -397,8 +404,8 @@ describe('HybridStorageService', () => {
       firebaseStorageSpy.save.mockRejectedValue('Network Error'); // Background failure
 
       // The promise returned by save should resolve successfully because background sync is validly background
-      let error: any;
-      await service.save(key, { foo: 'bar' }).catch((e) => (error = e));
+      let error: unknown;
+      await service.save(key, { foo: 'bar' }).catch((e: unknown) => (error = e));
 
       expect(error).toBeUndefined();
       expect(localStorageSpy.save).toHaveBeenCalled();
@@ -470,7 +477,7 @@ describe('HybridStorageService', () => {
     it('should pull from cloud if cloud is newer', async () => {
       firebaseStorageSpy.getCloudUpdateTimestamp.mockResolvedValue(100);
       localStorageSpy.getPreference.mockReturnValue('50'); // local timestamp
-      
+
       const pullSpy = vi.spyOn(service, 'pullFromCloud').mockResolvedValue(undefined);
       const migrateSpy = vi.spyOn(service, 'migrateLocalToCloud').mockResolvedValue(undefined);
 
@@ -483,7 +490,7 @@ describe('HybridStorageService', () => {
     it('should push to cloud if local is newer', async () => {
       firebaseStorageSpy.getCloudUpdateTimestamp.mockResolvedValue(50);
       localStorageSpy.getPreference.mockReturnValue('100');
-      
+
       const pullSpy = vi.spyOn(service, 'pullFromCloud').mockResolvedValue(undefined);
       const migrateSpy = vi.spyOn(service, 'migrateLocalToCloud').mockResolvedValue(undefined);
 
@@ -496,7 +503,7 @@ describe('HybridStorageService', () => {
     it('should do nothing if timestamps are equal', async () => {
       firebaseStorageSpy.getCloudUpdateTimestamp.mockResolvedValue(100);
       localStorageSpy.getPreference.mockReturnValue('100');
-      
+
       const pullSpy = vi.spyOn(service, 'pullFromCloud').mockResolvedValue(undefined);
       const migrateSpy = vi.spyOn(service, 'migrateLocalToCloud').mockResolvedValue(undefined);
 

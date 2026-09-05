@@ -13,14 +13,14 @@ import { ConsumptionRecord } from '../models/records.model';
 
 describe('ConsumptionDataService', () => {
   let service: ConsumptionDataService;
-  let storageServiceMock: any;
-  let fileStorageServiceMock: any;
-  let excelServiceMock: any;
-  let pdfServiceMock: any;
-  let importValidationServiceMock: any;
-  let languageServiceMock: any;
-  let householdServiceMock: any;
-  let notificationServiceMock: any;
+  let storageServiceMock: Record<string, import('vitest').Mock>;
+  let fileStorageServiceMock: Record<string, import('vitest').Mock>;
+  let excelServiceMock: Record<string, import('vitest').Mock>;
+  let pdfServiceMock: Record<string, import('vitest').Mock>;
+  let importValidationServiceMock: Record<string, import('vitest').Mock>;
+  let languageServiceMock: Record<string, import('vitest').Mock>;
+  let householdServiceMock: Record<string, import('vitest').Mock>;
+  let notificationServiceMock: Record<string, import('vitest').Mock>;
 
   const mockRecords: ConsumptionRecord[] = [
     {

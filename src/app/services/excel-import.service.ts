@@ -191,7 +191,7 @@ export class ExcelImportService {
         }
 
         // Validate each room entry
-        roomEntries.forEach(([roomId, value], index) => {
+        roomEntries.forEach(([roomId, value]) => {
           if (typeof value === 'string') {
             this.validateField(value, `Room "${roomId}"`, 'Heating', errors, fieldKeys, hintKeys);
           } else {
@@ -369,7 +369,7 @@ export class ExcelImportService {
         hintKeys.push('EXCEL.VALIDATION_TOO_LONG_HINT');
       } else if (value !== value.trim()) {
         hintKeys.push('EXCEL.VALIDATION_NO_WHITESPACE_HINT');
-      } else if (/[\[\]\*\/\\\?\:]/.test(value)) {
+      } else if (/[[\]*/\\?:]/.test(value)) {
         hintKeys.push('EXCEL.VALIDATION_INVALID_CHARS_HINT');
       } else {
         hintKeys.push('EXCEL.VALIDATION_REQUIRED_HINT');
@@ -382,9 +382,10 @@ export class ExcelImportService {
    */
   mapImportError(error: unknown): { message: string; details: string; instructions: string[] } {
     const err = error as ImportError;
-    let message = '';
+
+    let message: string;
     let details = '';
-    let instructions: string[] = [];
+    let instructions: string[];
 
     if (err.message === 'invalid_file_type' || (err.error && err.error === 'invalid_file_type')) {
       message = 'SETTINGS.IMPORT_EXCEL_SETTINGS_INVALID_FILE_TYPE';

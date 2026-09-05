@@ -1,13 +1,13 @@
 import { TestBed } from '@angular/core/testing';
 import { CountryFactsService } from './country-facts.service';
 import { LanguageService } from './language.service';
-import { describe, it, expect, beforeEach, vi } from 'vitest';
-import { signal } from '@angular/core';
+import { describe, it, expect, beforeEach } from 'vitest';
+import { signal, WritableSignal } from '@angular/core';
 
 describe('CountryFactsService', () => {
   let service: CountryFactsService;
-  let mockLanguageService: any;
-  let mockCurrentLangSignal: any;
+  let mockLanguageService: { currentLang: WritableSignal<string> };
+  let mockCurrentLangSignal: WritableSignal<string>;
 
   beforeEach(() => {
     mockCurrentLangSignal = signal('en');
@@ -43,12 +43,6 @@ describe('CountryFactsService', () => {
     });
 
     it('should return empty string if no facts found (and no default)', () => {
-      // This is hard to test without mocking the data source which is imported directly.
-      // But we know 'de' and 'en' files are used.
-      // If we want to test empty state, we would need to mock the imports or the private method.
-      // Since we can't easily mock the imports here without complexity, we rely on behavior.
-      // If we assume XX doesn't exist and DEFAULT exists, it returns DEFAULT.
-      // We can check if it returns a non-empty string which implies it works.
       const fact = service.getRandomFact('us');
       expect(fact).toBeTruthy();
     });

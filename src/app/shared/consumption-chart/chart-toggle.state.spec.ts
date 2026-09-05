@@ -1,12 +1,13 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { describe, it, expect, vi } from 'vitest';
 import { ChartToggleState } from './chart-toggle.state';
 import { LocalStorageService } from '../../services/local-storage.service';
 
-const makeStorage = (storedValue: string | null = null): LocalStorageService => ({
-  getPreference: vi.fn().mockReturnValue(storedValue),
-  setPreference: vi.fn(),
-  removePreference: vi.fn(),
-} as unknown as LocalStorageService);
+const makeStorage = (storedValue: string | null = null): LocalStorageService =>
+  ({
+    getPreference: vi.fn().mockReturnValue(storedValue),
+    setPreference: vi.fn(),
+    removePreference: vi.fn(),
+  }) as unknown as LocalStorageService;
 
 describe('ChartToggleState', () => {
   // ─── Trendline ────────────────────────────────────────────────────────────
@@ -45,7 +46,10 @@ describe('ChartToggleState', () => {
     it('should write "false" to the correct key', () => {
       const storage = makeStorage();
       new ChartToggleState(storage, 'electricity').saveTrendlineVisibility(false);
-      expect(storage.setPreference).toHaveBeenCalledWith('electricity_chart_trendline_visible', 'false');
+      expect(storage.setPreference).toHaveBeenCalledWith(
+        'electricity_chart_trendline_visible',
+        'false',
+      );
     });
   });
 
@@ -143,7 +147,10 @@ describe('ChartToggleState', () => {
     it('should write to key containing chartType and view', () => {
       const storage = makeStorage();
       new ChartToggleState(storage, 'heating').savePastForecastVisibility('by-room', true);
-      expect(storage.setPreference).toHaveBeenCalledWith('heating_by-room_show_past_forecast', 'true');
+      expect(storage.setPreference).toHaveBeenCalledWith(
+        'heating_by-room_show_past_forecast',
+        'true',
+      );
     });
   });
 });

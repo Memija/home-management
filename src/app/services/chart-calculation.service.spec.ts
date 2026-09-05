@@ -6,13 +6,14 @@ import {
   ConsumptionRecord,
   DynamicHeatingRecord,
   ElectricityRecord,
+  CombinedData,
 } from '../models/records.model';
 import { vi, describe, it, expect, beforeEach } from 'vitest';
 
 describe('ChartCalculationService', () => {
   let service: ChartCalculationService;
-  let waterAveragesServiceSpy: { getCountryData: any };
-  let electricityAveragesServiceSpy: { getCountryData: any };
+  let waterAveragesServiceSpy: { getCountryData: ReturnType<typeof vi.fn> };
+  let electricityAveragesServiceSpy: { getCountryData: ReturnType<typeof vi.fn> };
 
   beforeEach(() => {
     const waterSpy = { getCountryData: vi.fn() };
@@ -26,8 +27,12 @@ describe('ChartCalculationService', () => {
       ],
     });
     service = TestBed.inject(ChartCalculationService);
-    waterAveragesServiceSpy = TestBed.inject(WaterAveragesService) as any;
-    electricityAveragesServiceSpy = TestBed.inject(ElectricityAveragesService) as any;
+    waterAveragesServiceSpy = TestBed.inject(WaterAveragesService) as unknown as {
+      getCountryData: ReturnType<typeof vi.fn>;
+    };
+    electricityAveragesServiceSpy = TestBed.inject(ElectricityAveragesService) as unknown as {
+      getCountryData: ReturnType<typeof vi.fn>;
+    };
   });
 
   it('should be created', () => {
@@ -103,7 +108,7 @@ describe('ChartCalculationService', () => {
       const result = service.calculateIncrementalData(records);
 
       expect(result.length).toBe(1);
-      expect((result[0] as any).rooms).toEqual({
+      expect((result[0] as unknown as DynamicHeatingRecord).rooms).toEqual({
         room1: 10,
         room2: 20,
         room3: 30,
@@ -121,7 +126,7 @@ describe('ChartCalculationService', () => {
       expect(result.length).toBe(1);
       // room1: 50 < 1000, so use currVal (50) as consumption since reset
       // room2: 520 - 500 = 20 (normal delta)
-      expect((result[0] as any).rooms).toEqual({
+      expect((result[0] as unknown as DynamicHeatingRecord).rooms).toEqual({
         room1: 50,
         room2: 20,
       });
@@ -584,7 +589,7 @@ describe('ChartCalculationService', () => {
 
   const createHeatingRecord = (
     dateString: string,
-    rooms: { [key: string]: number },
+    rooms: Record<string, number>,
   ): DynamicHeatingRecord => {
     return { date: new Date(dateString), rooms };
   };
@@ -640,7 +645,7 @@ describe('ChartCalculationService', () => {
     const result = service.calculateIncrementalData(records, spikes);
 
     // Dec 7 delta: 271 < 1200 -> 271
-    expect((result[0] as any).rooms['room_3']).toBe(271);
+    expect((result[0] as unknown as DynamicHeatingRecord).rooms['room_3']).toBe(271);
   });
 
   it('should zero out delta if record matches an ignored spike', () => {
@@ -653,7 +658,7 @@ describe('ChartCalculationService', () => {
     const result = service.calculateIncrementalData(records, spikes);
 
     // Nov 16 delta: 1000. But isSpike=true -> 0.
-    expect((result[0] as any).rooms['room_3']).toBe(0);
+    expect((result[0] as unknown as DynamicHeatingRecord).rooms['room_3']).toBe(0);
   });
 
   describe('calculateDailyAverage (unified)', () => {
@@ -664,8 +669,8 @@ describe('ChartCalculationService', () => {
     });
 
     it('should normalize electricity data correctly', () => {
-      const incrementalData: any[] = [{ date: new Date('2023-01-31'), value: 300 }];
-      const originalData: any[] = [
+      const incrementalData: CombinedData[] = [{ date: new Date('2023-01-31'), value: 300 }];
+      const originalData: ElectricityRecord[] = [
         { date: new Date('2023-01-01'), value: 1000 },
         { date: new Date('2023-01-31'), value: 1300 },
       ];
@@ -674,11 +679,11 @@ describe('ChartCalculationService', () => {
 
       expect(result.length).toBe(2);
       expect(result[1]['value']).toBe(10); // 300 / 30 = 10
-      expect((result[1] as any).normalized.raw).toBe(300);
+      expect((result[1] as unknown as { normalized: { raw: number } }).normalized.raw).toBe(300);
     });
 
     it('should normalize water data correctly', () => {
-      const incrementalData: any[] = [
+      const incrementalData: CombinedData[] = [
         {
           date: new Date('2023-01-11'),
           kitchenWarm: 100,
@@ -687,7 +692,7 @@ describe('ChartCalculationService', () => {
           bathroomCold: 150,
         },
       ];
-      const originalData = [
+      const originalData: ConsumptionRecord[] = [
         {
           date: new Date('2023-01-01'),
           kitchenWarm: 0,
@@ -709,11 +714,13 @@ describe('ChartCalculationService', () => {
       // 10 days interval
       expect(result[1].kitchenWarm).toBe(10); // 100 / 10
       expect(result[1].kitchenCold).toBe(20); // 200 / 10
-      expect((result[1] as any).normalized.kitchenWarm).toBe(100);
+      expect(
+        (result[1] as unknown as { normalized: { kitchenWarm: number } }).normalized.kitchenWarm,
+      ).toBe(100);
     });
 
     it('should normalize heating data correctly', () => {
-      const incrementalData: any[] = [
+      const incrementalData: CombinedData[] = [
         { date: new Date('2023-01-08'), rooms: { room1: 70, room2: 140 } },
       ];
       const originalData: DynamicHeatingRecord[] = [
@@ -724,14 +731,14 @@ describe('ChartCalculationService', () => {
       const result = service.calculateDailyAverage(incrementalData, originalData, 'heating');
 
       // 7 days interval
-      expect((result[1] as any).rooms.room1).toBe(10); // 70 / 7
-      expect((result[1] as any).rooms.room2).toBe(20); // 140 / 7
-      expect((result[1] as any).normalized.room1).toBe(70);
+      expect((result[1] as unknown as DynamicHeatingRecord).rooms['room1']).toBe(10); // 70 / 7
+      expect((result[1] as unknown as DynamicHeatingRecord).rooms['room2']).toBe(20); // 140 / 7
+      expect((result[1] as unknown as { normalized: { room1: number } }).normalized.room1).toBe(70);
     });
 
     it('should pad first record with first original date for all types', () => {
-      const electricityIncremental: any[] = [{ date: new Date('2023-01-08'), value: 70 }];
-      const electricityOriginal: any[] = [
+      const electricityIncremental: CombinedData[] = [{ date: new Date('2023-01-08'), value: 70 }];
+      const electricityOriginal: ElectricityRecord[] = [
         { date: new Date('2023-01-01'), value: 1000 },
         { date: new Date('2023-01-08'), value: 1070 },
       ];
@@ -747,8 +754,10 @@ describe('ChartCalculationService', () => {
     });
 
     it('should treat intervals < 0.5 days as 1 day', () => {
-      const incrementalData: any[] = [{ date: new Date('2023-01-01T12:00:00'), value: 24 }];
-      const originalData: any[] = [
+      const incrementalData: CombinedData[] = [
+        { date: new Date('2023-01-01T12:00:00'), value: 24 },
+      ];
+      const originalData: ElectricityRecord[] = [
         { date: new Date('2023-01-01T08:00:00'), value: 100 },
         { date: new Date('2023-01-01T12:00:00'), value: 124 },
       ];
@@ -757,7 +766,7 @@ describe('ChartCalculationService', () => {
 
       // Short intervals (< 0.5 days) are clamped to 1 day minimum to prevent unrealistic daily averages
       expect(result[1]['value']).toBe(24); // 24 / 1 = 24
-      expect((result[1] as any).normalized.days).toBe(1);
+      expect((result[1] as unknown as { normalized: { days: number } }).normalized.days).toBe(1);
     });
   });
 });

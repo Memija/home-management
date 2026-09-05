@@ -8,8 +8,10 @@ export const errors = {
     EXCEL_DATE_FIX_1: 'Osigurajte da su datumi u DD.MM.YYYY formatu (npr. 14.09.2025)',
     EXCEL_DATE_FIX_2: 'Ili koristite DD/MM/YYYY format (npr. 14/09/2025)',
     EXCEL_DATE_FIX_3: 'Ili koristite YYYY-MM-DD format (npr. 2025-09-14)',
-    EXCEL_COLUMN_FIX_1: 'Provjerite da li imena Excel kolona odgovaraju postavljenim imenima u Postavkama',
-    EXCEL_COLUMN_FIX_2: 'Idite na Postavke → Excel Integracija za pregled ili ažuriranje preslikavanja kolona',
+    EXCEL_COLUMN_FIX_1:
+      'Provjerite da li imena Excel kolona odgovaraju postavljenim imenima u Postavkama',
+    EXCEL_COLUMN_FIX_2:
+      'Idite na Postavke → Excel Integracija za pregled ili ažuriranje preslikavanja kolona',
     EXCEL_GENERIC_FIX_1: 'Provjerite da li je vaš Excel dokument u .xlsx formatu',
     EXCEL_GENERIC_FIX_2: 'Osigurajte da su sve obavezne kolone prisutne uz tačne tipove podataka',
     EXCEL_NUMBER_FIX_1: 'Osigurajte da su sve vrijednosti potrošnje brojevi',
@@ -32,11 +34,14 @@ export const errors = {
     IMPORT_INVALID_DATE_VALUE: "Zapis {{row}}: Nevažeća vrijednost datuma '{{value}}'",
     IMPORT_INVALID_DATE_TYPE: 'Zapis {{row}}: Nevažeća vrsta datuma',
     IMPORT_DUPLICATE_DATE: "Zapis {{row}}: Dupli datum '{{date}}' (prvi put viđen u {firstRow})",
-    IMPORT_INVALID_NUMBER_VALUE: "Zapis {{row}}: Nevažeća brojčana vrijednost '{{value}}' za polje '{{field}}'",
+    IMPORT_INVALID_NUMBER_VALUE:
+      "Zapis {{row}}: Nevažeća brojčana vrijednost '{{value}}' za polje '{{field}}'",
     IMPORT_INVALID_FIELD_TYPE: "Zapis {{row}}: Nevažeća vrsta podataka za polje '{{field}}'",
     IMPORT_INVALID_DATA_FORMAT: 'Nevažeći format podataka: očekivan je niz zapisa',
     IMPORT_EMPTY_FILE: 'Datoteka je prazna ili nema zapisa.',
-    IMPORT_INVALID_EXCEL_FILE_TYPE: 'Nevažeći format datoteke. Očekivana je Excel datoteka (.xlsx, .xls, .csv), dobijen je {{extension}}',
-    IMPORT_EXCEL_MISSING_DATE_COLUMN: 'Nedostaje obavezna Date kolona: {{column}}. Molimo provjerite vaš Excel fajl.',
+    IMPORT_INVALID_EXCEL_FILE_TYPE:
+      'Nevažeći format datoteke. Očekivana je Excel datoteka (.xlsx, .xls, .csv), dobijen je {{extension}}',
+    IMPORT_EXCEL_MISSING_DATE_COLUMN:
+      'Nedostaje obavezna Date kolona: {{column}}. Molimo provjerite vaš Excel fajl.',
   },
 };

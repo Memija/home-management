@@ -13,11 +13,47 @@ import { ThemeService, Theme } from '../services/theme.service';
 import { LanguageService } from '../services/language.service';
 import { LanguageSwitcherComponent } from '../components/language-switcher/language-switcher.component';
 import { TranslatePipe } from '../pipes/translate.pipe';
+import {
+  LucideAngularModule,
+  Droplets,
+  Flame,
+  Zap,
+  Users,
+  BarChart3,
+  Brain,
+  Globe,
+  Cloud,
+  FileSpreadsheet,
+  BookOpen,
+  Pencil,
+  TrendingUp,
+  Sparkles,
+  ShieldCheck,
+  Layers,
+  Infinity as LucideInfinity,
+  Camera,
+  ArrowRight,
+  ArrowDown,
+  CheckCircle2,
+  Sun,
+  Moon,
+  Monitor,
+  Home,
+  Trees,
+  Activity,
+  Clock,
+  Sparkle,
+  LayoutDashboard,
+  Bell,
+  Plus,
+  Play,
+  SlidersHorizontal,
+} from 'lucide-angular';
 
 @Component({
   selector: 'app-landing',
   standalone: true,
-  imports: [RouterLink, LanguageSwitcherComponent, TranslatePipe],
+  imports: [RouterLink, LanguageSwitcherComponent, TranslatePipe, LucideAngularModule],
   templateUrl: './landing.component.html',
   styleUrl: './landing.component.scss',
 })
@@ -26,58 +62,151 @@ export class LandingComponent implements OnInit, OnDestroy {
   protected readonly languageService = inject(LanguageService);
   private readonly platformId = inject(PLATFORM_ID);
 
+  // Icons
+  readonly DropletsIcon = Droplets;
+  readonly FlameIcon = Flame;
+  readonly ZapIcon = Zap;
+  readonly UsersIcon = Users;
+  readonly BarChart3Icon = BarChart3;
+  readonly BrainIcon = Brain;
+  readonly GlobeIcon = Globe;
+  readonly CloudIcon = Cloud;
+  readonly FileSpreadsheetIcon = FileSpreadsheet;
+  readonly BookOpenIcon = BookOpen;
+  readonly PencilIcon = Pencil;
+  readonly TrendingUpIcon = TrendingUp;
+  readonly SparklesIcon = Sparkles;
+  readonly SparkleIcon = Sparkle;
+  readonly ShieldCheckIcon = ShieldCheck;
+  readonly LayersIcon = Layers;
+  readonly InfinityIcon = LucideInfinity;
+  readonly CameraIcon = Camera;
+  readonly ArrowRightIcon = ArrowRight;
+  readonly ArrowDownIcon = ArrowDown;
+  readonly CheckCircle2Icon = CheckCircle2;
+  readonly SunIcon = Sun;
+  readonly MoonIcon = Moon;
+  readonly MonitorIcon = Monitor;
+  readonly HomeIcon = Home;
+  readonly TreesIcon = Trees;
+  readonly ActivityIcon = Activity;
+  readonly ClockIcon = Clock;
+  readonly LayoutDashboardIcon = LayoutDashboard;
+  readonly BellIcon = Bell;
+  readonly PlusIcon = Plus;
+  readonly PlayIcon = Play;
+  readonly SlidersHorizontalIcon = SlidersHorizontal;
+
   protected scrollY = signal(0);
   protected roadProgress = signal(0);
   protected isVisible = signal<Record<string, boolean>>({});
+
   private isDragging = false;
   private readonly onDragMoveBound = this.onDragMove.bind(this);
   private readonly onDragEndBound = this.onDragEnd.bind(this);
 
+  protected readonly highlightKeys = [
+    {
+      icon: ShieldCheck,
+      titleKey: 'LANDING.HIGHLIGHTS.LOCAL_TITLE',
+      descKey: 'LANDING.HIGHLIGHTS.LOCAL_DESC',
+      tags: [
+        'LANDING.HIGHLIGHTS.LOCAL_TAG_1',
+        'LANDING.HIGHLIGHTS.LOCAL_TAG_2',
+        'LANDING.HIGHLIGHTS.LOCAL_TAG_3',
+      ],
+      themeClass: 'highlight--local',
+      color: '#10b981',
+    },
+    {
+      icon: Brain,
+      titleKey: 'LANDING.HIGHLIGHTS.PREDICT_TITLE',
+      descKey: 'LANDING.HIGHLIGHTS.PREDICT_DESC',
+      tags: [
+        'LANDING.HIGHLIGHTS.PREDICT_TAG_1',
+        'LANDING.HIGHLIGHTS.PREDICT_TAG_2',
+        'LANDING.HIGHLIGHTS.PREDICT_TAG_3',
+      ],
+      themeClass: 'highlight--predict',
+      color: '#a855f7',
+    },
+    {
+      icon: Layers,
+      titleKey: 'LANDING.HIGHLIGHTS.UNIFIED_TITLE',
+      descKey: 'LANDING.HIGHLIGHTS.UNIFIED_DESC',
+      tags: [
+        'LANDING.HIGHLIGHTS.UNIFIED_TAG_1',
+        'LANDING.HIGHLIGHTS.UNIFIED_TAG_2',
+        'LANDING.HIGHLIGHTS.UNIFIED_TAG_3',
+      ],
+      themeClass: 'highlight--unified',
+      color: '#0284c7',
+    },
+    {
+      icon: Globe,
+      titleKey: 'LANDING.HIGHLIGHTS.PRIVACY_TITLE',
+      descKey: 'LANDING.HIGHLIGHTS.PRIVACY_DESC',
+      tags: [
+        'LANDING.HIGHLIGHTS.PRIVACY_TAG_1',
+        'LANDING.HIGHLIGHTS.PRIVACY_TAG_2',
+        'LANDING.HIGHLIGHTS.PRIVACY_TAG_3',
+      ],
+      themeClass: 'highlight--privacy',
+      color: '#f43f5e',
+    },
+  ];
+
   protected readonly featureKeys = [
     {
-      icon: '💧',
+      icon: Droplets,
       titleKey: 'LANDING.FEATURES.WATER_TITLE',
       descKey: 'LANDING.FEATURES.WATER_DESC',
       color: '#3b82f6',
     },
     {
-      icon: '🔥',
+      icon: Flame,
       titleKey: 'LANDING.FEATURES.HEATING_TITLE',
       descKey: 'LANDING.FEATURES.HEATING_DESC',
       color: '#f59e0b',
     },
     {
-      icon: '⚡',
+      icon: Zap,
       titleKey: 'LANDING.FEATURES.ELECTRICITY_TITLE',
       descKey: 'LANDING.FEATURES.ELECTRICITY_DESC',
       color: '#8b5cf6',
     },
     {
-      icon: '👨‍👩‍👧‍👦',
+      icon: Users,
       titleKey: 'LANDING.FEATURES.FAMILY_TITLE',
       descKey: 'LANDING.FEATURES.FAMILY_DESC',
       color: '#10b981',
     },
     {
-      icon: '📊',
+      icon: BarChart3,
       titleKey: 'LANDING.FEATURES.ANALYTICS_TITLE',
       descKey: 'LANDING.FEATURES.ANALYTICS_DESC',
       color: '#ec4899',
     },
     {
-      icon: '🌍',
+      icon: Brain,
+      titleKey: 'LANDING.FEATURES.PREDICTIONS_TITLE',
+      descKey: 'LANDING.FEATURES.PREDICTIONS_DESC',
+      color: '#a855f7',
+    },
+    {
+      icon: Globe,
       titleKey: 'LANDING.FEATURES.COUNTRY_TITLE',
       descKey: 'LANDING.FEATURES.COUNTRY_DESC',
       color: '#f97316',
     },
     {
-      icon: '☁️',
+      icon: Cloud,
       titleKey: 'LANDING.FEATURES.CLOUD_TITLE',
       descKey: 'LANDING.FEATURES.CLOUD_DESC',
       color: '#06b6d4',
     },
     {
-      icon: '📄',
+      icon: FileSpreadsheet,
       titleKey: 'LANDING.FEATURES.EXPORT_TITLE',
       descKey: 'LANDING.FEATURES.EXPORT_DESC',
       color: '#14b8a6',
@@ -85,10 +214,10 @@ export class LandingComponent implements OnInit, OnDestroy {
   ];
 
   protected readonly statKeys = [
-    { value: '100%', labelKey: 'LANDING.STATS.FREE' },
-    { value: '3', labelKey: 'LANDING.STATS.TRACKERS' },
-    { value: '∞', labelKey: 'LANDING.STATS.DATA_POINTS' },
-    { value: '0', labelKey: 'LANDING.STATS.ADS' },
+    { value: '100%', labelKey: 'LANDING.STATS.FREE', icon: Sparkles },
+    { value: '3', labelKey: 'LANDING.STATS.TRACKERS', icon: Layers },
+    { value: '∞', labelKey: 'LANDING.STATS.DATA_POINTS', icon: LucideInfinity },
+    { value: '0', labelKey: 'LANDING.STATS.ADS', icon: ShieldCheck },
   ];
 
   protected readonly leftScenery = [
@@ -117,12 +246,36 @@ export class LandingComponent implements OnInit, OnDestroy {
     { top: 94, left: 66, delay: 0.66, type: 'house', icon: '🏠' },
   ];
 
-  protected readonly floatingIcons = [
-    { icon: '💧', top: '15%', left: '10%', delay: '0s', size: '2.5rem' },
-    { icon: '🔥', top: '25%', left: 'auto', right: '15%', delay: '-4s', size: '2rem' },
-    { icon: '⚡', top: '60%', left: '20%', delay: '-8s', size: '2.2rem' },
-    { icon: '📊', top: '70%', left: 'auto', right: '10%', delay: '-12s', size: '1.8rem' },
-    { icon: '🏠', top: '40%', left: '70%', delay: '-16s', size: '3rem' },
+  protected readonly floatingBadges = [
+    { icon: Droplets, top: '16%', left: '8%', delay: '0s', size: '20', color: '#3b82f6' },
+    {
+      icon: Flame,
+      top: '24%',
+      left: 'auto',
+      right: '10%',
+      delay: '-4s',
+      size: '18',
+      color: '#f59e0b',
+    },
+    { icon: Zap, top: '62%', left: '10%', delay: '-8s', size: '18', color: '#8b5cf6' },
+    {
+      icon: BarChart3,
+      top: '72%',
+      left: 'auto',
+      right: '8%',
+      delay: '-12s',
+      size: '18',
+      color: '#ec4899',
+    },
+    {
+      icon: Home,
+      top: '44%',
+      left: 'auto',
+      right: '18%',
+      delay: '-16s',
+      size: '22',
+      color: '#10b981',
+    },
   ];
 
   private observer: IntersectionObserver | null = null;
@@ -153,7 +306,6 @@ export class LandingComponent implements OnInit, OnDestroy {
         entries.forEach((entry) => {
           const id = entry.target.getAttribute('data-animate');
           if (id && entry.isIntersecting) {
-            // Once visible, stay visible (don't hide on leave)
             this.isVisible.update((prev) => ({ ...prev, [id]: true }));
           }
         });
@@ -161,7 +313,6 @@ export class LandingComponent implements OnInit, OnDestroy {
       { threshold: 0.15, rootMargin: '0px 0px -50px 0px' },
     );
 
-    // Observe after a tick so the DOM is ready
     setTimeout(() => {
       document.querySelectorAll('[data-animate]').forEach((el) => {
         this.observer?.observe(el);
@@ -178,9 +329,6 @@ export class LandingComponent implements OnInit, OnDestroy {
     this.roadProgress.set(maxScroll > 0 ? Math.min((this.scrollY() / maxScroll) * 100, 100) : 0);
   }
 
-  /**
-   * Handle click on the road track to jump to a scroll position
-   */
   protected onRoadClick(event: MouseEvent): void {
     const target = event.currentTarget as HTMLElement;
     const rect = target.getBoundingClientRect();
@@ -190,9 +338,17 @@ export class LandingComponent implements OnInit, OnDestroy {
     window.scrollTo({ top: percentage * maxScroll, behavior: 'smooth' });
   }
 
-  /**
-   * Start dragging the house icon to scroll
-   */
+  protected onRoadKeydown(event: Event): void {
+    const e = event as KeyboardEvent;
+    if (e.key === 'Enter' || e.key === ' ') {
+      event.preventDefault();
+      const maxScroll = document.documentElement.scrollHeight - window.innerHeight;
+      const currentScroll = this.scrollY();
+      const nextScroll = Math.min(currentScroll + window.innerHeight * 0.25, maxScroll);
+      window.scrollTo({ top: nextScroll, behavior: 'smooth' });
+    }
+  }
+
   protected onRoadDragStart(event: MouseEvent): void {
     event.preventDefault();
     event.stopPropagation();
@@ -218,9 +374,6 @@ export class LandingComponent implements OnInit, OnDestroy {
     document.removeEventListener('mouseup', this.onDragEndBound);
   }
 
-  /**
-   * Cycle through themes: light → dark → system → light
-   */
   protected cycleTheme(): void {
     const current = this.themeService.currentTheme();
     const themeOrder: Theme[] = ['light', 'dark', 'system'];

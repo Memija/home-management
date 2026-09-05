@@ -26,25 +26,32 @@ export const auth = {
     PULL_ERROR: 'Błąd pobierania danych z chmury',
     SYNC_ERROR: 'Początkowa synchronizacja nieudana',
     PULL_CONFIRM_TITLE: 'Pobrać z chmury?',
-    PULL_CONFIRM_MESSAGE: 'To spowoduje nadpisanie Twoich lokalnych danych danymi z chmury. Tej operacji nie można cofnąć.',
-    CLOUD_DESCRIPTION: 'Po włączeniu Twoje dane są archiwizowane w chmurze i synchronizowane między urządzeniami.',
+    PULL_CONFIRM_MESSAGE:
+      'To spowoduje nadpisanie Twoich lokalnych danych danymi z chmury. Tej operacji nie można cofnąć.',
+    CLOUD_DESCRIPTION:
+      'Po włączeniu Twoje dane są archiwizowane w chmurze i synchronizowane między urządzeniami.',
     LOCAL_DESCRIPTION: 'Dane zostają tylko na tym urządzeniu. Konto nie jest wymagane.',
     SIGN_IN_REQUIRED: 'Zaloguj się, aby włączyć synchronizację',
     DEMO_MODE_WARNING: 'Synchronizacja w chmurze jest wyłączona w trybie demo.',
     DELETE_CLOUD_DATA: 'Usuń dane z chmury',
     DELETE_CLOUD_TITLE: 'Usuń dane z chmury?',
-    DELETE_CLOUD_MESSAGE: 'To trwale usunie wszystkie Twoje dane z chmury. Dane lokalne pozostaną bezpieczne. Tej operacji nie można cofnąć.',
+    DELETE_CLOUD_MESSAGE:
+      'To trwale usunie wszystkie Twoje dane z chmury. Dane lokalne pozostaną bezpieczne. Tej operacji nie można cofnąć.',
     DELETE_SUCCESS: 'Dane z chmury usunięte. Dane pozostają na Twoim urządzeniu.',
     DELETE_ERROR: 'Błąd usuwania danych z chmury',
     HELP_TITLE: 'O Synchronizacji w Chmurze',
     HELP_STEP1_TITLE: 'Czym jest Synchronizacja w Chmurze?',
-    HELP_STEP1_DESC: 'Synchronizacja w chmurze bezpiecznie archiwizuje Twoje dane w chmurze. Dane są automatycznie synchronizowane między urządzeniami po zalogowaniu na to samo konto Google. Obecnie obsługujemy tylko konta Google.',
+    HELP_STEP1_DESC:
+      'Synchronizacja w chmurze bezpiecznie archiwizuje Twoje dane w chmurze. Dane są automatycznie synchronizowane między urządzeniami po zalogowaniu na to samo konto Google. Obecnie obsługujemy tylko konta Google.',
     HELP_STEP2_TITLE: 'Wysyłanie i Pobieranie',
-    HELP_STEP2_DESC: 'Użyj "Wyślij do chmury", aby przesłać lokalne dane. "Pobierz z chmury" przywraca dane na to urządzenie, nadpisując obecne dane lokalne.',
+    HELP_STEP2_DESC:
+      'Użyj "Wyślij do chmury", aby przesłać lokalne dane. "Pobierz z chmury" przywraca dane na to urządzenie, nadpisując obecne dane lokalne.',
     HELP_STEP3_TITLE: 'Prywatność i Bezpieczeństwo',
-    HELP_STEP3_DESC: 'Wszystkie dane są przechowywane w Firebase i chronione regułami bezpieczeństwa. Możesz je usunąć w dowolnym momencie. Dane lokalne zawsze zostają u Ciebie.',
+    HELP_STEP3_DESC:
+      'Wszystkie dane są przechowywane w Firebase i chronione regułami bezpieczeństwa. Możesz je usunąć w dowolnym momencie. Dane lokalne zawsze zostają u Ciebie.',
     CLEAR_LOCAL_TITLE: 'Usunąć dane lokalne?',
-    CLEAR_LOCAL_MESSAGE: 'Synchronizacja została wyłączona. Czy chcesz usunąć wszystkie lokalne dane z tego urządzenia? Tej operacji nie można cofnąć.',
+    CLEAR_LOCAL_MESSAGE:
+      'Synchronizacja została wyłączona. Czy chcesz usunąć wszystkie lokalne dane z tego urządzenia? Tej operacji nie można cofnąć.',
     KEEP_LOCAL: 'Zachowaj dane lokalne',
     CLEAR_LOCAL: 'Usuń dane lokalne',
     CLEAR_LOCAL_DEMO_DISABLED: 'Usuwanie danych lokalnych jest wyłączone w trybie demo.',

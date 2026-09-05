@@ -1,15 +1,22 @@
 import { TestBed } from '@angular/core/testing';
 import { FamilyImportService } from './family-import.service';
-import { HouseholdService } from './household.service';
+import { HouseholdService, HouseholdMember } from './household.service';
 import { LanguageService } from './language.service';
 import { FileStorageService } from './file-storage.service';
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 
 describe('FamilyImportService', () => {
   let service: FamilyImportService;
-  let mockHouseholdService: any;
-  let mockLanguageService: any;
-  let mockFileStorageService: any;
+  let mockHouseholdService: {
+    avatars: string[];
+  };
+  let mockLanguageService: {
+    translate: ReturnType<typeof vi.fn>;
+  };
+  let mockFileStorageService: {
+    importData: ReturnType<typeof vi.fn>;
+    exportData: ReturnType<typeof vi.fn>;
+  };
 
   beforeEach(() => {
     mockHouseholdService = {
@@ -17,7 +24,7 @@ describe('FamilyImportService', () => {
     };
 
     mockLanguageService = {
-      translate: vi.fn().mockImplementation((key) => key),
+      translate: vi.fn().mockImplementation((key: string) => key),
     };
 
     mockFileStorageService = {
@@ -155,9 +162,9 @@ describe('FamilyImportService', () => {
 
   describe('exportMembers', () => {
     it('should export members', async () => {
-      const members = [
+      const members: HouseholdMember[] = [
         { id: '1', name: 'John', surname: 'Doe', type: 'adult', gender: 'male', avatar: 'a.png' },
-      ] as any[];
+      ];
 
       await service.exportMembers(members);
 

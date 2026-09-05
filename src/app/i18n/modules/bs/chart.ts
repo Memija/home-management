@@ -16,16 +16,23 @@ export const chart = {
     YOUR_FAMILY: 'Vaša porodica',
     AVERAGE_FAMILY: 'Prosjek (ista veličina)',
     COMPARISON_NOTE: 'Poređenje je bazirano na porodicama od {{size}} članova na ovoj adresi',
-    COMPARISON_NOTE_CITY: 'Poređenje je bazirano na {{city}} prosjeku (128 litara po osobi dnevno) za porodice od {{size}} članova',
-    COMPARISON_NOTE_COUNTRY: 'Poređenje je bazirano na prosjeku za {{country}} ({{average}} litara po osobi dnevno) za porodice od {{size}} članova',
-    COMPARISON_NOTE_COUNTRY_HEATING: 'Poređenje je bazirano na prosjeku za {{country}} ({{average}} kWh po domaćinstvu godišnje)',
-    COMPARISON_NOTE_COUNTRY_ELECTRICITY: 'Poređenje je bazirano na prosjeku za {{country}} ({{average}} kWh po osobi godišnje) za porodice od {{size}} članova',
+    COMPARISON_NOTE_CITY:
+      'Poređenje je bazirano na {{city}} prosjeku (128 litara po osobi dnevno) za porodice od {{size}} članova',
+    COMPARISON_NOTE_COUNTRY:
+      'Poređenje je bazirano na prosjeku za {{country}} ({{average}} litara po osobi dnevno) za porodice od {{size}} članova',
+    COMPARISON_NOTE_COUNTRY_HEATING:
+      'Poređenje je bazirano na prosjeku za {{country}} ({{average}} kWh po domaćinstvu godišnje)',
+    COMPARISON_NOTE_COUNTRY_ELECTRICITY:
+      'Poređenje je bazirano na prosjeku za {{country}} ({{average}} kWh po osobi godišnje) za porodice od {{size}} članova',
     HISTORY_TITLE: 'Historija potrošnje',
     CHART_ELECTRICITY: 'Potrošnja struje',
     COMPARE_WITH: 'Uporedi sa',
-    COMPARE_WITH_INFO_WATER: 'Podaci o prosječnoj potrošnji vode preuzeti su iz nacionalnih statistika i izvještaja komunalnih preduzeća za svaku državu.',
-    COMPARE_WITH_INFO_ELECTRICITY: 'Podaci o prosječnoj potrošnji električne energije preuzeti su iz nacionalnih statistika i energetskih izvještaja za svaku državu.',
-    COMPARE_WITH_INFO_HEATING: 'Podaci o prosječnoj potrošnji grijanja preuzeti su iz nacionalnih statistika i anketa domaćinstava za svaku državu.',
+    COMPARE_WITH_INFO_WATER:
+      'Podaci o prosječnoj potrošnji vode preuzeti su iz nacionalnih statistika i izvještaja komunalnih preduzeća za svaku državu.',
+    COMPARE_WITH_INFO_ELECTRICITY:
+      'Podaci o prosječnoj potrošnji električne energije preuzeti su iz nacionalnih statistika i energetskih izvještaja za svaku državu.',
+    COMPARE_WITH_INFO_HEATING:
+      'Podaci o prosječnoj potrošnji grijanja preuzeti su iz nacionalnih statistika i anketa domaćinstava za svaku državu.',
     COMPARISON_REQUIRES_DATA: 'Za poređenje s držvama potrebna su barem 3 unosa',
     KITCHEN_TOTAL: 'Potrošnja u kuhinji',
     BATHROOM_TOTAL: 'Potrošnja u kupatilu',
@@ -59,14 +66,17 @@ export const chart = {
     COUNTRY_AVERAGE: 'Prosjek države',
     AVERAGE_REQUIRES_FAMILY: 'Dodajte članove porodice u Postavkama da biste omogućili poređenje',
     AVERAGE_REQUIRES_DATA: 'Za poređenje su potrebne najmanje 2 tačke podataka',
-    HEATING_AVERAGE_INFO: 'Poređenje s nacionalnim prosjekom bazirano je na kWh vrijednostima. Ako vaše brojilo koristi različite jedinice, poređenje možda neće biti tačno.',
+    HEATING_AVERAGE_INFO:
+      'Poređenje s nacionalnim prosjekom bazirano je na kWh vrijednostima. Ako vaše brojilo koristi različite jedinice, poređenje možda neće biti tačno.',
     TRENDLINE_REQUIRES_DATA: 'Za liniju trenda potrebne su barem 2 tačke podataka',
-    TRENDLINE_REQUIRES_DATA_INCREMENTAL: 'Za liniju trenda u režimu između mjerenja potrebna su barem 3 unosa',
+    TRENDLINE_REQUIRES_DATA_INCREMENTAL:
+      'Za liniju trenda u režimu između mjerenja potrebna su barem 3 unosa',
     COUNTRY_FLAG_ALT: 'Zastava za {{country}}',
     DID_YOU_KNOW: 'Da li ste znali?',
     NEW_FACT: 'Prikaži drugu zanimljivost',
     METER_CHANGE_DETECTED: 'Detektovana zamjena vodomjera',
-    METER_CHANGE_MESSAGE: 'Primijećen je pad očitanja potrošnje dana {{date}}. To se tipično dešava kod zamjene brojila. Želite li da se grafikon prilagodi?',
+    METER_CHANGE_MESSAGE:
+      'Primijećen je pad očitanja potrošnje dana {{date}}. To se tipično dešava kod zamjene brojila. Želite li da se grafikon prilagodi?',
     CONFIRM_METER_CHANGE: 'Da, prilagodi grafikon',
     DISMISS_METER_CHANGE: 'Ne, zadrži kako jeste',
     RESET_ZOOM: 'Resetuj zum',

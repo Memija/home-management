@@ -10,7 +10,7 @@ const mockAutoTable = vi.fn();
 
 vi.mock('jspdf', () => ({
   jsPDF: class {
-    constructor(...args: any[]) {
+    constructor(...args: unknown[]) {
       return mockJsPDFConstructor(...args);
     }
   },
@@ -20,14 +20,38 @@ vi.mock('jspdf-autotable', () => ({
   default: mockAutoTable,
 }));
 
+interface MockDoc {
+  addImage: import('vitest').Mock;
+  setFontSize: import('vitest').Mock;
+  setFont: import('vitest').Mock;
+  setTextColor: import('vitest').Mock;
+  text: import('vitest').Mock;
+  save: import('vitest').Mock;
+  setPage: import('vitest').Mock;
+  getNumberOfPages: import('vitest').Mock<() => number>;
+  setDrawColor: import('vitest').Mock;
+  setLineWidth: import('vitest').Mock;
+  line: import('vitest').Mock;
+  internal: {
+    pageSize: { width: number; height: number };
+  };
+}
+
+interface MockLanguageService {
+  translate: import('vitest').Mock<(key: string) => string>;
+  currentLang: import('vitest').Mock<() => string>;
+  currentLocale: import('vitest').Mock<() => string>;
+  formatDate: import('vitest').Mock<() => string>;
+}
+
 describe('PdfService', () => {
   let service: PdfService;
-  let mockLanguageService: any;
-  let mockDoc: any;
+  let mockLanguageService: MockLanguageService;
+  let mockDoc: MockDoc;
 
   beforeEach(() => {
     mockLanguageService = {
-      translate: vi.fn().mockImplementation((key) => {
+      translate: vi.fn().mockImplementation((key: string) => {
         if (key === 'PDF.GENERATED_ON') {
           return mockLanguageService.currentLang() === 'de' ? 'Erstellt am' : 'Generated on';
         }
@@ -46,18 +70,18 @@ describe('PdfService', () => {
     mockAutoTable.mockReset();
 
     // Mock Image to prevent timeout
-    (window as any).Image = class {
-      onload: any;
-      onerror: any;
+    window.Image = class {
+      onload: (() => void) | null = null;
+      onerror: ((err: Error) => void) | null = null;
       width = 100;
       height = 100;
-      set src(val: string) {
+      set src(_val: string) {
         setTimeout(() => {
           // Fail by default to speed up tests (service catches error)
           if (this.onerror) this.onerror(new Error('Image mock error'));
         }, 0);
       }
-    } as any;
+    } as unknown as typeof Image;
 
     // Mock jsPDF instance
     mockDoc = {
@@ -85,7 +109,7 @@ describe('PdfService', () => {
     service = TestBed.inject(PdfService);
 
     // Spy on console.warn to suppress expected warnings
-    vi.spyOn(console, 'warn').mockImplementation(() => {});
+    vi.spyOn(console, 'warn').mockImplementation(() => undefined);
   });
 
   afterEach(() => {
@@ -202,17 +226,12 @@ describe('PdfService', () => {
       await service.exportWaterToPdf(records, 'test.pdf');
 
       const callArgs = mockAutoTable.mock.calls[0];
-      const data = callArgs[1].body;
-      // German date format DD.MM.YYYY usually, or D.M.YYYY depending on browser locale implementation in mock
-      // Since we are in node environment, toLocaleDateString might behave differently or use en-US default if de-DE not installed.
-      // But let's check if it calls toLocaleDateString with de-DE.
-      // Actually, we can't easily spy on Date.prototype.toLocaleDateString for a specific instance.
+      expect(callArgs[1].body).toBeDefined();
 
-      // Let's assume the implementation uses the service result.
-      // We can check if 'Erstellt am' is used in text.
       const textCalls = mockDoc.text.mock.calls;
       const generatedText = textCalls.find(
-        (args: any) => typeof args[0] === 'string' && args[0].startsWith('Erstellt am'),
+        (args: unknown[]) =>
+          typeof args[0] === 'string' && (args[0] as string).startsWith('Erstellt am'),
       );
       expect(generatedText).toBeDefined();
     });
@@ -457,7 +476,8 @@ describe('PdfService', () => {
 
       const textCalls = mockDoc.text.mock.calls;
       const generatedText = textCalls.find(
-        (args: any) => typeof args[0] === 'string' && args[0].startsWith('Erstellt am'),
+        (args: unknown[]) =>
+          typeof args[0] === 'string' && (args[0] as string).startsWith('Erstellt am'),
       );
       expect(generatedText).toBeDefined();
     });
@@ -476,7 +496,8 @@ describe('PdfService', () => {
 
       const textCalls = mockDoc.text.mock.calls;
       const generatedText = textCalls.find(
-        (args: any) => typeof args[0] === 'string' && args[0].startsWith('Generated on'),
+        (args: unknown[]) =>
+          typeof args[0] === 'string' && (args[0] as string).startsWith('Generated on'),
       );
       expect(generatedText).toBeDefined();
     });
@@ -944,7 +965,8 @@ describe('PdfService', () => {
 
       const textCalls = mockDoc.text.mock.calls;
       const generatedText = textCalls.find(
-        (args: any) => typeof args[0] === 'string' && args[0].startsWith('Erstellt am'),
+        (args: unknown[]) =>
+          typeof args[0] === 'string' && (args[0] as string).startsWith('Erstellt am'),
       );
       expect(generatedText).toBeDefined();
     });
@@ -990,7 +1012,7 @@ describe('PdfService', () => {
     });
 
     it('should handle new room added between records', async () => {
-      const records: Array<{ date: Date; rooms: Record<string, number> }> = [
+      const records: { date: Date; rooms: Record<string, number> }[] = [
         {
           date: new Date('2023-01-01'),
           rooms: { room_1: 100 },

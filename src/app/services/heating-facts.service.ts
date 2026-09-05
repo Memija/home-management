@@ -50,8 +50,10 @@ export class HeatingFactsService {
   ): HeatingFact | null {
     const lang = this.languageService.currentLang();
     const translations = lang === 'de' ? de : lang === 'bs' ? bs : en;
-    const countryFacts = lang === 'de' ? deHeatingFacts : lang === 'bs' ? bsHeatingFacts : enHeatingFacts;
-    const didYouKnow = (translations.FACTS as any)?.DID_YOU_KNOW || 'Did you know?';
+    const countryFacts =
+      lang === 'de' ? deHeatingFacts : lang === 'bs' ? bsHeatingFacts : enHeatingFacts;
+    const didYouKnow =
+      (translations.FACTS as Record<string, string>)?.['DID_YOU_KNOW'] || 'Did you know?';
 
     if (mode === 'historical') {
       return this.getHistoricalFact(didYouKnow, index, countryFacts);

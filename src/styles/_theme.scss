@@ -3,12 +3,16 @@
 // ============================================
 
 :root {
+  // Primary brand & theme tokens
+  --theme-primary: #005cbf;
+  --theme-primary-rgb: 0, 92, 191;
+
   // Background colors
   --bg-primary: #ffffff;
   --bg-secondary: #f8f9fa;
   --bg-tertiary: #e9ecef;
-  --bg-gradient-start: #008080;
-  --bg-gradient-end: #90ee90;
+  --bg-gradient-start: #0f766e;
+  --bg-gradient-end: #34d399;
 
   // Text colors
   --text-primary: #2c3e50;
@@ -18,16 +22,29 @@
   // Border colors
   --border-color: #dee2e6;
   --border-light: #e9ecef;
+  --card-border: rgba(0, 0, 0, 0.08);
+  --card-border-hover: rgba(0, 92, 191, 0.25);
 
   // Card and component backgrounds
   --card-bg: #ffffff;
+  --card-bg-rgb: 255, 255, 255;
   --input-bg: #ffffff;
   --modal-bg: #ffffff;
 
+  // Specular surface highlight
+  --card-specular: inset 0 1px 0 0 rgba(255, 255, 255, 0.8);
+
+  // Glassmorphism tokens
+  --glass-bg: rgba(255, 255, 255, 0.7);
+  --glass-border: rgba(255, 255, 255, 0.6);
+  --glass-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.08);
+
   // Shadows
-  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
-  --shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-  --shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.1);
+  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.06), 0 1px 2px rgba(0, 0, 0, 0.04);
+  --shadow: 0 4px 12px -1px rgba(0, 0, 0, 0.08), 0 2px 6px -1px rgba(0, 0, 0, 0.04);
+  --shadow-lg: 0 12px 24px -4px rgba(0, 0, 0, 0.12), 0 4px 8px -2px rgba(0, 0, 0, 0.04);
+  --shadow-card: 0 4px 16px -2px rgba(0, 0, 0, 0.06);
+  --shadow-card-hover: 0 12px 28px -4px rgba(0, 0, 0, 0.12);
 
   // Overlay
   --overlay-bg: rgba(0, 0, 0, 0.5);
@@ -59,16 +76,29 @@
   // Border colors
   --border-color: #374151;
   --border-light: #4b5563;
+  --card-border: rgba(255, 255, 255, 0.08);
+  --card-border-hover: rgba(56, 189, 248, 0.3);
 
   // Card and component backgrounds
   --card-bg: #1e293b;
+  --card-bg-rgb: 30, 41, 59;
   --input-bg: #1e293b;
   --modal-bg: #1e293b;
 
+  // Specular surface highlight
+  --card-specular: inset 0 1px 0 0 rgba(255, 255, 255, 0.08);
+
+  // Glassmorphism tokens
+  --glass-bg: rgba(30, 41, 59, 0.7);
+  --glass-border: rgba(255, 255, 255, 0.1);
+  --glass-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.4);
+
   // Shadows
-  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.3);
-  --shadow: 0 4px 6px rgba(0, 0, 0, 0.4);
-  --shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.5);
+  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.3);
+  --shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+  --shadow-lg: 0 12px 28px rgba(0, 0, 0, 0.55);
+  --shadow-card: 0 4px 16px -2px rgba(0, 0, 0, 0.4);
+  --shadow-card-hover: 0 12px 28px -4px rgba(0, 0, 0, 0.6);
 
   // Overlay
   --overlay-bg: rgba(0, 0, 0, 0.7);
@@ -85,61 +115,61 @@
 
   // Predictions panel — badge dark-mode overrides
   .trend-row {
-    background: rgba(255, 255, 255, .05);
+    background: rgba(255, 255, 255, 0.05);
   }
 
   .auto-correction-notice {
-    background: rgba(96, 165, 250, .1);
+    background: rgba(96, 165, 250, 0.1);
     color: #93c5fd;
-    border-color: rgba(96, 165, 250, .25);
+    border-color: rgba(96, 165, 250, 0.25);
   }
 
   .category-item {
-    background: rgba(255, 255, 255, .04);
+    background: rgba(255, 255, 255, 0.04);
     box-shadow: none;
   }
 
   .confidence-badge {
     &.high {
       color: #34d399;
-      background: rgba(52, 211, 153, .12);
-      border-color: rgba(52, 211, 153, .25);
+      background: rgba(52, 211, 153, 0.12);
+      border-color: rgba(52, 211, 153, 0.25);
     }
 
     &.medium {
       color: #fcd34d;
-      background: rgba(252, 211, 77, .12);
-      border-color: rgba(252, 211, 77, .25);
+      background: rgba(252, 211, 77, 0.12);
+      border-color: rgba(252, 211, 77, 0.25);
     }
 
     &.low {
       color: #f87171;
-      background: rgba(248, 113, 113, .12);
-      border-color: rgba(248, 113, 113, .25);
+      background: rgba(248, 113, 113, 0.12);
+      border-color: rgba(248, 113, 113, 0.25);
     }
   }
 
   .accuracy-badge {
     color: #38bdf8;
-    background: rgba(56, 189, 248, .12);
-    border-color: rgba(56, 189, 248, .25);
+    background: rgba(56, 189, 248, 0.12);
+    border-color: rgba(56, 189, 248, 0.25);
 
     &.accuracy-high {
       color: #4ade80;
-      background: rgba(74, 222, 128, .12);
-      border-color: rgba(74, 222, 128, .25);
+      background: rgba(74, 222, 128, 0.12);
+      border-color: rgba(74, 222, 128, 0.25);
     }
 
     &.accuracy-medium {
       color: #fb923c;
-      background: rgba(251, 146, 60, .12);
-      border-color: rgba(251, 146, 60, .25);
+      background: rgba(251, 146, 60, 0.12);
+      border-color: rgba(251, 146, 60, 0.25);
     }
 
     &.accuracy-low {
       color: #fb7185;
-      background: rgba(251, 113, 133, .12);
-      border-color: rgba(251, 113, 133, .25);
+      background: rgba(251, 113, 133, 0.12);
+      border-color: rgba(251, 113, 133, 0.25);
     }
   }
 }

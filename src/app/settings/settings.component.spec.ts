@@ -3,6 +3,9 @@ import { SettingsComponent } from './settings.component';
 import { LanguageService } from '../services/language.service';
 import { signal } from '@angular/core';
 import { describe, it, expect, beforeEach, vi, type Mock } from 'vitest';
+import { FamilyComponent } from './family/family.component';
+import { AddressComponent } from './address/address.component';
+import { ExcelSettingsComponent } from './excel-settings/excel-settings.component';
 
 /**
  * Unit tests for SettingsComponent.
@@ -12,18 +15,18 @@ import { describe, it, expect, beforeEach, vi, type Mock } from 'vitest';
  * satisfying Angular's injection context requirement for inject().
  */
 
+interface MockChildComponent {
+  hasUnsavedChanges: Mock<() => boolean>;
+  triggerNavigationWarning: Mock<(callback: () => void) => void>;
+  stayAndSave: Mock<() => void>;
+}
+
 /** Helper to create a mock child component implementing ComponentWithUnsavedChanges */
-function createMockChild(
-  overrides: Partial<{
-    hasUnsavedChanges: () => boolean;
-    triggerNavigationWarning: (cb: () => void) => void;
-    stayAndSave: () => void;
-  }> = {},
-) {
+function createMockChild(overrides: Partial<MockChildComponent> = {}): MockChildComponent {
   return {
-    hasUnsavedChanges: vi.fn().mockReturnValue(false),
-    triggerNavigationWarning: vi.fn(),
-    stayAndSave: vi.fn(),
+    hasUnsavedChanges: vi.fn<() => boolean>().mockReturnValue(false),
+    triggerNavigationWarning: vi.fn<(callback: () => void) => void>(),
+    stayAndSave: vi.fn<() => void>(),
     ...overrides,
   };
 }
@@ -36,7 +39,6 @@ describe('SettingsComponent', () => {
   };
 
   beforeEach(() => {
-    // Reset signals
     mockLanguageService.currentLang.set('en');
 
     vi.clearAllMocks();
@@ -45,28 +47,26 @@ describe('SettingsComponent', () => {
       providers: [{ provide: LanguageService, useValue: mockLanguageService }],
     });
 
-    component = TestBed.runInInjectionContext(() => {
-      return new SettingsComponent();
-    });
+    component = TestBed.runInInjectionContext(() => new SettingsComponent());
   });
 
-  // ─── Creation ──────────────────────────────────────────────────────────
+  // ─── Creation & Initialization ─────────────────────────────────────────
 
-  it('should create', () => {
-    expect(component).toBeTruthy();
-  });
-
-  // ─── Language Service ──────────────────────────────────────────────────
-
-  describe('Language Service', () => {
-    it('should inject the language service', () => {
-      expect(component['languageService']).toBeDefined();
+  describe('Component Creation', () => {
+    it('should create', () => {
+      expect(component).toBeTruthy();
     });
 
-    it('should reflect current language from service', () => {
-      expect(component['languageService'].currentLang()).toBe('en');
-      mockLanguageService.currentLang.set('de');
-      expect(component['languageService'].currentLang()).toBe('de');
+    it('should inject LanguageService', () => {
+      expect(component['languageService']).toBeTruthy();
+    });
+
+    it('should initialize showDemoWizard as false', () => {
+      expect(component['showDemoWizard']()).toBe(false);
+    });
+
+    it('should initialize showDemoTour as false', () => {
+      expect(component['showDemoTour']()).toBe(false);
     });
   });
 
@@ -76,131 +76,133 @@ describe('SettingsComponent', () => {
     let mockEvent: BeforeUnloadEvent;
 
     beforeEach(() => {
-      mockEvent = new Event('beforeunload') as BeforeUnloadEvent;
-      vi.spyOn(mockEvent, 'preventDefault');
+      mockEvent = {
+        preventDefault: vi.fn(),
+        returnValue: '',
+      } as unknown as BeforeUnloadEvent;
     });
 
-    it('should not prevent default when no children have unsaved changes', () => {
-      // ViewChild refs are undefined by default (no template rendering)
+    it('should allow navigation when child components are undefined', () => {
       const result = component.onBeforeUnload(mockEvent);
       expect(mockEvent.preventDefault).not.toHaveBeenCalled();
       expect(result).toBeUndefined();
     });
 
     it('should prevent default when familyComponent has unsaved changes', () => {
-      (component as any).familyComponent = createMockChild({
-        hasUnsavedChanges: () => true,
-      });
+      component.familyComponent = createMockChild({
+        hasUnsavedChanges: vi.fn().mockReturnValue(true),
+      }) as unknown as FamilyComponent;
       const result = component.onBeforeUnload(mockEvent);
       expect(mockEvent.preventDefault).toHaveBeenCalled();
       expect(result).toBe('');
     });
 
     it('should prevent default when addressComponent has unsaved changes', () => {
-      (component as any).addressComponent = createMockChild({
-        hasUnsavedChanges: () => true,
-      });
+      component.addressComponent = createMockChild({
+        hasUnsavedChanges: vi.fn().mockReturnValue(true),
+      }) as unknown as AddressComponent;
       const result = component.onBeforeUnload(mockEvent);
       expect(mockEvent.preventDefault).toHaveBeenCalled();
       expect(result).toBe('');
     });
 
     it('should prevent default when excelSettingsComponent has unsaved changes', () => {
-      (component as any).excelSettingsComponent = createMockChild({
-        hasUnsavedChanges: () => true,
-      });
+      component.excelSettingsComponent = createMockChild({
+        hasUnsavedChanges: vi.fn().mockReturnValue(true),
+      }) as unknown as ExcelSettingsComponent;
       const result = component.onBeforeUnload(mockEvent);
       expect(mockEvent.preventDefault).toHaveBeenCalled();
       expect(result).toBe('');
     });
 
     it('should prevent default when multiple children have unsaved changes', () => {
-      (component as any).familyComponent = createMockChild({
-        hasUnsavedChanges: () => true,
-      });
-      (component as any).addressComponent = createMockChild({
-        hasUnsavedChanges: () => true,
-      });
-      (component as any).excelSettingsComponent = createMockChild({
-        hasUnsavedChanges: () => true,
-      });
+      component.familyComponent = createMockChild({
+        hasUnsavedChanges: vi.fn().mockReturnValue(true),
+      }) as unknown as FamilyComponent;
+      component.addressComponent = createMockChild({
+        hasUnsavedChanges: vi.fn().mockReturnValue(true),
+      }) as unknown as AddressComponent;
+      component.excelSettingsComponent = createMockChild({
+        hasUnsavedChanges: vi.fn().mockReturnValue(true),
+      }) as unknown as ExcelSettingsComponent;
       const result = component.onBeforeUnload(mockEvent);
       expect(mockEvent.preventDefault).toHaveBeenCalled();
       expect(result).toBe('');
     });
 
     it('should not prevent default when all children report no unsaved changes', () => {
-      (component as any).familyComponent = createMockChild();
-      (component as any).addressComponent = createMockChild();
-      (component as any).excelSettingsComponent = createMockChild();
+      component.familyComponent = createMockChild() as unknown as FamilyComponent;
+      component.addressComponent = createMockChild() as unknown as AddressComponent;
+      component.excelSettingsComponent = createMockChild() as unknown as ExcelSettingsComponent;
       const result = component.onBeforeUnload(mockEvent);
       expect(mockEvent.preventDefault).not.toHaveBeenCalled();
       expect(result).toBeUndefined();
     });
 
-    it('should handle null/undefined child components gracefully via optional chaining', () => {
-      (component as any).familyComponent = null;
-      (component as any).addressComponent = undefined;
-      (component as any).excelSettingsComponent = null;
-      expect(() => component.onBeforeUnload(mockEvent)).not.toThrow();
+    it('should handle some children being null/undefined and others clean', () => {
+      component.familyComponent = null as unknown as FamilyComponent;
+      component.addressComponent = undefined as unknown as AddressComponent;
+      component.excelSettingsComponent = null as unknown as ExcelSettingsComponent;
+      const result = component.onBeforeUnload(mockEvent);
       expect(mockEvent.preventDefault).not.toHaveBeenCalled();
+      expect(result).toBeUndefined();
     });
   });
 
   // ─── canDeactivate ─────────────────────────────────────────────────────
 
   describe('canDeactivate', () => {
-    it('should return true when no children have unsaved changes', () => {
-      (component as any).familyComponent = createMockChild();
-      (component as any).addressComponent = createMockChild();
-      (component as any).excelSettingsComponent = createMockChild();
-      expect(component.canDeactivate()).toBe(true);
+    it('should return true when no child components are set', () => {
+      const result = component.canDeactivate();
+      expect(result).toBe(true);
     });
 
-    it('should return true when all ViewChild refs are undefined', () => {
-      // No child components set – optional chaining returns undefined
-      expect(component.canDeactivate()).toBe(true);
+    it('should return true when all children have no unsaved changes', () => {
+      component.familyComponent = createMockChild() as unknown as FamilyComponent;
+      component.addressComponent = createMockChild() as unknown as AddressComponent;
+      component.excelSettingsComponent = createMockChild() as unknown as ExcelSettingsComponent;
+      const result = component.canDeactivate();
+      expect(result).toBe(true);
     });
 
     it('should return a Promise when familyComponent has unsaved changes', () => {
-      (component as any).familyComponent = createMockChild({
-        hasUnsavedChanges: () => true,
-      });
+      component.familyComponent = createMockChild({
+        hasUnsavedChanges: vi.fn().mockReturnValue(true),
+      }) as unknown as FamilyComponent;
       const result = component.canDeactivate();
       expect(result).toBeInstanceOf(Promise);
     });
 
     it('should return a Promise when excelSettingsComponent has unsaved changes', () => {
-      (component as any).familyComponent = createMockChild();
-      (component as any).excelSettingsComponent = createMockChild({
-        hasUnsavedChanges: () => true,
-      });
+      component.familyComponent = createMockChild() as unknown as FamilyComponent;
+      component.excelSettingsComponent = createMockChild({
+        hasUnsavedChanges: vi.fn().mockReturnValue(true),
+      }) as unknown as ExcelSettingsComponent;
       const result = component.canDeactivate();
       expect(result).toBeInstanceOf(Promise);
     });
 
     it('should return a Promise when addressComponent has unsaved changes', () => {
-      (component as any).familyComponent = createMockChild();
-      (component as any).excelSettingsComponent = createMockChild();
-      (component as any).addressComponent = createMockChild({
-        hasUnsavedChanges: () => true,
-      });
+      component.familyComponent = createMockChild() as unknown as FamilyComponent;
+      component.excelSettingsComponent = createMockChild() as unknown as ExcelSettingsComponent;
+      component.addressComponent = createMockChild({
+        hasUnsavedChanges: vi.fn().mockReturnValue(true),
+      }) as unknown as AddressComponent;
       const result = component.canDeactivate();
       expect(result).toBeInstanceOf(Promise);
     });
 
     it('should check familyComponent first (priority order)', () => {
-      const familyMock = createMockChild({ hasUnsavedChanges: () => true });
-      const excelMock = createMockChild({ hasUnsavedChanges: () => true });
-      const addressMock = createMockChild({ hasUnsavedChanges: () => true });
+      const familyMock = createMockChild({ hasUnsavedChanges: vi.fn().mockReturnValue(true) });
+      const excelMock = createMockChild({ hasUnsavedChanges: vi.fn().mockReturnValue(true) });
+      const addressMock = createMockChild({ hasUnsavedChanges: vi.fn().mockReturnValue(true) });
 
-      (component as any).familyComponent = familyMock;
-      (component as any).excelSettingsComponent = excelMock;
-      (component as any).addressComponent = addressMock;
+      component.familyComponent = familyMock as unknown as FamilyComponent;
+      component.excelSettingsComponent = excelMock as unknown as ExcelSettingsComponent;
+      component.addressComponent = addressMock as unknown as AddressComponent;
 
       component.canDeactivate();
 
-      // Only the first match should trigger
       expect(familyMock.triggerNavigationWarning).toHaveBeenCalled();
       expect(excelMock.triggerNavigationWarning).not.toHaveBeenCalled();
       expect(addressMock.triggerNavigationWarning).not.toHaveBeenCalled();
@@ -208,12 +210,12 @@ describe('SettingsComponent', () => {
 
     it('should check excelSettingsComponent second when family has no changes', () => {
       const familyMock = createMockChild();
-      const excelMock = createMockChild({ hasUnsavedChanges: () => true });
-      const addressMock = createMockChild({ hasUnsavedChanges: () => true });
+      const excelMock = createMockChild({ hasUnsavedChanges: vi.fn().mockReturnValue(true) });
+      const addressMock = createMockChild({ hasUnsavedChanges: vi.fn().mockReturnValue(true) });
 
-      (component as any).familyComponent = familyMock;
-      (component as any).excelSettingsComponent = excelMock;
-      (component as any).addressComponent = addressMock;
+      component.familyComponent = familyMock as unknown as FamilyComponent;
+      component.excelSettingsComponent = excelMock as unknown as ExcelSettingsComponent;
+      component.addressComponent = addressMock as unknown as AddressComponent;
 
       component.canDeactivate();
 
@@ -224,11 +226,11 @@ describe('SettingsComponent', () => {
     it('should check addressComponent third when family and excel have no changes', () => {
       const familyMock = createMockChild();
       const excelMock = createMockChild();
-      const addressMock = createMockChild({ hasUnsavedChanges: () => true });
+      const addressMock = createMockChild({ hasUnsavedChanges: vi.fn().mockReturnValue(true) });
 
-      (component as any).familyComponent = familyMock;
-      (component as any).excelSettingsComponent = excelMock;
-      (component as any).addressComponent = addressMock;
+      component.familyComponent = familyMock as unknown as FamilyComponent;
+      component.excelSettingsComponent = excelMock as unknown as ExcelSettingsComponent;
+      component.addressComponent = addressMock as unknown as AddressComponent;
 
       component.canDeactivate();
 
@@ -241,14 +243,13 @@ describe('SettingsComponent', () => {
   describe('handleComponentUnsavedChanges (via canDeactivate)', () => {
     it('should resolve to true when user confirms leaving (callback is invoked)', async () => {
       const mockChild = createMockChild({
-        hasUnsavedChanges: () => true,
+        hasUnsavedChanges: vi.fn().mockReturnValue(true),
         triggerNavigationWarning: vi.fn((cb: () => void) => {
-          // Simulate user clicking "Leave" — invoke the callback
           cb();
         }),
       });
 
-      (component as any).familyComponent = mockChild;
+      component.familyComponent = mockChild as unknown as FamilyComponent;
 
       const result = await component.canDeactivate();
       expect(result).toBe(true);
@@ -257,17 +258,15 @@ describe('SettingsComponent', () => {
     it('should resolve to false when user clicks "Stay and Save" (monkey-patched stayAndSave)', async () => {
       const originalStayAndSave = vi.fn();
       const mockChild = createMockChild({
-        hasUnsavedChanges: () => true,
+        hasUnsavedChanges: vi.fn().mockReturnValue(true),
         stayAndSave: originalStayAndSave,
         triggerNavigationWarning: vi.fn(),
       });
 
-      (component as any).familyComponent = mockChild;
+      component.familyComponent = mockChild as unknown as FamilyComponent;
 
       const promise = component.canDeactivate() as Promise<boolean>;
 
-      // At this point, handleComponentUnsavedChanges has monkey-patched stayAndSave
-      // Calling stayAndSave should resolve the promise with false
       mockChild.stayAndSave();
 
       const result = await promise;
@@ -277,16 +276,15 @@ describe('SettingsComponent', () => {
     it('should call original stayAndSave when monkey-patched version is invoked', async () => {
       const originalStayAndSave = vi.fn();
       const mockChild = createMockChild({
-        hasUnsavedChanges: () => true,
+        hasUnsavedChanges: vi.fn().mockReturnValue(true),
         stayAndSave: originalStayAndSave,
         triggerNavigationWarning: vi.fn(),
       });
 
-      (component as any).familyComponent = mockChild;
+      component.familyComponent = mockChild as unknown as FamilyComponent;
 
       const promise = component.canDeactivate() as Promise<boolean>;
 
-      // The monkey-patched stayAndSave should call the original
       mockChild.stayAndSave();
 
       await promise;
@@ -296,31 +294,28 @@ describe('SettingsComponent', () => {
     it('should restore original stayAndSave after monkey-patched version is called', async () => {
       const originalStayAndSave = vi.fn();
       const mockChild = createMockChild({
-        hasUnsavedChanges: () => true,
+        hasUnsavedChanges: vi.fn().mockReturnValue(true),
         stayAndSave: originalStayAndSave,
         triggerNavigationWarning: vi.fn(),
       });
 
-      (component as any).familyComponent = mockChild;
+      component.familyComponent = mockChild as unknown as FamilyComponent;
 
       const promise = component.canDeactivate() as Promise<boolean>;
 
-      // Call the monkey-patched version
       mockChild.stayAndSave();
       await promise;
 
-      // After resolution, stayAndSave should be restored to original (or bound version)
-      // Verify behavior instead of strict identity since .bind() creates a new function
       mockChild.stayAndSave();
       expect(originalStayAndSave).toHaveBeenCalledTimes(2);
     });
 
     it('should call triggerNavigationWarning with a callback function', () => {
       const mockChild = createMockChild({
-        hasUnsavedChanges: () => true,
+        hasUnsavedChanges: vi.fn().mockReturnValue(true),
       });
 
-      (component as any).familyComponent = mockChild;
+      component.familyComponent = mockChild as unknown as FamilyComponent;
 
       component.canDeactivate();
 
@@ -329,16 +324,16 @@ describe('SettingsComponent', () => {
     });
 
     it('should work with addressComponent for unsaved changes', async () => {
-      (component as any).familyComponent = createMockChild();
-      (component as any).excelSettingsComponent = createMockChild();
+      component.familyComponent = createMockChild() as unknown as FamilyComponent;
+      component.excelSettingsComponent = createMockChild() as unknown as ExcelSettingsComponent;
 
       const mockAddress = createMockChild({
-        hasUnsavedChanges: () => true,
+        hasUnsavedChanges: vi.fn().mockReturnValue(true),
         triggerNavigationWarning: vi.fn((cb: () => void) => {
           cb();
         }),
       });
-      (component as any).addressComponent = mockAddress;
+      component.addressComponent = mockAddress as unknown as AddressComponent;
 
       const result = await component.canDeactivate();
       expect(result).toBe(true);
@@ -346,15 +341,15 @@ describe('SettingsComponent', () => {
     });
 
     it('should work with excelSettingsComponent for unsaved changes', async () => {
-      (component as any).familyComponent = createMockChild();
+      component.familyComponent = createMockChild() as unknown as FamilyComponent;
 
       const mockExcel = createMockChild({
-        hasUnsavedChanges: () => true,
+        hasUnsavedChanges: vi.fn().mockReturnValue(true),
         triggerNavigationWarning: vi.fn((cb: () => void) => {
           cb();
         }),
       });
-      (component as any).excelSettingsComponent = mockExcel;
+      component.excelSettingsComponent = mockExcel as unknown as ExcelSettingsComponent;
 
       const result = await component.canDeactivate();
       expect(result).toBe(true);
@@ -366,37 +361,33 @@ describe('SettingsComponent', () => {
 
   describe('Edge Cases', () => {
     it('should handle mixed undefined and defined child components', () => {
-      // Only family defined, others undefined
-      (component as any).familyComponent = createMockChild();
+      component.familyComponent = createMockChild() as unknown as FamilyComponent;
       const result = component.canDeactivate();
       expect(result).toBe(true);
     });
 
     it('should handle hasUnsavedChanges returning false for all after being true', async () => {
       const mockChild = createMockChild({
-        hasUnsavedChanges: vi.fn().mockReturnValueOnce(true).mockReturnValue(false) as any,
+        hasUnsavedChanges: vi.fn<() => boolean>().mockReturnValueOnce(true).mockReturnValue(false),
         triggerNavigationWarning: vi.fn((cb: () => void) => cb()),
       });
 
-      (component as any).familyComponent = mockChild;
+      component.familyComponent = mockChild as unknown as FamilyComponent;
 
-      // First call: has unsaved changes
       const result1 = await component.canDeactivate();
       expect(result1).toBe(true);
 
-      // Second call: no unsaved changes anymore
       const result2 = component.canDeactivate();
-      expect(result2).toBe(true); // synchronous true
+      expect(result2).toBe(true);
     });
 
     it('should handle onBeforeUnload when only one child exists', () => {
       const event = new Event('beforeunload') as BeforeUnloadEvent;
       vi.spyOn(event, 'preventDefault');
 
-      // Only addressComponent exists and has changes
-      (component as any).addressComponent = createMockChild({
-        hasUnsavedChanges: () => true,
-      });
+      component.addressComponent = createMockChild({
+        hasUnsavedChanges: vi.fn().mockReturnValue(true),
+      }) as unknown as AddressComponent;
 
       const result = component.onBeforeUnload(event);
       expect(event.preventDefault).toHaveBeenCalled();
@@ -407,18 +398,18 @@ describe('SettingsComponent', () => {
       const event = new Event('beforeunload') as BeforeUnloadEvent;
       vi.spyOn(event, 'preventDefault');
 
-      (component as any).familyComponent = null;
-      (component as any).addressComponent = null;
-      (component as any).excelSettingsComponent = null;
+      component.familyComponent = null as unknown as FamilyComponent;
+      component.addressComponent = null as unknown as AddressComponent;
+      component.excelSettingsComponent = null as unknown as ExcelSettingsComponent;
 
       expect(() => component.onBeforeUnload(event)).not.toThrow();
       expect(event.preventDefault).not.toHaveBeenCalled();
     });
 
     it('should handle canDeactivate called multiple times in sequence', () => {
-      (component as any).familyComponent = createMockChild();
-      (component as any).addressComponent = createMockChild();
-      (component as any).excelSettingsComponent = createMockChild();
+      component.familyComponent = createMockChild() as unknown as FamilyComponent;
+      component.addressComponent = createMockChild() as unknown as AddressComponent;
+      component.excelSettingsComponent = createMockChild() as unknown as ExcelSettingsComponent;
 
       expect(component.canDeactivate()).toBe(true);
       expect(component.canDeactivate()).toBe(true);
@@ -426,21 +417,20 @@ describe('SettingsComponent', () => {
     });
 
     it('should handle concurrent canDeactivate calls with unsaved changes', async () => {
-      let triggerCallbacks: (() => void)[] = [];
+      const triggerCallbacks: (() => void)[] = [];
 
       const mockChild = createMockChild({
-        hasUnsavedChanges: () => true,
+        hasUnsavedChanges: vi.fn().mockReturnValue(true),
         triggerNavigationWarning: vi.fn((cb: () => void) => {
           triggerCallbacks.push(cb);
         }),
       });
 
-      (component as any).familyComponent = mockChild;
+      component.familyComponent = mockChild as unknown as FamilyComponent;
 
       const promise1 = component.canDeactivate() as Promise<boolean>;
       const promise2 = component.canDeactivate() as Promise<boolean>;
 
-      // Resolve both
       triggerCallbacks.forEach((cb) => cb());
 
       const [result1, result2] = await Promise.all([promise1, promise2]);
@@ -449,13 +439,13 @@ describe('SettingsComponent', () => {
     });
 
     it('should handle child component where hasUnsavedChanges throws', () => {
-      (component as any).familyComponent = {
+      component.familyComponent = {
         hasUnsavedChanges: () => {
           throw new Error('unexpected');
         },
         triggerNavigationWarning: vi.fn(),
         stayAndSave: vi.fn(),
-      };
+      } as unknown as FamilyComponent;
 
       expect(() => component.canDeactivate()).toThrow('unexpected');
     });
@@ -471,16 +461,15 @@ describe('SettingsComponent', () => {
     it('should handle stayAndSave being called before triggerNavigationWarning callback', async () => {
       const originalStayAndSave = vi.fn();
       const mockChild = createMockChild({
-        hasUnsavedChanges: () => true,
+        hasUnsavedChanges: vi.fn().mockReturnValue(true),
         stayAndSave: originalStayAndSave,
         triggerNavigationWarning: vi.fn(),
       });
 
-      (component as any).familyComponent = mockChild;
+      component.familyComponent = mockChild as unknown as FamilyComponent;
 
       const promise = component.canDeactivate() as Promise<boolean>;
 
-      // User clicks "Stay" first
       mockChild.stayAndSave();
 
       const result = await promise;
@@ -492,20 +481,17 @@ describe('SettingsComponent', () => {
       const event = new Event('beforeunload') as BeforeUnloadEvent;
       vi.spyOn(event, 'preventDefault');
 
-      // Simulate a component with a computed-like hasUnsavedChanges
       const unsaved = signal(false);
-      (component as any).familyComponent = {
+      component.familyComponent = {
         hasUnsavedChanges: () => unsaved(),
         triggerNavigationWarning: vi.fn(),
         stayAndSave: vi.fn(),
-      };
+      } as unknown as FamilyComponent;
 
-      // Start with no unsaved changes
       let result = component.onBeforeUnload(event);
       expect(event.preventDefault).not.toHaveBeenCalled();
       expect(result).toBeUndefined();
 
-      // Signal changes to true
       unsaved.set(true);
       result = component.onBeforeUnload(event);
       expect(event.preventDefault).toHaveBeenCalled();

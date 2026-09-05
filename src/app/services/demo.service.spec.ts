@@ -20,8 +20,8 @@ describe('DemoService', () => {
   let service: DemoService;
   let mockLocalStorageService: MockLocalStorageService;
   let originalFetch: typeof window.fetch;
-  let originalLocation: any;
-  let mockPlatformId: Object;
+  let originalLocation: Location;
+  let mockPlatformId: string;
 
   beforeEach(() => {
     // Mock LocalStorageService
@@ -41,12 +41,15 @@ describe('DemoService', () => {
     window.fetch = vi.fn().mockResolvedValue({
       ok: true,
       json: () => Promise.resolve([]),
-    });
+    } as unknown as Response);
 
     // Mock window.location.reload
     originalLocation = window.location;
-    delete (window as any).location;
-    (window as any).location = { reload: vi.fn() };
+    Object.defineProperty(window, 'location', {
+      value: { ...window.location, reload: vi.fn() },
+      configurable: true,
+      writable: true,
+    });
 
     // Mock localStorage with a functional implementation for length and keys
     const store: Record<string, string> = {};
@@ -65,16 +68,14 @@ describe('DemoService', () => {
       get length() {
         return Object.keys(store).length;
       },
-    } as any;
+    } as unknown as Storage;
 
     Object.defineProperty(window, 'localStorage', {
       value: mockLocalStorage,
       writable: true,
-      configurable: true,
     });
 
     mockPlatformId = 'browser';
-
 
     TestBed.configureTestingModule({
       providers: [
@@ -86,12 +87,16 @@ describe('DemoService', () => {
     service = TestBed.inject(DemoService);
 
     // Ensure isDemoMode starts false to prevent test pollution
-    (service.isDemoMode as any).set(false);
+    service.isDemoMode['set'](false);
   });
 
   afterEach(() => {
     window.fetch = originalFetch;
-    window.location = originalLocation;
+    Object.defineProperty(window, 'location', {
+      value: originalLocation,
+      configurable: true,
+      writable: true,
+    });
     vi.restoreAllMocks();
   });
 
@@ -130,8 +135,6 @@ describe('DemoService', () => {
       const newService = TestBed.inject(DemoService);
 
       expect(newService.isDemoMode()).toBe(false);
-      // Can't easily check if localStorage was NOT accessed because it's global,
-      // but the code branch shouldn't run.
     });
   });
 
@@ -140,7 +143,7 @@ describe('DemoService', () => {
       vi.mocked(window.fetch).mockResolvedValue({
         ok: true,
         json: () => Promise.resolve([{ data: 'test' }]),
-      } as any);
+      } as unknown as Response);
 
       // Add dummy data with hm_ prefix to ensure backup is performed
       localStorage.setItem('hm_some_data', 'true');
@@ -156,7 +159,7 @@ describe('DemoService', () => {
     });
 
     it('should not activate if already in demo mode', async () => {
-      (service.isDemoMode as any).set(true);
+      service.isDemoMode['set'](true);
 
       await service.activateDemo();
 
@@ -168,7 +171,7 @@ describe('DemoService', () => {
       vi.mocked(window.fetch).mockResolvedValue({
         ok: true,
         json: () => Promise.resolve(['data']),
-      } as any);
+      } as unknown as Response);
       mockLocalStorageService.save.mockRejectedValue(new Error('Storage full'));
 
       await service.activateDemo();
@@ -214,7 +217,7 @@ describe('DemoService', () => {
         ok: false,
         status: 404,
         json: () => Promise.reject(new Error('Not found')),
-      } as any);
+      } as unknown as Response);
 
       await service.activateDemo();
 
@@ -234,38 +237,45 @@ describe('DemoService', () => {
       const mockExcelSettings = { enabled: true };
 
       // Mock fetch to return different data based on URL
-      vi.mocked(window.fetch).mockImplementation((url: any) => {
+      vi.mocked(window.fetch).mockImplementation((input: URL | RequestInfo) => {
+        const url = String(input);
         if (url.includes('water-consumption.json')) {
           return Promise.resolve({
             ok: true,
             json: () => Promise.resolve(mockWaterRecords),
-          } as any);
+          } as unknown as Response);
         } else if (url.includes('heating-consumption.json')) {
           return Promise.resolve({
             ok: true,
             json: () => Promise.resolve(mockHeatingRecords),
-          } as any);
+          } as unknown as Response);
         } else if (url.includes('heating-settings.json')) {
           return Promise.resolve({
             ok: true,
             json: () => Promise.resolve(mockHeatingSettings),
-          } as any);
+          } as unknown as Response);
         } else if (url.includes('electricity-consumption.json')) {
           return Promise.resolve({
             ok: true,
             json: () => Promise.resolve(mockElectricityRecords),
-          } as any);
+          } as unknown as Response);
         } else if (url.includes('family.json')) {
-          return Promise.resolve({ ok: true, json: () => Promise.resolve(mockFamily) } as any);
+          return Promise.resolve({
+            ok: true,
+            json: () => Promise.resolve(mockFamily),
+          } as unknown as Response);
         } else if (url.includes('address.json')) {
-          return Promise.resolve({ ok: true, json: () => Promise.resolve(mockAddress) } as any);
+          return Promise.resolve({
+            ok: true,
+            json: () => Promise.resolve(mockAddress),
+          } as unknown as Response);
         } else if (url.includes('excel-settings.json')) {
           return Promise.resolve({
             ok: true,
             json: () => Promise.resolve(mockExcelSettings),
-          } as any);
+          } as unknown as Response);
         }
-        return Promise.resolve({ ok: false } as any);
+        return Promise.resolve({ ok: false } as unknown as Response);
       });
 
       await service.activateDemo();
@@ -298,7 +308,7 @@ describe('DemoService', () => {
 
   describe('deactivateDemo', () => {
     beforeEach(() => {
-      (service.isDemoMode as any).set(true);
+      service.isDemoMode['set'](true);
     });
 
     it('should clear demo data, restore user data, and reload', async () => {
@@ -309,7 +319,7 @@ describe('DemoService', () => {
       });
 
       await service.deactivateDemo();
-  
+
       expect(mockLocalStorageService.clearAll).toHaveBeenCalled();
       expect(localStorage.removeItem).toHaveBeenCalledWith('hm_user_backup_raw');
       expect(localStorage.removeItem).toHaveBeenCalledWith('hm_demo_mode_is_active');
@@ -318,7 +328,7 @@ describe('DemoService', () => {
     });
 
     it('should not deactivate if not in demo mode', async () => {
-      (service.isDemoMode as any).set(false);
+      service.isDemoMode['set'](false);
       await service.deactivateDemo();
       expect(mockLocalStorageService.delete).not.toHaveBeenCalled();
     });
@@ -329,9 +339,9 @@ describe('DemoService', () => {
         loadingDuringExecution = service.isLoading();
       });
       vi.mocked(localStorage.getItem).mockReturnValue(null);
-  
+
       await service.deactivateDemo();
-  
+
       expect(loadingDuringExecution).toBe(true);
       expect(service.isLoading()).toBe(false);
     });
@@ -346,7 +356,7 @@ describe('DemoService', () => {
         ],
       });
       const serverService = TestBed.inject(DemoService);
-      (serverService.isDemoMode as any).set(true);
+      serverService.isDemoMode['set'](true);
 
       await serverService.deactivateDemo();
 

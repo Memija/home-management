@@ -13,7 +13,7 @@ import { Shield, Database, Lock, Cookie } from 'lucide-angular';
  */
 describe('PrivacyComponent', () => {
   let component: PrivacyComponent;
-  let languageServiceMock: any;
+  let languageServiceMock: unknown;
 
   beforeEach(() => {
     languageServiceMock = {

@@ -1,13 +1,16 @@
 import { TestBed } from '@angular/core/testing';
 import { HeatingFormService } from './heating-form.service';
 import { HeatingRoomsService } from './heating-rooms.service';
+
 import { DynamicHeatingRecord } from '../models/records.model';
-import { describe, it, expect, beforeEach, vi } from 'vitest';
+import { describe, it, expect, beforeEach } from 'vitest';
 import { signal } from '@angular/core';
 
 describe('HeatingFormService', () => {
   let service: HeatingFormService;
-  let mockHeatingRoomsService: any;
+  let mockHeatingRoomsService: {
+    rooms: import('@angular/core').WritableSignal<{ id: string; name: string }[]>;
+  };
 
   beforeEach(() => {
     mockHeatingRoomsService = {

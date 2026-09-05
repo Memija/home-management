@@ -10,10 +10,36 @@ export const landing = {
     CTA_SEE_FEATURES: 'Funktionen ansehen',
     SCROLL_TO_EXPLORE: 'Scrollen zum Entdecken',
     STATS: {
-      FREE: 'Kostenlos & Open Source',
+      FREE: 'Kostenlos und Open Source',
       TRACKERS: 'Verbrauchszähler',
       DATA_POINTS: 'Datenpunkte',
       ADS: 'Werbung je',
+    },
+    HIGHLIGHTS: {
+      LOCAL_TITLE: '100% Lokal und Offline-First',
+      LOCAL_DESC:
+        'Keine Cloud-Abhängigkeit. Deine Verbrauchsdaten bleiben sicher im Browser mit direktem Excel-Export.',
+      LOCAL_TAG_1: 'Lokal gespeichert',
+      LOCAL_TAG_2: 'Sofortiger Export',
+      LOCAL_TAG_3: 'Kein Konto nötig',
+      PREDICT_TITLE: 'Intelligente Verbrauchs-Prognosen',
+      PREDICT_DESC:
+        'Lineare und polynomische Regression berechnen den zukünftigen Verbrauch basierend auf historischen saisonalen Mustern voraus.',
+      PREDICT_TAG_1: 'Regressionsanalyse',
+      PREDICT_TAG_2: 'Saisonale Muster',
+      PREDICT_TAG_3: 'Historische Trends',
+      UNIFIED_TITLE: 'Wasserverbrauch, Heizungsverbrauch und Stromverbrauch',
+      UNIFIED_DESC:
+        'Einheitliche Verbrauchserfassung über alle Räume, Zwischenzähler, Tageswerte und Länderdurchschnitte.',
+      UNIFIED_TAG_1: 'Zwischenzähler',
+      UNIFIED_TAG_2: 'Ländervergleich',
+      UNIFIED_TAG_3: 'Tagesverbrauch',
+      PRIVACY_TITLE: 'Mehrsprachigkeit und voller Datenschutz',
+      PRIVACY_DESC:
+        'Vollständige Unterstützung in 5 Sprachen mit barrierefreien kontrastreichen Designs und ohne Tracker.',
+      PRIVACY_TAG_1: '5 Sprachen',
+      PRIVACY_TAG_2: 'Keine Tracker',
+      PRIVACY_TAG_3: 'Barrierefreie Designs',
     },
     FEATURES: {
       SECTION_TITLE: 'Der Weg zum smarteren Zuhause',
@@ -33,13 +59,16 @@ export const landing = {
       ANALYTICS_TITLE: 'Intelligente Analysen',
       ANALYTICS_DESC:
         'Schöne interaktive Diagramme mit flexibler Datumsfilterung. Vergleiche Zeiträume und entdecke Verbrauchsmuster.',
+      PREDICTIONS_TITLE: 'Intelligente Prognosen und Ziele',
+      PREDICTIONS_DESC:
+        'Prognostiziere den zukünftigen Wasserverbrauch, Heizungsverbrauch und Stromverbrauch basierend auf saisonalen Mustern. Setze Sparziele und vermeide unerwartete Nachzahlungen.',
       CLOUD_TITLE: 'Cloud-Synchronisierung',
       CLOUD_DESC:
         'Synchronisiere optional deine Daten über Geräte hinweg mit Firebase, damit sie immer gesichert und zugänglich sind.',
       COUNTRY_TITLE: 'Ländervergleiche',
       COUNTRY_DESC:
         'Vergleiche deine Versorgungspreise und deinen Verbrauch mit verschiedenen Ländern. Ordne deine Leistung global ein.',
-      EXPORT_TITLE: 'PDF- und Excel-Export',
+      EXPORT_TITLE: 'PDF-Export und Excel-Export',
       EXPORT_DESC:
         'Erstelle umfassende PDF-Berichte oder exportiere deine Rohdaten nach Excel für externe Verarbeitung und Aufzeichnungen.',
     },

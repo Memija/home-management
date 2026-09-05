@@ -28,11 +28,8 @@ class MockAuthButtonComponent {}
 describe('HeaderComponent', () => {
   let component: HeaderComponent;
   let fixture: ComponentFixture<HeaderComponent>;
-  let router: any;
-  let demoService: any;
-  let notificationService: any;
-  let themeService: any;
-  let languageService: any;
+  let router: import('@angular/router').Router;
+  let themeService: import('../../services/theme.service').ThemeService;
 
   // Mock signals
   const currentThemeSignal = signal<'light' | 'dark' | 'system'>('system');
@@ -43,9 +40,9 @@ describe('HeaderComponent', () => {
   beforeEach(async () => {
     // Create spies for services
     const routerSpy = { navigate: vi.fn().mockResolvedValue(true) };
-    const demoSpy = { 
+    const demoSpy = {
       deactivateDemo: vi.fn(),
-      isDemoMode: vi.fn().mockReturnValue(false)
+      isDemoMode: vi.fn().mockReturnValue(false),
     };
 
     // NotificationService mock
@@ -95,10 +92,7 @@ describe('HeaderComponent', () => {
     component = fixture.componentInstance;
 
     router = TestBed.inject(Router);
-    demoService = TestBed.inject(DemoService);
-    notificationService = TestBed.inject(NotificationService);
     themeService = TestBed.inject(ThemeService);
-    languageService = TestBed.inject(LanguageService);
 
     // Reset signals before each test
     currentThemeSignal.set('system');
@@ -119,17 +113,17 @@ describe('HeaderComponent', () => {
 
       // 1. system -> light
       currentThemeSignal.set('system');
-      (component as any).cycleTheme();
+      component['cycleTheme']();
       expect(themeService.setTheme).toHaveBeenCalledWith('light');
 
       // 2. light -> dark
       currentThemeSignal.set('light');
-      (component as any).cycleTheme();
+      component['cycleTheme']();
       expect(themeService.setTheme).toHaveBeenCalledWith('dark');
 
       // 3. dark -> system
       currentThemeSignal.set('dark');
-      (component as any).cycleTheme();
+      component['cycleTheme']();
       expect(themeService.setTheme).toHaveBeenCalledWith('system');
     });
 
@@ -137,32 +131,32 @@ describe('HeaderComponent', () => {
       // Case 1: System (Light)
       currentThemeSignal.set('system');
       resolvedThemeSignal.set('light');
-      expect((component as any).getThemeTitle()).toBe('System (Light)');
+      expect(component['getThemeTitle']()).toBe('System (Light)');
 
       // Case 2: System (Dark)
       currentThemeSignal.set('system');
       resolvedThemeSignal.set('dark');
-      expect((component as any).getThemeTitle()).toBe('System (Dark)');
+      expect(component['getThemeTitle']()).toBe('System (Dark)');
 
       // Case 3: Light
       currentThemeSignal.set('light');
-      expect((component as any).getThemeTitle()).toBe('Light');
+      expect(component['getThemeTitle']()).toBe('Light');
 
       // Case 4: Dark
       currentThemeSignal.set('dark');
-      expect((component as any).getThemeTitle()).toBe('Dark');
+      expect(component['getThemeTitle']()).toBe('Dark');
     });
   });
 
   describe('Notifications', () => {
     it('should toggle notification panel', () => {
-      expect((component as any).isNotificationPanelOpen()).toBe(false);
+      expect(component['isNotificationPanelOpen']()).toBe(false);
 
-      (component as any).toggleNotificationPanel();
-      expect((component as any).isNotificationPanelOpen()).toBe(true);
+      component['toggleNotificationPanel']();
+      expect(component['isNotificationPanelOpen']()).toBe(true);
 
-      (component as any).toggleNotificationPanel();
-      expect((component as any).isNotificationPanelOpen()).toBe(false);
+      component['toggleNotificationPanel']();
+      expect(component['isNotificationPanelOpen']()).toBe(false);
     });
 
     it('should navigate to notification route and handle fragments', async () => {
@@ -180,16 +174,16 @@ describe('HeaderComponent', () => {
 
       // Mock document.getElementById and scrollIntoView
       const mockElement = document.createElement('div');
-      mockElement.scrollIntoView = () => {};
+      mockElement.scrollIntoView = () => undefined;
       vi.spyOn(mockElement, 'scrollIntoView');
       vi.spyOn(document, 'getElementById').mockReturnValue(mockElement);
 
-      (component as any).isNotificationPanelOpen.set(true);
+      component['isNotificationPanelOpen'].set(true);
 
-      (component as any).navigateToNotification(notification);
+      component['navigateToNotification'](notification);
 
       // Should close panel
-      expect((component as any).isNotificationPanelOpen()).toBe(false);
+      expect(component['isNotificationPanelOpen']()).toBe(false);
 
       // Should navigate
       expect(router.navigate).toHaveBeenCalledWith(['/target-route'], {
@@ -221,14 +215,14 @@ describe('HeaderComponent', () => {
         dismissible: true,
       };
 
-      (component as any).navigateToNotification(notification);
+      component['navigateToNotification'](notification);
 
       expect(router.navigate).not.toHaveBeenCalled();
-      expect((component as any).isNotificationPanelOpen()).toBe(false); // Should still close panel
+      expect(component['isNotificationPanelOpen']()).toBe(false); // Should still close panel
     });
 
     it('should close notification panel when clicking outside', () => {
-      (component as any).isNotificationPanelOpen.set(true);
+      component['isNotificationPanelOpen'].set(true);
       fixture.detectChanges();
 
       // Create a click event on document body
@@ -236,11 +230,11 @@ describe('HeaderComponent', () => {
       document.dispatchEvent(event);
       fixture.detectChanges();
 
-      expect((component as any).isNotificationPanelOpen()).toBe(false);
+      expect(component['isNotificationPanelOpen']()).toBe(false);
     });
 
     it('should NOT close notification panel when clicking inside', () => {
-      (component as any).isNotificationPanelOpen.set(true);
+      component['isNotificationPanelOpen'].set(true);
       fixture.detectChanges();
 
       // Click on the component's element
@@ -249,7 +243,7 @@ describe('HeaderComponent', () => {
       element.dispatchEvent(event);
       fixture.detectChanges();
 
-      expect((component as any).isNotificationPanelOpen()).toBe(true);
+      expect(component['isNotificationPanelOpen']()).toBe(true);
     });
   });
 });

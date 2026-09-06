@@ -1,11 +1,11 @@
-import fs from 'fs';
-import path from 'path';
+const fs = require('fs');
+const path = require('path');
 
 /**
  * Puppeteer setup script for Lighthouse CI (LHCI).
  * Injects complete demo datasets into localStorage before LHCI runs audits.
  */
-export default async function setup(browser, context) {
+async function setup(browser, context) {
   const page = await browser.newPage();
   const demoDir = path.resolve(process.cwd(), 'public/demo');
 
@@ -54,3 +54,6 @@ export default async function setup(browser, context) {
     await page.close();
   }
 }
+
+module.exports = setup;
+module.exports.default = setup;

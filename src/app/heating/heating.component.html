@@ -132,7 +132,10 @@
             [class.open]="isExportMenuOpen()"
             (click)="toggleExportMenu($event)"
             [disabled]="records().length === 0"
-            title="{{ (records().length === 0 ? 'HEATING.EXPORT_DISABLED_TOOLTIP' : 'HEATING.EXPORT') | translate }}"
+            title="{{
+              (records().length === 0 ? 'HEATING.EXPORT_DISABLED_TOOLTIP' : 'HEATING.EXPORT')
+                | translate
+            }}"
             aria-label="Export menu"
           >
             <lucide-icon [img]="DownloadIcon" size="16"></lucide-icon>

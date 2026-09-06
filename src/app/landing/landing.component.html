@@ -1,32 +1,40 @@
 <div class="landing-page">
+  <!-- Ambient Background Glow Mesh -->
+  <div class="ambient-glow-container" aria-hidden="true">
+    <div class="glow-orb orb-teal"></div>
+    <div class="glow-orb orb-blue"></div>
+    <div class="glow-orb orb-indigo"></div>
+  </div>
+
   <!-- Floating Toolbar: Theme + Language -->
-  <div class="landing-toolbar" [class.scrolled]="scrollY() > 50">
+  <header class="landing-toolbar" [class.scrolled]="scrollY() > 50">
     <div class="toolbar-inner">
-      <div class="toolbar-brand">
+      <a routerLink="/" class="toolbar-brand" aria-label="Home Management Home">
         <img
           src="/assets/logo-128.png"
           alt="Home Management Logo"
           class="toolbar-logo"
-          width="32"
-          height="32"
+          width="34"
+          height="34"
         />
-      </div>
+        <span class="brand-text">Home Management</span>
+      </a>
       <div class="toolbar-actions">
         <button
           type="button"
           class="theme-toggle-btn"
           (click)="cycleTheme()"
           [title]="getThemeTitle()"
-          aria-label="Toggle theme"
+          aria-label="Toggle color theme"
         >
-          <span class="theme-icon">{{ getThemeIcon() }}</span>
+          <span class="theme-icon" aria-hidden="true">{{ getThemeIcon() }}</span>
         </button>
         <app-language-switcher></app-language-switcher>
       </div>
     </div>
-  </div>
+  </header>
 
-  <!-- Road Progress Indicator (Interactive) -->
+  <!-- Road Progress Indicator (Interactive Scroll Navigator) -->
   <div
     class="road-progress"
     (click)="onRoadClick($event)"
@@ -44,8 +52,13 @@
   >
     <div class="road-track">
       <div class="road-fill" [style.height.%]="roadProgress()"></div>
-      <div class="road-car" [style.top.%]="roadProgress()" (mousedown)="onRoadDragStart($event)">
-        🏠
+      <div
+        class="road-car"
+        [style.top.%]="roadProgress()"
+        (mousedown)="onRoadDragStart($event)"
+        title="Drag to scroll"
+      >
+        <span class="road-car-icon" aria-hidden="true">🏠</span>
       </div>
     </div>
   </div>
@@ -53,56 +66,92 @@
   <!-- Hero Section -->
   <section class="hero-section">
     <div class="hero-bg">
-      <div class="hero-road">
+      <div class="hero-road" aria-hidden="true">
         <svg class="road-svg" viewBox="0 0 200 800" preserveAspectRatio="none">
           <path
             d="M100,0 C60,200 140,300 100,500 C60,700 140,800 100,800"
             stroke="rgba(255,255,255,0.1)"
-            stroke-width="40"
+            stroke-width="44"
             fill="none"
           />
           <path
             d="M100,0 C60,200 140,300 100,500 C60,700 140,800 100,800"
-            stroke="rgba(255,255,255,0.05)"
+            stroke="rgba(255,255,255,0.15)"
             stroke-width="2"
             fill="none"
             stroke-dasharray="12 8"
           />
         </svg>
       </div>
-      <div class="floating-icons" [style.transform]="getParallaxTransform(-0.3)">
-        @for (icon of floatingIcons; track i; let i = $index) {
-          <span
-            class="float-icon"
-            [style.top]="icon.top"
-            [style.left]="icon.left"
-            [style.right]="icon.right || 'auto'"
-            [style.font-size]="icon.size"
-            [style.animation-delay]="icon.delay"
-            >{{ icon.icon }}</span
+      <div
+        class="floating-icons"
+        [style.transform]="getParallaxTransform(-0.25)"
+        aria-hidden="true"
+      >
+        @for (badge of floatingBadges; track i; let i = $index) {
+          <div
+            class="float-badge"
+            [style.top]="badge.top"
+            [style.left]="badge.left"
+            [style.right]="badge.right || 'auto'"
+            [style.animation-delay]="badge.delay"
+            [style.--badge-color]="badge.color"
           >
+            <lucide-icon [img]="badge.icon" [size]="badge.size"></lucide-icon>
+          </div>
         }
       </div>
     </div>
 
     <div class="hero-content">
-      <div class="hero-badge">{{ 'LANDING.BADGE' | translate }}</div>
+      <div class="hero-badge">
+        <span class="pulse-dot"></span>
+        <span class="badge-text">{{ 'LANDING.BADGE' | translate }}</span>
+      </div>
+
       <h1 class="hero-title">
         <span class="title-line">{{ 'LANDING.TITLE_LINE_1' | translate }}</span>
         <span class="title-line gradient-text">{{ 'LANDING.TITLE_LINE_2' | translate }}</span>
       </h1>
+
       <p class="hero-subtitle">
         {{ 'LANDING.SUBTITLE' | translate }}
       </p>
+
       <div class="hero-actions">
         <a routerLink="/dashboard" class="cta-button primary" id="hero-cta">
           <span>{{ 'LANDING.CTA_OPEN_APP' | translate }}</span>
-          <span class="cta-arrow">→</span>
+          <lucide-icon [img]="ArrowRightIcon" size="18" class="cta-arrow"></lucide-icon>
         </a>
         <a href="#features" class="cta-button secondary" id="hero-learn-more">
           <span>{{ 'LANDING.CTA_SEE_FEATURES' | translate }}</span>
-          <span class="cta-arrow">↓</span>
+          <lucide-icon [img]="ArrowDownIcon" size="18" class="cta-arrow"></lucide-icon>
         </a>
+      </div>
+      <!-- Quick Value Metrics & Key Highlights Grid -->
+      <div
+        class="hero-highlights-container"
+        data-animate="hero-highlights"
+        [class.visible]="isVisible()['hero-highlights']"
+      >
+        <div class="hero-highlights-grid">
+          @for (item of highlightKeys; track item.titleKey) {
+            <div class="highlight-card" [class]="'highlight-card ' + item.themeClass">
+              <div class="highlight-header">
+                <div class="highlight-icon-wrap">
+                  <lucide-icon [img]="item.icon" [size]="24"></lucide-icon>
+                </div>
+                <h3 class="highlight-title">{{ item.titleKey | translate }}</h3>
+              </div>
+              <p class="highlight-desc">{{ item.descKey | translate }}</p>
+              <div class="highlight-tags">
+                @for (tag of item.tags; track tag) {
+                  <span class="highlight-tag-pill">{{ tag | translate }}</span>
+                }
+              </div>
+            </div>
+          }
+        </div>
       </div>
     </div>
 
@@ -118,19 +167,27 @@
   <section class="stats-section" data-animate="stats">
     <div class="stats-container" [class.visible]="isVisible()['stats']">
       @for (stat of statKeys; track stat.labelKey) {
-        <div class="stat-item">
-          <span class="stat-value">{{ stat.value }}</span>
-          <span class="stat-label">{{ stat.labelKey | translate }}</span>
+        <div class="stat-card">
+          <div class="stat-icon-wrapper">
+            <lucide-icon [img]="stat.icon" size="20"></lucide-icon>
+          </div>
+          <div class="stat-content">
+            <span class="stat-value">{{ stat.value }}</span>
+            <span class="stat-label">{{ stat.labelKey | translate }}</span>
+          </div>
         </div>
       }
     </div>
   </section>
 
   <!-- Full-Page Road with Scenery -->
-  <div class="page-road-scenery" data-animate="scenery" [class.visible]="isVisible()['scenery']">
-    <!-- Curving road SVG -->
-    <svg class="page-road-svg" viewBox="0 0 200 1000" preserveAspectRatio="none" aria-hidden="true">
-      <!-- Road surface (single lane) -->
+  <div
+    class="page-road-scenery"
+    data-animate="scenery"
+    [class.visible]="isVisible()['scenery']"
+    aria-hidden="true"
+  >
+    <svg class="page-road-svg" viewBox="0 0 200 1000" preserveAspectRatio="none">
       <path
         class="road-surface"
         d="M100,0 C60,100 140,200 100,300 C60,400 140,500 100,600 C60,700 140,800 100,900 C80,950 120,1000 100,1000"
@@ -138,7 +195,6 @@
         fill="none"
       />
     </svg>
-    <!-- Left side of the road -->
     @for (item of leftScenery; track i; let i = $index) {
       <span
         class="scenery-item {{ item.type }}"
@@ -149,8 +205,6 @@
         {{ item.icon }}
       </span>
     }
-
-    <!-- Right side of the road -->
     @for (item of rightScenery; track i; let i = $index) {
       <span
         class="scenery-item {{ item.type }}"
@@ -173,8 +227,7 @@
     </div>
 
     <div class="features-road">
-      <!-- Road SVG backbone -->
-      <div class="road-backbone">
+      <div class="road-backbone" aria-hidden="true">
         <svg viewBox="0 0 100 2400" preserveAspectRatio="none" class="road-line-svg">
           <path
             d="M50,0 L50,2400"
@@ -182,7 +235,7 @@
             stroke-width="3"
             fill="none"
             stroke-dasharray="8 6"
-            opacity="0.5"
+            opacity="0.6"
           />
         </svg>
       </div>
@@ -195,16 +248,24 @@
           [class.left]="i % 2 === 0"
           [class.right]="i % 2 !== 0"
         >
-          <!-- Road milestone marker -->
+          <!-- Milestone Marker Node -->
           <div class="milestone-marker">
             <div class="milestone-dot" [style.border-color]="feature.color">
               <div class="milestone-inner" [style.background]="feature.color"></div>
             </div>
           </div>
 
-          <div class="feature-card">
-            <div class="feature-icon-wrapper" [style.background]="feature.color + '18'">
-              <span class="feature-icon">{{ feature.icon }}</span>
+          <!-- Bento Card -->
+          <div class="feature-card" [style.--accent-color]="feature.color">
+            <div class="feature-card-header">
+              <div
+                class="feature-icon-wrapper"
+                [style.background]="feature.color + '1c'"
+                [style.color]="feature.color"
+              >
+                <lucide-icon [img]="feature.icon" size="26"></lucide-icon>
+              </div>
+              <span class="watermark-number">0{{ i + 1 }}</span>
             </div>
             <div class="feature-content">
               <h3 class="feature-title" [style.color]="feature.color">
@@ -212,14 +273,13 @@
               </h3>
               <p class="feature-description">{{ feature.descKey | translate }}</p>
             </div>
-            <div class="feature-number" [style.color]="feature.color + '30'">{{ i + 1 }}</div>
           </div>
         </div>
       }
     </div>
   </section>
 
-  <!-- How It Works -->
+  <!-- How It Works Section -->
   <section class="how-section" data-animate="how">
     <div [class.visible]="isVisible()['how']">
       <h2 class="section-title">{{ 'LANDING.HOW.TITLE' | translate }}</h2>
@@ -229,28 +289,38 @@
     <div class="steps-container" data-animate="steps">
       <div class="step-row" [class.visible]="isVisible()['steps']">
         <div class="step-card">
-          <div class="step-number">1</div>
-          <div class="step-icon">📖</div>
+          <div class="step-badge">01</div>
+          <div class="step-icon-box step-icon-1">
+            <lucide-icon [img]="BookOpenIcon" size="28"></lucide-icon>
+          </div>
           <h3>{{ 'LANDING.HOW.STEP_1_TITLE' | translate }}</h3>
           <p>{{ 'LANDING.HOW.STEP_1_DESC' | translate }}</p>
         </div>
-        <div class="step-connector">
+
+        <div class="step-connector" aria-hidden="true">
           <div class="connector-line"></div>
-          <div class="connector-arrow">→</div>
+          <lucide-icon [img]="ArrowRightIcon" size="18" class="connector-arrow"></lucide-icon>
         </div>
+
         <div class="step-card">
-          <div class="step-number">2</div>
-          <div class="step-icon">✏️</div>
+          <div class="step-badge">02</div>
+          <div class="step-icon-box step-icon-2">
+            <lucide-icon [img]="PencilIcon" size="28"></lucide-icon>
+          </div>
           <h3>{{ 'LANDING.HOW.STEP_2_TITLE' | translate }}</h3>
           <p>{{ 'LANDING.HOW.STEP_2_DESC' | translate }}</p>
         </div>
-        <div class="step-connector">
+
+        <div class="step-connector" aria-hidden="true">
           <div class="connector-line"></div>
-          <div class="connector-arrow">→</div>
+          <lucide-icon [img]="ArrowRightIcon" size="18" class="connector-arrow"></lucide-icon>
         </div>
+
         <div class="step-card">
-          <div class="step-number">3</div>
-          <div class="step-icon">📈</div>
+          <div class="step-badge">03</div>
+          <div class="step-icon-box step-icon-3">
+            <lucide-icon [img]="TrendingUpIcon" size="28"></lucide-icon>
+          </div>
           <h3>{{ 'LANDING.HOW.STEP_3_TITLE' | translate }}</h3>
           <p>{{ 'LANDING.HOW.STEP_3_DESC' | translate }}</p>
         </div>
@@ -258,10 +328,10 @@
     </div>
   </section>
 
-  <!-- Final CTA -->
+  <!-- Final Call to Action -->
   <section class="cta-section" data-animate="cta">
     <div class="cta-container" [class.visible]="isVisible()['cta']">
-      <div class="cta-bg-decoration">
+      <div class="cta-bg-decoration" aria-hidden="true">
         <div class="cta-circle circle-1"></div>
         <div class="cta-circle circle-2"></div>
         <div class="cta-circle circle-3"></div>
@@ -271,13 +341,13 @@
         <p>{{ 'LANDING.CTA.SUBTITLE' | translate }}</p>
         <a routerLink="/dashboard" class="cta-button primary large" id="final-cta">
           <span>{{ 'LANDING.CTA.BUTTON' | translate }}</span>
-          <span class="cta-arrow">→</span>
+          <lucide-icon [img]="ArrowRightIcon" size="20" class="cta-arrow"></lucide-icon>
         </a>
       </div>
     </div>
   </section>
 
-  <!-- Minimal Footer -->
+  <!-- Minimal Modern Footer -->
   <footer class="landing-footer">
     <div class="footer-inner">
       <div class="footer-brand">
@@ -288,7 +358,7 @@
           width="28"
           height="28"
         />
-        <span class="footer-name">{{ 'FOOTER.APP_NAME' | translate }}</span>
+        <span class="footer-name">Home Management</span>
       </div>
       <div class="footer-links">
         <a

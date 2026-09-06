@@ -255,7 +255,10 @@
       <div class="modal-header">
         <div class="modal-title-with-icon">
           <lucide-icon [img]="EditIcon" size="20" class="header-icon"></lucide-icon>
-          <h3>{{ 'SETTINGS.EDIT_MEMBER' | translate }}: {{ memberToEdit.name }} {{ memberToEdit.surname }}</h3>
+          <h3>
+            {{ 'SETTINGS.EDIT_MEMBER' | translate }}: {{ memberToEdit.name }}
+            {{ memberToEdit.surname }}
+          </h3>
         </div>
         <button
           type="button"
@@ -406,7 +409,8 @@
               </button>
             </div>
           </div>
-        </div>        <div class="form-group">
+        </div>
+        <div class="form-group">
           <span class="form-label">{{ 'SETTINGS.CUSTOM_PICTURE' | translate }}</span>
           <label class="upload-btn">
             <lucide-icon [img]="ImportIcon" size="14"></lucide-icon>

@@ -141,7 +141,9 @@
                   (click)="selectEmailClient('default'); $event.stopPropagation()"
                   tabindex="0"
                   (keydown.enter)="selectEmailClient('default'); $event.stopPropagation()"
-                  (keydown.space)="selectEmailClient('default'); $event.stopPropagation(); $event.preventDefault()"
+                  (keydown.space)="
+                    selectEmailClient('default'); $event.stopPropagation(); $event.preventDefault()
+                  "
                 >
                   <lucide-icon [img]="LaptopIcon" size="20"></lucide-icon>
                   <span>{{ 'CONTACT.DEFAULT_CLIENT' | translate }}</span>
@@ -154,7 +156,9 @@
                   (click)="selectEmailClient('outlook'); $event.stopPropagation()"
                   tabindex="0"
                   (keydown.enter)="selectEmailClient('outlook'); $event.stopPropagation()"
-                  (keydown.space)="selectEmailClient('outlook'); $event.stopPropagation(); $event.preventDefault()"
+                  (keydown.space)="
+                    selectEmailClient('outlook'); $event.stopPropagation(); $event.preventDefault()
+                  "
                 >
                   <img src="/assets/outlook_logo.png" alt="Outlook" class="logo-icon" />
                   <span>Outlook</span>
@@ -167,7 +171,9 @@
                   (click)="selectEmailClient('gmail'); $event.stopPropagation()"
                   tabindex="0"
                   (keydown.enter)="selectEmailClient('gmail'); $event.stopPropagation()"
-                  (keydown.space)="selectEmailClient('gmail'); $event.stopPropagation(); $event.preventDefault()"
+                  (keydown.space)="
+                    selectEmailClient('gmail'); $event.stopPropagation(); $event.preventDefault()
+                  "
                 >
                   <img src="/assets/gmail_logo.png" alt="Gmail" class="logo-icon" />
                   <span>Gmail</span>

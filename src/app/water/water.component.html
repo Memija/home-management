@@ -128,7 +128,10 @@
           [class.open]="isExportMenuOpen()"
           (click)="toggleExportMenu($event)"
           [disabled]="filteredRecords().length === 0"
-          title="{{ (filteredRecords().length === 0 ? 'WATER.EXPORT_DISABLED_TOOLTIP' : 'WATER.EXPORT') | translate }}"
+          title="{{
+            (filteredRecords().length === 0 ? 'WATER.EXPORT_DISABLED_TOOLTIP' : 'WATER.EXPORT')
+              | translate
+          }}"
           aria-label="Export menu"
         >
           <lucide-icon [img]="DownloadIcon" size="16"></lucide-icon>

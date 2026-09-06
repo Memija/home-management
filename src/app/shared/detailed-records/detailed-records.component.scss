@@ -1,7 +1,7 @@
 @use 'variables' as *;
 
 // Detailed records - Uses unified white card pattern
-// Base styles inherited from global _history.scss
+// Base styles inherited from global _history.scss & _buttons.scss
 
 .history-section {
   background: var(--card-bg);
@@ -9,571 +9,283 @@
   border: 1px solid var(--card-border);
   border-radius: 16px;
   box-shadow: var(--shadow-card);
-  margin-bottom: 2rem;
-  transition:
-    background 0.3s ease,
-    border-color 0.2s ease,
-    box-shadow 0.3s ease;
-
-  // Header & Title
-  .section-header {
-    display: flex;
-    flex-direction: column;
-    gap: 0.85rem;
-    margin-bottom: 1.25rem;
-  }
-
-  .title-with-help {
-    display: flex;
-    align-items: center;
-    width: 100%;
-    gap: 0.5rem;
-
-    h2 {
-      margin: 0;
-      font-weight: 700;
-      letter-spacing: -0.02em;
-    }
-
-    .header-spacer {
-      flex: 1;
-    }
-  }
-
-  // Toolbar & Filters Container
-  .filters-container {
-    display: flex;
-    flex-direction: column;
-    gap: 0.65rem;
-    width: 100%;
-  }
-
-  .toolbar-row {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    width: 100%;
-
-    &.filters-row {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 0.5rem;
-      padding-bottom: 0.65rem;
-      border-bottom: 1px solid var(--border-light);
-      flex-wrap: nowrap;
-      transition: border-color 0.2s ease;
-
-      .filters-group {
-        display: flex;
-        align-items: center;
-        gap: 0.45rem;
-        flex-wrap: nowrap;
-        flex: 1;
-        min-width: 0;
-
-        .search-box.date-range {
-          display: flex;
-          gap: 0.4rem;
-          align-items: center;
-          flex-shrink: 0;
-
-          app-date-picker {
-            width: 122px;
-            flex-shrink: 0;
-
-            ::ng-deep .date-picker-container {
-              margin-top: 0;
-
-              .input-wrapper {
-                height: 36px;
-                border-radius: 8px;
-                padding: 0 0.65rem;
-                background: var(--input-bg);
-                border: 1px solid var(--border-color);
-                transition: all 0.2s ease;
-
-                &:hover {
-                  border-color: var(--card-border-hover);
-                }
-
-                .calendar-icon {
-                  color: var(--text-muted);
-                  flex-shrink: 0;
-                  width: 15px;
-                  height: 15px;
-                }
-
-                .date-display {
-                  font-size: 0.825rem;
-                  font-weight: 500;
-                  white-space: nowrap;
-                  overflow: hidden;
-                  text-overflow: ellipsis;
-
-                  &.placeholder {
-                    color: var(--text-muted);
-                  }
-                }
-              }
-            }
-          }
-        }
-
-        .filter-box {
-          display: flex;
-          gap: 0.4rem;
-          align-items: center;
-          flex-shrink: 0;
-
-          #year-filter {
-            width: 92px;
-          }
-
-          #month-filter {
-            width: 110px;
-          }
-        }
-
-        .select-with-icon {
-          position: relative;
-          display: flex;
-          align-items: center;
-
-          lucide-icon {
-            position: absolute;
-            left: 0.65rem;
-            color: var(--text-muted);
-            pointer-events: none;
-            z-index: 1;
-            width: 15px;
-            height: 15px;
-          }
-
-          select {
-            height: 36px;
-            padding-left: 2rem;
-            padding-right: 1.6rem;
-            border-radius: 8px;
-            background-color: var(--input-bg);
-            border: 1px solid var(--border-color);
-            color: var(--text-primary);
-            font-size: 0.825rem;
-            font-weight: 500;
-            cursor: pointer;
-            appearance: none;
-            transition: all 0.2s ease;
-            background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20' fill='none' stroke='%238a94a6' stroke-width='1.75' stroke-linecap='round' stroke-linejoin='round'%3e%3cpath d='M6 8l4 4 4-4'/%3e%3c/svg%3e");
-            background-repeat: no-repeat;
-            background-position: right 0.5rem center;
-            background-size: 0.85em;
-
-            &:hover {
-              border-color: var(--card-border-hover);
-            }
-
-            &:focus {
-              outline: none;
-              border-color: var(--theme-primary, $primary);
-              box-shadow: 0 0 0 3px rgba(var(--theme-primary-rgb, 0, 92, 191), 0.15);
-            }
-
-            option {
-              background-color: var(--card-bg, #ffffff);
-              color: var(--text-primary);
-              padding: 0.45rem 0.65rem;
-
-              &:nth-child(even) {
-                background-color: var(--bg-secondary);
-              }
-
-              &:nth-child(odd) {
-                background-color: var(--card-bg, #ffffff);
-              }
-
-              &:disabled {
-                color: var(--text-muted);
-                opacity: 0.5;
-              }
-            }
-          }
-        }
-
-        .reset-filters-btn {
-          height: 36px;
-          padding: 0 0.65rem;
-          font-size: 0.825rem;
-          flex-shrink: 0;
-        }
-      }
-
-      .sort-group {
-        display: flex;
-        align-items: center;
-        margin-left: auto;
-        flex-shrink: 0;
-
-        .select-with-icon {
-          position: relative;
-          display: flex;
-          align-items: center;
-
-          lucide-icon {
-            position: absolute;
-            left: 0.65rem;
-            color: var(--text-muted);
-            pointer-events: none;
-            z-index: 1;
-            width: 15px;
-            height: 15px;
-          }
-
-          select {
-            height: 36px;
-            padding-left: 2rem;
-            padding-right: 1.6rem;
-            border-radius: 8px;
-            background-color: var(--input-bg);
-            border: 1px solid var(--border-color);
-            color: var(--text-primary);
-            font-size: 0.825rem;
-            font-weight: 500;
-            width: auto;
-            min-width: 165px;
-            max-width: 220px;
-            cursor: pointer;
-            appearance: none;
-            transition: all 0.2s ease;
-            background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20' fill='none' stroke='%238a94a6' stroke-width='1.75' stroke-linecap='round' stroke-linejoin='round'%3e%3cpath d='M6 8l4 4 4-4'/%3e%3c/svg%3e");
-            background-repeat: no-repeat;
-            background-position: right 0.5rem center;
-            background-size: 0.85em;
-
-            &:hover {
-              border-color: var(--card-border-hover);
-            }
-
-            &:focus {
-              outline: none;
-              border-color: var(--theme-primary, $primary);
-              box-shadow: 0 0 0 3px rgba(var(--theme-primary-rgb, 0, 92, 191), 0.15);
-            }
-
-            option {
-              background-color: var(--card-bg, #ffffff);
-              color: var(--text-primary);
-              padding: 0.45rem 0.65rem;
-
-              &:nth-child(even) {
-                background-color: var(--bg-secondary);
-              }
-
-              &:nth-child(odd) {
-                background-color: var(--card-bg, #ffffff);
-              }
-
-              &:disabled {
-                color: var(--text-muted);
-                opacity: 0.5;
-              }
-            }
-          }
-        }
-      }
-    }
-
-    &.actions-row {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 0.5rem;
-      flex-wrap: wrap;
-      padding-top: 0.1rem;
-
-      .actions-group {
-        display: flex;
-        align-items: center;
-        gap: 0.5rem;
-        flex-wrap: wrap;
-      }
-
-      .delete-all-btn {
-        margin-left: auto;
-        width: auto;
-        flex-shrink: 0;
-        height: 36px;
-        padding: 0 0.85rem;
-        display: inline-flex;
-        align-items: center;
-        gap: 0.45rem;
-        white-space: nowrap;
-
-        .btn-text-compact {
-          display: none;
-        }
-      }
-    }
-  }
-
-  .liters-note-container {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    margin-bottom: 0.75rem;
-    margin-top: 0.25rem;
-
-    .liters-note {
-      display: flex;
-      align-items: center;
-      gap: 0.5rem;
-      color: var(--text-secondary);
-      font-size: 0.875rem;
-      margin: 0;
-
-      lucide-icon {
-        color: var(--text-secondary);
-      }
-    }
-
-    .collapse-toggle {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      background: transparent;
-      border: none;
-      cursor: pointer;
-      padding: 0.35rem;
-      border-radius: 50%;
-      color: var(--text-secondary);
-      transition: all 0.2s ease;
-      margin-left: auto;
-
-      &:hover {
-        background: var(--bg-secondary);
-        color: var(--theme-primary, $primary);
-        transform: scale(1.1);
-      }
-    }
-  }
-
-  .history-list {
-    transition: max-height 0.3s ease-out;
-    position: relative;
-    max-height: 600px;
-
-    ul {
-      list-style: none;
-      padding: 6px 0.5rem 6px 4px;
-      max-height: 520px;
-      overflow-y: auto;
-      margin: 0;
-    }
-
-    &.collapsed {
-      max-height: 180px;
-      overflow: hidden;
-
-      ul {
-        overflow: hidden;
-      }
-
-      &::after {
-        content: '';
-        position: absolute;
-        bottom: 0;
-        left: 0;
-        right: 0;
-        height: 60px;
-        background: linear-gradient(to bottom, transparent, var(--card-bg));
-        pointer-events: none;
-      }
-    }
-  }
-
-  .record-header .record-actions .total {
-    font-weight: 700;
-    font-size: 1.15rem;
-    color: $purple;
-    background: rgba(124, 58, 237, 0.12);
-    border: 1px solid rgba(124, 58, 237, 0.25);
-    padding: 0.25rem 0.75rem;
-    border-radius: 6px;
-  }
-
-  // Remove border when no details are present
-  .record-header.no-details {
-    border-bottom: none;
-    margin-bottom: 0;
-    padding-bottom: 0;
-  }
-
-  .pagination-container .pagination-controls .pagination-btn {
-    background: var(--theme-primary, $primary);
-    box-shadow: 0 2px 4px rgba(0, 123, 255, 0.2);
-    border-radius: 8px;
-
-    &:hover:not(:disabled) {
-      background: var(--theme-primary-dark, $primary-dark);
-      box-shadow: 0 4px 12px rgba(0, 123, 255, 0.35);
-      transform: translateY(-1px);
-    }
-  }
-
-  // Responsive layout
-  @media (max-width: 768px) {
-    .toolbar-row {
-      &.filters-row {
-        display: flex;
-        flex-wrap: wrap;
-        align-items: center;
-        gap: 0.5rem;
-        width: 100%;
-
-        .filters-group {
-          display: contents;
-
-          .search-box.date-range {
-            width: 100%;
-            display: flex;
-            gap: 0.5rem;
-            flex: 1 1 100%;
-
-            app-date-picker {
-              flex: 1 1 50% !important;
-              width: 50% !important;
-              min-width: 0 !important;
-
-              ::ng-deep .calendar-popup {
-                max-width: calc(100vw - 2.5rem);
-              }
-
-              &:last-child ::ng-deep .calendar-popup {
-                left: auto !important;
-                right: 0 !important;
-              }
-            }
-          }
-
-          .filter-box {
-            display: flex;
-            gap: 0.5rem;
-            align-items: center;
-            flex-shrink: 0;
-
-            .select-with-icon {
-              flex: 0 0 auto !important;
-              width: auto !important;
-              min-width: 0 !important;
-
-              #year-filter {
-                width: 98px !important;
-              }
-
-              #month-filter {
-                width: 110px !important;
-              }
-
-              select {
-                width: auto !important;
-              }
-            }
-          }
-
-          .reset-filters-btn {
-            height: 36px;
-            padding: 0 0.65rem;
-            font-size: 0.825rem;
-            flex-shrink: 0;
-            display: inline-flex;
-            align-items: center;
-            gap: 0.35rem;
-            width: auto;
-            margin: 0;
-          }
-        }
-
-        .sort-group {
-          display: flex;
-          align-items: center;
-          flex: 1 1 auto;
-          min-width: 170px;
-          margin-left: 0;
-
-          .filter-box,
-          .select-with-icon {
-            width: 100% !important;
-            flex: 1;
-          }
-
-          select {
-            width: 100% !important;
-            min-width: 165px !important;
-          }
-        }
-      }
-
-      &.actions-row {
-        display: flex;
-        flex-direction: column;
-        align-items: stretch;
-        gap: 0.5rem;
-
-        .actions-group {
-          display: flex;
-          align-items: center;
-          gap: 0.5rem;
-          width: 100%;
-
-          ::ng-deep .action-buttons-group {
-            display: flex;
-            gap: 0.5rem;
-            width: 100%;
-          }
-
-          ::ng-deep .action-dropdown {
-            flex: 1 1 50%;
-            min-width: 0;
-          }
-
-          ::ng-deep .action-dropdown-trigger {
-            width: 100%;
-            justify-content: center;
-          }
-        }
-
-        .delete-all-btn {
-          align-self: flex-end;
-          margin-left: auto;
-          margin-top: 0.15rem;
-          height: 32px;
-          padding: 0 0.75rem;
-          font-size: 0.8rem;
-          font-weight: 500;
-          background: transparent;
-          border: 1px solid rgba(220, 38, 38, 0.35);
-          color: var(--danger);
-          border-radius: 6px;
-          width: auto;
-          flex-shrink: 0;
-
-          .btn-text-full {
-            display: inline;
-          }
-
-          .btn-text-compact {
-            display: none;
-          }
-
-          &:hover:not(:disabled) {
-            background: rgba(220, 38, 38, 0.08);
-            border-color: var(--danger);
-          }
-        }
-      }
-    }
-  }
 
   @media (max-width: 600px) {
     padding: 1rem;
+  }
+}
+
+.section-header {
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+  margin-bottom: 1.25rem;
+}
+
+.header-spacer {
+  flex: 1;
+}
+
+.filters-container {
+  display: flex;
+  flex-direction: column;
+  gap: 0.65rem;
+}
+
+.toolbar-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+
+  &.filters-row {
+    padding-bottom: 0.65rem;
+    border-bottom: 1px solid var(--border-light);
+  }
+
+  &.actions-row {
+    flex-wrap: wrap;
+    padding-top: 0.1rem;
+  }
+}
+
+.filters-group {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  flex: 1;
+  min-width: 0;
+}
+
+.sort-group {
+  display: flex;
+  align-items: center;
+  margin-left: auto;
+  flex-shrink: 0;
+
+  select {
+    width: auto;
+    min-width: 165px;
+    max-width: 220px;
+  }
+}
+
+.date-range {
+  display: flex;
+  gap: 0.4rem;
+  align-items: center;
+  flex-shrink: 0;
+
+  app-date-picker {
+    width: 122px;
+    flex-shrink: 0;
+
+    ::ng-deep {
+      .date-picker-container {
+        margin-top: 0;
+      }
+      .input-wrapper {
+        height: 36px;
+        border-radius: 8px;
+        padding: 0 0.65rem;
+        &:hover {
+          border-color: var(--card-border-hover);
+        }
+      }
+      .date-display {
+        font-size: 0.825rem;
+        font-weight: 500;
+      }
+    }
+  }
+}
+
+.filter-box {
+  display: flex;
+  gap: 0.4rem;
+  align-items: center;
+  flex-shrink: 0;
+
+  #year-filter {
+    width: 92px;
+  }
+  #month-filter {
+    width: 110px;
+  }
+}
+
+.select-with-icon {
+  position: relative;
+  display: flex;
+  align-items: center;
+
+  lucide-icon {
+    position: absolute;
+    left: 0.65rem;
+    color: var(--text-muted);
+    pointer-events: none;
+    width: 15px;
+    height: 15px;
+  }
+
+  select {
+    height: 36px;
+    padding: 0 1.6rem 0 2rem;
+    font-size: 0.825rem;
+  }
+}
+
+.reset-filters-btn {
+  height: 36px;
+  padding: 0 0.65rem;
+  font-size: 0.825rem;
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.actions-group {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.delete-all-btn {
+  margin-left: auto;
+}
+
+.btn-text-compact {
+  display: none;
+}
+
+.liters-note-container {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin: 0.25rem 0 0.75rem;
+}
+
+.collapse-toggle {
+  background: transparent;
+  border: 0;
+  cursor: pointer;
+  padding: 0.35rem;
+  border-radius: 50%;
+  color: var(--text-secondary);
+  transition: all 0.2s ease;
+  margin-left: auto;
+
+  &:hover {
+    background: var(--bg-secondary);
+    color: var(--theme-primary, $primary);
+  }
+}
+
+.history-list {
+  transition: max-height 0.3s ease-out;
+  position: relative;
+  max-height: 600px;
+
+  ul {
+    margin: 0;
+  }
+
+  &.collapsed {
+    max-height: 180px;
+    overflow: hidden;
+
+    &::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: 60px;
+      background: linear-gradient(to bottom, transparent, var(--card-bg));
+      pointer-events: none;
+    }
+  }
+}
+
+.record-header.no-details {
+  border: 0;
+  margin: 0;
+  padding: 0;
+}
+
+.record-actions .total {
+  font-weight: 700;
+  font-size: 1.15rem;
+  color: $purple;
+  background: rgba(124, 58, 237, 0.12);
+  border: 1px solid rgba(124, 58, 237, 0.25);
+  padding: 0.25rem 0.75rem;
+  border-radius: 6px;
+}
+
+.pagination-btn {
+  background: var(--theme-primary, $primary);
+  border-radius: 8px;
+
+  &:hover:not(:disabled) {
+    background: var(--theme-primary-dark, $primary-dark);
+  }
+}
+
+@media (max-width: 768px) {
+  .filters-row {
+    flex-wrap: wrap;
+  }
+  .filters-group {
+    display: contents;
+  }
+
+  .date-range {
+    width: 100%;
+    flex: 1 1 100%;
+
+    app-date-picker {
+      flex: 1 1 50% !important;
+      width: 50% !important;
+      min-width: 0 !important;
+
+      &:last-child ::ng-deep .calendar-popup {
+        left: auto !important;
+        right: 0 !important;
+      }
+    }
+  }
+
+  #year-filter {
+    width: 98px !important;
+  }
+  #month-filter {
+    width: 110px !important;
+  }
+
+  .sort-group {
+    flex: 1 1 auto;
+    min-width: 170px;
+    margin-left: 0;
+
+    select {
+      width: 100% !important;
+    }
+  }
+
+  .actions-row {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .actions-group {
+    width: 100%;
+  }
+
+  .delete-all-btn {
+    align-self: flex-end;
+    margin-top: 0.15rem;
   }
 }

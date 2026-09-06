@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, ChangeDetectionStrategy } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { NgTemplateOutlet } from '@angular/common';
 import { TranslatePipe } from '../pipes/translate.pipe';
@@ -12,6 +12,7 @@ import { HybridStorageService } from '../services/hybrid-storage.service';
   imports: [RouterLink, TranslatePipe, LucideAngularModule, NgTemplateOutlet],
   templateUrl: './dashboard.component.html',
   styleUrl: './dashboard.component.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class DashboardComponent {
   protected readonly demoService = inject(DemoService);

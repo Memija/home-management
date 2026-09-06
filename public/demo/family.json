@@ -1,5 +1,6 @@
 [
   {
+    "id": "member-bruce-wayne",
     "name": "Bruce",
     "surname": "Wayne",
     "type": "adult",
@@ -7,6 +8,7 @@
     "avatar": "/avatars/batman.jpg"
   },
   {
+    "id": "member-diana-prince",
     "name": "Diana",
     "surname": "Prince",
     "type": "adult",
@@ -14,6 +16,7 @@
     "avatar": "/avatars/wonder-woman.jpg"
   },
   {
+    "id": "member-barry-allen",
     "name": "Barry",
     "surname": "Allen",
     "type": "kid",

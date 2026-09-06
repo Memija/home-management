@@ -211,7 +211,9 @@ select.error {
     border: 1px solid var(--border-color);
     border-radius: 6px;
     background: var(--input-bg);
-    transition: border-color 0.2s, box-shadow 0.2s;
+    transition:
+      border-color 0.2s,
+      box-shadow 0.2s;
 
     &:hover {
       border-color: $primary;

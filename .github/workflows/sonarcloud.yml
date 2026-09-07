@@ -27,6 +27,9 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
+      - name: Security Vulnerability Audit
+        run: npm run security:audit
+
       - name: Check Formatting
         run: npm run format:check
 

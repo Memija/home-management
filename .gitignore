@@ -53,3 +53,6 @@ src/app/config/firebase.config.ts
 
 # Lighthouse CI output
 .lighthouseci/
+
+# Firebase
+.firebase/

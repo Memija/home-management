@@ -20,7 +20,8 @@
     "test:lighthouse:desktop": "lhci autorun --collect.settings.preset=desktop --upload.outputDir=./.lighthouseci/desktop",
     "test:lighthouse": "npm run test:lighthouse:mobile && npm run test:lighthouse:desktop",
     "test:lighthouse:flows": "node scripts/lighthouse-flow.mjs",
-    "validate": "npm run format:check && npm run lint && npm run build && npm run test:coverage && npm run test:lighthouse",
+    "security:audit": "npm audit --audit-level=critical",
+    "validate": "npm run format:check && npm run lint && npm run security:audit && npm run build && npm run test:coverage && npm run test:lighthouse",
     "sonar": "sonar-scanner",
     "prepare": "husky"
   },
@@ -41,6 +42,7 @@
     "@angular/ssr": "21.2.18",
     "chart.js": "^4.5.1",
     "chartjs-plugin-zoom": "^2.2.0",
+    "compression": "^1.8.1",
     "express": "^5.1.0",
     "firebase": "^12.9.0",
     "hammerjs": "^2.0.8",
@@ -51,7 +53,7 @@
     "rxjs": "~7.8.0",
     "tesseract.js": "^7.0.0",
     "tslib": "^2.3.0",
-    "xlsx": "^0.18.5"
+    "xlsx": "https://cdn.sheetjs.com/xlsx-0.20.3/xlsx-0.20.3.tgz"
   },
   "devDependencies": {
     "@angular-devkit/build-angular": "21.2.18",
@@ -68,7 +70,6 @@
     "@types/node": "^20.17.19",
     "@vitest/coverage-v8": "^4.1.10",
     "angular-eslint": "^21.4.0",
-    "baseline-browser-mapping": "^2.9.17",
     "eslint": "^10.6.0",
     "husky": "^9.1.7",
     "jsdom": "^27.1.0",

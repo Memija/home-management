@@ -21,7 +21,8 @@
     "format": "prettier --write \"src/**/*.{ts,html,scss,json}\"",
     "format:check": "prettier --check \"src/**/*.{ts,html,scss,json}\"",
     "validate": "npm run format:check && npm run lint && npm run build && npm run test:coverage && npm run test:lighthouse",
-    "lint": "ng lint"
+    "lint": "ng lint",
+    "prepare": "husky"
   },
   "private": true,
   "license": "SEE LICENSE IN LICENSE.md",
@@ -69,6 +70,7 @@
     "angular-eslint": "22.1.0",
     "baseline-browser-mapping": "^2.9.17",
     "eslint": "^10.6.0",
+    "husky": "^9.1.7",
     "jsdom": "^27.1.0",
     "lint-staged": "^17.3.0",
     "prettier": "^3.9.6",

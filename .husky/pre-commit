@@ -1,0 +1,5 @@
+if ! command -v npx >/dev/null 2>&1; then
+  export PATH="/usr/bin:/bin:/mingw64/bin:/cmd:/c/Program Files/nodejs:/c/Program Files (x86)/nodejs:$APPDATA/npm:$LOCALAPPDATA/Programs/nodejs:$HOME/AppData/Roaming/npm:/c/Windows/System32:/c/Windows:/c/Program Files/Git/cmd:$PATH"
+fi
+
+npx lint-staged

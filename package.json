@@ -67,7 +67,7 @@
     "@types/express": "^5.0.1",
     "@types/node": "^20.17.19",
     "@vitest/coverage-v8": "^4.1.10",
-    "angular-eslint": "22.1.0",
+    "angular-eslint": "^21.4.0",
     "baseline-browser-mapping": "^2.9.17",
     "eslint": "^10.6.0",
     "husky": "^9.1.7",

@@ -1,0 +1,77 @@
+# OSV-Scanner Configuration
+# https://google.github.io/osv-scanner/configuration/
+
+# adm-zip: Transitive dev dependency of sonarqube-scanner@5.0.0
+# Version 0.6.0 is the latest available on npm; used solely for CI analysis.
+[[IgnoredVulns]]
+id = "GHSA-vwc7-r8mq-g2x9"
+reason = "Dev-only dependency in sonarqube-scanner; latest npm release; not bundled into client production runtime."
+
+[[IgnoredVulns]]
+id = "CVE-2026-76845"
+reason = "Dev-only dependency in sonarqube-scanner; latest npm release; not bundled into client production runtime."
+
+# extract-zip: Transitive dev dependency of @lhci/cli (Lighthouse CI)
+# Unmaintained upstream; no patched npm release available; used solely for local/CI browser extraction.
+[[IgnoredVulns]]
+id = "GHSA-jmr9-qjv8-65gv"
+reason = "Dev-only dependency in @lhci/cli for Lighthouse audits; no upstream npm patch available; not bundled in production."
+
+[[IgnoredVulns]]
+id = "CVE-2026-56876"
+reason = "Dev-only dependency in @lhci/cli for Lighthouse audits; no upstream npm patch available; not bundled in production."
+
+[[IgnoredVulns]]
+id = "GHSA-7pqw-9j4j-h8q3"
+reason = "Dev-only dependency in @lhci/cli for Lighthouse audits; no upstream npm patch available; not bundled in production."
+
+[[IgnoredVulns]]
+id = "CVE-2026-19693"
+reason = "Dev-only dependency in @lhci/cli for Lighthouse audits; no upstream npm patch available; not bundled in production."
+
+# uuid: Transitive dev dependency in sockjs and @lhci/cli
+# Vulnerability only affects v3/v5/v6 when custom buffer is passed with offset; dev tools only invoke uuid.v4().
+[[IgnoredVulns]]
+id = "GHSA-w5hq-g745-h8pq"
+reason = "Dev-only dependency in sockjs and @lhci/cli; vulnerable buffer APIs are never invoked (only uuid.v4 is called)."
+
+[[IgnoredVulns]]
+id = "CVE-2026-41907"
+reason = "Dev-only dependency in sockjs and @lhci/cli; vulnerable buffer APIs are never invoked (only uuid.v4 is called)."
+
+# image-size: Transitive dev dependency in @angular-devkit/build-angular via less
+# Project exclusively uses SCSS, so less is unused; no upstream npm patch exists.
+[[IgnoredVulns]]
+id = "GHSA-w3rx-r6r6-pgpr"
+reason = "Dev-only transitive dependency via unused less preprocessor; project uses SCSS; no upstream npm patch."
+
+[[IgnoredVulns]]
+id = "CVE-2025-71330"
+reason = "Dev-only transitive dependency via unused less preprocessor; project uses SCSS; no upstream npm patch."
+
+[[IgnoredVulns]]
+id = "GHSA-5p2g-fcmc-qvqq"
+reason = "Dev-only transitive dependency via unused less preprocessor; project uses SCSS; no upstream npm patch."
+
+[[IgnoredVulns]]
+id = "CVE-2025-71329"
+reason = "Dev-only transitive dependency via unused less preprocessor; project uses SCSS; no upstream npm patch."
+
+# xlsx (SheetJS): False positive
+# Package is loaded directly from official vendor CDN release (https://cdn.sheetjs.com/xlsx-0.20.3/xlsx-0.20.3.tgz)
+# which includes upstream security patches for prototype pollution and ReDoS.
+[[IgnoredVulns]]
+id = "GHSA-4r6h-8v6p-xvw6"
+reason = "False positive: project uses official vendor release xlsx 0.20.3 containing upstream patches."
+
+[[IgnoredVulns]]
+id = "CVE-2024-22363"
+reason = "False positive: project uses official vendor release xlsx 0.20.3 containing upstream patches."
+
+[[IgnoredVulns]]
+id = "GHSA-5pgg-2g8v-p4x9"
+reason = "False positive: project uses official vendor release xlsx 0.20.3 containing upstream patches."
+
+[[IgnoredVulns]]
+id = "CVE-2023-30533"
+reason = "False positive: project uses official vendor release xlsx 0.20.3 containing upstream patches."

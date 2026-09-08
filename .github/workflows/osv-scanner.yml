@@ -24,6 +24,7 @@ jobs:
     with:
       scan-args: |-
         --lockfile=package-lock.json
+        --config=osv-scanner.toml
 
   scan-scheduled:
     if: ${{ github.event_name != 'pull_request' }}
@@ -35,4 +36,5 @@ jobs:
     with:
       scan-args: |-
         --lockfile=package-lock.json
+        --config=osv-scanner.toml
       fail-on-vuln: false

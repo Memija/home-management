@@ -5,36 +5,29 @@ on:
     branches:
       - main
   pull_request:
+    branches:
+      - main
   schedule:
     - cron: '0 6 * * 1' # Every Monday at 6:00 AM UTC
+  workflow_dispatch:
 
 permissions:
   contents: read
   security-events: write
+  actions: read
 
 jobs:
-  osv-scan:
-    name: Google OSV Vulnerability Scan
-    runs-on: ubuntu-latest
-    steps:
-      - name: Harden Runner
-        uses: step-security/harden-runner@v2
-        with:
-          egress-policy: audit
+  scan-pr:
+    if: ${{ github.event_name == 'pull_request' }}
+    uses: google/osv-scanner-action/.github/workflows/osv-scanner-reusable-pr.yml@v2.5.1
+    with:
+      scan-args: |-
+        --lockfile=package-lock.json
 
-      - name: Checkout Code
-        uses: actions/checkout@v4
-
-      - name: Run Google OSV Scanner
-        uses: google/osv-scanner-action/v1@main
-        with:
-          scan-args: |-
-            --lockfile=package-lock.json
-            --format=sarif
-            --output=osv-results.sarif
-
-      - name: Upload OSV Scan Results to GitHub Security Tab
-        uses: github/codeql-action/upload-sarif@v3
-        if: always()
-        with:
-          sarif_file: 'osv-results.sarif'
+  scan-scheduled:
+    if: ${{ github.event_name != 'pull_request' }}
+    uses: google/osv-scanner-action/.github/workflows/osv-scanner-reusable.yml@v2.5.1
+    with:
+      scan-args: |-
+        --lockfile=package-lock.json
+      fail-on-vuln: false

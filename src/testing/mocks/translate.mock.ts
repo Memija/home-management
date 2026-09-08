@@ -26,7 +26,7 @@ export function createMockLanguageService(
     let result = customTranslations[key] || key;
     if (params) {
       Object.entries(params).forEach(([paramKey, val]) => {
-        result = result.replace(new RegExp(`{{${paramKey}}}`, 'g'), String(val));
+        result = result.replaceAll(`{{${paramKey}}}`, String(val));
       });
     }
     return result;

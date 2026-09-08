@@ -1,0 +1,31 @@
+name: OWASP ZAP Baseline DAST Scan
+
+on:
+  schedule:
+    - cron: '0 5 * * 0' # Every Sunday at 5:00 AM UTC
+  workflow_dispatch:
+
+permissions:
+  issues: write
+  contents: read
+
+jobs:
+  zap_scan:
+    name: OWASP ZAP Baseline Penetration Scan
+    runs-on: ubuntu-latest
+    steps:
+      - name: Harden Runner
+        uses: step-security/harden-runner@v2
+        with:
+          egress-policy: audit
+
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Run OWASP ZAP Baseline Scan
+        uses: zaproxy/action-baseline@v0.14.0
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          target: 'https://home-management.dev'
+          issue_title: 'OWASP ZAP: Security Finding in Deployed App'
+          fail_action: false

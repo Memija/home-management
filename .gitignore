@@ -56,3 +56,8 @@ src/app/config/firebase.config.ts
 
 # Firebase
 .firebase/
+
+# Environment and secrets
+.env
+.env.*
+!.env.example

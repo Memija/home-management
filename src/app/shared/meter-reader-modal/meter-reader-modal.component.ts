@@ -22,6 +22,7 @@ import {
   type LucideIconData,
 } from 'lucide-angular';
 import { MeterReaderService, MeterReadingResult } from '../../services/meter-reader.service';
+import { FILE_SECURITY_LIMITS, validateFileSize } from '../../utils/file-security.utils';
 
 export interface MeterField {
   key: string;
@@ -246,6 +247,11 @@ export class MeterReaderModalComponent implements OnDestroy {
     if (!file) return;
 
     if (!file.type.startsWith('image/')) {
+      return;
+    }
+
+    if (!validateFileSize(file, FILE_SECURITY_LIMITS.MAX_IMAGE_FILE_SIZE_BYTES)) {
+      input.value = '';
       return;
     }
 

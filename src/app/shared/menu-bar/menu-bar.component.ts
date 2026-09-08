@@ -46,7 +46,7 @@ export class MenuBarComponent {
         mailUrl = `mailto:${recipient}?subject=${subject}&body=${body}`;
     }
 
-    window.open(mailUrl, '_blank');
+    window.open(mailUrl, '_blank', 'noopener,noreferrer');
     this.showContactModal.set(false);
   }
 }

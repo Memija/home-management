@@ -124,16 +124,18 @@ service cloud.firestore {
 
     // 1. Settings Document (Aggregated preferences)
     match /users/{userId}/data/user_settings {
-      // Allow read/write if owner AND valid schema
-      allow read, write: if isOwner(userId)
-        && isValidSettings()
-        && request.resource.size() < 1048576;
+      // Allow read and delete if owner
+      allow read, delete: if isOwner(userId);
+
+      // Allow create/update if owner AND valid schema
+      allow create, update: if isOwner(userId)
+        && isValidSettings();
     }
-    
+
     // 2. Sync Metadata
     match /users/{userId}/data/_sync_metadata {
-      allow read: if isOwner(userId);
-      allow write: if isOwner(userId)
+      allow read, delete: if isOwner(userId);
+      allow create, update: if isOwner(userId)
         && request.resource.data.keys().hasAll(['last_cloud_update'])
         && request.resource.data.last_cloud_update is number;
     }
@@ -149,8 +151,12 @@ service cloud.firestore {
       // Allow create/update for records only
       allow create, update: if isOwner(userId)
         && isValidSchema()
-        && isValidKey(document)
-        && request.resource.size() < 262144; // 256KB limit per record type
+        && isValidKey(document);
+    }
+
+    // Default deny all other paths
+    match /{document=**} {
+      allow read, write: if false;
     }
   }
 }

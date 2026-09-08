@@ -3,6 +3,7 @@ const eslint = require("@eslint/js");
 const { defineConfig } = require("eslint/config");
 const tseslint = require("typescript-eslint");
 const angular = require("angular-eslint");
+const pluginSecurity = /** @type {any} */ (require("eslint-plugin-security"));
 
 module.exports = defineConfig([
   {
@@ -12,9 +13,11 @@ module.exports = defineConfig([
       tseslint.configs.recommended,
       tseslint.configs.stylistic,
       angular.configs.tsRecommended,
+      pluginSecurity.configs.recommended,
     ],
     processor: angular.processInlineTemplates,
     rules: {
+      "security/detect-object-injection": "off",
       "@angular-eslint/directive-selector": [
         "error",
         {

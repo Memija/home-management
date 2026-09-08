@@ -1,0 +1,44 @@
+name: Socket.dev Supply Chain Security
+
+on:
+  pull_request:
+    paths:
+      - 'package.json'
+      - 'package-lock.json'
+  push:
+    branches:
+      - main
+    paths:
+      - 'package.json'
+      - 'package-lock.json'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  socket:
+    name: Socket Dependency Malware & Threat Scan
+    runs-on: ubuntu-latest
+    steps:
+      - name: Harden Runner
+        uses: step-security/harden-runner@v2
+        with:
+          egress-policy: audit
+
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'npm'
+
+      - name: Setup Socket Firewall & Scan
+        uses: SocketDev/action@v1
+        with:
+          mode: firewall-free
+
+      - name: Install dependencies with Socket Firewall
+        run: npm ci

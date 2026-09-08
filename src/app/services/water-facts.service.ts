@@ -105,7 +105,9 @@ export class WaterFactsService {
     const value = this.calculateValueForContext(liters, safeIndex, context);
 
     // Detect time-based facts that need conversion (days, minutes)
+    // eslint-disable-next-line security/detect-non-literal-regexp -- dayKeywords is an internal constant array
     const dayPattern = new RegExp(`\\{value\\}\\s*(${units.dayKeywords.join('|')})`, 'i');
+    // eslint-disable-next-line security/detect-non-literal-regexp -- minuteKeywords is an internal constant array
     const minutePattern = new RegExp(`\\{value\\}\\s*(${units.minuteKeywords.join('|')})`, 'i');
     const isDaysFact = dayPattern.test(factTemplate);
     const isMinutesFact = minutePattern.test(factTemplate);

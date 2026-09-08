@@ -1,0 +1,17 @@
+# Gitleaks Configuration
+title = "Home Management Gitleaks Config"
+
+[allowlist]
+description = "Global allowlist for harmless placeholders and test fixtures"
+paths = [
+  '''src/app/config/firebase.config.template.ts''',
+  '''dist/.*''',
+  '''package-lock\.json''',
+  '''node_modules/.*'''
+]
+regexes = [
+  '''YOUR_API_KEY''',
+  '''YOUR_PROJECT_ID''',
+  '''YOUR_APP_ID''',
+  '''YOUR_RECAPTCHA_V3_SITE_KEY'''
+]

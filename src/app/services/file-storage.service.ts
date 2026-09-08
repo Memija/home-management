@@ -1,4 +1,9 @@
 import { Injectable } from '@angular/core';
+import {
+  FILE_SECURITY_LIMITS,
+  validateFileSize,
+  sanitizeParsedJson,
+} from '../utils/file-security.utils';
 
 @Injectable({
   providedIn: 'root',
@@ -29,6 +34,10 @@ export class FileStorageService {
    * @returns The parsed data from the file
    */
   async importFromFile<T = unknown>(file: File): Promise<T> {
+    if (!validateFileSize(file, FILE_SECURITY_LIMITS.MAX_JSON_FILE_SIZE_BYTES)) {
+      throw new Error('File exceeds maximum allowed size (10 MB)');
+    }
+
     return new Promise((resolve, reject) => {
       const reader = new FileReader();
 
@@ -36,7 +45,7 @@ export class FileStorageService {
         try {
           const text = event.target?.result as string;
           const data = JSON.parse(text);
-          resolve(data as T);
+          resolve(sanitizeParsedJson(data as T));
         } catch {
           reject(new Error('Failed to parse JSON file'));
         }

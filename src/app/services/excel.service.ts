@@ -2,6 +2,7 @@ import { Injectable, inject } from '@angular/core';
 import { ExcelSettingsService } from './excel-settings.service';
 import { LanguageService } from './language.service';
 import { WaterRecord, DynamicHeatingRecord, ElectricityRecord } from '../models/records.model';
+import { FILE_SECURITY_LIMITS, validateFileSize } from '../utils/file-security.utils';
 
 // Re-export for consumers
 export type { WaterRecord, DynamicHeatingRecord, ElectricityRecord } from '../models/records.model';
@@ -300,6 +301,10 @@ export class ExcelService {
    * Reads all sheets and combines their data
    */
   private async readExcelFile(file: File): Promise<Record<string, unknown>[]> {
+    if (!validateFileSize(file, FILE_SECURITY_LIMITS.MAX_EXCEL_FILE_SIZE_BYTES)) {
+      throw new Error('File exceeds maximum allowed size (15 MB)');
+    }
+
     const XLSX = await this.getXLSX();
 
     return new Promise((resolve, reject) => {

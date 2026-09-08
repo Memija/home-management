@@ -148,6 +148,7 @@ export class SmartImportService {
 
     // Regex for text format: "1. Januar 2026" or "Donnerstag, 1. Januar 2026"
     // Uses \p{L} to match any Unicode letter (works for German, French, Spanish, etc.)
+    // eslint-disable-next-line security/detect-unsafe-regex -- bounded text date pattern
     const textDateDayFirstRegex = /(?:\p{L}+,?\s+)?(\d{1,2})\.\s*(\p{L}+)\s+(\d{4})/iu;
     const dayFirstMatch = line.match(textDateDayFirstRegex);
     if (dayFirstMatch) {
@@ -163,6 +164,7 @@ export class SmartImportService {
 
     // Regex for text format: "January 1, 2026" or "Thursday, January 1, 2026"
     // Uses \p{L} to match any Unicode letter (works for any language)
+    // eslint-disable-next-line security/detect-unsafe-regex -- bounded text date pattern
     const textDateMonthFirstRegex = /(?:\p{L}+,?\s+)?(\p{L}+)\s+(\d{1,2}),?\s+(\d{4})/iu;
     const monthFirstMatch = line.match(textDateMonthFirstRegex);
     if (monthFirstMatch) {
@@ -233,8 +235,10 @@ export class SmartImportService {
 
     // Remove text date patterns (works for any language with Unicode \p{L})
     // Pattern 1: Day first - "1. Januar 2026", "Donnerstag, 1. Januar 2026", "1 janvier 2026"
+    // eslint-disable-next-line security/detect-unsafe-regex -- bounded text date pattern
     lineWithoutDate = lineWithoutDate.replace(/(?:\p{L}+,?\s+)?\d{1,2}\.?\s*\p{L}+\s+\d{4}/giu, '');
     // Pattern 2: Month first - "January 1, 2026", "Thursday, January 1, 2026"
+    // eslint-disable-next-line security/detect-unsafe-regex -- bounded text date pattern
     lineWithoutDate = lineWithoutDate.replace(/(?:\p{L}+,?\s+)?\p{L}+\s+\d{1,2},?\s+\d{4}/giu, '');
 
     // Find ALL sequences of digits that may contain . or ,

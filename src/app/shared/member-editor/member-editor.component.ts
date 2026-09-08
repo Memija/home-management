@@ -14,6 +14,7 @@ import {
 } from 'lucide-angular';
 import { HouseholdMember } from '../../services/household.service';
 import { TranslatePipe } from '../../pipes/translate.pipe';
+import { FILE_SECURITY_LIMITS, validateFileSize } from '../../utils/file-security.utils';
 
 export interface MemberEditData {
   id: string;
@@ -98,7 +99,11 @@ export class MemberEditorComponent implements OnInit, OnChanges {
     const input = event.target as HTMLInputElement;
     const file = input.files?.[0];
 
-    if (file && file.type.startsWith('image/')) {
+    if (
+      file &&
+      file.type.startsWith('image/') &&
+      validateFileSize(file, FILE_SECURITY_LIMITS.MAX_IMAGE_FILE_SIZE_BYTES)
+    ) {
       const reader = new FileReader();
       reader.onload = (e) => {
         const result = e.target?.result as string;

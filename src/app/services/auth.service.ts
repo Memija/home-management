@@ -1,7 +1,6 @@
 import { Injectable, inject, signal, computed, PLATFORM_ID } from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
 import { Auth, User as FirebaseUser } from 'firebase/auth';
-import { firebaseConfig } from '../config/firebase.config';
 import { environment } from '../../environments/environment';
 import { BehaviorSubject } from 'rxjs';
 
@@ -56,9 +55,9 @@ export class AuthService {
     if (this.authInstance) return this.authInstance;
     if (!this.authInitPromise) {
       this.authInitPromise = (async () => {
-        const { initializeApp, getApps, getApp } = await import('firebase/app');
+        const { getOrCreateFirebaseApp } = await import('./firebase-app.helper');
         const { getAuth } = await import('firebase/auth');
-        const app = getApps().length === 0 ? initializeApp(firebaseConfig) : getApp();
+        const app = await getOrCreateFirebaseApp(isPlatformBrowser(this.platformId));
         this.authInstance = getAuth(app);
         return this.authInstance;
       })();

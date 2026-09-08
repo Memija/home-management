@@ -38,7 +38,8 @@ export function escapeRegExp(str: string): string {
  * and optional closing parens) with a compact icon symbol.
  */
 export function replaceLabelWithIcon(text: string, label: string, icon: string): string {
-  if (!label || !new RegExp(escapeRegExp(label), 'i').test(text)) return text;
+  if (!label || !text.toLowerCase().includes(label.toLowerCase())) return text;
+  // eslint-disable-next-line security/detect-non-literal-regexp -- label is escaped with escapeRegExp
   const pattern = new RegExp(`(\\s*[-—–(（\\[]\\s*)?${escapeRegExp(label)}(\\s*[)）\\]])?`, 'gi');
   return text.replace(pattern, ` ${icon}`).trim();
 }

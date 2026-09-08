@@ -19,4 +19,5 @@ export const firebaseConfig = {
   storageBucket: 'YOUR_PROJECT.appspot.com',
   messagingSenderId: 'YOUR_SENDER_ID',
   appId: 'YOUR_APP_ID',
+  recaptchaSiteKey: 'YOUR_RECAPTCHA_V3_SITE_KEY',
 };

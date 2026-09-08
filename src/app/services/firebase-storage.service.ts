@@ -1,7 +1,6 @@
 import { Injectable, inject, Injector, PLATFORM_ID } from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
 import { Firestore } from 'firebase/firestore';
-import { firebaseConfig } from '../config/firebase.config';
 import { StorageService } from './storage.service';
 import { AuthService } from './auth.service';
 
@@ -38,9 +37,9 @@ export class FirebaseStorageService extends StorageService {
     if (this.firestoreInstance) return this.firestoreInstance;
     if (!this.firestoreInitPromise) {
       this.firestoreInitPromise = (async () => {
-        const { initializeApp, getApps, getApp } = await import('firebase/app');
+        const { getOrCreateFirebaseApp } = await import('./firebase-app.helper');
         const { getFirestore } = await import('firebase/firestore');
-        const app = getApps().length === 0 ? initializeApp(firebaseConfig) : getApp();
+        const app = await getOrCreateFirebaseApp(this.isBrowser);
         this.firestoreInstance = getFirestore(app);
         return this.firestoreInstance;
       })();

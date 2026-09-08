@@ -1,6 +1,6 @@
 import { TestBed } from '@angular/core/testing';
 import { LanguageService } from './language.service';
-import { describe, it, expect, beforeEach, vi, afterEach } from 'vitest';
+import { describe, it, expect, beforeEach, vi, afterEach, afterAll } from 'vitest';
 import { ApplicationRef } from '@angular/core';
 
 describe('LanguageService', () => {
@@ -26,8 +26,9 @@ describe('LanguageService', () => {
     });
 
     Object.defineProperty(window, 'navigator', {
-      value: { language: 'en-US' },
+      value: { language: 'en-US', userAgent: 'node.js' },
       writable: true,
+      configurable: true,
     });
 
     // Mock document
@@ -49,6 +50,14 @@ describe('LanguageService', () => {
     vi.restoreAllMocks();
   });
 
+  afterAll(() => {
+    Object.defineProperty(window, 'navigator', {
+      value: { userAgent: 'node.js', language: 'en-US' },
+      writable: true,
+      configurable: true,
+    });
+  });
+
   it('should be created and default to English if no storage or browser match', () => {
     mockLocalStorage.getItem.mockReturnValue(null);
     service = TestBed.inject(LanguageService);
@@ -65,8 +74,9 @@ describe('LanguageService', () => {
   it('should detect browser language', () => {
     mockLocalStorage.getItem.mockReturnValue(null);
     Object.defineProperty(window, 'navigator', {
-      value: { language: 'de-DE' },
+      value: { language: 'de-DE', userAgent: 'node.js' },
       writable: true,
+      configurable: true,
     });
     service = TestBed.inject(LanguageService);
     expect(service.currentLang()).toBe('de');
@@ -87,8 +97,9 @@ describe('LanguageService', () => {
         providers: [LanguageService, { provide: ApplicationRef, useValue: mockApplicationRef }],
       });
       Object.defineProperty(window, 'navigator', {
-        value: { language: browser },
+        value: { language: browser, userAgent: 'node.js' },
         writable: true,
+        configurable: true,
       });
       const s = TestBed.inject(LanguageService);
       expect(s.currentLang()).toBe(expected);

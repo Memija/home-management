@@ -4,6 +4,7 @@ import {
   initAppCheck,
   _resetAppCheckStateForTesting,
 } from './firebase-app.helper';
+import { firebaseConfig } from '../config/firebase.config';
 import type { FirebaseApp } from 'firebase/app';
 
 const mockInitializeApp = vi.fn();
@@ -24,18 +25,6 @@ vi.mock('firebase/app-check', () => ({
     constructor(...args: unknown[]) {
       mockReCaptchaV3Provider(...args);
     }
-  },
-}));
-
-vi.mock('../config/firebase.config', () => ({
-  firebaseConfig: {
-    apiKey: 'test-api-key',
-    authDomain: 'test.firebaseapp.com',
-    projectId: 'test-project',
-    storageBucket: 'test.appspot.com',
-    messagingSenderId: '123456789',
-    appId: '1:123456789:web:test',
-    recaptchaSiteKey: 'YOUR_RECAPTCHA_V3_SITE_KEY',
   },
 }));
 
@@ -77,7 +66,18 @@ describe('firebase-app.helper', () => {
         isTokenAutoRefreshEnabled: true,
       }),
     );
-    expect(mockReCaptchaV3Provider).toHaveBeenCalledWith('YOUR_RECAPTCHA_V3_SITE_KEY');
+    expect(mockReCaptchaV3Provider).toHaveBeenCalledWith(firebaseConfig.recaptchaSiteKey);
+  });
+
+  it('should not initialize App Check if recaptchaSiteKey is empty', async () => {
+    const originalKey = (firebaseConfig as { recaptchaSiteKey?: string }).recaptchaSiteKey;
+    (firebaseConfig as { recaptchaSiteKey?: string }).recaptchaSiteKey = '';
+    try {
+      await initAppCheck(fakeApp, true, true);
+      expect(mockInitializeAppCheck).not.toHaveBeenCalled();
+    } finally {
+      (firebaseConfig as { recaptchaSiteKey?: string }).recaptchaSiteKey = originalKey;
+    }
   });
 
   it('should not initialize App Check if not browser', async () => {

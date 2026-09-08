@@ -13,9 +13,21 @@ const waitFor = async (fn: () => boolean, timeout = 1000) => {
   }
 };
 
-const mockSignInWithPopup = vi.fn();
-const mockSignOut = vi.fn();
-const mockOnAuthStateChanged = vi.fn();
+const {
+  mockSignInWithPopup,
+  mockSignOut,
+  mockOnAuthStateChanged,
+  mockInitializeApp,
+  mockGetApps,
+  mockGetApp,
+} = vi.hoisted(() => ({
+  mockSignInWithPopup: vi.fn(),
+  mockSignOut: vi.fn(),
+  mockOnAuthStateChanged: vi.fn(),
+  mockInitializeApp: vi.fn(),
+  mockGetApps: vi.fn().mockReturnValue([]),
+  mockGetApp: vi.fn(),
+}));
 
 let globalAuthMock: unknown = {};
 
@@ -23,18 +35,64 @@ vi.mock('firebase/auth', () => ({
   Auth: class {},
   GoogleAuthProvider: class {},
   getAuth: () => globalAuthMock,
-  signInWithPopup: (...args: unknown[]) => mockSignInWithPopup(...args),
-  signOut: (...args: unknown[]) => mockSignOut(...args),
-  onAuthStateChanged: (...args: unknown[]) => mockOnAuthStateChanged(...args),
+  signInWithPopup: (...args: unknown[]) => {
+    if (typeof mockSignInWithPopup === 'function') {
+      return mockSignInWithPopup(...args);
+    }
+  },
+  signOut: (...args: unknown[]) => {
+    if (typeof mockSignOut === 'function') {
+      return mockSignOut(...args);
+    }
+  },
+  onAuthStateChanged: (...args: unknown[]) => {
+    if (typeof mockOnAuthStateChanged === 'function') {
+      return mockOnAuthStateChanged(...args);
+    }
+  },
 }));
 
 vi.mock('@firebase/auth', () => ({
   Auth: class {},
   GoogleAuthProvider: class {},
   getAuth: () => globalAuthMock,
-  signInWithPopup: (...args: unknown[]) => mockSignInWithPopup(...args),
-  signOut: (...args: unknown[]) => mockSignOut(...args),
-  onAuthStateChanged: (...args: unknown[]) => mockOnAuthStateChanged(...args),
+  signInWithPopup: (...args: unknown[]) => {
+    if (typeof mockSignInWithPopup === 'function') {
+      return mockSignInWithPopup(...args);
+    }
+  },
+  signOut: (...args: unknown[]) => {
+    if (typeof mockSignOut === 'function') {
+      return mockSignOut(...args);
+    }
+  },
+  onAuthStateChanged: (...args: unknown[]) => {
+    if (typeof mockOnAuthStateChanged === 'function') {
+      return mockOnAuthStateChanged(...args);
+    }
+  },
+}));
+
+vi.mock('firebase/app', () => ({
+  initializeApp: (...args: unknown[]) => mockInitializeApp(...args),
+  getApps: () => mockGetApps(),
+  getApp: () => mockGetApp(),
+}));
+
+vi.mock('@firebase/app', () => ({
+  initializeApp: (...args: unknown[]) => mockInitializeApp(...args),
+  getApps: () => mockGetApps(),
+  getApp: () => mockGetApp(),
+}));
+
+vi.mock('firebase/app-check', () => ({
+  initializeAppCheck: vi.fn(),
+  ReCaptchaV3Provider: class {},
+}));
+
+vi.mock('@firebase/app-check', () => ({
+  initializeAppCheck: vi.fn(),
+  ReCaptchaV3Provider: class {},
 }));
 
 describe('AuthService', () => {
@@ -44,17 +102,8 @@ describe('AuthService', () => {
   beforeEach(() => {
     authMock = {};
     globalAuthMock = authMock;
-    vi.mock('firebase/app', () => ({
-      initializeApp: vi.fn(),
-      getApps: vi.fn().mockReturnValue([]),
-      getApp: vi.fn(),
-    }));
-    vi.mock('@firebase/app', () => ({
-      initializeApp: vi.fn(),
-      getApps: vi.fn().mockReturnValue([]),
-      getApp: vi.fn(),
-    }));
-
+    mockGetApps.mockReturnValue([]);
+    mockOnAuthStateChanged.mockImplementation(() => undefined);
     vi.clearAllMocks();
   });
 

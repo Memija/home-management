@@ -126,7 +126,7 @@ function resolveRunner(tool, envChecks = {}) {
           '  • uv: uvx zizmor .',
           '  • Cargo: cargo install zizmor',
           '  • pipx: pipx install zizmor',
-          '  • Or download binary from: https://github.com/woodruffw/zizmor/releases',
+          '  • Or download binary from: https://github.com/zizmorcore/zizmor/releases',
         ].join('\n'),
       };
 

@@ -10,38 +10,43 @@ function inlineAngularTemplates() {
     transform(code: string, id: string) {
       if (id.endsWith('.ts') && !id.endsWith('.spec.ts') && code.includes('@Component')) {
         let newCode = code;
-        
+
         // Inline templateUrl
         newCode = newCode.replace(/templateUrl:\s*['"`](.*?)['"`]/g, (match, url) => {
           try {
             const absPath = resolve(dirname(id), url);
-            const html = readFileSync(absPath, 'utf-8').replace(/`/g, '\\`').replace(/\$/g, '\\$');
-            return `template: \`${html}\``;
-          // eslint-disable-next-line @typescript-eslint/no-unused-vars
-          } catch(e) {
+            // eslint-disable-next-line security/detect-non-literal-fs-filename -- inlining templates dynamically in tests
+            const html = readFileSync(absPath, 'utf-8');
+            return `template: ${JSON.stringify(html)}`;
+          } catch {
             return match;
           }
         });
-        
+
         // Inline styleUrl / styleUrls
-        newCode = newCode.replace(/styleUrl(?:s)?:\s*(?:['"`](.*?)['"`]|\[(.*?)\])/g, (match, singleUrl, arrayUrls) => {
-          try {
-            const urls = singleUrl ? [singleUrl] : arrayUrls.split(',').map((u: string) => u.trim().replace(/['"`]/g, ''));
-            const cssContents = urls.map((url: string) => {
-              if (!url) return '';
-              const absPath = resolve(dirname(id), url);
-              return readFileSync(absPath, 'utf-8').replace(/`/g, '\\`').replace(/\$/g, '\\$');
-            });
-            return `styles: [\`${cssContents.join('')}\`]`;
-          // eslint-disable-next-line @typescript-eslint/no-unused-vars
-          } catch(e) {
-            return match;
-          }
-        });
-        
+        newCode = newCode.replace(
+          /styleUrl(?:s)?:\s*(?:['"`](.*?)['"`]|\[(.*?)\])/g,
+          (match, singleUrl, arrayUrls) => {
+            try {
+              const urls = singleUrl
+                ? [singleUrl]
+                : arrayUrls.split(',').map((u: string) => u.trim().replace(/['"`]/g, ''));
+              const cssContents = urls.map((url: string) => {
+                if (!url) return '';
+                const absPath = resolve(dirname(id), url);
+                // eslint-disable-next-line security/detect-non-literal-fs-filename -- inlining styles dynamically in tests
+                return readFileSync(absPath, 'utf-8');
+              });
+              return `styles: [${JSON.stringify(cssContents.join(''))}]`;
+            } catch {
+              return match;
+            }
+          },
+        );
+
         return { code: newCode, map: null };
       }
-    }
+    },
   };
 }
 
@@ -55,7 +60,7 @@ export default defineConfig({
     coverage: {
       provider: 'v8',
       reporter: ['lcov', 'text-summary'],
-      reportsDirectory: './coverage/home-management'
+      reportsDirectory: './coverage/home-management',
     },
     reporters: ['default', 'vitest-sonar-reporter'],
     outputFile: {

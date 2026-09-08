@@ -5,6 +5,13 @@ on:
     branches:
       - main
   pull_request:
+    branches:
+      - main
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 
 permissions:
   contents: read
@@ -14,9 +21,9 @@ jobs:
     name: CI/CD Workflow Security Audit
     runs-on: ubuntu-latest
     permissions:
-      security-events: write
-      contents: read
-      actions: read
+      security-events: write # Required to upload SARIF results to Security tab
+      contents: read # Required to checkout repository
+      actions: read # Required for zizmor to inspect actions and workflow metadata
 
     steps:
       - name: Harden Runner

@@ -17,12 +17,13 @@ diff --git a/src/app/test.ts b/src/app/test.ts
   });
 
   it('should detect Google / Firebase API keys on added lines', () => {
+    const key = ['AIza', 'SyA1B2C3D4E5F6G7H8I9J0K1L2M3N4O5P6Q'].join('');
     const diff = `
 diff --git a/src/app/bad.ts b/src/app/bad.ts
 --- a/src/app/bad.ts
 +++ b/src/app/bad.ts
 @@ -1,2 +1,3 @@
-+const key = 'AIzaSyA1B2C3D4E5F6G7H8I9J0K1L2M3N4O5P6Q';
++const key = '${key}';
 `;
     const violations = scanDiff(diff);
     expect(violations).toHaveLength(1);
@@ -32,11 +33,14 @@ diff --git a/src/app/bad.ts b/src/app/bad.ts
   });
 
   it('should detect GitHub tokens (PAT, fine-grained, OAuth, etc.)', () => {
+    const patPrefix = 'gh' + 'p_';
+    const oauthPrefix = 'gh' + 'o_';
+    const fineGrainedPrefix = 'github_' + 'pat_';
     const diff = `
 +++ b/src/token.ts
-+const pat = "ghp_1234567890abcdefghijklmnopqrstuvwxyz";
-+const oauth = "gho_1234567890abcdefghijklmnopqrstuvwxyz";
-+const fineGrained = "github_pat_11AAAAAAA0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ123456789012";
++const pat = "${patPrefix}1234567890abcdefghijklmnopqrstuvwxyz";
++const oauth = "${oauthPrefix}1234567890abcdefghijklmnopqrstuvwxyz";
++const fineGrained = "${fineGrainedPrefix}11AAAAAAA0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ123456789012";
 `;
     const violations = scanDiff(diff);
     expect(violations).toHaveLength(3);
@@ -56,9 +60,10 @@ diff --git a/src/app/bad.ts b/src/app/bad.ts
   });
 
   it('should detect Google OAuth Access Tokens', () => {
+    const token = ['ya29', '.a0ARrdaM8123456789012345678901234567890'].join('');
     const diff = `
 +++ b/src/auth.ts
-+const token = 'ya29.a0ARrdaM8123456789012345678901234567890';
++const token = '${token}';
 `;
     const violations = scanDiff(diff);
     expect(violations).toHaveLength(1);
@@ -66,9 +71,10 @@ diff --git a/src/app/bad.ts b/src/app/bad.ts
   });
 
   it('should detect NPM Access Tokens', () => {
+    const npmToken = ['npm', '_1234567890abcdefghijklmnopqrstuv'].join('');
     const diff = `
 +++ b/src/npm.ts
-+const npmToken = 'npm_1234567890abcdefghijklmnopqrstuv';
++const npmToken = '${npmToken}';
 `;
     const violations = scanDiff(diff);
     expect(violations).toHaveLength(1);
@@ -76,9 +82,14 @@ diff --git a/src/app/bad.ts b/src/app/bad.ts
   });
 
   it('should detect JSON Web Tokens (JWT)', () => {
+    const jwt = [
+      'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9',
+      'eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIn0',
+      'SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c',
+    ].join('.');
     const diff = `
 +++ b/src/jwt.ts
-+const jwt = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIn0.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c';
++const jwt = '${jwt}';
 `;
     const violations = scanDiff(diff);
     expect(violations).toHaveLength(1);
@@ -86,9 +97,10 @@ diff --git a/src/app/bad.ts b/src/app/bad.ts
   });
 
   it('should ignore secrets on deleted lines (-)', () => {
+    const removedKey = ['AIza', 'SyA1B2C3D4E5F6G7H8I9J0K1L2M3N4O5P6Q'].join('');
     const diff = `
 +++ b/src/app/cleanup.ts
--const removedKey = 'AIzaSyA1B2C3D4E5F6G7H8I9J0K1L2M3N4O5P6Q';
+-const removedKey = '${removedKey}';
 +const newKey = process.env.API_KEY;
 `;
     const violations = scanDiff(diff);

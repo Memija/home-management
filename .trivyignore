@@ -1,0 +1,3 @@
+# Trivy ignore configuration
+# AVD-GHA-0050: Harden-runner egress-policy is intentionally set to audit during deployment to monitor network calls
+AVD-GHA-0050

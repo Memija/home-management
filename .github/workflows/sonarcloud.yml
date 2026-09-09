@@ -50,20 +50,38 @@ jobs:
 
       - name: Generate Linting & Standards Summary
         if: always()
+        env:
+          AUDIT_OUTCOME: ${{ steps.audit.outcome }}
+          FORMAT_OUTCOME: ${{ steps.format.outcome }}
+          LINT_OUTCOME: ${{ steps.lint.outcome }}
+          JOB_STATUS: ${{ job.status }}
         run: |
           echo "## 🧹 Lint & Code Standards Summary" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
-          if [ "${{ job.status }}" = "success" ]; then
+          if [ "$JOB_STATUS" = "success" ]; then
             echo "### ✅ All Code Quality & Security Checks Passed!" >> $GITHUB_STEP_SUMMARY
           else
             echo "### ⚠️ Code Quality or Standards Issues Detected" >> $GITHUB_STEP_SUMMARY
           fi
           echo "" >> $GITHUB_STEP_SUMMARY
+
+          AUDIT_STATUS="⏭️ Skipped"
+          [ "$AUDIT_OUTCOME" = "success" ] && AUDIT_STATUS="✅ Passed"
+          [ "$AUDIT_OUTCOME" = "failure" ] && AUDIT_STATUS="❌ Failed"
+
+          FORMAT_STATUS="⏭️ Skipped"
+          [ "$FORMAT_OUTCOME" = "success" ] && FORMAT_STATUS="✅ Passed"
+          [ "$FORMAT_OUTCOME" = "failure" ] && FORMAT_STATUS="❌ Failed"
+
+          LINT_STATUS="⏭️ Skipped"
+          [ "$LINT_OUTCOME" = "success" ] && LINT_STATUS="✅ Passed"
+          [ "$LINT_OUTCOME" = "failure" ] && LINT_STATUS="❌ Failed"
+
           echo "| Check | Command | Status |" >> $GITHUB_STEP_SUMMARY
           echo "| :--- | :--- | :--- |" >> $GITHUB_STEP_SUMMARY
-          echo "| **Dependency Security Audit** | \`npm run security:audit\` | ${{ steps.audit.outcome == 'success' && '✅ Passed' || (steps.audit.outcome == 'failure' && '❌ Failed' || '⏭️ Skipped') }} |" >> $GITHUB_STEP_SUMMARY
-          echo "| **Prettier Formatting** | \`npm run format:check\` | ${{ steps.format.outcome == 'success' && '✅ Passed' || (steps.format.outcome == 'failure' && '❌ Failed' || '⏭️ Skipped') }} |" >> $GITHUB_STEP_SUMMARY
-          echo "| **ESLint Code Quality** | \`npm run lint\` | ${{ steps.lint.outcome == 'success' && '✅ Passed' || (steps.lint.outcome == 'failure' && '❌ Failed' || '⏭️ Skipped') }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| **Dependency Security Audit** | \`npm run security:audit\` | $AUDIT_STATUS |" >> $GITHUB_STEP_SUMMARY
+          echo "| **Prettier Formatting** | \`npm run format:check\` | $FORMAT_STATUS |" >> $GITHUB_STEP_SUMMARY
+          echo "| **ESLint Code Quality** | \`npm run lint\` | $LINT_STATUS |" >> $GITHUB_STEP_SUMMARY
 
   test:
     name: Unit Tests & Coverage
@@ -110,9 +128,12 @@ jobs:
 
       - name: Generate Unit Tests & Coverage Summary
         if: always()
+        env:
+          JOB_STATUS: ${{ job.status }}
         run: |
           node -e '
             const fs = require("fs");
+            const jobStatus = process.env.JOB_STATUS;
             let md = "## 🧪 Unit Tests & Code Coverage Summary\n\n";
             let totalLF = 0;
             let totalLH = 0;
@@ -125,7 +146,7 @@ jobs:
                 }
               }
               const coveragePct = totalLF > 0 ? ((totalLH / totalLF) * 100).toFixed(2) + "%" : "N/A";
-              if ("${{ job.status }}" === "success") {
+              if (jobStatus === "success") {
                 md += "### ✅ All Unit Tests Passed!\n\n";
               } else {
                 md += "### ⚠️ Unit Tests or Coverage Check Failed\n\n";
@@ -140,7 +161,8 @@ jobs:
               md += "> [!TIP]\n";
               md += "> Coverage telemetry (`lcov.info` and `sonar-report.xml`) is passed downstream to SonarCloud.\n";
             } catch (err) {
-              md += "| Metric | Status |\n| :--- | :--- |\n| **Unit Tests** | ${{ job.status == "success" && "✅ Passed" || "❌ Failed" }} |\n";
+              const status = jobStatus === "success" ? "✅ Passed" : "❌ Failed";
+              md += "| Metric | Status |\n| :--- | :--- |\n| **Unit Tests** | " + status + " |\n";
             }
             fs.appendFileSync(process.env.GITHUB_STEP_SUMMARY, md);
           '
@@ -186,10 +208,12 @@ jobs:
 
       - name: Generate SonarCloud Scan Summary
         if: always()
+        env:
+          JOB_STATUS: ${{ job.status }}
         run: |
           echo "## ☁️ SonarCloud Static Code Analysis" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
-          if [ "${{ job.status }}" = "success" ]; then
+          if [ "$JOB_STATUS" = "success" ]; then
             echo "### ✅ SonarCloud Scan Completed Successfully!" >> $GITHUB_STEP_SUMMARY
             echo "" >> $GITHUB_STEP_SUMMARY
             echo "| Metric | Value |" >> $GITHUB_STEP_SUMMARY
@@ -253,10 +277,12 @@ jobs:
 
       - name: Generate Application Build Summary
         if: always()
+        env:
+          JOB_STATUS: ${{ job.status }}
         run: |
           echo "## 🏗️ Production Application Build" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
-          if [ "${{ job.status }}" = "success" ]; then
+          if [ "$JOB_STATUS" = "success" ]; then
             echo "### ✅ Build Succeeded!" >> $GITHUB_STEP_SUMMARY
             echo "" >> $GITHUB_STEP_SUMMARY
             echo "| Metric | Value |" >> $GITHUB_STEP_SUMMARY

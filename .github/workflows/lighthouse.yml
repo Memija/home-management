@@ -60,10 +60,12 @@ jobs:
 
       - name: Generate Build Summary
         if: always()
+        env:
+          JOB_STATUS: ${{ job.status }}
         run: |
           echo "## 📦 Lighthouse CI: Application Build" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
-          if [ "${{ job.status }}" = "success" ]; then
+          if [ "$JOB_STATUS" = "success" ]; then
             echo "### ✅ Build Succeeded for Lighthouse Auditing" >> $GITHUB_STEP_SUMMARY
             echo "" >> $GITHUB_STEP_SUMMARY
             echo "| Metric | Value |" >> $GITHUB_STEP_SUMMARY
@@ -127,10 +129,14 @@ jobs:
 
       - name: Generate Lighthouse Summary (${{ matrix.preset }})
         if: always()
+        env:
+          JOB_STATUS: ${{ job.status }}
+          PRESET: ${{ matrix.preset }}
         run: |
           node -e '
             const fs = require("fs");
-            const preset = "${{ matrix.preset }}";
+            const preset = process.env.PRESET || "audit";
+            const jobStatus = process.env.JOB_STATUS;
             let md = `## ⚡ Lighthouse CI Audit (\`${preset.toUpperCase()}\`)\n\n`;
             try {
               if (fs.existsSync(".lighthouseci/manifest.json")) {
@@ -148,16 +154,18 @@ jobs:
                 }
                 md += "\n> [!TIP]\n> Detailed HTML reports with interactive traces and audits are saved in the `lighthouse-report-" + preset + "` artifact.\n";
               } else {
+                const status = jobStatus === "success" ? "✅ Audit Passed" : "⚠️ Audit Completed with Warnings/Failures";
                 md += "| Metric | Status |\n";
                 md += "| :--- | :--- |\n";
                 md += "| **Device Preset** | `" + preset + "` |\n";
-                md += "| **Audit Status** | ${{ job.status == "success" && "✅ Audit Passed" || "⚠️ Audit Completed with Warnings/Failures" }} |\n";
+                md += "| **Audit Status** | " + status + " |\n";
               }
             } catch (err) {
+              const status = jobStatus === "success" ? "✅ Audit Passed" : "⚠️ Audit Completed";
               md += "| Metric | Status |\n";
               md += "| :--- | :--- |\n";
               md += "| **Device Preset** | `" + preset + "` |\n";
-              md += "| **Audit Status** | ${{ job.status == "success" && "✅ Audit Passed" || "⚠️ Audit Completed" }} |\n";
+              md += "| **Audit Status** | " + status + " |\n";
             }
             fs.appendFileSync(process.env.GITHUB_STEP_SUMMARY, md);
           '

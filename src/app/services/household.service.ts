@@ -1,4 +1,5 @@
-import { Injectable, signal, effect, inject, untracked } from '@angular/core';
+import { Injectable, signal, effect, inject, untracked, DestroyRef } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { STORAGE_SERVICE } from './storage.service';
 import { NotificationService } from './notification.service';
 import { CountryService } from './country.service';
@@ -25,6 +26,7 @@ export interface HouseholdMember {
 })
 export class HouseholdService {
   private storage = inject(STORAGE_SERVICE);
+  private destroyRef = inject(DestroyRef);
   private notificationService = inject(NotificationService);
   private countryService = inject(CountryService);
   private isInitialized = false;
@@ -49,6 +51,9 @@ export class HouseholdService {
 
   constructor() {
     this.loadData();
+    this.storage.dataRefreshed$
+      ?.pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe(() => this.loadData());
 
     effect(() => {
       const currentMembers = this.members();
@@ -77,16 +82,13 @@ export class HouseholdService {
     }));
   }
 
-  private async loadData() {
+  async loadData(): Promise<void> {
+    this.isInitialized = false;
     const members = await this.storage.load<HouseholdMember[]>('household_members');
-    if (members) {
-      this.members.set(this.normalizeMembers(members));
-    }
+    this.members.set(members ? this.normalizeMembers(members) : []);
 
     const address = await this.storage.load<Address>('household_address');
-    if (address) {
-      this.address.set(this.normalizeAddress(address));
-    }
+    this.address.set(address ? this.normalizeAddress(address) : null);
 
     // Delay initialization flag to ensure initial signal updates don't trigger effects
     setTimeout(() => {

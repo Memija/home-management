@@ -5,7 +5,7 @@ import { STORAGE_SERVICE, StorageService } from './services/storage.service';
 import { Auth } from '@angular/fire/auth';
 
 // Mock StorageService
-const mockStorageService: StorageService = {
+const mockStorageService: Partial<StorageService> = {
   save: vi.fn().mockResolvedValue(undefined),
   load: vi.fn().mockResolvedValue(null),
   delete: vi.fn().mockResolvedValue(undefined),
@@ -14,6 +14,7 @@ const mockStorageService: StorageService = {
   importAll: vi.fn().mockResolvedValue(undefined),
   exportRecords: vi.fn().mockResolvedValue([]),
   importRecords: vi.fn().mockResolvedValue(undefined),
+  notifyDataRefreshed: vi.fn(),
 };
 
 // Mock Firebase Auth

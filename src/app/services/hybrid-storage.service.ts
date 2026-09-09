@@ -13,53 +13,10 @@ import { LocalStorageService } from './local-storage.service';
 import { FirebaseStorageService } from './firebase-storage.service';
 import { AuthService } from './auth.service';
 import { DemoService } from './demo.service';
+import { CloudSyncService } from './cloud-sync.service';
+import { STORAGE_MODE_KEY, checkHasUserContent, isSettingsKey } from '../utils/storage-sync.utils';
 
 export type StorageMode = 'local' | 'cloud';
-
-const STORAGE_MODE_KEY = 'storage_mode';
-const LAST_SYNC_KEY = 'last_sync_timestamp';
-const LAST_LOCAL_UPDATE_KEY = 'last_local_update_timestamp';
-
-// Core settings keys that don't follow a simple pattern
-const CORE_SETTINGS_KEYS = [
-  'heating_room_configuration',
-  'excel_settings',
-  'storage_mode',
-  'last_sync_timestamp',
-  'household_members',
-  'household_address',
-  'dismissed_notifications',
-  'theme',
-  'preferred_language',
-  'water_confirmed_meter_changes',
-  'water_dismissed_meter_changes',
-  'water_cold_only_mode',
-  'electricity_confirmed_meter_changes',
-  'electricity_dismissed_meter_changes',
-  'heating_confirmed_spikes',
-  'heating_dismissed_spikes',
-];
-
-/**
- * Checks if a key belongs in the user_settings document.
- * This includes core settings and dynamic chart preferences.
- */
-function isSettingsKey(key: string): boolean {
-  if (CORE_SETTINGS_KEYS.includes(key)) return true;
-
-  // Dynamic Chart Views & Display Modes
-  if (key.endsWith('_chart_view') || key.endsWith('_display_mode')) return true;
-
-  // Dynamic Chart Toggle States
-  if (key.endsWith('_chart_trendline_visible') || key.endsWith('_chart_average_visible'))
-    return true;
-  if (key.endsWith('_show_predictions') || key.endsWith('_show_past_forecast')) return true;
-
-  // Dynamic Collapsed States
-  if (key.endsWith('_are_collapsed') || key.endsWith('_is_collapsed')) return true;
-
-  return false;
-}
 
 /**
  * Hybrid storage service that uses localStorage as cache and optionally syncs to Firebase.
@@ -77,27 +34,26 @@ export class HybridStorageService extends StorageService {
   private firebaseStorage = inject(FirebaseStorageService);
   private authService = inject(AuthService);
   private demoService = inject(DemoService);
+  private cloudSync = inject(CloudSyncService);
   private platformId = inject(PLATFORM_ID);
 
   /** Current storage mode */
   readonly mode = signal<StorageMode>('local');
 
   /** Last sync timestamp (for display purposes) */
-  readonly lastSyncTime = signal<Date | null>(null);
+  readonly lastSyncTime = this.cloudSync.lastSyncTime;
 
   /** Whether an upload (push) to cloud is currently in progress */
-  readonly isUploading = signal<boolean>(false);
+  readonly isUploading = this.cloudSync.isUploading;
 
   /** Whether a download (pull) from cloud is currently in progress */
-  readonly isDownloading = signal<boolean>(false);
+  readonly isDownloading = this.cloudSync.isDownloading;
 
   /** Whether a cloud data deletion is currently in progress */
-  readonly isDeletingCloud = signal<boolean>(false);
+  readonly isDeletingCloud = this.cloudSync.isDeletingCloud;
 
   /** Whether any sync activity is currently in progress */
-  readonly isSyncing = computed(
-    () => this.isUploading() || this.isDownloading() || this.isDeletingCloud(),
-  );
+  readonly isSyncing = this.cloudSync.isSyncing;
 
   /** Whether there is any local user data beyond system keys */
   readonly hasUserContent = signal<boolean>(false);
@@ -114,60 +70,90 @@ export class HybridStorageService extends StorageService {
     return this.mode() === 'cloud' && this.canUseCloud();
   });
 
+  private get isBrowser(): boolean {
+    return isPlatformBrowser(this.platformId);
+  }
+
   constructor() {
     super();
     if (this.isBrowser) {
       this.loadStoredMode();
       this.refreshLocalContentStatus();
+      this.cloudSync.setupResumeListeners(() => this.onAppResume());
+      this.cloudSync.setOnDataRefreshed(() => {
+        this.loadStoredMode();
+        this.refreshLocalContentStatus();
+        this.notifyDataRefreshed();
+      });
 
       // Handle cloud sync automatically on startup if user signs in
       effect(() => {
         const authenticated = this.authService.isAuthenticated();
-        const currentMode = untracked(() => this.mode());
         const isDemo = untracked(() => this.demoService.isDemoMode());
-        const noLocalContent = untracked(() => !this.hasUserContent());
 
         if (authenticated && !isDemo) {
-          if (noLocalContent && currentMode === 'local') {
-            untracked(() => {
-              this.setMode('cloud');
-              this.pullFromCloud().catch((err) =>
-                console.error('[HybridStorage] Auto-pull failed:', err),
-              );
-            });
-          } else if (currentMode === 'cloud') {
-            untracked(() => {
-              this.smartSync().catch((err) =>
-                console.error('[HybridStorage] Smart sync failed:', err),
-              );
-            });
-          }
+          untracked(() => {
+            this.handleAuthenticatedStartup().catch((err) =>
+              console.error('[HybridStorage] Authenticated startup sync failed:', err),
+            );
+          });
         }
       });
     }
   }
 
-  private get isBrowser(): boolean {
-    return isPlatformBrowser(this.platformId);
+  /**
+   * Called when app is revisited after being in the background.
+   * Throttled to prevent unnecessary Firestore queries.
+   */
+  async onAppResume(): Promise<void> {
+    if (!this.isCloudMode() || this.isSyncing()) return;
+    if (!this.cloudSync.canResumeSync()) return;
+
+    try {
+      await this.smartSync();
+    } catch (err) {
+      console.warn('[HybridStorage] Revisit sync failed:', err);
+    }
+  }
+
+  /**
+   * Handles cloud synchronization when user is authenticated on startup.
+   */
+  async handleAuthenticatedStartup(): Promise<void> {
+    const currentMode = this.mode();
+    if (currentMode === 'local') {
+      try {
+        const cloudSettings = await this.firebaseStorage.getSettings();
+        const isCloudConfigured = cloudSettings['storage_mode'] === 'cloud';
+        const noLocalContent = !this.hasUserContent();
+
+        if (noLocalContent) {
+          this.setMode('cloud');
+          await this.pullFromCloud();
+          return;
+        }
+
+        if (isCloudConfigured) {
+          this.setMode('cloud');
+          // Local has user content: run smartSync to protect fresher local data and merge
+          await this.smartSync();
+          return;
+        }
+      } catch (err) {
+        console.warn('[HybridStorage] Failed to check cloud settings on startup:', err);
+      }
+    }
+
+    if (this.isCloudMode()) {
+      await this.smartSync();
+    }
   }
 
   private loadStoredMode(): void {
     const storedMode = this.localStorage.getPreference(STORAGE_MODE_KEY);
     if (storedMode === 'cloud' || storedMode === 'local') {
       this.mode.set(storedMode);
-    }
-
-    const lastSync = this.localStorage.getPreference(LAST_SYNC_KEY);
-    if (lastSync) {
-      const date = new Date(lastSync);
-      // Check if date is valid
-      if (!isNaN(date.getTime())) {
-        this.lastSyncTime.set(date);
-      } else {
-        console.warn('Invalid last sync timestamp found in storage:', lastSync);
-        // Optionally clear the invalid value
-        this.localStorage.removePreference(LAST_SYNC_KEY);
-      }
     }
   }
 
@@ -195,7 +181,7 @@ export class HybridStorageService extends StorageService {
    */
   async save<T>(key: string, data: T): Promise<void> {
     const ts = Date.now();
-    this.updateLocalTimestamp(ts);
+    this.cloudSync.updateLocalTimestamp(ts);
     // Always save to localStorage first (cache-first)
     await this.localStorage.save(key, data);
 
@@ -232,7 +218,7 @@ export class HybridStorageService extends StorageService {
    */
   async delete(key: string): Promise<void> {
     const ts = Date.now();
-    this.updateLocalTimestamp(ts);
+    this.cloudSync.updateLocalTimestamp(ts);
     await this.localStorage.delete(key);
 
     if (this.isCloudMode()) {
@@ -275,7 +261,7 @@ export class HybridStorageService extends StorageService {
    */
   async importAll(data: Record<string, unknown>): Promise<void> {
     const ts = Date.now();
-    this.updateLocalTimestamp(ts);
+    this.cloudSync.updateLocalTimestamp(ts);
     await this.localStorage.importAll(data);
 
     if (this.isCloudMode()) {
@@ -302,7 +288,7 @@ export class HybridStorageService extends StorageService {
    */
   async importRecords(recordKey: string, records: unknown[]): Promise<void> {
     const ts = Date.now();
-    this.updateLocalTimestamp(ts);
+    this.cloudSync.updateLocalTimestamp(ts);
     await this.localStorage.importRecords(recordKey, records);
 
     if (this.isCloudMode()) {
@@ -328,286 +314,73 @@ export class HybridStorageService extends StorageService {
 
     try {
       await this.firebaseStorage.save(key, data);
-      this.updateLastSyncTime();
+      this.cloudSync.updateLastSyncTime();
     } catch (error) {
       console.error(`Failed to sync ${key} to cloud:`, error);
       throw error;
     }
   }
 
-  private updateLastSyncTime(): void {
-    const now = new Date();
-    this.lastSyncTime.set(now);
-    if (this.isBrowser) {
-      this.localStorage.setPreference(LAST_SYNC_KEY, now.toISOString());
-    }
-  }
-
-  private updateLocalTimestamp(timestamp: number): void {
-    if (this.isBrowser) {
-      this.localStorage.setPreference(LAST_LOCAL_UPDATE_KEY, timestamp.toString());
-    }
-  }
-
-  private getLocalTimestamp(): number {
-    if (!this.isBrowser) return 0;
-    const val = this.localStorage.getPreference(LAST_LOCAL_UPDATE_KEY);
-    return val ? parseInt(val, 10) : 0;
-  }
-
+  /**
+   * Performs smart timestamp-aware sync between local and cloud storage.
+   */
   async smartSync(): Promise<void> {
-    if (!this.canUseCloud()) return;
-
-    this.isDownloading.set(true);
-    try {
-      const cloudTs = await this.firebaseStorage.getCloudUpdateTimestamp();
-      const localTs = this.getLocalTimestamp();
-
-      const cTime = cloudTs || 0;
-      const lTime = localTs || 0;
-
-      if (cTime > lTime) {
-        await this.pullFromCloud();
-      } else if (lTime > cTime) {
-        await this.migrateLocalToCloud();
-      } else {
-        // They are equal; no action needed
-      }
-    } catch (error) {
-      console.error('[HybridStorage] Smart sync failed:', error);
-    } finally {
-      this.isDownloading.set(false);
-    }
+    await this.cloudSync.smartSync(
+      this.canUseCloud(),
+      this.hasUserContent(),
+      () => this.pullFromCloud(),
+      () => this.migrateLocalToCloud(),
+    );
   }
 
   /**
    * Migrate all local data to cloud (one-time operation when enabling cloud)
    */
   async migrateLocalToCloud(): Promise<void> {
-    if (!this.canUseCloud()) {
-      throw new Error('Cannot migrate: user not authenticated');
-    }
-
-    this.isUploading.set(true);
-
-    try {
-      const allData = await this.localStorage.exportAll();
-      const keys = Object.keys(allData);
-
-      if (keys.length === 0) {
-        console.warn('[CloudSync] No local data found to migrate');
-      }
-
-      const settingsGroup: Record<string, unknown> = {};
-      const recordKeys: string[] = [];
-      const VALID_RECORD_KEYS = [
-        'water_consumption_records',
-        'electricity_consumption_records',
-        'heating_consumption_records',
-      ];
-
-      // Group keys into settings or records, skip unknown keys
-      for (const key of keys) {
-        if (VALID_RECORD_KEYS.includes(key)) {
-          recordKeys.push(key);
-        } else if (isSettingsKey(key)) {
-          settingsGroup[key] = allData[key];
-        } else {
-          console.warn(
-            `[CloudSync] Skipping unknown key "${key}" — not in settings or records whitelist`,
-          );
-        }
-      }
-
-      // Save settings in one go
-      if (Object.keys(settingsGroup).length > 0) {
-        await this.firebaseStorage.updateSettings(settingsGroup);
-      }
-
-      // Save consumption records individually
-      for (const key of recordKeys) {
-        await this.firebaseStorage.save(key, allData[key]);
-      }
-
-      this.updateLastSyncTime();
-      await this.firebaseStorage.updateCloudTimestamp(this.getLocalTimestamp());
-    } catch (error) {
-      console.error('Migration to cloud failed:', error);
-      throw error;
-    } finally {
-      this.isUploading.set(false);
-    }
+    await this.cloudSync.migrateLocalToCloud(this.canUseCloud());
   }
 
   /**
    * Pull all data from cloud to local (restore operation)
    */
   async pullFromCloud(): Promise<void> {
-    if (!this.canUseCloud()) {
-      throw new Error('Cannot pull: user not authenticated');
-    }
-
-    this.isDownloading.set(true);
-
-    try {
-      const cloudData = await this.firebaseStorage.exportAll();
-
-      // If user_settings exists and is a valid object, unpack only recognized settings keys for localStorage
-      const rawSettings = cloudData['user_settings'];
-      if (rawSettings && typeof rawSettings === 'object' && !Array.isArray(rawSettings)) {
-        const settings = rawSettings as Record<string, unknown>;
-        for (const [key, value] of Object.entries(settings)) {
-          if (isSettingsKey(key)) {
-            cloudData[key] = value;
-          }
-        }
-      }
-      delete cloudData['user_settings'];
-
-      // Extract preference keys before importAll (which JSON.stringifies values).
-      // These must be written via setPreference (raw) to match how they are read
-      // by ThemeService, LanguageService, and HybridStorageService.
-      const modeValue = cloudData[STORAGE_MODE_KEY] as string | undefined;
-      const syncValue = cloudData[LAST_SYNC_KEY] as string | undefined;
-      const themeValue = cloudData['theme'] as string | undefined;
-      const langValue = cloudData['preferred_language'] as string | undefined;
-      delete cloudData[STORAGE_MODE_KEY];
-      delete cloudData[LAST_SYNC_KEY];
-      delete cloudData['theme'];
-      delete cloudData['preferred_language'];
-
-      await this.localStorage.importAll(cloudData);
-
-      // Write preference keys as raw strings
-      if (modeValue) {
-        this.localStorage.setPreference(STORAGE_MODE_KEY, modeValue);
-      }
-      if (syncValue) {
-        this.localStorage.setPreference(LAST_SYNC_KEY, syncValue);
-      }
-      if (themeValue) {
-        this.localStorage.setPreference('theme', themeValue);
-      }
-      if (langValue) {
-        this.localStorage.setPreference('preferred_language', langValue);
-      }
-
-      this.loadStoredMode(); // Refresh mode signal from imported data
-      this.updateLastSyncTime();
-      const cloudTs = await this.firebaseStorage.getCloudUpdateTimestamp();
-      if (cloudTs) {
-        this.updateLocalTimestamp(cloudTs);
-      }
-    } catch (error) {
-      console.error('Pull from cloud failed:', error);
-      throw error;
-    } finally {
-      this.isDownloading.set(false);
-    }
+    await this.cloudSync.pullFromCloud(this.canUseCloud());
+    this.loadStoredMode();
+    this.refreshLocalContentStatus();
+    this.notifyDataRefreshed();
   }
 
   /**
    * Full sync: push local to cloud, then pull cloud to local
-   * This ensures both sides have the same data (local wins on conflicts)
    */
   async fullSync(): Promise<void> {
-    if (!this.canUseCloud()) {
-      throw new Error('Cannot sync: user not authenticated');
-    }
-
-    try {
-      // Local wins on conflict: Push local to cloud first
-      await this.migrateLocalToCloud();
-      // Then pull cloud data (including what we just pushed) back to local
-      await this.pullFromCloud();
-    } catch (error) {
-      console.error('Full sync failed:', error);
-      throw error;
-    }
+    await this.cloudSync.fullSync(this.canUseCloud());
+    this.loadStoredMode();
+    this.refreshLocalContentStatus();
+    this.notifyDataRefreshed();
   }
 
   /**
    * Delete all data from cloud storage
    */
   async clearCloudData(): Promise<void> {
-    if (!this.canUseCloud()) {
-      throw new Error('Cannot clear cloud data: user not authenticated');
-    }
-
-    this.isDeletingCloud.set(true);
-
-    try {
-      await this.firebaseStorage.deleteAllUserData();
-      // Clear last sync time as the remote data no longer exists
-      this.lastSyncTime.set(null);
-      if (this.isBrowser) {
-        this.localStorage.removePreference(LAST_SYNC_KEY);
-      }
-      await this.firebaseStorage.updateCloudTimestamp(0);
-    } catch (error) {
-      console.error('Clear cloud data failed:', error);
-      throw error;
-    } finally {
-      this.isDeletingCloud.set(false);
-    }
+    await this.cloudSync.clearCloudData(this.canUseCloud());
   }
+
   /**
    * Delete all local data
    */
   async clearLocalData(): Promise<void> {
     await this.localStorage.clearAll();
-    this.updateLocalTimestamp(0);
+    this.cloudSync.updateLocalTimestamp(0);
     this.refreshLocalContentStatus();
+    this.notifyDataRefreshed();
   }
 
   /**
    * Refreshes the hasUserContent signal by checking if there is any local data beyond system keys.
    */
   refreshLocalContentStatus(): void {
-    if (!this.isBrowser) {
-      this.hasUserContent.set(false);
-      return;
-    }
-
-    // System keys and preferences that are always present or set on navigation
-    const IGNORED_KEYS = [
-      'hm_season_sync',
-      'hm_excel_preview_is_collapsed',
-      'hm_storage_mode',
-      'hm_last_sync_timestamp',
-      'hm_theme',
-      'hm_preferred_language',
-    ];
-
-    let hasData = false;
-    for (let i = 0; i < localStorage.length; i++) {
-      const key = localStorage.key(i);
-      if (key?.startsWith('hm_') && !IGNORED_KEYS.includes(key)) {
-        // Only count as user data if it's not default/empty values
-        const value = localStorage.getItem(key);
-
-        // Skip empty/default values for core settings (JSON stringified)
-        if (
-          key === 'hm_household_members' &&
-          (value === '[]' || value === 'null' || value === null)
-        )
-          continue;
-        if (key === 'hm_household_address' && (value === 'null' || value === null)) continue;
-        if (
-          key === 'hm_dismissed_notifications' &&
-          (value === '[]' || value === 'null' || value === null)
-        )
-          continue;
-
-        // Skip chart views, display modes, and UI state which have defaults
-        if (key.endsWith('_chart_view') || key.endsWith('_display_mode')) continue;
-        if (key.endsWith('_trendline_visible') || key.endsWith('_average_visible')) continue;
-        if (key.endsWith('_collapsed')) continue;
-
-        hasData = true;
-        break;
-      }
-    }
-    this.hasUserContent.set(hasData);
+    this.hasUserContent.set(this.isBrowser ? checkHasUserContent() : false);
   }
 }

@@ -1,4 +1,5 @@
-import { Injectable, signal, inject, computed } from '@angular/core';
+import { Injectable, signal, inject, computed, DestroyRef } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import {
   ConsumptionRecord,
   mergeRecords,
@@ -20,6 +21,7 @@ import { NotificationService } from './notification.service';
 })
 export class ConsumptionDataService {
   private storage = inject(STORAGE_SERVICE);
+  private destroyRef = inject(DestroyRef);
   private fileStorage = inject(FileStorageService);
   private excelService = inject(ExcelService);
   private pdfService = inject(PdfService);
@@ -112,6 +114,9 @@ export class ConsumptionDataService {
 
   constructor() {
     this.loadData();
+    this.storage.dataRefreshed$
+      ?.pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe(() => this.loadData());
   }
 
   async loadData() {

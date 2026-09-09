@@ -11,7 +11,7 @@ const mockInitializeApp = vi.fn();
 const mockGetApps = vi.fn();
 const mockGetApp = vi.fn();
 const mockInitializeAppCheck = vi.fn();
-const mockReCaptchaV3Provider = vi.fn();
+const mockReCaptchaEnterpriseProvider = vi.fn();
 
 vi.mock('firebase/app', () => ({
   initializeApp: (...args: unknown[]) => mockInitializeApp(...args),
@@ -21,9 +21,9 @@ vi.mock('firebase/app', () => ({
 
 vi.mock('firebase/app-check', () => ({
   initializeAppCheck: (...args: unknown[]) => mockInitializeAppCheck(...args),
-  ReCaptchaV3Provider: class {
+  ReCaptchaEnterpriseProvider: class {
     constructor(...args: unknown[]) {
-      mockReCaptchaV3Provider(...args);
+      mockReCaptchaEnterpriseProvider(...args);
     }
   },
 }));
@@ -66,7 +66,7 @@ describe('firebase-app.helper', () => {
         isTokenAutoRefreshEnabled: true,
       }),
     );
-    expect(mockReCaptchaV3Provider).toHaveBeenCalledWith(firebaseConfig.recaptchaSiteKey);
+    expect(mockReCaptchaEnterpriseProvider).toHaveBeenCalledWith(firebaseConfig.recaptchaSiteKey);
   });
 
   it('should not initialize App Check if recaptchaSiteKey is empty', async () => {

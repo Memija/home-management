@@ -26,7 +26,7 @@ export async function initAppCheck(
   }
 
   try {
-    const { initializeAppCheck, ReCaptchaV3Provider } = await import('firebase/app-check');
+    const { initializeAppCheck, ReCaptchaEnterpriseProvider } = await import('firebase/app-check');
 
     if (typeof window !== 'undefined' && window.location?.hostname === 'localhost') {
       // In local development, enable debug token to print in DevTools console
@@ -35,7 +35,7 @@ export async function initAppCheck(
     }
 
     initializeAppCheck(app, {
-      provider: new ReCaptchaV3Provider(siteKey),
+      provider: new ReCaptchaEnterpriseProvider(siteKey),
       isTokenAutoRefreshEnabled: true,
     });
     appCheckInitialized = true;

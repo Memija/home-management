@@ -1,6 +1,22 @@
 import { InjectionToken } from '@angular/core';
+import { Observable, Subject } from 'rxjs';
 
 export abstract class StorageService {
+  protected readonly dataRefreshedSubject = new Subject<void>();
+
+  /**
+   * Observable that emits whenever storage data is refreshed or imported externally
+   * (e.g. cloud sync pull, file import, or cache reset).
+   */
+  readonly dataRefreshed$: Observable<void> = this.dataRefreshedSubject.asObservable();
+
+  /**
+   * Notifies subscribers that underlying storage data has been refreshed.
+   */
+  notifyDataRefreshed(): void {
+    this.dataRefreshedSubject.next();
+  }
+
   /**
    * Save data to storage
    * @param key The storage key

@@ -1,4 +1,5 @@
-import { Injectable, signal, computed, inject } from '@angular/core';
+import { Injectable, signal, computed, inject, DestroyRef } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { STORAGE_SERVICE } from './storage.service';
 import { LanguageService } from './language.service';
 
@@ -33,6 +34,7 @@ export const PREDEFINED_ROOM_KEYS = [
 })
 export class HeatingRoomsService {
   private storage = inject(STORAGE_SERVICE);
+  private destroyRef = inject(DestroyRef);
   private languageService = inject(LanguageService);
 
   // Room configurations signal
@@ -41,6 +43,9 @@ export class HeatingRoomsService {
 
   constructor() {
     this.loadRooms();
+    this.storage.dataRefreshed$
+      ?.pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe(() => this.loadRooms());
   }
 
   // Computed helpers
@@ -48,12 +53,9 @@ export class HeatingRoomsService {
   readonly canAddRoom = computed(() => this._rooms().length < MAX_ROOMS);
   readonly canRemoveRoom = computed(() => this._rooms().length > 0);
 
-  private async loadRooms(): Promise<void> {
+  async loadRooms(): Promise<void> {
     const stored = await this.storage.load<HeatingRoomConfig[]>(STORAGE_KEY);
-
-    if (stored && Array.isArray(stored)) {
-      this._rooms.set(stored);
-    }
+    this._rooms.set(stored && Array.isArray(stored) ? stored : []);
   }
 
   private saveRooms(): void {

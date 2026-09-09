@@ -21,8 +21,10 @@ describe('HybridStorageService', () => {
     importAll: Mock;
     exportRecords: Mock;
     importRecords: Mock;
+    clearAll: Mock;
   };
   let firebaseStorageSpy: {
+    load: Mock;
     updateSettings: Mock;
     save: Mock;
     delete: Mock;
@@ -33,6 +35,7 @@ describe('HybridStorageService', () => {
     importRecords: Mock;
     getCloudUpdateTimestamp: Mock;
     updateCloudTimestamp: Mock;
+    getSettings: Mock;
   };
   let authServiceSpy: { isAuthenticated: Mock };
   let demoServiceSpy: { isDemoMode: Mock };
@@ -60,6 +63,7 @@ describe('HybridStorageService', () => {
       };
       vi.stubGlobal('localStorage', mockStorage);
     }
+    localStorage.clear();
 
     localStorageSpy = {
       getPreference: vi.fn(),
@@ -73,8 +77,10 @@ describe('HybridStorageService', () => {
       importAll: vi.fn(),
       exportRecords: vi.fn(),
       importRecords: vi.fn(),
+      clearAll: vi.fn().mockResolvedValue(undefined),
     };
     firebaseStorageSpy = {
+      load: vi.fn().mockResolvedValue(null),
       updateSettings: vi.fn(),
       save: vi.fn(),
       delete: vi.fn(),
@@ -85,6 +91,7 @@ describe('HybridStorageService', () => {
       importRecords: vi.fn(),
       getCloudUpdateTimestamp: vi.fn(),
       updateCloudTimestamp: vi.fn(),
+      getSettings: vi.fn().mockResolvedValue({}),
     };
     authServiceSpy = { isAuthenticated: vi.fn() };
     demoServiceSpy = { isDemoMode: vi.fn() };
@@ -511,6 +518,172 @@ describe('HybridStorageService', () => {
 
       expect(pullSpy).not.toHaveBeenCalled();
       expect(migrateSpy).not.toHaveBeenCalled();
+    });
+
+    it('should push to cloud if local is newer even when cloud update timestamp is missing (0)', async () => {
+      firebaseStorageSpy.getCloudUpdateTimestamp.mockResolvedValue(0);
+      localStorageSpy.getPreference.mockReturnValue('1000000');
+      firebaseStorageSpy.exportAll.mockResolvedValue({
+        water_consumption_records: [{ date: new Date(500000).toISOString() }],
+      });
+
+      const pullSpy = vi.spyOn(service, 'pullFromCloud').mockResolvedValue(undefined);
+      const migrateSpy = vi.spyOn(service, 'migrateLocalToCloud').mockResolvedValue(undefined);
+
+      await service.smartSync();
+
+      expect(pullSpy).not.toHaveBeenCalled();
+      expect(migrateSpy).toHaveBeenCalled();
+    });
+
+    it('should fallback to latest local record date if local timestamp is not stored', async () => {
+      const augDate = new Date('2026-08-01').getTime();
+      const sepDate = new Date('2026-09-01').getTime();
+
+      firebaseStorageSpy.getCloudUpdateTimestamp.mockResolvedValue(augDate);
+      localStorageSpy.getPreference.mockReturnValue(null);
+      localStorage.setItem(
+        'hm_water_consumption_records',
+        JSON.stringify([{ date: new Date(sepDate).toISOString() }]),
+      );
+
+      const pullSpy = vi.spyOn(service, 'pullFromCloud').mockResolvedValue(undefined);
+      const migrateSpy = vi.spyOn(service, 'migrateLocalToCloud').mockResolvedValue(undefined);
+
+      await service.smartSync();
+
+      expect(pullSpy).not.toHaveBeenCalled();
+      expect(migrateSpy).toHaveBeenCalled();
+    });
+  });
+
+  describe('Storage Reactivity & App Resume', () => {
+    beforeEach(() => {
+      authServiceSpy.isAuthenticated.mockReturnValue(true);
+      demoServiceSpy.isDemoMode.mockReturnValue(false);
+    });
+
+    it('should emit dataRefreshed$ after pullFromCloud() succeeds', async () => {
+      firebaseStorageSpy.exportAll.mockResolvedValue({});
+      firebaseStorageSpy.getCloudUpdateTimestamp.mockResolvedValue(100);
+
+      let emitted = false;
+      const sub = service.dataRefreshed$.subscribe(() => {
+        emitted = true;
+      });
+
+      await service.pullFromCloud();
+
+      expect(emitted).toBe(true);
+      sub.unsubscribe();
+    });
+
+    it('should emit dataRefreshed$ after clearLocalData() succeeds', async () => {
+      let emitted = false;
+      const sub = service.dataRefreshed$.subscribe(() => {
+        emitted = true;
+      });
+
+      await service.clearLocalData();
+
+      expect(emitted).toBe(true);
+      sub.unsubscribe();
+    });
+
+    it('should auto-enable cloud mode and pull if cloud settings indicate cloud mode and no local content', async () => {
+      service.mode.set('local');
+      firebaseStorageSpy.getSettings.mockResolvedValue({ storage_mode: 'cloud' });
+      const pullSpy = vi.spyOn(service, 'pullFromCloud').mockResolvedValue(undefined);
+
+      await service.handleAuthenticatedStartup();
+
+      expect(service.mode()).toBe('cloud');
+      expect(pullSpy).toHaveBeenCalled();
+    });
+
+    it('should run smartSync instead of pullFromCloud if local content exists on startup', async () => {
+      service.mode.set('local');
+      localStorage.setItem('hm_household_members', '[{"id":"1"}]');
+      service.refreshLocalContentStatus();
+      firebaseStorageSpy.getSettings.mockResolvedValue({ storage_mode: 'cloud' });
+      const pullSpy = vi.spyOn(service, 'pullFromCloud').mockResolvedValue(undefined);
+      const smartSyncSpy = vi.spyOn(service, 'smartSync').mockResolvedValue(undefined);
+
+      await service.handleAuthenticatedStartup();
+
+      expect(service.mode()).toBe('cloud');
+      expect(smartSyncSpy).toHaveBeenCalled();
+      expect(pullSpy).not.toHaveBeenCalled();
+    });
+
+    it('should merge cloud records with existing local records in pullFromCloud without dropping unique local records', async () => {
+      localStorageSpy.load.mockImplementation(async (key: string) => {
+        if (key === 'water_consumption_records') {
+          return [
+            {
+              date: '2026-09-01',
+              kitchenWarm: 10,
+              kitchenCold: 20,
+              bathroomWarm: 30,
+              bathroomCold: 40,
+            },
+          ];
+        }
+        return null;
+      });
+      firebaseStorageSpy.exportAll.mockResolvedValue({
+        water_consumption_records: [
+          {
+            date: '2026-09-02',
+            kitchenWarm: 15,
+            kitchenCold: 25,
+            bathroomWarm: 35,
+            bathroomCold: 45,
+          },
+        ],
+      });
+      firebaseStorageSpy.getCloudUpdateTimestamp.mockResolvedValue(100);
+
+      await service.pullFromCloud();
+
+      expect(localStorageSpy.importAll).toHaveBeenCalledWith(
+        expect.objectContaining({
+          water_consumption_records: expect.arrayContaining([
+            expect.objectContaining({ date: '2026-09-01' }),
+            expect.objectContaining({ date: '2026-09-02' }),
+          ]),
+        }),
+      );
+    });
+
+    it('should trigger smartSync on app resume when cloud mode is active', async () => {
+      service.mode.set('cloud');
+      const smartSyncSpy = vi.spyOn(service, 'smartSync').mockResolvedValue(undefined);
+
+      await service.onAppResume();
+
+      expect(smartSyncSpy).toHaveBeenCalled();
+    });
+
+    it('should throttle onAppResume if called again within throttle interval', async () => {
+      service.mode.set('cloud');
+      const smartSyncSpy = vi.spyOn(service, 'smartSync').mockResolvedValue(undefined);
+
+      await service.onAppResume();
+      expect(smartSyncSpy).toHaveBeenCalledTimes(1);
+
+      // Immediate second call should be throttled
+      await service.onAppResume();
+      expect(smartSyncSpy).toHaveBeenCalledTimes(1);
+    });
+
+    it('should not sync on resume if storage mode is local', async () => {
+      service.mode.set('local');
+      const smartSyncSpy = vi.spyOn(service, 'smartSync').mockResolvedValue(undefined);
+
+      await service.onAppResume();
+
+      expect(smartSyncSpy).not.toHaveBeenCalled();
     });
   });
 });

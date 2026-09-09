@@ -1,4 +1,5 @@
-import { Injectable, inject, signal } from '@angular/core';
+import { Injectable, inject, signal, DestroyRef } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { STORAGE_SERVICE } from './storage.service';
 import { ChartView, DisplayMode } from '../shared/consumption-chart/consumption-chart.component';
 
@@ -10,6 +11,7 @@ export type ChartType = 'water' | 'heating' | 'home' | 'electricity';
 })
 export class ConsumptionPreferencesService {
   private storage = inject(STORAGE_SERVICE);
+  private destroyRef = inject(DestroyRef);
 
   // Water-specific signals (for backwards compatibility)
   readonly chartView = signal<ChartView>('total');
@@ -32,6 +34,9 @@ export class ConsumptionPreferencesService {
 
   constructor() {
     this.loadPreferences();
+    this.storage.dataRefreshed$
+      ?.pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe(() => this.loadPreferences());
   }
 
   private async loadPreferences() {

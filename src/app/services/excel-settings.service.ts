@@ -1,4 +1,5 @@
-import { Injectable, signal, effect, inject, untracked } from '@angular/core';
+import { Injectable, signal, effect, inject, untracked, DestroyRef } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { STORAGE_SERVICE } from './storage.service';
 import { HeatingRoomsService } from './heating-rooms.service';
 
@@ -36,6 +37,7 @@ export interface ExcelSettings {
 })
 export class ExcelSettingsService {
   private storage = inject(STORAGE_SERVICE);
+  private destroyRef = inject(DestroyRef);
   private heatingRoomsService = inject(HeatingRoomsService);
   private isInitialized = false;
 
@@ -43,6 +45,9 @@ export class ExcelSettingsService {
 
   constructor() {
     this.loadSettings();
+    this.storage.dataRefreshed$
+      ?.pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe(() => this.loadSettings());
 
     effect(() => {
       const currentSettings = this.settings();
@@ -93,7 +98,8 @@ export class ExcelSettingsService {
     };
   }
 
-  private async loadSettings() {
+  async loadSettings(): Promise<void> {
+    this.isInitialized = false;
     const settings = await this.storage.load<ExcelSettings>('excel_settings');
     if (settings) {
       this.settings.set({

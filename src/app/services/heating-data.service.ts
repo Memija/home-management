@@ -1,4 +1,5 @@
-import { Injectable, inject, signal } from '@angular/core';
+import { Injectable, inject, signal, DestroyRef } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { STORAGE_SERVICE } from './storage.service';
 import { FileStorageService } from './file-storage.service';
 import { LanguageService } from './language.service';
@@ -23,6 +24,7 @@ import {
 })
 export class HeatingDataService {
   private storage = inject(STORAGE_SERVICE);
+  private destroyRef = inject(DestroyRef);
   private fileStorage = inject(FileStorageService);
   private languageService = inject(LanguageService);
   private excelService = inject(ExcelService);
@@ -51,20 +53,25 @@ export class HeatingDataService {
   readonly successTitle = signal('HEATING.SUCCESS_TITLE');
   readonly successMessage = signal('HEATING.RECORD_SAVED');
 
+  constructor() {
+    this.loadData();
+    this.storage.dataRefreshed$
+      ?.pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe(() => this.loadData());
+  }
+
   /**
    * Load records from storage
    */
   async loadData(): Promise<void> {
     const records = await this.storage.load<DynamicHeatingRecord[]>('heating_consumption_records');
-    if (records) {
-      const parsedRecords = records
-        .map((r) => ({ ...r, date: parseSafeDate(r.date) }))
-        .filter((r) => {
-          return r.date instanceof Date && !isNaN(r.date.getTime());
-        });
-      this.records.set(parsedRecords);
-      this.notificationService.setHeatingRecords(this.records());
-    }
+    const parsedRecords = (records || [])
+      .map((r) => ({ ...r, date: parseSafeDate(r.date) }))
+      .filter((r) => {
+        return r.date instanceof Date && !isNaN(r.date.getTime());
+      });
+    this.records.set(parsedRecords);
+    this.notificationService.setHeatingRecords(this.records());
   }
 
   /**

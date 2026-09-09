@@ -1,4 +1,5 @@
-import { Injectable, inject, computed, signal } from '@angular/core';
+import { Injectable, inject, computed, signal, DestroyRef } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { STORAGE_SERVICE } from './storage.service';
 import { ConsumptionRecord, ElectricityRecord, parseSafeDate } from '../models/records.model';
 import { DemoService } from './demo.service';
@@ -21,6 +22,7 @@ export interface Notification {
 })
 export class NotificationService {
   private storage = inject(STORAGE_SERVICE);
+  private destroyRef = inject(DestroyRef);
   private demoService = inject(DemoService);
 
   // Data signals (will be set by consuming components or loaded)
@@ -34,6 +36,9 @@ export class NotificationService {
 
   constructor() {
     this.loadData();
+    this.storage.dataRefreshed$
+      ?.pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe(() => this.loadData());
   }
 
   /**

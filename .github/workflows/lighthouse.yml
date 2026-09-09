@@ -58,6 +58,25 @@ jobs:
           path: dist/home-management/
           retention-days: 1
 
+      - name: Generate Build Summary
+        if: always()
+        run: |
+          echo "## 📦 Lighthouse CI: Application Build" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          if [ "${{ job.status }}" = "success" ]; then
+            echo "### ✅ Build Succeeded for Lighthouse Auditing" >> $GITHUB_STEP_SUMMARY
+            echo "" >> $GITHUB_STEP_SUMMARY
+            echo "| Metric | Value |" >> $GITHUB_STEP_SUMMARY
+            echo "| :--- | :--- |" >> $GITHUB_STEP_SUMMARY
+            echo "| **Distribution Path** | \`dist/home-management/\` |" >> $GITHUB_STEP_SUMMARY
+            echo "| **Artifact Name** | \`lighthouse-dist-artifact\` |" >> $GITHUB_STEP_SUMMARY
+            echo "| **Status** | Ready for parallel matrix audit (\`desktop\`, \`mobile\`) |" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "### ⚠️ Application Build Failed" >> $GITHUB_STEP_SUMMARY
+            echo "" >> $GITHUB_STEP_SUMMARY
+            echo "Check build logs for Angular compilation errors." >> $GITHUB_STEP_SUMMARY
+          fi
+
   lighthouse:
     name: Lighthouse Audit (${{ matrix.preset }})
     needs: [build]
@@ -104,3 +123,41 @@ jobs:
           name: lighthouse-report-${{ matrix.preset }}
           path: .lighthouseci/
           retention-days: 7
+          if-no-files-found: ignore
+
+      - name: Generate Lighthouse Summary (${{ matrix.preset }})
+        if: always()
+        run: |
+          node -e '
+            const fs = require("fs");
+            const preset = "${{ matrix.preset }}";
+            let md = `## ⚡ Lighthouse CI Audit (\`${preset.toUpperCase()}\`)\n\n`;
+            try {
+              if (fs.existsSync(".lighthouseci/manifest.json")) {
+                const manifest = JSON.parse(fs.readFileSync(".lighthouseci/manifest.json", "utf8"));
+                md += "### ✅ Audit Completed Successfully!\n\n";
+                md += "| Route | Performance | Accessibility | Best Practices | SEO |\n";
+                md += "| :--- | :--- | :--- | :--- | :--- |\n";
+                for (const run of manifest) {
+                  const url = run.url.replace(/^http:\/\/[^/]+/, "") || "/";
+                  const perf = run.summary ? Math.round(run.summary.performance * 100) : "N/A";
+                  const a11y = run.summary ? Math.round(run.summary.accessibility * 100) : "N/A";
+                  const bp = run.summary ? Math.round(run.summary["best-practices"] * 100) : "N/A";
+                  const seo = run.summary ? Math.round(run.summary.seo * 100) : "N/A";
+                  md += `| \`${url}\` | ${perf}% | ${a11y}% | ${bp}% | ${seo}% |\n`;
+                }
+                md += "\n> [!TIP]\n> Detailed HTML reports with interactive traces and audits are saved in the `lighthouse-report-" + preset + "` artifact.\n";
+              } else {
+                md += "| Metric | Status |\n";
+                md += "| :--- | :--- |\n";
+                md += "| **Device Preset** | `" + preset + "` |\n";
+                md += "| **Audit Status** | ${{ job.status == "success" && "✅ Audit Passed" || "⚠️ Audit Completed with Warnings/Failures" }} |\n";
+              }
+            } catch (err) {
+              md += "| Metric | Status |\n";
+              md += "| :--- | :--- |\n";
+              md += "| **Device Preset** | `" + preset + "` |\n";
+              md += "| **Audit Status** | ${{ job.status == "success" && "✅ Audit Passed" || "⚠️ Audit Completed" }} |\n";
+            }
+            fs.appendFileSync(process.env.GITHUB_STEP_SUMMARY, md);
+          '

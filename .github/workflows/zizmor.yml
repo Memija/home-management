@@ -38,3 +38,25 @@ jobs:
 
       - name: Run zizmor
         uses: zizmorcore/zizmor-action@70fb788f84895a7701f5643d103d587e460b5c99 # v0.6.3
+
+      - name: Generate zizmor Summary
+        if: always()
+        run: |
+          echo "## 🛡️ zizmor GitHub Actions Security Audit" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          if [ "${{ job.status }}" = "success" ]; then
+            echo "### ✅ All Clear — No CI/CD Misconfigurations Detected!" >> $GITHUB_STEP_SUMMARY
+            echo "" >> $GITHUB_STEP_SUMMARY
+            echo "| Metric | Status |" >> $GITHUB_STEP_SUMMARY
+            echo "| :--- | :--- |" >> $GITHUB_STEP_SUMMARY
+            echo "| **Target** | \`.github/workflows/\` |" >> $GITHUB_STEP_SUMMARY
+            echo "| **Audit Type** | GitHub Actions Workflow Static Analysis |" >> $GITHUB_STEP_SUMMARY
+            echo "| **Result** | Passed — Hardened workflows verified |" >> $GITHUB_STEP_SUMMARY
+            echo "" >> $GITHUB_STEP_SUMMARY
+            echo "> [!NOTE]" >> $GITHUB_STEP_SUMMARY
+            echo "> Workflows follow least-privilege permissions, SHA pinning, and step-security runner hardening." >> $GITHUB_STEP_SUMMARY
+          else
+            echo "### ⚠️ Security Misconfiguration Found in Workflows" >> $GITHUB_STEP_SUMMARY
+            echo "" >> $GITHUB_STEP_SUMMARY
+            echo "Check the job logs or GitHub Security tab for specific findings." >> $GITHUB_STEP_SUMMARY
+          fi

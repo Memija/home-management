@@ -9,11 +9,14 @@ if (!chromePath) {
   }
 }
 
+/** @type {import('@lhci/cli').LhciConfig} */
 module.exports = {
   ci: {
     collect: {
-      chromePath,
+      ...(chromePath ? { chromePath } : {}),
       startServerCommand: 'npm run serve:ssr:home-management',
+      startServerReadyPattern: 'Node Express server listening',
+      startServerReadyTimeout: 30000,
       url: [
         'http://localhost:4000/',
         'http://localhost:4000/dashboard',
@@ -27,10 +30,13 @@ module.exports = {
       ],
       numberOfRuns: 1,
       puppeteerScript: 'scripts/lhci-demo-setup.js',
+      settings: {
+        chromeFlags: '--no-sandbox --headless=new --disable-gpu --disable-dev-shm-usage',
+      },
     },
     upload: {
       target: 'filesystem',
-      outputDir: './.lighthouseci/mobile',
+      outputDir: './.lighthouseci',
     },
   },
 };

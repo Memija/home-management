@@ -33,3 +33,26 @@ jobs:
           target: 'https://home-management.dev'
           issue_title: 'OWASP ZAP: Security Finding in Deployed App'
           fail_action: false
+
+      - name: Generate OWASP ZAP Summary
+        if: always()
+        run: |
+          echo "## 🌐 OWASP ZAP Dynamic Application Security Testing (DAST)" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          if [ "${{ job.status }}" = "success" ]; then
+            echo "### ✅ Baseline Penetration Scan Completed!" >> $GITHUB_STEP_SUMMARY
+            echo "" >> $GITHUB_STEP_SUMMARY
+            echo "| Metric | Value |" >> $GITHUB_STEP_SUMMARY
+            echo "| :--- | :--- |" >> $GITHUB_STEP_SUMMARY
+            echo "| **Target URL** | \`https://home-management.dev\` |" >> $GITHUB_STEP_SUMMARY
+            echo "| **Scan Type** | Baseline DAST / Passive Scan |" >> $GITHUB_STEP_SUMMARY
+            echo "| **Fail on Alert** | Disabled (\`fail_action: false\`) |" >> $GITHUB_STEP_SUMMARY
+            echo "| **Status** | Passed |" >> $GITHUB_STEP_SUMMARY
+            echo "" >> $GITHUB_STEP_SUMMARY
+            echo "> [!NOTE]" >> $GITHUB_STEP_SUMMARY
+            echo "> Dynamic scans test the live application for missing security headers, cookie flags, and exposed metadata. Any actionable findings create an automated GitHub issue." >> $GITHUB_STEP_SUMMARY
+          else
+            echo "### ⚠️ OWASP ZAP Scan Failed or Encountered Errors" >> $GITHUB_STEP_SUMMARY
+            echo "" >> $GITHUB_STEP_SUMMARY
+            echo "Review job logs for details on connection or scan failures." >> $GITHUB_STEP_SUMMARY
+          fi

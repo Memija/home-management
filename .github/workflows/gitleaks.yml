@@ -32,3 +32,26 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           GITLEAKS_CONFIG: .gitleaks.toml
+
+      - name: Generate Gitleaks Summary
+        if: always()
+        run: |
+          echo "## 🔑 Gitleaks Secret Scanner Report" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          if [ "${{ job.status }}" = "success" ]; then
+            echo "### ✅ All Clear — No Leaked Secrets Detected!" >> $GITHUB_STEP_SUMMARY
+            echo "" >> $GITHUB_STEP_SUMMARY
+            echo "| Metric | Status |" >> $GITHUB_STEP_SUMMARY
+            echo "| :--- | :--- |" >> $GITHUB_STEP_SUMMARY
+            echo "| **Config** | \`.gitleaks.toml\` |" >> $GITHUB_STEP_SUMMARY
+            echo "| **Scan Scope** | Git History & Workspace Files |" >> $GITHUB_STEP_SUMMARY
+            echo "| **Result** | Passed — 0 leaked secrets found |" >> $GITHUB_STEP_SUMMARY
+            echo "" >> $GITHUB_STEP_SUMMARY
+            echo "> [!NOTE]" >> $GITHUB_STEP_SUMMARY
+            echo "> Repository is verified free of hardcoded API keys, passwords, and private tokens." >> $GITHUB_STEP_SUMMARY
+          else
+            echo "### ⚠️ Potential Secret Exposure Detected!" >> $GITHUB_STEP_SUMMARY
+            echo "" >> $GITHUB_STEP_SUMMARY
+            echo "> [!CAUTION]" >> $GITHUB_STEP_SUMMARY
+            echo "> Review the job logs immediately and revoke any leaked credentials." >> $GITHUB_STEP_SUMMARY
+          fi

@@ -21,7 +21,7 @@
     "test": "ng test home-management",
     "test:coverage": "ng test home-management --coverage --coverage-reporters=lcovonly --coverage-reporters=text-summary --watch=false",
     "test:lighthouse": "npm run test:lighthouse:mobile && npm run test:lighthouse:desktop",
-    "test:lighthouse:mobile": "lhci autorun",
+    "test:lighthouse:mobile": "lhci autorun --upload.outputDir=./.lighthouseci/mobile",
     "test:lighthouse:desktop": "lhci autorun --collect.settings.preset=desktop --upload.outputDir=./.lighthouseci/desktop",
     "test:lighthouse:flows": "node scripts/lighthouse-flow.mjs",
     "security:all": "node scripts/run-security-scan.js all",

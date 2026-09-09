@@ -43,3 +43,25 @@ jobs:
         uses: github/codeql-action/upload-sarif@6bb031afdd8eb862ea3fc1848194185e076637e5 # v3.28.11
         with:
           sarif_file: scorecard-results.sarif
+
+      - name: Generate Scorecard Summary
+        if: always()
+        run: |
+          echo "## 🏆 OpenSSF Scorecard Security Analysis" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          if [ "${{ job.status }}" = "success" ]; then
+            echo "### ✅ Security Posture Evaluation Completed!" >> $GITHUB_STEP_SUMMARY
+            echo "" >> $GITHUB_STEP_SUMMARY
+            echo "| Metric | Status |" >> $GITHUB_STEP_SUMMARY
+            echo "| :--- | :--- |" >> $GITHUB_STEP_SUMMARY
+            echo "| **Framework** | [OpenSSF Scorecard](https://scorecard.dev) |" >> $GITHUB_STEP_SUMMARY
+            echo "| **Format** | SARIF 2.1.0 |" >> $GITHUB_STEP_SUMMARY
+            echo "| **Security Tab Sync** | ✅ Synced to Code Scanning |" >> $GITHUB_STEP_SUMMARY
+            echo "" >> $GITHUB_STEP_SUMMARY
+            echo "> [!NOTE]" >> $GITHUB_STEP_SUMMARY
+            echo "> Scorecard evaluates supply-chain security hygiene, dependency pinning, and workflow hardening." >> $GITHUB_STEP_SUMMARY
+          else
+            echo "### ⚠️ OpenSSF Scorecard Evaluation Failed" >> $GITHUB_STEP_SUMMARY
+            echo "" >> $GITHUB_STEP_SUMMARY
+            echo "Review job logs for details." >> $GITHUB_STEP_SUMMARY
+          fi

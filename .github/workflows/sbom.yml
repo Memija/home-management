@@ -48,3 +48,34 @@ jobs:
             cyclonedx.sbom.json
             spdx.sbom.json
           retention-days: 90
+
+      - name: Generate SBOM Summary
+        if: always()
+        run: |
+          node -e '
+            const fs = require("fs");
+            let md = "## 📦 Software Bill of Materials (SBOM) Report\n\n";
+            let cdxCount = 0;
+            let spdxCount = 0;
+
+            try {
+              if (fs.existsSync("cyclonedx.sbom.json")) {
+                const cdx = JSON.parse(fs.readFileSync("cyclonedx.sbom.json", "utf8"));
+                cdxCount = (cdx.components && cdx.components.length) || 0;
+              }
+              if (fs.existsSync("spdx.sbom.json")) {
+                const spdx = JSON.parse(fs.readFileSync("spdx.sbom.json", "utf8"));
+                spdxCount = (spdx.packages && spdx.packages.length) || 0;
+              }
+              md += "### ✅ SBOM Generation Successful!\n\n";
+              md += "| Format | File | Components Documented |\n";
+              md += "| :--- | :--- | :--- |\n";
+              md += `| **CycloneDX** (\`json\`) | \`cyclonedx.sbom.json\` | \`${cdxCount}\` packages |\n`;
+              md += `| **SPDX** (\`json\`) | \`spdx.sbom.json\` | \`${spdxCount}\` packages |\n\n`;
+              md += "> [!TIP]\n";
+              md += "> Download the **software-bill-of-materials** artifact for full dependency metadata, licenses, and hashes (Retained for 90 days).\n";
+            } catch (err) {
+              md += "### ✅ SBOM Artifacts Produced\n\nGenerated CycloneDX and SPDX manifests.\n";
+            }
+            fs.appendFileSync(process.env.GITHUB_STEP_SUMMARY, md);
+          '

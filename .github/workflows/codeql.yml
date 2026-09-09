@@ -50,3 +50,26 @@ jobs:
         uses: github/codeql-action/analyze@6bb031afdd8eb862ea3fc1848194185e076637e5 # v3.28.11
         with:
           category: '/language:${{matrix.language}}'
+
+      - name: Generate CodeQL Summary (${{ matrix.language }})
+        if: always()
+        run: |
+          echo "## 🔍 GitHub CodeQL Static Analysis (\`${{ matrix.language }}\`)" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          if [ "${{ job.status }}" = "success" ]; then
+            echo "### ✅ CodeQL Analysis Completed Successfully!" >> $GITHUB_STEP_SUMMARY
+            echo "" >> $GITHUB_STEP_SUMMARY
+            echo "| Metric | Value |" >> $GITHUB_STEP_SUMMARY
+            echo "| :--- | :--- |" >> $GITHUB_STEP_SUMMARY
+            echo "| **Target Language** | \`${{ matrix.language }}\` |" >> $GITHUB_STEP_SUMMARY
+            echo "| **Build Mode** | \`${{ matrix.build-mode }}\` |" >> $GITHUB_STEP_SUMMARY
+            echo "| **Category** | \`/language:${{ matrix.language }}\` |" >> $GITHUB_STEP_SUMMARY
+            echo "| **Status** | Passed — Queries Evaluated |" >> $GITHUB_STEP_SUMMARY
+            echo "" >> $GITHUB_STEP_SUMMARY
+            echo "> [!NOTE]" >> $GITHUB_STEP_SUMMARY
+            echo "> Detailed alerts and semantic query results are synced to the repository [Security Code Scanning](../../security/code-scanning) tab." >> $GITHUB_STEP_SUMMARY
+          else
+            echo "### ⚠️ CodeQL Analysis Failed or Interrupted" >> $GITHUB_STEP_SUMMARY
+            echo "" >> $GITHUB_STEP_SUMMARY
+            echo "Review job logs for query execution details." >> $GITHUB_STEP_SUMMARY
+          fi

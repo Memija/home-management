@@ -37,13 +37,33 @@ jobs:
         run: npm ci --legacy-peer-deps
 
       - name: Security Vulnerability Audit
+        id: audit
         run: npm run security:audit
 
       - name: Check Formatting
+        id: format
         run: npm run format:check
 
       - name: Lint Code
+        id: lint
         run: npm run lint
+
+      - name: Generate Linting & Standards Summary
+        if: always()
+        run: |
+          echo "## 🧹 Lint & Code Standards Summary" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          if [ "${{ job.status }}" = "success" ]; then
+            echo "### ✅ All Code Quality & Security Checks Passed!" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "### ⚠️ Code Quality or Standards Issues Detected" >> $GITHUB_STEP_SUMMARY
+          fi
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "| Check | Command | Status |" >> $GITHUB_STEP_SUMMARY
+          echo "| :--- | :--- | :--- |" >> $GITHUB_STEP_SUMMARY
+          echo "| **Dependency Security Audit** | \`npm run security:audit\` | ${{ steps.audit.outcome == 'success' && '✅ Passed' || (steps.audit.outcome == 'failure' && '❌ Failed' || '⏭️ Skipped') }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| **Prettier Formatting** | \`npm run format:check\` | ${{ steps.format.outcome == 'success' && '✅ Passed' || (steps.format.outcome == 'failure' && '❌ Failed' || '⏭️ Skipped') }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| **ESLint Code Quality** | \`npm run lint\` | ${{ steps.lint.outcome == 'success' && '✅ Passed' || (steps.lint.outcome == 'failure' && '❌ Failed' || '⏭️ Skipped') }} |" >> $GITHUB_STEP_SUMMARY
 
   test:
     name: Unit Tests & Coverage
@@ -88,6 +108,43 @@ jobs:
           path: coverage/home-management/
           retention-days: 1
 
+      - name: Generate Unit Tests & Coverage Summary
+        if: always()
+        run: |
+          node -e '
+            const fs = require("fs");
+            let md = "## 🧪 Unit Tests & Code Coverage Summary\n\n";
+            let totalLF = 0;
+            let totalLH = 0;
+            try {
+              if (fs.existsSync("coverage/home-management/lcov.info")) {
+                const content = fs.readFileSync("coverage/home-management/lcov.info", "utf8");
+                for (const line of content.split("\n")) {
+                  if (line.startsWith("LF:")) totalLF += parseInt(line.slice(3).trim(), 10) || 0;
+                  if (line.startsWith("LH:")) totalLH += parseInt(line.slice(3).trim(), 10) || 0;
+                }
+              }
+              const coveragePct = totalLF > 0 ? ((totalLH / totalLF) * 100).toFixed(2) + "%" : "N/A";
+              if ("${{ job.status }}" === "success") {
+                md += "### ✅ All Unit Tests Passed!\n\n";
+              } else {
+                md += "### ⚠️ Unit Tests or Coverage Check Failed\n\n";
+              }
+              md += "| Metric | Value |\n";
+              md += "| :--- | :--- |\n";
+              md += "| **Test Runner** | Vitest (`@angular/build:unit-test`) |\n";
+              md += `| **Lines Evaluated** | \`${totalLF.toLocaleString()}\` |\n`;
+              md += `| **Lines Covered** | \`${totalLH.toLocaleString()}\` |\n`;
+              md += `| **Line Coverage** | **${coveragePct}** |\n`;
+              md += "| **Coverage Artifact** | `coverage-report` (Retained 1 day) |\n\n";
+              md += "> [!TIP]\n";
+              md += "> Coverage telemetry (`lcov.info` and `sonar-report.xml`) is passed downstream to SonarCloud.\n";
+            } catch (err) {
+              md += "| Metric | Status |\n| :--- | :--- |\n| **Unit Tests** | ${{ job.status == "success" && "✅ Passed" || "❌ Failed" }} |\n";
+            }
+            fs.appendFileSync(process.env.GITHUB_STEP_SUMMARY, md);
+          '
+
   sonarcloud:
     name: SonarCloud Analysis
     needs: [test]
@@ -126,6 +183,30 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+
+      - name: Generate SonarCloud Scan Summary
+        if: always()
+        run: |
+          echo "## ☁️ SonarCloud Static Code Analysis" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          if [ "${{ job.status }}" = "success" ]; then
+            echo "### ✅ SonarCloud Scan Completed Successfully!" >> $GITHUB_STEP_SUMMARY
+            echo "" >> $GITHUB_STEP_SUMMARY
+            echo "| Metric | Value |" >> $GITHUB_STEP_SUMMARY
+            echo "| :--- | :--- |" >> $GITHUB_STEP_SUMMARY
+            echo "| **Project Key** | \`Memija_home-management\` |" >> $GITHUB_STEP_SUMMARY
+            echo "| **Organization** | \`memija\` |" >> $GITHUB_STEP_SUMMARY
+            echo "| **Coverage Ingestion** | \`coverage/home-management/lcov.info\` |" >> $GITHUB_STEP_SUMMARY
+            echo "| **Test Execution Report** | \`coverage/home-management/sonar-report.xml\` |" >> $GITHUB_STEP_SUMMARY
+            echo "| **Quality Gate Status** | [View SonarCloud Dashboard](https://sonarcloud.io/dashboard?id=Memija_home-management) |" >> $GITHUB_STEP_SUMMARY
+            echo "" >> $GITHUB_STEP_SUMMARY
+            echo "> [!NOTE]" >> $GITHUB_STEP_SUMMARY
+            echo "> Quality gate conditions analyze new code coverage, maintainability rating (A), reliability rating (A), and zero security vulnerabilities." >> $GITHUB_STEP_SUMMARY
+          else
+            echo "### ⚠️ SonarCloud Scan Failed" >> $GITHUB_STEP_SUMMARY
+            echo "" >> $GITHUB_STEP_SUMMARY
+            echo "Review job logs and ensure \`SONAR_TOKEN\` is properly configured." >> $GITHUB_STEP_SUMMARY
+          fi
 
   build:
     name: Build Application
@@ -170,3 +251,25 @@ jobs:
           path: dist/home-management/
           retention-days: 1
 
+      - name: Generate Application Build Summary
+        if: always()
+        run: |
+          echo "## 🏗️ Production Application Build" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          if [ "${{ job.status }}" = "success" ]; then
+            echo "### ✅ Build Succeeded!" >> $GITHUB_STEP_SUMMARY
+            echo "" >> $GITHUB_STEP_SUMMARY
+            echo "| Metric | Value |" >> $GITHUB_STEP_SUMMARY
+            echo "| :--- | :--- |" >> $GITHUB_STEP_SUMMARY
+            echo "| **Target Architecture** | Angular SSR + Client Hydration |" >> $GITHUB_STEP_SUMMARY
+            echo "| **Output Directory** | \`dist/home-management/\` |" >> $GITHUB_STEP_SUMMARY
+            echo "| **Artifact Name** | \`dist-artifact\` |" >> $GITHUB_STEP_SUMMARY
+            echo "| **Status** | Production Ready |" >> $GITHUB_STEP_SUMMARY
+            echo "" >> $GITHUB_STEP_SUMMARY
+            echo "> [!NOTE]" >> $GITHUB_STEP_SUMMARY
+            echo "> Artifact contains compiled browser bundle and server bundle ready for deployment." >> $GITHUB_STEP_SUMMARY
+          else
+            echo "### ⚠️ Application Build Failed" >> $GITHUB_STEP_SUMMARY
+            echo "" >> $GITHUB_STEP_SUMMARY
+            echo "Check build logs for compilation or bundling errors." >> $GITHUB_STEP_SUMMARY
+          fi

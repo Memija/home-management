@@ -450,13 +450,21 @@ async function runAudit() {
     await setupDemoMode(page, demoData);
     console.log('✅ Demo Mode activated with complete records, settings, and family.\n');
 
+    const flowTitle = ONLY_DESKTOP
+      ? `Home Management - Desktop ${ONLY_LIGHT ? 'Light' : ONLY_DARK ? 'Dark' : ''} User Flows`
+      : ONLY_MOBILE
+        ? `Home Management - Mobile ${ONLY_LIGHT ? 'Light' : ONLY_DARK ? 'Dark' : ''} User Flows`
+        : 'Home Management - Desktop/Mobile & All Modals Audit';
+
+    const initialConfig = ONLY_MOBILE ? MOBILE_CONFIG : DESKTOP_CONFIG;
+
     const flow = await startFlow(page, {
-      name: 'Home Management - Desktop/Mobile & All Modals Audit',
+      name: flowTitle,
       config: {
         extends: 'lighthouse:default',
         settings: {
           onlyCategories: ['accessibility', 'best-practices', 'seo'],
-          ...DESKTOP_CONFIG,
+          ...initialConfig,
         },
       },
     });
@@ -494,6 +502,25 @@ async function runAudit() {
     const reportPath = path.join(OUTPUT_DIR, 'lighthouse-userflow-report.html');
     fs.writeFileSync(reportPath, reportHtml, 'utf8');
 
+    const suiteTag =
+      ONLY_DESKTOP && ONLY_LIGHT
+        ? '-desktop-light'
+        : ONLY_DESKTOP && ONLY_DARK
+          ? '-desktop-dark'
+          : ONLY_MOBILE && ONLY_LIGHT
+            ? '-mobile-light'
+            : ONLY_MOBILE && ONLY_DARK
+              ? '-mobile-dark'
+              : '';
+
+    if (suiteTag) {
+      fs.writeFileSync(
+        path.join(OUTPUT_DIR, `lighthouse-userflow${suiteTag}-report.html`),
+        reportHtml,
+        'utf8',
+      );
+    }
+
     const flowResult = await flow.createFlowResult();
     const summary = flowResult.steps.map((step) => {
       const isMob = step.name.includes('📱') || step.name.toLowerCase().includes('mobile');
@@ -515,6 +542,13 @@ async function runAudit() {
 
     const summaryPath = path.join(OUTPUT_DIR, 'lighthouse-userflow-summary.json');
     fs.writeFileSync(summaryPath, JSON.stringify(summary, null, 2), 'utf8');
+    if (suiteTag) {
+      fs.writeFileSync(
+        path.join(OUTPUT_DIR, `lighthouse-userflow${suiteTag}-summary.json`),
+        JSON.stringify(summary, null, 2),
+        'utf8',
+      );
+    }
 
     console.log('\n================================================================');
     console.log('🎉 AUDIT COMPLETE!');

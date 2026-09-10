@@ -171,9 +171,25 @@ jobs:
           '
 
   flows:
-    name: Lighthouse User Flows
+    name: Lighthouse Flows (${{ matrix.title }})
     needs: [build]
     runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - platform: desktop
+            theme: light
+            title: Desktop Light
+          - platform: desktop
+            theme: dark
+            title: Desktop Dark
+          - platform: mobile
+            theme: light
+            title: Mobile Light
+          - platform: mobile
+            theme: dark
+            title: Mobile Dark
     permissions:
       contents: read
     steps:
@@ -224,34 +240,40 @@ jobs:
             wait();
           '
 
-      - name: Run Lighthouse User Journey Flows
-        run: npm run test:lighthouse:flows -- --quick
+      - name: Run Lighthouse User Journey Flows (${{ matrix.title }})
+        run: npm run test:lighthouse:flows:${{ matrix.platform }}:${{ matrix.theme }}
         env:
           TARGET_URL: http://localhost:4000
           HEADLESS: true
 
-      - name: Upload Lighthouse User Flow Report
+      - name: Upload Lighthouse User Flow Report (${{ matrix.title }})
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
         if: always()
         with:
-          name: lighthouse-userflow-report
+          name: lighthouse-userflow-report-${{ matrix.platform }}-${{ matrix.theme }}
           path: .lighthouseci/lighthouse-userflow*
           retention-days: 7
           if-no-files-found: ignore
 
-      - name: Generate Lighthouse User Flow Summary
+      - name: Generate Lighthouse User Flow Summary (${{ matrix.title }})
         if: always()
         env:
           JOB_STATUS: ${{ job.status }}
+          PLATFORM: ${{ matrix.platform }}
+          THEME: ${{ matrix.theme }}
+          TITLE: ${{ matrix.title }}
         run: |
           node -e '
             const fs = require("fs");
             const jobStatus = process.env.JOB_STATUS;
-            let md = "## 🔄 Lighthouse Interactive User Flows\n\n";
+            const title = process.env.TITLE || "User Flows";
+            const platform = process.env.PLATFORM || "desktop";
+            const theme = process.env.THEME || "light";
+            let md = `## 🔄 Lighthouse Interactive User Flows (\`${title}\`)\n\n`;
             try {
               if (fs.existsSync(".lighthouseci/lighthouse-userflow-summary.json")) {
                 const summary = JSON.parse(fs.readFileSync(".lighthouseci/lighthouse-userflow-summary.json", "utf8"));
-                md += "### ✅ User Journey Flows Completed Successfully!\n\n";
+                md += `### ✅ User Journey Flows (${title}) Completed Successfully!\n\n`;
                 md += "| Step / Interaction | Platform | Theme | Accessibility | Best Practices | SEO |\n";
                 md += "| :--- | :--- | :--- | :--- | :--- | :--- |\n";
                 for (const row of summary) {
@@ -262,7 +284,7 @@ jobs:
                   md += `| ${step} | ${row.Platform || "N/A"} | ${row.Theme || "N/A"} | ${a11y} | ${bp} | ${seo} |\n`;
                 }
                 md += "\n> [!TIP]\n";
-                md += "> Full interactive flow timeline trace and HTML report are saved in the `lighthouse-userflow-report` artifact.\n";
+                md += `> Full interactive flow timeline trace and HTML report are saved in the \`lighthouse-userflow-report-${platform}-${theme}\` artifact.\n`;
               } else {
                 const status = jobStatus === "success" ? "✅ Flows Passed" : "⚠️ Flows Completed or Failed";
                 md += "| Metric | Status |\n";

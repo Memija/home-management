@@ -169,3 +169,111 @@ jobs:
             }
             fs.appendFileSync(process.env.GITHUB_STEP_SUMMARY, md);
           '
+
+  flows:
+    name: Lighthouse User Flows
+    needs: [build]
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - name: Harden Runner
+        uses: step-security/harden-runner@e14015d583714f6e62063499dc959a02595150a1 # v2.21.1
+        with:
+          egress-policy: audit
+
+      - name: Checkout Code
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          persist-credentials: false
+
+      - name: Setup Node.js
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
+        with:
+          node-version: 20
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci --legacy-peer-deps
+
+      - name: Download Build Artifact
+        uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4.3.0
+        with:
+          name: lighthouse-dist-artifact
+          path: dist/home-management/
+
+      - name: Start Express SSR Server
+        run: |
+          node dist/home-management/server/server.mjs &
+          node -e '
+            const start = Date.now();
+            async function wait() {
+              while (Date.now() - start < 30000) {
+                try {
+                  const res = await fetch("http://localhost:4000/");
+                  if (res.ok) {
+                    console.log("SSR server is ready on http://localhost:4000");
+                    process.exit(0);
+                  }
+                } catch {}
+                await new Promise(r => setTimeout(r, 500));
+              }
+              console.error("SSR server timed out after 30s");
+              process.exit(1);
+            }
+            wait();
+          '
+
+      - name: Run Lighthouse User Journey Flows
+        run: npm run test:lighthouse:flows -- --quick
+        env:
+          TARGET_URL: http://localhost:4000
+          HEADLESS: true
+
+      - name: Upload Lighthouse User Flow Report
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        if: always()
+        with:
+          name: lighthouse-userflow-report
+          path: .lighthouseci/lighthouse-userflow*
+          retention-days: 7
+          if-no-files-found: ignore
+
+      - name: Generate Lighthouse User Flow Summary
+        if: always()
+        env:
+          JOB_STATUS: ${{ job.status }}
+        run: |
+          node -e '
+            const fs = require("fs");
+            const jobStatus = process.env.JOB_STATUS;
+            let md = "## 🔄 Lighthouse Interactive User Flows\n\n";
+            try {
+              if (fs.existsSync(".lighthouseci/lighthouse-userflow-summary.json")) {
+                const summary = JSON.parse(fs.readFileSync(".lighthouseci/lighthouse-userflow-summary.json", "utf8"));
+                md += "### ✅ User Journey Flows Completed Successfully!\n\n";
+                md += "| Step / Interaction | Platform | Theme | Accessibility | Best Practices | SEO |\n";
+                md += "| :--- | :--- | :--- | :--- | :--- | :--- |\n";
+                for (const row of summary) {
+                  const step = (row.Step || "Interaction").replace(/\|/g, "\\|");
+                  const a11y = row.Accessibility != null ? row.Accessibility + "%" : "N/A";
+                  const bp = row["Best Practices"] != null ? row["Best Practices"] + "%" : "N/A";
+                  const seo = row.SEO != null ? row.SEO + "%" : "N/A";
+                  md += `| ${step} | ${row.Platform || "N/A"} | ${row.Theme || "N/A"} | ${a11y} | ${bp} | ${seo} |\n`;
+                }
+                md += "\n> [!TIP]\n";
+                md += "> Full interactive flow timeline trace and HTML report are saved in the `lighthouse-userflow-report` artifact.\n";
+              } else {
+                const status = jobStatus === "success" ? "✅ Flows Passed" : "⚠️ Flows Completed or Failed";
+                md += "| Metric | Status |\n";
+                md += "| :--- | :--- |\n";
+                md += "| **Flow Execution** | " + status + " |\n";
+              }
+            } catch (err) {
+              const status = jobStatus === "success" ? "✅ Flows Passed" : "⚠️ Flows Failed";
+              md += "| Metric | Status |\n";
+              md += "| :--- | :--- |\n";
+              md += "| **Flow Execution** | " + status + " |\n";
+            }
+            fs.appendFileSync(process.env.GITHUB_STEP_SUMMARY, md);
+          '

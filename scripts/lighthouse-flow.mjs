@@ -157,15 +157,19 @@ async function auditPage(flow, page, { url, name, isMobile = false }) {
  * 4. Captures Lighthouse flow snapshot
  * 5. Closes modal safely via close selector or Escape key
  */
-async function auditModal(flow, page, {
-  name,
-  isMobile = false,
-  openAction,
-  triggerSelector,
-  modalSelector,
-  closeSelector,
-  beforeSnapshot = null,
-}) {
+async function auditModal(
+  flow,
+  page,
+  {
+    name,
+    isMobile = false,
+    openAction,
+    triggerSelector,
+    modalSelector,
+    closeSelector,
+    beforeSnapshot = null,
+  },
+) {
   console.log(`   👉 Auditing Modal: ${name}...`);
   try {
     if (typeof openAction === 'function') {
@@ -234,9 +238,11 @@ async function auditModal(flow, page, {
 async function auditSuite(flow, page, { isMobile, theme, suiteNum, totalSuites, isQuick }) {
   const platformName = isMobile ? 'Mobile' : 'Desktop';
   const themeName = theme === 'dark' ? 'Dark' : 'Light';
-  const icon = isMobile ? (theme === 'dark' ? '📱🌙' : '📱☀️') : (theme === 'dark' ? '💻🌙' : '💻☀️');
+  const icon = isMobile ? (theme === 'dark' ? '📱🌙' : '📱☀️') : theme === 'dark' ? '💻🌙' : '💻☀️';
 
-  console.log(`\n${icon} [${suiteNum}/${totalSuites}] Auditing ${platformName} - ${themeName} Theme & All Modals...`);
+  console.log(
+    `\n${icon} [${suiteNum}/${totalSuites}] Auditing ${platformName} - ${themeName} Theme & All Modals...`,
+  );
 
   await setDeviceViewport(page, isMobile);
   await applyTheme(page, theme);
@@ -419,13 +425,14 @@ async function runAudit() {
     IS_HEADLESS ? '--headless=new' : '',
     '--disable-gpu',
     '--no-sandbox',
+    '--disable-dev-shm-usage',
     '--window-size=1366,960',
   ].filter(Boolean);
 
-  const chrome = await chromeLauncher.launch({ chromeFlags });
-
+  let chrome;
   let browser;
   try {
+    chrome = await chromeLauncher.launch({ chromeFlags });
     const versionResp = await fetch(`http://127.0.0.1:${chrome.port}/json/version`);
     const versionData = await versionResp.json();
 
@@ -518,12 +525,20 @@ async function runAudit() {
     console.table(summary);
   } catch (err) {
     console.error('❌ Audit encountered an error:', err);
+    process.exitCode = 1;
   } finally {
     if (browser) {
       try {
         await browser.close();
       } catch {
         // Ignore close error
+      }
+    }
+    if (chrome) {
+      try {
+        await chrome.kill();
+      } catch {
+        // Ignore kill error
       }
     }
   }

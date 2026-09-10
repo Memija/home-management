@@ -261,6 +261,9 @@ Navigate to **Water**, **Electricity**, or **Heating** from the dashboard:
 |                  | `npm run security:zizmor`         | Audits GitHub Actions workflows with Zizmor                                          |
 |                  | `npm run security:dast`           | Dynamic application security testing targeting runtime endpoints (OWASP ZAP)         |
 |                  | `npm run audit:licenses`          | Validates dependency licenses against approved open-source list                      |
+| **Deployment**   | `npm run deploy`                  | Builds the project and deploys hosting and Firestore rules to Firebase               |
+|                  | `npm run deploy:hosting`          | Builds the project and deploys only Firebase Hosting                                 |
+|                  | `npm run deploy:firestore`        | Deploys Cloud Firestore security rules to Firebase                                   |
 | **Pre-Flight**   | `npm run validate`                | Runs formatting, linting, secret checks, license audit, build, tests, and Lighthouse |
 
 ---

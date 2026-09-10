@@ -53,17 +53,21 @@ jobs:
 
       - name: Generate CodeQL Summary (${{ matrix.language }})
         if: always()
+        env:
+          JOB_STATUS: ${{ job.status }}
+          LANGUAGE: ${{ matrix.language }}
+          BUILD_MODE: ${{ matrix.build-mode }}
         run: |
-          echo "## 🔍 GitHub CodeQL Static Analysis (\`${{ matrix.language }}\`)" >> $GITHUB_STEP_SUMMARY
+          echo "## 🔍 GitHub CodeQL Static Analysis (\`$LANGUAGE\`)" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
-          if [ "${{ job.status }}" = "success" ]; then
+          if [ "$JOB_STATUS" = "success" ]; then
             echo "### ✅ CodeQL Analysis Completed Successfully!" >> $GITHUB_STEP_SUMMARY
             echo "" >> $GITHUB_STEP_SUMMARY
             echo "| Metric | Value |" >> $GITHUB_STEP_SUMMARY
             echo "| :--- | :--- |" >> $GITHUB_STEP_SUMMARY
-            echo "| **Target Language** | \`${{ matrix.language }}\` |" >> $GITHUB_STEP_SUMMARY
-            echo "| **Build Mode** | \`${{ matrix.build-mode }}\` |" >> $GITHUB_STEP_SUMMARY
-            echo "| **Category** | \`/language:${{ matrix.language }}\` |" >> $GITHUB_STEP_SUMMARY
+            echo "| **Target Language** | \`$LANGUAGE\` |" >> $GITHUB_STEP_SUMMARY
+            echo "| **Build Mode** | \`$BUILD_MODE\` |" >> $GITHUB_STEP_SUMMARY
+            echo "| **Category** | \`/language:$LANGUAGE\` |" >> $GITHUB_STEP_SUMMARY
             echo "| **Status** | Passed — Queries Evaluated |" >> $GITHUB_STEP_SUMMARY
             echo "" >> $GITHUB_STEP_SUMMARY
             echo "> [!NOTE]" >> $GITHUB_STEP_SUMMARY

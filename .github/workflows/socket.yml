@@ -49,10 +49,12 @@ jobs:
 
       - name: Generate Socket Security Summary
         if: always()
+        env:
+          JOB_STATUS: ${{ job.status }}
         run: |
           echo "## 🛡️ Socket.dev Supply Chain Security" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
-          if [ "${{ job.status }}" = "success" ]; then
+          if [ "$JOB_STATUS" = "success" ]; then
             echo "### ✅ All Clear — No Supply Chain Threats Detected!" >> $GITHUB_STEP_SUMMARY
             echo "" >> $GITHUB_STEP_SUMMARY
             echo "| Metric | Status |" >> $GITHUB_STEP_SUMMARY

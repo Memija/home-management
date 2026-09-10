@@ -116,7 +116,9 @@ jobs:
           path: dist/home-management/
 
       - name: Run Lighthouse (${{ matrix.preset }})
-        run: npm run test:lighthouse:${{ matrix.preset }}
+        env:
+          PRESET: ${{ matrix.preset }}
+        run: npm run test:lighthouse:$PRESET
 
       - name: Upload Lighthouse Report (${{ matrix.preset }})
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
@@ -241,10 +243,12 @@ jobs:
           '
 
       - name: Run Lighthouse User Journey Flows (${{ matrix.title }})
-        run: npm run test:lighthouse:flows:${{ matrix.platform }}:${{ matrix.theme }}
         env:
           TARGET_URL: http://localhost:4000
           HEADLESS: true
+          PLATFORM: ${{ matrix.platform }}
+          THEME: ${{ matrix.theme }}
+        run: npm run test:lighthouse:flows:$PLATFORM:$THEME
 
       - name: Upload Lighthouse User Flow Report (${{ matrix.title }})
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2

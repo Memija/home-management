@@ -249,8 +249,13 @@ Navigate to **Water**, **Electricity**, or **Heating** from the dashboard:
 |                  | `npm run test:lighthouse:mobile`        | Runs Lighthouse CI audit specifically for mobile preset                         |
 |                  | `npm run test:lighthouse:desktop`       | Runs Lighthouse CI audit specifically for desktop preset                        |
 |                  | `npm run test:lighthouse:flows`         | Runs automated Lighthouse user-journey interaction flows (all suites)           |
+|                  | `npm run test:lighthouse:flows:quick`   | Executes quick smoke audit of user journeys with single iteration               |
 |                  | `npm run test:lighthouse:flows:desktop` | Audits Desktop user journey flow & modals                                       |
+|                  | `npm run test:lighthouse:flows:desktop:light` | Audits Desktop user journeys under Light theme                            |
+|                  | `npm run test:lighthouse:flows:desktop:dark`  | Audits Desktop user journeys under Dark theme                             |
 |                  | `npm run test:lighthouse:flows:mobile`  | Audits Mobile user journey flow & modals                                        |
+|                  | `npm run test:lighthouse:flows:mobile:light`  | Audits Mobile user journeys under Light theme                             |
+|                  | `npm run test:lighthouse:flows:mobile:dark`   | Audits Mobile user journeys under Dark theme                              |
 | **Security**     | `npm run security:all`                  | Executes full local security scan suite (Trivy, OSV, Gitleaks, Zizmor, SBOM)    |
 |                  | `npm run security:audit`                | Audits dependencies for critical vulnerabilities (`npm audit`)                  |
 |                  | `npm run security:secrets`              | Scans git staged changes for accidentally committed credentials & keys          |

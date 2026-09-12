@@ -24,7 +24,9 @@ app.use((_req, res, next) => {
   next();
 });
 
-const angularApp = new AngularNodeAppEngine();
+const angularApp = new AngularNodeAppEngine({
+  allowedHosts: ['localhost', '127.0.0.1'],
+});
 
 /**
  * Example Express Rest API endpoints can be defined here.

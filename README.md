@@ -226,50 +226,44 @@ Navigate to **Water**, **Electricity**, or **Heating** from the dashboard:
 
    ```bash
    npm run build
-   npm run serve:ssr:home-management
+   npm run serve:ssr
    ```
 
 ---
 
 ## 🧪 Available Scripts
 
-| Category         | Script                                        | Description                                                                          |
-| :--------------- | :-------------------------------------------- | :----------------------------------------------------------------------------------- |
-| **Development**  | `npm start`                                   | Launches dev server with automatic Firebase config pre-check                         |
-|                  | `npm run build`                               | Builds SSR application bundle and generates client-side fallback                     |
-|                  | `npm run watch`                               | Builds application in watch mode for development                                     |
-|                  | `npm run serve:ssr`                           | Serves SSR production build with Express server (`serve:ssr:home-management`)        |
-|                  | `npm run config:generate`                     | Generates Firebase runtime configuration from environment variables                  |
-| **Testing**      | `npm test`                                    | Executes unit tests via Vitest with jsdom                                            |
-|                  | `npm run test:coverage`                       | Runs Vitest tests with V8 coverage reporting (`lcov` and text)                       |
-| **Code Quality** | `npm run lint`                                | Lints TypeScript and HTML via `angular-eslint` & `eslint`                            |
-|                  | `npm run format`                              | Auto-formats code with Prettier                                                      |
-|                  | `npm run format:check`                        | Verifies formatting without modifying files                                          |
-|                  | `npm run sonar`                               | Runs SonarQube / SonarCloud static analysis scanner                                  |
-| **Performance**  | `npm run test:lighthouse`                     | Executes Lighthouse CI audits for mobile and desktop                                 |
-|                  | `npm run test:lighthouse:mobile`              | Runs Lighthouse CI audit specifically for mobile preset                              |
-|                  | `npm run test:lighthouse:desktop`             | Runs Lighthouse CI audit specifically for desktop preset                             |
-|                  | `npm run test:lighthouse:flows`               | Runs automated Lighthouse user-journey interaction flows (all 4 suites)              |
-|                  | `npm run test:lighthouse:flows:quick`         | Runs fast smoke-test user flows (Desktop Light + Mobile Dark)                        |
-|                  | `npm run test:lighthouse:flows:desktop:light` | Audits Desktop Light user journey flow & all 10 modals                               |
-|                  | `npm run test:lighthouse:flows:desktop:dark`  | Audits Desktop Dark user journey flow & all 10 modals                                |
-|                  | `npm run test:lighthouse:flows:mobile:light`  | Audits Mobile Light user journey flow & all 10 modals                                |
-|                  | `npm run test:lighthouse:flows:mobile:dark`   | Audits Mobile Dark user journey flow & all 10 modals                                 |
-| **Security**     | `npm run security:all`                        | Executes full security scan suite (Trivy, OSV, Gitleaks, Zizmor, DAST)               |
-|                  | `npm run security:audit`                      | Audits dependencies for critical vulnerabilities (`npm audit`)                       |
-|                  | `npm run security:secrets`                    | Scans codebase for leaked keys, tokens, and secrets                                  |
-|                  | `npm run security:socket`                     | Scans dependencies with Socket Security for supply-chain risks                       |
-|                  | `npm run security:sbom`                       | Generates a CycloneDX Software Bill of Materials (`cyclonedx.sbom.json`)             |
-|                  | `npm run security:trivy`                      | Scans repository filesystem and dependencies for known CVEs via Aqua Trivy           |
-|                  | `npm run security:osv`                        | Identifies open-source vulnerabilities via Google OSV-Scanner                        |
-|                  | `npm run security:gitleaks`                   | Scans git history and workspace for secrets with Gitleaks                            |
-|                  | `npm run security:zizmor`                     | Audits GitHub Actions workflows with Zizmor                                          |
-|                  | `npm run security:dast`                       | Dynamic application security testing targeting runtime endpoints (OWASP ZAP)         |
-|                  | `npm run audit:licenses`                      | Validates dependency licenses against approved open-source list                      |
-| **Deployment**   | `npm run deploy`                              | Builds the project and deploys hosting and Firestore rules to Firebase               |
-|                  | `npm run deploy:hosting`                      | Builds the project and deploys only Firebase Hosting                                 |
-|                  | `npm run deploy:firestore`                    | Deploys Cloud Firestore security rules to Firebase                                   |
-| **Pre-Flight**   | `npm run validate`                            | Runs formatting, linting, secret checks, license audit, build, tests, and Lighthouse |
+| Category         | Script                                  | Description                                                                     |
+| :--------------- | :-------------------------------------- | :------------------------------------------------------------------------------ |
+| **Development**  | `npm start`                             | Launches local development server                                               |
+|                  | `npm run watch`                         | Builds application in watch mode for development                                |
+|                  | `npm run build`                         | Builds SSR application bundle and generates client-side fallback                |
+|                  | `npm run serve:ssr`                     | Serves SSR production build with Node Express server                            |
+|                  | `npm run config:generate`               | Generates Firebase runtime configuration from environment variables             |
+| **Code Quality** | `npm run lint`                          | Lints TypeScript and HTML via `angular-eslint` & `eslint`                       |
+|                  | `npm run format`                        | Auto-formats code with Prettier                                                 |
+|                  | `npm run format:check`                  | Verifies formatting without modifying files                                     |
+| **Testing**      | `npm test`                              | Executes unit tests via Vitest with jsdom                                       |
+|                  | `npm run test:coverage`                 | Runs Vitest tests with V8 coverage reporting (`lcov` and text)                  |
+| **Performance**  | `npm run test:lighthouse`               | Executes Lighthouse CI audits for mobile and desktop presets                    |
+|                  | `npm run test:lighthouse:mobile`        | Runs Lighthouse CI audit specifically for mobile preset                         |
+|                  | `npm run test:lighthouse:desktop`       | Runs Lighthouse CI audit specifically for desktop preset                        |
+|                  | `npm run test:lighthouse:flows`         | Runs automated Lighthouse user-journey interaction flows (all suites)           |
+|                  | `npm run test:lighthouse:flows:desktop` | Audits Desktop user journey flow & modals                                       |
+|                  | `npm run test:lighthouse:flows:mobile`  | Audits Mobile user journey flow & modals                                        |
+| **Security**     | `npm run security:all`                  | Executes full local security scan suite (Trivy, OSV, Gitleaks, Zizmor, SBOM)    |
+|                  | `npm run security:audit`                | Audits dependencies for critical vulnerabilities (`npm audit`)                  |
+|                  | `npm run security:secrets`              | Scans git staged changes for accidentally committed credentials & keys          |
+|                  | `npm run security:gitleaks`             | Scans git history and workspace for secrets with Gitleaks                       |
+|                  | `npm run security:osv`                  | Identifies open-source vulnerabilities via Google OSV-Scanner                   |
+|                  | `npm run security:sbom`                 | Generates a CycloneDX Software Bill of Materials (`cyclonedx.sbom.json`)        |
+|                  | `npm run security:trivy`                | Scans repository filesystem and dependencies for known CVEs via Aqua Trivy      |
+|                  | `npm run security:zizmor`               | Audits GitHub Actions workflows with Zizmor                                     |
+|                  | `npm run audit:licenses`                | Validates dependency licenses against approved open-source list                 |
+| **Deployment**   | `npm run deploy`                        | Builds the project and deploys hosting and Firestore rules to Firebase          |
+|                  | `npm run deploy:hosting`                | Builds the project and deploys only Firebase Hosting                            |
+|                  | `npm run deploy:firestore`              | Deploys Cloud Firestore security rules to Firebase                              |
+| **Pre-Flight**   | `npm run validate`                      | Runs formatting, linting, Gitleaks, license audit, build, tests, and Lighthouse |
 
 ---
 

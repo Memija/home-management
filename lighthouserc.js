@@ -14,7 +14,7 @@ module.exports = {
   ci: {
     collect: {
       ...(chromePath ? { chromePath } : {}),
-      startServerCommand: 'npm run serve:ssr:home-management',
+      startServerCommand: 'npm run serve:ssr',
       startServerReadyPattern: 'Node Express server listening',
       startServerReadyTimeout: 30000,
       url: [

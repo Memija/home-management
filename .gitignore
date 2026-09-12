@@ -61,3 +61,6 @@ src/app/config/firebase.config.ts
 .env
 .env.*
 !.env.example
+
+# Security & audit artifacts
+cyclonedx.sbom.json

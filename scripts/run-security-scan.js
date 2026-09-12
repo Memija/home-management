@@ -5,7 +5,52 @@
  */
 
 const { execSync, spawnSync } = require('child_process');
+const fs = require('fs');
 const path = require('path');
+
+/**
+ * Ensures Windows PATH includes WinGet package directories and User PATH additions
+ * so newly installed CLI tools are immediately recognized without requiring a shell/IDE restart.
+ */
+function refreshWindowsPath() {
+  if (process.platform !== 'win32') return;
+
+  const localAppData = process.env.LOCALAPPDATA;
+  if (!localAppData) return;
+
+  const wingetPackagesDir = path.join(localAppData, 'Microsoft', 'WinGet', 'Packages');
+  const wingetLinksDir = path.join(localAppData, 'Microsoft', 'WinGet', 'Links');
+
+  const extraDirs = [];
+  if (fs.existsSync(wingetLinksDir)) {
+    extraDirs.push(wingetLinksDir);
+  }
+
+  if (fs.existsSync(wingetPackagesDir)) {
+    try {
+      const subdirs = fs.readdirSync(wingetPackagesDir);
+      for (const subdir of subdirs) {
+        extraDirs.push(path.join(wingetPackagesDir, subdir));
+      }
+    } catch {
+      // ignore
+    }
+  }
+
+  const currentPathParts = (process.env.PATH || '').split(';').map((p) => p.trim());
+  const pathSet = new Set(currentPathParts.map((p) => p.toLowerCase()));
+
+  for (const dir of extraDirs) {
+    if (!pathSet.has(dir.toLowerCase())) {
+      currentPathParts.push(dir);
+      pathSet.add(dir.toLowerCase());
+    }
+  }
+
+  process.env.PATH = currentPathParts.join(';');
+}
+
+refreshWindowsPath();
 
 /**
  * Checks if a command/executable exists in PATH.
@@ -15,7 +60,7 @@ const path = require('path');
 function checkCommandExists(cmd) {
   try {
     const isWindows = process.platform === 'win32';
-    const checkCmd = isWindows ? `where ${cmd}` : `which ${cmd}`;
+    const checkCmd = isWindows ? `where.exe ${cmd}` : `which ${cmd}`;
     execSync(checkCmd, { stdio: 'ignore' });
     return true;
   } catch {
@@ -37,14 +82,63 @@ function isDockerAvailable() {
 }
 
 /**
+ * Checks if Socket API authentication is configured with valid scan permissions.
+ * @returns {{ authenticated: boolean, isDemoToken: boolean }}
+ */
+function checkSocketAuth() {
+  if (process.env.SOCKET_CLI_API_TOKEN || process.env.SOCKET_SECURITY_API_KEY) {
+    return { authenticated: true, isDemoToken: false };
+  }
+
+  const os = require('os');
+  const candidates = [
+    process.env.LOCALAPPDATA &&
+      path.join(process.env.LOCALAPPDATA, 'socket', 'settings', 'config.json'),
+    path.join(os.homedir(), '.config', 'socket', 'settings', 'config.json'),
+    path.join(os.homedir(), '.socket', 'settings', 'config.json'),
+  ].filter(Boolean);
+
+  for (const p of candidates) {
+    if (fs.existsSync(p)) {
+      try {
+        const raw = fs.readFileSync(p, 'utf8').trim();
+        let jsonStr = raw;
+        try {
+          const decoded = Buffer.from(raw, 'base64').toString('utf8');
+          if (decoded.includes('apiToken')) jsonStr = decoded;
+        } catch {
+          // ignore
+        }
+        const parsed = JSON.parse(jsonStr);
+        if (parsed.apiToken && parsed.apiToken !== 'undefined') {
+          if (parsed.defaultOrg === 'SocketDemo') {
+            return { authenticated: false, isDemoToken: true };
+          }
+          return { authenticated: true, isDemoToken: false };
+        }
+      } catch {
+        // ignore
+      }
+    }
+  }
+
+  return { authenticated: false, isDemoToken: false };
+}
+
+/**
  * Resolves execution plan for a specified security tool.
- * @param {string} tool - 'trivy' | 'osv' | 'gitleaks' | 'zizmor' | 'dast' | 'codeql'
+ * @param {string} tool - 'trivy' | 'osv' | 'gitleaks' | 'zizmor' | 'dast' | 'codeql' | 'socket'
  * @param {object} [envChecks] - Optional dependency injection for testing
  * @returns {{ type: 'cli' | 'docker' | 'fallback' | 'missing', cmd?: string, instructions?: string, message?: string }}
  */
 function resolveRunner(tool, envChecks = {}) {
   const hasCmd = envChecks.hasCmd ?? checkCommandExists;
   const hasDocker = envChecks.hasDocker ?? isDockerAvailable;
+  const checkSocket = envChecks.hasSocketAuth ?? checkSocketAuth;
+  const socketStatus = typeof checkSocket === 'function' ? checkSocket() : checkSocket;
+  const isSocketAuth =
+    typeof socketStatus === 'boolean' ? socketStatus : Boolean(socketStatus?.authenticated);
+  const isDemoToken = typeof socketStatus === 'object' && Boolean(socketStatus?.isDemoToken);
   const cwd = envChecks.cwd ?? process.cwd();
   const normalizedCwd = cwd.replace(/\\/g, '/');
 
@@ -162,10 +256,41 @@ function resolveRunner(tool, envChecks = {}) {
         ].join('\n'),
       };
 
+    case 'socket':
+      if (isSocketAuth) {
+        const cmd = hasCmd('socket')
+          ? 'socket scan create .'
+          : 'npx -y @socketsecurity/cli scan create .';
+        return {
+          type: 'cli',
+          cmd,
+        };
+      }
+      return {
+        type: 'missing',
+        instructions: isDemoToken
+          ? [
+              'Socket.dev is currently configured with the limited public demo token (SocketDemo),',
+              'which does not have the "full-scans:create" permission required for repository scans.',
+              'To run Socket supply chain security scans locally:',
+              '  • Create a free token at https://socket.dev/dashboard (Settings -> API Keys)',
+              '  • Run: npx @socketsecurity/cli login and enter your personal token, OR',
+              '  • Set: $env:SOCKET_CLI_API_TOKEN = "your_token"',
+              '  • Note: Supply chain protection also runs automatically in CI via .github/workflows/socket.yml.',
+            ].join('\n')
+          : [
+              'Socket.dev API token is not configured.',
+              'To run Socket supply chain security scans locally:',
+              '  • Run: npx @socketsecurity/cli login (to authenticate with your Socket.dev account)',
+              '  • Or set the SOCKET_CLI_API_TOKEN environment variable.',
+              '  • Note: Supply chain protection also runs automatically in CI via .github/workflows/socket.yml.',
+            ].join('\n'),
+      };
+
     default:
       return {
         type: 'missing',
-        instructions: `Unknown security tool: "${tool}". Supported: trivy, osv, gitleaks, zizmor, dast, codeql, all`,
+        instructions: `Unknown security tool: "${tool}". Supported: trivy, osv, gitleaks, zizmor, dast, codeql, socket, all`,
       };
   }
 }
@@ -210,10 +335,9 @@ function runAll() {
   const steps = [
     { name: 'Secrets Check', cmd: 'node scripts/check-secrets.js' },
     { name: 'NPM Audit', cmd: 'npm audit --audit-level=critical' },
-    { name: 'Socket Supply Chain', cmd: 'npx -y @socketsecurity/cli scan' },
     {
       name: 'CycloneDX SBOM',
-      cmd: 'npx -y @cyclonedx/cyclonedx-npm --ignore-npm-errors --output-file cyclonedx.sbom.json',
+      cmd: 'npx --no-install cyclonedx-npm --ignore-npm-errors --output-file cyclonedx.sbom.json',
     },
     { name: 'Trivy Scan', tool: 'trivy' },
     { name: 'OSV Scanner', tool: 'osv' },
@@ -272,6 +396,7 @@ if (require.main === module) {
 module.exports = {
   checkCommandExists,
   isDockerAvailable,
+  checkSocketAuth,
   resolveRunner,
   executePlan,
   runAll,

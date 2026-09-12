@@ -125,4 +125,42 @@ describe('run-security-scan', () => {
       expect(missingPlan.type).toBe('missing');
     });
   });
+
+  describe('resolveRunner - Socket', () => {
+    it('should choose CLI when socket auth is present and socket binary exists', () => {
+      const plan = resolveRunner('socket', {
+        hasSocketAuth: () => true,
+        hasCmd: (cmd) => cmd === 'socket',
+      });
+      expect(plan.type).toBe('cli');
+      expect(plan.cmd).toBe('socket scan create .');
+    });
+
+    it('should fallback to npx when socket auth is present but socket binary is missing', () => {
+      const plan = resolveRunner('socket', {
+        hasSocketAuth: () => true,
+        hasCmd: () => false,
+      });
+      expect(plan.type).toBe('cli');
+      expect(plan.cmd).toBe('npx -y @socketsecurity/cli scan create .');
+    });
+
+    it('should report missing with setup instructions when socket auth is not configured', () => {
+      const plan = resolveRunner('socket', {
+        hasSocketAuth: () => false,
+      });
+      expect(plan.type).toBe('missing');
+      expect(plan.instructions).toContain('Socket.dev API token is not configured');
+      expect(plan.instructions).toContain('SOCKET_CLI_API_TOKEN');
+    });
+
+    it('should report specific guidance when public demo token is detected', () => {
+      const plan = resolveRunner('socket', {
+        hasSocketAuth: () => ({ authenticated: false, isDemoToken: true }),
+      });
+      expect(plan.type).toBe('missing');
+      expect(plan.instructions).toContain('SocketDemo');
+      expect(plan.instructions).toContain('full-scans:create');
+    });
+  });
 });

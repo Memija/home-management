@@ -3,8 +3,9 @@ import puppeteer from 'puppeteer-core';
 import { startFlow } from 'lighthouse';
 import fs from 'fs';
 import path from 'path';
+import { spawn, exec, execSync } from 'child_process';
 
-const BASE_URL = process.env.TARGET_URL || 'http://localhost:4200';
+let BASE_URL = process.env.TARGET_URL || '';
 const IS_HEADLESS = process.env.HEADLESS !== 'false' && !process.argv.includes('--headful');
 const OUTPUT_DIR = path.resolve(process.cwd(), '.lighthouseci');
 
@@ -405,33 +406,166 @@ async function auditSuite(flow, page, { isMobile, theme, suiteNum, totalSuites, 
   });
 }
 
-async function runAudit() {
-  console.log('================================================================');
-  console.log('🚀 Starting Lighthouse Flow: Desktop & Mobile, Themes & Modals');
-  console.log('================================================================');
-  console.log(`🌐 Base URL:        ${BASE_URL}`);
-  console.log(`🕶️ Headless:        ${IS_HEADLESS ? 'Yes' : 'No (Visible Browser)'}`);
-  console.log(`💻 Desktop:         ${RUN_DESKTOP ? 'Enabled' : 'Skipped'}`);
-  console.log(`📱 Mobile:          ${RUN_MOBILE ? 'Enabled' : 'Skipped'}`);
-  console.log(`☀️ Light Theme:     ${RUN_LIGHT ? 'Enabled' : 'Skipped'}`);
-  console.log(`🌙 Dark Theme:      ${RUN_DARK ? 'Enabled' : 'Skipped'}`);
-  console.log(`⚡ Quick Mode:      ${IS_QUICK ? 'Yes' : 'No'}\n`);
+/**
+ * Checks if a target URL is actively responding to HTTP requests
+ */
+async function isServerReachable(url, timeoutMs = 1500) {
+  try {
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), timeoutMs);
+    const res = await fetch(url, { signal: controller.signal });
+    clearTimeout(timeoutId);
+    return res.status < 500;
+  } catch {
+    return false;
+  }
+}
 
-  if (!fs.existsSync(OUTPUT_DIR)) {
-    fs.mkdirSync(OUTPUT_DIR, { recursive: true });
+/**
+ * Polls a URL until it becomes available or reaches max timeout
+ */
+async function waitForServer(url, maxTimeoutMs = 30000) {
+  const start = Date.now();
+  while (Date.now() - start < maxTimeoutMs) {
+    if (await isServerReachable(url)) {
+      return true;
+    }
+    await new Promise((r) => setTimeout(r, 500));
+  }
+  return false;
+}
+
+/**
+ * Stops a child process cleanly across Windows and Unix platforms
+ */
+async function stopProcess(child) {
+  if (!child || child.killed) return;
+  try {
+    if (process.platform === 'win32' && child.pid) {
+      await new Promise((resolve) => {
+        exec(`taskkill /pid ${child.pid} /T /F`, () => resolve());
+      });
+    } else {
+      child.kill('SIGTERM');
+      await new Promise((resolve) => setTimeout(resolve, 500));
+      if (!child.killed) {
+        child.kill('SIGKILL');
+      }
+    }
+  } catch {
+    try {
+      child.kill();
+    } catch {
+      // Ignore cleanup error
+    }
+  }
+}
+
+/**
+ * Discovers an active web server or automatically spawns the Express SSR server
+ */
+async function resolveServer() {
+  if (process.env.TARGET_URL) {
+    const targetUrl = process.env.TARGET_URL;
+    console.log(`🔍 Checking specified TARGET_URL: ${targetUrl}...`);
+    const ready = await waitForServer(targetUrl, 10000);
+    if (!ready) {
+      throw new Error(`Target server at ${targetUrl} did not respond within 10 seconds.`);
+    }
+    return { url: targetUrl, process: null };
   }
 
-  const chromeFlags = [
-    IS_HEADLESS ? '--headless=new' : '',
-    '--disable-gpu',
-    '--no-sandbox',
-    '--disable-dev-shm-usage',
-    '--window-size=1366,960',
-  ].filter(Boolean);
+  // 1. Check if Angular development server is already active on port 4200
+  if (await isServerReachable('http://localhost:4200')) {
+    console.log('📡 Connected to active development server at http://localhost:4200\n');
+    return { url: 'http://localhost:4200', process: null };
+  }
 
+  // 2. Check if Express SSR server is already active on port 4000
+  if (await isServerReachable('http://localhost:4000')) {
+    console.log('📡 Connected to active SSR server at http://localhost:4000\n');
+    return { url: 'http://localhost:4000', process: null };
+  }
+
+  // 3. Neither server is active: automatically launch Express SSR server
+  const serverPath = path.resolve(process.cwd(), 'dist/home-management/server/server.mjs');
+  if (!fs.existsSync(serverPath)) {
+    console.log('📦 SSR production build not found. Building application (npm run build)...');
+    execSync('npm run build', { stdio: 'inherit' });
+  }
+
+  console.log('🚀 Spawning local Express SSR server on port 4000...');
+  const serverProc = spawn(process.execPath, [serverPath], {
+    stdio: ['ignore', 'pipe', 'pipe'],
+    env: {
+      ...process.env,
+      PORT: '4000',
+      NG_ALLOWED_HOSTS: 'localhost,127.0.0.1',
+    },
+  });
+
+  serverProc.stdout?.on('data', () => {});
+
+  let serverErrOutput = '';
+  serverProc.stderr?.on('data', (chunk) => {
+    serverErrOutput += chunk.toString();
+  });
+
+  const isReady = await waitForServer('http://localhost:4000', 30000);
+  if (!isReady) {
+    await stopProcess(serverProc);
+    throw new Error(
+      `Failed to start Express SSR server on http://localhost:4000.\n${serverErrOutput}`,
+    );
+  }
+
+  console.log('✅ Express SSR server ready on http://localhost:4000\n');
+  return { url: 'http://localhost:4000', process: serverProc };
+}
+
+async function runAudit() {
+  let serverProcess = null;
   let chrome;
   let browser;
+
+  const handleTermination = async () => {
+    if (serverProcess) {
+      console.log('\n🛑 Stopping background SSR server...');
+      await stopProcess(serverProcess);
+      serverProcess = null;
+    }
+    process.exit(1);
+  };
+  process.once('SIGINT', handleTermination);
+  process.once('SIGTERM', handleTermination);
+
   try {
+    const serverInfo = await resolveServer();
+    BASE_URL = serverInfo.url;
+    serverProcess = serverInfo.process;
+
+    console.log('================================================================');
+    console.log('🚀 Starting Lighthouse Flow: Desktop & Mobile, Themes & Modals');
+    console.log('================================================================');
+    console.log(`🌐 Base URL:        ${BASE_URL}`);
+    console.log(`🕶️ Headless:        ${IS_HEADLESS ? 'Yes' : 'No (Visible Browser)'}`);
+    console.log(`💻 Desktop:         ${RUN_DESKTOP ? 'Enabled' : 'Skipped'}`);
+    console.log(`📱 Mobile:          ${RUN_MOBILE ? 'Enabled' : 'Skipped'}`);
+    console.log(`☀️ Light Theme:     ${RUN_LIGHT ? 'Enabled' : 'Skipped'}`);
+    console.log(`🌙 Dark Theme:      ${RUN_DARK ? 'Enabled' : 'Skipped'}`);
+    console.log(`⚡ Quick Mode:      ${IS_QUICK ? 'Yes' : 'No'}\n`);
+
+    if (!fs.existsSync(OUTPUT_DIR)) {
+      fs.mkdirSync(OUTPUT_DIR, { recursive: true });
+    }
+
+    const chromeFlags = [
+      IS_HEADLESS ? '--headless=new' : '',
+      '--disable-gpu',
+      '--no-sandbox',
+      '--disable-dev-shm-usage',
+      '--window-size=1366,960',
+    ].filter(Boolean);
     chrome = await chromeLauncher.launch({ chromeFlags });
     const versionResp = await fetch(`http://127.0.0.1:${chrome.port}/json/version`);
     const versionData = await versionResp.json();
@@ -561,6 +695,9 @@ async function runAudit() {
     console.error('❌ Audit encountered an error:', err);
     process.exitCode = 1;
   } finally {
+    process.removeListener('SIGINT', handleTermination);
+    process.removeListener('SIGTERM', handleTermination);
+
     if (browser) {
       try {
         await browser.close();
@@ -574,6 +711,10 @@ async function runAudit() {
       } catch {
         // Ignore kill error
       }
+    }
+    if (serverProcess) {
+      console.log('🛑 Stopping background SSR server...');
+      await stopProcess(serverProcess);
     }
   }
 }

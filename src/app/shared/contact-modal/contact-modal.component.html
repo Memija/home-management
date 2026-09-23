@@ -13,6 +13,7 @@
           class="help-btn"
           (click)="showHelpModal.set(true)"
           title="{{ 'CONTACT.HELP_TITLE' | translate }}"
+          aria-label="{{ 'CONTACT.HELP_TITLE' | translate }}"
         >
           <lucide-icon [img]="HelpIcon" size="20"></lucide-icon>
         </button>
@@ -21,6 +22,7 @@
           class="close-btn"
           (click)="onClose()"
           title="{{ 'ACTIONS.CLOSE' | translate }}"
+          aria-label="{{ 'ACTIONS.CLOSE' | translate }}"
         >
           <lucide-icon [img]="XIcon" size="24"></lucide-icon>
         </button>
@@ -96,8 +98,7 @@
           <div
             class="custom-select dropup"
             role="combobox"
-            title="Email client"
-            aria-expanded="false"
+            title="{{ 'CONTACT.EMAIL_CLIENT' | translate }}"
             [attr.aria-expanded]="dropdownOpen() ? 'true' : 'false'"
             aria-haspopup="listbox"
             aria-controls="email-client-dropdown"

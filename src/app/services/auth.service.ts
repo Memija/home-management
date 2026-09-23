@@ -45,7 +45,14 @@ export class AuthService {
         (hostname === 'localhost' && environment.allowLocalAuth);
 
       this.isAuthSupported.set(isAuthorized);
-      this.initAuthListener();
+      if (
+        typeof window !== 'undefined' &&
+        localStorage.getItem('hm_demo_mode_is_active') === 'true'
+      ) {
+        this.isLoading.set(false);
+      } else {
+        this.initAuthListener();
+      }
     } else {
       this.isLoading.set(false);
     }

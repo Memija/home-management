@@ -9,7 +9,7 @@
   <!-- Floating Toolbar: Theme + Language -->
   <header class="landing-toolbar" [class.scrolled]="scrollY() > 50">
     <div class="toolbar-inner">
-      <a routerLink="/" class="toolbar-brand" aria-label="Home Management Home">
+      <a routerLink="/" class="toolbar-brand" [attr.aria-label]="'LANDING.BRAND_LABEL' | translate">
         <img
           src="/assets/logo-128.png"
           alt="Home Management Logo"
@@ -24,8 +24,8 @@
           type="button"
           class="theme-toggle-btn"
           (click)="cycleTheme()"
-          [title]="getThemeTitle()"
-          aria-label="Toggle color theme"
+          title="{{ getThemeTitle() }}"
+          aria-label="{{ 'LANDING.THEME_TOGGLE' | translate }}"
         >
           <span class="theme-icon" aria-hidden="true">{{ getThemeIcon() }}</span>
         </button>
@@ -41,7 +41,7 @@
     (keydown)="onRoadKeydown($event)"
     tabindex="0"
     role="scrollbar"
-    aria-label="Page scroll progress"
+    [attr.aria-label]="'LANDING.SCROLL_PROGRESS' | translate"
     aria-controls="features"
     aria-orientation="vertical"
     aria-valuemin="0"
@@ -141,7 +141,7 @@
                 <div class="highlight-icon-wrap">
                   <lucide-icon [img]="item.icon" [size]="24"></lucide-icon>
                 </div>
-                <h3 class="highlight-title">{{ item.titleKey | translate }}</h3>
+                <h2 class="highlight-title">{{ item.titleKey | translate }}</h2>
               </div>
               <p class="highlight-desc">{{ item.descKey | translate }}</p>
               <div class="highlight-tags">

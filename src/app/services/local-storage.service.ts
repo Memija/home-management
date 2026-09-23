@@ -43,6 +43,24 @@ export class LocalStorageService extends StorageService {
     }
   }
 
+  override loadSync<T>(key: string): T | null {
+    if (!this.isBrowser) return null;
+
+    try {
+      const item = localStorage.getItem(this.prefix + key);
+      if (item === null) return null;
+
+      try {
+        return JSON.parse(item) as T;
+      } catch {
+        return item as unknown as T;
+      }
+    } catch (error) {
+      console.error(`Error synchronously loading from localStorage with key ${key}:`, error);
+      return null;
+    }
+  }
+
   async delete(key: string): Promise<void> {
     if (!this.isBrowser) return;
 

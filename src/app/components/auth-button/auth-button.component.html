@@ -17,6 +17,7 @@
     }
     <span class="user-name">{{ user()?.displayName || user()?.email }}</span>
     <button
+      type="button"
       class="btn-logout"
       (click)="signOut()"
       title="{{ 'AUTH.SIGN_OUT' | translate }}"
@@ -27,6 +28,7 @@
   </div>
 } @else if (isAuthSupported()) {
   <button
+    type="button"
     class="auth-button sign-in"
     (click)="signIn()"
     [disabled]="isSigningIn"

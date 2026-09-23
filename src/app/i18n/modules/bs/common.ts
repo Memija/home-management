@@ -16,6 +16,9 @@ export const common = {
     SAVE: 'Spasi',
     DELETE: 'Izbriši',
     EDIT: 'Uredi',
+    OK: 'U redu',
+    EXPORT_MENU: 'Meni za izvoz',
+    IMPORT_MENU: 'Meni za uvoz',
   },
   MENU: {
     HOME: 'Početna',
@@ -56,6 +59,7 @@ export const common = {
     SUBTITLE: 'Pregled svih značajnih izmjena objavljenih u svakom izdanju',
     CONFIDENCE_INFO:
       'Pokazuje koliko je predviđanje pouzdano na osnovu dosljednosti vaših historijskih podataka i količine dostupnih podataka.',
+    V1_2_0_LABEL: 'Verzija 1.2.0',
     V1_1_0_LABEL: 'Verzija 1.1.0',
     SHIPPED: 'Objavljeno',
   },
@@ -104,6 +108,9 @@ export const common = {
     FEATURE_12_TITLE: 'Gamifikacija i Dostignuća',
     FEATURE_12_DESC:
       'Pretvorite uštedu u zabavnu igru! Osvojite značke za postizanje ciljeva u uštedi i nadmašite svoj lični rekord kako bi upravljanje domaćinstvom bilo još zanimljivije.',
+    FEATURE_13_TITLE: 'Porodični i školski planer',
+    FEATURE_13_DESC:
+      'Organizujte porodične rasporede, školske rasporede časova i ponavljajuće kućne rutine na jednom mjestu. Dodijelite rasporede članovima porodice kako biste olakšali svakodnevnu koordinaciju.',
     CTA_TEXT:
       'Vaša podrška pomaže nam u bržoj izgradnji ovih opcija. Hvala vam što ste dio naše zajednice!',
     BACK_TO_HOME: 'Nazad na početnu',
@@ -298,6 +305,7 @@ export const common = {
     SCAN_FULL: 'Skeniraj cijelu sliku',
     NO_FIELDS_CONFIGURED: 'Nema konfiguriranih mjerača. Molimo podesite sobe ili mjerače.',
     CAMERA_ERROR: 'Nije moguće pristupiti kameri. Koristite opciju za učitavanje slike.',
+    ASSIGN_TO: 'Dodijeli za {{name}}',
   },
   MONTHS: {
     JANUARY: 'Januar',

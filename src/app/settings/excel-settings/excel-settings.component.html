@@ -66,14 +66,25 @@
         <button
           class="toggle-preview-btn"
           type="button"
-          [attr.aria-label]="
-            isPreviewCollapsed() ? 'Expand column mapping' : 'Collapse column mapping'
-          "
-          [attr.title]="isPreviewCollapsed() ? 'Expand column mapping' : 'Collapse column mapping'"
+          title="{{
+            (isPreviewCollapsed()
+              ? 'SETTINGS.EXPAND_COLUMN_MAPPING'
+              : 'SETTINGS.COLLAPSE_COLUMN_MAPPING'
+            ) | translate
+          }}"
+          aria-label="{{
+            (isPreviewCollapsed()
+              ? 'SETTINGS.EXPAND_COLUMN_MAPPING'
+              : 'SETTINGS.COLLAPSE_COLUMN_MAPPING'
+            ) | translate
+          }}"
         >
-          <span class="sr-only"
-            >{{ isPreviewCollapsed() ? 'Expand' : 'Collapse' }} column mapping</span
-          >
+          <span class="sr-only">{{
+            (isPreviewCollapsed()
+              ? 'SETTINGS.EXPAND_COLUMN_MAPPING'
+              : 'SETTINGS.COLLAPSE_COLUMN_MAPPING'
+            ) | translate
+          }}</span>
           <lucide-icon
             [img]="isPreviewCollapsed() ? ChevronDownIcon : ChevronUpIcon"
             size="20"
@@ -146,7 +157,9 @@
         <lucide-icon [img]="ImportIcon" size="16"></lucide-icon>
         <span class="btn-text">{{ 'SETTINGS.IMPORT_EXCEL_SETTINGS' | translate }}</span>
       </button>
-      <label for="excel-settings-file-import" class="sr-only">Import Excel Settings</label>
+      <label for="excel-settings-file-import" class="sr-only">{{
+        'SETTINGS.IMPORT_EXCEL_SETTINGS' | translate
+      }}</label>
       <input
         #fileInput
         id="excel-settings-file-import"
@@ -154,8 +167,8 @@
         (change)="importSettings($event)"
         accept=".json"
         class="hidden-input"
-        aria-label="Import Excel Settings"
-        title="Import Excel Settings"
+        [attr.aria-label]="'SETTINGS.IMPORT_EXCEL_SETTINGS' | translate"
+        [attr.title]="'SETTINGS.IMPORT_EXCEL_SETTINGS' | translate"
       />
     </div>
   }
@@ -172,10 +185,11 @@
         <div class="modal-header">
           <h3>{{ 'SETTINGS.EDIT_EXCEL_SETTINGS' | translate }}</h3>
           <button
+            type="button"
             class="close-btn"
             (click)="closeModal()"
-            [title]="'ACTIONS.CLOSE' | translate"
-            [attr.aria-label]="'ACTIONS.CLOSE' | translate"
+            title="{{ 'ACTIONS.CLOSE' | translate }}"
+            aria-label="{{ 'ACTIONS.CLOSE' | translate }}"
           >
             ×
           </button>

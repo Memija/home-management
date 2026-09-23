@@ -9,6 +9,9 @@ export const landing = {
     CTA_OPEN_APP: 'Otwórz Aplikację',
     CTA_SEE_FEATURES: 'Zobacz Funkcje',
     SCROLL_TO_EXPLORE: 'Przewiń, aby odkryć',
+    BRAND_LABEL: 'Strona główna Home Management',
+    THEME_TOGGLE: 'Przełącz motyw kolorystyczny',
+    SCROLL_PROGRESS: 'Postęp przewijania strony',
     STATS: {
       FREE: 'Darmowe i Open Source',
       TRACKERS: 'Liczniki Mediów',

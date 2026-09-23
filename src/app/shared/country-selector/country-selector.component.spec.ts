@@ -472,6 +472,10 @@ describe('CountrySelectorComponent', () => {
 
       const input = fixture.debugElement.query(By.css('input'));
       expect(input.nativeElement.getAttribute('autocomplete')).toBe('country-name');
+      expect(input.nativeElement.getAttribute('title')).toBe('SETTINGS.SEARCH_COUNTRY');
+      expect(input.nativeElement.getAttribute('aria-label')).toBe('SETTINGS.SEARCH_COUNTRY');
+      expect(input.nativeElement.getAttribute('id')).toBe('country-selector-input');
+      expect(input.nativeElement.getAttribute('name')).toBe('country-selector');
     });
 
     it('should set placeholder using translate pipe', () => {

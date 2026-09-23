@@ -31,6 +31,7 @@ jobs:
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           target: 'https://home-management.dev'
+          rules_file_name: '.zap/rules.tsv'
           issue_title: 'OWASP ZAP: Security Finding in Deployed App'
           fail_action: false
 

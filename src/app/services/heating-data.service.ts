@@ -34,7 +34,7 @@ export class HeatingDataService {
   private roomsService = inject(HeatingRoomsService);
 
   // State signals
-  readonly records = signal<DynamicHeatingRecord[]>([]);
+  readonly records = signal<DynamicHeatingRecord[]>(this.getInitialRecords());
   readonly isExporting = signal(false);
   readonly isImporting = signal(false);
   readonly pendingImportFile = signal<File | null>(null);
@@ -54,10 +54,27 @@ export class HeatingDataService {
   readonly successMessage = signal('HEATING.RECORD_SAVED');
 
   constructor() {
+    const initial = this.records();
+    if (initial.length > 0) {
+      this.notificationService.setHeatingRecords(initial);
+    }
     this.loadData();
     this.storage.dataRefreshed$
       ?.pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe(() => this.loadData());
+  }
+
+  private getInitialRecords(): DynamicHeatingRecord[] {
+    if (!this.storage || typeof this.storage.loadSync !== 'function') {
+      return [];
+    }
+    const records = this.storage.loadSync<DynamicHeatingRecord[]>('heating_consumption_records');
+    if (!records) return [];
+    return records
+      .map((r) => ({ ...r, date: parseSafeDate(r.date) }))
+      .filter((r) => {
+        return r.date instanceof Date && !isNaN(r.date.getTime());
+      });
   }
 
   /**

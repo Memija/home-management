@@ -118,6 +118,41 @@ describe('LocalStorageService', () => {
     });
   });
 
+  describe('loadSync', () => {
+    it('should synchronously load data from localStorage', () => {
+      const key = 'testKey';
+      const data = { value: 123 };
+      mockLocalStorage.getItem.mockReturnValue(JSON.stringify(data));
+
+      const result = service.loadSync(key);
+      expect(mockLocalStorage.getItem).toHaveBeenCalledWith('hm_testKey');
+      expect(result).toEqual(data);
+    });
+
+    it('should return null if item does not exist synchronously', () => {
+      mockLocalStorage.getItem.mockReturnValue(null);
+      const result = service.loadSync('missing');
+      expect(result).toBeNull();
+    });
+
+    it('should return raw string for non-JSON values synchronously', () => {
+      mockLocalStorage.getItem.mockReturnValue('raw-string');
+      const result = service.loadSync('key');
+      expect(result).toBe('raw-string');
+    });
+
+    it('should not synchronously load if not browser', () => {
+      TestBed.resetTestingModule();
+      TestBed.configureTestingModule({
+        providers: [LocalStorageService, { provide: PLATFORM_ID, useValue: 'server' }],
+      });
+      service = TestBed.inject(LocalStorageService);
+      const result = service.loadSync('key');
+      expect(result).toBeNull();
+      expect(mockLocalStorage.getItem).not.toHaveBeenCalled();
+    });
+  });
+
   describe('delete', () => {
     it('should remove item from localStorage', async () => {
       await service.delete('testKey');

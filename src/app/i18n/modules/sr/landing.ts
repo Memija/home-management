@@ -9,6 +9,9 @@ export const landing = {
     CTA_OPEN_APP: 'Отвори Апликацију',
     CTA_SEE_FEATURES: 'Види Функције',
     SCROLL_TO_EXPLORE: 'Помакните доле за више',
+    BRAND_LABEL: 'Home Management Почетна',
+    THEME_TOGGLE: 'Промени тему боја',
+    SCROLL_PROGRESS: 'Напредак померања странице',
     STATS: {
       FREE: 'Бесплатно и Отворен Код',
       TRACKERS: 'Модула Праћења',

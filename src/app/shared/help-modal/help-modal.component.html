@@ -14,6 +14,7 @@
           class="close-btn"
           (click)="onClose()"
           title="{{ 'ACTIONS.CLOSE' | translate }}"
+          aria-label="{{ 'ACTIONS.CLOSE' | translate }}"
         >
           <lucide-icon [img]="CloseIcon" size="20"></lucide-icon>
         </button>
@@ -52,6 +53,8 @@
           class="btn-primary"
           (click)="previousStep()"
           [style.visibility]="isFirstStep() ? 'hidden' : 'visible'"
+          title="{{ 'SETTINGS.FAMILY_HELP_PREVIOUS' | translate }}"
+          aria-label="{{ 'SETTINGS.FAMILY_HELP_PREVIOUS' | translate }}"
         >
           <lucide-icon [img]="PrevIcon" size="16"></lucide-icon>
           {{ 'SETTINGS.FAMILY_HELP_PREVIOUS' | translate }}
@@ -60,11 +63,23 @@
         <span class="step-counter">{{ currentStep() + 1 }} / {{ totalSteps() }}</span>
 
         @if (isLastStep()) {
-          <button type="button" class="btn-primary" (click)="onClose()">
+          <button
+            type="button"
+            class="btn-primary"
+            (click)="onClose()"
+            title="{{ 'SETTINGS.FAMILY_HELP_DONE' | translate }}"
+            aria-label="{{ 'SETTINGS.FAMILY_HELP_DONE' | translate }}"
+          >
             {{ 'SETTINGS.FAMILY_HELP_DONE' | translate }}
           </button>
         } @else {
-          <button type="button" class="btn-primary" (click)="nextStep()">
+          <button
+            type="button"
+            class="btn-primary"
+            (click)="nextStep()"
+            title="{{ 'SETTINGS.FAMILY_HELP_NEXT' | translate }}"
+            aria-label="{{ 'SETTINGS.FAMILY_HELP_NEXT' | translate }}"
+          >
             {{ 'SETTINGS.FAMILY_HELP_NEXT' | translate }}
             <lucide-icon [img]="NextIcon" size="16"></lucide-icon>
           </button>

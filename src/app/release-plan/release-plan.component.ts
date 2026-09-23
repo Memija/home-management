@@ -8,7 +8,6 @@ import {
   Sparkles,
   ArrowUpCircle,
   Brain,
-  Zap,
   ShieldCheck,
   LucideIconData,
   CloudSun,
@@ -16,6 +15,7 @@ import {
   Languages,
   StickyNote,
   Trophy,
+  CalendarCheck,
 } from 'lucide-angular';
 
 type FeatureTag = 'new' | 'enhancement' | 'smart';
@@ -46,15 +46,6 @@ export class ReleasePlanComponent {
 
   // Upcoming features
   readonly features: Feature[] = [
-    // Quality/Performance
-    {
-      id: 5,
-      titleKey: 'RELEASE_PLAN.FEATURE_5_TITLE',
-      descKey: 'RELEASE_PLAN.FEATURE_5_DESC',
-      icon: Zap,
-      tag: 'enhancement',
-      colorClass: 'enhancement-feature',
-    },
     // Code Quality
     {
       id: 6,
@@ -111,6 +102,14 @@ export class ReleasePlanComponent {
       icon: Trophy,
       tag: 'enhancement',
       colorClass: 'enhancement-feature',
+    },
+    {
+      id: 13,
+      titleKey: 'RELEASE_PLAN.FEATURE_13_TITLE',
+      descKey: 'RELEASE_PLAN.FEATURE_13_DESC',
+      icon: CalendarCheck,
+      tag: 'new',
+      colorClass: 'new-feature',
     },
   ];
 

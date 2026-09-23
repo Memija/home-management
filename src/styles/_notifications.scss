@@ -402,8 +402,12 @@
     .fact-label {
       font-size: 0.9rem;
       font-weight: 700;
-      color: $info;
+      color: #0369a1;
       margin-bottom: 0.25rem;
+
+      [data-theme='dark'] & {
+        color: #38bdf8;
+      }
     }
 
     .fact-text {

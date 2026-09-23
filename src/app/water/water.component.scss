@@ -12,6 +12,12 @@ $water-primary-dark: $primary-dark;
   --theme-primary-rgb: 0, 92, 191;
 }
 
+:host-context([data-theme='dark']) {
+  --theme-primary: #38bdf8;
+  --theme-primary-dark: #0284c7;
+  --theme-primary-rgb: 56, 189, 248;
+}
+
 .chart-section .chart-header .chart-filters button {
   &:hover {
     border-color: $water-primary;

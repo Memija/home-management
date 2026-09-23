@@ -63,7 +63,13 @@
         }
       </div>
       <div class="modal-footer">
-        <button type="button" class="btn-primary" (click)="cancelModal.emit()">
+        <button
+          type="button"
+          class="btn-primary"
+          (click)="cancelModal.emit()"
+          title="{{ 'ERROR.CLOSE' | translate }}"
+          aria-label="{{ 'ERROR.CLOSE' | translate }}"
+        >
           {{ 'ERROR.CLOSE' | translate }}
         </button>
       </div>

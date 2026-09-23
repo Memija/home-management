@@ -1,9 +1,21 @@
 // Heating-specific styles - extends shared styles from styles.scss
 
 // Heating theme color overrides
-$heating-primary: #f57c00;
-$heating-primary-dark: #ef6c00;
+$heating-primary: #c2410c;
+$heating-primary-dark: #9a3412;
 $heating-primary-light: #fff3e0;
+
+:host {
+  --theme-primary: #{$heating-primary};
+  --theme-primary-dark: #{$heating-primary-dark};
+  --theme-primary-rgb: 194, 65, 12;
+}
+
+:host-context([data-theme='dark']) {
+  --theme-primary: #fb923c;
+  --theme-primary-dark: #f97316;
+  --theme-primary-rgb: 251, 146, 60;
+}
 
 // Back button hover
 .app-header .back-btn:hover {
@@ -82,7 +94,7 @@ $heating-primary-light: #fff3e0;
 :host {
   --theme-primary: #{$heating-primary};
   --theme-primary-dark: #{$heating-primary-dark};
-  --theme-primary-rgb: 245, 124, 0;
+  --theme-primary-rgb: 194, 65, 12;
 }
 
 // Settings button style (projected into consumption input)
@@ -200,12 +212,12 @@ $heating-primary-light: #fff3e0;
   }
 }
 
-// Override Save button in consumption-input to ensure black text (contrast)
+// Ensure proper white text contrast with #c2410c
 :host ::ng-deep app-consumption-input .save-btn {
-  color: black !important;
+  color: white !important;
 }
 
-// Override Pagination buttons in detailed-records to ensure black text (contrast)
+// Ensure proper white text contrast with #c2410c
 :host ::ng-deep app-detailed-records .pagination-btn {
-  color: black !important;
+  color: white !important;
 }

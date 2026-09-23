@@ -83,6 +83,10 @@ describe('StorageService', () => {
       expect(loaded).toBeNull();
     });
 
+    it('should provide default loadSync returning null', () => {
+      expect(service.loadSync('any-key')).toBeNull();
+    });
+
     it('should check existence', async () => {
       await service.save('exists', true);
       expect(await service.exists('exists')).toBe(true);

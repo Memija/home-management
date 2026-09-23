@@ -29,7 +29,7 @@ export class ElectricityDataService {
   private notificationService = inject(NotificationService);
 
   // State
-  readonly records = signal<ElectricityRecord[]>([]);
+  readonly records = signal<ElectricityRecord[]>(this.getInitialRecords());
 
   // Filter State
   readonly filterState = signal<{
@@ -111,10 +111,25 @@ export class ElectricityDataService {
   readonly maxDate = new Date().toISOString().split('T')[0];
 
   constructor() {
+    const initial = this.records();
+    if (initial.length > 0) {
+      this.notificationService.setElectricityRecords(initial);
+    }
     this.loadData();
     this.storage.dataRefreshed$
       ?.pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe(() => this.loadData());
+  }
+
+  private getInitialRecords(): ElectricityRecord[] {
+    if (!this.storage || typeof this.storage.loadSync !== 'function') {
+      return [];
+    }
+    const data = this.storage.loadSync<ElectricityRecord[]>('electricity_consumption_records');
+    if (!data) return [];
+    return data
+      .map((r) => ({ ...r, date: parseSafeDate(r.date) }))
+      .filter((r) => !isNaN(r.date.getTime()));
   }
 
   async loadData() {

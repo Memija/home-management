@@ -57,20 +57,21 @@
     }
 
     .btn-secondary {
-      background: $secondary;
-      color: white;
+      background: var(--card-bg, $secondary);
+      border: 1px solid var(--border-color, transparent);
+      color: var(--text-primary, white);
 
       &:hover:not(:disabled) {
-        background: color.adjust($secondary, $lightness: -10%);
+        background: var(--bg-secondary, color.adjust($secondary, $lightness: -10%));
       }
     }
 
     .btn-primary {
-      background: $primary;
+      background: var(--theme-primary, $primary);
       color: white;
 
       &:hover:not(:disabled) {
-        background: $primary-dark;
+        background: var(--theme-primary-dark, $primary-dark);
       }
     }
   }

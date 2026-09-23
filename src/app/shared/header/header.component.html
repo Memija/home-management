@@ -16,7 +16,8 @@
         type="button"
         class="theme-toggle"
         (click)="cycleTheme()"
-        [title]="getThemeTitle()"
+        title="{{ getThemeTitle() }}"
+        aria-label="{{ getThemeTitle() }}"
         [class.is-dark]="themeService.resolvedTheme() === 'dark'"
         [class.is-system]="themeService.currentTheme() === 'system'"
       >
@@ -49,7 +50,8 @@
           class="notification-bell"
           (click)="toggleNotificationPanel()"
           [class.has-notifications]="notificationCount() > 0"
-          title="Notifications"
+          title="{{ 'NOTIFICATIONS.TITLE' | translate }}"
+          aria-label="{{ 'NOTIFICATIONS.TITLE' | translate }}"
         >
           <lucide-icon [img]="BellIcon" size="22"></lucide-icon>
           @if (notificationCount() > 0) {
@@ -67,6 +69,7 @@
                 class="close-btn"
                 (click)="closePanel()"
                 title="{{ 'ACTIONS.CLOSE' | translate }}"
+                aria-label="{{ 'ACTIONS.CLOSE' | translate }}"
               >
                 <lucide-icon [img]="XIcon" size="16"></lucide-icon>
               </button>
@@ -98,6 +101,12 @@
                               : 'NOTIFICATIONS.GO_TO_TRACKER'
                             ) | translate
                           }}"
+                          aria-label="{{
+                            (notification.route === '/settings'
+                              ? 'NOTIFICATIONS.GO_TO_SETTINGS'
+                              : 'NOTIFICATIONS.GO_TO_TRACKER'
+                            ) | translate
+                          }}"
                         >
                           <lucide-icon [img]="ArrowRightIcon" size="16"></lucide-icon>
                         </button>
@@ -108,6 +117,7 @@
                           class="dismiss-btn"
                           (click)="dismissNotification(notification.id, $event)"
                           title="{{ 'NOTIFICATIONS.DISMISS' | translate }}"
+                          aria-label="{{ 'NOTIFICATIONS.DISMISS' | translate }}"
                         >
                           <lucide-icon [img]="XIcon" size="14"></lucide-icon>
                         </button>
@@ -140,6 +150,8 @@
       class="exit-demo-btn"
       (click)="exitDemo()"
       [disabled]="demoService.isLoading()"
+      title="{{ 'DEMO.EXIT_BUTTON' | translate }}"
+      aria-label="{{ 'DEMO.EXIT_BUTTON' | translate }}"
     >
       <lucide-icon [img]="XIcon" size="14"></lucide-icon>
       <span class="btn-text">{{ 'DEMO.EXIT_BUTTON' | translate }}</span>
@@ -154,6 +166,8 @@
       class="exit-demo-btn"
       (click)="demoService.activateDemo()"
       [disabled]="demoService.isLoading()"
+      title="{{ 'DEMO.TRY_BUTTON' | translate }}"
+      aria-label="{{ 'DEMO.TRY_BUTTON' | translate }}"
     >
       <lucide-icon [img]="PlayIcon" size="14"></lucide-icon>
       <span class="btn-text">{{ 'DEMO.TRY_BUTTON' | translate }}</span>

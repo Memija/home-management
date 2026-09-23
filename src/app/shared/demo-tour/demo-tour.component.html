@@ -39,7 +39,7 @@
       class="tooltip-close"
       (click)="onClose()"
       title="{{ 'ACTIONS.CLOSE' | translate }}"
-      aria-label="Close tour"
+      aria-label="{{ 'ACTIONS.CLOSE' | translate }}"
     >
       <lucide-icon [img]="CloseIcon" size="14"></lucide-icon>
     </button>
@@ -51,7 +51,7 @@
           <lucide-icon [img]="SparklesIcon" size="12"></lucide-icon>
           <span>{{ currentStep() + 1 }} / {{ totalSteps() }}</span>
         </div>
-        <h4 class="tooltip-title">{{ step.titleKey | translate }}</h4>
+        <h3 class="tooltip-title">{{ step.titleKey | translate }}</h3>
         <p class="tooltip-desc">{{ step.descriptionKey | translate }}</p>
       }
     </div>
@@ -64,7 +64,7 @@
           class="tour-nav-btn tour-nav-btn--secondary"
           (click)="previousStep()"
           title="{{ 'SETTINGS.FAMILY_HELP_PREVIOUS' | translate }}"
-          aria-label="Previous step"
+          aria-label="{{ 'SETTINGS.FAMILY_HELP_PREVIOUS' | translate }}"
         >
           <lucide-icon [img]="PrevIcon" size="14"></lucide-icon>
           {{ 'SETTINGS.FAMILY_HELP_PREVIOUS' | translate }}
@@ -75,7 +75,7 @@
           class="tour-nav-btn tour-nav-btn--secondary"
           (click)="onClose()"
           title="{{ 'DEMO.TOUR_SKIP' | translate }}"
-          aria-label="Skip tour"
+          aria-label="{{ 'DEMO.TOUR_SKIP' | translate }}"
         >
           {{ 'DEMO.TOUR_SKIP' | translate }}
         </button>
@@ -87,7 +87,7 @@
           class="tour-nav-btn tour-nav-btn--primary"
           (click)="onClose()"
           title="{{ 'DEMO.WIZARD_GOT_IT' | translate }}"
-          aria-label="Finish tour"
+          aria-label="{{ 'DEMO.WIZARD_GOT_IT' | translate }}"
         >
           {{ 'DEMO.WIZARD_GOT_IT' | translate }}
         </button>
@@ -97,7 +97,7 @@
           class="tour-nav-btn tour-nav-btn--primary"
           (click)="nextStep()"
           title="{{ 'SETTINGS.FAMILY_HELP_NEXT' | translate }}"
-          aria-label="Next step"
+          aria-label="{{ 'SETTINGS.FAMILY_HELP_NEXT' | translate }}"
         >
           {{ 'SETTINGS.FAMILY_HELP_NEXT' | translate }}
           <lucide-icon [img]="NextIcon" size="14"></lucide-icon>

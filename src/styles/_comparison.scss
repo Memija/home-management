@@ -121,6 +121,10 @@
       align-items: center;
       gap: 0.25rem;
 
+      [data-theme='dark'] & {
+        color: #e2e8f0;
+      }
+
       &.disabled {
         color: var(--text-muted);
       }

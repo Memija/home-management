@@ -101,7 +101,8 @@
         class="prediction-card"
         [class.active]="selectedPeriod() === 30"
         (click)="selectPeriod(30)"
-        aria-label="View 30 days prediction on chart"
+        title="{{ 'PREDICTIONS.NEXT_30_DAYS' | translate }}"
+        aria-label="{{ 'PREDICTIONS.NEXT_30_DAYS' | translate }}"
       >
         <div class="card-header">
           <lucide-icon [img]="CalendarIcon" [size]="18"></lucide-icon>
@@ -124,7 +125,8 @@
         class="prediction-card"
         [class.active]="selectedPeriod() === 90"
         (click)="selectPeriod(90)"
-        aria-label="View 90 days prediction on chart"
+        title="{{ 'PREDICTIONS.NEXT_90_DAYS' | translate }}"
+        aria-label="{{ 'PREDICTIONS.NEXT_90_DAYS' | translate }}"
       >
         <div class="card-header">
           <lucide-icon [img]="CalendarIcon" [size]="18"></lucide-icon>
@@ -147,7 +149,8 @@
         class="prediction-card"
         [class.active]="selectedPeriod() === 180"
         (click)="selectPeriod(180)"
-        aria-label="View half year prediction on chart"
+        title="{{ 'PREDICTIONS.HALF_YEAR' | translate }}"
+        aria-label="{{ 'PREDICTIONS.HALF_YEAR' | translate }}"
       >
         <div class="card-header">
           <lucide-icon [img]="CalendarIcon" [size]="18"></lucide-icon>
@@ -170,7 +173,8 @@
         class="prediction-card"
         [class.active]="selectedPeriod() === 365"
         (click)="selectPeriod(365)"
-        aria-label="View yearly prediction on chart"
+        title="{{ 'PREDICTIONS.YEARLY' | translate }}"
+        aria-label="{{ 'PREDICTIONS.YEARLY' | translate }}"
       >
         <div class="card-header">
           <lucide-icon [img]="CalendarIcon" [size]="18"></lucide-icon>
@@ -193,7 +197,8 @@
         class="prediction-card"
         [class.active]="selectedPeriod() === 3650"
         (click)="selectPeriod(3650)"
-        aria-label="View decade prediction on chart"
+        title="{{ 'PREDICTIONS.DECADE' | translate }}"
+        aria-label="{{ 'PREDICTIONS.DECADE' | translate }}"
       >
         <div class="card-header">
           <lucide-icon [img]="CalendarIcon" [size]="18"></lucide-icon>

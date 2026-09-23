@@ -61,6 +61,7 @@
 
       <div class="actions">
         <button
+          type="button"
           class="btn-cloud-upload"
           (click)="migrateToCloud()"
           [disabled]="isSyncing() || !hasUserContent()"
@@ -75,6 +76,7 @@
         </button>
 
         <button
+          type="button"
           class="btn-cloud-download"
           (click)="openDownloadModal()"
           [disabled]="isSyncing()"
@@ -89,6 +91,7 @@
         </button>
 
         <button
+          type="button"
           class="btn-danger"
           (click)="openDeleteModal()"
           [disabled]="isSyncing()"
@@ -101,6 +104,7 @@
     } @else {
       <div class="actions">
         <button
+          type="button"
           class="btn-danger"
           (click)="isClearLocalModalOpen.set(true)"
           [disabled]="!hasUserContent() || isDemoMode()"

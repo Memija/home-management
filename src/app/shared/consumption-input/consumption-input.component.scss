@@ -166,6 +166,10 @@
       color: #ffffff;
       border-radius: 8px;
 
+      :host-context([data-theme='dark']) & {
+        color: #0f172a !important;
+      }
+
       &:hover:not(:disabled) {
         background: var(--theme-primary-dark, $primary-dark);
         transform: translateY(-1px);

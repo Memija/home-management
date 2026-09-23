@@ -16,6 +16,9 @@ export const common = {
     SAVE: 'Speichern',
     DELETE: 'Löschen',
     EDIT: 'Bearbeiten',
+    OK: 'OK',
+    EXPORT_MENU: 'Exportmenü',
+    IMPORT_MENU: 'Importmenü',
   },
   MENU: {
     HOME: 'Startseite',
@@ -56,6 +59,7 @@ export const common = {
     SUBTITLE: 'Eine Übersicht aller wichtigen Änderungen in jedem Release',
     CONFIDENCE_INFO:
       'Gibt an, wie zuverlässig die Vorhersage basierend auf der Konsistenz Ihrer historischen Daten und der verfügbaren Datenmenge ist.',
+    V1_2_0_LABEL: 'Version 1.2.0',
     V1_1_0_LABEL: 'Version 1.1.0',
     SHIPPED: 'Veröffentlicht',
   },
@@ -104,6 +108,9 @@ export const common = {
     FEATURE_12_TITLE: 'Gamification & Erfolge',
     FEATURE_12_DESC:
       'Machen Sie das Sparen zu einem lustigen Spiel! Verdienen Sie Abzeichen für das Erreichen von Sparzielen und übertreffen Sie Ihre persönliche Bestleistung, um die Haushaltsführung noch spannender zu machen.',
+    FEATURE_13_TITLE: 'Familienplaner und Schulplaner',
+    FEATURE_13_DESC:
+      'Organisieren Sie Familientermine, Schulstundenpläne und wiederkehrende Haushaltsroutinen an einem Ort. Weisen Sie Familienmitgliedern Pläne zu, um alle auf dem gleichen Stand zu halten und die tägliche Koordination zu erleichtern.',
     CTA_TEXT:
       'Ihre Unterstützung hilft uns, diese Funktionen schneller zu entwickeln. Danke, dass Sie Teil unserer Community sind!',
     BACK_TO_HOME: 'Zurück zur Startseite',
@@ -317,6 +324,7 @@ export const common = {
     CAMERA_ERROR:
       'Kamera konnte nicht gestartet werden. Bitte verwenden Sie stattdessen die Upload-Option.',
     STARTING_CAMERA: 'Kamera wird gestartet...',
+    ASSIGN_TO: 'Zuordnen zu {{name}}',
   },
   // Month names for date parsing in Smart Import
   // When adding a new language, include these month names for automatic date parsing

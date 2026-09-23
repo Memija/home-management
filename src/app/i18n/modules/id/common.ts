@@ -16,6 +16,9 @@ export const common = {
     SAVE: 'Simpan',
     DELETE: 'Hapus',
     EDIT: 'Ubah',
+    OK: 'OK',
+    EXPORT_MENU: 'Menu ekspor',
+    IMPORT_MENU: 'Menu impor',
   },
   MENU: {
     HOME: 'Beranda',
@@ -56,6 +59,7 @@ export const common = {
     SUBTITLE: 'Catatan semua perubahan penting yang dikirimkan di setiap rilis',
     CONFIDENCE_INFO:
       'Menunjukkan seberapa andal prediksi berdasarkan konsistensi data historis Anda dan jumlah data yang tersedia.',
+    V1_2_0_LABEL: 'Versi 1.2.0',
     V1_1_0_LABEL: 'Versi 1.1.0',
     SHIPPED: 'Dirilis',
   },
@@ -104,6 +108,9 @@ export const common = {
     FEATURE_12_TITLE: 'Gamifikasi & Pencapaian',
     FEATURE_12_DESC:
       'Ubah penghematan menjadi permainan yang menyenangkan! Dapatkan lencana untuk mencapai target penghematan dan kalahkan rekor pribadi Anda untuk membuat manajemen rumah menjadi lebih menarik.',
+    FEATURE_13_TITLE: 'Perencana Keluarga & Sekolah',
+    FEATURE_13_DESC:
+      'Atur jadwal keluarga, jadwal pelajaran sekolah, dan rutinitas rumah tangga yang berulang di satu tempat. Tetapkan jadwal untuk anggota keluarga guna mempermudah koordinasi harian.',
     CTA_TEXT:
       'Dukungan Anda membantu kami membangun fitur-fitur ini lebih cepat. Terima kasih telah menjadi bagian dari komunitas kami!',
     BACK_TO_HOME: 'Kembali ke Beranda',
@@ -306,6 +313,7 @@ export const common = {
     NO_FIELDS_CONFIGURED:
       'Belum ada meteran yang dikonfigurasi. Silakan atur ruangan atau meteran terlebih dahulu.',
     CAMERA_ERROR: 'Tidak dapat mengakses kamera. Silakan gunakan opsi unggah sebagai gantinya.',
+    ASSIGN_TO: 'Tetapkan ke {{name}}',
   },
   MONTHS: {
     JANUARY: 'Januari',

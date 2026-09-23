@@ -123,6 +123,8 @@ export const settings = {
     EXCEL_TITLE: 'Integrasi Excel',
     EXCEL_ENABLED: 'Aktifkan Integrasi Excel',
     EXCEL_COLUMN_MAPPING: 'Konfigurasi Pemetaan Kolom',
+    EXPAND_COLUMN_MAPPING: 'Perluas pemetaan kolom',
+    COLLAPSE_COLUMN_MAPPING: 'Ciutkan pemetaan kolom',
     EXCEL_WATER_MAPPING_TITLE: 'Konsumsi Air',
     EXCEL_HEATING_MAPPING_TITLE: 'Konsumsi Pemanas',
     EXCEL_ELECTRICITY_MAPPING_TITLE: 'Konsumsi Listrik',

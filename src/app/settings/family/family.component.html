@@ -102,6 +102,11 @@
             ? ('SETTINGS.MAX_MEMBERS_ERROR' | translate)
             : ('SETTINGS.ADD_MEMBER' | translate)
         }}"
+        aria-label="{{
+          isAtMaxMembers()
+            ? ('SETTINGS.MAX_MEMBERS_ERROR' | translate)
+            : ('SETTINGS.ADD_MEMBER' | translate)
+        }}"
       >
         <lucide-icon [img]="AddIcon" size="15"></lucide-icon>
         <span class="btn-text">{{ 'SETTINGS.ADD_MEMBER' | translate }}</span>
@@ -112,6 +117,7 @@
         (click)="exportFamily()"
         [disabled]="safeMembers().length === 0"
         title="{{ 'SETTINGS.EXPORT_FAMILY' | translate }}"
+        aria-label="{{ 'SETTINGS.EXPORT_FAMILY' | translate }}"
       >
         <lucide-icon [img]="ExportIcon" size="16"></lucide-icon>
         <span class="btn-text">{{ 'SETTINGS.EXPORT_FAMILY' | translate }}</span>
@@ -121,6 +127,7 @@
         class="import-btn"
         (click)="importFamily()"
         title="{{ 'SETTINGS.IMPORT_FAMILY' | translate }}"
+        aria-label="{{ 'SETTINGS.IMPORT_FAMILY' | translate }}"
       >
         <lucide-icon [img]="ImportIcon" size="16"></lucide-icon>
         <span class="btn-text">{{ 'SETTINGS.IMPORT_FAMILY' | translate }}</span>
@@ -210,6 +217,11 @@
             ? ('SETTINGS.MAX_MEMBERS_ERROR' | translate)
             : ('SETTINGS.SHOW_ADD_MEMBER_FORM' | translate)
         }}"
+        aria-label="{{
+          isAtMaxMembers()
+            ? ('SETTINGS.MAX_MEMBERS_ERROR' | translate)
+            : ('SETTINGS.SHOW_ADD_MEMBER_FORM' | translate)
+        }}"
       >
         <lucide-icon [img]="AddIcon" size="16"></lucide-icon>
         <span class="btn-text">{{ 'SETTINGS.SHOW_ADD_MEMBER_FORM' | translate }}</span>
@@ -219,6 +231,7 @@
         class="save-btn"
         (click)="saveFamily()"
         title="{{ 'SETTINGS.SAVE_FAMILY' | translate }}"
+        aria-label="{{ 'SETTINGS.SAVE_FAMILY' | translate }}"
       >
         <lucide-icon [img]="SaveIcon" size="16"></lucide-icon>
         <span class="btn-text">{{ 'SETTINGS.SAVE_FAMILY' | translate }}</span>
@@ -228,6 +241,7 @@
         class="cancel-btn"
         (click)="cancelEdit()"
         title="{{ 'SETTINGS.CANCEL' | translate }}"
+        aria-label="{{ 'SETTINGS.CANCEL' | translate }}"
       >
         <lucide-icon [img]="CancelIcon" size="16"></lucide-icon>
         <span class="btn-text">{{ 'SETTINGS.CANCEL' | translate }}</span>
@@ -368,6 +382,7 @@
                 [class.active]="newMemberType() === 'adult'"
                 (click)="newMemberType.set('adult')"
                 title="{{ 'SETTINGS.TYPES.ADULT' | translate }}"
+                aria-label="{{ 'SETTINGS.TYPES.ADULT' | translate }}"
               >
                 <lucide-icon [img]="AdultIcon" size="16"></lucide-icon>
                 <span class="toggle-text">{{ 'SETTINGS.TYPES.ADULT' | translate }}</span>
@@ -378,6 +393,7 @@
                 [class.active]="newMemberType() === 'kid'"
                 (click)="newMemberType.set('kid')"
                 title="{{ 'SETTINGS.TYPES.KID' | translate }}"
+                aria-label="{{ 'SETTINGS.TYPES.KID' | translate }}"
               >
                 <lucide-icon [img]="KidIcon" size="16"></lucide-icon>
                 <span class="toggle-text">{{ 'SETTINGS.TYPES.KID' | translate }}</span>
@@ -393,6 +409,7 @@
                 [class.active]="newMemberGender() === 'male'"
                 (click)="newMemberGender.set('male')"
                 title="{{ 'SETTINGS.GENDERS.MALE' | translate }}"
+                aria-label="{{ 'SETTINGS.GENDERS.MALE' | translate }}"
               >
                 <lucide-icon [img]="MaleIcon" size="16"></lucide-icon>
                 <span class="toggle-text">{{ 'SETTINGS.GENDERS.MALE' | translate }}</span>
@@ -403,6 +420,7 @@
                 [class.active]="newMemberGender() === 'female'"
                 (click)="newMemberGender.set('female')"
                 title="{{ 'SETTINGS.GENDERS.FEMALE' | translate }}"
+                aria-label="{{ 'SETTINGS.GENDERS.FEMALE' | translate }}"
               >
                 <lucide-icon [img]="FemaleIcon" size="16"></lucide-icon>
                 <span class="toggle-text">{{ 'SETTINGS.GENDERS.FEMALE' | translate }}</span>
@@ -450,7 +468,13 @@
       </div>
 
       <div class="modal-footer">
-        <button type="button" class="btn-secondary cancel-btn" (click)="closeAddMemberModal()">
+        <button
+          type="button"
+          class="btn-secondary cancel-btn"
+          (click)="closeAddMemberModal()"
+          title="{{ 'SETTINGS.CANCEL' | translate }}"
+          aria-label="{{ 'SETTINGS.CANCEL' | translate }}"
+        >
           <lucide-icon [img]="CancelIcon" size="15"></lucide-icon>
           <span class="btn-text">{{ 'SETTINGS.CANCEL' | translate }}</span>
         </button>
@@ -466,6 +490,7 @@
             newMemberSurnameError()
           "
           title="{{ 'SETTINGS.ADD_MEMBER' | translate }}"
+          aria-label="{{ 'SETTINGS.ADD_MEMBER' | translate }}"
         >
           <lucide-icon [img]="AddIcon" size="15"></lucide-icon>
           <span class="btn-text">{{ 'SETTINGS.ADD_MEMBER' | translate }}</span>

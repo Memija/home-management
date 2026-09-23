@@ -17,7 +17,13 @@
         >
           <lucide-icon [img]="HelpIcon" size="20"></lucide-icon>
         </button>
-        <button class="close-btn" (click)="onCancel()" title="{{ 'ACTIONS.CLOSE' | translate }}">
+        <button
+          type="button"
+          class="close-btn"
+          (click)="onCancel()"
+          title="{{ 'ACTIONS.CLOSE' | translate }}"
+          aria-label="{{ 'ACTIONS.CLOSE' | translate }}"
+        >
           &times;
         </button>
       </div>
@@ -63,18 +69,18 @@
                     type="button"
                     class="lock-btn"
                     (click)="isLocked(room.id) ? requestUnlock(room.id) : lockRoom(room.id)"
-                    title="Lock"
-                    aria-label="Lock"
-                    [title]="
-                      isLocked(room.id)
-                        ? ('HEATING.ROOM_LOCKED_TOOLTIP' | translate)
-                        : ('HEATING.ROOM_UNLOCKED_TOOLTIP' | translate)
-                    "
-                    [attr.aria-label]="
-                      isLocked(room.id)
-                        ? ('HEATING.ROOM_LOCKED_TOOLTIP' | translate)
-                        : ('HEATING.ROOM_UNLOCKED_TOOLTIP' | translate)
-                    "
+                    title="{{
+                      (isLocked(room.id)
+                        ? 'HEATING.ROOM_LOCKED_TOOLTIP'
+                        : 'HEATING.ROOM_UNLOCKED_TOOLTIP'
+                      ) | translate
+                    }}"
+                    aria-label="{{
+                      (isLocked(room.id)
+                        ? 'HEATING.ROOM_LOCKED_TOOLTIP'
+                        : 'HEATING.ROOM_UNLOCKED_TOOLTIP'
+                      ) | translate
+                    }}"
                   >
                     <lucide-icon
                       [img]="isLocked(room.id) ? LockIcon : LockOpenIcon"
@@ -102,7 +108,8 @@
           class="add-room-btn"
           (click)="addRoom()"
           [disabled]="!canAddRoom()"
-          [title]="!canAddRoom() ? maxRoomsMessage() : ('HEATING.ADD_ROOM' | translate)"
+          title="{{ !canAddRoom() ? maxRoomsMessage() : ('HEATING.ADD_ROOM' | translate) }}"
+          aria-label="{{ !canAddRoom() ? maxRoomsMessage() : ('HEATING.ADD_ROOM' | translate) }}"
         >
           <lucide-icon [img]="PlusIcon" size="18"></lucide-icon>
           {{ 'HEATING.ADD_ROOM' | translate }}
@@ -133,8 +140,23 @@
       </div>
 
       <div class="modal-footer">
-        <button class="btn-secondary" (click)="onCancel()">{{ 'HOME.CANCEL' | translate }}</button>
-        <button class="btn-primary" (click)="onSave()" [disabled]="hasErrors()">
+        <button
+          type="button"
+          class="btn-secondary"
+          (click)="onCancel()"
+          title="{{ 'HOME.CANCEL' | translate }}"
+          aria-label="{{ 'HOME.CANCEL' | translate }}"
+        >
+          {{ 'HOME.CANCEL' | translate }}
+        </button>
+        <button
+          type="button"
+          class="btn-primary"
+          (click)="onSave()"
+          [disabled]="hasErrors()"
+          title="{{ 'HOME.SAVE' | translate }}"
+          aria-label="{{ 'HOME.SAVE' | translate }}"
+        >
           {{ 'HOME.SAVE' | translate }}
         </button>
       </div>
@@ -164,10 +186,22 @@
         <p>{{ 'HEATING.UNLOCK_WARNING_MESSAGE' | translate }}</p>
       </div>
       <div class="modal-footer">
-        <button class="btn-secondary" (click)="cancelUnlock()">
+        <button
+          type="button"
+          class="btn-secondary"
+          (click)="cancelUnlock()"
+          title="{{ 'HOME.CANCEL' | translate }}"
+          aria-label="{{ 'HOME.CANCEL' | translate }}"
+        >
           {{ 'HOME.CANCEL' | translate }}
         </button>
-        <button class="btn-primary" (click)="confirmUnlock()">
+        <button
+          type="button"
+          class="btn-primary"
+          (click)="confirmUnlock()"
+          title="{{ 'HEATING.UNLOCK_BUTTON' | translate }}"
+          aria-label="{{ 'HEATING.UNLOCK_BUTTON' | translate }}"
+        >
           {{ 'HEATING.UNLOCK_BUTTON' | translate }}
         </button>
       </div>
@@ -197,10 +231,22 @@
         <p>{{ 'HEATING.DISCARD_WARNING_MESSAGE' | translate }}</p>
       </div>
       <div class="modal-footer">
-        <button class="btn-secondary" (click)="cancelDiscard()">
+        <button
+          type="button"
+          class="btn-secondary"
+          (click)="cancelDiscard()"
+          title="{{ 'HOME.CANCEL' | translate }}"
+          aria-label="{{ 'HOME.CANCEL' | translate }}"
+        >
           {{ 'HOME.CANCEL' | translate }}
         </button>
-        <button class="btn-primary discard-btn" (click)="confirmDiscard()">
+        <button
+          type="button"
+          class="btn-primary discard-btn"
+          (click)="confirmDiscard()"
+          title="{{ 'HEATING.DISCARD_BUTTON' | translate }}"
+          aria-label="{{ 'HEATING.DISCARD_BUTTON' | translate }}"
+        >
           {{ 'HEATING.DISCARD_BUTTON' | translate }}
         </button>
       </div>

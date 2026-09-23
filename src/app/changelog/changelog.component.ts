@@ -8,6 +8,7 @@ import {
   Droplets,
   Maximize2,
   Brain,
+  Zap,
   LucideIconData,
 } from 'lucide-angular';
 
@@ -31,6 +32,19 @@ export class ChangelogComponent {
   readonly CheckCircleIcon = CheckCircle2;
 
   readonly versions: { version: string; labelKey: string; entries: ChangelogEntry[] }[] = [
+    {
+      version: '1.2.0',
+      labelKey: 'CHANGELOG.V1_2_0_LABEL',
+      entries: [
+        {
+          id: 5,
+          titleKey: 'RELEASE_PLAN.FEATURE_5_TITLE',
+          descKey: 'RELEASE_PLAN.FEATURE_5_DESC',
+          icon: Zap,
+          colorClass: 'enhancement-feature',
+        },
+      ],
+    },
     {
       version: '1.1.0',
       labelKey: 'CHANGELOG.V1_1_0_LABEL',

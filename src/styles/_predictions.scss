@@ -72,19 +72,19 @@
 
   &.high {
     background: rgba(16, 185, 129, 0.12);
-    color: #059669;
+    color: #047857;
     border: 1px solid rgba(16, 185, 129, 0.25);
   }
 
   &.medium {
     background: rgba(245, 158, 11, 0.12);
-    color: #d97706;
+    color: #b45309;
     border: 1px solid rgba(245, 158, 11, 0.25);
   }
 
   &.low {
     background: rgba(239, 68, 68, 0.12);
-    color: #dc2626;
+    color: #b91c1c;
     border: 1px solid rgba(239, 68, 68, 0.25);
   }
 }
@@ -123,7 +123,7 @@
   padding: 0.65rem 1rem;
   border-radius: 10px;
   background: rgba(37, 99, 235, 0.1);
-  color: #2563eb;
+  color: #1d4ed8;
   font-size: 0.8rem;
   font-weight: 600;
   word-break: break-word;
@@ -195,12 +195,12 @@
 
   .rising & {
     background: rgba(220, 38, 38, 0.1);
-    color: #dc2626;
+    color: #b91c1c;
   }
 
   .falling & {
     background: rgba(5, 150, 105, 0.1);
-    color: #059669;
+    color: #047857;
   }
 
   .stable & {

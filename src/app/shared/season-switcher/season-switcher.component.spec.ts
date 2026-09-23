@@ -134,4 +134,15 @@ describe('SeasonSwitcherComponent', () => {
     expect(nameEl.nativeElement.textContent.trim()).toBe('SEASONS.SPRING.NAME_TRANSLATED');
     expect(taglineEl.nativeElement.textContent.trim()).toBe('SEASONS.SPRING.TAGLINE_TRANSLATED');
   });
+
+  it('should have localized aria-labels on navigation buttons', () => {
+    disabledSignal.set(false);
+    fixture.detectChanges();
+
+    const prevButton = fixture.debugElement.query(By.css('.season-nav-btn.prev'));
+    const nextButton = fixture.debugElement.query(By.css('.season-nav-btn.next'));
+
+    expect(prevButton.nativeElement.getAttribute('aria-label')).toBe('SEASONS.PREVIOUS_TRANSLATED');
+    expect(nextButton.nativeElement.getAttribute('aria-label')).toBe('SEASONS.NEXT_TRANSLATED');
+  });
 });

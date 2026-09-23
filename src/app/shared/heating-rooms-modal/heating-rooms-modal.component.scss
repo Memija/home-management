@@ -1,5 +1,5 @@
 @use 'variables' as *;
-$heating-primary: #f57c00;
+$heating-primary: #c2410c;
 
 .modal-header {
   .settings-icon {
@@ -88,6 +88,15 @@ $heating-primary: #f57c00;
     background: rgba($heating-primary, 0.05);
   }
 
+  :host-context([data-theme='dark']) & {
+    border-color: #fb923c;
+    color: #fb923c;
+
+    &:hover:not(:disabled) {
+      background: rgba(251, 146, 60, 0.1);
+    }
+  }
+
   &:disabled {
     opacity: 0.4;
     cursor: not-allowed;
@@ -153,10 +162,23 @@ $heating-primary: #f57c00;
 .modal-footer .btn-primary {
   background: $heating-primary;
   border-color: $heating-primary;
+  color: white;
+
+  :host-context([data-theme='dark']) & {
+    background: #fb923c;
+    border-color: #fb923c;
+    color: #0f172a !important;
+  }
 
   &:hover:not(:disabled) {
     background: #ef6c00;
     border-color: #ef6c00;
+
+    :host-context([data-theme='dark']) & {
+      background: #f97316;
+      border-color: #f97316;
+      color: #0f172a !important;
+    }
   }
 
   &:disabled {

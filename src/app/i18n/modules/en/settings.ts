@@ -120,6 +120,8 @@ export const settings = {
     EXCEL_TITLE: 'Excel Integration',
     EXCEL_ENABLED: 'Enable Excel Integration',
     EXCEL_COLUMN_MAPPING: 'Column Mapping Configuration',
+    EXPAND_COLUMN_MAPPING: 'Expand column mapping',
+    COLLAPSE_COLUMN_MAPPING: 'Collapse column mapping',
     EXCEL_WATER_MAPPING_TITLE: 'Water Consumption',
     EXCEL_HEATING_MAPPING_TITLE: 'Heating Consumption',
     EXCEL_ELECTRICITY_MAPPING_TITLE: 'Electricity Consumption',

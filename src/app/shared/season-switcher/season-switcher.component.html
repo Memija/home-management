@@ -4,8 +4,8 @@
       type="button"
       class="season-nav-btn prev"
       (click)="previousSeason()"
-      [title]="'SEASONS.PREVIOUS' | translate"
-      aria-label="Previous season"
+      title="{{ 'SEASONS.PREVIOUS' | translate }}"
+      aria-label="{{ 'SEASONS.PREVIOUS' | translate }}"
     >
       <lucide-icon [img]="ChevronLeftIcon" size="18"></lucide-icon>
     </button>
@@ -27,8 +27,8 @@
       type="button"
       class="season-nav-btn next"
       (click)="nextSeason()"
-      [title]="'SEASONS.NEXT' | translate"
-      aria-label="Next season"
+      title="{{ 'SEASONS.NEXT' | translate }}"
+      aria-label="{{ 'SEASONS.NEXT' | translate }}"
     >
       <lucide-icon [img]="ChevronRightIcon" size="18"></lucide-icon>
     </button>

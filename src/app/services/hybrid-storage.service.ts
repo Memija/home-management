@@ -214,6 +214,13 @@ export class HybridStorageService extends StorageService {
   }
 
   /**
+   * Synchronously load data - always reads from localStorage (cache-first)
+   */
+  override loadSync<T>(key: string): T | null {
+    return this.localStorage.loadSync<T>(key);
+  }
+
+  /**
    * Delete data - deletes from localStorage, optionally from cloud
    */
   async delete(key: string): Promise<void> {

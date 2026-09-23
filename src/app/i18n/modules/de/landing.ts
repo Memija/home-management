@@ -9,6 +9,9 @@ export const landing = {
     CTA_OPEN_APP: 'App öffnen',
     CTA_SEE_FEATURES: 'Funktionen ansehen',
     SCROLL_TO_EXPLORE: 'Scrollen zum Entdecken',
+    BRAND_LABEL: 'Home Management Startseite',
+    THEME_TOGGLE: 'Farbdesign umschalten',
+    SCROLL_PROGRESS: 'Seitenscrollfortschritt',
     STATS: {
       FREE: 'Kostenlos und Open Source',
       TRACKERS: 'Verbrauchszähler',

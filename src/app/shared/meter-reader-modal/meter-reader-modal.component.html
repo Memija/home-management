@@ -16,10 +16,11 @@
         <lucide-icon [img]="CameraIcon" size="24" class="header-icon"></lucide-icon>
         <h3>{{ 'METER_READER.TITLE' | translate }}</h3>
         <button
+          type="button"
           class="close-btn"
           (click)="onClose($event)"
           title="{{ 'ACTIONS.CLOSE' | translate }}"
-          aria-label="Close meter reader"
+          aria-label="{{ 'ACTIONS.CLOSE' | translate }}"
         >
           <lucide-icon [img]="XIcon" size="18"></lucide-icon>
         </button>
@@ -64,7 +65,7 @@
                     [disabled]="!isCameraReady()"
                     [class.disabled]="!isCameraReady()"
                     title="{{ 'METER_READER.CAPTURE' | translate }}"
-                    aria-label="Capture photo"
+                    aria-label="{{ 'METER_READER.CAPTURE' | translate }}"
                   >
                     <lucide-icon [img]="CameraIcon" size="24"></lucide-icon>
                   </button>
@@ -73,7 +74,7 @@
                     class="btn-cancel-camera"
                     (click)="stopCamera()"
                     title="{{ 'ACTIONS.CANCEL' | translate }}"
-                    aria-label="Cancel camera"
+                    aria-label="{{ 'ACTIONS.CANCEL' | translate }}"
                   >
                     <lucide-icon [img]="XIcon" size="20"></lucide-icon>
                   </button>
@@ -94,7 +95,7 @@
                   type="button"
                   class="capture-option-btn"
                   (click)="startCamera()"
-                  aria-label="Take a photo with camera"
+                  title="{{ 'METER_READER.TAKE_PHOTO' | translate }}"
                 >
                   <div class="option-icon camera-gradient">
                     <lucide-icon [img]="CameraIcon" size="32"></lucide-icon>
@@ -106,7 +107,7 @@
                 <label
                   class="capture-option-btn"
                   for="meter-image-upload"
-                  aria-label="Upload an image"
+                  title="{{ 'METER_READER.UPLOAD_IMAGE' | translate }}"
                 >
                   <div class="option-icon upload-gradient">
                     <lucide-icon [img]="UploadIcon" size="32"></lucide-icon>
@@ -154,7 +155,13 @@
               }
             </div>
             <div class="result-actions">
-              <button type="button" class="btn-secondary" (click)="retry()" aria-label="Retake">
+              <button
+                type="button"
+                class="btn-secondary"
+                (click)="retry()"
+                title="{{ 'METER_READER.RETRY' | translate }}"
+                aria-label="{{ 'METER_READER.RETRY' | translate }}"
+              >
                 <lucide-icon [img]="RetryIcon" size="16"></lucide-icon>
                 {{ 'METER_READER.RETRY' | translate }}
               </button>
@@ -163,7 +170,8 @@
                   type="button"
                   class="btn-primary"
                   (click)="confirmCrop()"
-                  aria-label="Scan selection"
+                  title="{{ 'METER_READER.SCAN_SELECTION' | translate }}"
+                  aria-label="{{ 'METER_READER.SCAN_SELECTION' | translate }}"
                 >
                   <lucide-icon [img]="CropIcon" size="16"></lucide-icon>
                   {{ 'METER_READER.SCAN_SELECTION' | translate }}
@@ -212,7 +220,9 @@
 
             @if (selectedValue() !== null) {
               <div class="result-card success-card">
-                <div class="result-label">{{ 'METER_READER.DETECTED_VALUE' | translate }}</div>
+                <label for="meter-detected-value" class="result-label">
+                  {{ 'METER_READER.DETECTED_VALUE' | translate }}
+                </label>
                 <div class="result-value-editor">
                   <input
                     id="meter-detected-value"
@@ -222,7 +232,9 @@
                     [value]="editedValue()"
                     (input)="onValueEdit($event)"
                     class="value-input"
-                    aria-label="Detected meter value"
+                    placeholder="0"
+                    title="{{ 'METER_READER.DETECTED_VALUE' | translate }}"
+                    aria-label="{{ 'METER_READER.DETECTED_VALUE' | translate }}"
                   />
                 </div>
                 <p class="edit-hint">{{ 'METER_READER.EDIT_HINT' | translate }}</p>
@@ -234,7 +246,13 @@
             }
 
             <div class="result-actions">
-              <button type="button" class="btn-secondary" (click)="retry()" aria-label="Try again">
+              <button
+                type="button"
+                class="btn-secondary"
+                (click)="retry()"
+                title="{{ 'METER_READER.RETRY' | translate }}"
+                aria-label="{{ 'METER_READER.RETRY' | translate }}"
+              >
                 <lucide-icon [img]="RetryIcon" size="16"></lucide-icon>
                 {{ 'METER_READER.RETRY' | translate }}
               </button>
@@ -243,7 +261,8 @@
                   type="button"
                   class="btn-primary"
                   (click)="confirmValue()"
-                  aria-label="Use this value"
+                  title="{{ 'METER_READER.USE_VALUE' | translate }}"
+                  aria-label="{{ 'METER_READER.USE_VALUE' | translate }}"
                 >
                   <lucide-icon [img]="CheckIcon" size="16"></lucide-icon>
                   {{ 'METER_READER.USE_VALUE' | translate }}
@@ -261,7 +280,13 @@
             @if (hasNoFields()) {
               <div class="no-fields-notice">
                 <p>{{ 'METER_READER.NO_FIELDS_CONFIGURED' | translate }}</p>
-                <button type="button" class="btn-secondary" (click)="retry()" aria-label="Go back">
+                <button
+                  type="button"
+                  class="btn-secondary"
+                  (click)="retry()"
+                  title="{{ 'METER_READER.RETRY' | translate }}"
+                  aria-label="{{ 'METER_READER.RETRY' | translate }}"
+                >
                   <lucide-icon [img]="RetryIcon" size="16"></lucide-icon>
                   {{ 'METER_READER.RETRY' | translate }}
                 </button>
@@ -281,7 +306,14 @@
                           type="button"
                           class="field-option-btn"
                           (click)="selectField(field.key)"
-                          [attr.aria-label]="'Assign to ' + field.key"
+                          title="{{
+                            'METER_READER.ASSIGN_TO'
+                              | translate: { name: (field.label | translate) }
+                          }}"
+                          aria-label="{{
+                            'METER_READER.ASSIGN_TO'
+                              | translate: { name: (field.label | translate) }
+                          }}"
                         >
                           <span class="field-btn-left">
                             @if (field.icon) {

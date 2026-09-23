@@ -9,7 +9,13 @@
       <div class="modal-header">
         <lucide-icon [img]="icon" size="32" class="warning-icon"></lucide-icon>
         <h3>{{ titleKey | translate }}</h3>
-        <button class="close-btn" (click)="onCancel()" title="{{ 'ACTIONS.CLOSE' | translate }}">
+        <button
+          type="button"
+          class="close-btn"
+          (click)="onCancel()"
+          title="{{ 'ACTIONS.CLOSE' | translate }}"
+          aria-label="{{ 'ACTIONS.CLOSE' | translate }}"
+        >
           &times;
         </button>
       </div>
@@ -17,8 +23,24 @@
         <p>{{ translatedMessage() }}</p>
       </div>
       <div class="modal-footer">
-        <button class="btn-secondary" (click)="onCancel()">{{ cancelKey | translate }}</button>
-        <button class="btn-danger" (click)="onConfirm()">{{ deleteKey | translate }}</button>
+        <button
+          type="button"
+          class="btn-secondary"
+          (click)="onCancel()"
+          title="{{ cancelKey | translate }}"
+          aria-label="{{ cancelKey | translate }}"
+        >
+          {{ cancelKey | translate }}
+        </button>
+        <button
+          type="button"
+          class="btn-danger"
+          (click)="onConfirm()"
+          title="{{ deleteKey | translate }}"
+          aria-label="{{ deleteKey | translate }}"
+        >
+          {{ deleteKey | translate }}
+        </button>
       </div>
     </div>
   </div>

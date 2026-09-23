@@ -121,6 +121,8 @@ export const settings = {
     EXCEL_TITLE: 'Integracja z Excelem',
     EXCEL_ENABLED: 'Włącz integrację z Excelem',
     EXCEL_COLUMN_MAPPING: 'Konfiguracja Mapowania Kolumn',
+    EXPAND_COLUMN_MAPPING: 'Rozwiń mapowanie kolumn',
+    COLLAPSE_COLUMN_MAPPING: 'Zwiń mapowanie kolumn',
     EXCEL_WATER_MAPPING_TITLE: 'Zużycie Wody',
     EXCEL_HEATING_MAPPING_TITLE: 'Zużycie Ogrzewania',
     EXCEL_ELECTRICITY_MAPPING_TITLE: 'Zużycie Energii',

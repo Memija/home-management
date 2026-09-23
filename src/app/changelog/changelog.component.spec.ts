@@ -1,6 +1,6 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { ChangelogComponent } from './changelog.component';
-import { LucideAngularModule, Camera, CheckCircle2, History } from 'lucide-angular';
+import { LucideAngularModule, Camera, CheckCircle2, History, Zap } from 'lucide-angular';
 import { By } from '@angular/platform-browser';
 import { LanguageService, Language } from '../services/language.service';
 import { signal } from '@angular/core';
@@ -17,7 +17,10 @@ describe('ChangelogComponent', () => {
     };
 
     await TestBed.configureTestingModule({
-      imports: [ChangelogComponent, LucideAngularModule.pick({ Camera, CheckCircle2, History })],
+      imports: [
+        ChangelogComponent,
+        LucideAngularModule.pick({ Camera, CheckCircle2, History, Zap }),
+      ],
       providers: [{ provide: LanguageService, useValue: mockLanguageService }],
     }).compileComponents();
 
@@ -56,13 +59,13 @@ describe('ChangelogComponent', () => {
     const firstEntryCard = fixture.debugElement.query(By.css('.entry-card'));
     expect(firstEntryCard).toBeTruthy();
 
-    expect(firstEntryCard.classes['new-feature']).toBeTruthy();
+    expect(firstEntryCard.classes['enhancement-feature']).toBeTruthy();
 
     const title = firstEntryCard.query(By.css('.entry-content h2'));
     const desc = firstEntryCard.query(By.css('.entry-content p'));
 
-    expect(title.nativeElement.textContent.trim()).toBe('RELEASE_PLAN.FEATURE_4_TITLE');
-    expect(desc.nativeElement.textContent.trim()).toBe('RELEASE_PLAN.FEATURE_4_DESC');
+    expect(title.nativeElement.textContent.trim()).toBe('RELEASE_PLAN.FEATURE_5_TITLE');
+    expect(desc.nativeElement.textContent.trim()).toBe('RELEASE_PLAN.FEATURE_5_DESC');
   });
 
   describe('Edge cases', () => {

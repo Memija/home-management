@@ -58,9 +58,37 @@
 
   // Component-specific
   --primary-light-bg: #e7f3ff;
+
+  // Badge colors
+  --badge-default-bg: rgba(99, 102, 241, 0.1);
+  --badge-default-color: #4338ca;
+  --badge-kid-bg: rgba(16, 185, 129, 0.12);
+  --badge-kid-color: #047857;
+  --badge-gender-bg: rgba(14, 165, 233, 0.12);
+  --badge-gender-color: #0369a1;
+  --badge-female-bg: rgba(244, 63, 94, 0.12);
+  --badge-female-color: #be123c;
+  --badge-max-color: #ea580c;
+  --badge-max-border: rgba(234, 88, 12, 0.3);
 }
 
 [data-theme='dark'] {
+  // Primary brand & theme tokens for dark mode
+  --theme-primary: #38bdf8;
+  --theme-primary-rgb: 56, 189, 248;
+
+  // Badge colors for dark mode
+  --badge-default-bg: rgba(165, 180, 252, 0.15);
+  --badge-default-color: #a5b4fc;
+  --badge-kid-bg: rgba(110, 231, 183, 0.15);
+  --badge-kid-color: #6ee7b7;
+  --badge-gender-bg: rgba(125, 211, 252, 0.15);
+  --badge-gender-color: #7dd3fc;
+  --badge-female-bg: rgba(253, 164, 175, 0.15);
+  --badge-female-color: #fda4af;
+  --badge-max-color: #fb923c;
+  --badge-max-border: rgba(251, 146, 60, 0.3);
+
   // Background colors
   --bg-primary: #1a1a2e;
   --bg-secondary: #16213e;
@@ -170,6 +198,38 @@
       color: #fb7185;
       background: rgba(251, 113, 133, 0.12);
       border-color: rgba(251, 113, 133, 0.25);
+    }
+  }
+
+  .trend-indicator {
+    &.rising {
+      color: #f87171;
+    }
+
+    &.falling {
+      color: #34d399;
+    }
+  }
+
+  .rising .trend-percent,
+  .trend-indicator.rising .trend-percent {
+    background: rgba(248, 113, 113, 0.15);
+    color: #fca5a5;
+  }
+
+  .falling .trend-percent,
+  .trend-indicator.falling .trend-percent {
+    background: rgba(52, 211, 153, 0.15);
+    color: #6ee7b7;
+  }
+
+  .category-trend {
+    &.rising {
+      color: #f87171;
+    }
+
+    &.falling {
+      color: #34d399;
     }
   }
 }

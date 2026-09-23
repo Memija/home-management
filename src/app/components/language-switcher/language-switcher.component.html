@@ -1,10 +1,13 @@
 <div class="language-switcher-container">
   <div class="dropdown">
     <button
+      type="button"
       class="dropdown-trigger"
       (click)="toggleDropdown()"
-      [title]="'LANGUAGE.CHOOSE' | translate"
-      [aria-label]="'LANGUAGE.CHOOSE' | translate"
+      title="{{ 'LANGUAGE.CHOOSE' | translate }}"
+      aria-label="{{
+        languageService.currentLang().toUpperCase() + ' - ' + ('LANGUAGE.CHOOSE' | translate)
+      }}"
     >
       <div class="flag-wrapper" aria-hidden="true">
         <img
@@ -26,11 +29,13 @@
     <div class="dropdown-menu" [class.show]="isDropdownOpen()" role="menu">
       @for (lang of languages; track lang) {
         <button
+          type="button"
           class="dropdown-item"
           [class.active]="languageService.currentLang() === lang"
           (click)="selectLanguage(lang)"
           role="menuitem"
-          [aria-label]="languageNames[lang]"
+          title="{{ languageNames[lang] }}"
+          aria-label="{{ languageNames[lang] }}"
         >
           <div class="lang-title">
             <div class="flag-wrapper small" aria-hidden="true">

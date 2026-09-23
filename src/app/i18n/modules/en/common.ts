@@ -16,6 +16,9 @@ export const common = {
     SAVE: 'Save',
     DELETE: 'Delete',
     EDIT: 'Edit',
+    OK: 'OK',
+    EXPORT_MENU: 'Export menu',
+    IMPORT_MENU: 'Import menu',
   },
   MENU: {
     HOME: 'Home',
@@ -56,6 +59,7 @@ export const common = {
     SUBTITLE: 'A record of all notable changes shipped in each release',
     CONFIDENCE_INFO:
       'Indicates how reliable the prediction is based on the consistency of your historical data and the amount of data available.',
+    V1_2_0_LABEL: 'Version 1.2.0',
     V1_1_0_LABEL: 'Version 1.1.0',
     SHIPPED: 'Shipped',
   },
@@ -103,6 +107,9 @@ export const common = {
     FEATURE_12_TITLE: 'Gamification & Achievements',
     FEATURE_12_DESC:
       'Turn savings into a fun game! Earn badges for reaching conservation milestones and beat your personal best to make home management more engaging.',
+    FEATURE_13_TITLE: 'Family & School Planner',
+    FEATURE_13_DESC:
+      'Organize daily family schedules, school timetables, and recurring household routines in one place. Assign schedules to family members to keep everyone synchronized and simplify everyday home coordination.',
     CTA_TEXT:
       'Your support helps us build these features faster. Thank you for being part of our community!',
     BACK_TO_HOME: 'Back to Home',
@@ -311,6 +318,7 @@ export const common = {
     NO_FIELDS_CONFIGURED: 'No meters are configured yet. Please set up your rooms or meters first.',
     CAMERA_ERROR: 'Could not access camera. Please use the upload option instead.',
     STARTING_CAMERA: 'Starting camera...',
+    ASSIGN_TO: 'Assign to {{name}}',
   },
   // Month names for date parsing in Smart Import
   // When adding a new language, include these month names for automatic date parsing

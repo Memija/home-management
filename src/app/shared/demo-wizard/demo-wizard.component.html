@@ -75,6 +75,7 @@
           class="wizard-btn wizard-btn-secondary"
           (click)="previousStep()"
           [style.visibility]="isFirstStep() ? 'hidden' : 'visible'"
+          title="{{ 'SETTINGS.FAMILY_HELP_PREVIOUS' | translate }}"
           aria-label="{{ 'SETTINGS.FAMILY_HELP_PREVIOUS' | translate }}"
         >
           <lucide-icon [img]="PrevIcon" size="16"></lucide-icon>
@@ -86,6 +87,7 @@
             type="button"
             class="wizard-btn wizard-btn-primary"
             (click)="onClose()"
+            title="{{ 'DEMO.WIZARD_GOT_IT' | translate }}"
             aria-label="{{ 'DEMO.WIZARD_GOT_IT' | translate }}"
           >
             {{ 'DEMO.WIZARD_GOT_IT' | translate }}
@@ -95,6 +97,7 @@
             type="button"
             class="wizard-btn wizard-btn-primary"
             (click)="nextStep()"
+            title="{{ 'SETTINGS.FAMILY_HELP_NEXT' | translate }}"
             aria-label="{{ 'SETTINGS.FAMILY_HELP_NEXT' | translate }}"
           >
             {{ 'SETTINGS.FAMILY_HELP_NEXT' | translate }}

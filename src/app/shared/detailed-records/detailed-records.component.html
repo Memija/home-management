@@ -38,12 +38,16 @@
               <div class="filter-box">
                 <div class="select-with-icon">
                   <lucide-icon [img]="CalendarIcon" size="16"></lucide-icon>
+                  <label for="year-filter" class="sr-only">
+                    {{ 'HOME.FILTER_BY_YEAR' | translate }}
+                  </label>
                   <select
                     id="year-filter"
                     name="year-filter"
                     [ngModel]="searchYear() ?? ''"
                     (ngModelChange)="searchYear.set($event === '' ? null : +$event)"
-                    aria-label="Filter by year"
+                    title="{{ 'HOME.FILTER_BY_YEAR' | translate }}"
+                    aria-label="{{ 'HOME.FILTER_BY_YEAR' | translate }}"
                   >
                     <option value="">{{ 'HOME.FILTER_YEAR' | translate }}</option>
                     @for (year of availableYears(); track year) {
@@ -53,12 +57,16 @@
                 </div>
                 <div class="select-with-icon">
                   <lucide-icon [img]="CalendarFoldIcon" size="16"></lucide-icon>
+                  <label for="month-filter" class="sr-only">
+                    {{ 'HOME.FILTER_BY_MONTH' | translate }}
+                  </label>
                   <select
                     id="month-filter"
                     name="month-filter"
                     [ngModel]="searchMonth()"
                     (ngModelChange)="searchMonth.set($event !== 'null' ? +$event : null)"
-                    aria-label="Filter by month"
+                    title="{{ 'HOME.FILTER_BY_MONTH' | translate }}"
+                    aria-label="{{ 'HOME.FILTER_BY_MONTH' | translate }}"
                   >
                     <option value="null">{{ 'HOME.FILTER_MONTH' | translate }}</option>
                     <option value="0" [disabled]="isMonthDisabled(0)">
@@ -118,12 +126,16 @@
               <div class="filter-box">
                 <div class="select-with-icon">
                   <lucide-icon [img]="SortIcon" size="16"></lucide-icon>
+                  <label for="sort-records" class="sr-only">
+                    {{ 'HOME.SORT_RECORDS' | translate }}
+                  </label>
                   <select
                     id="sort-records"
                     name="sort-records"
                     [ngModel]="sortOption()"
                     (ngModelChange)="setSortOption($event)"
-                    aria-label="Sort records"
+                    title="{{ 'HOME.SORT_RECORDS' | translate }}"
+                    aria-label="{{ 'HOME.SORT_RECORDS' | translate }}"
                   >
                     @for (option of sortOptionsSignal(); track option.value) {
                       <option [value]="option.value">
@@ -273,8 +285,11 @@
               <label for="pagination-size">{{ 'HOME.PAGINATION_SIZE' | translate }}:</label>
               <select
                 id="pagination-size"
+                name="pagination-size"
                 [ngModel]="paginationSize()"
                 (ngModelChange)="onPaginationSizeChange(+$event)"
+                title="{{ 'HOME.PAGINATION_SIZE' | translate }}"
+                aria-label="{{ 'HOME.PAGINATION_SIZE' | translate }}"
               >
                 <option [value]="5">5</option>
                 <option [value]="10">10</option>
@@ -291,6 +306,8 @@
               class="pagination-btn"
               (click)="prevPage()"
               [disabled]="currentPage() === 1"
+              title="{{ 'HOME.PREVIOUS_PAGE' | translate }}"
+              aria-label="{{ 'HOME.PREVIOUS_PAGE' | translate }}"
             >
               <lucide-icon [img]="ChevronLeftIcon" size="16"></lucide-icon>
               {{ 'HOME.PREVIOUS_PAGE' | translate }}
@@ -300,6 +317,8 @@
               class="pagination-btn"
               (click)="nextPage()"
               [disabled]="currentPage() >= totalPages()"
+              title="{{ 'HOME.NEXT_PAGE' | translate }}"
+              aria-label="{{ 'HOME.NEXT_PAGE' | translate }}"
             >
               {{ 'HOME.NEXT_PAGE' | translate }}
               <lucide-icon [img]="ChevronRightIcon" size="16"></lucide-icon>

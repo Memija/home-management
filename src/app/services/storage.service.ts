@@ -32,6 +32,16 @@ export abstract class StorageService {
   abstract load<T>(key: string): Promise<T | null>;
 
   /**
+   * Synchronously load data from cache or local storage if available.
+   * @param key The storage key
+   * @returns The loaded data or null if not found or unsupported
+   */
+  loadSync<T>(key: string): T | null {
+    void key;
+    return null;
+  }
+
+  /**
    * Delete data from storage
    * @param key The storage key
    */

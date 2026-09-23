@@ -15,6 +15,7 @@
   <!-- Filter Tabs -->
   <div class="filter-tabs">
     <button
+      type="button"
       class="filter-tab"
       [class.active]="activeFilter() === 'all'"
       (click)="setFilter('all')"
@@ -24,6 +25,7 @@
       <span class="filter-count">{{ filterOptions().all }}</span>
     </button>
     <button
+      type="button"
       class="filter-tab tag-new"
       [class.active]="activeFilter() === 'new'"
       (click)="setFilter('new')"
@@ -34,6 +36,7 @@
       <span class="filter-count">{{ filterOptions().new }}</span>
     </button>
     <button
+      type="button"
       class="filter-tab tag-enhancement"
       [class.active]="activeFilter() === 'enhancement'"
       (click)="setFilter('enhancement')"
@@ -44,6 +47,7 @@
       <span class="filter-count">{{ filterOptions().enhancement }}</span>
     </button>
     <button
+      type="button"
       class="filter-tab tag-smart"
       [class.active]="activeFilter() === 'smart'"
       (click)="setFilter('smart')"

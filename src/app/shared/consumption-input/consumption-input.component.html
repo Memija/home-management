@@ -12,7 +12,7 @@
         class="help-btn camera-btn"
         (click)="openMeterReader()"
         title="{{ 'METER_READER.TITLE' | translate }}"
-        aria-label="Read meter from photo"
+        aria-label="{{ 'METER_READER.TITLE' | translate }}"
       >
         <lucide-icon [img]="CameraIcon" size="20"></lucide-icon>
       </button>
@@ -22,6 +22,7 @@
           class="help-btn"
           (click)="showHelp()"
           title="{{ helpTitleKeySignal() | translate }}"
+          aria-label="{{ helpTitleKeySignal() | translate }}"
         >
           <lucide-icon [img]="HelpIcon" size="20"></lucide-icon>
         </button>
@@ -112,11 +113,27 @@
 
   <div class="button-group">
     @if (editingModeSignal()) {
-      <button type="button" class="cancel-btn" (click)="onCancel()">
+      <button
+        type="button"
+        class="cancel-btn"
+        (click)="onCancel()"
+        title="{{ cancelKeySignal() | translate }}"
+        aria-label="{{ cancelKeySignal() | translate }}"
+      >
         {{ cancelKeySignal() | translate }}
       </button>
     }
-    <button type="button" class="save-btn" (click)="onSave()">
+    <button
+      type="button"
+      class="save-btn"
+      (click)="onSave()"
+      title="{{
+        editingModeSignal() ? (updateKeySignal() | translate) : (saveKeySignal() | translate)
+      }}"
+      aria-label="{{
+        editingModeSignal() ? (updateKeySignal() | translate) : (saveKeySignal() | translate)
+      }}"
+    >
       {{ editingModeSignal() ? (updateKeySignal() | translate) : (saveKeySignal() | translate) }}
     </button>
   </div>

@@ -184,13 +184,21 @@
         </div>
 
         <div class="modal-actions">
-          <button type="button" class="btn-secondary" (click)="onClose()">
+          <button
+            type="button"
+            class="btn-secondary"
+            (click)="onClose()"
+            title="{{ 'CONTACT.CANCEL' | translate }}"
+            aria-label="{{ 'CONTACT.CANCEL' | translate }}"
+          >
             {{ 'CONTACT.CANCEL' | translate }}
           </button>
           <button
             type="submit"
             class="btn-primary"
             [disabled]="!name() || !email() || !subject() || !message() || emailError()"
+            title="{{ 'CONTACT.SEND' | translate }}"
+            aria-label="{{ 'CONTACT.SEND' | translate }}"
           >
             {{ 'CONTACT.SEND' | translate }}
           </button>

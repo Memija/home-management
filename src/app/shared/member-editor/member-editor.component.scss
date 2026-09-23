@@ -6,3 +6,20 @@
 // - .picture-preview
 
 // Form validation styling (.warning-message, input.error) defined globally in _forms.scss
+
+:host-context([data-theme='dark']) {
+  .save-btn {
+    background: #38bdf8 !important;
+    color: #0f172a !important;
+
+    .btn-text,
+    lucide-icon {
+      color: #0f172a !important;
+    }
+
+    &:hover:not(:disabled) {
+      background: #0284c7 !important;
+      color: #0f172a !important;
+    }
+  }
+}

@@ -25,7 +25,13 @@
       <span class="emoji-icon">⚙️</span>
       <span>{{ 'MENU.SETTINGS' | translate }}</span>
     </a>
-    <button type="button" class="menu-item contact-btn" (click)="contactUs()">
+    <button
+      type="button"
+      class="menu-item contact-btn"
+      (click)="contactUs()"
+      title="{{ 'MENU.CONTACT' | translate }}"
+      aria-label="{{ 'MENU.CONTACT' | translate }}"
+    >
       <span class="emoji-icon">✉️</span>
       <span>{{ 'MENU.CONTACT' | translate }}</span>
     </button>

@@ -56,6 +56,10 @@
     color: var(--text-secondary);
     white-space: nowrap;
 
+    :host-context([data-theme='dark']) & {
+      color: #e2e8f0;
+    }
+
     &.disabled {
       color: var(--text-muted);
     }

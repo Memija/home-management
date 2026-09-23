@@ -16,6 +16,9 @@ export const common = {
     SAVE: 'Zapisz',
     DELETE: 'Usuń',
     EDIT: 'Edytuj',
+    OK: 'OK',
+    EXPORT_MENU: 'Menu eksportu',
+    IMPORT_MENU: 'Menu importu',
   },
   MENU: {
     HOME: 'Główna',
@@ -56,6 +59,7 @@ export const common = {
     SUBTITLE: 'Zestawienie wszystkich istotnych zmian w każdej wersji',
     CONFIDENCE_INFO:
       'Wskazuje, jak wiarygodna jest prognoza na podstawie spójności danych historycznych i ilości dostępnych danych.',
+    V1_2_0_LABEL: 'Wersja 1.2.0',
     V1_1_0_LABEL: 'Wersja 1.1.0',
     SHIPPED: 'Wydano',
   },
@@ -103,6 +107,9 @@ export const common = {
     FEATURE_12_TITLE: 'Grywalizacja i Osiągnięcia',
     FEATURE_12_DESC:
       'Zmień oszczędzanie w fajną grę! Zdobywaj odznaki za osiąganie celów związanych z oszczędzaniem i bij własne rekordy, aby zarządzanie domem było jeszcze bardziej wciągające.',
+    FEATURE_13_TITLE: 'Organizer Rodzinny i Szkolny',
+    FEATURE_13_DESC:
+      'Organizuj harmonogramy rodzinne, plany lekcji i powtarzalne rutyny domowe w jednym miejscu. Przypisuj plany członkom rodziny, aby ułatwić codzienną koordynację.',
     CTA_TEXT:
       'Twoje wsparcie pomaga nam budować te funkcje szybciej. Dziękujemy za bycie częścią naszej społeczności!',
     BACK_TO_HOME: 'Powrót do strony głównej',
@@ -301,6 +308,7 @@ export const common = {
     NO_FIELDS_CONFIGURED:
       'Brak skonfigurowanych liczników. Proszę najpierw skonfigurować pokoje lub liczniki.',
     CAMERA_ERROR: 'Nie można uzyskać dostępu do aparatu. Użyj opcji przesyłania zamiast tego.',
+    ASSIGN_TO: 'Przypisz do {{name}}',
   },
   MONTHS: {
     JANUARY: 'Styczeń',

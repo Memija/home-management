@@ -127,6 +127,8 @@ export const settings = {
     EXCEL_TITLE: 'Excel-Integration',
     EXCEL_ENABLED: 'Excel-Integration aktivieren',
     EXCEL_COLUMN_MAPPING: 'Spaltenzuordnung Konfiguration',
+    EXPAND_COLUMN_MAPPING: 'Spaltenzuordnung ausklappen',
+    COLLAPSE_COLUMN_MAPPING: 'Spaltenzuordnung einklappen',
     EXCEL_WATER_MAPPING_TITLE: 'Wasserverbrauch',
     EXCEL_HEATING_MAPPING_TITLE: 'Heizungsverbrauch',
     EXCEL_ELECTRICITY_MAPPING_TITLE: 'Stromverbrauch',

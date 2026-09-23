@@ -49,6 +49,7 @@
           [class.active]="editType() === 'adult'"
           (click)="editType.set('adult')"
           title="{{ 'SETTINGS.TYPES.ADULT' | translate }}"
+          aria-label="{{ 'SETTINGS.TYPES.ADULT' | translate }}"
         >
           <lucide-icon [img]="AdultIcon" size="16"></lucide-icon>
           <span class="toggle-text">{{ 'SETTINGS.TYPES.ADULT' | translate }}</span>
@@ -59,6 +60,7 @@
           [class.active]="editType() === 'kid'"
           (click)="editType.set('kid')"
           title="{{ 'SETTINGS.TYPES.KID' | translate }}"
+          aria-label="{{ 'SETTINGS.TYPES.KID' | translate }}"
         >
           <lucide-icon [img]="KidIcon" size="16"></lucide-icon>
           <span class="toggle-text">{{ 'SETTINGS.TYPES.KID' | translate }}</span>
@@ -74,6 +76,7 @@
           [class.active]="editGender() === 'male'"
           (click)="editGender.set('male')"
           title="{{ 'SETTINGS.GENDERS.MALE' | translate }}"
+          aria-label="{{ 'SETTINGS.GENDERS.MALE' | translate }}"
         >
           <lucide-icon [img]="MaleIcon" size="16"></lucide-icon>
           <span class="toggle-text">{{ 'SETTINGS.GENDERS.MALE' | translate }}</span>
@@ -84,6 +87,7 @@
           [class.active]="editGender() === 'female'"
           (click)="editGender.set('female')"
           title="{{ 'SETTINGS.GENDERS.FEMALE' | translate }}"
+          aria-label="{{ 'SETTINGS.GENDERS.FEMALE' | translate }}"
         >
           <lucide-icon [img]="FemaleIcon" size="16"></lucide-icon>
           <span class="toggle-text">{{ 'SETTINGS.GENDERS.FEMALE' | translate }}</span>
@@ -134,6 +138,7 @@
       (click)="onSave()"
       [disabled]="!editName() || !editSurname() || editNameError() || editSurnameError()"
       title="{{ 'SETTINGS.SAVE_MEMBER' | translate }}"
+      aria-label="{{ 'SETTINGS.SAVE_MEMBER' | translate }}"
     >
       <lucide-icon [img]="SaveIcon" size="16"></lucide-icon>
       <span class="btn-text">{{ 'SETTINGS.SAVE_MEMBER' | translate }}</span>
@@ -143,6 +148,7 @@
       class="cancel-btn"
       (click)="onCancel()"
       title="{{ 'SETTINGS.CANCEL' | translate }}"
+      aria-label="{{ 'SETTINGS.CANCEL' | translate }}"
     >
       <lucide-icon [img]="CancelIcon" size="16"></lucide-icon>
       <span class="btn-text">{{ 'SETTINGS.CANCEL' | translate }}</span>

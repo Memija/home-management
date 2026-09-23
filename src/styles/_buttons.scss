@@ -93,10 +93,10 @@
   @extend %btn-surface;
   background: rgba(220, 53, 69, 0.08);
   border-color: rgba(220, 53, 69, 0.25);
-  color: $danger;
+  color: #b02a37;
 
   lucide-icon {
-    color: $danger;
+    color: #b02a37;
     transition: color 0.2s ease;
   }
 
@@ -114,10 +114,10 @@
 
 .save-btn {
   @extend %btn-base;
-  background: $primary;
+  background: var(--theme-primary, $primary);
 
   &:hover:not(:disabled) {
-    background: $primary-dark;
+    background: var(--theme-primary-dark, $primary-dark);
   }
 }
 
@@ -171,10 +171,10 @@
 
 .add-btn {
   @extend %btn-base;
-  background: $success;
+  background: #15803d;
 
   &:hover:not(:disabled) {
-    background: color.adjust($success, $lightness: -10%);
+    background: color.adjust(#15803d, $lightness: -8%);
   }
 }
 
@@ -374,11 +374,11 @@ label.upload-btn,
 // Primary action button
 .btn-primary {
   @extend %btn-base;
-  background: $primary;
+  background: var(--theme-primary, $primary);
 
   &:hover:not(:disabled) {
-    background: $primary-dark;
-    box-shadow: 0 4px 12px rgba($primary, 0.3);
+    background: var(--theme-primary-dark, $primary-dark);
+    box-shadow: 0 4px 12px rgba(var(--theme-primary-rgb, 0, 92, 191), 0.3);
   }
 }
 
@@ -565,13 +565,33 @@ label.upload-btn,
 
 // Dark theme overrides for surface action buttons
 [data-theme='dark'] {
+  .btn-primary,
+  .save-btn,
+  .btn-confirm,
+  .submit-add-btn {
+    color: #0f172a !important;
+    font-weight: 600;
+
+    lucide-icon {
+      color: #0f172a !important;
+    }
+
+    &:hover:not(:disabled) {
+      color: #0f172a !important;
+
+      lucide-icon {
+        color: #0f172a !important;
+      }
+    }
+  }
+
   .delete-all-btn {
     background: rgba(248, 113, 113, 0.12);
     border-color: rgba(248, 113, 113, 0.3);
-    color: #f87171;
+    color: #fca5a5;
 
     lucide-icon {
-      color: #f87171;
+      color: #fca5a5;
     }
 
     &:hover:not(:disabled) {

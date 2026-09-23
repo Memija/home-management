@@ -30,8 +30,8 @@ export class ConsumptionDataService {
   private householdService = inject(HouseholdService);
   private notificationService = inject(NotificationService);
 
-  // Main    // State
-  readonly records = signal<ConsumptionRecord[]>([]);
+  // Main State
+  readonly records = signal<ConsumptionRecord[]>(this.getInitialRecords());
 
   // Filter State
   readonly filterState = signal<{
@@ -113,10 +113,25 @@ export class ConsumptionDataService {
   readonly maxDate = new Date().toISOString().split('T')[0];
 
   constructor() {
+    const initial = this.records();
+    if (initial.length > 0) {
+      this.notificationService.setWaterRecords(initial);
+    }
     this.loadData();
     this.storage.dataRefreshed$
       ?.pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe(() => this.loadData());
+  }
+
+  private getInitialRecords(): ConsumptionRecord[] {
+    if (!this.storage || typeof this.storage.loadSync !== 'function') {
+      return [];
+    }
+    const data = this.storage.loadSync<ConsumptionRecord[]>('water_consumption_records');
+    if (!data) return [];
+    return data
+      .map((r) => ({ ...r, date: parseSafeDate(r.date) }))
+      .filter((r) => !isNaN(r.date.getTime()));
   }
 
   async loadData() {

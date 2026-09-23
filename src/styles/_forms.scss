@@ -293,12 +293,12 @@ select.error {
         background: var(--primary-light-bg, #e7f3ff);
 
         span {
-          color: $primary;
+          color: var(--theme-primary, $primary);
           font-weight: 500;
         }
 
         lucide-icon {
-          color: $primary;
+          color: var(--theme-primary, $primary);
         }
       }
     }
@@ -403,20 +403,20 @@ select.error {
       &:hover:not(.active) {
         background: rgba(14, 165, 233, 0.1);
         border-color: #0ea5e9;
-        color: #0284c7;
+        color: #0369a1;
       }
 
       &.active {
-        background: #0284c7;
-        border-color: #0284c7;
+        background: #0369a1;
+        border-color: #0369a1;
         color: white;
-        box-shadow: 0 2px 8px rgba(2, 132, 199, 0.3);
+        box-shadow: 0 2px 8px rgba(3, 105, 161, 0.3);
 
         &:hover {
-          background: #0369a1;
+          background: #075985;
           border-color: #075985;
           color: white;
-          box-shadow: 0 5px 14px rgba(2, 132, 199, 0.45);
+          box-shadow: 0 5px 14px rgba(3, 105, 161, 0.45);
         }
       }
     }

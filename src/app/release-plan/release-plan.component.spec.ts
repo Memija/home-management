@@ -48,7 +48,7 @@ describe('ReleasePlanComponent', () => {
   it('should filter features by "new"', () => {
     component.setFilter('new');
     const filtered = component.filteredFeatures();
-    expect(filtered.length).toBe(2);
+    expect(filtered.length).toBe(3);
     filtered.forEach((feature) => {
       expect(feature.tag).toBe('new');
     });
@@ -57,7 +57,7 @@ describe('ReleasePlanComponent', () => {
   it('should filter features by "enhancement"', () => {
     component.setFilter('enhancement');
     const filtered = component.filteredFeatures();
-    expect(filtered.length).toBe(4);
+    expect(filtered.length).toBe(3);
     filtered.forEach((feature) => {
       expect(feature.tag).toBe('enhancement');
     });
@@ -73,8 +73,8 @@ describe('ReleasePlanComponent', () => {
   it('should calculate filter counts correctly', () => {
     const counts = component.filterOptions();
     expect(counts['all']).toBe(8);
-    expect(counts['new']).toBe(2);
-    expect(counts['enhancement']).toBe(4);
+    expect(counts['new']).toBe(3);
+    expect(counts['enhancement']).toBe(3);
     expect(counts['smart']).toBe(2);
   });
 
@@ -93,7 +93,7 @@ describe('ReleasePlanComponent', () => {
   it('should handle switching filters back and forth', () => {
     component.setFilter('new');
     expect(component.activeFilter()).toBe('new');
-    expect(component.filteredFeatures().length).toBe(2);
+    expect(component.filteredFeatures().length).toBe(3);
 
     component.setFilter('all');
     expect(component.activeFilter()).toBe('all');

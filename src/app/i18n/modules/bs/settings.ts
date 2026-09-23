@@ -114,6 +114,8 @@ export const settings = {
     EXCEL_TITLE: 'Excel integracija',
     EXCEL_ENABLED: 'Omogući Excel integraciju',
     EXCEL_COLUMN_MAPPING: 'Podesite nazive kolona kako bi odgovarali vašoj Excel tabeli.',
+    EXPAND_COLUMN_MAPPING: 'Proširi mapiranje kolona',
+    COLLAPSE_COLUMN_MAPPING: 'Skupi mapiranje kolona',
     EXCEL_WATER_MAPPING_TITLE: 'Mapiranje vode',
     EXCEL_HEATING_MAPPING_TITLE: 'Mapiranje grijanja',
     EXCEL_ELECTRICITY_MAPPING_TITLE: 'Mapiranje struje',

@@ -8,7 +8,7 @@
       class="demo-tour-btn demo-tour-btn--heating"
       (click)="openRelevantDemoGuide()"
       title="{{ 'DEMO.WIZARD_BUTTON' | translate }}"
-      aria-label="Start demo tour"
+      aria-label="{{ 'DEMO.WIZARD_BUTTON' | translate }}"
     >
       <span class="cat-btn-icon">
         <lucide-icon [img]="LightbulbIcon" class="cat-icon"></lucide-icon>
@@ -33,10 +33,22 @@
         </div>
       </div>
       <div class="notification-actions">
-        <button type="button" class="btn-confirm" (click)="confirmSpike(unconfirmedSpike()!)">
+        <button
+          type="button"
+          class="btn-confirm"
+          (click)="confirmSpike(unconfirmedSpike()!)"
+          title="{{ 'HEATING.CONFIRM_NEW_ROOM' | translate }}"
+          aria-label="{{ 'HEATING.CONFIRM_NEW_ROOM' | translate }}"
+        >
           {{ 'HEATING.CONFIRM_NEW_ROOM' | translate }}
         </button>
-        <button type="button" class="btn-dismiss" (click)="dismissSpike(unconfirmedSpike()!)">
+        <button
+          type="button"
+          class="btn-dismiss"
+          (click)="dismissSpike(unconfirmedSpike()!)"
+          title="{{ 'HEATING.DISMISS_NEW_ROOM' | translate }}"
+          aria-label="{{ 'HEATING.DISMISS_NEW_ROOM' | translate }}"
+        >
           {{ 'HEATING.DISMISS_NEW_ROOM' | translate }}
         </button>
       </div>
@@ -78,29 +90,23 @@
     </div>
   }
 
-  @defer (on viewport) {
-    <app-consumption-chart
-      [data]="chartRecords()"
-      [currentView]="chartView()"
-      [onViewChange]="onChartViewChange"
-      [chartType]="'heating'"
-      [displayMode]="displayMode()"
-      [onDisplayModeChange]="onDisplayModeChange"
-      [roomNames]="chartRoomNames()"
-      [roomIds]="chartRoomIds()"
-      [roomColors]="chartRoomColors()"
-      [country]="selectedCountryCode()"
-      [ignoredSpikes]="confirmedSpikes()"
-      [helpSteps]="chartHelpSteps"
-      [prediction]="heatingPrediction()"
-      [predictionPeriod]="selectedPredictionPeriod()"
-    >
-    </app-consumption-chart>
-  } @placeholder {
-    <div class="loading-placeholder loading-placeholder--chart">
-      {{ 'APP.LOADING_CHART' | translate }}
-    </div>
-  }
+  <app-consumption-chart
+    [data]="chartRecords()"
+    [currentView]="chartView()"
+    [onViewChange]="onChartViewChange"
+    [chartType]="'heating'"
+    [displayMode]="displayMode()"
+    [onDisplayModeChange]="onDisplayModeChange"
+    [roomNames]="chartRoomNames()"
+    [roomIds]="chartRoomIds()"
+    [roomColors]="chartRoomColors()"
+    [country]="selectedCountryCode()"
+    [ignoredSpikes]="confirmedSpikes()"
+    [helpSteps]="chartHelpSteps"
+    [prediction]="heatingPrediction()"
+    [predictionPeriod]="selectedPredictionPeriod()"
+  >
+  </app-consumption-chart>
 
   <app-predictions-panel
     [prediction]="heatingPrediction()"
@@ -136,7 +142,7 @@
               (records().length === 0 ? 'HEATING.EXPORT_DISABLED_TOOLTIP' : 'HEATING.EXPORT')
                 | translate
             }}"
-            aria-label="Export menu"
+            aria-label="{{ 'ACTIONS.EXPORT_MENU' | translate }}"
           >
             <lucide-icon [img]="DownloadIcon" size="16"></lucide-icon>
             {{ 'HEATING.EXPORT' | translate }}
@@ -148,6 +154,8 @@
               class="action-dropdown-item json-item"
               (click)="exportData(); closeMenus()"
               [disabled]="isExporting()"
+              title="{{ 'HEATING.EXPORT' | translate }} (JSON)"
+              aria-label="{{ 'HEATING.EXPORT' | translate }} (JSON)"
             >
               <lucide-icon [img]="DownloadIcon" size="16"></lucide-icon>
               {{ 'HEATING.EXPORT' | translate }} (JSON)
@@ -158,6 +166,8 @@
                 class="action-dropdown-item excel-item"
                 (click)="exportToExcel(); closeMenus()"
                 [disabled]="isExporting()"
+                title="{{ 'HEATING.EXPORT_EXCEL' | translate }}"
+                aria-label="{{ 'HEATING.EXPORT_EXCEL' | translate }}"
               >
                 <lucide-icon [img]="FileSpreadsheetIcon" size="16"></lucide-icon>
                 {{ 'HEATING.EXPORT_EXCEL' | translate }}
@@ -167,6 +177,8 @@
                 class="action-dropdown-item pdf-item"
                 (click)="exportToPdf(); closeMenus()"
                 [disabled]="isExporting()"
+                title="{{ 'HEATING.EXPORT_PDF' | translate }}"
+                aria-label="{{ 'HEATING.EXPORT_PDF' | translate }}"
               >
                 <lucide-icon [img]="FileTextIcon" size="16"></lucide-icon>
                 {{ 'HEATING.EXPORT_PDF' | translate }}
@@ -184,7 +196,7 @@
             (click)="toggleImportMenu($event)"
             [disabled]="isImporting()"
             title="{{ 'HEATING.IMPORT' | translate }}"
-            aria-label="Import menu"
+            aria-label="{{ 'ACTIONS.IMPORT_MENU' | translate }}"
           >
             <lucide-icon [img]="UploadIcon" size="16"></lucide-icon>
             {{ 'HEATING.IMPORT' | translate }}
@@ -325,13 +337,29 @@
       <div class="modal-header">
         <lucide-icon [img]="CheckCircleIcon" size="32" class="success-icon"></lucide-icon>
         <h3>{{ successTitle() | translate }}</h3>
-        <button class="close-btn" (click)="closeSuccessModal()">×</button>
+        <button
+          type="button"
+          class="close-btn"
+          (click)="closeSuccessModal()"
+          title="{{ 'ACTIONS.CLOSE' | translate }}"
+          aria-label="{{ 'ACTIONS.CLOSE' | translate }}"
+        >
+          ×
+        </button>
       </div>
       <div class="modal-body">
         <p>{{ successMessage() | translate }}</p>
       </div>
       <div class="modal-footer">
-        <button class="btn-primary" (click)="closeSuccessModal()">OK</button>
+        <button
+          type="button"
+          class="btn-primary"
+          (click)="closeSuccessModal()"
+          title="{{ 'ACTIONS.OK' | translate }}"
+          aria-label="{{ 'ACTIONS.OK' | translate }}"
+        >
+          {{ 'ACTIONS.OK' | translate }}
+        </button>
       </div>
     </div>
   </div>

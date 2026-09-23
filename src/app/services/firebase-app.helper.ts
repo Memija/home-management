@@ -29,9 +29,13 @@ export async function initAppCheck(
     const { initializeAppCheck, ReCaptchaEnterpriseProvider } = await import('firebase/app-check');
 
     if (typeof window !== 'undefined' && window.location?.hostname === 'localhost') {
-      // In local development, enable debug token to print in DevTools console
+      // On localhost, only initialize if an explicit debug token string is configured.
+      // Setting boolean true causes unauthorized exchangeDebugToken network requests that fail with 403.
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      (self as any).FIREBASE_APPCHECK_DEBUG_TOKEN = true;
+      const debugToken = (self as any).FIREBASE_APPCHECK_DEBUG_TOKEN;
+      if (typeof debugToken !== 'string' && !forceTest) {
+        return;
+      }
     }
 
     initializeAppCheck(app, {

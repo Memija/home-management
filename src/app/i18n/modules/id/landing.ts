@@ -9,6 +9,9 @@ export const landing = {
     CTA_OPEN_APP: 'Buka Aplikasi',
     CTA_SEE_FEATURES: 'Lihat Fitur',
     SCROLL_TO_EXPLORE: 'Gulir untuk menjelajah',
+    BRAND_LABEL: 'Beranda Home Management',
+    THEME_TOGGLE: 'Ganti tema warna',
+    SCROLL_PROGRESS: 'Kemajuan gulir halaman',
     STATS: {
       FREE: 'Gratis dan Open Source',
       TRACKERS: 'Pelacak Utilitas',

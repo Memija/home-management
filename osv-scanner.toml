@@ -1,15 +1,6 @@
 # OSV-Scanner Configuration
 # https://google.github.io/osv-scanner/configuration/
 
-# adm-zip: Transitive dev dependency of sonarqube-scanner@5.0.0
-# Version 0.6.0 is the latest available on npm; used solely for CI analysis.
-[[IgnoredVulns]]
-id = "GHSA-vwc7-r8mq-g2x9"
-reason = "Dev-only dependency in sonarqube-scanner; latest npm release; not bundled into client production runtime."
-
-[[IgnoredVulns]]
-id = "CVE-2026-76845"
-reason = "Dev-only dependency in sonarqube-scanner; latest npm release; not bundled into client production runtime."
 
 # extract-zip: Transitive dev dependency of @lhci/cli (Lighthouse CI)
 # Unmaintained upstream; no patched npm release available; used solely for local/CI browser extraction.

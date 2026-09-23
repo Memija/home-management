@@ -35,20 +35,7 @@
     <link rel="apple-touch-icon" href="assets/logo-512.png" />
     <meta name="apple-mobile-web-app-title" content="Home Management" />
     <meta name="application-name" content="Home Management" />
-    <script>
-      // Redirect default Firebase domains to the custom domain
-      if (
-        window.location.hostname === 'home-management-be965.web.app' ||
-        window.location.hostname === 'home-management-be965.firebaseapp.com'
-      ) {
-        window.location.replace(
-          'https://home-management.dev' +
-            window.location.pathname +
-            window.location.search +
-            window.location.hash,
-        );
-      }
-    </script>
+    <script src="domain-redirect.js"></script>
   </head>
 
   <body>

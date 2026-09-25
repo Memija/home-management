@@ -206,7 +206,7 @@ function generateFlowsSummary(options = {}) {
       const stepsWithIssues = [];
 
       for (const row of summary) {
-        const step = (row.Step || 'Interaction').replace(/\|/g, '\\|');
+        const step = (row.Step || 'Interaction').replace(/\\/g, '\\\\').replace(/\|/g, '\\|');
         const a11yVal = Number(row.Accessibility);
         const bpVal = Number(row['Best Practices']);
         const seoVal = Number(row.SEO);

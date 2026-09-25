@@ -17,6 +17,24 @@
     </button>
   </div>
 
+  <app-consumption-chart
+    [data]="chartRecords()"
+    [currentView]="chartView()"
+    [onViewChange]="onChartViewChange"
+    [chartType]="'heating'"
+    [displayMode]="displayMode()"
+    [onDisplayModeChange]="onDisplayModeChange"
+    [roomNames]="chartRoomNames()"
+    [roomIds]="chartRoomIds()"
+    [roomColors]="chartRoomColors()"
+    [country]="selectedCountryCode()"
+    [ignoredSpikes]="confirmedSpikes()"
+    [helpSteps]="chartHelpSteps"
+    [prediction]="heatingPrediction()"
+    [predictionPeriod]="selectedPredictionPeriod()"
+  >
+  </app-consumption-chart>
+
   <!-- New Room Spike Notification -->
   @if (unconfirmedSpike()) {
     <div class="notification-card notification-card--warning">
@@ -89,24 +107,6 @@
       </div>
     </div>
   }
-
-  <app-consumption-chart
-    [data]="chartRecords()"
-    [currentView]="chartView()"
-    [onViewChange]="onChartViewChange"
-    [chartType]="'heating'"
-    [displayMode]="displayMode()"
-    [onDisplayModeChange]="onDisplayModeChange"
-    [roomNames]="chartRoomNames()"
-    [roomIds]="chartRoomIds()"
-    [roomColors]="chartRoomColors()"
-    [country]="selectedCountryCode()"
-    [ignoredSpikes]="confirmedSpikes()"
-    [helpSteps]="chartHelpSteps"
-    [prediction]="heatingPrediction()"
-    [predictionPeriod]="selectedPredictionPeriod()"
-  >
-  </app-consumption-chart>
 
   <app-predictions-panel
     [prediction]="heatingPrediction()"

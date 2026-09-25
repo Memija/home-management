@@ -4,7 +4,6 @@ import {
   inject,
   signal,
   effect,
-  OnInit,
   HostListener,
   ElementRef,
 } from '@angular/core';
@@ -97,7 +96,7 @@ import { PredictionsPanelComponent } from '../shared/predictions-panel/predictio
   templateUrl: './electricity.component.html',
   styleUrl: './electricity.component.scss',
 })
-export class ElectricityComponent implements OnInit {
+export class ElectricityComponent {
   // Services
   protected excelSettings = inject(ExcelSettingsService);
   protected demoService = inject(DemoService);
@@ -110,12 +109,6 @@ export class ElectricityComponent implements OnInit {
   private dataService = inject(ElectricityDataService);
   private meterService = inject(ElectricityMeterService);
   private predictionService = inject(PredictionService);
-
-  ngOnInit() {
-    if (this.demoService.isDemoMode()) {
-      this.openRelevantDemoGuide();
-    }
-  }
 
   // Signals
   protected records = this.dataService.records;

@@ -10,13 +10,17 @@
   <header class="landing-toolbar" [class.scrolled]="scrollY() > 50">
     <div class="toolbar-inner">
       <a routerLink="/" class="toolbar-brand" [attr.aria-label]="'LANDING.BRAND_LABEL' | translate">
-        <img
-          src="/assets/logo-128.png"
-          alt="Home Management Logo"
-          class="toolbar-logo"
-          width="34"
-          height="34"
-        />
+        <picture>
+          <source srcset="/assets/logo.webp" type="image/webp" />
+          <img
+            src="/assets/logo-128.png"
+            alt="Home Management Logo"
+            class="toolbar-logo"
+            width="34"
+            height="34"
+            decoding="async"
+          />
+        </picture>
         <span class="brand-text">Home Management</span>
       </a>
       <div class="toolbar-actions">

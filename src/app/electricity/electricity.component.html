@@ -17,6 +17,21 @@
     </button>
   </div>
 
+  <app-consumption-chart
+    [data]="adjustedRecords()"
+    [currentView]="chartView()"
+    [onViewChange]="onChartViewChange"
+    [chartType]="'electricity'"
+    [displayMode]="displayMode()"
+    [onDisplayModeChange]="onDisplayModeChange"
+    [familySize]="familySize()"
+    [country]="effectiveComparisonCountryCode()"
+    [helpSteps]="chartHelpSteps"
+    [prediction]="electricityPrediction()"
+    [predictionPeriod]="selectedPredictionPeriod()"
+  >
+  </app-consumption-chart>
+
   @if (records().length > 0 && familySize() > 0 && displayMode() === 'incremental') {
     <app-comparison-note
       [records]="records()"
@@ -60,7 +75,9 @@
         </button>
       </div>
     </div>
-  } @else if (displayMode() === 'total' && electricityFact()) {
+  }
+
+  @if (displayMode() === 'total' && electricityFact()) {
     <div class="notification-card notification-card--info">
       <div class="notification-content">
         <lucide-icon [img]="LightbulbIcon" class="notification-cat"></lucide-icon>
@@ -81,21 +98,6 @@
       </div>
     </div>
   }
-
-  <app-consumption-chart
-    [data]="adjustedRecords()"
-    [currentView]="chartView()"
-    [onViewChange]="onChartViewChange"
-    [chartType]="'electricity'"
-    [displayMode]="displayMode()"
-    [onDisplayModeChange]="onDisplayModeChange"
-    [familySize]="familySize()"
-    [country]="effectiveComparisonCountryCode()"
-    [helpSteps]="chartHelpSteps"
-    [prediction]="electricityPrediction()"
-    [predictionPeriod]="selectedPredictionPeriod()"
-  >
-  </app-consumption-chart>
 
   <app-predictions-panel
     [prediction]="electricityPrediction()"

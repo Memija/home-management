@@ -4,7 +4,6 @@ import {
   computed,
   inject,
   effect,
-  OnInit,
   HostListener,
   ElementRef,
 } from '@angular/core';
@@ -97,7 +96,7 @@ import { PredictionsPanelComponent } from '../shared/predictions-panel/predictio
   templateUrl: './heating.component.html',
   styleUrl: './heating.component.scss',
 })
-export class HeatingComponent implements OnInit {
+export class HeatingComponent {
   // Services
   protected dataService = inject(HeatingDataService);
   protected formService = inject(HeatingFormService);
@@ -421,12 +420,6 @@ export class HeatingComponent implements OnInit {
 
   constructor() {
     this.dataService.loadData();
-  }
-
-  ngOnInit() {
-    if (this.demoService.isDemoMode()) {
-      this.openRelevantDemoGuide();
-    }
   }
 
   // ===== Delegations to DataService =====

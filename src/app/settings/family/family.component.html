@@ -34,7 +34,15 @@
             <li class="member-card">
               <div class="member-info">
                 <div class="avatar-wrapper">
-                  <img [src]="member.avatar" [alt]="member.name" title="{{ member.name }}" />
+                  <img
+                    [src]="member.avatar"
+                    [alt]="member.name"
+                    title="{{ member.name }}"
+                    width="48"
+                    height="48"
+                    loading="lazy"
+                    decoding="async"
+                  />
                 </div>
                 <div class="details">
                   <span class="name">{{ member.name }} {{ member.surname }}</span>

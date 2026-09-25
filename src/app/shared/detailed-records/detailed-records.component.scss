@@ -1,5 +1,9 @@
 @use 'variables' as *;
 
+:host {
+  display: block;
+}
+
 // Detailed records - Uses unified white card pattern
 // Base styles inherited from global _history.scss & _buttons.scss
 

@@ -32,7 +32,11 @@
 
   textarea {
     resize: vertical;
-    min-height: 120px;
+    min-height: 200px;
+  }
+
+  .custom-select.dropup {
+    margin-top: 0.5rem;
   }
 
   .modal-actions {

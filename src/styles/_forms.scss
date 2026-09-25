@@ -468,11 +468,12 @@ select.error {
 
   img {
     width: 100%;
+    height: auto;
+    aspect-ratio: 1;
     border-radius: 8px;
     cursor: pointer;
     border: 3px solid transparent;
     transition: all 0.2s;
-    aspect-ratio: 1;
     object-fit: cover;
 
     &:hover {

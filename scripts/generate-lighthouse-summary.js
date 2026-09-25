@@ -187,8 +187,10 @@ function generateFlowsSummary(options = {}) {
         const seo = Number(row.SEO);
         const hasLowScore =
           (!isNaN(a11y) && a11y < 100) || (!isNaN(bp) && bp < 100) || (!isNaN(seo) && seo < 100);
-        const hasDetails = Array.isArray(row.details) && row.details.length > 0;
-        return hasLowScore || hasDetails;
+        const weightedIssues = (Array.isArray(row.details) ? row.details : []).filter(
+          (issue) => (issue.weight || 0) > 0,
+        );
+        return hasLowScore || weightedIssues.length > 0;
       });
 
       if (hasIssues) {
@@ -229,19 +231,25 @@ function generateFlowsSummary(options = {}) {
               : 'N/A';
 
         const rowIssues = Array.isArray(row.details) ? row.details : [];
-        const isProblematic =
+        const weightedIssues = rowIssues.filter((issue) => (issue.weight || 0) > 0);
+        const informationalIssues = rowIssues.filter((issue) => (issue.weight || 0) === 0);
+
+        const hasLowScore =
           (!isNaN(a11yVal) && a11yVal < 100) ||
           (!isNaN(bpVal) && bpVal < 100) ||
-          (!isNaN(seoVal) && seoVal < 100) ||
-          rowIssues.length > 0;
+          (!isNaN(seoVal) && seoVal < 100);
+
+        const isProblematic = hasLowScore || weightedIssues.length > 0;
 
         const statusCell = isProblematic
-          ? `❌ **${rowIssues.length > 0 ? `${rowIssues.length} issue(s)` : 'Sub-100%'}**`
-          : '✅ Passed';
+          ? `❌ **${weightedIssues.length > 0 ? `${weightedIssues.length} issue(s)` : 'Sub-100%'}**`
+          : informationalIssues.length > 0
+            ? `ℹ️ **${informationalIssues.length} note(s)**`
+            : '✅ Passed';
 
         md += `| ${step} | ${row.Platform || 'N/A'} | ${row.Theme || 'N/A'} | ${a11y} | ${bp} | ${seo} | ${statusCell} |\n`;
 
-        if (isProblematic) {
+        if (isProblematic || informationalIssues.length > 0) {
           stepsWithIssues.push({
             step: row.Step,
             platform: row.Platform,
@@ -256,8 +264,13 @@ function generateFlowsSummary(options = {}) {
 
       if (stepsWithIssues.length > 0) {
         md += `\n### 🔍 Problem Diagnostics & Exact Failure Locations\n\n`;
-        md += `> [!WARNING]\n`;
-        md += `> The following user journey step(s) did not achieve 100%. Review the exact failing audits and DOM element locations below:\n\n`;
+        if (hasIssues) {
+          md += `> [!WARNING]\n`;
+          md += `> The following user journey step(s) did not achieve 100%. Review the failing audits and DOM element locations below:\n\n`;
+        } else {
+          md += `> [!NOTE]\n`;
+          md += `> All user journey steps achieved 100% scores. The following informational notes and best-practice suggestions were identified:\n\n`;
+        }
 
         for (const item of stepsWithIssues) {
           md += `#### ${item.step} (${item.platform} - ${item.theme})\n\n`;

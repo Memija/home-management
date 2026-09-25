@@ -244,6 +244,40 @@ describe('generate-lighthouse-summary', () => {
       expect(md).toContain('aria-controls="email-client-dropdown"');
     });
 
+    it('should distinguish informational unweighted notes from sub-100% failures', () => {
+      const summaryData = [
+        {
+          Step: '📱🌙 Dashboard Page',
+          Platform: 'Mobile',
+          Theme: 'Dark',
+          Accessibility: 100,
+          'Best Practices': 100,
+          SEO: 100,
+          details: [
+            {
+              id: 'label-content-name-mismatch',
+              title: 'Elements with visible text labels do not have matching accessible names.',
+              score: 0,
+              weight: 0,
+              elements: [{ selector: 'button.card' }],
+            },
+          ],
+        },
+      ];
+      const summaryPath = path.join(testDir, 'flows-info.json');
+      fs.writeFileSync(summaryPath, JSON.stringify(summaryData));
+
+      const md = generateFlowsSummary({
+        summaryPath,
+        title: 'Mobile Dark',
+        outputFile: summaryFile,
+      });
+
+      expect(md).toContain('Completed Successfully (100% Score)!');
+      expect(md).toContain('ℹ️ **1 note(s)**');
+      expect(md).toContain('All user journey steps achieved 100% scores.');
+    });
+
     it('should handle missing summary file gracefully', () => {
       const missingPath = path.join(testDir, 'non-existent.json');
       const md = generateFlowsSummary({

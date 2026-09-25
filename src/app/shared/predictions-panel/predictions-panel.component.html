@@ -102,7 +102,6 @@
         [class.active]="selectedPeriod() === 30"
         (click)="selectPeriod(30)"
         title="{{ 'PREDICTIONS.NEXT_30_DAYS' | translate }}"
-        aria-label="{{ 'PREDICTIONS.NEXT_30_DAYS' | translate }}"
       >
         <div class="card-header">
           <lucide-icon [img]="CalendarIcon" [size]="18"></lucide-icon>
@@ -126,7 +125,6 @@
         [class.active]="selectedPeriod() === 90"
         (click)="selectPeriod(90)"
         title="{{ 'PREDICTIONS.NEXT_90_DAYS' | translate }}"
-        aria-label="{{ 'PREDICTIONS.NEXT_90_DAYS' | translate }}"
       >
         <div class="card-header">
           <lucide-icon [img]="CalendarIcon" [size]="18"></lucide-icon>
@@ -150,7 +148,6 @@
         [class.active]="selectedPeriod() === 180"
         (click)="selectPeriod(180)"
         title="{{ 'PREDICTIONS.HALF_YEAR' | translate }}"
-        aria-label="{{ 'PREDICTIONS.HALF_YEAR' | translate }}"
       >
         <div class="card-header">
           <lucide-icon [img]="CalendarIcon" [size]="18"></lucide-icon>
@@ -174,7 +171,6 @@
         [class.active]="selectedPeriod() === 365"
         (click)="selectPeriod(365)"
         title="{{ 'PREDICTIONS.YEARLY' | translate }}"
-        aria-label="{{ 'PREDICTIONS.YEARLY' | translate }}"
       >
         <div class="card-header">
           <lucide-icon [img]="CalendarIcon" [size]="18"></lucide-icon>
@@ -198,7 +194,6 @@
         [class.active]="selectedPeriod() === 3650"
         (click)="selectPeriod(3650)"
         title="{{ 'PREDICTIONS.DECADE' | translate }}"
-        aria-label="{{ 'PREDICTIONS.DECADE' | translate }}"
       >
         <div class="card-header">
           <lucide-icon [img]="CalendarIcon" [size]="18"></lucide-icon>

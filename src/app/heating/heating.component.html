@@ -142,7 +142,8 @@
               (records().length === 0 ? 'HEATING.EXPORT_DISABLED_TOOLTIP' : 'HEATING.EXPORT')
                 | translate
             }}"
-            aria-label="{{ 'ACTIONS.EXPORT_MENU' | translate }}"
+            aria-haspopup="menu"
+            [attr.aria-expanded]="isExportMenuOpen() ? 'true' : 'false'"
           >
             <lucide-icon [img]="DownloadIcon" size="16"></lucide-icon>
             {{ 'HEATING.EXPORT' | translate }}
@@ -196,7 +197,8 @@
             (click)="toggleImportMenu($event)"
             [disabled]="isImporting()"
             title="{{ 'HEATING.IMPORT' | translate }}"
-            aria-label="{{ 'ACTIONS.IMPORT_MENU' | translate }}"
+            aria-haspopup="menu"
+            [attr.aria-expanded]="isImportMenuOpen() ? 'true' : 'false'"
           >
             <lucide-icon [img]="UploadIcon" size="16"></lucide-icon>
             {{ 'HEATING.IMPORT' | translate }}

@@ -260,6 +260,10 @@ select.error {
     overflow-y: auto;
     animation: fadeIn 0.15s ease-out;
 
+    &[hidden] {
+      display: none !important;
+    }
+
     .dropdown-item {
       display: flex;
       align-items: center;

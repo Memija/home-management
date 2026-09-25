@@ -133,55 +133,58 @@
                 [style.transform]="dropdownOpen() ? 'rotate(180deg)' : 'rotate(0deg)'"
               ></lucide-icon>
             </div>
-            @if (dropdownOpen()) {
-              <div class="dropdown-menu" role="listbox" id="email-client-dropdown">
-                <div
-                  class="dropdown-item"
-                  role="option"
-                  [attr.aria-selected]="emailClient() === 'default'"
-                  [class.selected]="emailClient() === 'default'"
-                  (click)="selectEmailClient('default'); $event.stopPropagation()"
-                  tabindex="0"
-                  (keydown.enter)="selectEmailClient('default'); $event.stopPropagation()"
-                  (keydown.space)="
-                    selectEmailClient('default'); $event.stopPropagation(); $event.preventDefault()
-                  "
-                >
-                  <lucide-icon [img]="LaptopIcon" size="20"></lucide-icon>
-                  <span>{{ 'CONTACT.DEFAULT_CLIENT' | translate }}</span>
-                </div>
-                <div
-                  class="dropdown-item"
-                  role="option"
-                  [attr.aria-selected]="emailClient() === 'outlook'"
-                  [class.selected]="emailClient() === 'outlook'"
-                  (click)="selectEmailClient('outlook'); $event.stopPropagation()"
-                  tabindex="0"
-                  (keydown.enter)="selectEmailClient('outlook'); $event.stopPropagation()"
-                  (keydown.space)="
-                    selectEmailClient('outlook'); $event.stopPropagation(); $event.preventDefault()
-                  "
-                >
-                  <img src="/assets/outlook_logo.png" alt="Outlook" class="logo-icon" />
-                  <span>Outlook</span>
-                </div>
-                <div
-                  class="dropdown-item"
-                  role="option"
-                  [attr.aria-selected]="emailClient() === 'gmail'"
-                  [class.selected]="emailClient() === 'gmail'"
-                  (click)="selectEmailClient('gmail'); $event.stopPropagation()"
-                  tabindex="0"
-                  (keydown.enter)="selectEmailClient('gmail'); $event.stopPropagation()"
-                  (keydown.space)="
-                    selectEmailClient('gmail'); $event.stopPropagation(); $event.preventDefault()
-                  "
-                >
-                  <img src="/assets/gmail_logo.png" alt="Gmail" class="logo-icon" />
-                  <span>Gmail</span>
-                </div>
+            <div
+              class="dropdown-menu"
+              role="listbox"
+              id="email-client-dropdown"
+              [hidden]="!dropdownOpen()"
+            >
+              <div
+                class="dropdown-item"
+                role="option"
+                [attr.aria-selected]="emailClient() === 'default'"
+                [class.selected]="emailClient() === 'default'"
+                (click)="selectEmailClient('default'); $event.stopPropagation()"
+                tabindex="0"
+                (keydown.enter)="selectEmailClient('default'); $event.stopPropagation()"
+                (keydown.space)="
+                  selectEmailClient('default'); $event.stopPropagation(); $event.preventDefault()
+                "
+              >
+                <lucide-icon [img]="LaptopIcon" size="20"></lucide-icon>
+                <span>{{ 'CONTACT.DEFAULT_CLIENT' | translate }}</span>
               </div>
-            }
+              <div
+                class="dropdown-item"
+                role="option"
+                [attr.aria-selected]="emailClient() === 'outlook'"
+                [class.selected]="emailClient() === 'outlook'"
+                (click)="selectEmailClient('outlook'); $event.stopPropagation()"
+                tabindex="0"
+                (keydown.enter)="selectEmailClient('outlook'); $event.stopPropagation()"
+                (keydown.space)="
+                  selectEmailClient('outlook'); $event.stopPropagation(); $event.preventDefault()
+                "
+              >
+                <img src="/assets/outlook_logo.png" alt="Outlook" class="logo-icon" />
+                <span>Outlook</span>
+              </div>
+              <div
+                class="dropdown-item"
+                role="option"
+                [attr.aria-selected]="emailClient() === 'gmail'"
+                [class.selected]="emailClient() === 'gmail'"
+                (click)="selectEmailClient('gmail'); $event.stopPropagation()"
+                tabindex="0"
+                (keydown.enter)="selectEmailClient('gmail'); $event.stopPropagation()"
+                (keydown.space)="
+                  selectEmailClient('gmail'); $event.stopPropagation(); $event.preventDefault()
+                "
+              >
+                <img src="/assets/gmail_logo.png" alt="Gmail" class="logo-icon" />
+                <span>Gmail</span>
+              </div>
+            </div>
           </div>
         </div>
 

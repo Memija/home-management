@@ -156,8 +156,14 @@ function formatIssuesMarkdown(issues) {
 
 /**
  * Generates the user flows GitHub Step Summary from .lighthouseci/lighthouse-userflow-summary.json.
- * @param {object} options
- * @returns {string} Generated Markdown
+ * @param {object} [options={}] - Configuration options for generating user flows summary
+ * @param {string} [options.summaryPath] - Absolute path to userflow summary JSON file
+ * @param {string} [options.title] - Title/suite name for the user journey flow
+ * @param {string} [options.platform] - Target platform ('desktop' or 'mobile')
+ * @param {string} [options.theme] - Theme mode ('light' or 'dark')
+ * @param {string} [options.jobStatus] - GitHub Actions job status ('success', 'failure', etc.)
+ * @param {string|null} [options.outputFile] - File path to append summary Markdown to (defaults to process.env.GITHUB_STEP_SUMMARY)
+ * @returns {string} Generated Markdown summary string
  */
 function generateFlowsSummary(options = {}) {
   const summaryPath =
@@ -306,8 +312,11 @@ function generateFlowsSummary(options = {}) {
 
 /**
  * Generates the preset audit GitHub Step Summary from .lighthouseci/${preset}/manifest.json.
- * @param {object} options
- * @returns {string} Generated Markdown
+ * @param {object} [options={}] - Configuration options for generating preset audit summary
+ * @param {string} [options.preset] - Lighthouse preset identifier ('desktop' or 'mobile')
+ * @param {string} [options.jobStatus] - GitHub Actions job status ('success', 'failure', etc.)
+ * @param {string|null} [options.outputFile] - File path to append summary Markdown to (defaults to process.env.GITHUB_STEP_SUMMARY)
+ * @returns {string} Generated Markdown summary string
  */
 function generatePresetSummary(options = {}) {
   const preset = options.preset || process.env.PRESET || 'desktop';

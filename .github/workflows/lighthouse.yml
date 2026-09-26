@@ -134,51 +134,7 @@ jobs:
         env:
           JOB_STATUS: ${{ job.status }}
           PRESET: ${{ matrix.preset }}
-        run: |
-          node -e '
-            const fs = require("fs");
-            const preset = process.env.PRESET || "audit";
-            const jobStatus = process.env.JOB_STATUS;
-            let md = `## ⚡ Lighthouse CI Audit (\`${preset.toUpperCase()}\`)\n\n`;
-            try {
-              const candidatePaths = [
-                `.lighthouseci/${preset}/manifest.json`,
-                `.lighthouseci/manifest.json`
-              ];
-              const manifestPath = candidatePaths.find((p) => fs.existsSync(p));
-              if (manifestPath) {
-                const manifest = JSON.parse(fs.readFileSync(manifestPath, "utf8"));
-                const runs = manifest.filter((r) => r.isRepresentativeRun !== false);
-                const items = runs.length > 0 ? runs : manifest;
-                const statusIcon = jobStatus === "success" ? "✅" : "⚠️";
-                md += `### ${statusIcon} Audit Completed Successfully!\n\n`;
-                md += "| Route / Page | Performance | Accessibility | Best Practices | SEO |\n";
-                md += "| :--- | :--- | :--- | :--- | :--- |\n";
-                for (const run of items) {
-                  const url = run.url.replace(/^http:\/\/[^/]+/, "") || "/";
-                  const perf = run.summary ? Math.round(run.summary.performance * 100) + "%" : "N/A";
-                  const a11y = run.summary ? Math.round(run.summary.accessibility * 100) + "%" : "N/A";
-                  const bp = run.summary ? Math.round(run.summary["best-practices"] * 100) + "%" : "N/A";
-                  const seo = run.summary ? Math.round(run.summary.seo * 100) + "%" : "N/A";
-                  md += `| \`${url}\` | ${perf} | ${a11y} | ${bp} | ${seo} |\n`;
-                }
-                md += "\n> [!TIP]\n> Detailed HTML reports with interactive traces and audits are saved in the `lighthouse-report-" + preset + "` artifact.\n";
-              } else {
-                const status = jobStatus === "success" ? "✅ Audit Passed" : "⚠️ Audit Completed with Warnings/Failures";
-                md += "| Metric | Status |\n";
-                md += "| :--- | :--- |\n";
-                md += "| **Device Preset** | `" + preset + "` |\n";
-                md += "| **Audit Status** | " + status + " |\n";
-              }
-            } catch (err) {
-              const status = jobStatus === "success" ? "✅ Audit Passed" : "⚠️ Audit Completed";
-              md += "| Metric | Status |\n";
-              md += "| :--- | :--- |\n";
-              md += "| **Device Preset** | `" + preset + "` |\n";
-              md += "| **Audit Status** | " + status + " |\n";
-            }
-            fs.appendFileSync(process.env.GITHUB_STEP_SUMMARY, md);
-          '
+        run: node scripts/generate-lighthouse-summary.js preset
 
   flows:
     name: Lighthouse Flows (${{ matrix.title }})
@@ -274,40 +230,4 @@ jobs:
           PLATFORM: ${{ matrix.platform }}
           THEME: ${{ matrix.theme }}
           TITLE: ${{ matrix.title }}
-        run: |
-          node -e '
-            const fs = require("fs");
-            const jobStatus = process.env.JOB_STATUS;
-            const title = process.env.TITLE || "User Flows";
-            const platform = process.env.PLATFORM || "desktop";
-            const theme = process.env.THEME || "light";
-            let md = `## 🔄 Lighthouse Interactive User Flows (\`${title}\`)\n\n`;
-            try {
-              if (fs.existsSync(".lighthouseci/lighthouse-userflow-summary.json")) {
-                const summary = JSON.parse(fs.readFileSync(".lighthouseci/lighthouse-userflow-summary.json", "utf8"));
-                md += `### ✅ User Journey Flows (${title}) Completed Successfully!\n\n`;
-                md += "| Step / Interaction | Platform | Theme | Accessibility | Best Practices | SEO |\n";
-                md += "| :--- | :--- | :--- | :--- | :--- | :--- |\n";
-                for (const row of summary) {
-                  const step = (row.Step || "Interaction").replace(/\|/g, "\\|");
-                  const a11y = row.Accessibility != null ? row.Accessibility + "%" : "N/A";
-                  const bp = row["Best Practices"] != null ? row["Best Practices"] + "%" : "N/A";
-                  const seo = row.SEO != null ? row.SEO + "%" : "N/A";
-                  md += `| ${step} | ${row.Platform || "N/A"} | ${row.Theme || "N/A"} | ${a11y} | ${bp} | ${seo} |\n`;
-                }
-                md += "\n> [!TIP]\n";
-                md += `> Full interactive flow timeline trace and HTML report are saved in the \`lighthouse-userflow-report-${platform}-${theme}\` artifact.\n`;
-              } else {
-                const status = jobStatus === "success" ? "✅ Flows Passed" : "⚠️ Flows Completed or Failed";
-                md += "| Metric | Status |\n";
-                md += "| :--- | :--- |\n";
-                md += "| **Flow Execution** | " + status + " |\n";
-              }
-            } catch (err) {
-              const status = jobStatus === "success" ? "✅ Flows Passed" : "⚠️ Flows Failed";
-              md += "| Metric | Status |\n";
-              md += "| :--- | :--- |\n";
-              md += "| **Flow Execution** | " + status + " |\n";
-            }
-            fs.appendFileSync(process.env.GITHUB_STEP_SUMMARY, md);
-          '
+        run: node scripts/generate-lighthouse-summary.js flows

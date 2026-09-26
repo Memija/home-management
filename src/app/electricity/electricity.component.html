@@ -140,7 +140,8 @@
               (filteredRecords().length === 0 ? 'WATER.EXPORT_DISABLED_TOOLTIP' : 'WATER.EXPORT')
                 | translate
             }}"
-            aria-label="{{ 'ACTIONS.EXPORT_MENU' | translate }}"
+            aria-haspopup="menu"
+            [attr.aria-expanded]="isExportMenuOpen() ? 'true' : 'false'"
           >
             <lucide-icon [img]="DownloadIcon" size="16"></lucide-icon>
             {{ 'WATER.EXPORT' | translate }}
@@ -194,7 +195,8 @@
             (click)="toggleImportMenu($event)"
             [disabled]="isImporting()"
             title="{{ 'WATER.IMPORT' | translate }}"
-            aria-label="{{ 'ACTIONS.IMPORT_MENU' | translate }}"
+            aria-haspopup="menu"
+            [attr.aria-expanded]="isImportMenuOpen() ? 'true' : 'false'"
           >
             <lucide-icon [img]="UploadIcon" size="16"></lucide-icon>
             {{ 'WATER.IMPORT' | translate }}

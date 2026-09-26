@@ -23,7 +23,25 @@ export class SeasonService {
   readonly currentSeason = signal<Season>(this.getInitialSeason());
 
   /** When true, tree + switcher are disabled due to poor browser performance */
-  readonly disabled = signal(false);
+  readonly disabled = signal(this.getInitialDisabled());
+
+  private getInitialDisabled(): boolean {
+    if (!isPlatformBrowser(this.platformId)) return false;
+    try {
+      if (this.localStorageService.getPreference('nature_tree_disabled') === 'true') {
+        return true;
+      }
+      if (
+        typeof navigator !== 'undefined' &&
+        (navigator as Navigator & { webdriver?: boolean }).webdriver
+      ) {
+        return true;
+      }
+    } catch {
+      // Ignore
+    }
+    return false;
+  }
 
   /**
    * Determine the natural season based on astronomical seasons (Northern Hemisphere).

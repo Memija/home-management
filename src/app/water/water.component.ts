@@ -4,7 +4,6 @@ import {
   inject,
   signal,
   effect,
-  OnInit,
   HostListener,
   ElementRef,
 } from '@angular/core';
@@ -93,7 +92,7 @@ import { DemoTourComponent } from '../shared/demo-tour/demo-tour.component';
   templateUrl: './water.component.html',
   styleUrl: './water.component.scss',
 })
-export class WaterComponent implements OnInit {
+export class WaterComponent {
   // Icons
   protected readonly DownloadIcon = Download;
   protected readonly UploadIcon = Upload;
@@ -155,12 +154,6 @@ export class WaterComponent implements OnInit {
   private formService = inject(ConsumptionFormService);
   private dataService = inject(ConsumptionDataService);
   private predictionService = inject(PredictionService);
-
-  ngOnInit() {
-    if (this.demoService.isDemoMode()) {
-      this.openRelevantDemoGuide();
-    }
-  }
 
   // Signals
   protected records = this.dataService.records;

@@ -9,8 +9,7 @@
       type="button"
       routerLink="/dashboard/water"
       class="tracker-card water-card"
-      title="{{ 'DASHBOARD.WATER_TRACKER' | translate }}"
-      aria-label="{{ 'DASHBOARD.WATER_TRACKER' | translate }}"
+      title="{{ 'DASHBOARD.WATER_TRACKER' | translate }}: {{ 'DASHBOARD.WATER_DESC' | translate }}"
     >
       <div class="icon-wrapper">
         <lucide-icon [img]="DropletsIcon" [size]="64"></lucide-icon>
@@ -23,8 +22,9 @@
       type="button"
       routerLink="/dashboard/heating"
       class="tracker-card heating-card"
-      title="{{ 'DASHBOARD.HEATING_TRACKER' | translate }}"
-      aria-label="{{ 'DASHBOARD.HEATING_TRACKER' | translate }}"
+      title="{{ 'DASHBOARD.HEATING_TRACKER' | translate }}: {{
+        'DASHBOARD.HEATING_DESC' | translate
+      }}"
     >
       <div class="icon-wrapper">
         <lucide-icon [img]="FlameIcon" [size]="64"></lucide-icon>
@@ -37,8 +37,9 @@
       type="button"
       routerLink="/dashboard/electricity"
       class="tracker-card electricity-card"
-      title="{{ 'DASHBOARD.ELECTRICITY_TRACKER' | translate }}"
-      aria-label="{{ 'DASHBOARD.ELECTRICITY_TRACKER' | translate }}"
+      title="{{ 'DASHBOARD.ELECTRICITY_TRACKER' | translate }}: {{
+        'DASHBOARD.ELECTRICITY_DESC' | translate
+      }}"
     >
       <div class="icon-wrapper">
         <lucide-icon [img]="ZapIcon" [size]="64"></lucide-icon>

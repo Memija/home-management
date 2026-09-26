@@ -1,5 +1,6 @@
-// Only the theme-colour tokens need component scope.
-// All structural styles live in src/styles/_predictions.scss.
+:host {
+  display: block;
+}
 
 .predictions-section {
   --accent: #1976d2;

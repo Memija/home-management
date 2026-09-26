@@ -127,6 +127,8 @@
           title="{{ 'SETTINGS.SELECT_AVATAR' | translate }}"
           tabindex="0"
           (keyup.enter)="selectAvatar(avatar)"
+          loading="lazy"
+          decoding="async"
         />
       }
     </div>

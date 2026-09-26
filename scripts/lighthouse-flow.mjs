@@ -4,6 +4,7 @@ import { startFlow } from 'lighthouse';
 import fs from 'fs';
 import path from 'path';
 import { spawn, exec, execSync } from 'child_process';
+import { extractFailingAudits } from './generate-lighthouse-summary.js';
 
 let BASE_URL = process.env.TARGET_URL || '';
 const IS_HEADLESS = process.env.HEADLESS !== 'false' && !process.argv.includes('--headful');
@@ -276,7 +277,11 @@ async function auditSuite(flow, page, { isMobile, theme, suiteNum, totalSuites, 
         const sel = document.querySelector('.custom-select');
         if (sel) sel.click();
       });
-      await new Promise((r) => setTimeout(r, 200));
+      try {
+        await p.waitForSelector('#email-client-dropdown', { visible: true, timeout: 3000 });
+      } catch {
+        await new Promise((r) => setTimeout(r, 300));
+      }
     },
   });
 
@@ -659,18 +664,27 @@ async function runAudit() {
     const summary = flowResult.steps.map((step) => {
       const isMob = step.name.includes('📱') || step.name.toLowerCase().includes('mobile');
       const isDk = step.name.includes('🌙') || step.name.toLowerCase().includes('dark');
+      const a11yScore = step.lhr.categories?.accessibility
+        ? Math.round(step.lhr.categories.accessibility.score * 100)
+        : 'N/A';
+      const bpScore = step.lhr.categories?.['best-practices']
+        ? Math.round(step.lhr.categories['best-practices'].score * 100)
+        : 'N/A';
+      const seoScore = step.lhr.categories?.seo
+        ? Math.round(step.lhr.categories.seo.score * 100)
+        : 'N/A';
+
+      const issues = extractFailingAudits(step.lhr);
 
       return {
         Step: step.name,
         Platform: isMob ? 'Mobile' : 'Desktop',
         Theme: isDk ? 'Dark' : 'Light',
-        Accessibility: step.lhr.categories?.accessibility
-          ? Math.round(step.lhr.categories.accessibility.score * 100)
-          : 'N/A',
-        'Best Practices': step.lhr.categories?.['best-practices']
-          ? Math.round(step.lhr.categories['best-practices'].score * 100)
-          : 'N/A',
-        SEO: step.lhr.categories?.seo ? Math.round(step.lhr.categories.seo.score * 100) : 'N/A',
+        Accessibility: a11yScore,
+        'Best Practices': bpScore,
+        SEO: seoScore,
+        Issues: issues.length > 0 ? `${issues.length} issue(s)` : '0',
+        details: issues,
       };
     });
 
@@ -690,7 +704,45 @@ async function runAudit() {
     console.log(`📄 Full HTML Report:  file://${reportPath}`);
     console.log(`📊 Summary JSON:      file://${summaryPath}`);
     console.log('================================================================\n');
-    console.table(summary);
+
+    // Display clean table in console without dumping raw details objects
+    const tableData = summary.map(({ details, ...row }) => row);
+    console.table(tableData);
+
+    const stepsWithIssues = summary.filter((s) => s.details && s.details.length > 0);
+    if (stepsWithIssues.length > 0) {
+      console.log('\n================================================================');
+      console.log('⚠️  LIGHTHOUSE FLOW AUDIT ISSUES DETECTED (< 100%)');
+      console.log('================================================================');
+      for (const s of stepsWithIssues) {
+        console.log(`\n👉 Step: ${s.Step} [${s.Platform} | ${s.Theme}]`);
+        for (const issue of s.details) {
+          const weightLabel = issue.weight > 0 ? `Weight: ${issue.weight}` : 'Informational';
+          console.log(
+            `   ❌ [${issue.category} (${issue.categoryScore}%)] ${issue.title} (${issue.id}) - ${weightLabel}`,
+          );
+          if (issue.explanation) console.log(`      Explanation: ${issue.explanation}`);
+          if (issue.errorMessage) console.log(`      Error:       ${issue.errorMessage}`);
+          if (issue.elements && issue.elements.length > 0) {
+            console.log(`      Problem Element(s) & Locations:`);
+            issue.elements.forEach((el, idx) => {
+              if (el.selector) console.log(`        [${idx + 1}] Selector: ${el.selector}`);
+              if (el.snippet) console.log(`            Snippet:  ${el.snippet}`);
+              if (el.explanation) console.log(`            Why failed: ${el.explanation}`);
+              if (el.source) console.log(`            Source:   ${el.source}`);
+            });
+            if (issue.totalElements > issue.elements.length) {
+              console.log(
+                `        ... and ${issue.totalElements - issue.elements.length} more element(s)`,
+              );
+            }
+          }
+        }
+      }
+      console.log('================================================================\n');
+    } else {
+      console.log('✨ All user journey steps achieved 100% across all audited categories!\n');
+    }
   } catch (err) {
     console.error('❌ Audit encountered an error:', err);
     process.exitCode = 1;

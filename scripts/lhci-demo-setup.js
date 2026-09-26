@@ -47,6 +47,7 @@ async function setup(browser, context) {
       localStorage.setItem('hm_electricity_display_mode', JSON.stringify('incremental'));
 
       localStorage.setItem('hm_demo_mode_is_active', 'true');
+      localStorage.setItem('hm_nature_tree_disabled', 'true');
     }, demoData);
   } catch (err) {
     console.warn('LHCI Demo setup warning:', err.message);

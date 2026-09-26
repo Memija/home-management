@@ -260,6 +260,10 @@ select.error {
     overflow-y: auto;
     animation: fadeIn 0.15s ease-out;
 
+    &[hidden] {
+      display: none !important;
+    }
+
     .dropdown-item {
       display: flex;
       align-items: center;
@@ -464,11 +468,12 @@ select.error {
 
   img {
     width: 100%;
+    height: auto;
+    aspect-ratio: 1;
     border-radius: 8px;
     cursor: pointer;
     border: 3px solid transparent;
     transition: all 0.2s;
-    aspect-ratio: 1;
     object-fit: cover;
 
     &:hover {

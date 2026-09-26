@@ -560,6 +560,23 @@ describe('ContactModalComponent', () => {
       expect(selector.nativeElement.getAttribute('aria-expanded')).toBe('false');
     });
 
+    it('should have aria-controls and toggle hidden state on dropdown-menu', () => {
+      const selector = fixture.debugElement.query(By.css('.custom-select'));
+      expect(selector.nativeElement.getAttribute('aria-controls')).toBe('email-client-dropdown');
+
+      const menu = fixture.debugElement.query(By.css('#email-client-dropdown'));
+      expect(menu).toBeTruthy();
+      expect(menu.nativeElement.hasAttribute('hidden')).toBe(true);
+
+      component['toggleDropdown']();
+      fixture.detectChanges();
+      expect(menu.nativeElement.hasAttribute('hidden')).toBe(false);
+
+      component['toggleDropdown']();
+      fixture.detectChanges();
+      expect(menu.nativeElement.hasAttribute('hidden')).toBe(true);
+    });
+
     it('should select email client and close dropdown', () => {
       component['dropdownOpen'].set(true);
       fixture.detectChanges();

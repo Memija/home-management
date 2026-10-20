@@ -1,7 +1,7 @@
 import { ChartConfiguration } from 'chart.js';
 import { LanguageService } from '../../../services/language.service';
 import { AppChartDataset } from '../../../models/records.model';
-import type { PredictionBuilderDeps, PredictionPeriod } from './chart-prediction.types';
+import type { PredictionBuilderDeps } from './chart-prediction.types';
 import { getPredictionMonths } from './chart-prediction-series.utils';
 import { extendTrendlinesAndAverages } from './chart-prediction-trendlines.utils';
 import {
@@ -10,7 +10,8 @@ import {
 } from './chart-prediction-datasets.builder';
 import { reorderDatasets } from './chart-prediction-reorder.utils';
 
-export type { PredictionBuilderDeps, PredictionPeriod };
+export type { PredictionBuilderDeps };
+export type { PredictionPeriod } from './chart-prediction.types';
 
 /**
  * Appends prediction datasets (expected, min/max band, past forecast, trendline extensions)

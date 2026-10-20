@@ -254,6 +254,10 @@
 
 // Alternative modal container for contact modal style
 .modal-container {
+  border: none;
+  padding: 0;
+  margin: auto;
+  color: inherit;
   background: var(--modal-bg);
   border-radius: 8px;
   box-shadow: var(--shadow);

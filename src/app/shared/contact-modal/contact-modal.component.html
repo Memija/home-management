@@ -1,9 +1,9 @@
 <!-- eslint-disable-next-line @angular-eslint/template/interactive-supports-focus -- Backdrop dismissal by design -->
 <div class="modal-overlay" (click)="onClose()" (keydown.escape)="onClose()">
-  <div
+  <!-- eslint-disable-next-line @angular-eslint/template/interactive-supports-focus -- Container stopPropagation by design -->
+  <dialog
     class="modal-container"
-    role="dialog"
-    aria-modal="true"
+    open
     aria-labelledby="contact-modal-title"
     (click)="$event.stopPropagation()"
     (keydown)="$event.stopPropagation()"
@@ -186,7 +186,7 @@
         </div>
       </form>
     </div>
-  </div>
+  </dialog>
 </div>
 
 <app-help-modal

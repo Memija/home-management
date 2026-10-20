@@ -613,11 +613,10 @@ describe('ContactModalComponent', () => {
   });
 
   describe('Accessibility', () => {
-    it('should configure dialog role and aria attributes on modal container', () => {
+    it('should configure native dialog element and aria attributes on modal container', () => {
       const container = fixture.debugElement.query(By.css('.modal-container'));
       expect(container).toBeTruthy();
-      expect(container.nativeElement.getAttribute('role')).toBe('dialog');
-      expect(container.nativeElement.getAttribute('aria-modal')).toBe('true');
+      expect(container.nativeElement.tagName.toLowerCase()).toBe('dialog');
       expect(container.nativeElement.getAttribute('aria-labelledby')).toBe('contact-modal-title');
     });
   });

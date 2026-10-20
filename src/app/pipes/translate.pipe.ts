@@ -7,7 +7,7 @@ import { LanguageService } from '../services/language.service';
   pure: false,
 })
 export class TranslatePipe implements PipeTransform {
-  private languageService = inject(LanguageService);
+  private readonly languageService = inject(LanguageService);
 
   transform(key: string, params?: Record<string, string | number>): string {
     // Reading the signal here creates a dependency so the pipe updates when language changes

@@ -64,13 +64,13 @@ describe('HeatingRoomsService', () => {
       const newService = TestBed.inject(HeatingRoomsService);
       await waitForInit(); // Wait for loadRooms to complete
 
-      expect(newService.rooms().length).toBe(1);
+      expect(newService.rooms()).toHaveLength(1);
       expect(newService.rooms()[0].name).toBe('Living Room');
     });
 
     it('should start empty if no storage', async () => {
       await waitForInit();
-      expect(service.rooms().length).toBe(0);
+      expect(service.rooms()).toHaveLength(0);
     });
   });
 
@@ -81,7 +81,7 @@ describe('HeatingRoomsService', () => {
 
     it('should add a room', () => {
       service.addRoom();
-      expect(service.rooms().length).toBe(1);
+      expect(service.rooms()).toHaveLength(1);
       expect(service.rooms()[0].id).toBe('room_1');
       expect(mockStorageService.save).toHaveBeenCalled();
     });
@@ -91,7 +91,7 @@ describe('HeatingRoomsService', () => {
       service.addRoom(); // room_2
       service.removeRoom('room_1');
 
-      expect(service.rooms().length).toBe(1);
+      expect(service.rooms()).toHaveLength(1);
       expect(service.rooms()[0].id).toBe('room_2');
       expect(mockStorageService.save).toHaveBeenCalled();
     });
@@ -105,14 +105,14 @@ describe('HeatingRoomsService', () => {
     it('should reset rooms', () => {
       service.addRoom();
       service.reset();
-      expect(service.rooms().length).toBe(0);
+      expect(service.rooms()).toHaveLength(0);
       expect(mockStorageService.save).toHaveBeenCalled();
     });
 
     it('should set rooms', () => {
       const rooms = [{ id: 'custom', name: 'Custom' }];
       service.setRooms(rooms);
-      expect(service.rooms().length).toBe(1);
+      expect(service.rooms()).toHaveLength(1);
       expect(service.rooms()[0].id).toBe('custom');
       expect(mockStorageService.save).toHaveBeenCalled();
     });
@@ -122,11 +122,11 @@ describe('HeatingRoomsService', () => {
       for (let i = 0; i < 10; i++) {
         service.addRoom();
       }
-      expect(service.rooms().length).toBe(10);
+      expect(service.rooms()).toHaveLength(10);
       expect(service.canAddRoom()).toBe(false);
 
       service.addRoom(); // Try 11th
-      expect(service.rooms().length).toBe(10);
+      expect(service.rooms()).toHaveLength(10);
     });
   });
 
@@ -168,6 +168,7 @@ describe('HeatingRoomsService', () => {
         href: '',
         download: '',
         click: mockClick,
+        remove: vi.fn(),
       } as unknown as HTMLAnchorElement);
 
       service.addRoom();
@@ -198,7 +199,7 @@ describe('HeatingRoomsService', () => {
       const result = await service.importRooms(mockFile);
 
       expect(result.success).toBe(true);
-      expect(service.rooms().length).toBe(2);
+      expect(service.rooms()).toHaveLength(2);
       expect(service.rooms()[0].name).toBe('Kitchen');
       expect(mockStorageService.save).toHaveBeenCalled();
     });

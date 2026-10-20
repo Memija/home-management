@@ -34,34 +34,16 @@ describe('ElectricityFormService', () => {
   });
 
   describe('hasValidInput', () => {
-    it('should return false when value is null', () => {
-      service.updateValue(null);
-      expect(service.hasValidInput()).toBe(false);
-    });
-
-    it('should return true when value is 0', () => {
-      service.updateValue(0);
-      expect(service.hasValidInput()).toBe(true);
-    });
-
-    it('should return true when value is positive', () => {
-      service.updateValue(100);
-      expect(service.hasValidInput()).toBe(true);
-    });
-
-    it('should return false when value is negative', () => {
-      service.updateValue(-1);
-      expect(service.hasValidInput()).toBe(false);
-    });
-
-    it('should return true for very large numbers', () => {
-      service.updateValue(999999999);
-      expect(service.hasValidInput()).toBe(true);
-    });
-
-    it('should return true for decimal values', () => {
-      service.updateValue(123.456);
-      expect(service.hasValidInput()).toBe(true);
+    it.each([
+      { value: null, expected: false, desc: 'null' },
+      { value: 0, expected: true, desc: '0' },
+      { value: 100, expected: true, desc: 'positive number' },
+      { value: -1, expected: false, desc: 'negative number' },
+      { value: 999999999, expected: true, desc: 'very large numbers' },
+      { value: 123.456, expected: true, desc: 'decimal values' },
+    ])('should return $expected when value is $desc', ({ value, expected }) => {
+      service.updateValue(value);
+      expect(service.hasValidInput()).toBe(expected);
     });
   });
 
@@ -295,34 +277,18 @@ describe('ElectricityFormService', () => {
       expect(result?.value).toBe(100);
     });
 
-    it('should create record with zero value', () => {
-      service.updateDate('2023-01-01');
-      service.updateValue(0);
+    it.each([
+      { date: '2023-01-01', value: 0, desc: 'zero value' },
+      { date: '2023-06-15', value: 123.456, desc: 'decimal value' },
+      { date: '2023-12-31', value: 999999999, desc: 'large value' },
+    ])('should create record with $desc', ({ date, value }) => {
+      service.updateDate(date);
+      service.updateValue(value);
 
       const result = service.createRecordFromState();
 
       expect(result).toBeTruthy();
-      expect(result?.value).toBe(0);
-    });
-
-    it('should create record with decimal value', () => {
-      service.updateDate('2023-06-15');
-      service.updateValue(123.456);
-
-      const result = service.createRecordFromState();
-
-      expect(result).toBeTruthy();
-      expect(result?.value).toBe(123.456);
-    });
-
-    it('should create record with large value', () => {
-      service.updateDate('2023-12-31');
-      service.updateValue(999999999);
-
-      const result = service.createRecordFromState();
-
-      expect(result).toBeTruthy();
-      expect(result?.value).toBe(999999999);
+      expect(result?.value).toBe(value);
     });
 
     it('should create correct Date object from date string', () => {

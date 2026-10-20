@@ -101,7 +101,7 @@ describe('ElectricityMeterService', () => {
         { date: new Date('2023-01-03'), value: 60 },
       ];
       const changes = service.detectMeterChanges(records);
-      expect(changes.length).toBe(1);
+      expect(changes).toHaveLength(1);
       expect(changes[0]).toBe(new Date('2023-01-02').toISOString());
     });
 
@@ -112,7 +112,7 @@ describe('ElectricityMeterService', () => {
         { date: new Date('2023-01-03'), value: 20 }, // Second drop
       ];
       const changes = service.detectMeterChanges(records);
-      expect(changes.length).toBe(2);
+      expect(changes).toHaveLength(2);
       expect(changes[0]).toBe(new Date('2023-01-02').toISOString());
       expect(changes[1]).toBe(new Date('2023-01-03').toISOString());
     });
@@ -268,68 +268,31 @@ describe('ElectricityMeterService', () => {
       service = TestBed.inject(ElectricityMeterService);
     });
 
-    it('should not detect changes when values are equal', () => {
-      const records: ElectricityRecord[] = [
-        { date: new Date('2023-01-01'), value: 100 },
-        { date: new Date('2023-01-02'), value: 100 },
-        { date: new Date('2023-01-03'), value: 100 },
-      ];
+    it.each([
+      { values: [100, 100, 100], desc: 'equal values' },
+      { values: [99999999, 100000000], desc: 'very large values' },
+      { values: [100.5, 110.75], desc: 'decimal values' },
+      { values: [0, 10], desc: 'zero values' },
+    ])('should not detect changes when $desc ($values)', ({ values }) => {
+      const records: ElectricityRecord[] = values.map((val, idx) => ({
+        date: new Date(`2023-01-0${idx + 1}`),
+        value: val,
+      }));
       const changes = service.detectMeterChanges(records);
       expect(changes).toEqual([]);
     });
 
-    it('should handle very large values', () => {
-      const records: ElectricityRecord[] = [
-        { date: new Date('2023-01-01'), value: 99999999 },
-        { date: new Date('2023-01-02'), value: 100000000 },
-      ];
+    it.each([
+      { values: [100000000, 100], desc: 'very large value drops' },
+      { values: [100.5, 100.49], desc: 'drop with decimal values' },
+      { values: [100, 0], desc: 'drop to zero' },
+    ])('should detect single change when $desc ($values)', ({ values }) => {
+      const records: ElectricityRecord[] = values.map((val, idx) => ({
+        date: new Date(`2023-01-0${idx + 1}`),
+        value: val,
+      }));
       const changes = service.detectMeterChanges(records);
-      expect(changes).toEqual([]);
-    });
-
-    it('should handle very large value drops', () => {
-      const records: ElectricityRecord[] = [
-        { date: new Date('2023-01-01'), value: 100000000 },
-        { date: new Date('2023-01-02'), value: 100 },
-      ];
-      const changes = service.detectMeterChanges(records);
-      expect(changes.length).toBe(1);
-    });
-
-    it('should handle decimal values', () => {
-      const records: ElectricityRecord[] = [
-        { date: new Date('2023-01-01'), value: 100.5 },
-        { date: new Date('2023-01-02'), value: 110.75 },
-      ];
-      const changes = service.detectMeterChanges(records);
-      expect(changes).toEqual([]);
-    });
-
-    it('should detect drop with decimal values', () => {
-      const records: ElectricityRecord[] = [
-        { date: new Date('2023-01-01'), value: 100.5 },
-        { date: new Date('2023-01-02'), value: 100.49 },
-      ];
-      const changes = service.detectMeterChanges(records);
-      expect(changes.length).toBe(1);
-    });
-
-    it('should handle zero values', () => {
-      const records: ElectricityRecord[] = [
-        { date: new Date('2023-01-01'), value: 0 },
-        { date: new Date('2023-01-02'), value: 10 },
-      ];
-      const changes = service.detectMeterChanges(records);
-      expect(changes).toEqual([]);
-    });
-
-    it('should detect drop to zero', () => {
-      const records: ElectricityRecord[] = [
-        { date: new Date('2023-01-01'), value: 100 },
-        { date: new Date('2023-01-02'), value: 0 },
-      ];
-      const changes = service.detectMeterChanges(records);
-      expect(changes.length).toBe(1);
+      expect(changes).toHaveLength(1);
     });
 
     it('should handle two records with drop', () => {
@@ -338,7 +301,7 @@ describe('ElectricityMeterService', () => {
         { date: new Date('2023-01-02'), value: 50 },
       ];
       const changes = service.detectMeterChanges(records);
-      expect(changes.length).toBe(1);
+      expect(changes).toHaveLength(1);
       expect(changes[0]).toBe(new Date('2023-01-02').toISOString());
     });
 
@@ -349,7 +312,7 @@ describe('ElectricityMeterService', () => {
         { date: new Date('2023-01-03'), value: 150 }, // Increase
       ];
       const changes = service.detectMeterChanges(records);
-      expect(changes.length).toBe(1);
+      expect(changes).toHaveLength(1);
       expect(changes[0]).toBe(new Date('2023-01-02').toISOString());
     });
 
@@ -360,7 +323,7 @@ describe('ElectricityMeterService', () => {
         { date: new Date('2023-01-03'), value: 80 }, // Drop
       ];
       const changes = service.detectMeterChanges(records);
-      expect(changes.length).toBe(1);
+      expect(changes).toHaveLength(1);
       expect(changes[0]).toBe(new Date('2023-01-03').toISOString());
     });
 
@@ -381,7 +344,7 @@ describe('ElectricityMeterService', () => {
         { date: new Date('2023-01-03'), value: 90 }, // Drop
       ];
       const changes = service.detectMeterChanges(records);
-      expect(changes.length).toBe(1);
+      expect(changes).toHaveLength(1);
     });
 
     it('should handle many consecutive drops', () => {
@@ -393,7 +356,7 @@ describe('ElectricityMeterService', () => {
         { date: new Date('2023-01-05'), value: 20 },
       ];
       const changes = service.detectMeterChanges(records);
-      expect(changes.length).toBe(4);
+      expect(changes).toHaveLength(4);
     });
 
     it('should handle alternating increases and drops', () => {
@@ -405,7 +368,7 @@ describe('ElectricityMeterService', () => {
         { date: new Date('2023-01-05'), value: 60 }, // Increase
       ];
       const changes = service.detectMeterChanges(records);
-      expect(changes.length).toBe(2);
+      expect(changes).toHaveLength(2);
     });
   });
 

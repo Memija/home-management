@@ -9,6 +9,7 @@ import {
 import { isPlatformBrowser, CommonModule } from '@angular/common';
 import { ThemeService } from '../../services/theme.service';
 import { SeasonService, Season } from '../../services/season.service';
+import { secureRandom } from '../../utils/crypto.utils';
 
 interface Branch {
   x: number;
@@ -94,11 +95,11 @@ export class NatureTreeComponent {
   // Use a fixed seed so the tree is mostly deterministic and doesn't jitter on reload.
   private seed = 51234;
   private performanceChecked = false;
-  private platformId = inject(PLATFORM_ID);
+  private readonly platformId = inject(PLATFORM_ID);
 
-  public themeService = inject(ThemeService);
-  protected seasonService = inject(SeasonService);
-  private cdr = inject(ChangeDetectorRef);
+  public readonly themeService = inject(ThemeService);
+  protected readonly seasonService = inject(SeasonService);
+  private readonly cdr = inject(ChangeDetectorRef);
 
   constructor() {
     // Reactively regenerate the tree whenever the season changes
@@ -187,21 +188,21 @@ export class NatureTreeComponent {
     if (this.season === 'winter') {
       for (let i = 0; i < MAX_SNOWFLAKES; i++) {
         this.snowflakes.push({
-          x: Math.random() * 3000 - 1000,
-          y: Math.random() * 1200 - 1200,
-          size: 1.5 + Math.random() * 3.5,
-          animDuration: 8 + Math.random() * 12 + 's',
-          animDelay: '-' + Math.random() * 20 + 's',
+          x: secureRandom() * 3000 - 1000,
+          y: secureRandom() * 1200 - 1200,
+          size: 1.5 + secureRandom() * 3.5,
+          animDuration: 8 + secureRandom() * 12 + 's',
+          animDelay: '-' + secureRandom() * 20 + 's',
         });
       }
     } else if (this.season === 'autumn') {
       for (let i = 0; i < MAX_RAINDROPS; i++) {
         this.raindrops.push({
-          x: Math.random() * 3000 - 500,
-          y: Math.random() * 1200 - 1200,
-          height: 15 + Math.random() * 25,
-          animDuration: 0.4 + Math.random() * 0.6 + 's',
-          animDelay: '-' + Math.random() * 2 + 's',
+          x: secureRandom() * 3000 - 500,
+          y: secureRandom() * 1200 - 1200,
+          height: 15 + secureRandom() * 25,
+          animDuration: 0.4 + secureRandom() * 0.6 + 's',
+          animDelay: '-' + secureRandom() * 2 + 's',
         });
       }
     }
@@ -213,38 +214,35 @@ export class NatureTreeComponent {
     return (this.seed - 1) / 2147483646;
   }
 
-  private generateBranchChildren(parent: Branch, depth: number) {
-    if (depth === 0) {
-      // Add a cluster of leaves at the end of branches (except in winter)
-      if (this.season !== 'winter') {
-        const leafCount = this.season === 'autumn' ? 3 : 4;
-        for (let i = 0; i < leafCount; i++) {
-          parent.leaves.push({
-            offsetX: this.random() * 50 - 25,
-            offsetY: -(parent.length + this.random() * 50 - 25),
-            rotation: this.random() * 360,
-            scale: 1.2 + this.random() * 2.0,
-            type: Math.floor(this.random() * 3),
-            animDelay: '-' + (this.random() * 5).toFixed(2) + 's',
-          });
-        }
-      }
+  private addTerminalLeaves(parent: Branch): void {
+    if (this.season === 'winter') {
       return;
     }
-
-    // Lanterns on medium depth branches
-    if (depth <= 5 && depth >= 2 && this.random() > 0.4) {
-      if (parent.width < 35) {
-        parent.lanterns.push({
-          offsetX: 0,
-          offsetY: -parent.length,
-          length: 40 + this.random() * 60,
-          animDelay: '-' + (this.random() * 5).toFixed(2) + 's',
-        });
-      }
+    const leafCount = this.season === 'autumn' ? 3 : 4;
+    for (let i = 0; i < leafCount; i++) {
+      parent.leaves.push({
+        offsetX: this.random() * 50 - 25,
+        offsetY: -(parent.length + this.random() * 50 - 25),
+        rotation: this.random() * 360,
+        scale: 1.2 + this.random() * 2.0,
+        type: Math.floor(this.random() * 3),
+        animDelay: '-' + (this.random() * 5).toFixed(2) + 's',
+      });
     }
+  }
 
-    // Flowers for Spring
+  private addLanterns(parent: Branch, depth: number): void {
+    if (depth <= 5 && depth >= 2 && this.random() > 0.4 && parent.width < 35) {
+      parent.lanterns.push({
+        offsetX: 0,
+        offsetY: -parent.length,
+        length: 40 + this.random() * 60,
+        animDelay: '-' + (this.random() * 5).toFixed(2) + 's',
+      });
+    }
+  }
+
+  private addFlowers(parent: Branch, depth: number): void {
     if (this.season === 'spring' && depth < 4 && this.random() > 0.6) {
       const colors = ['#f472b6', '#fbcfe8', '#fff1f2', '#fda4af'];
       parent.flowers.push({
@@ -256,29 +254,31 @@ export class NatureTreeComponent {
         animDelay: '-' + (this.random() * 5).toFixed(2) + 's',
       });
     }
+  }
 
-    // Add side leaves along branches
-    if (depth < 4 && this.season !== 'winter') {
-      const leafCount = this.season === 'autumn' ? 1 : 2;
-      for (let i = 0; i < leafCount; i++) {
-        if (this.random() > 0.4) {
-          const t = this.random();
-          parent.leaves.push({
-            offsetX: this.random() * 40 - 20,
-            offsetY: -(parent.length * t),
-            rotation: this.random() * 360,
-            scale: 1.0 + this.random() * 1.5,
-            type: Math.floor(this.random() * 3),
-            animDelay: '-' + (this.random() * 5).toFixed(2) + 's',
-          });
-        }
+  private addSideLeaves(parent: Branch, depth: number): void {
+    if (depth >= 4 || this.season === 'winter') {
+      return;
+    }
+    const leafCount = this.season === 'autumn' ? 1 : 2;
+    for (let i = 0; i < leafCount; i++) {
+      if (this.random() > 0.4) {
+        const t = this.random();
+        parent.leaves.push({
+          offsetX: this.random() * 40 - 20,
+          offsetY: -(parent.length * t),
+          rotation: this.random() * 360,
+          scale: 1.0 + this.random() * 1.5,
+          type: Math.floor(this.random() * 3),
+          animDelay: '-' + (this.random() * 5).toFixed(2) + 's',
+        });
       }
     }
+  }
 
+  private calculateAngleDeltas(depth: number): number[] {
     const maxBranches = depth > 4 ? 2 : 3;
     const numBranches = Math.floor(this.random() * (maxBranches - 1)) + 2;
-
-    // Spread angle becomes wider as depth decrements
     const angleSpread = 40 + this.random() * 50;
 
     let angleDeltas: number[];
@@ -295,11 +295,24 @@ export class NatureTreeComponent {
       ];
     }
 
-    // Ensure root splits look nice
     if (depth === MAX_DEPTH) {
       angleDeltas = [-25, 30, -5];
     }
 
+    return angleDeltas;
+  }
+
+  private generateBranchChildren(parent: Branch, depth: number) {
+    if (depth === 0) {
+      this.addTerminalLeaves(parent);
+      return;
+    }
+
+    this.addLanterns(parent, depth);
+    this.addFlowers(parent, depth);
+    this.addSideLeaves(parent, depth);
+
+    const angleDeltas = this.calculateAngleDeltas(depth);
     for (const delta of angleDeltas) {
       const childLength = depth * 40 + this.random() * 45;
       const child: Branch = {

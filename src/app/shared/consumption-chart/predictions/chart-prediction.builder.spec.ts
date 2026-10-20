@@ -1,9 +1,9 @@
 import { describe, it, expect, vi } from 'vitest';
 import { appendPredictionDatasets, PredictionBuilderDeps } from './chart-prediction.builder';
 import { ChartConfiguration } from 'chart.js';
-import { LanguageService } from '../../services/language.service';
-import { PredictionResult, MultiPredictionResult } from '../../models/prediction.models';
-import { ConsumptionRecord } from '../../models/records.model';
+import { LanguageService } from '../../../services/language.service';
+import { PredictionResult, MultiPredictionResult } from '../../../models/prediction.models';
+import { ConsumptionRecord, AppChartDataset } from '../../../models/records.model';
 
 interface ExtendedDataset {
   label?: string;
@@ -60,8 +60,12 @@ const makePrediction = (overrides: Partial<PredictionResult> = {}): PredictionRe
   ...overrides,
 });
 
-const makeMultiPrediction = (overrides?: Partial<PredictionResult>): MultiPredictionResult => ({
+const makeMultiPrediction = (
+  overrides?: Partial<PredictionResult>,
+  categories?: Record<string, PredictionResult>,
+): MultiPredictionResult => ({
   total: makePrediction(overrides),
+  categories,
 });
 
 /** Minimal chart data with a single bar dataset */
@@ -120,68 +124,35 @@ describe('appendPredictionDatasets', () => {
       expect(result.datasets).toHaveLength(4);
     });
 
-    it('should extend labels by predictionMonths for 30-day period', () => {
-      const chartData = makeChartData([10, 20]);
-      const result = appendPredictionDatasets(chartData, makeDeps({ predictionPeriod: 30 }));
-      // Original 2 labels + 1 future month
-      expect(result.labels).toHaveLength(3);
-    });
+    it.each([
+      { period: 30, futureMonths: 1, total: 3 },
+      { period: 90, futureMonths: 3, total: 5 },
+      { period: 180, futureMonths: 6, total: 8 },
+      { period: 365, futureMonths: 12, total: 14 },
+      { period: 3650, futureMonths: 120, total: 122 },
+    ] as const)(
+      'should extend labels by $futureMonths month(s) for $period-day period',
+      ({ period, total }) => {
+        const chartData = makeChartData([10, 20]);
+        const result = appendPredictionDatasets(chartData, makeDeps({ predictionPeriod: period }));
+        expect(result.labels).toHaveLength(total);
+      },
+    );
 
-    it('should extend labels by 3 months for 90-day period', () => {
-      const chartData = makeChartData([10, 20]);
-      const result = appendPredictionDatasets(chartData, makeDeps({ predictionPeriod: 90 }));
-      expect(result.labels).toHaveLength(5); // 2 original + 3 future
-    });
-
-    it('should extend labels by 6 months for 180-day period', () => {
-      const chartData = makeChartData([10, 20]);
-      const result = appendPredictionDatasets(chartData, makeDeps({ predictionPeriod: 180 }));
-      expect(result.labels).toHaveLength(8); // 2 original + 6 future
-    });
-
-    it('should extend labels by 12 months for 365-day period', () => {
-      const chartData = makeChartData([10, 20]);
-      const result = appendPredictionDatasets(chartData, makeDeps({ predictionPeriod: 365 }));
-      expect(result.labels).toHaveLength(14); // 2 original + 12 future
-    });
-
-    it('should extend labels by 120 months for 3650-day period', () => {
-      const chartData = makeChartData([10, 20]);
-      const result = appendPredictionDatasets(chartData, makeDeps({ predictionPeriod: 3650 }));
-      expect(result.labels).toHaveLength(122); // 2 original + 120 future
-    });
-
-    it('should use yellow color for electricity chart predictions', () => {
+    it.each([
+      { chartType: 'electricity' as const, color: '#ffc107', desc: 'yellow' },
+      { chartType: 'heating' as const, color: '#f57c00', desc: 'orange' },
+      { chartType: 'water' as const, color: '#1976d2', desc: 'blue' },
+    ])('should use $desc color for $chartType chart predictions', ({ chartType, color }) => {
       const chartData = makeChartData([10, 20]);
       const result = appendPredictionDatasets(
         chartData,
-        makeDeps({ chartType: 'electricity', currentView: () => 'total' }),
+        makeDeps({ chartType, currentView: () => 'total' }),
       );
       const expectedDataset = (result.datasets as ExtendedDataset[]).find((ds) =>
         ds.label?.includes('CHART.CONSUMPTION_PREDICTION'),
       );
-      expect(expectedDataset?.borderColor).toBe('#ffc107');
-    });
-
-    it('should use orange color for heating chart predictions', () => {
-      const chartData = makeChartData([10, 20]);
-      const result = appendPredictionDatasets(
-        chartData,
-        makeDeps({ chartType: 'heating', currentView: () => 'total' }),
-      );
-      const expectedDataset = (result.datasets as ExtendedDataset[]).find((ds) =>
-        ds.label?.includes('CHART.CONSUMPTION_PREDICTION'),
-      );
-      expect(expectedDataset?.borderColor).toBe('#f57c00');
-    });
-
-    it('should use blue color for water chart predictions', () => {
-      const chartData = makeChartData([10, 20]);
-      const result = appendPredictionDatasets(chartData, makeDeps({ chartType: 'water' }));
-      const expectedDataset = (result.datasets as ExtendedDataset[]).find((ds) =>
-        ds.label?.includes('CHART.CONSUMPTION_PREDICTION'),
-      );
-      expect(expectedDataset?.borderColor).toBe('#1976d2');
+      expect(expectedDataset?.borderColor).toBe(color);
     });
 
     it('expected dataset should have dashed border [4, 4]', () => {
@@ -476,6 +447,206 @@ describe('appendPredictionDatasets', () => {
       // All future prediction values should be non-zero
       const futureValues = data.slice(2).filter((v) => v !== null) as number[];
       expect(futureValues.every((v) => v > 0)).toBe(true);
+    });
+  });
+
+  describe('country average comparison line extension', () => {
+    it('should extend country average dataset with constant value into prediction zone', () => {
+      const chartData: ChartConfiguration['data'] = {
+        labels: ['Jan', 'Feb'],
+        datasets: [
+          { data: [10, 20], label: 'Total' },
+          {
+            data: [15, 15],
+            label: 'Country Average',
+            borderDash: [5, 5],
+          },
+        ],
+      };
+      const deps = makeDeps({ predictionPeriod: 30, showPredictions: true });
+      const result = appendPredictionDatasets(chartData, deps);
+      const avgDs = result.datasets.find((ds) => ds.label === 'Country Average');
+      expect(avgDs).toBeDefined();
+      expect(avgDs!.data).toEqual([15, 15, 15]);
+    });
+  });
+
+  describe('subcategory predictions (non-total view)', () => {
+    const makeSubcategoryChartData = () => ({
+      labels: ['Jan', 'Feb'],
+      datasets: [
+        {
+          data: [10, 20],
+          label: 'Kitchen Warm (L)',
+          borderColor: '#ff6384',
+          categoryId: 'kitchenWarm',
+        },
+        {
+          data: [5, 15],
+          label: 'Kitchen Cold (L)',
+          borderColor: '#36a2eb',
+          categoryId: 'kitchenCold',
+        },
+      ],
+    });
+
+    it('should append prediction datasets (min, max, expected) for each subcategory', () => {
+      const chartData = makeSubcategoryChartData();
+      const pred = makeMultiPrediction(
+        {},
+        {
+          kitchenWarm: makePrediction({ daily30: 25, daily30Min: 20, daily30Max: 30 }),
+          kitchenCold: makePrediction({ daily30: 18, daily30Min: 15, daily30Max: 22 }),
+        },
+      );
+      const deps = makeDeps({
+        chartType: 'water',
+        currentView: () => 'separate',
+        prediction: pred,
+        predictionPeriod: 30,
+        showPredictions: true,
+      });
+
+      const result = appendPredictionDatasets(chartData, deps);
+
+      // Each category gets: original + min + max + expected = 4 datasets per category (8 total)
+      expect(result.datasets).toHaveLength(8);
+
+      const kitchenWarmExpected = (result.datasets as ExtendedDataset[]).find(
+        (ds) =>
+          ds.categoryId === 'kitchenWarm' && ds.label?.includes('CHART.CONSUMPTION_PREDICTION'),
+      );
+      expect(kitchenWarmExpected).toBeDefined();
+      expect(kitchenWarmExpected?.borderColor).toBe('#ff6384');
+      // Starts with null, anchors at 20, then prediction
+      expect((kitchenWarmExpected?.data as unknown[])[0]).toBeNull();
+      expect((kitchenWarmExpected?.data as unknown[])[1]).toBe(20);
+      expect((kitchenWarmExpected?.data as unknown[])[2]).toBe(25);
+    });
+
+    it('should use fallback category color from WATER_CATEGORY_COLORS when borderColor is absent', () => {
+      const chartData = {
+        labels: ['Jan', 'Feb'],
+        datasets: [
+          {
+            data: [10, 20],
+            label: 'Kitchen Warm',
+            categoryId: 'kitchenWarm',
+          },
+        ],
+      };
+      const pred = makeMultiPrediction(
+        {},
+        {
+          kitchenWarm: makePrediction({ daily30: 25 }),
+        },
+      );
+      const deps = makeDeps({
+        chartType: 'water',
+        currentView: () => 'separate',
+        prediction: pred,
+        predictionPeriod: 30,
+        showPredictions: true,
+      });
+
+      const result = appendPredictionDatasets(chartData, deps);
+      const kwExpected = (result.datasets as ExtendedDataset[]).find(
+        (ds) =>
+          ds.categoryId === 'kitchenWarm' && ds.label?.includes('CHART.CONSUMPTION_PREDICTION'),
+      );
+      expect(kwExpected?.borderColor).toBe('#ff6384');
+    });
+
+    it('should add past forecast dataset for each subcategory when showPastForecast is true', () => {
+      const chartData = makeSubcategoryChartData();
+      const kwPred = makePrediction();
+      kwPred.historicalPredictions = [null, 18, 22];
+      const pred = makeMultiPrediction({}, { kitchenWarm: kwPred });
+      const deps = makeDeps({
+        chartType: 'water',
+        currentView: () => 'separate',
+        prediction: pred,
+        showPredictions: false,
+        showPastForecast: true,
+      });
+
+      const result = appendPredictionDatasets(chartData, deps);
+      const pastDs = (result.datasets as ExtendedDataset[]).find(
+        (ds) => ds.categoryId === 'kitchenWarm' && ds.label?.includes('CHART.PAST_FORECAST'),
+      );
+      expect(pastDs).toBeDefined();
+      expect((pastDs?.data as unknown[])[0]).toBe(18);
+      expect((pastDs?.data as unknown[])[1]).toBe(22);
+    });
+
+    it('should skip datasets with borderDash or type line or missing categoryId', () => {
+      const chartData: ChartConfiguration['data'] = {
+        labels: ['Jan', 'Feb'],
+        datasets: [
+          { data: [10, 20], label: 'Total', categoryId: undefined },
+          { data: [10, 20], label: 'Line Item', type: 'line', categoryId: 'kitchenWarm' },
+          { data: [10, 20], label: 'Dashed Item', borderDash: [5, 5], categoryId: 'kitchenWarm' },
+          { data: [10, 20], label: 'Unmatched Category', categoryId: 'unknownCategory' },
+        ] as AppChartDataset[],
+      };
+      const pred = makeMultiPrediction({}, { kitchenWarm: makePrediction() });
+      const deps = makeDeps({
+        chartType: 'water',
+        currentView: () => 'separate',
+        prediction: pred,
+        showPredictions: true,
+      });
+
+      const result = appendPredictionDatasets(chartData, deps);
+      // No valid category bar dataset matched, so no prediction datasets added
+      expect(result.datasets).toHaveLength(4);
+    });
+
+    it('should reorder datasets so matching category and trendlines are grouped together', () => {
+      const chartData = {
+        labels: ['Jan', 'Feb'],
+        datasets: [
+          { data: [10, 20], label: 'Cat B', categoryId: 'catB' },
+          { data: [5, 15], label: 'Cat A', categoryId: 'catA' },
+          { data: [6, 14], label: 'Trendline A', trendlineFor: 'catA' },
+          { data: [100, 100], label: 'Global Average' },
+        ],
+      };
+      const pred = makeMultiPrediction(
+        {},
+        {
+          catA: makePrediction(),
+          catB: makePrediction(),
+        },
+      );
+      const deps = makeDeps({
+        chartType: 'water',
+        currentView: () => 'separate',
+        prediction: pred,
+        showPredictions: false,
+        showPastForecast: true,
+      });
+
+      const result = appendPredictionDatasets(chartData, deps);
+
+      const labels = result.datasets.map((d) => d.label);
+      const catAIndex = labels.indexOf('Cat A');
+      const trendlineAIndex = labels.indexOf('Trendline A');
+      expect(Math.abs(catAIndex - trendlineAIndex)).toBe(1);
+      expect(labels[labels.length - 1]).toBe('Global Average');
+    });
+  });
+
+  describe('edge cases', () => {
+    it('should handle all-null actual data values gracefully without throwing', () => {
+      const chartData = makeChartData([null, null]);
+      const deps = makeDeps({ predictionPeriod: 30 });
+      const result = appendPredictionDatasets(chartData, deps);
+      const expectedDs = (result.datasets as ExtendedDataset[]).find((ds) =>
+        ds.label?.includes('CHART.CONSUMPTION_PREDICTION'),
+      );
+      expect(expectedDs).toBeDefined();
+      expect(expectedDs?.data?.every((v) => v === null)).toBe(true);
     });
   });
 });

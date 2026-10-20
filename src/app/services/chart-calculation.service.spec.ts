@@ -82,7 +82,7 @@ describe('ChartCalculationService', () => {
 
       const result = service.calculateIncrementalData(records);
 
-      expect(result.length).toBe(2);
+      expect(result).toHaveLength(2);
       expect(result[0]).toEqual({
         date: new Date('2023-01-02'),
         kitchenWarm: 10,
@@ -107,7 +107,7 @@ describe('ChartCalculationService', () => {
 
       const result = service.calculateIncrementalData(records);
 
-      expect(result.length).toBe(1);
+      expect(result).toHaveLength(1);
       expect((result[0] as unknown as DynamicHeatingRecord).rooms).toEqual({
         room1: 10,
         room2: 20,
@@ -123,7 +123,7 @@ describe('ChartCalculationService', () => {
 
       const result = service.calculateIncrementalData(records);
 
-      expect(result.length).toBe(1);
+      expect(result).toHaveLength(1);
       // room1: 50 < 1000, so use currVal (50) as consumption since reset
       // room2: 520 - 500 = 20 (normal delta)
       expect((result[0] as unknown as DynamicHeatingRecord).rooms).toEqual({
@@ -253,7 +253,7 @@ describe('ChartCalculationService', () => {
       const result = service.generateComparisonData(records, 2, 'de');
 
       expect(waterAveragesServiceSpy.getCountryData).toHaveBeenCalledWith('de');
-      expect(result.length).toBe(2);
+      expect(result).toHaveLength(2);
       expect(result[0]).toEqual({
         date: new Date('2023-01-01'),
         kitchenWarm: 12,
@@ -318,7 +318,7 @@ describe('ChartCalculationService', () => {
       expect(electricityAveragesServiceSpy.getCountryData).toHaveBeenCalledWith('DE');
       // 3652.5 / 365.25 * 2 = 20 kWh/day for family of 2
       // Result should have 3 records (2 + 1 padded)
-      expect(result.length).toBe(3);
+      expect(result).toHaveLength(3);
       expect(result[0].value).toBe(20);
       expect(result[1].value).toBe(20);
       expect(result[2].value).toBe(20);
@@ -336,7 +336,7 @@ describe('ChartCalculationService', () => {
       const result = service.generateElectricityComparisonData(records, 1, 'DE');
 
       // 1 record + 1 padded = 2
-      expect(result.length).toBe(2);
+      expect(result).toHaveLength(2);
       expect(result[0].value).toBe(1); // 365.25 / 365.25 * 1 = 1
     });
 
@@ -527,7 +527,7 @@ describe('ChartCalculationService', () => {
 
       const result = service.detectNewRoomSpikes(records);
 
-      expect(result.length).toBe(1);
+      expect(result).toHaveLength(1);
       expect(result[0].roomId).toBe('room2');
       expect(result[0].value).toBe(500);
     });
@@ -539,7 +539,7 @@ describe('ChartCalculationService', () => {
       ];
 
       const result = service.detectNewRoomSpikes(records);
-      expect(result.length).toBe(0);
+      expect(result).toHaveLength(0);
     });
 
     it('should detect multiple spikes on different dates', () => {
@@ -551,7 +551,7 @@ describe('ChartCalculationService', () => {
 
       const result = service.detectNewRoomSpikes(records);
 
-      expect(result.length).toBe(2);
+      expect(result).toHaveLength(2);
       expect(result.map((s) => s.roomId)).toContain('room2');
       expect(result.map((s) => s.roomId)).toContain('room3');
     });
@@ -677,7 +677,7 @@ describe('ChartCalculationService', () => {
 
       const result = service.calculateDailyAverage(incrementalData, originalData, 'electricity');
 
-      expect(result.length).toBe(2);
+      expect(result).toHaveLength(2);
       expect(result[1]['value']).toBe(10); // 300 / 30 = 10
       expect((result[1] as unknown as { normalized: { raw: number } }).normalized.raw).toBe(300);
     });
@@ -749,7 +749,7 @@ describe('ChartCalculationService', () => {
         'electricity',
       );
 
-      expect(result.length).toBe(2);
+      expect(result).toHaveLength(2);
       expect(new Date(result[0].date).toISOString().split('T')[0]).toBe('2023-01-01');
     });
 

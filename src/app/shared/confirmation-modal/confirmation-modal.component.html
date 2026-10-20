@@ -1,10 +1,11 @@
 @if (show) {
-  <div class="modal-overlay" (click)="onCancel()" tabindex="0" (keyup.enter)="onCancel()">
+  <!-- eslint-disable-next-line @angular-eslint/template/interactive-supports-focus -- Backdrop dismissal by design -->
+  <div class="modal-overlay" (click)="onCancel()" (keydown.escape)="onCancel()">
+    <!-- eslint-disable-next-line @angular-eslint/template/interactive-supports-focus -- Container stopPropagation by design -->
     <div
       class="modal-content"
       (click)="$event.stopPropagation()"
-      tabindex="0"
-      (keyup.enter)="$event.stopPropagation()"
+      (keydown)="$event.stopPropagation()"
     >
       <div class="modal-header">
         <lucide-icon [img]="icon" size="32" class="info-icon"></lucide-icon>

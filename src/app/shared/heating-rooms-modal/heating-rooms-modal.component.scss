@@ -167,7 +167,7 @@ $heating-primary: #c2410c;
   :host-context([data-theme='dark']) & {
     background: #fb923c;
     border-color: #fb923c;
-    color: #0f172a !important;
+    color: #0f172a;
   }
 
   &:hover:not(:disabled) {
@@ -177,7 +177,7 @@ $heating-primary: #c2410c;
     :host-context([data-theme='dark']) & {
       background: #f97316;
       border-color: #f97316;
-      color: #0f172a !important;
+      color: #0f172a;
     }
   }
 

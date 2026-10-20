@@ -2,10 +2,11 @@ import { Injectable, inject } from '@angular/core';
 import { WaterAveragesService } from './water-averages.service';
 import { ElectricityAveragesService } from './electricity-averages.service';
 import {
-  ConsumptionRecord,
-  DynamicHeatingRecord,
   CombinedData,
   ComparisonData,
+  AnyConsumptionRecord,
+  ConsumptionRecord,
+  DynamicHeatingRecord,
   ElectricityRecord,
 } from '../models/records.model';
 
@@ -13,97 +14,105 @@ import {
   providedIn: 'root',
 })
 export class ChartCalculationService {
-  private waterAveragesService = inject(WaterAveragesService);
-  private electricityAveragesService = inject(ElectricityAveragesService);
+  private readonly waterAveragesService = inject(WaterAveragesService);
+  private readonly electricityAveragesService = inject(ElectricityAveragesService);
 
   /**
    * Calculate incremental (delta) data between consecutive readings
    */
   calculateIncrementalData(
-    recs: (ConsumptionRecord | DynamicHeatingRecord | ElectricityRecord)[],
+    recs: AnyConsumptionRecord[],
     ignoredSpikes?: { date: string; roomId: string }[],
   ): CombinedData[] {
     // Defensive filter against invalid dates
-    const validRecs = recs.filter((r) => r && r.date && !isNaN(new Date(r.date).getTime()));
+    const validRecs = recs.filter((r) => r?.date && !Number.isNaN(new Date(r.date).getTime()));
     if (validRecs.length <= 1) return [];
 
     const incrementalData: CombinedData[] = [];
-    // Start from 1, comparing with i-1. The first record (index 0) is the baseline, so it doesn't get a bar.
     for (let i = 1; i < validRecs.length; i++) {
-      const current = validRecs[i];
-      const previous = validRecs[i - 1];
-      const currentDateStr = new Date(current.date).toISOString().split('T')[0];
-
-      // Initialize with date
-      const incremental: CombinedData = { date: current.date };
-
-      // Check for nested 'rooms' object (DynamicHeatingRecord)
-      if ('rooms' in current) {
-        // Handle dynamic heating record
-        const currRooms = (current as DynamicHeatingRecord).rooms;
-        const prevRooms = (previous as DynamicHeatingRecord)?.rooms || {};
-        const incRooms: Record<string, number> = {};
-
-        // Calculate delta for each room
-        Object.keys(currRooms).forEach((roomId) => {
-          // Check if this specific record/room is a confirmed spike
-          const isSpike = ignoredSpikes?.some(
-            (s) => s.date === currentDateStr && s.roomId === roomId,
-          );
-
-          if (isSpike) {
-            incRooms[roomId] = 0; // Ignore spike consumption (treat as 0 usage initialization)
-            return;
-          }
-
-          const currVal = currRooms[roomId] || 0;
-          const prevVal = prevRooms[roomId] || 0;
-
-          if (currVal < prevVal) {
-            // Meter reset detected - current value IS the consumption since reset
-            incRooms[roomId] = currVal;
-          } else {
-            incRooms[roomId] = currVal - prevVal;
-          }
-        });
-
-        // Add rooms to incremental data
-        incremental['rooms'] = incRooms;
-      } else {
-        // Handle flat records (ConsumptionRecord or ElectricityRecord)
-        const currentObj = current as unknown as Record<string, unknown>;
-        const previousObj = (previous as unknown as Record<string, unknown>) || {};
-
-        // Handle ElectricityRecord explicitly or generic logic
-        if ('value' in current) {
-          const currVal = (current as unknown as ElectricityRecord).value;
-          const prevVal =
-            'value' in (previous as object) ? (previous as unknown as ElectricityRecord).value : 0;
-
-          if (currVal < prevVal) {
-            // Reset detected
-            incremental['value'] = currVal;
-          } else {
-            incremental['value'] = currVal - prevVal;
-          }
-        } else {
-          // Water consumption logic (generic keys)
-          Object.keys(current).forEach((key) => {
-            const currVal = currentObj[key];
-            const prevVal = previousObj[key] ?? 0;
-
-            if (key !== 'date' && typeof currVal === 'number') {
-              const pVal = prevVal as number;
-              incremental[key] = Math.max(0, currVal - pVal);
-            }
-          });
-        }
-      }
-
-      incrementalData.push(incremental);
+      incrementalData.push(
+        this.buildIncrementalEntry(validRecs[i], validRecs[i - 1], ignoredSpikes),
+      );
     }
 
     return incrementalData;
+  }
+
+  private buildIncrementalEntry(
+    current: AnyConsumptionRecord,
+    previous: AnyConsumptionRecord,
+    ignoredSpikes?: { date: string; roomId: string }[],
+  ): CombinedData {
+    const incremental: CombinedData = { date: current.date };
+    const currentDateStr = new Date(current.date).toISOString().split('T')[0];
+
+    if ('rooms' in current) {
+      incremental['rooms'] = this.calculateHeatingRoomDeltas(
+        (current as DynamicHeatingRecord).rooms,
+        (previous as DynamicHeatingRecord)?.rooms || {},
+        currentDateStr,
+        ignoredSpikes,
+      );
+    } else if ('value' in current) {
+      const prevVal =
+        'value' in (previous as object) ? (previous as unknown as ElectricityRecord).value : 0;
+      incremental['value'] = this.calculateElectricityDelta(
+        (current as unknown as ElectricityRecord).value,
+        prevVal,
+      );
+    } else {
+      this.populateWaterDeltas(
+        incremental,
+        current as unknown as Record<string, unknown>,
+        (previous as unknown as Record<string, unknown>) || {},
+      );
+    }
+
+    return incremental;
+  }
+
+  private calculateHeatingRoomDeltas(
+    currRooms: Record<string, number>,
+    prevRooms: Record<string, number>,
+    currentDateStr: string,
+    ignoredSpikes?: { date: string; roomId: string }[],
+  ): Record<string, number> {
+    const incRooms: Record<string, number> = {};
+
+    Object.keys(currRooms).forEach((roomId) => {
+      const isSpike = ignoredSpikes?.some((s) => s.date === currentDateStr && s.roomId === roomId);
+
+      if (isSpike) {
+        incRooms[roomId] = 0;
+        return;
+      }
+
+      const currVal = currRooms[roomId] || 0;
+      const prevVal = prevRooms[roomId] || 0;
+
+      incRooms[roomId] = currVal < prevVal ? currVal : currVal - prevVal;
+    });
+
+    return incRooms;
+  }
+
+  private calculateElectricityDelta(currVal: number, prevVal: number): number {
+    return currVal < prevVal ? currVal : currVal - prevVal;
+  }
+
+  private populateWaterDeltas(
+    incremental: CombinedData,
+    currentObj: Record<string, unknown>,
+    previousObj: Record<string, unknown>,
+  ): void {
+    Object.keys(currentObj).forEach((key) => {
+      const currVal = currentObj[key];
+      const prevVal = previousObj[key] ?? 0;
+
+      if (key !== 'date' && typeof currVal === 'number') {
+        incremental[key] = Math.max(0, currVal - (prevVal as number));
+      }
+    });
   }
 
   /**
@@ -151,7 +160,7 @@ export class ChartCalculationService {
     if (trendData.length < 2) return '#000000';
 
     const firstVal = trendData[0] as number;
-    const lastVal = trendData[trendData.length - 1] as number;
+    const lastVal = trendData.at(-1) as number;
     const slope = lastVal - firstVal;
 
     if (slope > 1) {
@@ -205,16 +214,13 @@ export class ChartCalculationService {
    * Returns array of date strings where ANY field had a drop
    */
   detectMeterChanges(records: ConsumptionRecord[]): string[] {
-    const validRecords = records.filter((r) => r && r.date && !isNaN(new Date(r.date).getTime()));
+    const validRecords = records.filter(
+      (r) => Boolean(r?.date) && !Number.isNaN(new Date(r.date).getTime()),
+    );
     if (validRecords.length < 2) return [];
 
     const changesSet = new Set<string>();
-    const fields: (keyof ConsumptionRecord)[] = [
-      'kitchenWarm',
-      'kitchenCold',
-      'bathroomWarm',
-      'bathroomCold',
-    ];
+    const fields = ['kitchenWarm', 'kitchenCold', 'bathroomWarm', 'bathroomCold'] as const;
 
     for (let i = 1; i < validRecords.length; i++) {
       const prevRecord = validRecords[i - 1];
@@ -243,16 +249,13 @@ export class ChartCalculationService {
     records: ConsumptionRecord[],
     confirmedChangeDates: string[],
   ): ConsumptionRecord[] {
-    const validRecords = records.filter((r) => r && r.date && !isNaN(new Date(r.date).getTime()));
+    const validRecords = records.filter(
+      (r) => Boolean(r?.date) && !Number.isNaN(new Date(r.date).getTime()),
+    );
     if (validRecords.length < 2 || confirmedChangeDates.length === 0) return records;
 
     const adjustedRecords: ConsumptionRecord[] = [];
-    const fields: (keyof ConsumptionRecord)[] = [
-      'kitchenWarm',
-      'kitchenCold',
-      'bathroomWarm',
-      'bathroomCold',
-    ];
+    const fields = ['kitchenWarm', 'kitchenCold', 'bathroomWarm', 'bathroomCold'] as const;
 
     // Track offset for each field independently
     const offsets: Record<string, number> = {
@@ -269,7 +272,7 @@ export class ChartCalculationService {
       // Check if this is a confirmed meter change point
       if (i > 0 && confirmedChangeDates.includes(recordDate)) {
         const prevRecord = records[i - 1];
-        const prevAdjusted = adjustedRecords[adjustedRecords.length - 1];
+        const prevAdjusted = adjustedRecords.at(-1)!;
 
         // Check each field for a drop and update its offset
         for (const field of fields) {
@@ -305,7 +308,9 @@ export class ChartCalculationService {
   detectNewRoomSpikes(
     records: DynamicHeatingRecord[],
   ): { date: string; roomId: string; value: number; averageDelta: number }[] {
-    const validRecords = records.filter((r) => r && r.date && !isNaN(new Date(r.date).getTime()));
+    const validRecords = records.filter(
+      (r) => Boolean(r?.date) && !Number.isNaN(new Date(r.date).getTime()),
+    );
     if (validRecords.length < 2) return [];
 
     const spikes: { date: string; roomId: string; value: number; averageDelta: number }[] = [];
@@ -367,7 +372,9 @@ export class ChartCalculationService {
     records: DynamicHeatingRecord[],
     ignoredSpikes: { date: string; roomId: string }[],
   ): DynamicHeatingRecord[] {
-    const validRecords = records.filter((r) => r && r.date && !isNaN(new Date(r.date).getTime()));
+    const validRecords = records.filter(
+      (r) => Boolean(r?.date) && !Number.isNaN(new Date(r.date).getTime()),
+    );
     if (validRecords.length < 2 || ignoredSpikes.length === 0) return records;
 
     const adjustedRecords: DynamicHeatingRecord[] = [];
@@ -457,7 +464,7 @@ export class ChartCalculationService {
    */
   calculateDailyAverage(
     incrementalData: CombinedData[],
-    originalData: (ElectricityRecord | ConsumptionRecord | DynamicHeatingRecord)[],
+    originalData: AnyConsumptionRecord[],
     type: 'electricity' | 'water' | 'heating',
   ): CombinedData[] {
     if (incrementalData.length === 0) return incrementalData;
@@ -469,12 +476,12 @@ export class ChartCalculationService {
       const endRecord = originalData[i + 1];
       const startRecord = originalData[i];
 
-      if (!endRecord || !startRecord || !startRecord.date || !endRecord.date) continue;
+      if (!endRecord?.date || !startRecord?.date) continue;
 
       const endDateObj = new Date(endRecord.date);
       const startDateObj = new Date(startRecord.date);
 
-      if (isNaN(endDateObj.getTime()) || isNaN(startDateObj.getTime())) continue;
+      if (Number.isNaN(endDateObj.getTime()) || Number.isNaN(startDateObj.getTime())) continue;
 
       const endDate = endDateObj.getTime();
       const startDate = startDateObj.getTime();
@@ -520,7 +527,7 @@ export class ChartCalculationService {
     if (typeof val === 'number') {
       const dailyAvg = val / daysDiff;
       record['value'] = Math.round(dailyAvg);
-      if (!record['normalized']) record['normalized'] = {};
+      record['normalized'] ??= {};
       record['normalized']['raw'] = val;
     }
   }
@@ -537,7 +544,7 @@ export class ChartCalculationService {
       if (typeof record[field] === 'number') {
         const rawVal = record[field];
         record[field] = Math.round(rawVal / daysDiff);
-        if (!record['normalized']) record['normalized'] = {};
+        record['normalized'] ??= {};
         record['normalized'][field] = rawVal;
       }
     });
@@ -560,7 +567,7 @@ export class ChartCalculationService {
         const rawVal = rooms[roomId];
         if (typeof rawVal === 'number') {
           rooms[roomId] = Math.round(rawVal / daysDiff);
-          if (!record['normalized']) record['normalized'] = {};
+          record['normalized'] ??= {};
           record['normalized'][roomId] = rawVal;
         }
       });

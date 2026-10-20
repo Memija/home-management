@@ -5,8 +5,8 @@ import { TranslatePipe } from '../../pipes/translate.pipe';
 import {
   LucideAngularModule,
   TriangleAlert,
-  HelpCircle,
-  Home,
+  CircleQuestionMark,
+  House,
   Camera,
   type LucideIconData,
 } from 'lucide-angular';
@@ -50,11 +50,11 @@ export interface ConsumptionData {
   styleUrl: './consumption-input.component.scss',
 })
 export class ConsumptionInputComponent {
-  private languageService = inject(LanguageService);
+  private readonly languageService = inject(LanguageService);
 
   protected readonly TriangleAlertIcon = TriangleAlert;
-  protected readonly HelpIcon = HelpCircle;
-  protected readonly HomeIcon = Home;
+  protected readonly HelpIcon = CircleQuestionMark;
+  protected readonly HomeIcon = House;
   protected readonly CameraIcon = Camera;
 
   // Inputs
@@ -64,7 +64,7 @@ export class ConsumptionInputComponent {
   get groups(): ConsumptionGroup[] {
     return this.groupsSignal();
   }
-  protected groupsSignal = signal<ConsumptionGroup[]>([]);
+  protected readonly groupsSignal = signal<ConsumptionGroup[]>([]);
 
   @Input() set selectedDate(val: string) {
     this.selectedDateSignal.set(val || '');
@@ -72,7 +72,7 @@ export class ConsumptionInputComponent {
   get selectedDate(): string {
     return this.selectedDateSignal();
   }
-  protected selectedDateSignal = signal<string>('');
+  protected readonly selectedDateSignal = signal<string>('');
 
   @Input() set maxDate(val: string) {
     this.maxDateSignal.set(val || '');
@@ -80,7 +80,7 @@ export class ConsumptionInputComponent {
   get maxDate(): string {
     return this.maxDateSignal();
   }
-  protected maxDateSignal = signal<string>('');
+  protected readonly maxDateSignal = signal<string>('');
 
   @Input() set editingMode(val: boolean) {
     this.editingModeSignal.set(val);
@@ -88,7 +88,7 @@ export class ConsumptionInputComponent {
   get editingMode(): boolean {
     return this.editingModeSignal();
   }
-  protected editingModeSignal = signal<boolean>(false);
+  protected readonly editingModeSignal = signal<boolean>(false);
 
   @Input() set dateExists(val: boolean) {
     this.dateExistsSignal.set(val);
@@ -96,7 +96,7 @@ export class ConsumptionInputComponent {
   get dateExists(): boolean {
     return this.dateExistsSignal();
   }
-  protected dateExistsSignal = signal<boolean>(false);
+  protected readonly dateExistsSignal = signal<boolean>(false);
 
   @Input() set titleKey(val: string) {
     this.titleKeySignal.set(val || 'HOME.RECORD_CONSUMPTION');
@@ -104,7 +104,7 @@ export class ConsumptionInputComponent {
   get titleKey(): string {
     return this.titleKeySignal();
   }
-  protected titleKeySignal = signal<string>('HOME.RECORD_CONSUMPTION');
+  protected readonly titleKeySignal = signal<string>('HOME.RECORD_CONSUMPTION');
 
   @Input() set editTitleKey(val: string) {
     this.editTitleKeySignal.set(val || 'HOME.EDIT_RECORD');
@@ -112,7 +112,7 @@ export class ConsumptionInputComponent {
   get editTitleKey(): string {
     return this.editTitleKeySignal();
   }
-  protected editTitleKeySignal = signal<string>('HOME.EDIT_RECORD');
+  protected readonly editTitleKeySignal = signal<string>('HOME.EDIT_RECORD');
 
   @Input() set dateWarningKey(val: string) {
     this.dateWarningKeySignal.set(val || 'HOME.DATE_EXISTS_WARNING');
@@ -120,7 +120,7 @@ export class ConsumptionInputComponent {
   get dateWarningKey(): string {
     return this.dateWarningKeySignal();
   }
-  protected dateWarningKeySignal = signal<string>('HOME.DATE_EXISTS_WARNING');
+  protected readonly dateWarningKeySignal = signal<string>('HOME.DATE_EXISTS_WARNING');
 
   @Input() set readingsForKey(val: string) {
     this.readingsForKeySignal.set(val || 'HOME.READINGS_FOR');
@@ -128,7 +128,7 @@ export class ConsumptionInputComponent {
   get readingsForKey(): string {
     return this.readingsForKeySignal();
   }
-  protected readingsForKeySignal = signal<string>('HOME.READINGS_FOR');
+  protected readonly readingsForKeySignal = signal<string>('HOME.READINGS_FOR');
 
   @Input() set saveKey(val: string) {
     this.saveKeySignal.set(val || 'HOME.SAVE');
@@ -136,7 +136,7 @@ export class ConsumptionInputComponent {
   get saveKey(): string {
     return this.saveKeySignal();
   }
-  protected saveKeySignal = signal<string>('HOME.SAVE');
+  protected readonly saveKeySignal = signal<string>('HOME.SAVE');
 
   @Input() set updateKey(val: string) {
     this.updateKeySignal.set(val || 'HOME.UPDATE_RECORD');
@@ -144,7 +144,7 @@ export class ConsumptionInputComponent {
   get updateKey(): string {
     return this.updateKeySignal();
   }
-  protected updateKeySignal = signal<string>('HOME.UPDATE_RECORD');
+  protected readonly updateKeySignal = signal<string>('HOME.UPDATE_RECORD');
 
   @Input() set cancelKey(val: string) {
     this.cancelKeySignal.set(val || 'HOME.CANCEL');
@@ -152,7 +152,7 @@ export class ConsumptionInputComponent {
   get cancelKey(): string {
     return this.cancelKeySignal();
   }
-  protected cancelKeySignal = signal<string>('HOME.CANCEL');
+  protected readonly cancelKeySignal = signal<string>('HOME.CANCEL');
 
   @Input() set helpTitleKey(val: string) {
     this.helpTitleKeySignal.set(val || 'HOME.RECORD_HELP_TITLE');
@@ -160,7 +160,7 @@ export class ConsumptionInputComponent {
   get helpTitleKey(): string {
     return this.helpTitleKeySignal();
   }
-  protected helpTitleKeySignal = signal<string>('HOME.RECORD_HELP_TITLE');
+  protected readonly helpTitleKeySignal = signal<string>('HOME.RECORD_HELP_TITLE');
 
   @Input() set helpSteps(val: HelpStep[]) {
     this.helpStepsSignal.set(val || []);
@@ -168,7 +168,7 @@ export class ConsumptionInputComponent {
   get helpSteps(): HelpStep[] {
     return this.helpStepsSignal();
   }
-  protected helpStepsSignal = signal<HelpStep[]>([]);
+  protected readonly helpStepsSignal = signal<HelpStep[]>([]);
 
   // When true, individual fields can be saved independently (heating mode)
   // When false, all fields in a group must be complete (water mode)
@@ -178,7 +178,7 @@ export class ConsumptionInputComponent {
   get allowPartialGroups(): boolean {
     return this.allowPartialGroupsSignal();
   }
-  protected allowPartialGroupsSignal = signal<boolean>(false);
+  protected readonly allowPartialGroupsSignal = signal<boolean>(false);
 
   // Layout mode: 'grouped' = show group containers (water), 'flat' = room cards in grid (heating)
   @Input() set layoutMode(val: 'grouped' | 'flat') {
@@ -187,7 +187,7 @@ export class ConsumptionInputComponent {
   get layoutMode(): 'grouped' | 'flat' {
     return this.layoutModeSignal();
   }
-  protected layoutModeSignal = signal<'grouped' | 'flat'>('grouped');
+  protected readonly layoutModeSignal = signal<'grouped' | 'flat'>('grouped');
 
   // Configurable error message keys for validation
   @Input() set noValuesErrorKey(val: string) {
@@ -196,7 +196,7 @@ export class ConsumptionInputComponent {
   get noValuesErrorKey(): string {
     return this.noValuesErrorKeySignal();
   }
-  protected noValuesErrorKeySignal = signal<string>('HOME.PARTIAL_INPUT_ERROR');
+  protected readonly noValuesErrorKeySignal = signal<string>('HOME.PARTIAL_INPUT_ERROR');
 
   @Input() set incompleteRoomErrorKey(val: string) {
     this.incompleteRoomErrorKeySignal.set(val || 'HOME.INCOMPLETE_ROOM_ERROR');
@@ -204,12 +204,12 @@ export class ConsumptionInputComponent {
   get incompleteRoomErrorKey(): string {
     return this.incompleteRoomErrorKeySignal();
   }
-  protected incompleteRoomErrorKeySignal = signal<string>('HOME.INCOMPLETE_ROOM_ERROR');
+  protected readonly incompleteRoomErrorKeySignal = signal<string>('HOME.INCOMPLETE_ROOM_ERROR');
 
   // State
-  protected errorMessage = signal<string | null>(null);
-  protected showHelpModal = signal(false);
-  protected showMeterReader = signal(false);
+  protected readonly errorMessage = signal<string | null>(null);
+  protected readonly showHelpModal = signal(false);
+  protected readonly showMeterReader = signal(false);
 
   // Outputs
   @Output() dateChange = new EventEmitter<string>();
@@ -267,10 +267,10 @@ export class ConsumptionInputComponent {
     // Remove any non-numeric characters (except keeping empty string)
     // This catches pastings with disallowed chars
     if (input.value) {
-      input.value = input.value.replace(/[^0-9]/g, '');
+      input.value = input.value.replace(/\D/g, '');
     }
 
-    const value = parseFloat(input.value);
+    const value = Number.parseFloat(input.value);
 
     // If the value is negative, clear it immediately (double safety)
     if (value < 0) {

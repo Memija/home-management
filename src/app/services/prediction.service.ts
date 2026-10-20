@@ -19,8 +19,8 @@ export type { PredictionResult, MultiPredictionResult } from '../models/predicti
   providedIn: 'root',
 })
 export class PredictionService {
-  private calculationService = inject(ChartCalculationService);
-  private predictionCalculation = inject(PredictionCalculationService);
+  private readonly calculationService = inject(ChartCalculationService);
+  private readonly predictionCalculation = inject(PredictionCalculationService);
 
   /**
    * Generate predictions for water consumption.
@@ -30,7 +30,7 @@ export class PredictionService {
   predictWater(records: ConsumptionRecord[]): MultiPredictionResult | null {
     if (records.length < MIN_RECORDS_FOR_PREDICTION) return null;
 
-    const validRecords = records.filter((r) => r && r.date && !isNaN(new Date(r.date).getTime()));
+    const validRecords = this.filterValidDates(records);
     if (validRecords.length < MIN_RECORDS_FOR_PREDICTION) return null;
 
     const incrementalData = this.calculationService.calculateIncrementalData(validRecords);
@@ -104,7 +104,7 @@ export class PredictionService {
   predictElectricity(records: ElectricityRecord[]): MultiPredictionResult | null {
     if (records.length < MIN_RECORDS_FOR_PREDICTION) return null;
 
-    const validRecords = records.filter((r) => r && r.date && !isNaN(new Date(r.date).getTime()));
+    const validRecords = this.filterValidDates(records);
     if (validRecords.length < MIN_RECORDS_FOR_PREDICTION) return null;
 
     const incrementalData = this.calculationService.calculateIncrementalData(validRecords);
@@ -140,7 +140,7 @@ export class PredictionService {
   predictHeating(records: DynamicHeatingRecord[]): MultiPredictionResult | null {
     if (records.length < MIN_RECORDS_FOR_PREDICTION) return null;
 
-    const validRecords = records.filter((r) => r && r.date && !isNaN(new Date(r.date).getTime()));
+    const validRecords = this.filterValidDates(records);
     if (validRecords.length < MIN_RECORDS_FOR_PREDICTION) return null;
 
     const incrementalData = this.calculationService.calculateIncrementalData(validRecords);
@@ -203,5 +203,9 @@ export class PredictionService {
     }
 
     return { total, categories };
+  }
+
+  private filterValidDates<T extends { date?: string | Date }>(records: T[]): T[] {
+    return records.filter((r) => r?.date && !Number.isNaN(new Date(r.date).getTime()));
   }
 }

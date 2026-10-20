@@ -21,8 +21,8 @@ export const excel = {
     VALIDATION_TOO_LONG_HINT: 'Nazwy kolumn muszą mieć 255 znaków lub mniej',
     VALIDATION_NO_WHITESPACE: 'Nazwa kolumny nie może mieć spacji na początku ani na końcu',
     VALIDATION_NO_WHITESPACE_HINT: 'Usuń spacje z początku i końca nazw kolumn',
-    VALIDATION_INVALID_CHARS: 'Nazwa kolumny nie może zawierać: [ ] * / \\ ? :',
-    VALIDATION_INVALID_CHARS_HINT: 'Usuń znaki [ ] * / \\ ? : z nazw kolumn',
+    VALIDATION_INVALID_CHARS: String.raw`Nazwa kolumny nie może zawierać: [ ] * / \ ? :`,
+    VALIDATION_INVALID_CHARS_HINT: String.raw`Usuń znaki [ ] * / \ ? : z nazw kolumn`,
     VALIDATION_DUPLICATES: 'Nazwy kolumn muszą być unikalne w każdej sekcji',
     VALIDATION_DUPLICATES_HINT:
       'Każda nazwa kolumny musi być inna - sprawdź czy wartości się nie powtarzają',

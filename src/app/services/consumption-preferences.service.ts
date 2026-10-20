@@ -10,8 +10,8 @@ export type ChartType = 'water' | 'heating' | 'home' | 'electricity';
   providedIn: 'root',
 })
 export class ConsumptionPreferencesService {
-  private storage = inject(STORAGE_SERVICE);
-  private destroyRef = inject(DestroyRef);
+  private readonly storage = inject(STORAGE_SERVICE);
+  private readonly destroyRef = inject(DestroyRef);
 
   // Water-specific signals (for backwards compatibility)
   readonly chartView = signal<ChartView>('total');
@@ -33,10 +33,12 @@ export class ConsumptionPreferencesService {
   readonly dismissedMeterChanges = signal<string[]>([]);
 
   constructor() {
-    this.loadPreferences();
+    queueMicrotask(() => {
+      void this.loadPreferences();
+    });
     this.storage.dataRefreshed$
       ?.pipe(takeUntilDestroyed(this.destroyRef))
-      .subscribe(() => this.loadPreferences());
+      .subscribe(() => void this.loadPreferences());
   }
 
   private async loadPreferences() {
@@ -82,22 +84,22 @@ export class ConsumptionPreferencesService {
     const storedView = await this.storage.load<ChartView>(viewKey);
     const storedMode = await this.storage.load<DisplayMode>(modeKey);
 
-    // Update signals based on type
-    if (type === 'water') {
-      if (storedView) this.chartView.set(storedView);
-      else if (defaultView) this.chartView.set(defaultView);
-      if (storedMode) this.displayMode.set(storedMode);
-      else if (defaultMode) this.displayMode.set(defaultMode);
-    } else if (type === 'heating') {
-      if (storedView) this.heatingChartView.set(storedView);
-      else if (defaultView) this.heatingChartView.set(defaultView);
-      if (storedMode) this.heatingDisplayMode.set(storedMode);
-      else if (defaultMode) this.heatingDisplayMode.set(defaultMode);
-    } else if (type === 'electricity') {
-      if (storedView) this.electricityChartView.set(storedView);
-      else if (defaultView) this.electricityChartView.set(defaultView);
-      if (storedMode) this.electricityDisplayMode.set(storedMode);
-      else if (defaultMode) this.electricityDisplayMode.set(defaultMode);
+    const finalView = storedView ?? defaultView;
+    const finalMode = storedMode ?? defaultMode;
+
+    switch (type) {
+      case 'water':
+        if (finalView) this.chartView.set(finalView);
+        if (finalMode) this.displayMode.set(finalMode);
+        break;
+      case 'heating':
+        if (finalView) this.heatingChartView.set(finalView);
+        if (finalMode) this.heatingDisplayMode.set(finalMode);
+        break;
+      case 'electricity':
+        if (finalView) this.electricityChartView.set(finalView);
+        if (finalMode) this.electricityDisplayMode.set(finalMode);
+        break;
     }
   }
 
@@ -105,7 +107,7 @@ export class ConsumptionPreferencesService {
     this.confirmedMeterChanges.update((current) => {
       const updated = [...current, date];
       const unique = [...new Set(updated)];
-      this.storage.save('water_confirmed_meter_changes', unique);
+      void this.storage.save('water_confirmed_meter_changes', unique);
       return unique;
     });
   }
@@ -114,19 +116,19 @@ export class ConsumptionPreferencesService {
     this.dismissedMeterChanges.update((current) => {
       const updated = [...current, date];
       const unique = [...new Set(updated)];
-      this.storage.save('water_dismissed_meter_changes', unique);
+      void this.storage.save('water_dismissed_meter_changes', unique);
       return unique;
     });
   }
 
   setColdWaterOnlyMode(enabled: boolean) {
     this.coldWaterOnlyMode.set(enabled);
-    this.storage.save('water_cold_only_mode', enabled);
+    void this.storage.save('water_cold_only_mode', enabled);
   }
 
   setChartView(view: ChartView, chartType: ChartType = 'water') {
     const key = `${chartType}_chart_view`;
-    this.storage.save(key, view);
+    void this.storage.save(key, view);
 
     if (chartType === 'water') {
       this.chartView.set(view);
@@ -139,7 +141,7 @@ export class ConsumptionPreferencesService {
 
   setDisplayMode(mode: DisplayMode, chartType: ChartType = 'water') {
     const key = `${chartType}_display_mode`;
-    this.storage.save(key, mode);
+    void this.storage.save(key, mode);
 
     if (chartType === 'water') {
       this.displayMode.set(mode);

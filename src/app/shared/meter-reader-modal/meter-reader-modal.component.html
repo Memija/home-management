@@ -1,16 +1,11 @@
 @if (show) {
+  <!-- eslint-disable-next-line @angular-eslint/template/interactive-supports-focus -- Backdrop dismissal by design -->
   <div
     class="modal-overlay"
-    (click)="onOverlayClick($event)"
-    tabindex="0"
-    (keyup.enter)="onOverlayClick($event)"
+    (click)="$event.target === $event.currentTarget && onOverlayClick($event)"
+    (keydown.escape)="onClose($event)"
   >
-    <div
-      class="modal-content modal-lg"
-      (click)="onModalClick($event)"
-      tabindex="0"
-      (keyup.enter)="onModalClick($event)"
-    >
+    <div class="modal-content modal-lg">
       <!-- Header -->
       <div class="modal-header modal-header-premium">
         <lucide-icon [img]="CameraIcon" size="24" class="header-icon"></lucide-icon>
@@ -44,15 +39,10 @@
                 ></video>
                 <div class="camera-overlay">
                   @if (!isCameraReady()) {
-                    <div
-                      class="camera-loader"
-                      (click)="manualKickstart()"
-                      tabindex="0"
-                      (keyup.enter)="manualKickstart()"
-                    >
-                      <div class="spinner"></div>
+                    <button type="button" class="camera-loader" (click)="manualKickstart()">
+                      <span class="spinner"></span>
                       <span>{{ 'METER_READER.STARTING_CAMERA' | translate }}</span>
-                    </div>
+                    </button>
                   } @else {
                     <div class="scan-frame"></div>
                   }
@@ -307,10 +297,6 @@
                           class="field-option-btn"
                           (click)="selectField(field.key)"
                           title="{{
-                            'METER_READER.ASSIGN_TO'
-                              | translate: { name: (field.label | translate) }
-                          }}"
-                          aria-label="{{
                             'METER_READER.ASSIGN_TO'
                               | translate: { name: (field.label | translate) }
                           }}"

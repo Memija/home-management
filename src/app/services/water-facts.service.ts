@@ -70,7 +70,7 @@ const WATER_EQUIVALENTS = {
   providedIn: 'root',
 })
 export class WaterFactsService {
-  private languageService = inject(LanguageService);
+  private readonly languageService = inject(LanguageService);
 
   /**
    * Get a context-specific fact by index
@@ -106,9 +106,12 @@ export class WaterFactsService {
 
     // Detect time-based facts that need conversion (days, minutes)
     // eslint-disable-next-line security/detect-non-literal-regexp -- dayKeywords is an internal constant array
-    const dayPattern = new RegExp(`\\{value\\}\\s*(${units.dayKeywords.join('|')})`, 'i');
+    const dayPattern = new RegExp(String.raw`\{value\}\s*(${units.dayKeywords.join('|')})`, 'i');
     // eslint-disable-next-line security/detect-non-literal-regexp -- minuteKeywords is an internal constant array
-    const minutePattern = new RegExp(`\\{value\\}\\s*(${units.minuteKeywords.join('|')})`, 'i');
+    const minutePattern = new RegExp(
+      String.raw`\{value\}\s*(${units.minuteKeywords.join('|')})`,
+      'i',
+    );
     const isDaysFact = dayPattern.test(factTemplate);
     const isMinutesFact = minutePattern.test(factTemplate);
 

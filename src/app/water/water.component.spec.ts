@@ -21,7 +21,7 @@ import {
   FileText,
   FileInput,
   FileOutput,
-  AlertTriangle,
+  TriangleAlert,
   Lightbulb,
   RefreshCw,
 } from 'lucide-angular';
@@ -310,8 +310,8 @@ describe('WaterComponent', () => {
       expect(component['TrashIcon']).toBe(Trash2);
     });
 
-    it('should have AlertTriangleIcon set to lucide AlertTriangle icon', () => {
-      expect(component['AlertTriangleIcon']).toBe(AlertTriangle);
+    it('should have AlertTriangleIcon set to lucide TriangleAlert icon', () => {
+      expect(component['AlertTriangleIcon']).toBe(TriangleAlert);
     });
 
     it('should have LightbulbIcon set to lucide Lightbulb icon', () => {
@@ -872,10 +872,14 @@ describe('WaterComponent', () => {
     });
 
     it('should change factRandomSeed when refreshFact is called', () => {
-      // Mock Math.random to return a known value
-      vi.spyOn(Math, 'random').mockReturnValue(0.42);
+      vi.spyOn(crypto, 'getRandomValues').mockImplementation((arr) => {
+        const uintArr = arr as Uint32Array;
+        uintArr[0] = 0x80000000;
+        return arr;
+      });
       component['refreshFact']();
-      expect(component['factRandomSeed']()).toBe(0.42);
+      expect(component['factRandomSeed']()).toBe(0.5);
+      vi.restoreAllMocks();
     });
   });
 

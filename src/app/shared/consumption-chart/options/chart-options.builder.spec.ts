@@ -5,8 +5,8 @@ import {
   escapeRegExp,
   replaceLabelWithIcon,
 } from './chart-options.builder';
-import { LanguageService } from '../../services/language.service';
-import { ChartDataPoint } from '../../models/consumption-chart.model';
+import { LanguageService } from '../../../services/language.service';
+import { ChartDataPoint } from '../../../models/consumption-chart.model';
 
 interface CustomChartPluginOptions {
   summerSun?: { enabled?: boolean; records?: unknown[] };
@@ -88,44 +88,19 @@ describe('buildChartOptions', () => {
   });
 
   describe('Y-axis unit label', () => {
-    it('should use kWh label for heating', () => {
+    it.each([
+      { chartType: 'heating' as const, expected: 'kWh' },
+      { chartType: 'electricity' as const, expected: 'kWh' },
+      { chartType: 'water' as const, expected: 'L' },
+      { chartType: 'home' as const, expected: 'L' },
+    ])('should use $expected label for $chartType', ({ chartType, expected }) => {
       const langService = makeLangService({ 'CHART.AXIS_KWH': 'kWh', 'CHART.AXIS_LITERS': 'L' });
       const options = buildChartOptions({
         languageService: langService,
-        chartType: 'heating',
+        chartType,
         getData: () => [],
       });
-      expect((options?.scales as CustomChartScales)?.y?.title?.text).toBe('kWh');
-    });
-
-    it('should use kWh label for electricity', () => {
-      const langService = makeLangService({ 'CHART.AXIS_KWH': 'kWh', 'CHART.AXIS_LITERS': 'L' });
-      const options = buildChartOptions({
-        languageService: langService,
-        chartType: 'electricity',
-        getData: () => [],
-      });
-      expect((options?.scales as CustomChartScales)?.y?.title?.text).toBe('kWh');
-    });
-
-    it('should use liters label for water', () => {
-      const langService = makeLangService({ 'CHART.AXIS_KWH': 'kWh', 'CHART.AXIS_LITERS': 'L' });
-      const options = buildChartOptions({
-        languageService: langService,
-        chartType: 'water',
-        getData: () => [],
-      });
-      expect((options?.scales as CustomChartScales)?.y?.title?.text).toBe('L');
-    });
-
-    it('should use liters label for home', () => {
-      const langService = makeLangService({ 'CHART.AXIS_KWH': 'kWh', 'CHART.AXIS_LITERS': 'L' });
-      const options = buildChartOptions({
-        languageService: langService,
-        chartType: 'home',
-        getData: () => [],
-      });
-      expect((options?.scales as CustomChartScales)?.y?.title?.text).toBe('L');
+      expect((options?.scales as CustomChartScales)?.y?.title?.text).toBe(expected);
     });
   });
 
@@ -673,28 +648,37 @@ describe('replaceLabelWithIcon', () => {
     ).toBe('📅');
   });
 
-  it('should replace " - Label" suffix with icon', () => {
-    const result = replaceLabelWithIcon('Livingroom - Trendline', 'Trendline', '📈');
-    expect(result).toBe('Livingroom 📈');
-  });
-
-  it('should replace " (Label)" suffix with icon', () => {
-    const result = replaceLabelWithIcon(
-      'Livingroom (Daily Average Consumption)',
-      'Daily Average Consumption',
-      '📅',
-    );
-    expect(result).toBe('Livingroom 📅');
-  });
-
-  it('should replace em-dash separator', () => {
-    const result = replaceLabelWithIcon('Livingroom — Trendline', 'Trendline', '📈');
-    expect(result).toBe('Livingroom 📈');
-  });
-
-  it('should replace en-dash separator', () => {
-    const result = replaceLabelWithIcon('Livingroom – Trendline', 'Trendline', '📈');
-    expect(result).toBe('Livingroom 📈');
+  it.each([
+    {
+      input: 'Livingroom - Trendline',
+      label: 'Trendline',
+      icon: '📈',
+      expected: 'Livingroom 📈',
+      desc: '" - Label" suffix',
+    },
+    {
+      input: 'Livingroom (Daily Average Consumption)',
+      label: 'Daily Average Consumption',
+      icon: '📅',
+      expected: 'Livingroom 📅',
+      desc: '" (Label)" suffix',
+    },
+    {
+      input: 'Livingroom — Trendline',
+      label: 'Trendline',
+      icon: '📈',
+      expected: 'Livingroom 📈',
+      desc: 'em-dash separator',
+    },
+    {
+      input: 'Livingroom – Trendline',
+      label: 'Trendline',
+      icon: '📈',
+      expected: 'Livingroom 📈',
+      desc: 'en-dash separator',
+    },
+  ])('should replace $desc with icon', ({ input, label, icon, expected }) => {
+    expect(replaceLabelWithIcon(input, label, icon)).toBe(expected);
   });
 
   it('should be case-insensitive', () => {
@@ -716,6 +700,25 @@ describe('replaceLabelWithIcon', () => {
   it('should not leave double spaces after replacement', () => {
     const result = replaceLabelWithIcon('Livingroom - Trendline', 'Trendline', '📈');
     expect(result).not.toContain('  ');
+  });
+
+  it('should handle square and full-width brackets', () => {
+    expect(replaceLabelWithIcon('Livingroom [Trendline]', 'Trendline', '📈')).toBe('Livingroom 📈');
+    expect(replaceLabelWithIcon('Livingroom （Trendline）', 'Trendline', '📈')).toBe(
+      'Livingroom 📈',
+    );
+  });
+
+  it('should not swallow outer parentheses when replacing a dash-prefixed label', () => {
+    expect(replaceLabelWithIcon('(Livingroom - Trendline)', 'Trendline', '📈')).toBe(
+      '(Livingroom 📈)',
+    );
+  });
+
+  it('should normalize consecutive whitespace in results', () => {
+    expect(replaceLabelWithIcon('Livingroom   -   Trendline', 'Trendline', '📈')).toBe(
+      'Livingroom 📈',
+    );
   });
 });
 

@@ -160,58 +160,34 @@ describe('CountrySelectorComponent', () => {
       expect(component['_countryCode']()).toBe('de');
     });
 
-    it('should emit countryCodeChange on exact match', () => {
-      const spy = vi.fn();
-      component.countryCodeChange.subscribe(spy);
+    it.each([
+      { search: 'Germany', expectedCode: 'de', expectedErrors: [], desc: 'exact match' },
+      {
+        search: 'InvalidCountry',
+        expectedCode: '',
+        expectedErrors: ['SETTINGS.ERRORS.INVALID_COUNTRY'],
+        desc: 'no match',
+      },
+      { search: '', expectedCode: '', expectedErrors: [], desc: 'empty search' },
+      { search: '   ', expectedCode: '', expectedErrors: [], desc: 'only whitespace' },
+    ])(
+      'should emit expected code and validationErrors on $desc',
+      ({ search, expectedCode, expectedErrors }) => {
+        const codeSpy = vi.fn();
+        const errorsSpy = vi.fn();
+        component.countryCodeChange.subscribe(codeSpy);
+        component.validationErrors.subscribe(errorsSpy);
 
-      component.onSearchChange('Germany');
-      expect(spy).toHaveBeenCalledWith('de');
-    });
-
-    it('should emit empty validationErrors on exact match', () => {
-      const spy = vi.fn();
-      component.validationErrors.subscribe(spy);
-
-      component.onSearchChange('Germany');
-      expect(spy).toHaveBeenCalledWith([]);
-    });
+        component.onSearchChange(search);
+        expect(codeSpy).toHaveBeenCalledWith(expectedCode);
+        expect(errorsSpy).toHaveBeenCalledWith(expectedErrors);
+      },
+    );
 
     it('should clear country code when no match found', () => {
       component.countryCode = 'de';
       component.onSearchChange('NonExistentCountry');
       expect(component['_countryCode']()).toBe('');
-    });
-
-    it('should emit empty string for countryCodeChange when no match', () => {
-      const spy = vi.fn();
-      component.countryCodeChange.subscribe(spy);
-
-      component.onSearchChange('InvalidCountry');
-      expect(spy).toHaveBeenCalledWith('');
-    });
-
-    it('should emit validation error when search is non-empty and no match', () => {
-      const spy = vi.fn();
-      component.validationErrors.subscribe(spy);
-
-      component.onSearchChange('InvalidCountry');
-      expect(spy).toHaveBeenCalledWith(['SETTINGS.ERRORS.INVALID_COUNTRY']);
-    });
-
-    it('should emit no validation errors when search is empty', () => {
-      const spy = vi.fn();
-      component.validationErrors.subscribe(spy);
-
-      component.onSearchChange('');
-      expect(spy).toHaveBeenCalledWith([]);
-    });
-
-    it('should emit no validation errors when search is only whitespace', () => {
-      const spy = vi.fn();
-      component.validationErrors.subscribe(spy);
-
-      component.onSearchChange('   ');
-      expect(spy).toHaveBeenCalledWith([]);
     });
   });
 

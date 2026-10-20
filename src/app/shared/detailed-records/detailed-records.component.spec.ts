@@ -237,13 +237,13 @@ describe('DetailedRecordsComponent', () => {
     });
 
     it('should return all records when no filters are active', () => {
-      expect(component['filteredRecords']().length).toBe(5);
+      expect(component['filteredRecords']()).toHaveLength(5);
     });
 
     it('should filter by start date', () => {
       component['startDate'].set('2024-06-01');
       const filtered = component['filteredRecords']();
-      expect(filtered.length).toBe(3);
+      expect(filtered).toHaveLength(3);
       expect(filtered.every((r: GenericRecord) => new Date(r.date) >= new Date('2024-06-01'))).toBe(
         true,
       );
@@ -252,32 +252,32 @@ describe('DetailedRecordsComponent', () => {
     it('should filter by end date', () => {
       component['endDate'].set('2024-06-30');
       const filtered = component['filteredRecords']();
-      expect(filtered.length).toBe(3);
+      expect(filtered).toHaveLength(3);
     });
 
     it('should filter by both start and end date', () => {
       component['startDate'].set('2024-03-01');
       component['endDate'].set('2024-09-30');
       const filtered = component['filteredRecords']();
-      expect(filtered.length).toBe(3);
+      expect(filtered).toHaveLength(3);
     });
 
     it('should return empty when date range excludes all records', () => {
       component['startDate'].set('2025-01-01');
       component['endDate'].set('2025-12-31');
-      expect(component['filteredRecords']().length).toBe(0);
+      expect(component['filteredRecords']()).toHaveLength(0);
     });
 
     it('should include record on exact start date boundary', () => {
       component['startDate'].set('2024-01-15');
       const filtered = component['filteredRecords']();
-      expect(filtered.length).toBe(5);
+      expect(filtered).toHaveLength(5);
     });
 
     it('should include record on exact end date boundary', () => {
       component['endDate'].set('2024-12-25');
       const filtered = component['filteredRecords']();
-      expect(filtered.length).toBe(5);
+      expect(filtered).toHaveLength(5);
     });
   });
 
@@ -298,7 +298,7 @@ describe('DetailedRecordsComponent', () => {
     it('should filter by year', () => {
       component['searchYear'].set(2024);
       const filtered = component['filteredRecords']();
-      expect(filtered.length).toBe(3);
+      expect(filtered).toHaveLength(3);
       expect(filtered.every((r: GenericRecord) => new Date(r.date).getFullYear() === 2024)).toBe(
         true,
       );
@@ -307,25 +307,25 @@ describe('DetailedRecordsComponent', () => {
     it('should filter by month (0-indexed)', () => {
       component['searchMonth'].set(0); // January
       const filtered = component['filteredRecords']();
-      expect(filtered.length).toBe(2); // Jan 2024 + Jan 2025
+      expect(filtered).toHaveLength(2); // Jan 2024 + Jan 2025
     });
 
     it('should filter by both year and month', () => {
       component['searchYear'].set(2024);
       component['searchMonth'].set(0); // January
       const filtered = component['filteredRecords']();
-      expect(filtered.length).toBe(1);
+      expect(filtered).toHaveLength(1);
     });
 
     it('should return empty when year has no records', () => {
       component['searchYear'].set(2020);
-      expect(component['filteredRecords']().length).toBe(0);
+      expect(component['filteredRecords']()).toHaveLength(0);
     });
 
     it('should return empty when month has no records in selected year', () => {
       component['searchYear'].set(2024);
       component['searchMonth'].set(11); // December
-      expect(component['filteredRecords']().length).toBe(0);
+      expect(component['filteredRecords']()).toHaveLength(0);
     });
 
     it('should combine date range with year filter', () => {
@@ -333,7 +333,7 @@ describe('DetailedRecordsComponent', () => {
       component['endDate'].set('2024-12-31');
       component['searchYear'].set(2024);
       const filtered = component['filteredRecords']();
-      expect(filtered.length).toBe(3);
+      expect(filtered).toHaveLength(3);
     });
   });
 
@@ -507,7 +507,7 @@ describe('DetailedRecordsComponent', () => {
       component['setSortOption']('bathroom-desc');
 
       const displayed = component['displayedRecords']();
-      expect(displayed.length).toBe(2);
+      expect(displayed).toHaveLength(2);
     });
   });
 
@@ -522,7 +522,7 @@ describe('DetailedRecordsComponent', () => {
     it('should return first page of records', () => {
       component.records = createRecords(12);
       fixture.detectChanges();
-      expect(component['displayedRecords']().length).toBe(5);
+      expect(component['displayedRecords']()).toHaveLength(5);
     });
 
     it('should calculate total pages correctly', () => {
@@ -543,7 +543,7 @@ describe('DetailedRecordsComponent', () => {
 
       component['nextPage']();
       expect(component['currentPage']()).toBe(2);
-      expect(component['displayedRecords']().length).toBe(5);
+      expect(component['displayedRecords']()).toHaveLength(5);
     });
 
     it('should show remaining records on last page', () => {
@@ -551,7 +551,7 @@ describe('DetailedRecordsComponent', () => {
       fixture.detectChanges();
 
       component['currentPage'].set(3);
-      expect(component['displayedRecords']().length).toBe(2); // 12 - 5 - 5
+      expect(component['displayedRecords']()).toHaveLength(2); // 12 - 5 - 5
     });
 
     it('should not go past the last page', () => {
@@ -596,7 +596,7 @@ describe('DetailedRecordsComponent', () => {
       fixture.detectChanges();
 
       component['onPaginationSizeChange'](50);
-      expect(component['displayedRecords']().length).toBe(3);
+      expect(component['displayedRecords']()).toHaveLength(3);
       expect(component['totalPages']()).toBe(1);
     });
 
@@ -604,7 +604,7 @@ describe('DetailedRecordsComponent', () => {
       component.records = [];
       fixture.detectChanges();
 
-      expect(component['displayedRecords']().length).toBe(0);
+      expect(component['displayedRecords']()).toHaveLength(0);
       expect(component['totalPages']()).toBe(0);
     });
   });
@@ -863,8 +863,8 @@ describe('DetailedRecordsComponent', () => {
       component.records = [makeRecord('2024-06-15')];
       fixture.detectChanges();
 
-      expect(component['filteredRecords']().length).toBe(1);
-      expect(component['displayedRecords']().length).toBe(1);
+      expect(component['filteredRecords']()).toHaveLength(1);
+      expect(component['displayedRecords']()).toHaveLength(1);
       expect(component['totalPages']()).toBe(1);
       expect(component['availableYears']()).toEqual([2024]);
     });
@@ -876,7 +876,7 @@ describe('DetailedRecordsComponent', () => {
       ];
       fixture.detectChanges();
 
-      expect(component['filteredRecords']().length).toBe(2);
+      expect(component['filteredRecords']()).toHaveLength(2);
       expect(component['availableYears']()).toEqual([2024]);
     });
 
@@ -888,7 +888,7 @@ describe('DetailedRecordsComponent', () => {
       fixture.detectChanges();
 
       expect(component['totalPages']()).toBe(1);
-      expect(component['displayedRecords']().length).toBe(5);
+      expect(component['displayedRecords']()).toHaveLength(5);
     });
 
     it('should handle calculateTotalFn that returns 0 for all records', () => {
@@ -901,7 +901,7 @@ describe('DetailedRecordsComponent', () => {
       fixture.detectChanges();
 
       component['setSortOption']('total-desc');
-      expect(component['displayedRecords']().length).toBe(2);
+      expect(component['displayedRecords']()).toHaveLength(2);
     });
 
     it('should handle rapid filter changes without errors', () => {
@@ -920,17 +920,17 @@ describe('DetailedRecordsComponent', () => {
       component['searchYear'].set(2024);
       component['searchMonth'].set(11);
 
-      expect(component['filteredRecords']().length).toBe(1);
+      expect(component['filteredRecords']()).toHaveLength(1);
     });
 
     it('should handle new records input reactively', () => {
       component.records = [makeRecord('2024-01-15')];
       fixture.detectChanges();
-      expect(component['filteredRecords']().length).toBe(1);
+      expect(component['filteredRecords']()).toHaveLength(1);
 
       component.records = [makeRecord('2024-01-15'), makeRecord('2024-06-20')];
       fixture.detectChanges();
-      expect(component['filteredRecords']().length).toBe(2);
+      expect(component['filteredRecords']()).toHaveLength(2);
     });
 
     it('should handle records at year boundaries', () => {
@@ -938,10 +938,10 @@ describe('DetailedRecordsComponent', () => {
       fixture.detectChanges();
 
       component['searchYear'].set(2023);
-      expect(component['filteredRecords']().length).toBe(1);
+      expect(component['filteredRecords']()).toHaveLength(1);
 
       component['searchYear'].set(2024);
-      expect(component['filteredRecords']().length).toBe(1);
+      expect(component['filteredRecords']()).toHaveLength(1);
     });
 
     it('should handle month 0 (January) correctly in filter — not falsy-skipped', () => {
@@ -949,7 +949,7 @@ describe('DetailedRecordsComponent', () => {
       fixture.detectChanges();
 
       component['searchMonth'].set(0);
-      expect(component['filteredRecords']().length).toBe(1);
+      expect(component['filteredRecords']()).toHaveLength(1);
       expect(new Date(component['filteredRecords']()[0].date).getMonth()).toBe(0);
     });
   });
@@ -960,7 +960,7 @@ describe('DetailedRecordsComponent', () => {
       fixture.detectChanges();
 
       const options = component.sortOptions;
-      expect(options.length).toBe(8);
+      expect(options).toHaveLength(8);
       expect(options[0]).toEqual({
         value: 'date-desc',
         labelKey: 'HOME.SORT.DATE_DESC',
@@ -977,7 +977,7 @@ describe('DetailedRecordsComponent', () => {
       component.sortOptions = customOptions;
       fixture.detectChanges();
 
-      expect(component.sortOptions.length).toBe(2);
+      expect(component.sortOptions).toHaveLength(2);
       expect(component.sortOptions[0].labelKey).toBe('CUSTOM.NEWEST');
     });
 

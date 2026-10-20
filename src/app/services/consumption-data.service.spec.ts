@@ -111,7 +111,7 @@ describe('ConsumptionDataService', () => {
       });
 
       const filtered = service.filteredRecords();
-      expect(filtered.length).toBe(1);
+      expect(filtered).toHaveLength(1);
       expect(new Date(filtered[0].date).toISOString().split('T')[0]).toBe('2023-01-08');
     });
 
@@ -125,7 +125,7 @@ describe('ConsumptionDataService', () => {
       });
 
       const filtered = service.filteredRecords();
-      expect(filtered.length).toBe(2);
+      expect(filtered).toHaveLength(2);
     });
 
     it('should check if filter is active', () => {
@@ -153,7 +153,7 @@ describe('ConsumptionDataService', () => {
 
       await service.saveRecord(newRecord);
 
-      expect(service.records().length).toBe(3);
+      expect(service.records()).toHaveLength(3);
       expect(storageServiceMock.save).toHaveBeenCalled();
       expect(notificationServiceMock.setWaterRecords).toHaveBeenCalled();
       expect(service.showSuccessModal()).toBe(true);
@@ -168,7 +168,7 @@ describe('ConsumptionDataService', () => {
 
       await service.saveRecord(updatedRecord);
 
-      expect(service.records().length).toBe(2);
+      expect(service.records()).toHaveLength(2);
       expect(service.records()[0].kitchenWarm).toBe(99);
       expect(storageServiceMock.save).toHaveBeenCalled();
     });
@@ -181,7 +181,7 @@ describe('ConsumptionDataService', () => {
       service.confirmDelete();
       await new Promise((resolve) => setTimeout(resolve, 0));
 
-      expect(service.records().length).toBe(1);
+      expect(service.records()).toHaveLength(1);
       expect(storageServiceMock.save).toHaveBeenCalled();
       expect(service.showDeleteModal()).toBe(false);
     });
@@ -194,7 +194,7 @@ describe('ConsumptionDataService', () => {
       service.confirmDeleteAll();
       await new Promise((resolve) => setTimeout(resolve, 0));
 
-      expect(service.records().length).toBe(1);
+      expect(service.records()).toHaveLength(1);
       expect(storageServiceMock.save).toHaveBeenCalled();
       expect(service.showDeleteAllModal()).toBe(false);
     });

@@ -5,7 +5,8 @@ import { TranslatePipe } from '../../pipes/translate.pipe';
 import { Pipe, PipeTransform, signal } from '@angular/core';
 import { vi, afterEach } from 'vitest';
 import { By } from '@angular/platform-browser';
-import { AlertTriangle } from 'lucide-angular';
+import { TriangleAlert } from 'lucide-angular';
+
 import { DeleteConfirmationModalHarness } from './delete-confirmation-modal.harness';
 import { getHarness } from '../../../testing';
 
@@ -87,7 +88,7 @@ describe('DeleteConfirmationModalComponent', () => {
 
     it('should render modal content when show is true', () => {
       component.show = true;
-      component.icon = AlertTriangle;
+      component.icon = TriangleAlert;
       fixture.detectChanges();
 
       const overlay = fixture.debugElement.query(By.css('.modal-overlay'));
@@ -96,7 +97,7 @@ describe('DeleteConfirmationModalComponent', () => {
 
     it('should render all modal sections when visible', () => {
       component.show = true;
-      component.icon = AlertTriangle;
+      component.icon = TriangleAlert;
       fixture.detectChanges();
 
       expect(fixture.debugElement.query(By.css('.modal-header'))).toBeTruthy();
@@ -108,7 +109,7 @@ describe('DeleteConfirmationModalComponent', () => {
   describe('Content Display', () => {
     beforeEach(() => {
       component.show = true;
-      component.icon = AlertTriangle;
+      component.icon = TriangleAlert;
       component.titleKey = 'DELETE.TITLE';
       component.messageKey = 'DELETE.MESSAGE';
       component.cancelKey = 'ACTIONS.CANCEL';
@@ -146,7 +147,7 @@ describe('DeleteConfirmationModalComponent', () => {
   describe('Translated Message', () => {
     it('should translate message without params', () => {
       component.show = true;
-      component.icon = AlertTriangle;
+      component.icon = TriangleAlert;
       component.messageKey = 'DELETE.MESSAGE';
       component.messageParams = {};
       fixture.detectChanges();
@@ -158,7 +159,7 @@ describe('DeleteConfirmationModalComponent', () => {
 
     it('should replace single placeholder with param value', () => {
       component.show = true;
-      component.icon = AlertTriangle;
+      component.icon = TriangleAlert;
       component.messageKey = 'DELETE.MESSAGE_WITH_PARAMS';
       component.messageParams = { count: '5', source: 'water records' };
       fixture.detectChanges();
@@ -224,7 +225,7 @@ describe('DeleteConfirmationModalComponent', () => {
   describe('Event Emitters', () => {
     beforeEach(() => {
       component.show = true;
-      component.icon = AlertTriangle;
+      component.icon = TriangleAlert;
       component.titleKey = 'DELETE.TITLE';
       component.messageKey = 'DELETE.MESSAGE';
       component.cancelKey = 'ACTIONS.CANCEL';
@@ -304,7 +305,7 @@ describe('DeleteConfirmationModalComponent', () => {
   describe('Edge Cases', () => {
     it('should handle empty titleKey', () => {
       component.show = true;
-      component.icon = AlertTriangle;
+      component.icon = TriangleAlert;
       component.titleKey = '';
       fixture.detectChanges();
 
@@ -323,7 +324,7 @@ describe('DeleteConfirmationModalComponent', () => {
 
     it('should handle empty cancelKey and deleteKey', () => {
       component.show = true;
-      component.icon = AlertTriangle;
+      component.icon = TriangleAlert;
       component.cancelKey = '';
       component.deleteKey = '';
       fixture.detectChanges();
@@ -336,7 +337,7 @@ describe('DeleteConfirmationModalComponent', () => {
 
     it('should handle multiple rapid confirm clicks', () => {
       component.show = true;
-      component.icon = AlertTriangle;
+      component.icon = TriangleAlert;
       fixture.detectChanges();
 
       const spy = vi.fn();
@@ -351,7 +352,7 @@ describe('DeleteConfirmationModalComponent', () => {
 
     it('should handle multiple rapid cancel clicks', () => {
       component.show = true;
-      component.icon = AlertTriangle;
+      component.icon = TriangleAlert;
       fixture.detectChanges();
 
       const spy = vi.fn();
@@ -365,7 +366,7 @@ describe('DeleteConfirmationModalComponent', () => {
     });
 
     it('should not render overlay when show starts as false', () => {
-      component.icon = AlertTriangle;
+      component.icon = TriangleAlert;
       component.show = false;
       fixture.detectChanges();
 
@@ -373,7 +374,7 @@ describe('DeleteConfirmationModalComponent', () => {
     });
 
     it('should render overlay when show starts as true', () => {
-      component.icon = AlertTriangle;
+      component.icon = TriangleAlert;
       component.show = true;
       fixture.detectChanges();
 
@@ -393,7 +394,7 @@ describe('DeleteConfirmationModalComponent', () => {
   describe('HTML Structure', () => {
     beforeEach(() => {
       component.show = true;
-      component.icon = AlertTriangle;
+      component.icon = TriangleAlert;
       component.titleKey = 'DELETE.TITLE';
       component.messageKey = 'DELETE.MESSAGE';
       component.cancelKey = 'ACTIONS.CANCEL';
@@ -404,14 +405,14 @@ describe('DeleteConfirmationModalComponent', () => {
     it('should have overlay as the outermost element', () => {
       const overlay = fixture.debugElement.query(By.css('.modal-overlay'));
       expect(overlay).toBeTruthy();
-      expect(overlay.children.length).toBe(1);
+      expect(overlay.children).toHaveLength(1);
       expect(overlay.children[0].nativeElement.classList.contains('modal-content')).toBe(true);
     });
 
     it('should have exactly two buttons in footer', () => {
       const footer = fixture.debugElement.query(By.css('.modal-footer'));
       const buttons = footer.queryAll(By.css('button'));
-      expect(buttons.length).toBe(2);
+      expect(buttons).toHaveLength(2);
       expect(buttons[0].nativeElement.classList.contains('btn-secondary')).toBe(true);
       expect(buttons[1].nativeElement.classList.contains('btn-danger')).toBe(true);
     });
@@ -435,13 +436,13 @@ describe('DeleteConfirmationModalComponent', () => {
       fixture.componentRef.setInput('show', false);
       expect(await harness.isOpen()).toBe(false);
 
-      fixture.componentRef.setInput('icon', AlertTriangle);
+      fixture.componentRef.setInput('icon', TriangleAlert);
       fixture.componentRef.setInput('show', true);
       expect(await harness.isOpen()).toBe(true);
     });
 
     it('should read title and message text via harness', async () => {
-      fixture.componentRef.setInput('icon', AlertTriangle);
+      fixture.componentRef.setInput('icon', TriangleAlert);
       fixture.componentRef.setInput('show', true);
       fixture.componentRef.setInput('titleKey', 'DELETE.TITLE');
       fixture.componentRef.setInput('messageKey', 'DELETE.MESSAGE');
@@ -451,7 +452,7 @@ describe('DeleteConfirmationModalComponent', () => {
     });
 
     it('should trigger confirm event on clicking confirm button via harness', async () => {
-      fixture.componentRef.setInput('icon', AlertTriangle);
+      fixture.componentRef.setInput('icon', TriangleAlert);
       fixture.componentRef.setInput('show', true);
 
       const confirmSpy = vi.fn();
@@ -462,7 +463,7 @@ describe('DeleteConfirmationModalComponent', () => {
     });
 
     it('should trigger cancel event on clicking cancel button via harness', async () => {
-      fixture.componentRef.setInput('icon', AlertTriangle);
+      fixture.componentRef.setInput('icon', TriangleAlert);
       fixture.componentRef.setInput('show', true);
 
       const cancelSpy = vi.fn();
@@ -473,7 +474,7 @@ describe('DeleteConfirmationModalComponent', () => {
     });
 
     it('should trigger cancel event on clicking close button via harness', async () => {
-      fixture.componentRef.setInput('icon', AlertTriangle);
+      fixture.componentRef.setInput('icon', TriangleAlert);
       fixture.componentRef.setInput('show', true);
 
       const cancelSpy = vi.fn();
@@ -484,7 +485,7 @@ describe('DeleteConfirmationModalComponent', () => {
     });
 
     it('should trigger cancel event on clicking overlay via harness', async () => {
-      fixture.componentRef.setInput('icon', AlertTriangle);
+      fixture.componentRef.setInput('icon', TriangleAlert);
       fixture.componentRef.setInput('show', true);
 
       const cancelSpy = vi.fn();

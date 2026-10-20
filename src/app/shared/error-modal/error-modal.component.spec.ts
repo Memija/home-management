@@ -84,7 +84,7 @@ describe('ErrorModalComponent', () => {
 
       const lines = component.detailLines();
 
-      expect(lines.length).toBe(3);
+      expect(lines).toHaveLength(3);
       expect(lines).toEqual(['Line 1', 'Line 2', 'Line 3']);
     });
 
@@ -92,7 +92,7 @@ describe('ErrorModalComponent', () => {
       component.details = '';
       fixture.detectChanges();
 
-      expect(component.detailLines().length).toBe(0);
+      expect(component.detailLines()).toHaveLength(0);
 
       // DOM should omit error-details sections
       expect(fixture.nativeElement.querySelector('.error-details')).toBeNull();
@@ -116,7 +116,7 @@ describe('ErrorModalComponent', () => {
       fixture.detectChanges();
 
       const instructionElements = fixture.nativeElement.querySelectorAll('.error-instructions li');
-      expect(instructionElements.length).toBe(2);
+      expect(instructionElements).toHaveLength(2);
 
       expect(instructionElements[0].textContent.trim()).toBe('STRING_INSTRUCTION');
       expect(instructionElements[1].textContent.trim()).toContain(

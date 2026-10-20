@@ -27,11 +27,13 @@ describe('NatureTreeComponent', () => {
 
     // Direct instantiation with manual season/tree setup since effect() requires Angular runtime
     component = Object.create(NatureTreeComponent.prototype);
-    component.branches = [];
-    component.snowflakes = [];
-    component.raindrops = [];
-    component.season = 'summer';
-    component.themeService = mockThemeService as unknown as ThemeService;
+    Object.assign(component, {
+      branches: [],
+      snowflakes: [],
+      raindrops: [],
+      season: 'summer',
+      themeService: mockThemeService as unknown as ThemeService,
+    });
   });
 
   afterEach(() => {
@@ -48,28 +50,28 @@ describe('NatureTreeComponent', () => {
       // Access private method via bracket notation for testing
       component['resetAndGenerate']();
       expect(component.snowflakes.length).toBeGreaterThan(0);
-      expect(component.raindrops.length).toBe(0);
+      expect(component.raindrops).toHaveLength(0);
     });
 
     it('should generate raindrops in autumn', () => {
       component.season = 'autumn';
       component['resetAndGenerate']();
       expect(component.raindrops.length).toBeGreaterThan(0);
-      expect(component.snowflakes.length).toBe(0);
+      expect(component.snowflakes).toHaveLength(0);
     });
 
     it('should generate no weather in summer', () => {
       component.season = 'summer';
       component['resetAndGenerate']();
-      expect(component.snowflakes.length).toBe(0);
-      expect(component.raindrops.length).toBe(0);
+      expect(component.snowflakes).toHaveLength(0);
+      expect(component.raindrops).toHaveLength(0);
     });
 
     it('should generate no weather in spring', () => {
       component.season = 'spring';
       component['resetAndGenerate']();
-      expect(component.snowflakes.length).toBe(0);
-      expect(component.raindrops.length).toBe(0);
+      expect(component.snowflakes).toHaveLength(0);
+      expect(component.raindrops).toHaveLength(0);
     });
   });
 

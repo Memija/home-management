@@ -6,7 +6,7 @@ import { HeatingRoomsService } from './heating-rooms.service';
   providedIn: 'root',
 })
 export class HeatingFormService {
-  private roomsService = inject(HeatingRoomsService);
+  private readonly roomsService = inject(HeatingRoomsService);
 
   // Form State - dynamic room values by room ID
   readonly selectedDate = signal<string>('');

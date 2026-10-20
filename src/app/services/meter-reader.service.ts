@@ -399,55 +399,9 @@ export class MeterReaderService {
         const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
         const data = imageData.data;
 
-        // Calculate average brightness to use as a dynamic threshold
-        let totalBrightness = 0;
-        for (let i = 0; i < data.length; i += 4) {
-          totalBrightness += data[i] * 0.299 + data[i + 1] * 0.587 + data[i + 2] * 0.114;
-        }
-        const avgBrightness = totalBrightness / (data.length / 4);
-
-        // Create a temporary array for morphological operation
-        const grayData = new Uint8Array(data.length / 4);
-        for (let i = 0; i < data.length; i += 4) {
-          grayData[i / 4] = data[i] * 0.299 + data[i + 1] * 0.587 + data[i + 2] * 0.114;
-        }
-
-        const w = canvas.width;
-        const h = canvas.height;
-        const dilatedData = new Uint8Array(grayData.length);
-
-        // Morphological Erosion (expands dark areas)
-        // Vertical only! This helps connect horizontally broken 7-segment LCD digits
-        // without accidentally merging horizontally adjacent printed labels
-        for (let y = 0; y < h; y++) {
-          for (let x = 0; x < w; x++) {
-            const idx = y * w + x;
-            let minVal = grayData[idx];
-
-            // Check vertical neighbors
-            if (y > 0) minVal = Math.min(minVal, grayData[idx - w]);
-            if (y < h - 1) minVal = Math.min(minVal, grayData[idx + w]);
-
-            dilatedData[idx] = minVal;
-          }
-        }
-
-        // Use a threshold slightly lower than average to catch faint LCD segments
-        const threshold = avgBrightness * 0.95;
-
-        for (let y = 0; y < h; y++) {
-          for (let x = 0; x < w; x++) {
-            const idx = y * w + x;
-            const gray = dilatedData[idx];
-            // Strict binary: black or white
-            const val = gray > threshold ? 255 : 0;
-
-            const dataIdx = idx * 4;
-            data[dataIdx] = val;
-            data[dataIdx + 1] = val;
-            data[dataIdx + 2] = val;
-          }
-        }
+        const { avgBrightness, grayData } = this.computeAverageBrightnessAndGrayscale(data);
+        const dilatedData = this.applyVerticalErosion(grayData, canvas.width, canvas.height);
+        this.binarizeImageData(data, dilatedData, avgBrightness * 0.95);
 
         ctx.putImageData(imageData, 0, 0);
         resolve(canvas.toDataURL('image/png'));
@@ -455,6 +409,56 @@ export class MeterReaderService {
       img.onerror = () => resolve(dataUrl);
       img.src = dataUrl;
     });
+  }
+
+  private computeAverageBrightnessAndGrayscale(data: Uint8ClampedArray): {
+    avgBrightness: number;
+    grayData: Uint8Array;
+  } {
+    const pixelCount = data.length / 4;
+    const grayData = new Uint8Array(pixelCount);
+    let totalBrightness = 0;
+
+    for (let i = 0; i < data.length; i += 4) {
+      const gray = data[i] * 0.299 + data[i + 1] * 0.587 + data[i + 2] * 0.114;
+      grayData[i / 4] = gray;
+      totalBrightness += gray;
+    }
+
+    return {
+      avgBrightness: totalBrightness / pixelCount,
+      grayData,
+    };
+  }
+
+  private applyVerticalErosion(grayData: Uint8Array, w: number, h: number): Uint8Array {
+    const dilatedData = new Uint8Array(grayData.length);
+    for (let y = 0; y < h; y++) {
+      for (let x = 0; x < w; x++) {
+        const idx = y * w + x;
+        let minVal = grayData[idx];
+
+        if (y > 0) minVal = Math.min(minVal, grayData[idx - w]);
+        if (y < h - 1) minVal = Math.min(minVal, grayData[idx + w]);
+
+        dilatedData[idx] = minVal;
+      }
+    }
+    return dilatedData;
+  }
+
+  private binarizeImageData(
+    data: Uint8ClampedArray,
+    dilatedData: Uint8Array,
+    threshold: number,
+  ): void {
+    for (let idx = 0; idx < dilatedData.length; idx++) {
+      const val = dilatedData[idx] > threshold ? 255 : 0;
+      const dataIdx = idx * 4;
+      data[dataIdx] = val;
+      data[dataIdx + 1] = val;
+      data[dataIdx + 2] = val;
+    }
   }
 
   /**
@@ -509,7 +513,7 @@ export class MeterReaderService {
       .replace(/[bB]/g, '8'); // B → 8
 
     // Match contiguous number blocks (e.g., "15432", "1.234,56")
-    const numberPatterns = cleaned.match(/[\d]+[.,\d]*[\d]|[\d]+/g) || [];
+    const numberPatterns = cleaned.match(/\d+[.,\d]*\d|\d+/g) || [];
 
     return numberPatterns
       .map((n) => {
@@ -525,7 +529,7 @@ export class MeterReaderService {
           dots <= 1 &&
           normalized.lastIndexOf(',') > normalized.lastIndexOf('.')
         ) {
-          normalized = normalized.replace(/\./g, '').replace(',', '.');
+          normalized = normalized.replaceAll('.', '').replace(',', '.');
         }
         // If US format "1,234.56" or "12.34"
         else if (
@@ -533,16 +537,16 @@ export class MeterReaderService {
           commas <= 1 &&
           normalized.lastIndexOf('.') > normalized.lastIndexOf(',')
         ) {
-          normalized = normalized.replace(/,/g, '');
+          normalized = normalized.replaceAll(',', '');
         }
         // If multiple of same separator, assume thousand separators "1,234,567" or "1.234.567"
         else {
           normalized = normalized.replace(/[.,]/g, '');
         }
 
-        return parseFloat(normalized);
+        return Number.parseFloat(normalized);
       })
-      .filter((n) => !isNaN(n) && n >= 0);
+      .filter((n) => !Number.isNaN(n) && n >= 0);
   }
 
   private scoreAndSelectBest(candidates: ScoredCandidate[], isCropped = false): number | null {
@@ -551,7 +555,10 @@ export class MeterReaderService {
     if (isCropped) {
       // In cropped mode the image IS the reading — just return highest-confidence candidate.
       // De-duplicate by value and pick the one Tesseract was most confident about.
-      const best = candidates.reduce((max, c) => (c.confidence > max.confidence ? c : max));
+      const best = candidates.reduce(
+        (max, c) => (c.confidence > max.confidence ? c : max),
+        candidates[0],
+      );
       return best.value;
     }
 

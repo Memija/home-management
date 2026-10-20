@@ -21,7 +21,7 @@ export class ElectricityFormService {
     // Check if a record already exists for the selected date
     return currentRecords.some((r) => {
       const d = new Date(r.date);
-      if (isNaN(d.getTime())) return false;
+      if (Number.isNaN(d.getTime())) return false;
       return d.toISOString().split('T')[0] === this.selectedDate();
     });
   }
@@ -29,7 +29,7 @@ export class ElectricityFormService {
   startEdit(record: ElectricityRecord) {
     this.editingRecord.set(record);
     const date = new Date(record.date);
-    if (!isNaN(date.getTime())) {
+    if (!Number.isNaN(date.getTime())) {
       this.selectedDate.set(date.toISOString().split('T')[0]);
     }
     this.value.set(record.value);

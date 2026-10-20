@@ -1,12 +1,4 @@
-import {
-  Component,
-  computed,
-  inject,
-  signal,
-  effect,
-  HostListener,
-  ElementRef,
-} from '@angular/core';
+import { Component, computed, inject, signal, effect, ElementRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 
@@ -22,7 +14,7 @@ import {
   FileText,
   FileInput,
   FileOutput,
-  AlertTriangle,
+  TriangleAlert,
   RefreshCw,
   Droplet,
   Lightbulb,
@@ -37,6 +29,10 @@ import {
 import { DeleteConfirmationModalComponent } from '../shared/delete-confirmation-modal/delete-confirmation-modal.component';
 import { ConfirmationModalComponent } from '../shared/confirmation-modal/confirmation-modal.component';
 import { DetailedRecordsComponent } from '../shared/detailed-records/detailed-records.component';
+import {
+  BaseConsumptionComponent,
+  ConsumptionDataServiceContract,
+} from '../shared/base-consumption.directive';
 import {
   ConsumptionRecord,
   calculateWaterTotal,
@@ -69,6 +65,7 @@ import {
   DEMO_TOUR_STEPS,
 } from './water.constants';
 import { DemoTourComponent } from '../shared/demo-tour/demo-tour.component';
+import { secureRandom } from '../utils/crypto.utils';
 
 @Component({
   selector: 'app-water',
@@ -92,7 +89,7 @@ import { DemoTourComponent } from '../shared/demo-tour/demo-tour.component';
   templateUrl: './water.component.html',
   styleUrl: './water.component.scss',
 })
-export class WaterComponent {
+export class WaterComponent extends BaseConsumptionComponent<ConsumptionRecord> {
   // Icons
   protected readonly DownloadIcon = Download;
   protected readonly UploadIcon = Upload;
@@ -101,80 +98,50 @@ export class WaterComponent {
   protected readonly FileTextIcon = FileText;
   protected readonly CheckCircleIcon = CircleCheck;
   protected readonly TrashIcon = Trash2;
-  protected readonly AlertTriangleIcon = AlertTriangle;
+  protected readonly AlertTriangleIcon = TriangleAlert;
   protected readonly RefreshCwIcon = RefreshCw;
   protected readonly LightbulbIcon = Lightbulb;
   protected readonly ToggleLeftIcon = ToggleLeft;
   protected readonly ToggleRightIcon = ToggleRight;
   protected readonly ChevronDownIcon = ChevronDown;
 
-  // Dropdown state
-  protected isExportMenuOpen = signal(false);
-  protected isImportMenuOpen = signal(false);
-
-  private elementRef = inject(ElementRef, { optional: true });
-
-  @HostListener('document:click', ['$event'])
-  onDocumentClick(event: MouseEvent): void {
-    const target = event.target as HTMLElement | null;
-    if (!target?.closest('.action-dropdown')) {
-      this.isExportMenuOpen.set(false);
-      this.isImportMenuOpen.set(false);
-    }
-  }
-
-  toggleExportMenu(event: MouseEvent): void {
-    event.stopPropagation();
-    const next = !this.isExportMenuOpen();
-    this.isExportMenuOpen.set(next);
-    this.isImportMenuOpen.set(false);
-  }
-
-  toggleImportMenu(event: MouseEvent): void {
-    event.stopPropagation();
-    const next = !this.isImportMenuOpen();
-    this.isImportMenuOpen.set(next);
-    this.isExportMenuOpen.set(false);
-  }
-
-  closeMenus(): void {
-    this.isExportMenuOpen.set(false);
-    this.isImportMenuOpen.set(false);
-  }
+  private readonly elementRef = inject(ElementRef, { optional: true });
 
   // Services
-  protected excelSettings = inject(ExcelSettingsService);
-  protected demoService = inject(DemoService);
-  private householdService = inject(HouseholdService);
-  private chartCalculationService = inject(ChartCalculationService);
-  private localStorageService = inject(LocalStorageService);
-  private languageService = inject(LanguageService);
-  private waterFactsService = inject(WaterFactsService);
-  private preferencesService = inject(ConsumptionPreferencesService);
-  private formService = inject(ConsumptionFormService);
-  private dataService = inject(ConsumptionDataService);
-  private predictionService = inject(PredictionService);
+  protected readonly excelSettings = inject(ExcelSettingsService);
+  protected readonly demoService = inject(DemoService);
+  private readonly householdService = inject(HouseholdService);
+  private readonly chartCalculationService = inject(ChartCalculationService);
+  private readonly localStorageService = inject(LocalStorageService);
+  private readonly languageService = inject(LanguageService);
+  private readonly waterFactsService = inject(WaterFactsService);
+  private readonly preferencesService = inject(ConsumptionPreferencesService);
+  private readonly formService = inject(ConsumptionFormService);
+  private readonly dataService = inject(ConsumptionDataService);
+  private readonly predictionService = inject(PredictionService);
 
   // Signals
-  protected records = this.dataService.records;
-  protected waterPrediction = computed(() => this.predictionService.predictWater(this.records()));
-  protected adjustedRecords = computed(() => {
+  protected readonly records = this.dataService.records;
+  protected readonly waterPrediction = computed(() =>
+    this.predictionService.predictWater(this.records()),
+  );
+  protected readonly adjustedRecords = computed(() => {
     const recs = this.records();
     const changes = this.confirmedMeterChanges();
     if (changes.length === 0) return recs;
     return this.chartCalculationService.adjustForMeterChanges(recs, changes);
   });
 
-  protected chartView = this.preferencesService.chartView;
-  protected displayMode = this.preferencesService.displayMode;
-  protected effectiveComparisonCountryCode = signal('DE'); // Default
-  protected selectedPredictionPeriod = signal<30 | 90 | 180 | 365 | 3650>(30);
+  protected readonly chartView = this.preferencesService.chartView;
+  protected readonly displayMode = this.preferencesService.displayMode;
+  protected readonly effectiveComparisonCountryCode = signal('DE'); // Default
+  protected readonly selectedPredictionPeriod = signal<30 | 90 | 180 | 365 | 3650>(30);
 
   protected onPredictionPeriodChange(period: 30 | 90 | 180 | 365 | 3650): void {
     this.selectedPredictionPeriod.set(period);
   }
 
-  protected waterCategoryNames = computed(() => ({
+  protected readonly waterCategoryNames = computed(() => ({
     kitchenWarm: 'CHART.KITCHEN_WARM',
     kitchenCold: 'CHART.KITCHEN_COLD',
     bathroomWarm: 'CHART.BATHROOM_WARM',
@@ -185,18 +152,18 @@ export class WaterComponent {
     coldTotal: 'CHART.COLD_WATER_TOTAL',
   }));
 
-  private syncCountryFromAddress = effect(() => {
+  private readonly syncCountryFromAddress = effect(() => {
     const address = this.householdService.address();
     if (address?.country) {
       this.effectiveComparisonCountryCode.set(address.country.toUpperCase());
     }
   });
-  protected factRandomSeed = signal(Math.random());
+  protected readonly factRandomSeed = signal(secureRandom());
 
   // Template Helpers & Signals
-  protected coldWaterOnlyMode = this.preferencesService.coldWaterOnlyMode;
+  protected readonly coldWaterOnlyMode = this.preferencesService.coldWaterOnlyMode;
 
-  protected consumptionGroups = computed<ConsumptionGroup[]>(() => {
+  protected readonly consumptionGroups = computed<ConsumptionGroup[]>(() => {
     const coldOnly = this.coldWaterOnlyMode();
 
     if (coldOnly) {
@@ -264,19 +231,19 @@ export class WaterComponent {
     ];
   });
 
-  protected selectedDate = this.formService.selectedDate;
-  protected editingRecord = this.formService.editingRecord;
-  protected maxDate = new Date().toISOString().split('T')[0];
+  protected readonly selectedDate = this.formService.selectedDate;
+  protected readonly editingRecord = this.formService.editingRecord;
+  protected readonly maxDate = new Date().toISOString().split('T')[0];
 
-  protected helpSteps = RECORD_HELP_STEPS;
-  protected chartHelpSteps = CHART_HELP_STEPS;
-  protected recordsHelpSteps = RECORDS_LIST_HELP_STEPS;
+  protected readonly helpSteps = RECORD_HELP_STEPS;
+  protected readonly chartHelpSteps = CHART_HELP_STEPS;
+  protected readonly recordsHelpSteps = RECORDS_LIST_HELP_STEPS;
 
   // Demo wizard & tour
-  protected demoWizardSteps = DEMO_WIZARD_STEPS;
-  protected demoTourSteps = DEMO_TOUR_STEPS;
-  protected showDemoWizard = signal(false);
-  protected showDemoTour = signal(false);
+  protected readonly demoWizardSteps = DEMO_WIZARD_STEPS;
+  protected readonly demoTourSteps = DEMO_TOUR_STEPS;
+  protected readonly showDemoWizard = signal(false);
+  protected readonly showDemoTour = signal(false);
 
   protected openRelevantDemoGuide(): void {
     if (this.demoService.isDemoMode()) {
@@ -286,14 +253,14 @@ export class WaterComponent {
     }
   }
 
-  protected isExporting = this.dataService.isExporting;
-  protected isImporting = this.dataService.isImporting;
-  protected filteredRecords = this.dataService.filteredRecords;
+  protected readonly isExporting = this.dataService.isExporting;
+  protected readonly isImporting = this.dataService.isImporting;
+  protected readonly filteredRecords = this.dataService.filteredRecords;
 
-  protected showImportConfirmModal = this.dataService.showImportConfirmModal;
-  protected showFilterWarningModal = this.dataService.showFilterWarningModal;
+  protected readonly showImportConfirmModal = this.dataService.showImportConfirmModal;
+  protected readonly showFilterWarningModal = this.dataService.showFilterWarningModal;
 
-  protected unconfirmedMeterChanges = computed(() => {
+  protected readonly unconfirmedMeterChanges = computed(() => {
     if (this.records().length < 2) return [];
     const changes = this.chartCalculationService.detectMeterChanges(this.records());
     return changes.filter(
@@ -303,102 +270,53 @@ export class WaterComponent {
     );
   });
 
-  protected formattedMeterChangeDate = computed(() => {
+  protected readonly formattedMeterChangeDate = computed(() => {
     const dates = this.unconfirmedMeterChanges();
     if (dates.length === 0) return '';
     return new Date(dates[0]).toLocaleDateString(this.languageService.currentLang());
   });
 
-  protected successTitle = this.dataService.successTitle;
-  protected successMessage = this.dataService.successMessage;
+  protected readonly successTitle = this.dataService.successTitle;
+  protected readonly successMessage = this.dataService.successMessage;
 
-  protected deleteAllMessageKey = computed(() => 'HOME.DELETE_ALL_CONFIRM_MESSAGE');
-  protected deleteAllMessageParams = computed<Record<string, string>>(() => ({
+  protected readonly deleteAllMessageKey = computed(() => 'HOME.DELETE_ALL_CONFIRM_MESSAGE');
+  protected readonly deleteAllMessageParams = computed<Record<string, string>>(() => ({
     count: this.dataService.recordsToDelete().length.toString(),
   }));
 
-  protected errorTitle = this.dataService.errorTitle;
-  protected errorMessage = this.dataService.errorMessage;
-  protected errorDetails = this.dataService.errorDetails;
-  protected errorInstructions = this.dataService.errorInstructions;
-  protected errorType = this.dataService.errorType;
+  protected readonly errorTitle = this.dataService.errorTitle;
+  protected readonly errorMessage = this.dataService.errorMessage;
+  protected readonly errorDetails = this.dataService.errorDetails;
+  protected readonly errorInstructions = this.dataService.errorInstructions;
+  protected readonly errorType = this.dataService.errorType;
 
-  protected showSuccessModal = this.dataService.showSuccessModal;
-  protected showErrorModal = this.dataService.showErrorModal;
-  protected showDeleteModal = this.dataService.showDeleteModal;
-  protected showDeleteAllModal = this.dataService.showDeleteAllModal;
+  protected readonly showSuccessModal = this.dataService.showSuccessModal;
+  protected readonly showErrorModal = this.dataService.showErrorModal;
+  protected readonly showDeleteModal = this.dataService.showDeleteModal;
+  protected readonly showDeleteAllModal = this.dataService.showDeleteAllModal;
 
-  protected familySize = computed(() => this.householdService.members().length);
+  protected readonly familySize = computed(() => this.householdService.members().length);
 
   // Water fun fact - changes when chart view changes and is context-aware
-  protected waterFact = computed(() => {
+  protected readonly waterFact = computed(() => {
     const records = this.records();
-    const chartView = this.chartView();
     const mode = this.displayMode();
 
-    if (!this.languageService.currentLang()) {
+    if (!this.languageService.currentLang() || mode !== 'total' || records.length === 0) {
       return null;
     }
+
     const seed = this.factRandomSeed();
-
-    if (mode !== 'total' || records.length === 0) {
-      return null;
-    }
-
-    const latestRecord = records[records.length - 1];
-
-    const kitchenTotal = latestRecord.kitchenWarm + latestRecord.kitchenCold;
-    const bathroomTotal = latestRecord.bathroomWarm + latestRecord.bathroomCold;
-    const warmTotal = latestRecord.kitchenWarm + latestRecord.bathroomWarm;
-    const coldTotal = latestRecord.kitchenCold + latestRecord.bathroomCold;
-    const totalLiters = kitchenTotal + bathroomTotal;
-
+    const latestRecord = records.at(-1)!;
+    const totals = calculateRecordTotals(latestRecord);
+    const { context, liters } = resolveWaterFactContext(this.chartView(), seed, totals);
     const factIndex = Math.floor(seed * 20);
-
-    type FactContext = 'total' | 'kitchen' | 'bathroom' | 'warm' | 'cold';
-
-    let context: FactContext;
-    let liters: number;
-
-    switch (chartView) {
-      case 'by-room':
-        if (seed > 0.5) {
-          context = kitchenTotal > 0 ? 'kitchen' : bathroomTotal > 0 ? 'bathroom' : 'total';
-          liters =
-            context === 'kitchen'
-              ? kitchenTotal
-              : context === 'bathroom'
-                ? bathroomTotal
-                : totalLiters;
-        } else {
-          context = bathroomTotal > 0 ? 'bathroom' : kitchenTotal > 0 ? 'kitchen' : 'total';
-          liters =
-            context === 'bathroom'
-              ? bathroomTotal
-              : context === 'kitchen'
-                ? kitchenTotal
-                : totalLiters;
-        }
-        break;
-      case 'by-type':
-        if (seed > 0.5) {
-          context = warmTotal > 0 ? 'warm' : coldTotal > 0 ? 'cold' : 'total';
-          liters = context === 'warm' ? warmTotal : context === 'cold' ? coldTotal : totalLiters;
-        } else {
-          context = coldTotal > 0 ? 'cold' : warmTotal > 0 ? 'warm' : 'total';
-          liters = context === 'cold' ? coldTotal : context === 'warm' ? warmTotal : totalLiters;
-        }
-        break;
-      default:
-        context = 'total';
-        liters = totalLiters;
-    }
 
     return this.waterFactsService.getFactByIndex(liters, factIndex, context);
   });
 
   protected refreshFact(): void {
-    this.factRandomSeed.set(Math.random());
+    this.factRandomSeed.set(secureRandom());
   }
 
   // Methods
@@ -407,11 +325,11 @@ export class WaterComponent {
   }
 
   // UI Handlers
-  protected onChartViewChange = (view: ChartView) => {
+  protected readonly onChartViewChange = (view: ChartView) => {
     this.preferencesService.setChartView(view);
     this.refreshFact();
   };
-  protected onDisplayModeChange = (mode: DisplayMode) =>
+  protected readonly onDisplayModeChange = (mode: DisplayMode) =>
     this.preferencesService.setDisplayMode(mode);
 
   protected onFilterStateChange(state: {
@@ -427,54 +345,8 @@ export class WaterComponent {
     // Optional
   }
 
-  // Delegations to DataService
-  protected importData(event: Event) {
-    this.closeMenus();
-    this.dataService.importData(event);
-  }
-  protected importFromExcel(event: Event) {
-    this.closeMenus();
-    this.dataService.importFromExcel(event);
-  }
-
-  protected confirmImport() {
-    this.dataService.confirmImport();
-  }
-  protected cancelImport() {
-    this.dataService.cancelImport();
-  }
-
-  protected confirmFilterWarningImport() {
-    this.dataService.confirmFilterWarningImport();
-  }
-  protected cancelFilterWarningImport() {
-    this.dataService.cancelFilterWarningImport();
-  }
-
-  protected exportData() {
-    this.dataService.exportData();
-  }
-  protected exportToExcel() {
-    this.dataService.exportToExcel();
-  }
-  protected exportToPdf() {
-    this.dataService.exportToPdf();
-  }
-
-  protected confirmDelete() {
-    this.dataService.confirmDelete();
-  }
-  protected cancelDelete() {
-    this.dataService.showDeleteModal.set(false);
-    this.dataService.recordToDelete.set(null);
-  }
-
-  protected confirmDeleteAll() {
-    this.dataService.confirmDeleteAll();
-  }
-  protected cancelDeleteAll() {
-    this.dataService.showDeleteAllModal.set(false);
-    this.dataService.recordsToDelete.set([]);
+  override get baseDataService(): ConsumptionDataServiceContract<ConsumptionRecord> {
+    return this.dataService;
   }
 
   protected deleteAllRecords(records: unknown[]) {
@@ -504,7 +376,7 @@ export class WaterComponent {
     if (this.hasValidInput && !this.dateExists) {
       const newRecord = this.formService.createRecordFromState();
       if (newRecord) {
-        this.dataService.saveRecord(newRecord);
+        void this.dataService.saveRecord(newRecord);
         this.formService.cancelEdit();
       }
     }
@@ -513,7 +385,7 @@ export class WaterComponent {
   protected onConsumptionSave() {
     const newRecord = this.formService.createRecordFromState();
     if (newRecord) {
-      this.dataService.saveRecord(newRecord);
+      void this.dataService.saveRecord(newRecord);
       this.formService.cancelEdit();
     }
   }
@@ -544,14 +416,14 @@ export class WaterComponent {
     return this.formService.isDateDuplicate(this.records());
   }
 
-  protected calculateTotal = (record: unknown): number =>
+  protected readonly calculateTotal = (record: unknown): number =>
     calculateWaterTotal(record as ConsumptionRecord);
-  protected calculateKitchenTotal = calculateKitchenTotal;
-  protected calculateBathroomTotal = calculateBathroomTotal;
+  protected readonly calculateKitchenTotal = calculateKitchenTotal;
+  protected readonly calculateBathroomTotal = calculateBathroomTotal;
 
   // Meter Change Methods
-  private confirmedMeterChanges = this.preferencesService.confirmedMeterChanges;
-  private dismissedMeterChanges = this.preferencesService.dismissedMeterChanges;
+  private readonly confirmedMeterChanges = this.preferencesService.confirmedMeterChanges;
+  private readonly dismissedMeterChanges = this.preferencesService.dismissedMeterChanges;
 
   protected confirmMeterChange(date: string): void {
     if (!date) return;
@@ -562,4 +434,60 @@ export class WaterComponent {
     if (!date) return;
     this.preferencesService.setMeterChangeDismissed(date);
   }
+}
+
+type FactContext = 'total' | 'kitchen' | 'bathroom' | 'warm' | 'cold';
+
+interface RoomTotals {
+  kitchen: number;
+  bathroom: number;
+  warm: number;
+  cold: number;
+  total: number;
+}
+
+function calculateRecordTotals(record: ConsumptionRecord): RoomTotals {
+  const kitchen = record.kitchenWarm + record.kitchenCold;
+  const bathroom = record.bathroomWarm + record.bathroomCold;
+  const warm = record.kitchenWarm + record.bathroomWarm;
+  const cold = record.kitchenCold + record.bathroomCold;
+  return {
+    kitchen,
+    bathroom,
+    warm,
+    cold,
+    total: kitchen + bathroom,
+  };
+}
+
+function selectPairedContext(
+  primaryKey: 'kitchen' | 'bathroom' | 'warm' | 'cold',
+  secondaryKey: 'kitchen' | 'bathroom' | 'warm' | 'cold',
+  totals: RoomTotals,
+): { context: FactContext; liters: number } {
+  if (totals[primaryKey] > 0) {
+    return { context: primaryKey, liters: totals[primaryKey] };
+  }
+  if (totals[secondaryKey] > 0) {
+    return { context: secondaryKey, liters: totals[secondaryKey] };
+  }
+  return { context: 'total', liters: totals.total };
+}
+
+function resolveWaterFactContext(
+  chartView: string,
+  seed: number,
+  totals: RoomTotals,
+): { context: FactContext; liters: number } {
+  if (chartView === 'by-room') {
+    return seed > 0.5
+      ? selectPairedContext('kitchen', 'bathroom', totals)
+      : selectPairedContext('bathroom', 'kitchen', totals);
+  }
+  if (chartView === 'by-type') {
+    return seed > 0.5
+      ? selectPairedContext('warm', 'cold', totals)
+      : selectPairedContext('cold', 'warm', totals);
+  }
+  return { context: 'total', liters: totals.total };
 }

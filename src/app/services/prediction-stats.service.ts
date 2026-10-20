@@ -85,7 +85,12 @@ export class PredictionStatsService {
     records: { date: Date | string }[],
   ): 'high' | 'medium' | 'low' {
     // Factor 1: Number of data points
-    const dataScore = dailyRates.length >= 10 ? 3 : dailyRates.length >= 6 ? 2 : 1;
+    let dataScore = 1;
+    if (dailyRates.length >= 10) {
+      dataScore = 3;
+    } else if (dailyRates.length >= 6) {
+      dataScore = 2;
+    }
 
     // Factor 2: Variance (coefficient of variation)
     const mean = dailyRates.reduce((s, v) => s + v, 0) / dailyRates.length;
@@ -94,13 +99,22 @@ export class PredictionStatsService {
       const variance =
         dailyRates.reduce((s, v) => s + Math.pow(v - mean, 2), 0) / dailyRates.length;
       const cv = Math.sqrt(variance) / mean;
-      varianceScore = cv < 0.3 ? 3 : cv < 0.6 ? 2 : 1;
+      if (cv < 0.3) {
+        varianceScore = 3;
+      } else if (cv < 0.6) {
+        varianceScore = 2;
+      }
     }
 
     // Factor 3: Recency (how recent is the last data point)
-    const lastDate = new Date(records[records.length - 1].date);
+    const lastDate = new Date(records.at(-1)!.date);
     const daysSinceLastRecord = (Date.now() - lastDate.getTime()) / (1000 * 3600 * 24);
-    const recencyScore = daysSinceLastRecord < 45 ? 3 : daysSinceLastRecord < 90 ? 2 : 1;
+    let recencyScore = 1;
+    if (daysSinceLastRecord < 45) {
+      recencyScore = 3;
+    } else if (daysSinceLastRecord < 90) {
+      recencyScore = 2;
+    }
 
     const totalScore = dataScore + varianceScore + recencyScore;
 

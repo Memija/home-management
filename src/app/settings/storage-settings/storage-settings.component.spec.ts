@@ -146,28 +146,15 @@ describe('StorageSettingsComponent', () => {
   // ─── isToggleDisabled ─────────────────────────────────────────────────
 
   describe('isToggleDisabled', () => {
-    it('should return false when authenticated and not in demo mode', () => {
-      mockAuth.isAuthenticated.set(true);
-      mockDemo.isDemoMode.set(false);
-      expect(component.isToggleDisabled).toBe(false);
-    });
-
-    it('should return true when not authenticated', () => {
-      mockAuth.isAuthenticated.set(false);
-      mockDemo.isDemoMode.set(false);
-      expect(component.isToggleDisabled).toBe(true);
-    });
-
-    it('should return true when in demo mode', () => {
-      mockAuth.isAuthenticated.set(true);
-      mockDemo.isDemoMode.set(true);
-      expect(component.isToggleDisabled).toBe(true);
-    });
-
-    it('should return true when both unauthenticated and in demo mode', () => {
-      mockAuth.isAuthenticated.set(false);
-      mockDemo.isDemoMode.set(true);
-      expect(component.isToggleDisabled).toBe(true);
+    it.each([
+      { auth: true, demo: false, expected: false, desc: 'authenticated and not in demo mode' },
+      { auth: false, demo: false, expected: true, desc: 'not authenticated' },
+      { auth: true, demo: true, expected: true, desc: 'in demo mode' },
+      { auth: false, demo: true, expected: true, desc: 'both unauthenticated and in demo mode' },
+    ])('should return $expected when $desc', ({ auth, demo, expected }) => {
+      mockAuth.isAuthenticated.set(auth);
+      mockDemo.isDemoMode.set(demo);
+      expect(component.isToggleDisabled).toBe(expected);
     });
   });
 

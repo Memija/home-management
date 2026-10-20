@@ -58,10 +58,10 @@
           aria-label="{{ 'NOTIFICATIONS.TITLE' | translate }}"
         >
           <lucide-icon [img]="BellIcon" size="22"></lucide-icon>
-          @if (notificationCount() > 0) {
-            <span class="notification-badge">{{ notificationCount() }}</span>
-          }
         </button>
+        @if (notificationCount() > 0) {
+          <span class="notification-badge" aria-hidden="true">{{ notificationCount() }}</span>
+        }
 
         <!-- Notification Dropdown Panel -->
         @if (isNotificationPanelOpen()) {

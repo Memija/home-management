@@ -1,12 +1,12 @@
-<div class="modal-overlay" (click)="onClose()" tabindex="0" (keyup.enter)="onClose()">
+<!-- eslint-disable-next-line @angular-eslint/template/interactive-supports-focus -- Backdrop dismissal by design -->
+<div class="modal-overlay" (click)="onClose()" (keydown.escape)="onClose()">
   <div
     class="modal-container"
     role="dialog"
     aria-modal="true"
     aria-labelledby="contact-modal-title"
     (click)="$event.stopPropagation()"
-    tabindex="0"
-    (keyup.enter)="$event.stopPropagation()"
+    (keydown)="$event.stopPropagation()"
   >
     <div class="modal-header">
       <h2 id="contact-modal-title">{{ 'CONTACT.TITLE' | translate }}</h2>
@@ -98,21 +98,17 @@
         </div>
 
         <div class="form-group">
-          <div
-            class="custom-select dropup"
-            role="combobox"
-            title="{{ 'CONTACT.EMAIL_CLIENT' | translate }}"
-            aria-expanded="false"
-            [attr.aria-expanded]="dropdownOpen() ? 'true' : 'false'"
-            aria-haspopup="listbox"
-            aria-controls="email-client-dropdown"
-            [attr.aria-label]="'CONTACT.EMAIL_CLIENT' | translate"
-            tabindex="0"
-            (click)="toggleDropdown()"
-            (keydown.enter)="toggleDropdown()"
-            (keydown.space)="toggleDropdown(); $event.preventDefault()"
-          >
-            <div class="select-trigger">
+          <div class="custom-select dropup">
+            <button
+              type="button"
+              class="select-trigger"
+              (click)="toggleDropdown()"
+              title="{{ 'CONTACT.EMAIL_CLIENT' | translate }}"
+              [attr.aria-label]="'CONTACT.EMAIL_CLIENT' | translate"
+              [attr.aria-expanded]="dropdownOpen() ? 'true' : 'false'"
+              aria-haspopup="true"
+              aria-controls="email-client-dropdown"
+            >
               <div class="select-content">
                 @if (emailClient() === 'default') {
                   <lucide-icon [img]="LaptopIcon" size="20"></lucide-icon>
@@ -135,58 +131,35 @@
                 class="chevron"
                 [style.transform]="dropdownOpen() ? 'rotate(180deg)' : 'rotate(0deg)'"
               ></lucide-icon>
-            </div>
-            <div
-              class="dropdown-menu"
-              role="listbox"
-              id="email-client-dropdown"
-              [hidden]="!dropdownOpen()"
-            >
-              <div
+            </button>
+            <div class="dropdown-menu" id="email-client-dropdown" [hidden]="!dropdownOpen()">
+              <button
+                type="button"
                 class="dropdown-item"
-                role="option"
-                [attr.aria-selected]="emailClient() === 'default'"
                 [class.selected]="emailClient() === 'default'"
                 (click)="selectEmailClient('default'); $event.stopPropagation()"
-                tabindex="0"
-                (keydown.enter)="selectEmailClient('default'); $event.stopPropagation()"
-                (keydown.space)="
-                  selectEmailClient('default'); $event.stopPropagation(); $event.preventDefault()
-                "
               >
                 <lucide-icon [img]="LaptopIcon" size="20"></lucide-icon>
                 <span>{{ 'CONTACT.DEFAULT_CLIENT' | translate }}</span>
-              </div>
-              <div
+              </button>
+              <button
+                type="button"
                 class="dropdown-item"
-                role="option"
-                [attr.aria-selected]="emailClient() === 'outlook'"
                 [class.selected]="emailClient() === 'outlook'"
                 (click)="selectEmailClient('outlook'); $event.stopPropagation()"
-                tabindex="0"
-                (keydown.enter)="selectEmailClient('outlook'); $event.stopPropagation()"
-                (keydown.space)="
-                  selectEmailClient('outlook'); $event.stopPropagation(); $event.preventDefault()
-                "
               >
                 <img src="/assets/outlook_logo.png" alt="Outlook" class="logo-icon" />
                 <span>Outlook</span>
-              </div>
-              <div
+              </button>
+              <button
+                type="button"
                 class="dropdown-item"
-                role="option"
-                [attr.aria-selected]="emailClient() === 'gmail'"
                 [class.selected]="emailClient() === 'gmail'"
                 (click)="selectEmailClient('gmail'); $event.stopPropagation()"
-                tabindex="0"
-                (keydown.enter)="selectEmailClient('gmail'); $event.stopPropagation()"
-                (keydown.space)="
-                  selectEmailClient('gmail'); $event.stopPropagation(); $event.preventDefault()
-                "
               >
                 <img src="/assets/gmail_logo.png" alt="Gmail" class="logo-icon" />
                 <span>Gmail</span>
-              </div>
+              </button>
             </div>
           </div>
         </div>

@@ -1,7 +1,7 @@
 import { Chart, ChartConfiguration, ChartEvent, LegendItem, TooltipItem } from 'chart.js';
-import { LanguageService } from '../../services/language.service';
-import { AppChartDataset } from '../../models/records.model';
-import { ChartDataPoint } from '../../models/consumption-chart.model';
+import { LanguageService } from '../../../services/language.service';
+import { AppChartDataset } from '../../../models/records.model';
+import { ChartDataPoint } from '../../../models/consumption-chart.model';
 
 export interface ChartOptionsBuilderDeps {
   languageService: LanguageService;
@@ -30,7 +30,7 @@ function buildLegendFilter(languageService: LanguageService) {
 }
 
 export function escapeRegExp(str: string): string {
-  return str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+  return str.replace(/[.*+?^${}()|[\]\\]/g, String.raw`\$&`);
 }
 
 /**
@@ -39,9 +39,16 @@ export function escapeRegExp(str: string): string {
  */
 export function replaceLabelWithIcon(text: string, label: string, icon: string): string {
   if (!label || !text.toLowerCase().includes(label.toLowerCase())) return text;
-  // eslint-disable-next-line security/detect-non-literal-regexp -- label is escaped with escapeRegExp
-  const pattern = new RegExp(`(\\s*[-—–(（\\[]\\s*)?${escapeRegExp(label)}(\\s*[)）\\]])?`, 'gi');
-  return text.replace(pattern, ` ${icon}`).trim();
+  const escaped = escapeRegExp(label);
+  // eslint-disable-next-line security/detect-non-literal-regexp -- label is escaped with escapeRegExp and sourced from internal i18n
+  const pattern = new RegExp(
+    String.raw`(\s*[(（\[]\s*${escaped}\s*[)）\]]|\s*[-—–]\s*${escaped}\s*|${escaped})`,
+    'giu',
+  );
+  return text
+    .replace(pattern, ` ${icon}`)
+    .replace(/\s{2,}/g, ' ')
+    .trim();
 }
 
 /**

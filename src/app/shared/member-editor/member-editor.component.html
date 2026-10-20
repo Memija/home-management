@@ -119,17 +119,16 @@
     <span class="form-label">{{ 'SETTINGS.OR_SELECT_AVATAR' | translate }}</span>
     <div class="avatar-grid">
       @for (avatar of avatars; track avatar; let i = $index) {
-        <img
-          [src]="avatar"
+        <button
+          type="button"
+          class="avatar-btn"
           [class.selected]="editAvatar() === avatar && !customPicturePreview()"
-          alt="Avatar option {{ i + 1 }}"
           (click)="selectAvatar(avatar)"
-          title="{{ 'SETTINGS.SELECT_AVATAR' | translate }}"
-          tabindex="0"
-          (keyup.enter)="selectAvatar(avatar)"
-          loading="lazy"
-          decoding="async"
-        />
+          [attr.aria-label]="('SETTINGS.SELECT_AVATAR' | translate) + ' ' + (i + 1)"
+          [title]="'SETTINGS.SELECT_AVATAR' | translate"
+        >
+          <img [src]="avatar" alt="Avatar option {{ i + 1 }}" loading="lazy" decoding="async" />
+        </button>
       }
     </div>
   </div>

@@ -10,7 +10,7 @@ export interface CountryInfo {
   providedIn: 'root',
 })
 export class CountryService {
-  private languageService = inject(LanguageService);
+  private readonly languageService = inject(LanguageService);
 
   // Country codes mapped to translation keys
   private readonly countryData: CountryInfo[] = [
@@ -158,7 +158,7 @@ export class CountryService {
     // Try matching the English name embedded in the translation key
     // e.g., 'COUNTRIES.GERMANY' -> 'germany'
     const keyMatch = this.countryData.find((c) => {
-      const keyName = c.translationKey.replace('COUNTRIES.', '').toLowerCase().replace(/_/g, ' ');
+      const keyName = c.translationKey.replace('COUNTRIES.', '').toLowerCase().replaceAll('_', ' ');
       return keyName === normalizedName;
     });
     if (keyMatch) return keyMatch;

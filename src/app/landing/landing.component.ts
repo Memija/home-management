@@ -19,7 +19,7 @@ import {
   Flame,
   Zap,
   Users,
-  BarChart3,
+  ChartBar,
   Brain,
   Globe,
   Cloud,
@@ -34,11 +34,11 @@ import {
   Camera,
   ArrowRight,
   ArrowDown,
-  CheckCircle2,
+  CircleCheck,
   Sun,
   Moon,
   Monitor,
-  Home,
+  House,
   Trees,
   Activity,
   Clock,
@@ -67,7 +67,7 @@ export class LandingComponent implements OnInit, OnDestroy {
   readonly FlameIcon = Flame;
   readonly ZapIcon = Zap;
   readonly UsersIcon = Users;
-  readonly BarChart3Icon = BarChart3;
+  readonly BarChart3Icon = ChartBar;
   readonly BrainIcon = Brain;
   readonly GlobeIcon = Globe;
   readonly CloudIcon = Cloud;
@@ -83,11 +83,11 @@ export class LandingComponent implements OnInit, OnDestroy {
   readonly CameraIcon = Camera;
   readonly ArrowRightIcon = ArrowRight;
   readonly ArrowDownIcon = ArrowDown;
-  readonly CheckCircle2Icon = CheckCircle2;
+  readonly CheckCircle2Icon = CircleCheck;
   readonly SunIcon = Sun;
   readonly MoonIcon = Moon;
   readonly MonitorIcon = Monitor;
-  readonly HomeIcon = Home;
+  readonly HomeIcon = House;
   readonly TreesIcon = Trees;
   readonly ActivityIcon = Activity;
   readonly ClockIcon = Clock;
@@ -97,9 +97,9 @@ export class LandingComponent implements OnInit, OnDestroy {
   readonly PlayIcon = Play;
   readonly SlidersHorizontalIcon = SlidersHorizontal;
 
-  protected scrollY = signal(0);
-  protected roadProgress = signal(0);
-  protected isVisible = signal<Record<string, boolean>>({});
+  protected readonly scrollY = signal(0);
+  protected readonly roadProgress = signal(0);
+  protected readonly isVisible = signal<Record<string, boolean>>({});
 
   private isDragging = false;
   private readonly onDragMoveBound = this.onDragMove.bind(this);
@@ -182,7 +182,7 @@ export class LandingComponent implements OnInit, OnDestroy {
       color: '#10b981',
     },
     {
-      icon: BarChart3,
+      icon: ChartBar,
       titleKey: 'LANDING.FEATURES.ANALYTICS_TITLE',
       descKey: 'LANDING.FEATURES.ANALYTICS_DESC',
       color: '#ec4899',
@@ -259,7 +259,7 @@ export class LandingComponent implements OnInit, OnDestroy {
     },
     { icon: Zap, top: '62%', left: '10%', delay: '-8s', size: '18', color: '#8b5cf6' },
     {
-      icon: BarChart3,
+      icon: ChartBar,
       top: '72%',
       left: 'auto',
       right: '8%',
@@ -268,7 +268,7 @@ export class LandingComponent implements OnInit, OnDestroy {
       color: '#ec4899',
     },
     {
-      icon: Home,
+      icon: House,
       top: '44%',
       left: 'auto',
       right: '18%',
@@ -304,7 +304,8 @@ export class LandingComponent implements OnInit, OnDestroy {
     this.observer = new IntersectionObserver(
       (entries) => {
         entries.forEach((entry) => {
-          const id = entry.target.getAttribute('data-animate');
+          const target = entry.target as HTMLElement;
+          const id = target.dataset['animate'];
           if (id && entry.isIntersecting) {
             this.isVisible.update((prev) => ({ ...prev, [id]: true }));
           }

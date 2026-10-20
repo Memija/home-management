@@ -138,7 +138,7 @@ describe('ElectricityDataService', () => {
       });
 
       const filtered = service.filteredRecords();
-      expect(filtered.length).toBe(2);
+      expect(filtered).toHaveLength(2);
       expect(filtered.every((r) => new Date(r.date) >= new Date('2023-01-05'))).toBe(true);
     });
 
@@ -151,7 +151,7 @@ describe('ElectricityDataService', () => {
       });
 
       const filtered = service.filteredRecords();
-      expect(filtered.length).toBe(2);
+      expect(filtered).toHaveLength(2);
       expect(filtered.every((r) => new Date(r.date) <= new Date('2023-01-10'))).toBe(true);
     });
 
@@ -164,7 +164,7 @@ describe('ElectricityDataService', () => {
       });
 
       const filtered = service.filteredRecords();
-      expect(filtered.length).toBe(1);
+      expect(filtered).toHaveLength(1);
       expect(new Date(filtered[0].date).toISOString().split('T')[0]).toBe('2023-01-08');
     });
 
@@ -177,7 +177,7 @@ describe('ElectricityDataService', () => {
       });
 
       const filtered = service.filteredRecords();
-      expect(filtered.length).toBe(3);
+      expect(filtered).toHaveLength(3);
     });
 
     it('should filter records by month', () => {
@@ -189,7 +189,7 @@ describe('ElectricityDataService', () => {
       });
 
       const filtered = service.filteredRecords();
-      expect(filtered.length).toBe(2);
+      expect(filtered).toHaveLength(2);
     });
 
     it('should filter records by year and month combined', () => {
@@ -201,7 +201,7 @@ describe('ElectricityDataService', () => {
       });
 
       const filtered = service.filteredRecords();
-      expect(filtered.length).toBe(1);
+      expect(filtered).toHaveLength(1);
       expect(filtered[0].value).toBe(200);
     });
 
@@ -214,7 +214,7 @@ describe('ElectricityDataService', () => {
       });
 
       const filtered = service.filteredRecords();
-      expect(filtered.length).toBe(3);
+      expect(filtered).toHaveLength(3);
     });
 
     it('should return empty array when no records match filter', () => {
@@ -226,7 +226,7 @@ describe('ElectricityDataService', () => {
       });
 
       const filtered = service.filteredRecords();
-      expect(filtered.length).toBe(0);
+      expect(filtered).toHaveLength(0);
     });
 
     it('should correctly identify when filter is active', () => {
@@ -279,7 +279,7 @@ describe('ElectricityDataService', () => {
 
       await service.saveRecord(newRecord);
 
-      expect(service.records().length).toBe(4);
+      expect(service.records()).toHaveLength(4);
       expect(storageServiceMock.save).toHaveBeenCalledWith(
         'electricity_consumption_records',
         expect.any(Array),
@@ -297,7 +297,7 @@ describe('ElectricityDataService', () => {
 
       await service.saveRecord(updatedRecord);
 
-      expect(service.records().length).toBe(3);
+      expect(service.records()).toHaveLength(3);
       expect(
         service.records().find((r) => new Date(r.date).toISOString().split('T')[0] === '2023-01-01')
           ?.value,
@@ -335,7 +335,7 @@ describe('ElectricityDataService', () => {
       service.confirmDelete();
       await new Promise((resolve) => setTimeout(resolve, 0));
 
-      expect(service.records().length).toBe(2);
+      expect(service.records()).toHaveLength(2);
       expect(storageServiceMock.save).toHaveBeenCalled();
       expect(service.showDeleteModal()).toBe(false);
       expect(service.recordToDelete()).toBeNull();
@@ -348,7 +348,7 @@ describe('ElectricityDataService', () => {
 
       service.confirmDelete();
 
-      expect(service.records().length).toBe(initialLength);
+      expect(service.records()).toHaveLength(initialLength);
       expect(service.showDeleteModal()).toBe(false);
     });
 
@@ -359,7 +359,7 @@ describe('ElectricityDataService', () => {
       service.confirmDeleteAll();
       await new Promise((resolve) => setTimeout(resolve, 0));
 
-      expect(service.records().length).toBe(1);
+      expect(service.records()).toHaveLength(1);
       expect(storageServiceMock.save).toHaveBeenCalled();
       expect(service.showDeleteAllModal()).toBe(false);
       expect(service.recordsToDelete()).toEqual([]);
@@ -372,7 +372,7 @@ describe('ElectricityDataService', () => {
 
       service.confirmDeleteAll();
 
-      expect(service.records().length).toBe(initialLength);
+      expect(service.records()).toHaveLength(initialLength);
       expect(service.showDeleteAllModal()).toBe(false);
     });
   });
@@ -605,47 +605,22 @@ describe('ElectricityDataService', () => {
       expect(excelServiceMock.importElectricityFromExcel).not.toHaveBeenCalled();
     });
 
-    it('should accept .xlsx files', async () => {
-      const file = new File([''], 'test.xlsx');
-      const event = { target: { files: [file], value: '' } } as unknown as Event;
+    it.each(['test.xlsx', 'test.xls', 'test.csv'])(
+      'should accept valid file extension (%s)',
+      async (filename) => {
+        const file = new File([''], filename);
+        const event = { target: { files: [file], value: '' } } as unknown as Event;
 
-      excelServiceMock.importElectricityFromExcel.mockResolvedValue({
-        records: [],
-        missingColumns: [],
-      });
+        excelServiceMock.importElectricityFromExcel.mockResolvedValue({
+          records: [],
+          missingColumns: [],
+        });
 
-      await service.importFromExcel(event);
+        await service.importFromExcel(event);
 
-      expect(excelServiceMock.importElectricityFromExcel).toHaveBeenCalled();
-    });
-
-    it('should accept .xls files', async () => {
-      const file = new File([''], 'test.xls');
-      const event = { target: { files: [file], value: '' } } as unknown as Event;
-
-      excelServiceMock.importElectricityFromExcel.mockResolvedValue({
-        records: [],
-        missingColumns: [],
-      });
-
-      await service.importFromExcel(event);
-
-      expect(excelServiceMock.importElectricityFromExcel).toHaveBeenCalled();
-    });
-
-    it('should accept .csv files', async () => {
-      const file = new File([''], 'test.csv');
-      const event = { target: { files: [file], value: '' } } as unknown as Event;
-
-      excelServiceMock.importElectricityFromExcel.mockResolvedValue({
-        records: [],
-        missingColumns: [],
-      });
-
-      await service.importFromExcel(event);
-
-      expect(excelServiceMock.importElectricityFromExcel).toHaveBeenCalled();
-    });
+        expect(excelServiceMock.importElectricityFromExcel).toHaveBeenCalled();
+      },
+    );
 
     it('should handle Excel import error', async () => {
       const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {
@@ -755,7 +730,7 @@ describe('ElectricityDataService', () => {
 
       await service.finishImport(recordsToImport, [], 'IMPORT.JSON_SUCCESS');
 
-      expect(service.records().length).toBe(4);
+      expect(service.records()).toHaveLength(4);
       expect(storageServiceMock.save).toHaveBeenCalled();
     });
 
@@ -908,7 +883,7 @@ describe('ElectricityDataService', () => {
       const recordsOnDate = service
         .records()
         .filter((r) => new Date(r.date).toISOString().split('T')[0] === '2023-01-01');
-      expect(recordsOnDate.length).toBe(1);
+      expect(recordsOnDate).toHaveLength(1);
       expect(recordsOnDate[0].value).toBe(200);
     });
 
@@ -948,7 +923,7 @@ describe('ElectricityDataService', () => {
       });
 
       const filtered = service.filteredRecords();
-      expect(filtered.length).toBe(1);
+      expect(filtered).toHaveLength(1);
       expect(new Date(filtered[0].date).toISOString().split('T')[0]).toBe('2023-01-01');
     });
 

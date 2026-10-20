@@ -21,24 +21,26 @@ export interface Notification {
   providedIn: 'root',
 })
 export class NotificationService {
-  private storage = inject(STORAGE_SERVICE);
-  private destroyRef = inject(DestroyRef);
-  private demoService = inject(DemoService);
+  private readonly storage = inject(STORAGE_SERVICE);
+  private readonly destroyRef = inject(DestroyRef);
+  private readonly demoService = inject(DemoService);
 
   // Data signals (will be set by consuming components or loaded)
-  private waterRecords = signal<ConsumptionRecord[]>([]);
-  private heatingRecords = signal<{ date: Date }[]>([]);
-  private electricityRecords = signal<ElectricityRecord[]>([]);
-  private address = signal<Address | null>(null);
-  private familyMembers = signal<HouseholdMember[]>([]);
-  private dismissedNotifications = signal<string[]>([]);
-  private isDataLoaded = signal(false);
+  private readonly waterRecords = signal<ConsumptionRecord[]>([]);
+  private readonly heatingRecords = signal<{ date: Date }[]>([]);
+  private readonly electricityRecords = signal<ElectricityRecord[]>([]);
+  private readonly address = signal<Address | null>(null);
+  private readonly familyMembers = signal<HouseholdMember[]>([]);
+  private readonly dismissedNotifications = signal<string[]>([]);
+  private readonly isDataLoaded = signal(false);
 
   constructor() {
-    this.loadData();
+    queueMicrotask(() => {
+      void this.loadData();
+    });
     this.storage.dataRefreshed$
       ?.pipe(takeUntilDestroyed(this.destroyRef))
-      .subscribe(() => this.loadData());
+      .subscribe(() => void this.loadData());
   }
 
   /**
@@ -114,186 +116,130 @@ export class NotificationService {
    */
   readonly notifications = computed<Notification[]>(() => {
     // Don't show notifications until data is loaded
-    if (!this.isDataLoaded()) {
-      return [];
-    }
-
-    // Don't show notifications in demo mode
-    if (this.demoService.isDemoMode()) {
+    if (!this.isDataLoaded() || this.demoService.isDemoMode()) {
       return [];
     }
 
     const notifications: Notification[] = [];
     const dismissed = this.dismissedNotifications();
 
-    // Check for missing initial water readings
-    if (this.waterRecords().length === 0) {
-      const notif: Notification = {
+    this.collectInitialNotifications(notifications, dismissed);
+    this.collectReminderNotifications(notifications, dismissed);
+    this.collectSettingsNotifications(notifications, dismissed);
+
+    return notifications;
+  });
+
+  private addNotification(
+    notifications: Notification[],
+    dismissed: string[],
+    notif: Notification,
+  ): void {
+    if (!dismissed.includes(notif.id)) {
+      notifications.push(notif);
+    }
+  }
+
+  private collectInitialNotifications(notifications: Notification[], dismissed: string[]): void {
+    const configs: {
+      id: string;
+      length: number;
+      titleKey: string;
+      messageKey: string;
+      route: string;
+    }[] = [
+      {
         id: 'water-initial',
-        type: 'initial',
+        length: this.waterRecords().length,
         titleKey: 'NOTIFICATIONS.WATER_INITIAL_TITLE',
         messageKey: 'NOTIFICATIONS.WATER_INITIAL_MESSAGE',
-        priority: 'high',
-        dismissible: true,
         route: '/dashboard/water',
-        fragment: 'input-section',
-      };
-      if (!dismissed.includes(notif.id)) {
-        notifications.push(notif);
-      }
-    }
-
-    // Check for missing initial heating readings
-    if (this.heatingRecords().length === 0) {
-      const notif: Notification = {
+      },
+      {
         id: 'heating-initial',
-        type: 'initial',
+        length: this.heatingRecords().length,
         titleKey: 'NOTIFICATIONS.HEATING_INITIAL_TITLE',
         messageKey: 'NOTIFICATIONS.HEATING_INITIAL_MESSAGE',
-        priority: 'high',
-        dismissible: true,
         route: '/dashboard/heating',
-        fragment: 'input-section',
-      };
-      if (!dismissed.includes(notif.id)) {
-        notifications.push(notif);
-      }
-    }
-
-    // Check for missing initial electricity readings
-    if (this.electricityRecords().length === 0) {
-      const notif: Notification = {
+      },
+      {
         id: 'electricity-initial',
-        type: 'initial',
+        length: this.electricityRecords().length,
         titleKey: 'NOTIFICATIONS.ELECTRICITY_INITIAL_TITLE',
         messageKey: 'NOTIFICATIONS.ELECTRICITY_INITIAL_MESSAGE',
-        priority: 'high',
-        dismissible: true,
         route: '/dashboard/electricity',
-        fragment: 'input-section',
-      };
-      if (!dismissed.includes(notif.id)) {
-        notifications.push(notif);
+      },
+    ];
+
+    for (const c of configs) {
+      if (c.length === 0) {
+        this.addNotification(notifications, dismissed, {
+          id: c.id,
+          type: 'initial',
+          titleKey: c.titleKey,
+          messageKey: c.messageKey,
+          priority: 'high',
+          dismissible: true,
+          route: c.route,
+          fragment: 'input-section',
+        });
       }
     }
+  }
 
-    // Check if water reading is due or overdue based on average frequency
-    const waterStatus = this.checkWaterReadingStatus();
-
-    // Show "due" notification when it's time for a reading
-    if (waterStatus.isDue && !waterStatus.isOverdue) {
-      const notif: Notification = {
-        id: 'water-due',
-        type: 'reminder',
-        titleKey: 'NOTIFICATIONS.WATER_DUE_TITLE',
-        messageKey: 'NOTIFICATIONS.WATER_DUE_MESSAGE',
-        priority: 'low',
-        dismissible: true,
+  private collectReminderNotifications(notifications: Notification[], dismissed: string[]): void {
+    const services = [
+      {
+        category: 'water',
         route: '/dashboard/water',
-        fragment: 'input-section',
-      };
-      if (!dismissed.includes(notif.id)) {
-        notifications.push(notif);
-      }
-    }
-
-    // Show "overdue" notification when significantly late
-    if (waterStatus.isOverdue) {
-      const notif: Notification = {
-        id: 'water-overdue',
-        type: 'reminder',
-        titleKey: 'NOTIFICATIONS.WATER_OVERDUE_TITLE',
-        messageKey: 'NOTIFICATIONS.WATER_OVERDUE_MESSAGE',
-        messageParams: { days: waterStatus.daysSinceLast },
-        priority: 'medium',
-        dismissible: true,
-        route: '/dashboard/water',
-        fragment: 'input-section',
-      };
-      if (!dismissed.includes(notif.id)) {
-        notifications.push(notif);
-      }
-    }
-
-    // Check if heating reading is due or overdue based on average frequency
-    const heatingStatus = this.checkHeatingReadingStatus();
-
-    // Show "due" notification when it's time for a heating reading
-    if (heatingStatus.isDue && !heatingStatus.isOverdue) {
-      const notif: Notification = {
-        id: 'heating-due',
-        type: 'reminder',
-        titleKey: 'NOTIFICATIONS.HEATING_DUE_TITLE',
-        messageKey: 'NOTIFICATIONS.HEATING_DUE_MESSAGE',
-        priority: 'low',
-        dismissible: true,
+        status: this.checkWaterReadingStatus(),
+      },
+      {
+        category: 'heating',
         route: '/dashboard/heating',
-        fragment: 'input-section',
-      };
-      if (!dismissed.includes(notif.id)) {
-        notifications.push(notif);
-      }
-    }
-
-    // Show "overdue" notification for heating when significantly late
-    if (heatingStatus.isOverdue) {
-      const notif: Notification = {
-        id: 'heating-overdue',
-        type: 'reminder',
-        titleKey: 'NOTIFICATIONS.HEATING_OVERDUE_TITLE',
-        messageKey: 'NOTIFICATIONS.HEATING_OVERDUE_MESSAGE',
-        messageParams: { days: heatingStatus.daysSinceLast },
-        priority: 'medium',
-        dismissible: true,
-        route: '/dashboard/heating',
-        fragment: 'input-section',
-      };
-      if (!dismissed.includes(notif.id)) {
-        notifications.push(notif);
-      }
-    }
-
-    // Check if electricity reading is due or overdue based on average frequency
-    const electricityStatus = this.checkElectricityReadingStatus();
-
-    // Show "due" notification when it's time for an electricity reading
-    if (electricityStatus.isDue && !electricityStatus.isOverdue) {
-      const notif: Notification = {
-        id: 'electricity-due',
-        type: 'reminder',
-        titleKey: 'NOTIFICATIONS.ELECTRICITY_DUE_TITLE',
-        messageKey: 'NOTIFICATIONS.ELECTRICITY_DUE_MESSAGE',
-        priority: 'low',
-        dismissible: true,
+        status: this.checkHeatingReadingStatus(),
+      },
+      {
+        category: 'electricity',
         route: '/dashboard/electricity',
-        fragment: 'input-section',
-      };
-      if (!dismissed.includes(notif.id)) {
-        notifications.push(notif);
+        status: this.checkElectricityReadingStatus(),
+      },
+    ];
+
+    for (const { category, route, status } of services) {
+      const upper = category.toUpperCase();
+      if (status.isDue && !status.isOverdue) {
+        this.addNotification(notifications, dismissed, {
+          id: `${category}-due`,
+          type: 'reminder',
+          titleKey: `NOTIFICATIONS.${upper}_DUE_TITLE`,
+          messageKey: `NOTIFICATIONS.${upper}_DUE_MESSAGE`,
+          priority: 'low',
+          dismissible: true,
+          route,
+          fragment: 'input-section',
+        });
+      }
+
+      if (status.isOverdue) {
+        this.addNotification(notifications, dismissed, {
+          id: `${category}-overdue`,
+          type: 'reminder',
+          titleKey: `NOTIFICATIONS.${upper}_OVERDUE_TITLE`,
+          messageKey: `NOTIFICATIONS.${upper}_OVERDUE_MESSAGE`,
+          messageParams: { days: status.daysSinceLast },
+          priority: 'medium',
+          dismissible: true,
+          route,
+          fragment: 'input-section',
+        });
       }
     }
+  }
 
-    // Show "overdue" notification for electricity when significantly late
-    if (electricityStatus.isOverdue) {
-      const notif: Notification = {
-        id: 'electricity-overdue',
-        type: 'reminder',
-        titleKey: 'NOTIFICATIONS.ELECTRICITY_OVERDUE_TITLE',
-        messageKey: 'NOTIFICATIONS.ELECTRICITY_OVERDUE_MESSAGE',
-        messageParams: { days: electricityStatus.daysSinceLast },
-        priority: 'medium',
-        dismissible: true,
-        route: '/dashboard/electricity',
-        fragment: 'input-section',
-      };
-      if (!dismissed.includes(notif.id)) {
-        notifications.push(notif);
-      }
-    }
-
-    // Check for missing address
+  private collectSettingsNotifications(notifications: Notification[], dismissed: string[]): void {
     if (!this.address()) {
-      const notif: Notification = {
+      this.addNotification(notifications, dismissed, {
         id: 'address-missing',
         type: 'initial',
         titleKey: 'NOTIFICATIONS.ADDRESS_MISSING_TITLE',
@@ -302,15 +248,11 @@ export class NotificationService {
         dismissible: true,
         route: '/dashboard/settings',
         fragment: 'address-section',
-      };
-      if (!dismissed.includes(notif.id)) {
-        notifications.push(notif);
-      }
+      });
     }
 
-    // Check for missing family members
     if (this.familyMembers().length === 0) {
-      const notif: Notification = {
+      this.addNotification(notifications, dismissed, {
         id: 'family-missing',
         type: 'initial',
         titleKey: 'NOTIFICATIONS.FAMILY_MISSING_TITLE',
@@ -319,14 +261,9 @@ export class NotificationService {
         dismissible: true,
         route: '/dashboard/settings',
         fragment: 'family-section',
-      };
-      if (!dismissed.includes(notif.id)) {
-        notifications.push(notif);
-      }
+      });
     }
-
-    return notifications;
-  });
+  }
 
   /**
    * Calculate if reading is due or overdue based on average entry frequency
@@ -385,7 +322,7 @@ export class NotificationService {
     const averageDays = totalDays / (sorted.length - 1);
 
     // Calculate days since last entry
-    const lastEntry = sorted[sorted.length - 1];
+    const lastEntry = sorted.at(-1)!;
     const daysSinceLast = Math.floor(
       (Date.now() - parseSafeDate(lastEntry.date).getTime()) / (1000 * 60 * 60 * 24),
     );
@@ -476,6 +413,6 @@ export class NotificationService {
   }
 
   private saveDismissedNotifications(dismissed: string[]): void {
-    this.storage.save('dismissed_notifications', dismissed);
+    void this.storage.save('dismissed_notifications', dismissed);
   }
 }

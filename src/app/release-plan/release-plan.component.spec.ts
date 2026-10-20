@@ -42,13 +42,13 @@ describe('ReleasePlanComponent', () => {
 
   it('should show all features when filter is "all"', () => {
     component.setFilter('all');
-    expect(component.filteredFeatures().length).toBe(8);
+    expect(component.filteredFeatures()).toHaveLength(7);
   });
 
   it('should filter features by "new"', () => {
     component.setFilter('new');
     const filtered = component.filteredFeatures();
-    expect(filtered.length).toBe(3);
+    expect(filtered).toHaveLength(3);
     filtered.forEach((feature) => {
       expect(feature.tag).toBe('new');
     });
@@ -57,7 +57,7 @@ describe('ReleasePlanComponent', () => {
   it('should filter features by "enhancement"', () => {
     component.setFilter('enhancement');
     const filtered = component.filteredFeatures();
-    expect(filtered.length).toBe(3);
+    expect(filtered).toHaveLength(2);
     filtered.forEach((feature) => {
       expect(feature.tag).toBe('enhancement');
     });
@@ -66,15 +66,15 @@ describe('ReleasePlanComponent', () => {
   it('should filter features by "smart"', () => {
     component.setFilter('smart');
     const filtered = component.filteredFeatures();
-    expect(filtered.length).toBe(2);
+    expect(filtered).toHaveLength(2);
     expect(filtered[0].tag).toBe('smart');
   });
 
   it('should calculate filter counts correctly', () => {
     const counts = component.filterOptions();
-    expect(counts['all']).toBe(8);
+    expect(counts['all']).toBe(7);
     expect(counts['new']).toBe(3);
-    expect(counts['enhancement']).toBe(3);
+    expect(counts['enhancement']).toBe(2);
     expect(counts['smart']).toBe(2);
   });
 
@@ -93,10 +93,10 @@ describe('ReleasePlanComponent', () => {
   it('should handle switching filters back and forth', () => {
     component.setFilter('new');
     expect(component.activeFilter()).toBe('new');
-    expect(component.filteredFeatures().length).toBe(3);
+    expect(component.filteredFeatures()).toHaveLength(3);
 
     component.setFilter('all');
     expect(component.activeFilter()).toBe('all');
-    expect(component.filteredFeatures().length).toBe(8);
+    expect(component.filteredFeatures()).toHaveLength(7);
   });
 });

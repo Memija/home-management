@@ -78,7 +78,7 @@ describe('ContactModalComponent', () => {
     });
 
     it('should have 5 help steps defined', () => {
-      expect(component['helpSteps'].length).toBe(5);
+      expect(component['helpSteps']).toHaveLength(5);
     });
 
     it('should have help modal hidden by default', () => {
@@ -532,9 +532,10 @@ describe('ContactModalComponent', () => {
     });
 
     it('should have proper ARIA attributes on email client selector', () => {
-      const selector = fixture.debugElement.query(By.css('.custom-select'));
-      expect(selector.nativeElement.getAttribute('role')).toBe('combobox');
-      expect(selector.nativeElement.getAttribute('aria-haspopup')).toBe('listbox');
+      const trigger = fixture.debugElement.query(By.css('.select-trigger'));
+      expect(trigger.nativeElement.getAttribute('aria-controls')).toBe('email-client-dropdown');
+      expect(trigger.nativeElement.getAttribute('aria-label')).toBe('CONTACT.EMAIL_CLIENT');
+      expect(trigger.nativeElement.getAttribute('aria-haspopup')).toBe('true');
     });
 
     it('should not show email error message by default', () => {
@@ -548,21 +549,21 @@ describe('ContactModalComponent', () => {
     });
 
     it('should update aria-expanded when dropdown opens and closes', () => {
-      const selector = fixture.debugElement.query(By.css('.custom-select'));
-      expect(selector.nativeElement.getAttribute('aria-expanded')).toBe('false');
+      const trigger = fixture.debugElement.query(By.css('.select-trigger'));
+      expect(trigger.nativeElement.getAttribute('aria-expanded')).toBe('false');
 
       component['toggleDropdown']();
       fixture.detectChanges();
-      expect(selector.nativeElement.getAttribute('aria-expanded')).toBe('true');
+      expect(trigger.nativeElement.getAttribute('aria-expanded')).toBe('true');
 
       component['toggleDropdown']();
       fixture.detectChanges();
-      expect(selector.nativeElement.getAttribute('aria-expanded')).toBe('false');
+      expect(trigger.nativeElement.getAttribute('aria-expanded')).toBe('false');
     });
 
     it('should have aria-controls and toggle hidden state on dropdown-menu', () => {
-      const selector = fixture.debugElement.query(By.css('.custom-select'));
-      expect(selector.nativeElement.getAttribute('aria-controls')).toBe('email-client-dropdown');
+      const trigger = fixture.debugElement.query(By.css('.select-trigger'));
+      expect(trigger.nativeElement.getAttribute('aria-controls')).toBe('email-client-dropdown');
 
       const menu = fixture.debugElement.query(By.css('#email-client-dropdown'));
       expect(menu).toBeTruthy();
@@ -608,6 +609,16 @@ describe('ContactModalComponent', () => {
       component['onDocumentClick'](mockEvent);
 
       expect(component.dropdownOpen()).toBe(false);
+    });
+  });
+
+  describe('Accessibility', () => {
+    it('should configure dialog role and aria attributes on modal container', () => {
+      const container = fixture.debugElement.query(By.css('.modal-container'));
+      expect(container).toBeTruthy();
+      expect(container.nativeElement.getAttribute('role')).toBe('dialog');
+      expect(container.nativeElement.getAttribute('aria-modal')).toBe('true');
+      expect(container.nativeElement.getAttribute('aria-labelledby')).toBe('contact-modal-title');
     });
   });
 });

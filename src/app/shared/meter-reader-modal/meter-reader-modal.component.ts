@@ -62,7 +62,7 @@ export class MeterReaderModalComponent implements OnDestroy {
 
   private cameraVideoElement?: HTMLVideoElement;
 
-  private meterReaderService = inject(MeterReaderService);
+  private readonly meterReaderService = inject(MeterReaderService);
 
   protected readonly CameraIcon = Camera;
   protected readonly UploadIcon = Upload;
@@ -80,15 +80,15 @@ export class MeterReaderModalComponent implements OnDestroy {
   get fields(): MeterField[] {
     return this._fields();
   }
-  private _fields = signal<MeterField[]>([]);
+  private readonly _fields = signal<MeterField[]>([]);
 
   // Outputs
-  @Output() closeModal = new EventEmitter<void>();
-  @Output() reading = new EventEmitter<MeterReadingOutput>();
+  @Output() readonly closeModal = new EventEmitter<void>();
+  @Output() readonly reading = new EventEmitter<MeterReadingOutput>();
 
-  protected hasNoFields = computed(() => this._fields().length === 0);
-  protected isSingleField = computed(() => this._fields().length === 1);
-  protected groupedFields = computed(() => {
+  protected readonly hasNoFields = computed(() => this._fields().length === 0);
+  protected readonly isSingleField = computed(() => this._fields().length === 1);
+  protected readonly groupedFields = computed(() => {
     const groups: { label: string; fields: MeterField[] }[] = [];
     const groupMap = new Map<string, MeterField[]>();
 
@@ -105,24 +105,26 @@ export class MeterReaderModalComponent implements OnDestroy {
   });
 
   // State
-  protected step = signal<'capture' | 'crop' | 'processing' | 'result' | 'select-field'>('capture');
-  protected capturedImage = signal<string | null>(null);
-  protected result = signal<MeterReadingResult | null>(null);
-  protected selectedValue = signal<number | null>(null);
-  protected editedValue = signal<string>('');
-  protected cameraStream = signal<MediaStream | null>(null);
-  protected cameraError = signal<string | null>(null);
-  protected useCameraMode = signal(false);
-  protected isCameraReady = signal(false);
+  protected readonly step = signal<'capture' | 'crop' | 'processing' | 'result' | 'select-field'>(
+    'capture',
+  );
+  protected readonly capturedImage = signal<string | null>(null);
+  protected readonly result = signal<MeterReadingResult | null>(null);
+  protected readonly selectedValue = signal<number | null>(null);
+  protected readonly editedValue = signal<string>('');
+  protected readonly cameraStream = signal<MediaStream | null>(null);
+  protected readonly cameraError = signal<string | null>(null);
+  protected readonly useCameraMode = signal(false);
+  protected readonly isCameraReady = signal(false);
 
   // Crop state
-  protected cropRect = signal<CropRect | null>(null);
+  protected readonly cropRect = signal<CropRect | null>(null);
   private isDragging = false;
   private dragStart = { x: 0, y: 0 };
   private cropImage: HTMLImageElement | null = null;
 
-  protected isProcessing = this.meterReaderService.isProcessing;
-  protected progress = this.meterReaderService.progress;
+  protected readonly isProcessing = this.meterReaderService.isProcessing;
+  protected readonly progress = this.meterReaderService.progress;
 
   constructor() {
     /* noop */
@@ -406,7 +408,7 @@ export class MeterReaderModalComponent implements OnDestroy {
 
     if (!rect || !this.cropImage) {
       // No crop drawn — use full image, uncropped mode
-      this.processImage(fullImage, false);
+      void this.processImage(fullImage, false);
       return;
     }
 
@@ -435,7 +437,7 @@ export class MeterReaderModalComponent implements OnDestroy {
     const croppedDataUrl = canvas.toDataURL('image/png');
     this.capturedImage.set(croppedDataUrl);
     // isCropped=true: tells the service to use single-line OCR mode
-    this.processImage(croppedDataUrl, true);
+    void this.processImage(croppedDataUrl, true);
   }
 
   private async processImage(imageData: string, isCropped = false): Promise<void> {
@@ -456,10 +458,10 @@ export class MeterReaderModalComponent implements OnDestroy {
 
   protected onValueEdit(event: Event): void {
     const input = event.target as HTMLInputElement;
-    const raw = input.value.replace(/[^0-9]/g, '');
+    const raw = input.value.replace(/\D/g, '');
     this.editedValue.set(raw);
-    const parsed = parseInt(raw, 10);
-    this.selectedValue.set(isNaN(parsed) ? null : parsed);
+    const parsed = Number.parseInt(raw, 10);
+    this.selectedValue.set(Number.isNaN(parsed) ? null : parsed);
   }
 
   protected confirmValue(): void {

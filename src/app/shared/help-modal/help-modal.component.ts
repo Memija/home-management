@@ -1,6 +1,12 @@
 import { Component, Input, Output, EventEmitter, signal, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { LucideAngularModule, X, ChevronLeft, ChevronRight, HelpCircle } from 'lucide-angular';
+import {
+  LucideAngularModule,
+  X,
+  ChevronLeft,
+  ChevronRight,
+  CircleQuestionMark,
+} from 'lucide-angular';
 import { TranslatePipe } from '../../pipes/translate.pipe';
 
 export interface HelpStep {
@@ -26,7 +32,7 @@ export class HelpModalComponent {
   get steps(): HelpStep[] {
     return this._steps();
   }
-  private _steps = signal<HelpStep[]>([]);
+  private readonly _steps = signal<HelpStep[]>([]);
 
   @Output() closeModal = new EventEmitter<void>();
 
@@ -34,10 +40,10 @@ export class HelpModalComponent {
   protected readonly CloseIcon = X;
   protected readonly PrevIcon = ChevronLeft;
   protected readonly NextIcon = ChevronRight;
-  protected readonly HelpIcon = HelpCircle;
+  protected readonly HelpIcon = CircleQuestionMark;
 
   // Current step index
-  protected currentStep = signal(0);
+  protected readonly currentStep = signal(0);
 
   protected totalSteps = computed(() => this._steps().length);
 

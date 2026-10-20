@@ -1,16 +1,18 @@
 <div class="date-picker-container">
-  <div
+  <button
+    type="button"
     class="input-wrapper"
     (click)="toggleCalendar()"
+    [disabled]="disabledSignal()"
     [class.disabled]="disabledSignal()"
-    tabindex="0"
-    (keyup.enter)="toggleCalendar()"
+    [attr.aria-expanded]="isOpen()"
+    [attr.aria-label]="placeholderSignal() | translate"
   >
     <lucide-icon [img]="CalendarIcon" size="18" class="calendar-icon"></lucide-icon>
     <span class="date-display" [class.placeholder]="!dateSignal()">
       {{ formattedDate() || (placeholderSignal() | translate) }}
     </span>
-  </div>
+  </button>
 
   @if (isOpen()) {
     <div class="calendar-popup">
@@ -55,7 +57,6 @@
               [disabled]="!day || isDisabled(day)"
               (click)="selectDate(day)"
               title="{{ day ? (day | date: 'fullDate') : '' }}"
-              aria-label="{{ day ? (day | date: 'fullDate') : '' }}"
             >
               {{ day?.getDate() }}
             </button>

@@ -143,7 +143,7 @@ describe('AppLayoutComponent', () => {
   it('should render deferred nature tree and footer components when blocks resolve', async () => {
     const deferBlocks = await fixture.getDeferBlocks();
 
-    expect(deferBlocks.length).toBe(2);
+    expect(deferBlocks).toHaveLength(2);
 
     await deferBlocks[0].render(DeferBlockState.Complete);
     await deferBlocks[1].render(DeferBlockState.Complete);

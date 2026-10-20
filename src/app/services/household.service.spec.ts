@@ -27,10 +27,9 @@ describe('HouseholdService', () => {
     };
 
     // Mock crypto.randomUUID
-    Object.defineProperty(window, 'crypto', {
-      value: { randomUUID: vi.fn().mockReturnValue('mock-uuid') },
-      writable: true,
-    });
+    vi.spyOn(crypto, 'randomUUID').mockReturnValue(
+      'mock-uuid' as `${string}-${string}-${string}-${string}-${string}`,
+    );
 
     TestBed.configureTestingModule({
       providers: [
@@ -56,7 +55,7 @@ describe('HouseholdService', () => {
 
   it('should add member', () => {
     service.addMember('John', 'Doe', 'adult', 'male');
-    expect(service.members().length).toBe(1);
+    expect(service.members()).toHaveLength(1);
     expect(service.members()[0]).toEqual(
       expect.objectContaining({
         id: 'mock-uuid',
@@ -81,7 +80,7 @@ describe('HouseholdService', () => {
     service.updateMembers([member]);
 
     service.removeMember('1');
-    expect(service.members().length).toBe(0);
+    expect(service.members()).toHaveLength(0);
   });
 
   it('should update address', () => {

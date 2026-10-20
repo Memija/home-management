@@ -144,7 +144,7 @@ describe('PdfService', () => {
       expect(mockAutoTable).toHaveBeenCalled();
       const callArgs = mockAutoTable.mock.calls[0];
       expect(callArgs[0]).toBe(mockDoc); // first arg is doc
-      expect(callArgs[1].body.length).toBe(1); // One record
+      expect(callArgs[1].body).toHaveLength(1); // One record
     });
 
     it('should calculate differences correctly', async () => {
@@ -170,7 +170,7 @@ describe('PdfService', () => {
       const callArgs = mockAutoTable.mock.calls[0];
       const data = callArgs[1].body;
 
-      expect(data.length).toBe(2);
+      expect(data).toHaveLength(2);
       // First row difference should be '-'
       expect(data[0][6]).toBe('-');
       // Second row difference should be '+4.00'
@@ -204,7 +204,7 @@ describe('PdfService', () => {
       const callArgs = mockAutoTable.mock.calls[0];
       const data = callArgs[1].body;
 
-      expect(data.length).toBe(2);
+      expect(data).toHaveLength(2);
       // With old logic: 320 - 400 = -80.
       // With new logic: 5 + 5 + 5 + 5 = 20.
       expect(data[1][6]).toBe('+20.00');
@@ -237,21 +237,8 @@ describe('PdfService', () => {
     });
 
     it('should handle image loading error gracefully', async () => {
-      // Mock image loading to fail
-      // The service creates `new Image()`. In test environment (jsdom), Image exists.
-      // We can spy on global Image constructor?
-
-      // The service does `const img = new Image();`
-      // We can try to rely on console.warn being called.
-      // But `loadImageAsBase64` is private and called inside.
-      // If it fails, it catches and logs warning.
-
-      // Since we mocked `fetch` or `Image` loading logic is browser specific,
-      // in JSDOM, setting `src` might not trigger onload/onerror without setup.
-
-      // Let's just ensure the function finishes without throwing.
-      await service.exportWaterToPdf([], 'test.pdf');
-      // If it finishes, it's fine.
+      await expect(service.exportWaterToPdf([], 'test.pdf')).resolves.not.toThrow();
+      expect(mockDoc.save).toHaveBeenCalledWith('test.pdf');
     });
   });
 
@@ -294,7 +281,7 @@ describe('PdfService', () => {
       const callArgs = mockAutoTable.mock.calls[0];
       const data = callArgs[1].body;
 
-      expect(data.length).toBe(2);
+      expect(data).toHaveLength(2);
       // Verify totals are calculated (room_1 + room_2)
       expect(data[0][3]).toBe('30.00'); // Total column for first record
       expect(data[1][3]).toBe('40.00'); // Total column for second record
@@ -401,7 +388,7 @@ describe('PdfService', () => {
 
       const callArgs = mockAutoTable.mock.calls[0];
       expect(callArgs[0]).toBe(mockDoc);
-      expect(callArgs[1].body.length).toBe(1);
+      expect(callArgs[1].body).toHaveLength(1);
     });
 
     it('should use default filename when not provided', async () => {
@@ -434,7 +421,7 @@ describe('PdfService', () => {
       const callArgs = mockAutoTable.mock.calls[0];
       const data = callArgs[1].body;
 
-      expect(data.length).toBe(2);
+      expect(data).toHaveLength(2);
       // First row difference should be '-'
       expect(data[0][2]).toBe('-');
       // Second row difference should be '+100.00'
@@ -509,7 +496,7 @@ describe('PdfService', () => {
       expect(mockAutoTable).toHaveBeenCalled();
 
       const callArgs = mockAutoTable.mock.calls[0];
-      expect(callArgs[1].body.length).toBe(0);
+      expect(callArgs[1].body).toHaveLength(0);
     });
 
     it('should sort records by date before exporting', async () => {
@@ -553,7 +540,7 @@ describe('PdfService', () => {
       const head = callArgs[1].head[0];
 
       // Should have Date, Value, Difference columns
-      expect(head.length).toBe(3);
+      expect(head).toHaveLength(3);
     });
 
     it('should apply correct styling to table', async () => {
@@ -642,7 +629,7 @@ describe('PdfService', () => {
       const callArgs = mockAutoTable.mock.calls[0];
       const data = callArgs[1].body;
 
-      expect(data.length).toBe(1);
+      expect(data).toHaveLength(1);
       expect(data[0][1]).toBe('1000.00');
       expect(data[0][2]).toBe('-'); // No previous record for difference
     });
@@ -827,7 +814,7 @@ describe('PdfService', () => {
       const callArgs = mockAutoTable.mock.calls[0];
       const data = callArgs[1].body;
 
-      expect(data.length).toBe(1);
+      expect(data).toHaveLength(1);
       expect(data[0][5]).toBe('100.00'); // Total
       expect(data[0][6]).toBe('-'); // No previous record
     });
@@ -890,7 +877,7 @@ describe('PdfService', () => {
       const headers = callArgs[1].head[0];
 
       // Last header should be 'Differenz'
-      expect(headers[headers.length - 1]).toBe('Differenz');
+      expect(headers.at(-1)).toBe('Differenz');
     });
 
     it('should use English difference label when language is English', async () => {
@@ -912,7 +899,7 @@ describe('PdfService', () => {
       const headers = callArgs[1].head[0];
 
       // Last header should be 'Difference'
-      expect(headers[headers.length - 1]).toBe('Difference');
+      expect(headers.at(-1)).toBe('Difference');
     });
   });
 
@@ -945,7 +932,7 @@ describe('PdfService', () => {
       const callArgs = mockAutoTable.mock.calls[0];
       const data = callArgs[1].body;
 
-      expect(data.length).toBe(1);
+      expect(data).toHaveLength(1);
       expect(data[0][3]).toBe('100.00'); // Total
       expect(data[0][4]).toBe('-'); // No previous record
     });
@@ -1007,7 +994,7 @@ describe('PdfService', () => {
       const callArgs = mockAutoTable.mock.calls[0];
       const data = callArgs[1].body;
 
-      expect(data.length).toBe(1);
+      expect(data).toHaveLength(1);
       expect(data[0][1]).toBe('0.00'); // Total of empty rooms is 0
     });
 
@@ -1156,7 +1143,7 @@ describe('PdfService', () => {
       const headers = callArgs[1].head[0];
 
       // Last header should be 'Differenz'
-      expect(headers[headers.length - 1]).toBe('Differenz');
+      expect(headers.at(-1)).toBe('Differenz');
     });
 
     it('should apply correct styling for heating theme', async () => {

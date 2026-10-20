@@ -216,7 +216,7 @@ describe('FamilyComponent', () => {
     });
 
     it('should have 7 help steps', () => {
-      expect(component['helpSteps'].length).toBe(7);
+      expect(component['helpSteps']).toHaveLength(7);
     });
 
     it('should have MAX_FAMILY_MEMBERS set to 9', () => {
@@ -286,7 +286,7 @@ describe('FamilyComponent', () => {
       const members = [makeMember({ name: 'Jane' })];
       householdServiceMock.members.set(members);
       component.editFamily();
-      expect(component['draftMembers']().length).toBe(1);
+      expect(component['draftMembers']()).toHaveLength(1);
       expect(component['draftMembers']()[0].name).toBe('Jane');
     });
 
@@ -360,7 +360,7 @@ describe('FamilyComponent', () => {
       component['newMemberName'].set('J');
       component['newMemberSurname'].set('Doe');
       component.addMember();
-      expect(component['draftMembers']().length).toBe(0);
+      expect(component['draftMembers']()).toHaveLength(0);
     });
 
     it('should not add when surname validation fails', () => {
@@ -368,7 +368,7 @@ describe('FamilyComponent', () => {
       component['newMemberName'].set('John');
       component['newMemberSurname'].set('D');
       component.addMember();
-      expect(component['draftMembers']().length).toBe(0);
+      expect(component['draftMembers']()).toHaveLength(0);
     });
 
     it('should set name error signal on validation failure', () => {
@@ -391,7 +391,7 @@ describe('FamilyComponent', () => {
       component['newMemberName'].set('John');
       component['newMemberSurname'].set('Doe');
       component.addMember();
-      expect(component['draftMembers']().length).toBe(1);
+      expect(component['draftMembers']()).toHaveLength(1);
       expect(component['draftMembers']()[0].name).toBe('John');
       expect(component['draftMembers']()[0].surname).toBe('Doe');
     });
@@ -408,14 +408,14 @@ describe('FamilyComponent', () => {
       component['newMemberName'].set('');
       component['newMemberSurname'].set('Doe');
       component.addMember();
-      expect(component['draftMembers']().length).toBe(0);
+      expect(component['draftMembers']()).toHaveLength(0);
     });
 
     it('should not add when surname is empty', () => {
       component['newMemberName'].set('John');
       component['newMemberSurname'].set('');
       component.addMember();
-      expect(component['draftMembers']().length).toBe(0);
+      expect(component['draftMembers']()).toHaveLength(0);
     });
 
     it('should set type and gender from signals', () => {
@@ -523,7 +523,7 @@ describe('FamilyComponent', () => {
       component['memberToDelete'].set('member-1');
 
       component.confirmDelete();
-      expect(component['draftMembers']().length).toBe(0);
+      expect(component['draftMembers']()).toHaveLength(0);
     });
 
     it('should hide delete modal', () => {
@@ -544,7 +544,7 @@ describe('FamilyComponent', () => {
       component['memberToDelete'].set(null);
 
       component.confirmDelete();
-      expect(component['draftMembers']().length).toBe(1);
+      expect(component['draftMembers']()).toHaveLength(1);
     });
   });
 
@@ -927,7 +927,7 @@ describe('FamilyComponent', () => {
       component['newMemberSurname'].set('Johnson');
       component.addMember();
 
-      expect(component['draftMembers']().length).toBe(2);
+      expect(component['draftMembers']()).toHaveLength(2);
     });
 
     it('should handle delete followed by save', () => {

@@ -10,8 +10,7 @@ import {
   inject,
   PLATFORM_ID,
 } from '@angular/core';
-import { isPlatformBrowser } from '@angular/common';
-import { CommonModule } from '@angular/common';
+import { isPlatformBrowser, CommonModule } from '@angular/common';
 import { LucideAngularModule, ChevronLeft, ChevronRight, X, Sparkles } from 'lucide-angular';
 import { TranslatePipe } from '../../pipes/translate.pipe';
 
@@ -40,7 +39,7 @@ export class DemoTourComponent implements OnDestroy {
   get show(): boolean {
     return this._show();
   }
-  private _show = signal(false);
+  private readonly _show = signal(false);
 
   @Input() set steps(val: DemoTourStep[]) {
     this._steps.set(val || []);
@@ -48,13 +47,13 @@ export class DemoTourComponent implements OnDestroy {
   get steps(): DemoTourStep[] {
     return this._steps();
   }
-  private _steps = signal<DemoTourStep[]>([]);
+  private readonly _steps = signal<DemoTourStep[]>([]);
 
   @Input() theme: DemoTourTheme = 'water';
 
   @Output() closeModal = new EventEmitter<void>();
 
-  private platformId = inject(PLATFORM_ID);
+  private readonly platformId = inject(PLATFORM_ID);
 
   // Icons
   protected readonly PrevIcon = ChevronLeft;
@@ -63,41 +62,41 @@ export class DemoTourComponent implements OnDestroy {
   protected readonly SparklesIcon = Sparkles;
 
   // State
-  protected currentStep = signal(0);
-  protected isActive = signal(false);
-  protected isTransitioning = signal(false);
+  protected readonly currentStep = signal(0);
+  protected readonly isActive = signal(false);
+  protected readonly isTransitioning = signal(false);
 
   // Spotlight position
-  protected spotTop = signal(0);
-  protected spotLeft = signal(0);
-  protected spotWidth = signal(0);
-  protected spotHeight = signal(0);
+  protected readonly spotTop = signal(0);
+  protected readonly spotLeft = signal(0);
+  protected readonly spotWidth = signal(0);
+  protected readonly spotHeight = signal(0);
 
   // Tooltip position
-  protected tipTop = signal(0);
-  protected tipLeft = signal(0);
-  protected tipPosition = signal<'top' | 'bottom'>('bottom');
+  protected readonly tipTop = signal(0);
+  protected readonly tipLeft = signal(0);
+  protected readonly tipPosition = signal<'top' | 'bottom'>('bottom');
 
   // Computeds
-  protected totalSteps = computed(() => this._steps().length);
-  protected currentStepData = computed(() => {
+  protected readonly totalSteps = computed(() => this._steps().length);
+  protected readonly currentStepData = computed(() => {
     const s = this._steps();
     const i = this.currentStep();
     return s[i] ?? null;
   });
-  protected isFirstStep = computed(() => this.currentStep() === 0);
-  protected isLastStep = computed(
+  protected readonly isFirstStep = computed(() => this.currentStep() === 0);
+  protected readonly isLastStep = computed(
     () => this.totalSteps() === 0 || this.currentStep() === this.totalSteps() - 1,
   );
-  protected progress = computed(() => {
+  protected readonly progress = computed(() => {
     const total = this.totalSteps();
     if (total <= 1) return 100;
     return ((this.currentStep() + 1) / total) * 100;
   });
 
   private targetElement: Element | null = null;
-  private scrollHandler = () => this.recalcPositions();
-  private resizeHandler = () => this.recalcPositions();
+  private readonly scrollHandler = () => this.recalcPositions();
+  private readonly resizeHandler = () => this.recalcPositions();
   private positionTimer: ReturnType<typeof setTimeout> | null = null;
 
   constructor() {

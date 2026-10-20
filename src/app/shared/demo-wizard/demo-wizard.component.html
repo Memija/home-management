@@ -1,11 +1,11 @@
 @if (show) {
-  <div class="modal-overlay" (click)="onClose()" tabindex="0" (keyup.enter)="onClose()">
-    <div
-      [class]="'demo-wizard theme-' + theme"
-      (click)="$event.stopPropagation()"
-      tabindex="0"
-      (keyup.enter)="$event.stopPropagation()"
-    >
+  <!-- eslint-disable-next-line @angular-eslint/template/interactive-supports-focus -- Backdrop dismissal by design -->
+  <div
+    class="modal-overlay"
+    (click)="$event.target === $event.currentTarget && onClose()"
+    (keydown.escape)="onClose()"
+  >
+    <div [class]="'demo-wizard theme-' + theme">
       <!-- Progress bar -->
       <div class="wizard-progress">
         <div class="wizard-progress-bar" [style.width.%]="progress()"></div>

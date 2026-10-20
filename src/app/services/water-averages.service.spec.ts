@@ -22,24 +22,18 @@ describe('WaterAveragesService', () => {
       expect(data.source).toContain('World Average');
     });
 
-    it('should return data for known country code', () => {
-      const data = service.getCountryData('de');
-      expect(data.averageLitersPerPersonPerDay).toBe(128);
-    });
-
-    it('should return data for known country name', () => {
-      const data = service.getCountryData('Germany');
+    it.each([
+      { input: 'de', desc: 'known country code' },
+      { input: 'Germany', desc: 'known country name' },
+      { input: 'GERMANY', desc: 'uppercase country name' },
+    ])('should return data for $desc ($input)', ({ input }) => {
+      const data = service.getCountryData(input);
       expect(data.averageLitersPerPersonPerDay).toBe(128);
     });
 
     it('should return data for World', () => {
       const data = service.getCountryData('world');
       expect(data.source).toContain('World Average');
-    });
-
-    it('should be case insensitive', () => {
-      const data = service.getCountryData('GERMANY');
-      expect(data.averageLitersPerPersonPerDay).toBe(128);
     });
   });
 
@@ -51,16 +45,12 @@ describe('WaterAveragesService', () => {
   });
 
   describe('getCountryCode', () => {
-    it('should return code if passed a code', () => {
-      expect(service.getCountryCode('de')).toBe('de');
-    });
-
-    it('should return code if passed an English name', () => {
-      expect(service.getCountryCode('Germany')).toBe('de');
-    });
-
-    it('should return code if passed a German name', () => {
-      expect(service.getCountryCode('Deutschland')).toBe('de');
+    it.each([
+      { input: 'de', desc: 'a country code' },
+      { input: 'Germany', desc: 'an English name' },
+      { input: 'Deutschland', desc: 'a German name' },
+    ])('should return code if passed $desc ($input)', ({ input }) => {
+      expect(service.getCountryCode(input)).toBe('de');
     });
 
     it('should return null for unknown name', () => {

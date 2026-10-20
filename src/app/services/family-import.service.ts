@@ -24,9 +24,9 @@ export interface FamilyImportResult {
   providedIn: 'root',
 })
 export class FamilyImportService {
-  private householdService = inject(HouseholdService);
-  private languageService = inject(LanguageService);
-  private fileStorage = inject(FileStorageService);
+  private readonly householdService = inject(HouseholdService);
+  private readonly languageService = inject(LanguageService);
+  private readonly fileStorage = inject(FileStorageService);
 
   /**
    * Import family data from a file with validation.
@@ -97,82 +97,11 @@ export class FamilyImportService {
     const errors: string[] = [];
     const validatedMembers: HouseholdMember[] = [];
 
-    // Local interface for validation
-    interface RawMember {
-      id?: unknown;
-      name?: unknown;
-      surname?: unknown;
-      type?: unknown;
-      gender?: unknown;
-      avatar?: unknown;
-    }
-
     for (const rawItem of data) {
-      const item = rawItem as RawMember; // Helper cast
-      let hasErrors = false;
-
-      // Check if item is an object
-      if (!item || typeof item !== 'object') {
-        errors.push('SETTINGS.IMPORT_FAMILY_ERROR_NOT_OBJECT');
-        continue;
+      const member = this.validateMemberItem(rawItem, errors);
+      if (member) {
+        validatedMembers.push(member);
       }
-
-      // Validate required string fields
-      if (!item.name || typeof item.name !== 'string' || item.name.trim() === '') {
-        errors.push('SETTINGS.IMPORT_FAMILY_ERROR_MISSING_NAME');
-        hasErrors = true;
-      }
-      if (!item.surname || typeof item.surname !== 'string' || item.surname.trim() === '') {
-        errors.push('SETTINGS.IMPORT_FAMILY_ERROR_MISSING_SURNAME');
-        hasErrors = true;
-      }
-
-      // Validate type (required - must be adult, kid, or other)
-      const type = item.type as string; // Check value below
-      if (!type || (type !== 'adult' && type !== 'kid' && type !== 'other')) {
-        errors.push('SETTINGS.IMPORT_FAMILY_ERROR_INVALID_TYPE');
-        hasErrors = true;
-      }
-
-      // Validate gender (required - must be male, female, or other)
-      const gender = item.gender as string;
-      if (!gender || (gender !== 'male' && gender !== 'female' && gender !== 'other')) {
-        errors.push('SETTINGS.IMPORT_FAMILY_ERROR_INVALID_GENDER');
-        hasErrors = true;
-      }
-
-      // Skip this record if it has validation errors
-      if (hasErrors) {
-        continue;
-      }
-
-      // Validate and sanitize avatar - accept known avatars or data URLs, otherwise use default
-      let validAvatar: string;
-      if (item.avatar && typeof item.avatar === 'string') {
-        const isKnownAvatar = this.householdService.avatars.includes(item.avatar);
-        const isDataUrl = item.avatar.startsWith('data:image/');
-        validAvatar =
-          isKnownAvatar || isDataUrl
-            ? item.avatar
-            : this.householdService.avatars[
-                Math.floor(Math.random() * this.householdService.avatars.length)
-              ];
-      } else {
-        validAvatar =
-          this.householdService.avatars[
-            Math.floor(Math.random() * this.householdService.avatars.length)
-          ];
-      }
-
-      // Create validated member with generated ID if missing
-      validatedMembers.push({
-        id: item.id && typeof item.id === 'string' ? item.id : crypto.randomUUID(),
-        name: (item.name as string).trim(),
-        surname: (item.surname as string).trim(),
-        type: type as 'adult' | 'kid' | 'other',
-        gender: gender as 'male' | 'female' | 'other',
-        avatar: validAvatar,
-      });
     }
 
     // Remove duplicate errors and keep unique ones
@@ -187,6 +116,73 @@ export class FamilyImportService {
     }
 
     return { valid: true, members: validatedMembers };
+  }
+
+  private validateMemberItem(item: unknown, errors: string[]): HouseholdMember | null {
+    if (!item || typeof item !== 'object') {
+      errors.push('SETTINGS.IMPORT_FAMILY_ERROR_NOT_OBJECT');
+      return null;
+    }
+
+    interface RawMember {
+      id?: unknown;
+      name?: unknown;
+      surname?: unknown;
+      type?: unknown;
+      gender?: unknown;
+      avatar?: unknown;
+    }
+
+    const raw = item as RawMember;
+    let hasErrors = false;
+
+    if (!raw.name || typeof raw.name !== 'string' || raw.name.trim() === '') {
+      errors.push('SETTINGS.IMPORT_FAMILY_ERROR_MISSING_NAME');
+      hasErrors = true;
+    }
+    if (!raw.surname || typeof raw.surname !== 'string' || raw.surname.trim() === '') {
+      errors.push('SETTINGS.IMPORT_FAMILY_ERROR_MISSING_SURNAME');
+      hasErrors = true;
+    }
+
+    const type = raw.type as string;
+    if (!type || (type !== 'adult' && type !== 'kid' && type !== 'other')) {
+      errors.push('SETTINGS.IMPORT_FAMILY_ERROR_INVALID_TYPE');
+      hasErrors = true;
+    }
+
+    const gender = raw.gender as string;
+    if (!gender || (gender !== 'male' && gender !== 'female' && gender !== 'other')) {
+      errors.push('SETTINGS.IMPORT_FAMILY_ERROR_INVALID_GENDER');
+      hasErrors = true;
+    }
+
+    if (hasErrors) {
+      return null;
+    }
+
+    return {
+      id: raw.id && typeof raw.id === 'string' ? raw.id : crypto.randomUUID(),
+      name: (raw.name as string).trim(),
+      surname: (raw.surname as string).trim(),
+      type: type as 'adult' | 'kid' | 'other',
+      gender: gender as 'male' | 'female' | 'other',
+      avatar: this.sanitizeAvatar(raw.avatar),
+    };
+  }
+
+  private sanitizeAvatar(avatar: unknown): string {
+    if (avatar && typeof avatar === 'string') {
+      const isKnownAvatar = this.householdService.avatars.includes(avatar);
+      const isDataUrl = avatar.startsWith('data:image/');
+      if (isKnownAvatar || isDataUrl) {
+        return avatar;
+      }
+    }
+    const randomArray = new Uint32Array(1);
+    globalThis.crypto.getRandomValues(randomArray);
+    const randomIndex = randomArray[0] % this.householdService.avatars.length;
+    return this.householdService.avatars[randomIndex];
   }
 
   /**

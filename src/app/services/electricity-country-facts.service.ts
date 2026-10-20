@@ -27,7 +27,7 @@ export type ElectricityFactMode = 'historical' | 'country';
   providedIn: 'root',
 })
 export class ElectricityCountryFactsService {
-  private languageService = inject(LanguageService);
+  private readonly languageService = inject(LanguageService);
 
   /**
    * Get available countries for electricity facts
@@ -50,9 +50,14 @@ export class ElectricityCountryFactsService {
     countryCode?: string,
   ): ElectricityFact | null {
     const lang = this.languageService.currentLang();
-    const translations = lang === 'de' ? de : lang === 'bs' ? bs : en;
-    const countryFacts =
-      lang === 'de' ? deElectricityFacts : lang === 'bs' ? bsElectricityFacts : enElectricityFacts;
+    const translationMap = { de, bs, en } as const;
+    const translations = translationMap[lang as 'de' | 'bs'] ?? en;
+    const countryFactsMap = {
+      de: deElectricityFacts,
+      bs: bsElectricityFacts,
+      en: enElectricityFacts,
+    } as const;
+    const countryFacts = countryFactsMap[lang as 'de' | 'bs'] ?? enElectricityFacts;
     // Fallback title if translation missing
     const didYouKnow =
       (translations.FACTS as Record<string, string>)?.['DID_YOU_KNOW'] || 'Did you know?';

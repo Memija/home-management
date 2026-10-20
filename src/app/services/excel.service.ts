@@ -4,6 +4,8 @@ import { LanguageService } from './language.service';
 import { WaterRecord, DynamicHeatingRecord, ElectricityRecord } from '../models/records.model';
 import { FILE_SECURITY_LIMITS, validateFileSize } from '../utils/file-security.utils';
 
+const EXCEL_EPOCH = Date.UTC(1900, 0, 1);
+
 // Re-export for consumers
 export type { WaterRecord, DynamicHeatingRecord, ElectricityRecord } from '../models/records.model';
 
@@ -11,17 +13,15 @@ export type { WaterRecord, DynamicHeatingRecord, ElectricityRecord } from '../mo
   providedIn: 'root',
 })
 export class ExcelService {
-  private excelSettings = inject(ExcelSettingsService);
-  private languageService = inject(LanguageService);
+  private readonly excelSettings = inject(ExcelSettingsService);
+  private readonly languageService = inject(LanguageService);
   private xlsxModule: typeof import('xlsx') | null = null;
 
   /**
    * Dynamically load xlsx library when needed
    */
   private async getXLSX(): Promise<typeof import('xlsx')> {
-    if (!this.xlsxModule) {
-      this.xlsxModule = await import('xlsx');
-    }
+    this.xlsxModule ??= await import('xlsx');
     return this.xlsxModule;
   }
 
@@ -307,38 +307,26 @@ export class ExcelService {
 
     const XLSX = await this.getXLSX();
 
-    return new Promise((resolve, reject) => {
-      const reader = new FileReader();
+    try {
+      const buffer = await file.arrayBuffer();
+      const workbook = XLSX.read(buffer, { type: 'array' });
 
-      reader.onload = (event) => {
-        try {
-          const data = event.target?.result;
-          const workbook = XLSX.read(data, { type: 'binary' });
+      // Combine data from all sheets
+      const allData: Record<string, unknown>[] = [];
 
-          // Combine data from all sheets
-          const allData: Record<string, unknown>[] = [];
+      for (const sheetName of workbook.SheetNames) {
+        const worksheet = workbook.Sheets[sheetName];
+        const sheetData = XLSX.utils.sheet_to_json(worksheet, { defval: '' }) as Record<
+          string,
+          unknown
+        >[];
+        allData.push(...sheetData);
+      }
 
-          for (const sheetName of workbook.SheetNames) {
-            const worksheet = workbook.Sheets[sheetName];
-            const sheetData = XLSX.utils.sheet_to_json(worksheet, { defval: '' }) as Record<
-              string,
-              unknown
-            >[];
-            allData.push(...sheetData);
-          }
-
-          resolve(allData);
-        } catch {
-          reject(new Error('Failed to parse Excel file'));
-        }
-      };
-
-      reader.onerror = () => {
-        reject(new Error('Failed to read file'));
-      };
-
-      reader.readAsBinaryString(file);
-    });
+      return allData;
+    } catch {
+      throw new Error('Failed to parse Excel file');
+    }
   }
 
   /**
@@ -367,11 +355,11 @@ export class ExcelService {
     if (typeof value === 'string') {
       // Try DD.MM.YYYY or DD/MM/YYYY format (European)
       const europeanPattern = /^(\d{1,2})[./](\d{1,2})[./](\d{4})$/;
-      const europeanMatch = value.match(europeanPattern);
+      const europeanMatch = europeanPattern.exec(value);
       if (europeanMatch) {
-        const day = parseInt(europeanMatch[1], 10);
-        const month = parseInt(europeanMatch[2], 10) - 1; // Month is 0-indexed
-        const year = parseInt(europeanMatch[3], 10);
+        const day = Number.parseInt(europeanMatch[1], 10);
+        const month = Number.parseInt(europeanMatch[2], 10) - 1; // Month is 0-indexed
+        const year = Number.parseInt(europeanMatch[3], 10);
         const date = new Date(year, month, day);
 
         // Validate the date
@@ -383,16 +371,14 @@ export class ExcelService {
 
       // Try standard ISO format or other parseable formats
       const parsed = new Date(value);
-      return isNaN(parsed.getTime()) ? null : parsed;
+      return Number.isNaN(parsed.getTime()) ? null : parsed;
     }
 
     // If it's an Excel serial date number
     if (typeof value === 'number') {
       // Excel date serial numbers start from 1900-01-01
       // Use UTC to avoid timezone issues
-      const excelEpoch = Date.UTC(1900, 0, 1);
-      const date = new Date(excelEpoch + (value - 2) * 24 * 60 * 60 * 1000);
-      return date;
+      return new Date(EXCEL_EPOCH + (value - 2) * 24 * 60 * 60 * 1000);
     }
 
     return null;
@@ -416,12 +402,16 @@ export class ExcelService {
     const num = Number(value);
 
     // strict check
-    if (isNaN(num)) {
+    if (Number.isNaN(num)) {
+      const displayValue =
+        typeof value === 'string' || typeof value === 'number' || typeof value === 'boolean'
+          ? String(value)
+          : JSON.stringify(value);
       errors.push(
         this.languageService
           .translate('ERROR.IMPORT_INVALID_NUMBER_VALUE')
           .replace('{{row}}', rowIndex.toString())
-          .replace('{{value}}', String(value))
+          .replace('{{value}}', displayValue)
           .replace('{{field}}', columnName),
       );
       return 0; // Return 0 as fallback, row will be skipped anyway

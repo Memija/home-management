@@ -84,34 +84,16 @@ describe('SupportModalComponent', () => {
       expect(mockSanitizer.bypassSecurityTrustHtml).not.toHaveBeenCalled();
     });
 
-    it('should include hidefeed=true in the URL', () => {
+    it.each([
+      { param: 'hidefeed=true' },
+      { param: 'widget=true' },
+      { param: 'embed=true' },
+      { param: 'preview=true' },
+      { param: 'ko-fi.com/memija' },
+    ])('should include $param in the URL', ({ param }) => {
       const calledUrl = (mockSanitizer.bypassSecurityTrustResourceUrl as ReturnType<typeof vi.fn>)
         .mock.calls[0][0];
-      expect(calledUrl).toContain('hidefeed=true');
-    });
-
-    it('should include widget=true in the URL', () => {
-      const calledUrl = (mockSanitizer.bypassSecurityTrustResourceUrl as ReturnType<typeof vi.fn>)
-        .mock.calls[0][0];
-      expect(calledUrl).toContain('widget=true');
-    });
-
-    it('should include embed=true in the URL', () => {
-      const calledUrl = (mockSanitizer.bypassSecurityTrustResourceUrl as ReturnType<typeof vi.fn>)
-        .mock.calls[0][0];
-      expect(calledUrl).toContain('embed=true');
-    });
-
-    it('should include preview=true in the URL', () => {
-      const calledUrl = (mockSanitizer.bypassSecurityTrustResourceUrl as ReturnType<typeof vi.fn>)
-        .mock.calls[0][0];
-      expect(calledUrl).toContain('preview=true');
-    });
-
-    it('should point to the correct Ko-fi user (memija)', () => {
-      const calledUrl = (mockSanitizer.bypassSecurityTrustResourceUrl as ReturnType<typeof vi.fn>)
-        .mock.calls[0][0];
-      expect(calledUrl).toContain('ko-fi.com/memija');
+      expect(calledUrl).toContain(param);
     });
   });
 

@@ -11,7 +11,7 @@ export interface ValidationResult<T> {
   providedIn: 'root',
 })
 export class ImportValidationService {
-  private languageService = inject(LanguageService);
+  private readonly languageService = inject(LanguageService);
 
   /**
    * Validates JSON import data for water consumption records
@@ -86,73 +86,20 @@ export class ImportValidationService {
       }
 
       const rooms = record['rooms'] as Record<string, unknown>;
-      const validRooms: Record<string, number> = {};
-      let hasRoomsError = false;
 
       // Strict validation against expected room IDs
       if (expectedRoomIds && expectedRoomIds.length > 0) {
-        const recordRoomKeys = Object.keys(rooms);
-
-        // Check for missing rooms
-        for (const expectedId of expectedRoomIds) {
-          if (!recordRoomKeys.includes(expectedId)) {
-            validationErrors.push(
-              this.languageService.translate('ERROR.IMPORT_MISSING_ROOM_DATA', {
-                date: dateStr,
-                room: expectedId,
-              }),
-            );
-            hasRoomsError = true;
-          }
-        }
-
-        // Check for unknown rooms
-        for (const key of recordRoomKeys) {
-          if (!expectedRoomIds.includes(key)) {
-            validationErrors.push(
-              this.languageService.translate('ERROR.IMPORT_UNKNOWN_ROOM', {
-                date: dateStr,
-                room: key,
-              }),
-            );
-            hasRoomsError = true;
-          }
-        }
+        const hasRoomsError = this.validateExpectedRoomIds(
+          rooms,
+          expectedRoomIds,
+          dateStr,
+          validationErrors,
+        );
+        if (hasRoomsError) continue;
       }
 
-      if (hasRoomsError) continue;
-
-      for (const [roomId, value] of Object.entries(rooms)) {
-        if (typeof value === 'number' && !isNaN(value)) {
-          validRooms[roomId] = value;
-        } else if (typeof value === 'string') {
-          const num = Number(value);
-          if (isNaN(num)) {
-            validationErrors.push(
-              this.languageService.translate('ERROR.IMPORT_INVALID_ROOM_VALUE', {
-                date: dateStr,
-                value: value,
-                room: roomId,
-              }),
-            );
-            hasRoomsError = true;
-          } else {
-            validRooms[roomId] = num;
-          }
-        } else if (value === null || value === undefined) {
-          validRooms[roomId] = 0;
-        } else {
-          validationErrors.push(
-            this.languageService.translate('ERROR.IMPORT_INVALID_ROOM_TYPE', {
-              date: dateStr,
-              room: roomId,
-            }),
-          );
-          hasRoomsError = true;
-        }
-      }
-
-      if (hasRoomsError) continue;
+      const validRooms = this.parseHeatingRoomValues(rooms, dateStr, validationErrors);
+      if (!validRooms) continue;
 
       validRecords.push({
         date: dateResult.date!,
@@ -161,6 +108,83 @@ export class ImportValidationService {
     }
 
     return { validRecords, errors: validationErrors };
+  }
+
+  private validateExpectedRoomIds(
+    rooms: Record<string, unknown>,
+    expectedRoomIds: string[],
+    dateStr: string,
+    validationErrors: string[],
+  ): boolean {
+    let hasError = false;
+    const recordRoomKeys = Object.keys(rooms);
+
+    for (const expectedId of expectedRoomIds) {
+      if (!recordRoomKeys.includes(expectedId)) {
+        validationErrors.push(
+          this.languageService.translate('ERROR.IMPORT_MISSING_ROOM_DATA', {
+            date: dateStr,
+            room: expectedId,
+          }),
+        );
+        hasError = true;
+      }
+    }
+
+    for (const key of recordRoomKeys) {
+      if (!expectedRoomIds.includes(key)) {
+        validationErrors.push(
+          this.languageService.translate('ERROR.IMPORT_UNKNOWN_ROOM', {
+            date: dateStr,
+            room: key,
+          }),
+        );
+        hasError = true;
+      }
+    }
+
+    return hasError;
+  }
+
+  private parseHeatingRoomValues(
+    rooms: Record<string, unknown>,
+    dateStr: string,
+    validationErrors: string[],
+  ): Record<string, number> | null {
+    const validRooms: Record<string, number> = {};
+    let hasError = false;
+
+    for (const [roomId, value] of Object.entries(rooms)) {
+      if (typeof value === 'number' && !Number.isNaN(value)) {
+        validRooms[roomId] = value;
+      } else if (typeof value === 'string') {
+        const num = Number(value);
+        if (Number.isNaN(num)) {
+          validationErrors.push(
+            this.languageService.translate('ERROR.IMPORT_INVALID_ROOM_VALUE', {
+              date: dateStr,
+              value: value,
+              room: roomId,
+            }),
+          );
+          hasError = true;
+        } else {
+          validRooms[roomId] = num;
+        }
+      } else if (value === null || value === undefined) {
+        validRooms[roomId] = 0;
+      } else {
+        validationErrors.push(
+          this.languageService.translate('ERROR.IMPORT_INVALID_ROOM_TYPE', {
+            date: dateStr,
+            room: roomId,
+          }),
+        );
+        hasError = true;
+      }
+    }
+
+    return hasError ? null : validRooms;
   }
 
   /**
@@ -309,7 +333,7 @@ export class ImportValidationService {
 
     if (typeof dateValue === 'string') {
       parsedDate = new Date(dateValue);
-      if (isNaN(parsedDate.getTime())) {
+      if (Number.isNaN(parsedDate.getTime())) {
         errors.push(
           this.languageService.translate('ERROR.IMPORT_INVALID_DATE_VALUE', {
             row: rowNumber,
@@ -356,11 +380,11 @@ export class ImportValidationService {
       const value = record[field];
       if (value === undefined || value === null || value === '') {
         values[field] = 0; // Default to 0 for missing
-      } else if (typeof value === 'number' && !isNaN(value)) {
+      } else if (typeof value === 'number' && !Number.isNaN(value)) {
         values[field] = value;
       } else if (typeof value === 'string') {
         const num = Number(value);
-        if (isNaN(num)) {
+        if (Number.isNaN(num)) {
           errors.push(
             this.languageService.translate('ERROR.IMPORT_INVALID_NUMBER_VALUE', {
               row: rowNumber,

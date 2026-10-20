@@ -91,7 +91,7 @@
 
   .chart-container {
     flex: 1;
-    height: auto !important;
+    height: auto;
     min-height: 0;
   }
 
@@ -112,6 +112,7 @@
     }
   }
 
+  .chart-fullscreen-wrapper.chart-fake-fullscreen,
   .chart-fake-fullscreen {
     padding: 8px;
 
@@ -127,10 +128,11 @@
 @media (pointer: coarse) {
   .chart-fullscreen-wrapper:fullscreen,
   .chart-fullscreen-wrapper:-webkit-full-screen,
+  .chart-fullscreen-wrapper.chart-fake-fullscreen,
   .chart-fake-fullscreen {
     .chart-controls,
     .toggle-controls-btn {
-      display: none !important;
+      display: none;
     }
   }
 }
@@ -140,11 +142,12 @@
 // (primarily iOS Safari which has never supported requestFullscreen)
 // ==========================================================================
 
+.chart-fullscreen-wrapper.chart-fake-fullscreen,
 .chart-fake-fullscreen {
-  position: fixed !important;
-  inset: 0 !important;
+  position: fixed;
+  inset: 0;
   z-index: 9999;
-  display: flex !important;
+  display: flex;
   align-items: stretch;
   background: var(--bg-secondary, #f0f2f5);
   padding: 16px;
@@ -166,7 +169,7 @@
 
   .chart-container {
     flex: 1;
-    height: auto !important;
+    height: auto;
     min-height: 0;
   }
 

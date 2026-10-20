@@ -36,8 +36,8 @@ export abstract class StorageService {
    * @param key The storage key
    * @returns The loaded data or null if not found or unsupported
    */
-  loadSync<T>(key: string): T | null {
-    void key;
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  loadSync<T>(_key: string): T | null {
     return null;
   }
 

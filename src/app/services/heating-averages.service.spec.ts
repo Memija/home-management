@@ -23,24 +23,18 @@ describe('HeatingAveragesService', () => {
       expect(data.source).toBe('Temperate climate estimate');
     });
 
-    it('should return data for known country code', () => {
-      const data = service.getCountryData('de');
-      expect(data.averageKwhPerYear).toBe(13500);
-    });
-
-    it('should return data for known country name', () => {
-      const data = service.getCountryData('Germany');
+    it.each([
+      { input: 'de', desc: 'known country code' },
+      { input: 'Germany', desc: 'known country name' },
+      { input: 'GERMANY', desc: 'uppercase country name' },
+    ])('should return data for $desc ($input)', ({ input }) => {
+      const data = service.getCountryData(input);
       expect(data.averageKwhPerYear).toBe(13500);
     });
 
     it('should return default data for world (no special case)', () => {
       const data = service.getCountryData('world');
       expect(data.averageKwhPerYear).toBe(10000); // Falls back to default
-    });
-
-    it('should be case insensitive', () => {
-      const data = service.getCountryData('GERMANY');
-      expect(data.averageKwhPerYear).toBe(13500);
     });
 
     it('should return default for empty string', () => {

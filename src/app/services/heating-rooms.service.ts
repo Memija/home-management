@@ -33,19 +33,21 @@ export const PREDEFINED_ROOM_KEYS = [
   providedIn: 'root',
 })
 export class HeatingRoomsService {
-  private storage = inject(STORAGE_SERVICE);
-  private destroyRef = inject(DestroyRef);
-  private languageService = inject(LanguageService);
+  private readonly storage = inject(STORAGE_SERVICE);
+  private readonly destroyRef = inject(DestroyRef);
+  private readonly languageService = inject(LanguageService);
 
   // Room configurations signal
-  private _rooms = signal<HeatingRoomConfig[]>([]);
+  private readonly _rooms = signal<HeatingRoomConfig[]>([]);
   readonly rooms = this._rooms.asReadonly();
 
   constructor() {
-    this.loadRooms();
+    queueMicrotask(() => {
+      void this.loadRooms();
+    });
     this.storage.dataRefreshed$
       ?.pipe(takeUntilDestroyed(this.destroyRef))
-      .subscribe(() => this.loadRooms());
+      .subscribe(() => void this.loadRooms());
   }
 
   // Computed helpers
@@ -60,7 +62,7 @@ export class HeatingRoomsService {
 
   private saveRooms(): void {
     // Fire and forget save
-    this.storage.save(STORAGE_KEY, this._rooms());
+    void this.storage.save(STORAGE_KEY, this._rooms());
   }
 
   /**
@@ -69,13 +71,13 @@ export class HeatingRoomsService {
   addRoom(): void {
     if (!this.canAddRoom()) return;
 
-    const existingIds = this._rooms().map((r) => r.id);
+    const existingIds = new Set(this._rooms().map((r) => r.id));
     let newId = '';
     let counter = 1;
     do {
       newId = `room_${counter}`;
       counter++;
-    } while (existingIds.includes(newId));
+    } while (existingIds.has(newId));
 
     // Get next predefined name from translation, or fallback to Room N
     const roomIndex = this._rooms().length;
@@ -153,7 +155,7 @@ export class HeatingRoomsService {
     a.download = 'heating-settings.json';
     document.body.appendChild(a);
     a.click();
-    document.body.removeChild(a);
+    a.remove();
     URL.revokeObjectURL(url);
   }
 

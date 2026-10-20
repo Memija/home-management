@@ -322,20 +322,13 @@
 >
 </app-heating-rooms-modal>
 @if (showSuccessModal()) {
+  <!-- eslint-disable-next-line @angular-eslint/template/interactive-supports-focus -- Backdrop dismissal by design -->
   <div
     class="modal-overlay"
-    (click)="closeSuccessModal()"
-    (keydown.enter)="closeSuccessModal()"
-    tabindex="0"
-    (keyup.enter)="closeSuccessModal()"
+    (click)="$event.target === $event.currentTarget && closeSuccessModal()"
+    (keydown.escape)="closeSuccessModal()"
   >
-    <div
-      class="modal-content"
-      (click)="$event.stopPropagation()"
-      (keydown.enter)="$event.stopPropagation()"
-      tabindex="0"
-      (keyup.enter)="$event.stopPropagation()"
-    >
+    <div class="modal-content">
       <div class="modal-header">
         <lucide-icon [img]="CheckCircleIcon" size="32" class="success-icon"></lucide-icon>
         <h3>{{ successTitle() | translate }}</h3>

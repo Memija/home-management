@@ -165,7 +165,7 @@ describe('HeatingDataService', () => {
       await service.loadData();
 
       expect(mockStorageService.load).toHaveBeenCalledWith('heating_consumption_records');
-      expect(service.records().length).toBe(1);
+      expect(service.records()).toHaveLength(1);
       expect(service.records()[0].rooms['room_1']).toBe(100);
     });
 
@@ -192,7 +192,7 @@ describe('HeatingDataService', () => {
 
       await service.loadData();
 
-      expect(service.records()[0].date instanceof Date).toBe(true);
+      expect(service.records()[0].date).toBeInstanceOf(Date);
     });
   });
 
@@ -202,7 +202,7 @@ describe('HeatingDataService', () => {
 
       await service.saveRecord(newRecord, null);
 
-      expect(service.records().length).toBe(1);
+      expect(service.records()).toHaveLength(1);
       expect(service.records()[0]).toBe(newRecord);
     });
 
@@ -217,7 +217,7 @@ describe('HeatingDataService', () => {
       // Update it
       await service.saveRecord(updatedRecord, originalRecord);
 
-      expect(service.records().length).toBe(1);
+      expect(service.records()).toHaveLength(1);
       expect(service.records()[0].rooms['room_1']).toBe(200);
     });
 
@@ -250,7 +250,7 @@ describe('HeatingDataService', () => {
 
       await service.deleteRecord(record1);
 
-      expect(service.records().length).toBe(1);
+      expect(service.records()).toHaveLength(1);
       expect(service.records()[0].date.getTime()).toBe(record2.date.getTime());
     });
 
@@ -286,7 +286,7 @@ describe('HeatingDataService', () => {
 
       await service.deleteRecords([record1, record3]);
 
-      expect(service.records().length).toBe(1);
+      expect(service.records()).toHaveLength(1);
       expect(service.records()[0].date.getTime()).toBe(record2.date.getTime());
     });
 
@@ -296,7 +296,7 @@ describe('HeatingDataService', () => {
 
       await service.deleteRecords([]);
 
-      expect(service.records().length).toBe(1);
+      expect(service.records()).toHaveLength(1);
     });
   });
 
@@ -623,7 +623,7 @@ describe('HeatingDataService', () => {
 
       await service.importFromExcel(event);
 
-      expect(service.records().length).toBe(2);
+      expect(service.records()).toHaveLength(2);
     });
 
     it('should deduplicate records by date', async () => {
@@ -643,7 +643,7 @@ describe('HeatingDataService', () => {
 
       await service.importFromExcel(event);
 
-      expect(service.records().length).toBe(1);
+      expect(service.records()).toHaveLength(1);
       expect(service.records()[0].rooms['room_1']).toBe(200); // New value overwrites
     });
 

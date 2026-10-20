@@ -27,10 +27,10 @@ const MONTH_KEYS = [
   providedIn: 'root',
 })
 export class SmartImportService {
-  private languageService = inject(LanguageService);
+  private readonly languageService = inject(LanguageService);
 
   // Cache for month-to-index maps per language
-  private monthMapsCache = new Map<string, Map<string, number>>();
+  private readonly monthMapsCache = new Map<string, Map<string, number>>();
 
   constructor() {
     /* noop */
@@ -128,33 +128,32 @@ export class SmartImportService {
   private extractDate(line: string): Date | null {
     // Regex for DD.MM.YYYY (German/European)
     const deDateRegex = /(\d{1,2})\.(\d{1,2})\.(\d{4})/;
-    const deMatch = line.match(deDateRegex);
+    const deMatch = deDateRegex.exec(line);
     if (deMatch) {
-      const day = parseInt(deMatch[1], 10);
-      const month = parseInt(deMatch[2], 10) - 1; // Months are 0-indexed
-      const year = parseInt(deMatch[3], 10);
+      const day = Number.parseInt(deMatch[1], 10);
+      const month = Number.parseInt(deMatch[2], 10) - 1; // Months are 0-indexed
+      const year = Number.parseInt(deMatch[3], 10);
       return new Date(year, month, day);
     }
 
     // Regex for YYYY-MM-DD (ISO)
     const isoDateRegex = /(\d{4})-(\d{1,2})-(\d{1,2})/;
-    const isoMatch = line.match(isoDateRegex);
+    const isoMatch = isoDateRegex.exec(line);
     if (isoMatch) {
-      const year = parseInt(isoMatch[1], 10);
-      const month = parseInt(isoMatch[2], 10) - 1;
-      const day = parseInt(isoMatch[3], 10);
+      const year = Number.parseInt(isoMatch[1], 10);
+      const month = Number.parseInt(isoMatch[2], 10) - 1;
+      const day = Number.parseInt(isoMatch[3], 10);
       return new Date(year, month, day);
     }
 
     // Regex for text format: "1. Januar 2026" or "Donnerstag, 1. Januar 2026"
     // Uses \p{L} to match any Unicode letter (works for German, French, Spanish, etc.)
-    // eslint-disable-next-line security/detect-unsafe-regex -- bounded text date pattern
-    const textDateDayFirstRegex = /(?:\p{L}+,?\s+)?(\d{1,2})\.\s*(\p{L}+)\s+(\d{4})/iu;
-    const dayFirstMatch = line.match(textDateDayFirstRegex);
+    const textDateDayFirstRegex = /\b(\d{1,2})\.\s*(\p{L}+)\s+(\d{4})\b/iu;
+    const dayFirstMatch = textDateDayFirstRegex.exec(line);
     if (dayFirstMatch) {
-      const day = parseInt(dayFirstMatch[1], 10);
+      const day = Number.parseInt(dayFirstMatch[1], 10);
       const monthName = dayFirstMatch[2].toLowerCase();
-      const year = parseInt(dayFirstMatch[3], 10);
+      const year = Number.parseInt(dayFirstMatch[3], 10);
 
       const monthIndex = this.getMonthIndex(monthName);
       if (monthIndex !== undefined) {
@@ -164,13 +163,12 @@ export class SmartImportService {
 
     // Regex for text format: "January 1, 2026" or "Thursday, January 1, 2026"
     // Uses \p{L} to match any Unicode letter (works for any language)
-    // eslint-disable-next-line security/detect-unsafe-regex -- bounded text date pattern
-    const textDateMonthFirstRegex = /(?:\p{L}+,?\s+)?(\p{L}+)\s+(\d{1,2}),?\s+(\d{4})/iu;
-    const monthFirstMatch = line.match(textDateMonthFirstRegex);
+    const textDateMonthFirstRegex = /\b(\p{L}+)\s+(\d{1,2})(?:,\s*|\s+)(\d{4})\b/iu;
+    const monthFirstMatch = textDateMonthFirstRegex.exec(line);
     if (monthFirstMatch) {
       const monthName = monthFirstMatch[1].toLowerCase();
-      const day = parseInt(monthFirstMatch[2], 10);
-      const year = parseInt(monthFirstMatch[3], 10);
+      const day = Number.parseInt(monthFirstMatch[2], 10);
+      const year = Number.parseInt(monthFirstMatch[3], 10);
 
       const monthIndex = this.getMonthIndex(monthName);
       if (monthIndex !== undefined) {
@@ -235,20 +233,18 @@ export class SmartImportService {
 
     // Remove text date patterns (works for any language with Unicode \p{L})
     // Pattern 1: Day first - "1. Januar 2026", "Donnerstag, 1. Januar 2026", "1 janvier 2026"
-    // eslint-disable-next-line security/detect-unsafe-regex -- bounded text date pattern
-    lineWithoutDate = lineWithoutDate.replace(/(?:\p{L}+,?\s+)?\d{1,2}\.?\s*\p{L}+\s+\d{4}/giu, '');
+    lineWithoutDate = lineWithoutDate.replace(/\b\d{1,2}\.?\s*\p{L}+\s+\d{4}\b/giu, '');
     // Pattern 2: Month first - "January 1, 2026", "Thursday, January 1, 2026"
-    // eslint-disable-next-line security/detect-unsafe-regex -- bounded text date pattern
-    lineWithoutDate = lineWithoutDate.replace(/(?:\p{L}+,?\s+)?\p{L}+\s+\d{1,2},?\s+\d{4}/giu, '');
+    lineWithoutDate = lineWithoutDate.replace(/\b\p{L}+\s+\d{1,2}(?:,\s*|\s+)\d{4}\b/giu, '');
 
     // Find ALL sequences of digits that may contain . or ,
     // We match any sequence starting with a digit, containing digits, dots, or commas
     // Use global flag to find all matches, then take the LAST one (typically the value in tabular data)
-    const numberMatches = lineWithoutDate.match(/[0-9][0-9.,]*/g);
+    const numberMatches = lineWithoutDate.match(/\d[\d.,]*/g);
 
     if (numberMatches && numberMatches.length > 0) {
       // Take the last match - in tabular data, the value is usually the last number
-      let rawNumberString = numberMatches[numberMatches.length - 1];
+      let rawNumberString = numberMatches.at(-1)!;
 
       // Heuristic for "Whole Numbers Only" from formatted strings:
       // If the string contains BOTH . and , (e.g. 12,632.00 or 1.234,56)
@@ -267,7 +263,7 @@ export class SmartImportService {
 
         const separator = rawNumberString.includes('.') ? '.' : ',';
         const parts = rawNumberString.split(separator);
-        const lastPart = parts[parts.length - 1];
+        const lastPart = parts.at(-1)!;
 
         // If the part after the last separator has exactly 2 digits, assume it's cents/decimals -> Truncate.
         // If it has 1 digit, assume decimal -> Truncate.
@@ -284,9 +280,9 @@ export class SmartImportService {
       const strippedString = rawNumberString.replace(/[.,]/g, '');
 
       // Parse as integer
-      const value = parseInt(strippedString, 10);
+      const value = Number.parseInt(strippedString, 10);
 
-      if (!isNaN(value)) {
+      if (!Number.isNaN(value)) {
         return value;
       }
     }

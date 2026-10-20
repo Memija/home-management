@@ -21,7 +21,7 @@ import {
   LockOpen,
   Download,
   Upload,
-  HelpCircle,
+  CircleQuestionMark,
 } from 'lucide-angular';
 import { TranslatePipe } from '../../pipes/translate.pipe';
 import { HelpModalComponent, HelpStep } from '../help-modal/help-modal.component';
@@ -36,8 +36,8 @@ import { LanguageService } from '../../services/language.service';
   styleUrl: './heating-rooms-modal.component.scss',
 })
 export class HeatingRoomsModalComponent {
-  private languageService = inject(LanguageService);
-  private roomsService = inject(HeatingRoomsService);
+  private readonly languageService = inject(LanguageService);
+  private readonly roomsService = inject(HeatingRoomsService);
 
   protected readonly XIcon = X;
   protected readonly PlusIcon = Plus;
@@ -48,7 +48,7 @@ export class HeatingRoomsModalComponent {
   protected readonly LockOpenIcon = LockOpen;
   protected readonly DownloadIcon = Download;
   protected readonly UploadIcon = Upload;
-  protected readonly HelpIcon = HelpCircle;
+  protected readonly HelpIcon = CircleQuestionMark;
 
   // Inputs
   @Input() set show(val: boolean) {
@@ -57,7 +57,7 @@ export class HeatingRoomsModalComponent {
   get show(): boolean {
     return this.showSignal();
   }
-  protected showSignal = signal(false);
+  protected readonly showSignal = signal(false);
 
   @Input() set rooms(val: HeatingRoomConfig[]) {
     this.roomsSignal.set(val || []);
@@ -65,7 +65,7 @@ export class HeatingRoomsModalComponent {
   get rooms(): HeatingRoomConfig[] {
     return this.roomsSignal();
   }
-  protected roomsSignal = signal<HeatingRoomConfig[]>([]);
+  protected readonly roomsSignal = signal<HeatingRoomConfig[]>([]);
 
   @Input() set maxRooms(val: number) {
     this.maxRoomsSignal.set(val);
@@ -73,7 +73,7 @@ export class HeatingRoomsModalComponent {
   get maxRooms(): number {
     return this.maxRoomsSignal();
   }
-  protected maxRoomsSignal = signal<number>(10);
+  protected readonly maxRoomsSignal = signal<number>(10);
 
   @Input() set roomsWithDataArray(val: string[]) {
     this.roomsWithDataArraySignal.set(val || []);
@@ -81,10 +81,10 @@ export class HeatingRoomsModalComponent {
   get roomsWithDataArray(): string[] {
     return this.roomsWithDataArraySignal();
   }
-  protected roomsWithDataArraySignal = signal<string[]>([]);
+  protected readonly roomsWithDataArraySignal = signal<string[]>([]);
 
   // Cached version of roomsWithData - stored when modal opens to avoid reactivity issues
-  private cachedRoomsWithData = signal<Set<string>>(new Set());
+  private readonly cachedRoomsWithData = signal<Set<string>>(new Set());
 
   readonly MAX_ROOM_NAME_LENGTH = 125;
 
@@ -93,18 +93,18 @@ export class HeatingRoomsModalComponent {
   @Output() cancelModal = new EventEmitter<void>();
 
   // Local editing state (copy of rooms for editing)
-  protected editingRooms = signal<HeatingRoomConfig[]>([]);
-  protected hasChanges = signal(false);
+  protected readonly editingRooms = signal<HeatingRoomConfig[]>([]);
+  protected readonly hasChanges = signal(false);
 
   // Lock state: tracks which rooms with data have been unlocked for editing
-  protected unlockedRooms = signal<Set<string>>(new Set());
-  protected pendingUnlockRoomId = signal<string | null>(null);
+  protected readonly unlockedRooms = signal<Set<string>>(new Set());
+  protected readonly pendingUnlockRoomId = signal<string | null>(null);
 
   // Discard warning
-  protected showDiscardWarning = signal(false);
+  protected readonly showDiscardWarning = signal(false);
 
   // Help modal
-  protected showHelpModal = signal(false);
+  protected readonly showHelpModal = signal(false);
   protected readonly helpSteps: HelpStep[] = [
     {
       titleKey: 'HEATING.HELP.ROOM_MANAGEMENT_TITLE',
@@ -218,13 +218,13 @@ export class HeatingRoomsModalComponent {
   protected addRoom(): void {
     if (!this.canAddRoom()) return;
 
-    const existingIds = this.editingRooms().map((r) => r.id);
+    const existingIds = new Set(this.editingRooms().map((r) => r.id));
     let newId = '';
     let counter = 1;
     do {
       newId = `room_${counter}`;
       counter++;
-    } while (existingIds.includes(newId));
+    } while (existingIds.has(newId));
 
     // Get next predefined name from translation, or fallback to Room N
     const roomIndex = this.editingRooms().length;

@@ -165,23 +165,12 @@ describe('HeatingFactsService', () => {
       expect(fact1?.message).not.toBe(fact2?.message);
     });
 
-    it('should fallback to DEFAULT facts for unknown country code', () => {
-      const fact = service.getFactByIndex(100, 0, 'country', 'XX');
-      expect(fact).toBeDefined();
-      expect(fact).not.toBeNull();
-      // Should return a DEFAULT fact, not null
-      expect(fact?.message).toBeTruthy();
-    });
-
-    it('should fallback to DEFAULT facts when no country code provided', () => {
-      const fact = service.getFactByIndex(100, 0, 'country', undefined);
-      expect(fact).toBeDefined();
-      expect(fact).not.toBeNull();
-      expect(fact?.message).toBeTruthy();
-    });
-
-    it('should fallback to DEFAULT facts for empty string country code', () => {
-      const fact = service.getFactByIndex(100, 0, 'country', '');
+    it.each([
+      { code: 'XX', desc: 'unknown country code' },
+      { code: undefined, desc: 'undefined country code' },
+      { code: '', desc: 'empty string country code' },
+    ])('should fallback to DEFAULT facts for $desc', ({ code }) => {
+      const fact = service.getFactByIndex(100, 0, 'country', code);
       expect(fact).toBeDefined();
       expect(fact).not.toBeNull();
       expect(fact?.message).toBeTruthy();
@@ -214,23 +203,14 @@ describe('HeatingFactsService', () => {
   });
 
   describe('Language Switching', () => {
-    it('should return English facts by default', () => {
-      mockCurrentLangSignal.set('en');
+    it.each([
+      { lang: 'en', title: 'Did you know?' },
+      { lang: 'de', title: 'Wussten Sie schon?' },
+      { lang: 'fr', title: 'Did you know?' },
+    ])('should return expected title for language $lang', ({ lang, title }) => {
+      mockCurrentLangSignal.set(lang);
       const fact = service.getFactByIndex(100, 0, 'country', 'DE');
-      expect(fact?.title).toBe('Did you know?');
-    });
-
-    it('should return German facts when language is de', () => {
-      mockCurrentLangSignal.set('de');
-      const fact = service.getFactByIndex(100, 0, 'country', 'DE');
-      expect(fact?.title).toBe('Wussten Sie schon?');
-    });
-
-    it('should fallback to English for unknown language codes', () => {
-      mockCurrentLangSignal.set('fr');
-      const fact = service.getFactByIndex(100, 0, 'country', 'DE');
-      // Should use English as fallback (not de)
-      expect(fact?.title).toBe('Did you know?');
+      expect(fact?.title).toBe(title);
     });
   });
 

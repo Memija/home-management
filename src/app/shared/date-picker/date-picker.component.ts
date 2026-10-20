@@ -23,9 +23,9 @@ import { LucideAngularModule, ChevronLeft, ChevronRight, Calendar } from 'lucide
   styleUrl: './date-picker.component.scss',
 })
 export class DatePickerComponent {
-  private languageService = inject(LanguageService);
-  private datePipe = inject(DatePipe);
-  private eRef = inject(ElementRef);
+  private readonly languageService = inject(LanguageService);
+  private readonly datePipe = inject(DatePipe);
+  private readonly eRef = inject(ElementRef);
 
   // Inputs
   @Input() set date(val: string) {
@@ -34,7 +34,7 @@ export class DatePickerComponent {
   get date(): string {
     return this.dateSignal();
   }
-  protected dateSignal = signal<string>('');
+  protected readonly dateSignal = signal<string>('');
 
   @Input() set maxDate(val: string) {
     this.maxDateSignal.set(val || '');
@@ -42,7 +42,7 @@ export class DatePickerComponent {
   get maxDate(): string {
     return this.maxDateSignal();
   }
-  protected maxDateSignal = signal<string>('');
+  protected readonly maxDateSignal = signal<string>('');
 
   @Input() set placeholder(val: string) {
     this.placeholderSignal.set(val || 'Select date');
@@ -50,7 +50,7 @@ export class DatePickerComponent {
   get placeholder(): string {
     return this.placeholderSignal();
   }
-  protected placeholderSignal = signal<string>('Select date');
+  protected readonly placeholderSignal = signal<string>('Select date');
 
   @Input() set disabled(val: boolean) {
     this.disabledSignal.set(val);
@@ -58,14 +58,14 @@ export class DatePickerComponent {
   get disabled(): boolean {
     return this.disabledSignal();
   }
-  protected disabledSignal = signal<boolean>(false);
+  protected readonly disabledSignal = signal<boolean>(false);
 
   // Outputs
   @Output() dateChange = new EventEmitter<string>();
 
   // State
-  isOpen = signal(false);
-  viewDate = signal(new Date()); // Current month view
+  readonly isOpen = signal(false);
+  readonly viewDate = signal(new Date()); // Current month view
 
   protected readonly ChevronLeftIcon = ChevronLeft;
   protected readonly ChevronRightIcon = ChevronRight;

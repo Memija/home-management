@@ -2,6 +2,23 @@ import { TestBed } from '@angular/core/testing';
 import { FileStorageService } from './file-storage.service';
 import { describe, it, expect, beforeEach, vi, afterEach } from 'vitest';
 
+if (typeof Blob !== 'undefined' && !Blob.prototype.text) {
+  Blob.prototype.text = function () {
+    return new Promise<string>((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        const res = (event?.target as { result?: string })?.result ?? reader.result;
+        resolve((res ?? '') as string);
+      };
+      reader.onerror = () => reject(new Error('Failed to read file'));
+      reader.readAsText(this);
+    });
+  };
+}
+if (typeof File !== 'undefined' && !File.prototype.text) {
+  File.prototype.text = Blob.prototype.text;
+}
+
 describe('FileStorageService', () => {
   let service: FileStorageService;
 
@@ -121,11 +138,10 @@ describe('FileStorageService', () => {
     });
 
     it('should reject on file read error', async () => {
-      const cleanup = mockFileReader('', true);
       const file = new File([''], 'test.json', { type: 'application/json' });
+      vi.spyOn(file, 'text').mockRejectedValue(new Error('Read error'));
 
       await expect(service.importFromFile(file)).rejects.toThrow('Failed to read file');
-      cleanup();
     });
   });
 

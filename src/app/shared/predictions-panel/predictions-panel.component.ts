@@ -16,6 +16,9 @@ import {
 } from 'lucide-angular';
 import { MultiPredictionResult } from '../../services/prediction.service';
 
+export type PredictionPeriod = 30 | 90 | 180 | 365 | 3650;
+export type PredictionConsumptionType = 'water' | 'electricity' | 'heating';
+
 @Component({
   selector: 'app-predictions-panel',
   standalone: true,
@@ -43,18 +46,18 @@ export class PredictionsPanelComponent {
   });
 
   /** Currently selected prediction period (30, 90, 180, 365, 3650 days) */
-  selectedPeriod = input<30 | 90 | 180 | 365 | 3650>(30);
+  selectedPeriod = input<PredictionPeriod>(30);
 
   /** Emits when the user selects a different period */
-  periodChange = output<30 | 90 | 180 | 365 | 3650>();
+  readonly periodChange = output<PredictionPeriod>();
 
   /** Select a prediction period */
-  protected selectPeriod(period: 30 | 90 | 180 | 365 | 3650): void {
+  protected selectPeriod(period: PredictionPeriod): void {
     this.periodChange.emit(period);
   }
 
   /** The consumption type — determines accent color and unit labels */
-  type = input<'water' | 'electricity' | 'heating'>('water');
+  type = input<PredictionConsumptionType>('water');
 
   /** Minimum records needed (used for empty state message) */
   minRecords = input<number>(4);

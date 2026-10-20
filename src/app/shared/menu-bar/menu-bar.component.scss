@@ -30,7 +30,15 @@
     align-items: center;
     gap: 0.35rem;
     overflow-x: auto;
-    @include hide-scrollbar;
+    -ms-overflow-style: none;
+
+    @supports (scrollbar-width: none) {
+      scrollbar-width: none;
+    }
+
+    &::-webkit-scrollbar {
+      display: none;
+    }
   }
 
   .menu-item {

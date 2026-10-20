@@ -251,22 +251,24 @@
     flex: 1 1 100%;
 
     app-date-picker {
-      flex: 1 1 50% !important;
-      width: 50% !important;
-      min-width: 0 !important;
+      flex: 1 1 50%;
+      width: 50%;
+      min-width: 0;
 
       &:last-child ::ng-deep .calendar-popup {
-        left: auto !important;
-        right: 0 !important;
+        left: auto;
+        right: 0;
       }
     }
   }
 
-  #year-filter {
-    width: 98px !important;
-  }
-  #month-filter {
-    width: 110px !important;
+  .filter-box {
+    #year-filter {
+      width: 98px;
+    }
+    #month-filter {
+      width: 110px;
+    }
   }
 
   .sort-group {
@@ -275,7 +277,8 @@
     margin-left: 0;
 
     select {
-      width: 100% !important;
+      width: 100%;
+      max-width: none;
     }
   }
 

@@ -91,12 +91,12 @@
 
 .delete-all-btn {
   @extend %btn-surface;
-  background: rgba(220, 53, 69, 0.08);
+  background: #fef2f2;
   border-color: rgba(220, 53, 69, 0.25);
-  color: #b02a37;
+  color: #991b1b;
 
   lucide-icon {
-    color: #b02a37;
+    color: #991b1b;
     transition: color 0.2s ease;
   }
 
@@ -218,9 +218,9 @@
   }
 
   &:hover:not(:disabled) {
-    background: rgba(220, 53, 69, 0.08);
+    background: #fef2f2;
     border-color: rgba(220, 53, 69, 0.35);
-    color: #dc3545;
+    color: #991b1b;
     box-shadow: 0 2px 8px rgba(220, 53, 69, 0.18);
   }
 }
@@ -234,9 +234,9 @@
   }
 
   &:hover:not(:disabled) {
-    background: rgba(33, 115, 70, 0.08);
+    background: #f0fdf4;
     border-color: rgba(33, 115, 70, 0.35);
-    color: #217346;
+    color: #166534;
     box-shadow: 0 2px 8px rgba(33, 115, 70, 0.18);
   }
 }
@@ -250,20 +250,20 @@
   }
 
   &:hover:not(:disabled) {
-    background: rgba(124, 58, 237, 0.08);
+    background: #faf5ff;
     border-color: rgba(124, 58, 237, 0.35);
-    color: #7c3aed;
+    color: #5b21b6;
     box-shadow: 0 2px 8px rgba(124, 58, 237, 0.18);
   }
 }
 
 label.upload-btn,
 .upload-btn {
-  display: inline-flex !important;
+  display: inline-flex;
   align-items: center;
   justify-content: center;
   gap: 0.45rem;
-  width: fit-content !important;
+  width: fit-content;
   height: 32px;
   padding: 0.35rem 0.85rem;
   background: var(--card-bg);
@@ -569,29 +569,29 @@ label.upload-btn,
   .save-btn,
   .btn-confirm,
   .submit-add-btn {
-    color: #0f172a !important;
+    color: #0f172a;
     font-weight: 600;
 
     lucide-icon {
-      color: #0f172a !important;
+      color: #0f172a;
     }
 
     &:hover:not(:disabled) {
-      color: #0f172a !important;
+      color: #0f172a;
 
       lucide-icon {
-        color: #0f172a !important;
+        color: #0f172a;
       }
     }
   }
 
   .delete-all-btn {
-    background: rgba(248, 113, 113, 0.12);
+    background: #450a0a;
     border-color: rgba(248, 113, 113, 0.3);
-    color: #fca5a5;
+    color: #fecaca;
 
     lucide-icon {
-      color: #fca5a5;
+      color: #fecaca;
     }
 
     &:hover:not(:disabled) {
@@ -607,37 +607,37 @@ label.upload-btn,
 
   .json-btn {
     lucide-icon {
-      color: #a78bfa;
+      color: #c4b5fd;
     }
 
     &:hover:not(:disabled) {
-      background: rgba(167, 139, 250, 0.12);
+      background: #2e1065;
       border-color: rgba(167, 139, 250, 0.4);
-      color: #c4b5fd;
+      color: #ddd6fe;
     }
   }
 
   .excel-btn {
     lucide-icon {
-      color: #34d399;
+      color: #6ee7b7;
     }
 
     &:hover:not(:disabled) {
-      background: rgba(52, 211, 153, 0.12);
+      background: #064e3b;
       border-color: rgba(52, 211, 153, 0.4);
-      color: #6ee7b7;
+      color: #a7f3d0;
     }
   }
 
   .pdf-btn {
     lucide-icon {
-      color: #fb7185;
+      color: #fda4af;
     }
 
     &:hover:not(:disabled) {
-      background: rgba(251, 113, 133, 0.12);
+      background: #4c0519;
       border-color: rgba(251, 113, 133, 0.4);
-      color: #fda4af;
+      color: #fecdd3;
     }
   }
 }

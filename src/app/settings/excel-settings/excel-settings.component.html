@@ -56,16 +56,12 @@
   <!-- Column Mapping Preview (when enabled and not editing) -->
   @if (enabled()) {
     <div class="column-preview">
-      <div
-        class="preview-header"
-        (click)="togglePreview()"
-        tabindex="0"
-        (keyup.enter)="togglePreview()"
-      >
+      <div class="preview-header">
         <h3>{{ 'SETTINGS.EXCEL_COLUMN_MAPPING' | translate }}</h3>
         <button
           class="toggle-preview-btn"
           type="button"
+          (click)="togglePreview()"
           title="{{
             (isPreviewCollapsed()
               ? 'SETTINGS.EXPAND_COLUMN_MAPPING'
@@ -175,13 +171,13 @@
 
   <!-- Edit Modal -->
   @if (showModal()) {
-    <div class="modal-overlay" (click)="closeModal()" tabindex="0" (keyup.enter)="closeModal()">
-      <div
-        class="modal-content modal-lg"
-        (click)="$event.stopPropagation()"
-        tabindex="0"
-        (keyup.enter)="$event.stopPropagation()"
-      >
+    <!-- eslint-disable-next-line @angular-eslint/template/interactive-supports-focus -- Backdrop dismissal by design -->
+    <div
+      class="modal-overlay"
+      (click)="$event.target === $event.currentTarget && closeModal()"
+      (keydown.escape)="closeModal()"
+    >
+      <div class="modal-content modal-lg">
         <div class="modal-header">
           <h3>{{ 'SETTINGS.EDIT_EXCEL_SETTINGS' | translate }}</h3>
           <button

@@ -43,11 +43,12 @@ describe('ThemeService', () => {
       writable: true,
     });
 
-    // Mock document attributes
-    document.documentElement.setAttribute = vi.fn();
+    // Reset theme attribute
+    delete document.documentElement.dataset['theme'];
   });
 
   afterEach(() => {
+    delete document.documentElement.dataset['theme'];
     vi.restoreAllMocks();
   });
 
@@ -90,7 +91,7 @@ describe('ThemeService', () => {
   it('should apply theme to document', () => {
     mockLocalStorage.getItem.mockReturnValue('dark');
     service = setupService();
-    expect(document.documentElement.setAttribute).toHaveBeenCalledWith('data-theme', 'dark');
+    expect(document.documentElement.dataset['theme']).toBe('dark');
   });
 
   it('should set theme and update storage', () => {
@@ -99,7 +100,7 @@ describe('ThemeService', () => {
     expect(service.currentTheme()).toBe('dark');
     expect(service.resolvedTheme()).toBe('dark');
     expect(mockLocalStorage.setItem).toHaveBeenCalledWith('hm_theme', 'dark');
-    expect(document.documentElement.setAttribute).toHaveBeenCalledWith('data-theme', 'dark');
+    expect(document.documentElement.dataset['theme']).toBe('dark');
   });
 
   it('should toggle theme', () => {
@@ -126,7 +127,7 @@ describe('ThemeService', () => {
     listener({ matches: true } as MediaQueryListEvent); // System changes to dark
 
     expect(service.resolvedTheme()).toBe('dark');
-    expect(document.documentElement.setAttribute).toHaveBeenCalledWith('data-theme', 'dark');
+    expect(document.documentElement.dataset['theme']).toBe('dark');
   });
 
   it('should not update if system theme changes but user overrides', () => {

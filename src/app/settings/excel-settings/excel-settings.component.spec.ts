@@ -290,7 +290,7 @@ describe('ExcelSettingsComponent', () => {
     });
 
     it('should have 4 help steps', () => {
-      expect(component['helpSteps'].length).toBe(4);
+      expect(component['helpSteps']).toHaveLength(4);
     });
 
     it('should have enabled set to false by default', () => {
@@ -494,25 +494,15 @@ describe('ExcelSettingsComponent', () => {
   // Duplicate Checks
   // ========================================================================
   describe('Duplicate detection', () => {
-    it('isDuplicateWater should delegate to validation service', () => {
-      validationServiceMock.isDuplicate.mockReturnValue(true);
-      const result = component['isDuplicateWater']('Date');
+    it.each([
+      { method: 'isDuplicateWater' as const, expected: true },
+      { method: 'isDuplicateHeating' as const, expected: false },
+      { method: 'isDuplicateElectricity' as const, expected: true },
+    ])('$method should delegate to validation service', ({ method, expected }) => {
+      validationServiceMock.isDuplicate.mockReturnValue(expected);
+      const result = component[method]('Date');
       expect(validationServiceMock.isDuplicate).toHaveBeenCalled();
-      expect(result).toBe(true);
-    });
-
-    it('isDuplicateHeating should delegate to validation service', () => {
-      validationServiceMock.isDuplicate.mockReturnValue(false);
-      const result = component['isDuplicateHeating']('Date');
-      expect(validationServiceMock.isDuplicate).toHaveBeenCalled();
-      expect(result).toBe(false);
-    });
-
-    it('isDuplicateElectricity should delegate to validation service', () => {
-      validationServiceMock.isDuplicate.mockReturnValue(true);
-      const result = component['isDuplicateElectricity']('Date');
-      expect(validationServiceMock.isDuplicate).toHaveBeenCalled();
-      expect(result).toBe(true);
+      expect(result).toBe(expected);
     });
 
     it('isDuplicateWater should pass water columns to validation service', () => {
@@ -545,18 +535,17 @@ describe('ExcelSettingsComponent', () => {
   // onEnabledChange
   // ========================================================================
   describe('onEnabledChange', () => {
-    it('should update enabled signal from checkbox event', () => {
-      const event = { target: { checked: true } } as unknown as Event;
-      component['onEnabledChange'](event);
-      expect(component['enabled']()).toBe(true);
-    });
-
-    it('should update enabled signal to false from checkbox event', () => {
-      component['enabled'].set(true);
-      const event = { target: { checked: false } } as unknown as Event;
-      component['onEnabledChange'](event);
-      expect(component['enabled']()).toBe(false);
-    });
+    it.each([true, false])(
+      'should update enabled signal from checkbox event when checked is %s',
+      (checked) => {
+        if (!checked) {
+          component['enabled'].set(true);
+        }
+        const event = { target: { checked } } as unknown as Event;
+        component['onEnabledChange'](event);
+        expect(component['enabled']()).toBe(checked);
+      },
+    );
 
     it('should call updateSettings with current enabled state', () => {
       const event = { target: { checked: true } } as unknown as Event;
@@ -655,51 +644,18 @@ describe('ExcelSettingsComponent', () => {
       expect(component.hasUnsavedChanges()).toBe(false);
     });
 
-    it('should return true when waterDateCol is changed', () => {
+    it.each([
+      { field: 'waterDateCol' as const },
+      { field: 'waterKitchenWarmCol' as const },
+      { field: 'waterKitchenColdCol' as const },
+      { field: 'waterBathroomWarmCol' as const },
+      { field: 'waterBathroomColdCol' as const },
+      { field: 'heatingDateCol' as const },
+      { field: 'electricityDateCol' as const },
+      { field: 'electricityValueCol' as const },
+    ])('should return true when $field is changed', ({ field }) => {
       component['showModal'].set(true);
-      component['waterDateCol'].set('Changed');
-      expect(component.hasUnsavedChanges()).toBe(true);
-    });
-
-    it('should return true when waterKitchenWarmCol is changed', () => {
-      component['showModal'].set(true);
-      component['waterKitchenWarmCol'].set('Changed');
-      expect(component.hasUnsavedChanges()).toBe(true);
-    });
-
-    it('should return true when waterKitchenColdCol is changed', () => {
-      component['showModal'].set(true);
-      component['waterKitchenColdCol'].set('Changed');
-      expect(component.hasUnsavedChanges()).toBe(true);
-    });
-
-    it('should return true when waterBathroomWarmCol is changed', () => {
-      component['showModal'].set(true);
-      component['waterBathroomWarmCol'].set('Changed');
-      expect(component.hasUnsavedChanges()).toBe(true);
-    });
-
-    it('should return true when waterBathroomColdCol is changed', () => {
-      component['showModal'].set(true);
-      component['waterBathroomColdCol'].set('Changed');
-      expect(component.hasUnsavedChanges()).toBe(true);
-    });
-
-    it('should return true when heatingDateCol is changed', () => {
-      component['showModal'].set(true);
-      component['heatingDateCol'].set('Changed');
-      expect(component.hasUnsavedChanges()).toBe(true);
-    });
-
-    it('should return true when electricityDateCol is changed', () => {
-      component['showModal'].set(true);
-      component['electricityDateCol'].set('Changed');
-      expect(component.hasUnsavedChanges()).toBe(true);
-    });
-
-    it('should return true when electricityValueCol is changed', () => {
-      component['showModal'].set(true);
-      component['electricityValueCol'].set('Changed');
+      component[field].set('Changed');
       expect(component.hasUnsavedChanges()).toBe(true);
     });
 
@@ -1132,12 +1088,12 @@ describe('ExcelSettingsComponent', () => {
     });
 
     it('should show error modal when validateImportedSettings throws', async () => {
-      const importError: ImportError = {
+      const importError = new ImportError({
         message: 'SETTINGS.IMPORT_VALIDATION_ERROR',
         details: 'Missing fields',
         fieldKeys: ['field1'],
         hintKeys: ['hint1'],
-      };
+      });
       importServiceMock.validateImportedSettings.mockImplementation(() => {
         throw importError;
       });
@@ -1357,7 +1313,7 @@ describe('ExcelSettingsComponent', () => {
       component['saveSettings']();
 
       const calledWith = excelSettingsServiceMock.updateSettings.mock.calls[0][0];
-      expect(Object.keys(calledWith.heatingMapping.rooms).length).toBe(10);
+      expect(Object.keys(calledWith.heatingMapping.rooms)).toHaveLength(10);
     });
 
     it('should handle concurrent modal operations gracefully', () => {

@@ -101,16 +101,10 @@ describe('ExcelValidationService', () => {
       expect(result.isValid).toBe(true);
     });
 
-    it('should return invalid if some fields empty', () => {
-      const water = ['A', ''];
-      const heating = ['C', 'D'];
-      const result = service.validateMappings(water, heating);
-      expect(result.isValid).toBe(false);
-      expect(result.errorKey).toBe('EXCEL.VALIDATION_FORM_INVALID');
-    });
-
-    it('should return invalid if some fields have invalid format', () => {
-      const water = ['A*', 'B'];
+    it.each([
+      { water: ['A', ''], desc: 'some fields empty' },
+      { water: ['A*', 'B'], desc: 'some fields have invalid format' },
+    ])('should return invalid if $desc', ({ water }) => {
       const heating = ['C', 'D'];
       const result = service.validateMappings(water, heating);
       expect(result.isValid).toBe(false);

@@ -28,8 +28,24 @@ describe('ExcelService', () => {
 
   const mockFileReader = (data: unknown) => {
     const originalFileReader = window.FileReader;
+    const originalArrayBuffer = window.File.prototype.arrayBuffer;
+
+    window.File.prototype.arrayBuffer = function () {
+      if (typeof data === 'string') {
+        const buf = new Uint8Array(data.length);
+        for (let i = 0; i < data.length; i++) {
+          buf[i] = data.charCodeAt(i) & 0xff;
+        }
+        return Promise.resolve(buf.buffer);
+      }
+      if (data instanceof ArrayBuffer) {
+        return Promise.resolve(data);
+      }
+      return Promise.resolve(new ArrayBuffer(0));
+    };
+
     window.FileReader = class {
-      readAsBinaryString() {
+      readAsArrayBuffer() {
         setTimeout(() => {
           if (this.onload) {
             this.onload({
@@ -43,6 +59,7 @@ describe('ExcelService', () => {
     } as unknown as typeof FileReader;
     return () => {
       window.FileReader = originalFileReader;
+      window.File.prototype.arrayBuffer = originalArrayBuffer;
     };
   };
 
@@ -214,7 +231,7 @@ describe('ExcelService', () => {
 
       cleanup();
 
-      expect(result.records.length).toBe(1);
+      expect(result.records).toHaveLength(1);
       expect(result.records[0].kitchenWarm).toBe(10);
     });
 
@@ -324,7 +341,7 @@ describe('ExcelService', () => {
       const result = await service.importHeatingFromExcel(file);
       cleanup();
 
-      expect(result.records.length).toBe(1);
+      expect(result.records).toHaveLength(1);
       expect(result.records[0].rooms['room_1']).toBe(10);
     });
 
@@ -364,7 +381,7 @@ describe('ExcelService', () => {
       const result = await service.importElectricityFromExcel(file);
       cleanup();
 
-      expect(result.records.length).toBe(1);
+      expect(result.records).toHaveLength(1);
       expect(result.records[0].value).toBe(100);
     });
 

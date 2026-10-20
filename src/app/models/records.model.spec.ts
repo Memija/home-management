@@ -165,7 +165,7 @@ describe('Records Model Utils', () => {
 
       const { filtered, skippedCount } = filterZeroPlaceholders(records, isAllZero);
 
-      expect(filtered.length).toBe(2);
+      expect(filtered).toHaveLength(2);
       expect(filtered[0].val).toBe(10);
       expect(filtered[1].val).toBe(5);
       expect(skippedCount).toBe(2);
@@ -180,13 +180,13 @@ describe('Records Model Utils', () => {
 
       const { filtered, skippedCount } = filterZeroPlaceholders(records, isAllZero);
 
-      expect(filtered.length).toBe(2);
+      expect(filtered).toHaveLength(2);
       expect(skippedCount).toBe(0);
     });
 
     it('should handle empty records in filterZeroPlaceholders', () => {
       const { filtered, skippedCount } = filterZeroPlaceholders([], () => true);
-      expect(filtered.length).toBe(0);
+      expect(filtered).toHaveLength(0);
       expect(skippedCount).toBe(0);
     });
 
@@ -195,7 +195,7 @@ describe('Records Model Utils', () => {
       const incoming: TestRecord[] = [{ date: new Date('2023-01-02'), val: 2 }];
 
       const result = mergeRecords(existing, incoming);
-      expect(result.length).toBe(2);
+      expect(result).toHaveLength(2);
       expect(result[0].val).toBe(1);
       expect(result[1].val).toBe(2);
     });
@@ -205,7 +205,7 @@ describe('Records Model Utils', () => {
       const incoming: TestRecord[] = [{ date: new Date('2023-01-01'), val: 2 }];
 
       const result = mergeRecords(existing, incoming);
-      expect(result.length).toBe(1);
+      expect(result).toHaveLength(1);
       expect(result[0].val).toBe(2);
     });
 
@@ -217,7 +217,7 @@ describe('Records Model Utils', () => {
       ];
 
       const result = mergeRecords(existing, incoming);
-      expect(result.length).toBe(3);
+      expect(result).toHaveLength(3);
       expect(result[0].val).toBe(1);
       expect(result[1].val).toBe(2);
       expect(result[2].val).toBe(3);

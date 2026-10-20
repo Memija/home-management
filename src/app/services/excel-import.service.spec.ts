@@ -376,11 +376,11 @@ describe('ExcelImportService', () => {
     });
 
     it('should map generic validation error with details', () => {
-      const error: ImportError = {
+      const error = new ImportError({
         message: 'Validation Failed',
         details: 'Details...',
         hintKeys: ['HINT1'],
-      };
+      });
       const result = service.mapImportError(error);
       expect(result.message).toBe('Validation Failed');
       expect(result.details).toBe('Details...');
@@ -442,7 +442,7 @@ describe('ExcelImportService', () => {
       };
 
       const result = service.validateImportedSettings(validData);
-      expect(Object.keys(result.heatingMapping.rooms).length).toBe(4);
+      expect(Object.keys(result.heatingMapping.rooms)).toHaveLength(4);
     });
 
     it('should throw on empty rooms object', () => {

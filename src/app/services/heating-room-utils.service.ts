@@ -8,7 +8,7 @@ import {
   Briefcase,
   DoorOpen,
   UtensilsCrossed,
-  Home,
+  House,
   type LucideIconData,
 } from 'lucide-angular';
 import { HeatingRoomConfig } from './heating-rooms.service';
@@ -27,7 +27,7 @@ const ROOM_TYPE_ICONS: Record<string, LucideIconData> = {
   'HEATING.ROOM_GUEST_ROOM': DoorOpen,
   'HEATING.ROOM_DINING_ROOM': UtensilsCrossed,
   'HEATING.ROOM_HALLWAY': DoorOpen,
-  'HEATING.ROOM_ATTIC': Home,
+  'HEATING.ROOM_ATTIC': House,
 };
 
 /**
@@ -56,7 +56,7 @@ const DEFAULT_ROOM_COLOR = { border: '#ffa726', bg: 'rgba(255, 167, 38, 0.1)' };
   providedIn: 'root',
 })
 export class HeatingRoomUtilsService {
-  private languageService = inject(LanguageService);
+  private readonly languageService = inject(LanguageService);
 
   /**
    * Get the icon for a room based on its type or name heuristics.
@@ -104,7 +104,7 @@ export class HeatingRoomUtilsService {
       }
     }
 
-    return Home;
+    return House;
   }
 
   /**

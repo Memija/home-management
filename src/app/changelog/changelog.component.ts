@@ -3,12 +3,13 @@ import { TranslatePipe } from '../pipes/translate.pipe';
 import {
   LucideAngularModule,
   Camera,
-  CheckCircle2,
+  CircleCheck,
   History,
   Droplets,
   Maximize2,
   Brain,
   Zap,
+  ShieldCheck,
   LucideIconData,
 } from 'lucide-angular';
 
@@ -29,7 +30,7 @@ interface ChangelogEntry {
 })
 export class ChangelogComponent {
   readonly HistoryIcon = History;
-  readonly CheckCircleIcon = CheckCircle2;
+  readonly CheckCircleIcon = CircleCheck;
 
   readonly versions: { version: string; labelKey: string; entries: ChangelogEntry[] }[] = [
     {
@@ -41,6 +42,13 @@ export class ChangelogComponent {
           titleKey: 'RELEASE_PLAN.FEATURE_5_TITLE',
           descKey: 'RELEASE_PLAN.FEATURE_5_DESC',
           icon: Zap,
+          colorClass: 'enhancement-feature',
+        },
+        {
+          id: 6,
+          titleKey: 'RELEASE_PLAN.FEATURE_6_TITLE',
+          descKey: 'RELEASE_PLAN.FEATURE_6_DESC',
+          icon: ShieldCheck,
           colorClass: 'enhancement-feature',
         },
       ],

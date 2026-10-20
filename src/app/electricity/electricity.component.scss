@@ -14,10 +14,6 @@ $electricity-primary-dark: #713f12; // Darken for hover
   --theme-primary-rgb: 250, 204, 21;
 }
 
-.detailed-value {
-  color: $electricity-primary !important;
-}
-
 .chart-section .chart-header .chart-filters button {
   &:hover {
     border-color: $electricity-primary;
@@ -60,13 +56,13 @@ $electricity-primary-dark: #713f12; // Darken for hover
 
 // Ensure proper white text contrast with #a16207
 :host ::ng-deep app-consumption-input .save-btn {
-  color: white !important;
+  color: white;
 }
 
 // Override Pagination buttons in detailed-records
 :host ::ng-deep app-detailed-records .pagination-btn {
-  background: $electricity-primary !important;
-  color: white !important;
+  background: $electricity-primary;
+  color: white;
 
   &:hover:not(:disabled) {
     background: $electricity-primary-dark;

@@ -283,7 +283,7 @@ describe('MeterReaderService', () => {
       const result = await service.readMeter('data:image/png;base64,mock', false);
 
       expect(result.value).toBeNull();
-      expect(result.candidates.length).toBe(0);
+      expect(result.candidates).toHaveLength(0);
     });
 
     it('should handle OCR failures gracefully', async () => {
@@ -342,7 +342,7 @@ describe('MeterReaderService', () => {
       expect(mockWorker.recognize).toHaveBeenCalledWith('imgData');
       expect(result.text).toBe('test');
       expect(result.confidence).toBe(90);
-      expect(result.words.length).toBe(1);
+      expect(result.words).toHaveLength(1);
     });
 
     it('should handle undefined words in recognize output', async () => {

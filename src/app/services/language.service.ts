@@ -69,7 +69,7 @@ const LANGUAGE_LOADERS: Record<Language, () => Promise<Record<string, unknown>>>
   providedIn: 'root',
 })
 export class LanguageService {
-  private appRef = inject(ApplicationRef);
+  private readonly appRef = inject(ApplicationRef);
   readonly currentLang = signal<Language>(this.getStoredLanguage());
   readonly currentLocale = computed(() => this.getLocale(this.currentLang()));
   readonly isLoading = signal<boolean>(false);
@@ -84,7 +84,9 @@ export class LanguageService {
 
   constructor() {
     // Load initial language
-    this.loadLanguage(this.currentLang());
+    queueMicrotask(() => {
+      void this.loadLanguage(this.currentLang());
+    });
   }
 
   private getStoredLanguage(): Language {
@@ -168,35 +170,42 @@ export class LanguageService {
     let result = '';
     const needsDot = DOT_LANGUAGES.includes(lang);
 
-    // This is a simplified localized formatter that works for the app's current needs.
-    // In a larger app, we might use a library, but here we want to avoid extra weight.
     if (options.weekday) {
-      const dayName = this.translate(`DAYS.${DAYS_OF_WEEK[date.getDay()]}`);
-      const formattedDay =
-        options.weekday === 'long'
-          ? this.capitalize(dayName)
-          : `${this.capitalize(dayName.substring(0, 3))}${needsDot ? '.' : ''}`;
-      result += `${formattedDay}, `;
+      result += this.formatWeekday(date, options.weekday, needsDot);
     }
-
     if (options.day === 'numeric') {
-      const day = date.getDate();
-      // Slavic languages often use dot after the day number
-      result += `${day}${needsDot ? '. ' : ' '}`;
+      result += this.formatDay(date, needsDot);
     }
-
     if (options.month) {
-      const monthName = this.translate(`MONTHS.${MONTHS_OF_YEAR[date.getMonth()]}`);
-      const formattedMonth =
-        options.month === 'long' ? monthName : `${monthName.substring(0, 3)}${needsDot ? '.' : ''}`;
-      result += `${formattedMonth} `;
+      result += this.formatMonth(date, options.month, needsDot);
     }
-
     if (options.year === 'numeric') {
       result += date.getFullYear();
     }
 
     return result.trim();
+  }
+
+  private formatWeekday(date: Date, weekday: 'long' | 'short', needsDot: boolean): string {
+    const dayName = this.translate(`DAYS.${DAYS_OF_WEEK[date.getDay()]}`);
+    if (weekday === 'long') {
+      return `${this.capitalize(dayName)}, `;
+    }
+    const dot = needsDot ? '.' : '';
+    return `${this.capitalize(dayName.substring(0, 3))}${dot}, `;
+  }
+
+  private formatDay(date: Date, needsDot: boolean): string {
+    return `${date.getDate()}${needsDot ? '. ' : ' '}`;
+  }
+
+  private formatMonth(date: Date, month: 'long' | 'short', needsDot: boolean): string {
+    const monthName = this.translate(`MONTHS.${MONTHS_OF_YEAR[date.getMonth()]}`);
+    if (month === 'long') {
+      return `${monthName} `;
+    }
+    const dot = needsDot ? '.' : '';
+    return `${monthName.substring(0, 3)}${dot} `;
   }
 
   private async loadLanguage(lang: Language) {

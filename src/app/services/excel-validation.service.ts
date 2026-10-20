@@ -5,7 +5,7 @@ import { LanguageService } from './language.service';
   providedIn: 'root',
 })
 export class ExcelValidationService {
-  private languageService = inject(LanguageService);
+  private readonly languageService = inject(LanguageService);
 
   /**
    * Validate Excel column name

@@ -171,8 +171,6 @@ select.error {
     box-shadow: var(--shadow);
 
     li {
-      padding: 0.75rem;
-      cursor: pointer;
       border-bottom: 1px solid var(--border-light);
       color: var(--text-primary);
 
@@ -180,8 +178,21 @@ select.error {
         border-bottom: none;
       }
 
-      &:hover {
-        background: var(--bg-secondary);
+      button {
+        width: 100%;
+        text-align: left;
+        padding: 0.75rem;
+        background: transparent;
+        border: none;
+        cursor: pointer;
+        color: var(--text-primary);
+        font: inherit;
+
+        &:hover,
+        &:focus {
+          background: var(--bg-secondary);
+          outline: none;
+        }
       }
     }
   }
@@ -190,33 +201,31 @@ select.error {
 // Custom Select Dropdown (reusable)
 .custom-select {
   position: relative;
-  cursor: pointer;
   -webkit-user-select: none;
   user-select: none;
-
-  &:focus-visible {
-    outline: none;
-
-    .select-trigger {
-      border-color: $primary;
-      box-shadow: 0 0 0 2px rgba(var(--theme-primary-rgb, 0, 92, 191), 0.2);
-    }
-  }
 
   .select-trigger {
     display: flex;
     align-items: center;
     justify-content: space-between;
+    width: 100%;
     padding: 0.75rem;
     border: 1px solid var(--border-color);
     border-radius: 6px;
     background: var(--input-bg);
+    cursor: pointer;
+    font: inherit;
+    color: inherit;
+    text-align: left;
     transition:
       border-color 0.2s,
       box-shadow 0.2s;
 
-    &:hover {
+    &:hover,
+    &:focus-visible {
       border-color: $primary;
+      outline: none;
+      box-shadow: 0 0 0 2px rgba(var(--theme-primary-rgb, 0, 92, 191), 0.2);
     }
 
     .select-content {
@@ -261,15 +270,21 @@ select.error {
     animation: fadeIn 0.15s ease-out;
 
     &[hidden] {
-      display: none !important;
+      display: none;
     }
 
     .dropdown-item {
       display: flex;
       align-items: center;
+      width: 100%;
+      border: none;
+      background: transparent;
       gap: 0.5rem;
       padding: 0.75rem;
       cursor: pointer;
+      font: inherit;
+      color: inherit;
+      text-align: left;
       transition: background-color 0.2s;
 
       lucide-icon {
@@ -383,30 +398,30 @@ select.error {
     // Role-specific accents and interactive feedback
     &.toggle-kid {
       &:hover:not(.active) {
-        background: rgba(16, 185, 129, 0.1);
-        border-color: #10b981;
-        color: #10b981;
+        background: #ecfdf5;
+        border-color: #047857;
+        color: #047857;
       }
 
       &.active {
-        background: #10b981;
-        border-color: #10b981;
+        background: #047857;
+        border-color: #047857;
         color: white;
-        box-shadow: 0 2px 8px rgba(16, 185, 129, 0.3);
+        box-shadow: 0 2px 8px rgba(4, 120, 87, 0.3);
 
         &:hover {
-          background: #059669;
-          border-color: #047857;
+          background: #065f46;
+          border-color: #064e3b;
           color: white;
-          box-shadow: 0 5px 14px rgba(16, 185, 129, 0.45);
+          box-shadow: 0 5px 14px rgba(4, 120, 87, 0.45);
         }
       }
     }
 
     &.toggle-male {
       &:hover:not(.active) {
-        background: rgba(14, 165, 233, 0.1);
-        border-color: #0ea5e9;
+        background: #f0f9ff;
+        border-color: #0284c7;
         color: #0369a1;
       }
 
@@ -427,22 +442,22 @@ select.error {
 
     &.toggle-female {
       &:hover:not(.active) {
-        background: rgba(244, 63, 94, 0.1);
-        border-color: #f43f5e;
-        color: #e11d48;
+        background: #fff1f2;
+        border-color: #be123c;
+        color: #9f1239;
       }
 
       &.active {
-        background: #e11d48;
-        border-color: #e11d48;
+        background: #be123c;
+        border-color: #be123c;
         color: white;
-        box-shadow: 0 2px 8px rgba(225, 29, 72, 0.3);
+        box-shadow: 0 2px 8px rgba(190, 18, 60, 0.3);
 
         &:hover {
-          background: #be123c;
-          border-color: #9f1239;
+          background: #9f1239;
+          border-color: #881337;
           color: white;
-          box-shadow: 0 5px 14px rgba(225, 29, 72, 0.45);
+          box-shadow: 0 5px 14px rgba(190, 18, 60, 0.45);
         }
       }
     }
@@ -465,6 +480,43 @@ select.error {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(60px, 1fr));
   gap: 0.5rem;
+
+  .avatar-btn {
+    background: none;
+    border: none;
+    padding: 0;
+    cursor: pointer;
+    border-radius: 8px;
+    display: block;
+    width: 100%;
+    outline: none;
+
+    img {
+      width: 100%;
+      height: auto;
+      aspect-ratio: 1;
+      border-radius: 8px;
+      cursor: pointer;
+      border: 3px solid transparent;
+      transition: all 0.2s;
+      object-fit: cover;
+      display: block;
+    }
+
+    &:hover img {
+      transform: scale(1.05);
+    }
+
+    &:focus-visible img {
+      outline: 2px solid $primary;
+      outline-offset: 2px;
+    }
+
+    &.selected img {
+      border-color: $primary;
+      transform: scale(1.05);
+    }
+  }
 
   img {
     width: 100%;

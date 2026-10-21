@@ -5,6 +5,7 @@
 :root {
   // Primary brand & theme tokens
   --theme-primary: #005cbf;
+  --theme-primary-contrast: #ffffff;
   --theme-primary-rgb: 0, 92, 191;
 
   // Background colors
@@ -75,6 +76,7 @@
 [data-theme='dark'] {
   // Primary brand & theme tokens for dark mode
   --theme-primary: #38bdf8;
+  --theme-primary-contrast: #0f172a;
   --theme-primary-rgb: 56, 189, 248;
 
   // Badge colors for dark mode

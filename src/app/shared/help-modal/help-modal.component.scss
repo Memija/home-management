@@ -93,6 +93,7 @@
   .btn-primary {
     background: var(--theme-primary, $primary);
     border-color: var(--theme-primary, $primary);
+    color: var(--theme-primary-contrast, white);
 
     &:hover {
       background: var(--theme-primary-dark, $primary-dark);

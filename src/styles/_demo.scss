@@ -141,6 +141,10 @@
   white-space: nowrap;
   animation: demoTourPulse 3s ease-in-out infinite;
 
+  [data-theme='dark'] & {
+    color: #0f172a;
+  }
+
   &:hover {
     transform: translateY(-1px);
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);

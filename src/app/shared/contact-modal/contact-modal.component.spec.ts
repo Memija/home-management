@@ -534,7 +534,7 @@ describe('ContactModalComponent', () => {
     it('should have proper ARIA attributes on email client selector', () => {
       const trigger = fixture.debugElement.query(By.css('.select-trigger'));
       expect(trigger.nativeElement.getAttribute('aria-controls')).toBe('email-client-dropdown');
-      expect(trigger.nativeElement.getAttribute('aria-label')).toBe('CONTACT.EMAIL_CLIENT');
+      expect(trigger.nativeElement.getAttribute('title')).toBe('CONTACT.EMAIL_CLIENT');
       expect(trigger.nativeElement.getAttribute('aria-haspopup')).toBe('true');
     });
 

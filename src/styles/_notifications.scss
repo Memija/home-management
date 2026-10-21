@@ -70,12 +70,12 @@
     .btn-confirm {
       padding: 0.5rem 1rem;
       font-size: 0.85rem;
-      font-weight: 500;
+      font-weight: 600;
       border: none;
       border-radius: 6px;
       cursor: pointer;
       background: var(--theme-primary, $primary);
-      color: white;
+      color: var(--theme-primary-contrast, white);
       transition: all 0.2s ease;
       box-shadow: var(--shadow-sm);
 

@@ -115,6 +115,7 @@
 .save-btn {
   @extend %btn-base;
   background: var(--theme-primary, $primary);
+  color: var(--theme-primary-contrast, white);
 
   &:hover:not(:disabled) {
     background: var(--theme-primary-dark, $primary-dark);
@@ -375,6 +376,7 @@ label.upload-btn,
 .btn-primary {
   @extend %btn-base;
   background: var(--theme-primary, $primary);
+  color: var(--theme-primary-contrast, white);
 
   &:hover:not(:disabled) {
     background: var(--theme-primary-dark, $primary-dark);

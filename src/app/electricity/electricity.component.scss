@@ -6,12 +6,14 @@ $electricity-primary-dark: #713f12; // Darken for hover
   --theme-primary: #{$electricity-primary};
   --theme-primary-dark: #{$electricity-primary-dark};
   --theme-primary-rgb: 161, 98, 7;
+  --theme-primary-contrast: #ffffff;
 }
 
 :host-context([data-theme='dark']) {
   --theme-primary: #facc15;
   --theme-primary-dark: #eab308;
   --theme-primary-rgb: 250, 204, 21;
+  --theme-primary-contrast: #0f172a;
 }
 
 .chart-section .chart-header .chart-filters button {

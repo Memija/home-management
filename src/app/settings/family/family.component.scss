@@ -47,19 +47,6 @@
   }
 }
 
-.success-message {
-  background: #d4edda;
-  color: #155724;
-  padding: 0.75rem 1rem;
-  border-radius: 8px;
-  margin-bottom: 1.25rem;
-  border: 1px solid #c3e6cb;
-  font-weight: 500;
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-}
-
 .members-list {
   .list-header {
     display: flex;
@@ -209,9 +196,9 @@
   }
 
   &.edit-action-btn:hover {
-    background: rgba(245, 158, 11, 0.12);
-    border-color: rgba(245, 158, 11, 0.35);
-    color: #d97706;
+    background: var(--btn-edit-hover-bg, rgba(234, 88, 12, 0.12));
+    border-color: var(--btn-edit-hover-border, rgba(234, 88, 12, 0.3));
+    color: var(--btn-edit-hover-color, #ea580c);
   }
 
   &.remove-action-btn:hover {

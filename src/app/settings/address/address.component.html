@@ -60,6 +60,9 @@
         <lucide-icon [img]="ImportIcon" size="16"></lucide-icon>
         <span class="btn-text">{{ 'SETTINGS.IMPORT_ADDRESS' | translate }}</span>
       </button>
+      <label for="import-address-file" class="sr-only">{{
+        'SETTINGS.IMPORT_ADDRESS' | translate
+      }}</label>
       <input
         #fileInput
         type="file"
@@ -68,7 +71,8 @@
         (change)="importAddress($event)"
         accept=".json"
         class="hidden-input"
-        title="Import Address"
+        title="{{ 'SETTINGS.IMPORT_ADDRESS' | translate }}"
+        aria-label="{{ 'SETTINGS.IMPORT_ADDRESS' | translate }}"
       />
     </div>
   } @else {
@@ -220,6 +224,9 @@
         <lucide-icon [img]="ImportIcon" size="16"></lucide-icon>
         <span class="btn-text">{{ 'SETTINGS.IMPORT_ADDRESS' | translate }}</span>
       </button>
+      <label for="import-address-file-edit" class="sr-only">{{
+        'SETTINGS.IMPORT_ADDRESS' | translate
+      }}</label>
       <input
         #editFileInput
         type="file"
@@ -228,7 +235,8 @@
         (change)="importAddress($event)"
         accept=".json"
         class="hidden-input"
-        title="Import Address"
+        title="{{ 'SETTINGS.IMPORT_ADDRESS' | translate }}"
+        aria-label="{{ 'SETTINGS.IMPORT_ADDRESS' | translate }}"
       />
     </div>
   }

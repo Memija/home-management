@@ -47,7 +47,6 @@
                     [ngModel]="searchYear() ?? ''"
                     (ngModelChange)="searchYear.set($event === '' ? null : +$event)"
                     title="{{ 'HOME.FILTER_BY_YEAR' | translate }}"
-                    aria-label="{{ 'HOME.FILTER_BY_YEAR' | translate }}"
                   >
                     <option value="">{{ 'HOME.FILTER_YEAR' | translate }}</option>
                     @for (year of availableYears(); track year) {
@@ -66,7 +65,6 @@
                     [ngModel]="searchMonth()"
                     (ngModelChange)="searchMonth.set($event !== 'null' ? +$event : null)"
                     title="{{ 'HOME.FILTER_BY_MONTH' | translate }}"
-                    aria-label="{{ 'HOME.FILTER_BY_MONTH' | translate }}"
                   >
                     <option value="null">{{ 'HOME.FILTER_MONTH' | translate }}</option>
                     <option value="0" [disabled]="isMonthDisabled(0)">
@@ -135,7 +133,6 @@
                     [ngModel]="sortOption()"
                     (ngModelChange)="setSortOption($event)"
                     title="{{ 'HOME.SORT_RECORDS' | translate }}"
-                    aria-label="{{ 'HOME.SORT_RECORDS' | translate }}"
                   >
                     @for (option of sortOptionsSignal(); track option.value) {
                       <option [value]="option.value">

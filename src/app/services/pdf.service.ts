@@ -13,7 +13,7 @@ import { LanguageService } from './language.service';
  */
 @Injectable({ providedIn: 'root' })
 export class PdfService {
-  private languageService = inject(LanguageService);
+  private readonly languageService = inject(LanguageService);
 
   /**
    * Load an image and convert to base64 for PDF embedding

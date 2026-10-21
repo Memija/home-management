@@ -42,11 +42,10 @@
                 (isFullscreen() ? 'CHART.COLLAPSE_CHART' : 'CHART.EXPAND_CHART') | translate
               }}"
             >
-              @if (isFullscreen()) {
-                <lucide-icon [img]="Minimize2Icon" size="18"></lucide-icon>
-              } @else {
-                <lucide-icon [img]="Maximize2Icon" size="18"></lucide-icon>
-              }
+              <lucide-icon
+                [img]="isFullscreen() ? Minimize2Icon : Maximize2Icon"
+                size="18"
+              ></lucide-icon>
             </button>
           </div>
         </div>

@@ -1,7 +1,7 @@
 import { describe, it, expect, vi, afterEach } from 'vitest';
 import { summerSunPlugin, newYearMarkerPlugin, registerChartPlugins } from './chart-plugins';
 import { Chart } from 'chart.js';
-import { DynamicHeatingRecord } from '../../models/records.model';
+import { DynamicHeatingRecord } from '../../../models/records.model';
 
 interface MockCtx {
   save: ReturnType<typeof vi.fn>;
@@ -422,7 +422,7 @@ describe('Chart Plugins', () => {
         expect(chart.ctx.fillRect).toHaveBeenCalledTimes(2);
 
         const sunCalls = chart.ctx.fillText.mock.calls.filter((c: unknown[]) => c[0] === '☼');
-        expect(sunCalls.length).toBe(1);
+        expect(sunCalls).toHaveLength(1);
       });
     });
 

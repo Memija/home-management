@@ -115,40 +115,24 @@ describe('ElectricityAveragesService', () => {
     });
 
     describe('case insensitivity', () => {
-      it('should handle uppercase country name', () => {
-        const data = service.getCountryData('GERMANY');
-        expect(data.averageKwhPerPersonPerYear).toBe(1500);
-      });
-
-      it('should handle mixed case country name', () => {
-        const data = service.getCountryData('GeRmAnY');
-        expect(data.averageKwhPerPersonPerYear).toBe(1500);
-      });
-
-      it('should handle uppercase country code', () => {
-        const data = service.getCountryData('DE');
-        expect(data.averageKwhPerPersonPerYear).toBe(1500);
-      });
-
-      it('should handle mixed case country code', () => {
-        const data = service.getCountryData('De');
+      it.each([
+        { input: 'GERMANY', desc: 'uppercase country name' },
+        { input: 'GeRmAnY', desc: 'mixed case country name' },
+        { input: 'DE', desc: 'uppercase country code' },
+        { input: 'De', desc: 'mixed case country code' },
+      ])('should handle $desc ($input)', ({ input }) => {
+        const data = service.getCountryData(input);
         expect(data.averageKwhPerPersonPerYear).toBe(1500);
       });
     });
 
     describe('whitespace handling', () => {
-      it('should trim leading whitespace', () => {
-        const data = service.getCountryData('  Germany');
-        expect(data.averageKwhPerPersonPerYear).toBe(1500);
-      });
-
-      it('should trim trailing whitespace', () => {
-        const data = service.getCountryData('Germany  ');
-        expect(data.averageKwhPerPersonPerYear).toBe(1500);
-      });
-
-      it('should trim whitespace from country code', () => {
-        const data = service.getCountryData('  de  ');
+      it.each([
+        { input: '  Germany', desc: 'leading whitespace' },
+        { input: 'Germany  ', desc: 'trailing whitespace' },
+        { input: '  de  ', desc: 'whitespace from country code' },
+      ])('should trim $desc', ({ input }) => {
+        const data = service.getCountryData(input);
         expect(data.averageKwhPerPersonPerYear).toBe(1500);
       });
     });
@@ -203,42 +187,25 @@ describe('ElectricityAveragesService', () => {
     });
 
     describe('Scandinavian high consumption countries', () => {
-      it('should return high consumption for Norway', () => {
-        const data = service.getCountryData('no');
-        expect(data.averageKwhPerPersonPerYear).toBe(7000);
-      });
-
-      it('should return high consumption for Sweden', () => {
-        const data = service.getCountryData('se');
-        expect(data.averageKwhPerPersonPerYear).toBe(4000);
-      });
-
-      it('should return high consumption for Finland', () => {
-        const data = service.getCountryData('fi');
-        expect(data.averageKwhPerPersonPerYear).toBe(3500);
+      it.each([
+        { code: 'no', expected: 7000, country: 'Norway' },
+        { code: 'se', expected: 4000, country: 'Sweden' },
+        { code: 'fi', expected: 3500, country: 'Finland' },
+      ])('should return high consumption for $country', ({ code, expected }) => {
+        const data = service.getCountryData(code);
+        expect(data.averageKwhPerPersonPerYear).toBe(expected);
       });
     });
   });
 
   describe('getAverageKwhPerPersonPerYear', () => {
-    it('should return kWh for known country code', () => {
-      const kwh = service.getAverageKwhPerPersonPerYear('de');
-      expect(kwh).toBe(1500);
-    });
-
-    it('should return kWh for known country name', () => {
-      const kwh = service.getAverageKwhPerPersonPerYear('Germany');
-      expect(kwh).toBe(1500);
-    });
-
-    it('should return default kWh for unknown country', () => {
-      const kwh = service.getAverageKwhPerPersonPerYear('Unknown');
-      expect(kwh).toBe(1500);
-    });
-
-    it('should return default kWh for empty input', () => {
-      const kwh = service.getAverageKwhPerPersonPerYear('');
-      expect(kwh).toBe(1500);
+    it.each([
+      { input: 'de', expected: 1500, desc: 'known country code' },
+      { input: 'Germany', expected: 1500, desc: 'known country name' },
+      { input: 'Unknown', expected: 1500, desc: 'unknown country' },
+      { input: '', expected: 1500, desc: 'empty input' },
+    ])('should return kWh for $desc', ({ input, expected }) => {
+      expect(service.getAverageKwhPerPersonPerYear(input)).toBe(expected);
     });
 
     it('should be case insensitive', () => {
@@ -255,22 +222,14 @@ describe('ElectricityAveragesService', () => {
   });
 
   describe('consistency checks', () => {
-    it('should return same data for DE code and Germany name', () => {
-      const dataByCode = service.getCountryData('de');
-      const dataByName = service.getCountryData('Germany');
-      expect(dataByCode.averageKwhPerPersonPerYear).toBe(dataByName.averageKwhPerPersonPerYear);
-    });
-
-    it('should return same data for GB and UK codes', () => {
-      const dataGB = service.getCountryData('gb');
-      const dataUK = service.getCountryData('uk');
-      expect(dataGB.averageKwhPerPersonPerYear).toBe(dataUK.averageKwhPerPersonPerYear);
-    });
-
-    it('should return same data for Germany and Deutschland', () => {
-      const dataEn = service.getCountryData('Germany');
-      const dataDe = service.getCountryData('Deutschland');
-      expect(dataEn.averageKwhPerPersonPerYear).toBe(dataDe.averageKwhPerPersonPerYear);
+    it.each([
+      { codeA: 'de', codeB: 'Germany', desc: 'DE code and Germany name' },
+      { codeA: 'gb', codeB: 'uk', desc: 'GB and UK codes' },
+      { codeA: 'Germany', codeB: 'Deutschland', desc: 'Germany and Deutschland' },
+    ])('should return same data for $desc', ({ codeA, codeB }) => {
+      const dataA = service.getCountryData(codeA);
+      const dataB = service.getCountryData(codeB);
+      expect(dataA.averageKwhPerPersonPerYear).toBe(dataB.averageKwhPerPersonPerYear);
     });
   });
 });

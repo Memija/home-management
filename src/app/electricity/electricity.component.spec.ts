@@ -362,7 +362,7 @@ describe('ElectricityComponent', () => {
     it('should cancel delete process', () => {
       component['cancelDelete']();
       expect(mockDataService.showDeleteModal()).toBe(false);
-      expect(mockDataService.recordToDelete()).toBe(null);
+      expect(mockDataService.recordToDelete()).toBeNull();
     });
   });
 

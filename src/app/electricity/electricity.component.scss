@@ -6,16 +6,14 @@ $electricity-primary-dark: #713f12; // Darken for hover
   --theme-primary: #{$electricity-primary};
   --theme-primary-dark: #{$electricity-primary-dark};
   --theme-primary-rgb: 161, 98, 7;
+  --theme-primary-contrast: #ffffff;
 }
 
 :host-context([data-theme='dark']) {
   --theme-primary: #facc15;
   --theme-primary-dark: #eab308;
   --theme-primary-rgb: 250, 204, 21;
-}
-
-.detailed-value {
-  color: $electricity-primary !important;
+  --theme-primary-contrast: #0f172a;
 }
 
 .chart-section .chart-header .chart-filters button {
@@ -60,13 +58,13 @@ $electricity-primary-dark: #713f12; // Darken for hover
 
 // Ensure proper white text contrast with #a16207
 :host ::ng-deep app-consumption-input .save-btn {
-  color: white !important;
+  color: white;
 }
 
 // Override Pagination buttons in detailed-records
 :host ::ng-deep app-detailed-records .pagination-btn {
-  background: $electricity-primary !important;
-  color: white !important;
+  background: $electricity-primary;
+  color: white;
 
   &:hover:not(:disabled) {
     background: $electricity-primary-dark;

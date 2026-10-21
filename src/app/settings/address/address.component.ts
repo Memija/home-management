@@ -6,7 +6,7 @@ import {
   X,
   Download,
   Upload,
-  HelpCircle,
+  CircleQuestionMark,
   TriangleAlert,
 } from 'lucide-angular';
 import { FormsModule } from '@angular/forms';
@@ -25,6 +25,7 @@ import {
 import { HelpModalComponent, HelpStep } from '../../shared/help-modal/help-modal.component';
 import { CountrySelectorComponent } from '../../shared/country-selector/country-selector.component';
 import { DeleteConfirmationModalComponent } from '../../shared/delete-confirmation-modal/delete-confirmation-modal.component';
+import { NavigationGuardState } from '../../utils/navigation-guard.utils';
 
 @Component({
   selector: 'app-address',
@@ -44,11 +45,11 @@ import { DeleteConfirmationModalComponent } from '../../shared/delete-confirmati
   styleUrl: './address.component.scss',
 })
 export class AddressComponent {
-  protected languageService = inject(LanguageService);
-  protected householdService = inject(HouseholdService);
-  protected fileStorage = inject(FileStorageService);
-  protected countryService = inject(CountryService);
-  private validationService = inject(FormValidationService);
+  protected readonly languageService = inject(LanguageService);
+  protected readonly householdService = inject(HouseholdService);
+  protected readonly fileStorage = inject(FileStorageService);
+  protected readonly countryService = inject(CountryService);
+  private readonly validationService = inject(FormValidationService);
 
   // Icons
   protected readonly EditIcon = Pencil;
@@ -56,11 +57,11 @@ export class AddressComponent {
   protected readonly CancelIcon = X;
   protected readonly ExportIcon = Download;
   protected readonly ImportIcon = Upload;
-  protected readonly HelpIcon = HelpCircle;
+  protected readonly HelpIcon = CircleQuestionMark;
   protected readonly TriangleAlertIcon = TriangleAlert;
 
   // Help modal
-  protected showHelpModal = signal(false);
+  protected readonly showHelpModal = signal(false);
   protected readonly helpSteps: HelpStep[] = [
     {
       titleKey: 'SETTINGS.ADDRESS_HELP_STEP_1_TITLE',
@@ -81,36 +82,37 @@ export class AddressComponent {
   ];
 
   // Address Form Signals with defaults
-  protected streetName = signal('');
-  protected streetNumber = signal('');
-  protected city = signal('');
-  protected zipCode = signal('');
-  protected country = signal(''); // Stores COUNTRY CODE (e.g., 'de')
+  protected readonly streetName = signal('');
+  protected readonly streetNumber = signal('');
+  protected readonly city = signal('');
+  protected readonly zipCode = signal('');
+  protected readonly country = signal(''); // Stores COUNTRY CODE (e.g., 'de')
 
   // Address UI State
-  protected isEditingAddress = signal(true);
-  protected showSaveConfirmation = signal(false);
+  protected readonly isEditingAddress = signal(true);
+  protected readonly showSaveConfirmation = signal(false);
 
   // Validation Errors
-  protected streetNameError = signal<string[]>([]);
-  protected streetNumberError = signal<string[]>([]);
-  protected cityError = signal<string[]>([]);
-  protected zipCodeError = signal<string[]>([]);
-  protected countryError = signal<string[]>([]);
+  protected readonly streetNameError = signal<string[]>([]);
+  protected readonly streetNumberError = signal<string[]>([]);
+  protected readonly cityError = signal<string[]>([]);
+  protected readonly zipCodeError = signal<string[]>([]);
+  protected readonly countryError = signal<string[]>([]);
 
   // Navigation Guard State
-  protected showUnsavedChangesModal = signal(false);
-  protected pendingNavigation = signal<(() => void) | null>(null);
+  private readonly navGuard = new NavigationGuardState();
+  protected readonly showUnsavedChangesModal = this.navGuard.showModal;
+  protected readonly pendingNavigation = this.navGuard.pendingNavigation;
 
   // Import confirmation modal
-  protected showImportConfirmModal = signal(false);
-  protected pendingImportFile = signal<File | null>(null);
+  protected readonly showImportConfirmModal = signal(false);
+  protected readonly pendingImportFile = signal<File | null>(null);
 
   // Error modal state
-  protected showImportErrorModal = signal(false);
-  protected importErrorMessage = signal('');
-  protected importErrorDetails = signal('');
-  protected importErrorInstructions = signal<(string | ErrorInstruction)[]>([]);
+  protected readonly showImportErrorModal = signal(false);
+  protected readonly importErrorMessage = signal('');
+  protected readonly importErrorDetails = signal('');
+  protected readonly importErrorInstructions = signal<(string | ErrorInstruction)[]>([]);
 
   // Country display name (computed for read-only view)
   protected countryDisplayName = computed(() => {
@@ -177,12 +179,12 @@ export class AddressComponent {
   });
 
   @HostListener('window:beforeunload', ['$event'])
-  onBeforeUnload(event: BeforeUnloadEvent) {
+  onBeforeUnload(event: BeforeUnloadEvent): string | undefined {
     if (this.hasUnsavedChanges()) {
       event.preventDefault();
       return '';
     }
-    return;
+    return undefined;
   }
 
   constructor() {
@@ -190,21 +192,7 @@ export class AddressComponent {
     effect(() => {
       const addr = this.householdService.address();
       if (addr) {
-        this.streetName.set(addr.streetName);
-        this.streetNumber.set(addr.streetNumber);
-        this.city.set(addr.city);
-        this.zipCode.set(addr.zipCode);
-
-        // Migrate legacy name-based country to code if needed
-        let countryCode = addr.country;
-        if (addr.country && addr.country.length > 2) {
-          const info = this.countryService.getCountryInfoByNameAnyLanguage(addr.country);
-          if (info) {
-            countryCode = info.code;
-          }
-        }
-        this.country.set(countryCode);
-        this.isEditingAddress.set(false);
+        this.loadAddressIntoForm(addr);
       }
     });
   }
@@ -254,6 +242,15 @@ export class AddressComponent {
 
   private performCancel(): void {
     const addr = this.householdService.address();
+    this.loadAddressIntoForm(addr);
+    this.streetNameError.set([]);
+    this.streetNumberError.set([]);
+    this.cityError.set([]);
+    this.zipCodeError.set([]);
+    this.countryError.set([]);
+  }
+
+  private loadAddressIntoForm(addr: Address | null): void {
     if (addr) {
       this.streetName.set(addr.streetName);
       this.streetNumber.set(addr.streetNumber);
@@ -270,14 +267,6 @@ export class AddressComponent {
       }
       this.country.set(countryCode);
       this.isEditingAddress.set(false);
-
-      // Clear all validation errors
-      this.streetNameError.set([]);
-      this.streetNumberError.set([]);
-      this.cityError.set([]);
-      this.zipCodeError.set([]);
-      this.countryError.set([]);
-      this.countryError.set([]);
     } else {
       // If no address existed (first time), clear fields and stop editing
       this.streetName.set('');
@@ -291,24 +280,15 @@ export class AddressComponent {
 
   // Navigation Guard Methods
   public triggerNavigationWarning(onLeave: () => void): boolean {
-    if (this.hasUnsavedChanges()) {
-      this.pendingNavigation.set(onLeave);
-      this.showUnsavedChangesModal.set(true);
-      return true;
-    }
-    return false;
+    return this.navGuard.triggerWarning(this.hasUnsavedChanges(), onLeave);
   }
 
-  confirmLeaveWithoutSaving() {
-    const navigation = this.pendingNavigation();
-    if (navigation) navigation();
-    this.showUnsavedChangesModal.set(false);
-    this.pendingNavigation.set(null);
+  confirmLeaveWithoutSaving(): void {
+    this.navGuard.confirmLeave();
   }
 
-  stayAndSave() {
-    this.showUnsavedChangesModal.set(false);
-    this.pendingNavigation.set(null);
+  stayAndSave(): void {
+    this.navGuard.stay();
   }
 
   saveAddress(): void {
@@ -338,7 +318,7 @@ export class AddressComponent {
     }
   }
 
-  async importAddress(event: Event): Promise<void> {
+  importAddress(event: Event): void {
     const input = event.target as HTMLInputElement;
     const file = input.files?.[0];
     if (file) {
@@ -350,155 +330,144 @@ export class AddressComponent {
 
   async confirmImportAddress(): Promise<void> {
     const file = this.pendingImportFile();
-    if (file) {
-      // Validate file extension
-      if (!file.name.toLowerCase().endsWith('.json')) {
-        this.importErrorMessage.set(
-          this.languageService.translate('SETTINGS.IMPORT_ADDRESS_INVALID_FILE_TYPE'),
-        );
-        this.importErrorInstructions.set([
-          'SETTINGS.IMPORT_ADDRESS_INVALID_FILE_TYPE_INSTRUCTION_1',
-          'SETTINGS.IMPORT_ADDRESS_INVALID_FILE_TYPE_INSTRUCTION_2',
-        ]);
-        this.showImportErrorModal.set(true);
-        this.showImportConfirmModal.set(false);
-        this.pendingImportFile.set(null);
-        return;
-      }
+    if (!file) {
+      this.cancelImportAddress();
+      return;
+    }
 
-      try {
-        const data = await this.fileStorage.importFromFile<Address>(file);
+    if (!file.name.toLowerCase().endsWith('.json')) {
+      this.setInvalidFileTypeError();
+      return;
+    }
 
-        // Normalize country to code format
-        if (data && data.country && typeof data.country === 'string') {
-          const lowerValue = data.country.toLowerCase().trim();
-          const infoByCode = this.countryService.getCountryInfoByCode(lowerValue);
-          if (infoByCode) {
-            data.country = infoByCode.code;
-          } else {
-            const infoByName = this.countryService.getCountryInfoByNameAnyLanguage(data.country);
-            if (infoByName) {
-              data.country = infoByName.code;
-            }
-          }
-        }
+    try {
+      const data = await this.fileStorage.importFromFile<Address>(file);
+      this.processImportedAddress(data);
+    } catch (err: unknown) {
+      this.handleImportError(err);
+    } finally {
+      this.cancelImportAddress();
+    }
+  }
 
-        // Validate required fields
-        if (
-          data &&
-          data.streetName &&
-          data.streetNumber &&
-          data.city &&
-          data.zipCode &&
-          data.country
-        ) {
-          const errors: string[] = [];
-          const fieldKeys: string[] = [];
+  private setInvalidFileTypeError(): void {
+    this.importErrorMessage.set(
+      this.languageService.translate('SETTINGS.IMPORT_ADDRESS_INVALID_FILE_TYPE'),
+    );
+    this.importErrorInstructions.set([
+      'SETTINGS.IMPORT_ADDRESS_INVALID_FILE_TYPE_INSTRUCTION_1',
+      'SETTINGS.IMPORT_ADDRESS_INVALID_FILE_TYPE_INSTRUCTION_2',
+    ]);
+    this.showImportErrorModal.set(true);
+    this.cancelImportAddress();
+  }
 
-          const streetNameErrs = this.validationService.getStreetNameError(data.streetName);
-          if (streetNameErrs.length > 0) {
-            fieldKeys.push('SETTINGS.STREET_NAME');
-            errors.push(
-              `${this.languageService.translate('SETTINGS.STREET_NAME')}: ${streetNameErrs.map((e) => this.languageService.translate(e)).join(', ')}`,
-            );
-          }
+  private normalizeImportCountry(country: unknown): string {
+    if (typeof country !== 'string') return '';
+    const lowerValue = country.toLowerCase().trim();
+    const infoByCode = this.countryService.getCountryInfoByCode(lowerValue);
+    if (infoByCode) return infoByCode.code;
 
-          const streetNumErrs = this.validationService.getStreetNumberError(data.streetNumber);
-          if (streetNumErrs.length > 0) {
-            fieldKeys.push('SETTINGS.NUMBER');
-            errors.push(
-              `${this.languageService.translate('SETTINGS.NUMBER')}: ${streetNumErrs.map((e) => this.languageService.translate(e)).join(', ')}`,
-            );
-          }
+    const infoByName = this.countryService.getCountryInfoByNameAnyLanguage(country);
+    return infoByName ? infoByName.code : country;
+  }
 
-          const cityErrs = this.validationService.getCityError(data.city);
-          if (cityErrs.length > 0) {
-            fieldKeys.push('SETTINGS.CITY');
-            errors.push(
-              `${this.languageService.translate('SETTINGS.CITY')}: ${cityErrs.map((e) => this.languageService.translate(e)).join(', ')}`,
-            );
-          }
+  private validateAddressFields(data: Address): void {
+    const fieldChecks = [
+      {
+        key: 'SETTINGS.STREET_NAME',
+        errors: this.validationService.getStreetNameError(data.streetName),
+      },
+      {
+        key: 'SETTINGS.NUMBER',
+        errors: this.validationService.getStreetNumberError(data.streetNumber),
+      },
+      {
+        key: 'SETTINGS.CITY',
+        errors: this.validationService.getCityError(data.city),
+      },
+      {
+        key: 'SETTINGS.ZIP_CODE',
+        errors: this.validationService.getZipCodeError(data.zipCode),
+      },
+      {
+        key: 'SETTINGS.COUNTRY',
+        errors: this.validationService.getCountryError(data.country),
+      },
+    ];
 
-          const zipErrs = this.validationService.getZipCodeError(data.zipCode);
-          if (zipErrs.length > 0) {
-            fieldKeys.push('SETTINGS.ZIP_CODE');
-            errors.push(
-              `${this.languageService.translate('SETTINGS.ZIP_CODE')}: ${zipErrs.map((e) => this.languageService.translate(e)).join(', ')}`,
-            );
-          }
+    const errors: string[] = [];
+    const fieldKeys: string[] = [];
 
-          const countryErrs = this.validationService.getCountryError(data.country);
-          if (countryErrs.length > 0) {
-            fieldKeys.push('SETTINGS.COUNTRY');
-            errors.push(
-              `${this.languageService.translate('SETTINGS.COUNTRY')}: ${countryErrs.map((e) => this.languageService.translate(e)).join(', ')}`,
-            );
-          }
-
-          if (errors.length > 0) {
-            throw {
-              message: this.languageService.translate('SETTINGS.VALIDATION_FAILED'),
-              details: errors.join('\n'),
-              fieldKeys,
-            };
-          }
-
-          this.householdService.updateAddress(data);
-          this.showSaveConfirmation.set(true);
-          setTimeout(() => this.showSaveConfirmation.set(false), 3000);
-        } else {
-          throw new Error(this.languageService.translate('SETTINGS.IMPORT_ERROR'));
-        }
-      } catch (err: unknown) {
-        interface AddressImportError {
-          message: string;
-          details?: string;
-          fieldKeys?: string[];
-          error?: string;
-        }
-        const error = err as AddressImportError;
-        console.error('Error importing address:', error);
-
-        // Handle explicit invalid file type errors from fileStorage import (if any)
-        if (
-          error.message === 'invalid_file_type' ||
-          (error.error && error.error === 'invalid_file_type')
-        ) {
-          this.importErrorMessage.set(
-            this.languageService.translate('SETTINGS.IMPORT_ADDRESS_INVALID_FILE_TYPE'),
-          );
-          this.importErrorInstructions.set([
-            'SETTINGS.IMPORT_ADDRESS_INVALID_FILE_TYPE_INSTRUCTION_1',
-            'SETTINGS.IMPORT_ADDRESS_INVALID_FILE_TYPE_INSTRUCTION_2',
-          ]);
-        } else {
-          this.importErrorMessage.set(
-            error.message || this.languageService.translate('SETTINGS.IMPORT_ERROR'),
-          );
-          this.importErrorDetails.set(error.details || '');
-
-          const instructions: (string | ErrorInstruction)[] = [];
-          if (error.fieldKeys && Array.isArray(error.fieldKeys)) {
-            error.fieldKeys.forEach((key: string) => {
-              instructions.push({
-                key: 'HOME.IMPORT_ERROR_CHECK_FIELD',
-                params: { field: this.languageService.translate(key) },
-              });
-            });
-          }
-          instructions.push(
-            'HOME.IMPORT_ERROR_INSTRUCTION_1',
-            'HOME.IMPORT_ERROR_INSTRUCTION_2',
-            'HOME.IMPORT_ERROR_INSTRUCTION_3',
-          );
-          this.importErrorInstructions.set(instructions);
-        }
-
-        this.showImportErrorModal.set(true);
+    for (const { key, errors: errs } of fieldChecks) {
+      if (errs.length > 0) {
+        fieldKeys.push(key);
+        const fieldName = this.languageService.translate(key);
+        const translatedErrs = errs.map((e) => this.languageService.translate(e)).join(', ');
+        errors.push(`${fieldName}: ${translatedErrs}`);
       }
     }
-    this.showImportConfirmModal.set(false);
-    this.pendingImportFile.set(null);
+
+    if (errors.length > 0) {
+      throw Object.assign(new Error(this.languageService.translate('SETTINGS.VALIDATION_FAILED')), {
+        details: errors.join('\n'),
+        fieldKeys,
+      });
+    }
+  }
+
+  private processImportedAddress(data: Address | null): void {
+    if (data?.country && typeof data.country === 'string') {
+      data.country = this.normalizeImportCountry(data.country);
+    }
+
+    if (!data?.streetName || !data.streetNumber || !data.city || !data.zipCode || !data.country) {
+      throw new Error(this.languageService.translate('SETTINGS.IMPORT_ERROR'));
+    }
+
+    this.validateAddressFields(data);
+
+    this.householdService.updateAddress(data);
+    this.showSaveConfirmation.set(true);
+    setTimeout(() => this.showSaveConfirmation.set(false), 3000);
+  }
+
+  private handleImportError(err: unknown): void {
+    interface AddressImportError {
+      message?: string;
+      details?: string;
+      fieldKeys?: string[];
+      error?: string;
+    }
+    const error = err as AddressImportError;
+    console.error('Error importing address:', error);
+
+    if (error.message === 'invalid_file_type' || error.error === 'invalid_file_type') {
+      this.setInvalidFileTypeError();
+      return;
+    }
+
+    this.importErrorMessage.set(
+      error.message || this.languageService.translate('SETTINGS.IMPORT_ERROR'),
+    );
+    this.importErrorDetails.set(error.details || '');
+
+    const instructions: (string | ErrorInstruction)[] = [];
+    if (Array.isArray(error.fieldKeys)) {
+      for (const key of error.fieldKeys) {
+        instructions.push({
+          key: 'HOME.IMPORT_ERROR_CHECK_FIELD',
+          params: { field: this.languageService.translate(key) },
+        });
+      }
+    }
+    instructions.push(
+      'HOME.IMPORT_ERROR_INSTRUCTION_1',
+      'HOME.IMPORT_ERROR_INSTRUCTION_2',
+      'HOME.IMPORT_ERROR_INSTRUCTION_3',
+    );
+    this.importErrorInstructions.set(instructions);
+    this.showImportErrorModal.set(true);
   }
 
   cancelImportAddress(): void {

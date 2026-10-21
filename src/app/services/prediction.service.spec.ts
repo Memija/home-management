@@ -340,7 +340,7 @@ describe('PredictionService', () => {
       const result = service.predictElectricity(makeElectricityRecords(6));
       expect(result).not.toBeNull();
       expect(result!.total.monthlyRates).toBeDefined();
-      expect(result!.total.monthlyRates!.length).toBe(12);
+      expect(result!.total.monthlyRates!).toHaveLength(12);
     });
 
     it('should have expected/min/max for each month', () => {
@@ -384,7 +384,7 @@ describe('PredictionService', () => {
 
       const result = service.predictElectricity(records);
       expect(result).not.toBeNull();
-      expect(result!.total.monthlyRates.length).toBe(12);
+      expect(result!.total.monthlyRates).toHaveLength(12);
 
       // Winter months (Jan=0) should have higher rates than summer (Jul=6)
       const janRate = result!.total.monthlyRates![0].expected;
@@ -396,14 +396,14 @@ describe('PredictionService', () => {
       const result = service.predictWater(makeWaterRecords(6));
       expect(result).not.toBeNull();
       expect(result!.total.monthlyRates).toBeDefined();
-      expect(result!.total.monthlyRates.length).toBe(12);
+      expect(result!.total.monthlyRates).toHaveLength(12);
     });
 
     it('should return monthlyRates for heating predictions', () => {
       const result = service.predictHeating(makeHeatingRecords(6));
       expect(result).not.toBeNull();
       expect(result!.total.monthlyRates).toBeDefined();
-      expect(result!.total.monthlyRates.length).toBe(12);
+      expect(result!.total.monthlyRates).toHaveLength(12);
     });
 
     it('should zero out off-season months detected from seasonal heating data', () => {

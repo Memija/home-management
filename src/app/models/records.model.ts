@@ -136,6 +136,11 @@ export interface ElectricityRecord {
 }
 
 /**
+ * Union of all consumption record types
+ */
+export type AnyConsumptionRecord = ConsumptionRecord | DynamicHeatingRecord | ElectricityRecord;
+
+/**
  * Calculate total electricity (just returns the value, for consistency with other types)
  */
 export function calculateElectricityTotal(record: ElectricityRecord): number {
@@ -151,7 +156,7 @@ export function calculateDynamicHeatingTotal(record: DynamicHeatingRecord): numb
 
 export function getDateKey(date: Date): string {
   const d = parseSafeDate(date);
-  if (isNaN(d.getTime())) return '';
+  if (Number.isNaN(d.getTime())) return '';
   return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
 }
 
@@ -159,7 +164,7 @@ export function getDateKey(date: Date): string {
  * Safely parse a date that might be a string, a Date object, or a Firebase Timestamp
  */
 export function parseSafeDate(dateRaw: unknown): Date {
-  if (!dateRaw) return new Date(NaN);
+  if (!dateRaw) return new Date(Number.NaN);
 
   if (dateRaw instanceof Date) {
     return dateRaw;

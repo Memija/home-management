@@ -11,14 +11,14 @@ import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
   styleUrl: './support-modal.component.scss',
 })
 export class SupportModalComponent {
-  private sanitizer = inject(DomSanitizer);
+  private readonly sanitizer = inject(DomSanitizer);
 
   readonly XIcon = X;
   readonly HeartIcon = Heart;
 
-  closeModal = output<void>();
+  readonly closeModal = output<void>();
 
-  kofiUrl: SafeResourceUrl = this.sanitizer.bypassSecurityTrustResourceUrl(
+  readonly kofiUrl: SafeResourceUrl = this.sanitizer.bypassSecurityTrustResourceUrl(
     'https://ko-fi.com/memija/?hidefeed=true&widget=true&embed=true&preview=true',
   );
 

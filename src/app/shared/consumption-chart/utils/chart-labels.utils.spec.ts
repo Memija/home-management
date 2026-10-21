@@ -1,7 +1,7 @@
 import { describe, it, expect, vi } from 'vitest';
 import { generateSmartLabels } from './chart-labels.utils';
-import { ConsumptionRecord } from '../../models/records.model';
-import { LanguageService } from '../../services/language.service';
+import { ConsumptionRecord } from '../../../models/records.model';
+import { LanguageService } from '../../../services/language.service';
 
 const makeRecs = (dates: string[]): ConsumptionRecord[] =>
   dates.map((d) => ({

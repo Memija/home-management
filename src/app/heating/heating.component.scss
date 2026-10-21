@@ -9,12 +9,14 @@ $heating-primary-light: #fff3e0;
   --theme-primary: #{$heating-primary};
   --theme-primary-dark: #{$heating-primary-dark};
   --theme-primary-rgb: 194, 65, 12;
+  --theme-primary-contrast: #ffffff;
 }
 
 :host-context([data-theme='dark']) {
   --theme-primary: #fb923c;
   --theme-primary-dark: #f97316;
   --theme-primary-rgb: 251, 146, 60;
+  --theme-primary-contrast: #0f172a;
 }
 
 // Back button hover
@@ -34,8 +36,8 @@ $heating-primary-light: #fff3e0;
 
   &.import-btn:hover {
     background: #e0f7fa;
-    border-color: #0097a7;
-    color: #0097a7;
+    border-color: #006064;
+    color: #006064;
   }
 }
 
@@ -88,13 +90,6 @@ $heating-primary-light: #fff3e0;
 // Filter focus
 .history-section .section-header .filters-container select:focus {
   border-color: $heating-primary;
-}
-
-// Theme override for heating component
-:host {
-  --theme-primary: #{$heating-primary};
-  --theme-primary-dark: #{$heating-primary-dark};
-  --theme-primary-rgb: 194, 65, 12;
 }
 
 // Settings button style (projected into consumption input)
@@ -214,10 +209,10 @@ $heating-primary-light: #fff3e0;
 
 // Ensure proper white text contrast with #c2410c
 :host ::ng-deep app-consumption-input .save-btn {
-  color: white !important;
+  color: white;
 }
 
 // Ensure proper white text contrast with #c2410c
 :host ::ng-deep app-detailed-records .pagination-btn {
-  color: white !important;
+  color: white;
 }

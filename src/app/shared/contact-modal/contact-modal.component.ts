@@ -8,7 +8,7 @@ import {
   AtSign,
   Laptop,
   TriangleAlert,
-  HelpCircle,
+  CircleQuestionMark,
   ChevronDown,
 } from 'lucide-angular';
 import { HelpModalComponent, HelpStep } from '../help-modal/help-modal.component';
@@ -29,10 +29,10 @@ export class ContactModalComponent {
   protected readonly AtSignIcon = AtSign;
   protected readonly LaptopIcon = Laptop;
   protected readonly TriangleAlertIcon = TriangleAlert;
-  protected readonly HelpIcon = HelpCircle;
+  protected readonly HelpIcon = CircleQuestionMark;
 
   // Help modal
-  protected showHelpModal = signal(false);
+  protected readonly showHelpModal = signal(false);
   protected readonly helpSteps: HelpStep[] = [
     { titleKey: 'CONTACT.HELP_STEP_1_TITLE', descriptionKey: 'CONTACT.HELP_STEP_1_DESC' },
     { titleKey: 'CONTACT.HELP_STEP_2_TITLE', descriptionKey: 'CONTACT.HELP_STEP_2_DESC' },
@@ -42,19 +42,19 @@ export class ContactModalComponent {
   ];
 
   // Form data
-  name = signal('');
-  email = signal('');
-  subject = signal('');
-  message = signal('');
-  emailClient = signal<EmailClient>('default');
+  readonly name = signal('');
+  readonly email = signal('');
+  readonly subject = signal('');
+  readonly message = signal('');
+  readonly emailClient = signal<EmailClient>('default');
 
   // Validation state
-  emailError = signal(false);
-  dropdownOpen = signal(false);
+  readonly emailError = signal(false);
+  readonly dropdownOpen = signal(false);
 
   // Output
-  closeModal = output<void>();
-  compose = output<{
+  readonly closeModal = output<void>();
+  readonly compose = output<{
     name: string;
     email: string;
     subject: string;
@@ -63,7 +63,7 @@ export class ContactModalComponent {
   }>();
 
   protected validateEmail(email: string): boolean {
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    const emailRegex = /^[^\s@]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
     return emailRegex.test(email);
   }
 

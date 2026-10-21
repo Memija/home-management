@@ -76,17 +76,6 @@
     }
   }
 
-  .record-details {
-    display: flex;
-    flex-direction: column;
-    gap: 0.25rem;
-
-    .location {
-      font-size: 0.95rem;
-      color: var(--text-secondary);
-    }
-  }
-
   .pagination-container {
     display: flex;
     justify-content: space-between;
@@ -340,7 +329,14 @@
   }
 
   .record-details {
+    display: flex;
+    flex-direction: column;
     gap: 0.5rem;
+
+    .location {
+      font-size: 0.95rem;
+      color: var(--text-secondary);
+    }
 
     .consumption-row {
       display: grid;
@@ -359,10 +355,10 @@
       }
 
       .warm-water {
-        color: #d97706;
+        color: var(--history-warm-color, #92400e);
         font-weight: 600;
-        background: rgba(217, 119, 6, 0.12);
-        border: 1px solid rgba(217, 119, 6, 0.2);
+        background: var(--history-warm-bg, #fef3c7);
+        border: 1px solid var(--history-warm-border, #fde68a);
         padding: 0.25rem 0.6rem;
         border-radius: 6px;
         white-space: nowrap;
@@ -371,10 +367,10 @@
       }
 
       .cold-water {
-        color: #0284c7;
+        color: var(--history-cold-color, #075985);
         font-weight: 600;
-        background: rgba(2, 132, 199, 0.12);
-        border: 1px solid rgba(2, 132, 199, 0.2);
+        background: var(--history-cold-bg, #e0f2fe);
+        border: 1px solid var(--history-cold-border, #bae6fd);
         padding: 0.25rem 0.6rem;
         border-radius: 6px;
         white-space: nowrap;

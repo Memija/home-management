@@ -26,11 +26,11 @@ export class DashboardComponent {
   protected readonly ZapIcon = Zap;
   protected readonly CirclePlayIcon = CirclePlay;
 
-  protected activateDemo(): void {
-    this.demoService.activateDemo();
+  protected async activateDemo(): Promise<void> {
+    await this.demoService.activateDemo();
   }
 
-  protected deactivateDemo(): void {
-    this.demoService.deactivateDemo();
+  protected async deactivateDemo(): Promise<void> {
+    await this.demoService.deactivateDemo();
   }
 }

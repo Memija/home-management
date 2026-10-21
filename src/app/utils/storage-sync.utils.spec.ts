@@ -74,7 +74,7 @@ describe('storage-sync.utils', () => {
       const override = [{ date: '2026-01-02', kitchenWarm: 20 }];
 
       const merged = mergeRecordLists(base, override);
-      expect(merged.length).toBe(2);
+      expect(merged).toHaveLength(2);
       expect(merged[0]).toEqual(expect.objectContaining({ date: '2026-01-01' }));
       expect(merged[1]).toEqual(expect.objectContaining({ date: '2026-01-02' }));
     });
@@ -84,7 +84,7 @@ describe('storage-sync.utils', () => {
       const override = [{ date: '2026-01-01', kitchenWarm: 25 }];
 
       const merged = mergeRecordLists(base, override);
-      expect(merged.length).toBe(1);
+      expect(merged).toHaveLength(1);
       expect(merged[0]).toEqual(expect.objectContaining({ kitchenWarm: 25 }));
     });
 
@@ -103,7 +103,7 @@ describe('storage-sync.utils', () => {
       ];
 
       const merged = mergeRecordLists(base, override);
-      expect(merged.length).toBe(1);
+      expect(merged).toHaveLength(1);
       expect(merged[0]).toEqual(expect.objectContaining({ kitchenWarm: 50 }));
     });
   });

@@ -26,7 +26,7 @@ import {
   CalendarDays,
   CalendarFold,
   ListFilter,
-  HelpCircle,
+  CircleQuestionMark,
   RotateCcw,
 } from 'lucide-angular';
 import { TranslatePipe } from '../../pipes/translate.pipe';
@@ -64,8 +64,6 @@ export interface SortOptionConfig {
   direction: '↑' | '↓';
 }
 
-export type SortOption = string; // Now generic string instead of union
-
 @Component({
   selector: 'app-detailed-records',
   standalone: true,
@@ -82,8 +80,8 @@ export type SortOption = string; // Now generic string instead of union
   styleUrl: './detailed-records.component.scss',
 })
 export class DetailedRecordsComponent {
-  private languageService = inject(LanguageService);
-  private localStorageService = inject(LocalStorageService);
+  private readonly languageService = inject(LanguageService);
+  private readonly localStorageService = inject(LocalStorageService);
 
   // Icons
   protected readonly EditIcon = Pencil;
@@ -97,7 +95,7 @@ export class DetailedRecordsComponent {
   protected readonly CalendarFoldIcon = CalendarFold;
   protected readonly SortIcon = ListFilter;
   protected readonly ArrowUpDownIcon = ListFilter;
-  protected readonly HelpIcon = HelpCircle;
+  protected readonly HelpIcon = CircleQuestionMark;
   protected readonly ResetIcon = RotateCcw;
   protected readonly ChevronUpIcon = ChevronUp;
 
@@ -108,16 +106,16 @@ export class DetailedRecordsComponent {
   get records(): GenericRecord[] {
     return this.recordsSignal();
   }
-  protected recordsSignal = signal<GenericRecord[]>([]);
+  protected readonly recordsSignal = signal<GenericRecord[]>([]);
 
-  @Input() set defaultSortOption(val: SortOption) {
+  @Input() set defaultSortOption(val: string) {
     this.defaultSortOptionSignal.set(val || 'date-desc');
     this.sortOption.set(val || 'date-desc');
   }
-  get defaultSortOption(): SortOption {
+  get defaultSortOption(): string {
     return this.defaultSortOptionSignal();
   }
-  protected defaultSortOptionSignal = signal<SortOption>('date-desc');
+  protected readonly defaultSortOptionSignal = signal<string>('date-desc');
 
   @Input() set showSearchDate(val: boolean) {
     this.showSearchDateSignal.set(val);
@@ -125,7 +123,7 @@ export class DetailedRecordsComponent {
   get showSearchDate(): boolean {
     return this.showSearchDateSignal();
   }
-  protected showSearchDateSignal = signal<boolean>(true);
+  protected readonly showSearchDateSignal = signal<boolean>(true);
 
   @Input() set showYearMonth(val: boolean) {
     this.showYearMonthSignal.set(val);
@@ -133,7 +131,7 @@ export class DetailedRecordsComponent {
   get showYearMonth(): boolean {
     return this.showYearMonthSignal();
   }
-  protected showYearMonthSignal = signal<boolean>(true);
+  protected readonly showYearMonthSignal = signal<boolean>(true);
 
   @Input() set showEditDelete(val: boolean) {
     this.showEditDeleteSignal.set(val);
@@ -141,7 +139,7 @@ export class DetailedRecordsComponent {
   get showEditDelete(): boolean {
     return this.showEditDeleteSignal();
   }
-  protected showEditDeleteSignal = signal<boolean>(true);
+  protected readonly showEditDeleteSignal = signal<boolean>(true);
 
   @Input() set recordType(val: string) {
     this.recordTypeSignal.set(val || 'water');
@@ -149,7 +147,7 @@ export class DetailedRecordsComponent {
   get recordType(): string {
     return this.recordTypeSignal();
   }
-  protected recordTypeSignal = signal<string>('water');
+  protected readonly recordTypeSignal = signal<string>('water');
 
   @Input() set helpTitleKey(val: string) {
     this.helpTitleKeySignal.set(val || 'HOME.RECORDS_HELP_TITLE');
@@ -157,7 +155,7 @@ export class DetailedRecordsComponent {
   get helpTitleKey(): string {
     return this.helpTitleKeySignal();
   }
-  protected helpTitleKeySignal = signal<string>('HOME.RECORDS_HELP_TITLE');
+  protected readonly helpTitleKeySignal = signal<string>('HOME.RECORDS_HELP_TITLE');
 
   @Input() set helpSteps(val: HelpStep[]) {
     this.helpStepsSignal.set(val || []);
@@ -165,7 +163,7 @@ export class DetailedRecordsComponent {
   get helpSteps(): HelpStep[] {
     return this.helpStepsSignal();
   }
-  protected helpStepsSignal = signal<HelpStep[]>([]);
+  protected readonly helpStepsSignal = signal<HelpStep[]>([]);
 
   @Input() set showTotal(val: boolean) {
     this.showTotalSignal.set(val);
@@ -173,7 +171,7 @@ export class DetailedRecordsComponent {
   get showTotal(): boolean {
     return this.showTotalSignal();
   }
-  protected showTotalSignal = signal<boolean>(true);
+  protected readonly showTotalSignal = signal<boolean>(true);
 
   @Input() set totalLabelKey(val: string) {
     this.totalLabelKeySignal.set(val || 'HOME.TOTAL');
@@ -181,7 +179,7 @@ export class DetailedRecordsComponent {
   get totalLabelKey(): string {
     return this.totalLabelKeySignal();
   }
-  protected totalLabelKeySignal = signal<string>('HOME.TOTAL');
+  protected readonly totalLabelKeySignal = signal<string>('HOME.TOTAL');
 
   @Input() set hasDetails(val: boolean) {
     this.hasDetailsSignal.set(val);
@@ -189,7 +187,7 @@ export class DetailedRecordsComponent {
   get hasDetails(): boolean {
     return this.hasDetailsSignal();
   }
-  protected hasDetailsSignal = signal<boolean>(true);
+  protected readonly hasDetailsSignal = signal<boolean>(true);
 
   @Input() set allowCollapse(val: boolean) {
     this.allowCollapseSignal.set(val);
@@ -197,7 +195,7 @@ export class DetailedRecordsComponent {
   get allowCollapse(): boolean {
     return this.allowCollapseSignal();
   }
-  protected allowCollapseSignal = signal<boolean>(true);
+  protected readonly allowCollapseSignal = signal<boolean>(true);
 
   // Configurable sort options - parent provides these
   @Input() set sortOptions(val: SortOptionConfig[]) {
@@ -206,7 +204,7 @@ export class DetailedRecordsComponent {
   get sortOptions(): SortOptionConfig[] {
     return this.sortOptionsSignal();
   }
-  protected sortOptionsSignal = signal<SortOptionConfig[]>([
+  protected readonly sortOptionsSignal = signal<SortOptionConfig[]>([
     { value: 'date-desc', labelKey: 'HOME.SORT.DATE_DESC', direction: '↓' },
     { value: 'date-asc', labelKey: 'HOME.SORT.DATE_ASC', direction: '↑' },
     { value: 'total-desc', labelKey: 'HOME.SORT.TOTAL_DESC', direction: '↓' },
@@ -224,7 +222,7 @@ export class DetailedRecordsComponent {
   get calculateTotalFn(): (record: GenericRecord) => number {
     return this.calculateTotalFnSignal();
   }
-  protected calculateTotalFnSignal = signal<(record: GenericRecord) => number>(() => 0);
+  protected readonly calculateTotalFnSignal = signal<(record: GenericRecord) => number>(() => 0);
 
   // Configurable note about values (e.g., "All values in liters" vs "All values in kWh")
   @Input() set valuesNoteKey(val: string) {
@@ -233,7 +231,7 @@ export class DetailedRecordsComponent {
   get valuesNoteKey(): string {
     return this.valuesNoteKeySignal();
   }
-  protected valuesNoteKeySignal = signal<string>('HOME.ALL_VALUES_IN_LITERS');
+  protected readonly valuesNoteKeySignal = signal<string>('HOME.ALL_VALUES_IN_LITERS');
 
   // Content projection for record details template
   @ContentChild('recordDetails') recordDetailsTemplate!: TemplateRef<{ $implicit: GenericRecord }>;
@@ -251,15 +249,15 @@ export class DetailedRecordsComponent {
   }>();
 
   // State
-  protected startDate = signal<string | null>(null);
-  protected endDate = signal<string | null>(null);
-  protected searchYear = signal<number | null>(null);
-  protected searchMonth = signal<number | null>(null);
-  protected currentPage = signal<number>(1);
-  protected paginationSize = signal<number>(5);
-  protected sortOption = signal<SortOption>('date-desc');
-  protected showHelpModal = signal(false);
-  protected isCollapsed = signal(true); // Will be initialized in constructor
+  protected readonly startDate = signal<string | null>(null);
+  protected readonly endDate = signal<string | null>(null);
+  protected readonly searchYear = signal<number | null>(null);
+  protected readonly searchMonth = signal<number | null>(null);
+  protected readonly currentPage = signal<number>(1);
+  protected readonly paginationSize = signal<number>(5);
+  protected readonly sortOption = signal<string>('date-desc');
+  protected readonly showHelpModal = signal(false);
+  protected readonly isCollapsed = signal(true); // Will be initialized in constructor
 
   constructor() {
     // Reactively load collapsed state when recordType changes
@@ -437,65 +435,12 @@ export class DetailedRecordsComponent {
     const end = this.endDate();
     const year = this.searchYear();
 
-    // If year is selected, check constraints against that specific year
     if (year !== null) {
-      if (start) {
-        const startDate = new Date(start);
-        if (year < startDate.getFullYear()) return true;
-        if (year === startDate.getFullYear() && monthIndex < startDate.getMonth()) return true;
-      }
-
-      if (end) {
-        const endDate = new Date(end);
-        if (year > endDate.getFullYear()) return true;
-        if (year === endDate.getFullYear() && monthIndex > endDate.getMonth()) return true;
-      }
-      return false;
+      return isMonthDisabledForYear(monthIndex, year, start, end);
     }
 
-    // If NO year is selected, we only disable if the range is stricly within a partial year span
-    // For example: Range Jan 2024 - Mar 2024 (3 months)
-    // Then months April-Dec should be disabled because they can't possibly match anything in that range.
-    // But if Range is Nov 2023 - Feb 2024, then Nov, Dec, Jan, Feb are valid.
-
     if (start && end) {
-      const startDate = new Date(start);
-      const endDate = new Date(end);
-
-      // Calculate month difference
-      const monthsDiff =
-        (endDate.getFullYear() - startDate.getFullYear()) * 12 +
-        (endDate.getMonth() - startDate.getMonth());
-
-      // If range covers 12 months or more, all months are valid
-      if (monthsDiff >= 11) return false;
-
-      // If range is within the same year
-      if (startDate.getFullYear() === endDate.getFullYear()) {
-        return monthIndex < startDate.getMonth() || monthIndex > endDate.getMonth();
-      }
-
-      // If range spans across adjacent years (e.g. Nov 2023 - Feb 2024)
-      // This is tricky without a year selected.
-      // A record in "March" could be March 2023 (outside) or March 2024 (outside).
-      // But if user didn't pick a year, they usually mean "Month X in ANY year within range".
-      // If the range is small (e.g. 2 months), likely they only want those 2 months.
-
-      // Simplified Logic as per plan:
-      // If spans < 12 months, check if monthIndex is roughly inside the varying window.
-      // Actually simpler:
-      // If (monthIndex < startMonth AND monthIndex > endMonth) -> potentially disabled?
-      // No, because of wrap around.
-      // Example: Nov(10) to Feb(1). Valid: 10,11, 0, 1. Invalid: 2..9.
-
-      const startMonth = startDate.getMonth();
-      const endMonth = endDate.getMonth();
-
-      if (startDate.getFullYear() < endDate.getFullYear()) {
-        // Spans year boundary. Valid months are [startMonth...11] AND [0...endMonth]
-        // Invalid are (endMonth ... startMonth)
-        return monthIndex > endMonth && monthIndex < startMonth;
-      }
+      return isMonthDisabledForRange(monthIndex, start, end);
     }
 
     return false;
@@ -533,7 +478,7 @@ export class DetailedRecordsComponent {
   }
 
   protected setSortOption(option: unknown) {
-    this.sortOption.set(option as SortOption);
+    this.sortOption.set(option as string);
   }
 
   // Event emitters
@@ -570,4 +515,45 @@ export class DetailedRecordsComponent {
     this.searchMonth.set(null);
     this.currentPage.set(1);
   }
+}
+
+function isMonthDisabledForYear(
+  monthIndex: number,
+  year: number,
+  start: string | null,
+  end: string | null,
+): boolean {
+  if (start) {
+    const startDate = new Date(start);
+    if (year < startDate.getFullYear()) return true;
+    if (year === startDate.getFullYear() && monthIndex < startDate.getMonth()) return true;
+  }
+
+  if (end) {
+    const endDate = new Date(end);
+    if (year > endDate.getFullYear()) return true;
+    if (year === endDate.getFullYear() && monthIndex > endDate.getMonth()) return true;
+  }
+  return false;
+}
+
+function isMonthDisabledForRange(monthIndex: number, start: string, end: string): boolean {
+  const startDate = new Date(start);
+  const endDate = new Date(end);
+
+  const monthsDiff =
+    (endDate.getFullYear() - startDate.getFullYear()) * 12 +
+    (endDate.getMonth() - startDate.getMonth());
+
+  if (monthsDiff >= 11) return false;
+
+  if (startDate.getFullYear() === endDate.getFullYear()) {
+    return monthIndex < startDate.getMonth() || monthIndex > endDate.getMonth();
+  }
+
+  if (startDate.getFullYear() < endDate.getFullYear()) {
+    return monthIndex > endDate.getMonth() && monthIndex < startDate.getMonth();
+  }
+
+  return false;
 }

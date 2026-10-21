@@ -12,11 +12,11 @@ import { TranslatePipe } from '../../pipes/translate.pipe';
   styleUrl: './language-switcher.component.scss',
 })
 export class LanguageSwitcherComponent {
-  protected languageService = inject(LanguageService);
-  private elementRef = inject(ElementRef);
+  protected readonly languageService = inject(LanguageService);
+  private readonly elementRef = inject(ElementRef);
 
   protected readonly languages = SUPPORTED_LANGUAGES;
-  protected isDropdownOpen = signal(false);
+  protected readonly isDropdownOpen = signal(false);
 
   // Lucide icons
   protected readonly GlobeIcon = Globe;
@@ -52,12 +52,12 @@ export class LanguageSwitcherComponent {
     }
   }
 
-  selectLanguage(lang: Language) {
-    this.languageService.setLanguage(lang);
+  async selectLanguage(lang: Language) {
+    await this.languageService.setLanguage(lang);
     this.isDropdownOpen.set(false);
   }
 
-  setLanguage(lang: Language) {
-    this.languageService.setLanguage(lang);
+  async setLanguage(lang: Language) {
+    await this.languageService.setLanguage(lang);
   }
 }

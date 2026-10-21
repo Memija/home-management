@@ -22,12 +22,56 @@ export interface ChartDataParams<T = ConsumptionRecord> {
   roomColors?: { border: string; bg: string }[]; // For heating chart: room-specific colors
 }
 
+interface WaterCategoryConfig {
+  key: 'bathroomWarm' | 'kitchenWarm' | 'bathroomCold' | 'kitchenCold';
+  labelKey: string;
+  avgLabelKey: string;
+  color: string;
+  bg: string;
+  trendColor: string;
+}
+
+const WATER_DETAILED_CATEGORIES: WaterCategoryConfig[] = [
+  {
+    key: 'bathroomWarm',
+    labelKey: 'CHART.BATHROOM_WARM',
+    avgLabelKey: 'CHART.BATHROOM_WARM_AVG',
+    color: '#ff9f40',
+    bg: 'rgba(255, 159, 64, 0.1)',
+    trendColor: '#ffcd56',
+  },
+  {
+    key: 'kitchenWarm',
+    labelKey: 'CHART.KITCHEN_WARM',
+    avgLabelKey: 'CHART.KITCHEN_WARM_AVG',
+    color: '#ff6384',
+    bg: 'rgba(255, 99, 132, 0.1)',
+    trendColor: '#ff6384',
+  },
+  {
+    key: 'bathroomCold',
+    labelKey: 'CHART.BATHROOM_COLD',
+    avgLabelKey: 'CHART.BATHROOM_COLD_AVG',
+    color: '#4bc0c0',
+    bg: 'rgba(75, 192, 192, 0.1)',
+    trendColor: '#4bc0c0',
+  },
+  {
+    key: 'kitchenCold',
+    labelKey: 'CHART.KITCHEN_COLD',
+    avgLabelKey: 'CHART.KITCHEN_COLD_AVG',
+    color: '#36a2eb',
+    bg: 'rgba(54, 162, 235, 0.1)',
+    trendColor: '#36a2eb',
+  },
+];
+
 @Injectable({
   providedIn: 'root',
 })
 export class WaterChartService {
-  private languageService = inject(LanguageService);
-  private calculationService = inject(ChartCalculationService);
+  private readonly languageService = inject(LanguageService);
+  private readonly calculationService = inject(ChartCalculationService);
 
   getWaterChartData(params: ChartDataParams): ChartConfiguration['data'] {
     const {
@@ -388,189 +432,78 @@ export class WaterChartService {
     mode: DisplayMode,
     showTrendline?: boolean,
   ): ChartConfiguration['data'] {
-    // Extract data arrays
-    const kitchenWarmData = recs.map((r) => this.sumNullable(r.kitchenWarm));
-    const kitchenColdData = recs.map((r) => this.sumNullable(r.kitchenCold));
-    const bathroomWarmData = recs.map((r) => this.sumNullable(r.bathroomWarm));
-    const bathroomColdData = recs.map((r) => this.sumNullable(r.bathroomCold));
-
-    // Check if each category has data
-    const hasKitchenWarmData = kitchenWarmData.some((v) => (v || 0) > 0);
-    const hasKitchenColdData = kitchenColdData.some((v) => (v || 0) > 0);
-    const hasBathroomWarmData = bathroomWarmData.some((v) => (v || 0) > 0);
-    const hasBathroomColdData = bathroomColdData.some((v) => (v || 0) > 0);
-
     const suffix =
       mode === 'incremental'
         ? ` (${this.languageService.translate('CHART.INCREMENTAL_CONSUMPTION')})`
         : '';
+    const pointRadius = recs.length === 1 ? 8 : 3;
+    const datasets: ChartConfiguration['data']['datasets'] = [];
 
-    const datasets: ChartConfiguration['data']['datasets'] = [
-      {
-        label: this.languageService.translate('CHART.BATHROOM_WARM') + suffix,
-        data: bathroomWarmData,
-        borderColor: '#ff9f40',
-        backgroundColor: 'rgba(255, 159, 64, 0.1)',
-        fill: false,
-        tension: 0.4,
-        pointRadius: recs.length === 1 ? 8 : 3,
-        categoryId: 'bathroomWarm',
-      } as AppChartDataset,
-      {
-        label: this.languageService.translate('CHART.KITCHEN_WARM') + suffix,
-        data: kitchenWarmData,
-        borderColor: '#ff6384',
-        backgroundColor: 'rgba(255, 99, 132, 0.1)',
-        fill: false,
-        tension: 0.4,
-        pointRadius: recs.length === 1 ? 8 : 3,
-        categoryId: 'kitchenWarm',
-      } as AppChartDataset,
-      {
-        label: this.languageService.translate('CHART.BATHROOM_COLD') + suffix,
-        data: bathroomColdData,
-        borderColor: '#4bc0c0',
-        backgroundColor: 'rgba(75, 192, 192, 0.1)',
-        fill: false,
-        tension: 0.4,
-        pointRadius: recs.length === 1 ? 8 : 3,
-        categoryId: 'bathroomCold',
-      } as AppChartDataset,
-      {
-        label: this.languageService.translate('CHART.KITCHEN_COLD') + suffix,
-        data: kitchenColdData,
-        borderColor: '#36a2eb',
-        backgroundColor: 'rgba(54, 162, 235, 0.1)',
-        fill: false,
-        tension: 0.4,
-        pointRadius: recs.length === 1 ? 8 : 3,
-        categoryId: 'kitchenCold',
-      } as AppChartDataset,
-    ];
+    const categoryDataMap = new Map<string, (number | null)[]>();
+    for (const cat of WATER_DETAILED_CATEGORIES) {
+      const data = recs.map((r) => this.sumNullable(r[cat.key]));
+      categoryDataMap.set(cat.key, data);
 
-    // Add trendlines for each category if enabled
+      datasets.push({
+        label: this.languageService.translate(cat.labelKey) + suffix,
+        data,
+        borderColor: cat.color,
+        backgroundColor: cat.bg,
+        fill: false,
+        tension: 0.4,
+        pointRadius,
+        categoryId: cat.key,
+      } as AppChartDataset);
+    }
+
     if (showTrendline && recs.length >= 2) {
-      if (hasBathroomWarmData) {
-        const trendData = this.calculationService.generateTrendlineData(
-          bathroomWarmData.map((v) => v || 0),
-        );
-        datasets.push({
-          data: trendData,
-          label:
-            this.languageService.translate('CHART.BATHROOM_WARM') +
-            ' ' +
-            this.languageService.translate('CHART.TRENDLINE'),
-          type: 'line',
-          borderColor: '#ffcd56', // Bathroom Warm color
-          borderWidth: 2,
-          borderDash: [3, 3],
-          pointRadius: 0,
-          fill: false,
-          trendlineFor: 'bathroomWarm',
-        } as AppChartDataset);
-      }
-      if (hasKitchenWarmData) {
-        const trendData = this.calculationService.generateTrendlineData(
-          kitchenWarmData.map((v) => v || 0),
-        );
-        datasets.push({
-          data: trendData,
-          label:
-            this.languageService.translate('CHART.KITCHEN_WARM') +
-            ' ' +
-            this.languageService.translate('CHART.TRENDLINE'),
-          type: 'line',
-          borderColor: '#ff6384', // Kitchen Warm color
-          borderWidth: 2,
-          borderDash: [3, 3],
-          pointRadius: 0,
-          fill: false,
-          trendlineFor: 'kitchenWarm',
-        } as AppChartDataset);
-      }
-      if (hasBathroomColdData) {
-        const trendData = this.calculationService.generateTrendlineData(
-          bathroomColdData.map((v) => v || 0),
-        );
-        datasets.push({
-          data: trendData,
-          label:
-            this.languageService.translate('CHART.BATHROOM_COLD') +
-            ' ' +
-            this.languageService.translate('CHART.TRENDLINE'),
-          type: 'line',
-          borderColor: '#4bc0c0', // Bathroom Cold color
-          borderWidth: 2,
-          borderDash: [3, 3],
-          pointRadius: 0,
-          fill: false,
-          trendlineFor: 'bathroomCold',
-        } as AppChartDataset);
-      }
-      if (hasKitchenColdData) {
-        const trendData = this.calculationService.generateTrendlineData(
-          kitchenColdData.map((v) => v || 0),
-        );
-        datasets.push({
-          data: trendData,
-          label:
-            this.languageService.translate('CHART.KITCHEN_COLD') +
-            ' ' +
-            this.languageService.translate('CHART.TRENDLINE'),
-          type: 'line',
-          borderColor: '#36a2eb', // Kitchen Cold color
-          borderWidth: 2,
-          borderDash: [3, 3],
-          pointRadius: 0,
-          fill: false,
-          trendlineFor: 'kitchenCold',
-        } as AppChartDataset);
-      }
+      this.appendCategoryTrendlines(datasets, categoryDataMap);
     }
 
     if (showComparison && comparisonData.length > 0) {
-      // Only show average if corresponding real data exists
-      if (hasBathroomWarmData) {
+      this.appendCategoryComparisons(datasets, comparisonData, categoryDataMap);
+    }
+
+    return { labels, datasets: this.filterEmptyDatasets(datasets) };
+  }
+
+  private appendCategoryTrendlines(
+    datasets: ChartConfiguration['data']['datasets'],
+    categoryDataMap: Map<string, (number | null)[]>,
+  ): void {
+    for (const cat of WATER_DETAILED_CATEGORIES) {
+      const data = categoryDataMap.get(cat.key) || [];
+      const hasData = data.some((v) => (v || 0) > 0);
+      if (hasData) {
+        const trendData = this.calculationService.generateTrendlineData(data.map((v) => v || 0));
         datasets.push({
-          label: this.languageService.translate('CHART.BATHROOM_WARM_AVG'),
-          data: comparisonData.map((r) => r.bathroomWarm || 0),
-          borderColor: '#ffcd56',
-          backgroundColor: 'transparent',
-          fill: false,
-          tension: 0.4,
-          borderDash: [5, 5],
+          data: trendData,
+          label: `${this.languageService.translate(cat.labelKey)} ${this.languageService.translate('CHART.TRENDLINE')}`,
+          type: 'line',
+          borderColor: cat.trendColor,
+          borderWidth: 2,
+          borderDash: [3, 3],
           pointRadius: 0,
-        });
-      }
-      if (hasKitchenWarmData) {
-        datasets.push({
-          label: this.languageService.translate('CHART.KITCHEN_WARM_AVG'),
-          data: comparisonData.map((r) => r.kitchenWarm || 0),
-          borderColor: '#ff6384',
-          backgroundColor: 'transparent',
           fill: false,
-          tension: 0.4,
-          borderDash: [5, 5],
-          pointRadius: 0,
-        });
+          trendlineFor: cat.key,
+        } as AppChartDataset);
       }
-      if (hasBathroomColdData) {
+    }
+  }
+
+  private appendCategoryComparisons(
+    datasets: ChartConfiguration['data']['datasets'],
+    comparisonData: ComparisonData[],
+    categoryDataMap: Map<string, (number | null)[]>,
+  ): void {
+    for (const cat of WATER_DETAILED_CATEGORIES) {
+      const data = categoryDataMap.get(cat.key) || [];
+      const hasData = data.some((v) => (v || 0) > 0);
+      if (hasData) {
         datasets.push({
-          label: this.languageService.translate('CHART.BATHROOM_COLD_AVG'),
-          data: comparisonData.map((r) => r.bathroomCold || 0),
-          borderColor: '#4bc0c0',
-          backgroundColor: 'transparent',
-          fill: false,
-          tension: 0.4,
-          borderDash: [5, 5],
-          pointRadius: 0,
-        });
-      }
-      if (hasKitchenColdData) {
-        datasets.push({
-          label: this.languageService.translate('CHART.KITCHEN_COLD_AVG'),
-          data: comparisonData.map((r) => r.kitchenCold || 0),
-          borderColor: '#36a2eb',
+          label: this.languageService.translate(cat.avgLabelKey),
+          data: comparisonData.map((r) => r[cat.key] || 0),
+          borderColor: cat.trendColor,
           backgroundColor: 'transparent',
           fill: false,
           tension: 0.4,
@@ -579,8 +512,6 @@ export class WaterChartService {
         });
       }
     }
-
-    return { labels, datasets: this.filterEmptyDatasets(datasets) };
   }
 
   /**
@@ -593,14 +524,14 @@ export class WaterChartService {
       if (!dataset.data || !Array.isArray(dataset.data)) return true;
       // Keep dataset if at least one value is non-zero
       return dataset.data.some(
-        (value: unknown) => typeof value === 'number' && !isNaN(value) && value !== 0,
+        (value: unknown) => typeof value === 'number' && !Number.isNaN(value) && value !== 0,
       );
     });
   }
 
   private sumNullable(...values: (number | undefined | null)[]): number | null {
     const valid = values.filter(
-      (v) => v !== undefined && v !== null && typeof v === 'number' && !isNaN(v),
+      (v) => v !== undefined && v !== null && typeof v === 'number' && !Number.isNaN(v),
     );
     if (valid.length === 0) return null;
     return valid.reduce((sum, v) => (sum as number) + (v as number), 0) as number;

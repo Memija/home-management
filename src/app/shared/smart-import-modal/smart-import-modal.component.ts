@@ -13,7 +13,7 @@ import { SmartImportService, ParsedRecord } from '../../services/smart-import.se
   styleUrl: './smart-import-modal.component.scss',
 })
 export class SmartImportModalComponent {
-  private smartImportService = inject(SmartImportService);
+  private readonly smartImportService = inject(SmartImportService);
 
   @Input() set show(val: boolean) {
     this.showSignal.set(val);
@@ -21,18 +21,18 @@ export class SmartImportModalComponent {
   get show(): boolean {
     return this.showSignal();
   }
-  protected showSignal = signal<boolean>(false);
+  protected readonly showSignal = signal<boolean>(false);
 
   @Output() closeModal = new EventEmitter<void>();
   @Output() import = new EventEmitter<ParsedRecord[]>();
 
-  protected ClipboardIcon = Clipboard;
-  protected XIcon = X;
-  protected ArrowRightIcon = ArrowRight;
+  protected readonly ClipboardIcon = Clipboard;
+  protected readonly XIcon = X;
+  protected readonly ArrowRightIcon = ArrowRight;
 
-  protected step = signal<'input' | 'preview'>('input');
-  protected rawText = signal('');
-  protected parsedRecords = signal<ParsedRecord[]>([]);
+  protected readonly step = signal<'input' | 'preview'>('input');
+  protected readonly rawText = signal('');
+  protected readonly parsedRecords = signal<ParsedRecord[]>([]);
 
   protected analyzeText() {
     if (!this.rawText()) return;

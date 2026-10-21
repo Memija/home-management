@@ -3,6 +3,7 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { STORAGE_SERVICE } from './storage.service';
 import { NotificationService } from './notification.service';
 import { CountryService } from './country.service';
+import { secureRandomItem } from '../utils/crypto.utils';
 
 export interface Address {
   streetName: string;
@@ -25,10 +26,10 @@ export interface HouseholdMember {
   providedIn: 'root',
 })
 export class HouseholdService {
-  private storage = inject(STORAGE_SERVICE);
-  private destroyRef = inject(DestroyRef);
-  private notificationService = inject(NotificationService);
-  private countryService = inject(CountryService);
+  private readonly storage = inject(STORAGE_SERVICE);
+  private readonly destroyRef = inject(DestroyRef);
+  private readonly notificationService = inject(NotificationService);
+  private readonly countryService = inject(CountryService);
   private isInitialized = false;
 
   readonly members = signal<HouseholdMember[]>([]);
@@ -50,15 +51,17 @@ export class HouseholdService {
   ];
 
   constructor() {
-    this.loadData();
+    queueMicrotask(() => {
+      void this.loadData();
+    });
     this.storage.dataRefreshed$
       ?.pipe(takeUntilDestroyed(this.destroyRef))
-      .subscribe(() => this.loadData());
+      .subscribe(() => void this.loadData());
 
     effect(() => {
       const currentMembers = this.members();
       if (this.isInitialized) {
-        untracked(() => this.storage.save('household_members', currentMembers));
+        untracked(() => void this.storage.save('household_members', currentMembers));
       }
       // Update notification service
       this.notificationService.setHouseholdMembers(currentMembers);
@@ -67,7 +70,7 @@ export class HouseholdService {
     effect(() => {
       const currentAddress = this.address();
       if (this.isInitialized && currentAddress) {
-        untracked(() => this.storage.save('household_address', currentAddress));
+        untracked(() => void this.storage.save('household_address', currentAddress));
       }
       // Update notification service
       this.notificationService.setAddress(currentAddress);
@@ -109,7 +112,7 @@ export class HouseholdService {
       surname,
       type,
       gender,
-      avatar: avatar || this.avatars[Math.floor(Math.random() * this.avatars.length)],
+      avatar: avatar || secureRandomItem(this.avatars) || this.avatars[0],
     };
     this.members.update((members) => [...members, newMember]);
   }

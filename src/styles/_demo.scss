@@ -25,17 +25,17 @@
     align-items: center;
     gap: 0.4rem;
     padding: 0.5rem 1rem;
-    background: rgba(255, 255, 255, 0.2);
-    border: 1px solid rgba(255, 255, 255, 0.3);
+    background: #312e81;
+    border: 1px solid rgba(255, 255, 255, 0.4);
     border-radius: 6px;
-    color: white;
+    color: #ffffff;
     font-size: 0.9rem;
     font-weight: 500;
     cursor: pointer;
     transition: all 0.2s ease;
 
     &:hover:not(:disabled) {
-      background: rgba(255, 255, 255, 0.3);
+      background: #1e1b4b;
     }
 
     &:disabled {
@@ -140,6 +140,10 @@
   transition: all 0.25s ease;
   white-space: nowrap;
   animation: demoTourPulse 3s ease-in-out infinite;
+
+  [data-theme='dark'] & {
+    color: #0f172a;
+  }
 
   &:hover {
     transform: translateY(-1px);

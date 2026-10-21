@@ -70,80 +70,46 @@ describe('PredictionCalculationService', () => {
   describe('calculateDailyRatesWithMonths', () => {
     // --- Water: total -------------------------------------------------------
 
-    it('should sum all four water fields for category "total"', () => {
+    it.each([
+      {
+        category: 'total',
+        expectedDelta: 225,
+        desc: 'sum all four water fields for category "total"',
+      },
+      {
+        category: 'kitchenTotal',
+        expectedDelta: 90,
+        desc: 'sum kitchenWarm + kitchenCold for category "kitchenTotal"',
+      },
+      {
+        category: 'bathroomTotal',
+        expectedDelta: 135,
+        desc: 'sum bathroomWarm + bathroomCold for category "bathroomTotal"',
+      },
+      {
+        category: 'warmTotal',
+        expectedDelta: 75,
+        desc: 'sum kitchenWarm + bathroomWarm for category "warmTotal"',
+      },
+      {
+        category: 'coldTotal',
+        expectedDelta: 150,
+        desc: 'sum kitchenCold + bathroomCold for category "coldTotal"',
+      },
+      {
+        category: 'bathroomWarm',
+        expectedDelta: 45,
+        desc: 'read individual water field for a named category like "bathroomWarm"',
+      },
+    ])('should $desc', ({ category, expectedDelta }) => {
       const records = twoRecords();
-      const inc = waterInc(30, 60, 45, 90); // total delta = 225
+      const inc = waterInc(30, 60, 45, 90);
       const daysDiff = (records[1].date.getTime() - records[0].date.getTime()) / (1000 * 3600 * 24);
 
-      const result = service.calculateDailyRatesWithMonths(records, inc, 'total');
+      const result = service.calculateDailyRatesWithMonths(records, inc, category);
 
-      expect(result.length).toBe(1);
-      expect(result[0].rate).toBeCloseTo(225 / daysDiff, 5);
-    });
-
-    // --- Water: kitchenTotal ------------------------------------------------
-
-    it('should sum kitchenWarm + kitchenCold for category "kitchenTotal"', () => {
-      const records = twoRecords();
-      const inc = waterInc(30, 60, 45, 90); // kitchen total delta = 90
-      const daysDiff = (records[1].date.getTime() - records[0].date.getTime()) / (1000 * 3600 * 24);
-
-      const result = service.calculateDailyRatesWithMonths(records, inc, 'kitchenTotal');
-
-      expect(result.length).toBe(1);
-      expect(result[0].rate).toBeCloseTo(90 / daysDiff, 5);
-    });
-
-    // --- Water: bathroomTotal -----------------------------------------------
-
-    it('should sum bathroomWarm + bathroomCold for category "bathroomTotal"', () => {
-      const records = twoRecords();
-      const inc = waterInc(30, 60, 45, 90); // bathroom total delta = 135
-      const daysDiff = (records[1].date.getTime() - records[0].date.getTime()) / (1000 * 3600 * 24);
-
-      const result = service.calculateDailyRatesWithMonths(records, inc, 'bathroomTotal');
-
-      expect(result.length).toBe(1);
-      expect(result[0].rate).toBeCloseTo(135 / daysDiff, 5);
-    });
-
-    // --- Water: warmTotal ---------------------------------------------------
-
-    it('should sum kitchenWarm + bathroomWarm for category "warmTotal"', () => {
-      const records = twoRecords();
-      const inc = waterInc(30, 60, 45, 90); // warm total delta = 75
-      const daysDiff = (records[1].date.getTime() - records[0].date.getTime()) / (1000 * 3600 * 24);
-
-      const result = service.calculateDailyRatesWithMonths(records, inc, 'warmTotal');
-
-      expect(result.length).toBe(1);
-      expect(result[0].rate).toBeCloseTo(75 / daysDiff, 5);
-    });
-
-    // --- Water: coldTotal ---------------------------------------------------
-
-    it('should sum kitchenCold + bathroomCold for category "coldTotal"', () => {
-      const records = twoRecords();
-      const inc = waterInc(30, 60, 45, 90); // cold total delta = 150
-      const daysDiff = (records[1].date.getTime() - records[0].date.getTime()) / (1000 * 3600 * 24);
-
-      const result = service.calculateDailyRatesWithMonths(records, inc, 'coldTotal');
-
-      expect(result.length).toBe(1);
-      expect(result[0].rate).toBeCloseTo(150 / daysDiff, 5);
-    });
-
-    // --- Water: individual field (e.g. bathroomWarm) ------------------------
-
-    it('should read individual water field for a named category like "bathroomWarm"', () => {
-      const records = twoRecords();
-      const inc = waterInc(30, 60, 45, 90); // bathroomWarm delta = 45
-      const daysDiff = (records[1].date.getTime() - records[0].date.getTime()) / (1000 * 3600 * 24);
-
-      const result = service.calculateDailyRatesWithMonths(records, inc, 'bathroomWarm');
-
-      expect(result.length).toBe(1);
-      expect(result[0].rate).toBeCloseTo(45 / daysDiff, 5);
+      expect(result).toHaveLength(1);
+      expect(result[0].rate).toBeCloseTo(expectedDelta / daysDiff, 5);
     });
 
     // --- Electricity --------------------------------------------------------
@@ -155,7 +121,7 @@ describe('PredictionCalculationService', () => {
 
       const result = service.calculateDailyRatesWithMonths(records, inc, 'total');
 
-      expect(result.length).toBe(1);
+      expect(result).toHaveLength(1);
       expect(result[0].rate).toBeCloseTo(300 / daysDiff, 5);
     });
 
@@ -168,7 +134,7 @@ describe('PredictionCalculationService', () => {
 
       const result = service.calculateDailyRatesWithMonths(records, inc, 'total');
 
-      expect(result.length).toBe(1);
+      expect(result).toHaveLength(1);
       expect(result[0].rate).toBeCloseTo(300 / daysDiff, 5);
     });
 
@@ -181,7 +147,7 @@ describe('PredictionCalculationService', () => {
 
       const result = service.calculateDailyRatesWithMonths(records, inc, 'living');
 
-      expect(result.length).toBe(1);
+      expect(result).toHaveLength(1);
       expect(result[0].rate).toBeCloseTo(200 / daysDiff, 5);
     });
 
@@ -196,7 +162,7 @@ describe('PredictionCalculationService', () => {
 
       const result = service.calculateDailyRatesWithMonths(records, inc, 'total');
 
-      expect(result.length).toBe(0);
+      expect(result).toHaveLength(0);
     });
 
     it('should exclude intervals with a negative rate', () => {
@@ -206,7 +172,7 @@ describe('PredictionCalculationService', () => {
 
       const result = service.calculateDailyRatesWithMonths(records, inc, 'total');
 
-      expect(result.length).toBe(1);
+      expect(result).toHaveLength(1);
       expect(result[0].rate).toBe(0);
     });
 
@@ -217,7 +183,7 @@ describe('PredictionCalculationService', () => {
 
       const result = service.calculateDailyRatesWithMonths(records, inc, 'total');
 
-      expect(result.length).toBe(1);
+      expect(result).toHaveLength(1);
       expect(result[0].month).toBe(1); // February
     });
 
@@ -250,7 +216,7 @@ describe('PredictionCalculationService', () => {
 
       expect(result.accuracy).toBeNull();
       expect(result.correctionFactor).toBe(1.0);
-      expect(result.historicalPredictions.length).toBe(5);
+      expect(result.historicalPredictions).toHaveLength(5);
       expect(result.historicalPredictions.every((v) => v === null)).toBe(true);
     });
 
@@ -363,7 +329,7 @@ describe('PredictionCalculationService', () => {
 
       const result = service.calculateHistoricalAccuracy(records, inc, 'total');
 
-      expect(result.historicalPredictions.length).toBe(records.length);
+      expect(result.historicalPredictions).toHaveLength(records.length);
     });
 
     it('should leave early indices of historicalPredictions as null', () => {

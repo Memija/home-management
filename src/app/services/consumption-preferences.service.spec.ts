@@ -430,29 +430,24 @@ describe('ConsumptionPreferencesService', () => {
   // ============ Storage Key Verification ============
 
   describe('storage key verification', () => {
-    it('should use correct storage keys when loading water preferences', async () => {
-      service = setupService();
-      await waitForInit();
+    it.each([
+      { utility: 'water', viewKey: 'water_chart_view', modeKey: 'water_display_mode' },
+      { utility: 'heating', viewKey: 'heating_chart_view', modeKey: 'heating_display_mode' },
+      {
+        utility: 'electricity',
+        viewKey: 'electricity_chart_view',
+        modeKey: 'electricity_display_mode',
+      },
+    ])(
+      'should use correct storage keys when loading $utility preferences',
+      async ({ viewKey, modeKey }) => {
+        service = setupService();
+        await waitForInit();
 
-      expect(mockStorageService.load).toHaveBeenCalledWith('water_chart_view');
-      expect(mockStorageService.load).toHaveBeenCalledWith('water_display_mode');
-    });
-
-    it('should use correct storage keys when loading heating preferences', async () => {
-      service = setupService();
-      await waitForInit();
-
-      expect(mockStorageService.load).toHaveBeenCalledWith('heating_chart_view');
-      expect(mockStorageService.load).toHaveBeenCalledWith('heating_display_mode');
-    });
-
-    it('should use correct storage keys when loading electricity preferences', async () => {
-      service = setupService();
-      await waitForInit();
-
-      expect(mockStorageService.load).toHaveBeenCalledWith('electricity_chart_view');
-      expect(mockStorageService.load).toHaveBeenCalledWith('electricity_display_mode');
-    });
+        expect(mockStorageService.load).toHaveBeenCalledWith(viewKey);
+        expect(mockStorageService.load).toHaveBeenCalledWith(modeKey);
+      },
+    );
 
     it('should use correct storage keys when loading meter changes', async () => {
       service = setupService();

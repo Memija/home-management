@@ -295,13 +295,13 @@
   }
 
   &.primary {
-    background: linear-gradient(135deg, #059669 0%, #0d9488 100%);
+    background: linear-gradient(135deg, #047857 0%, #0f766e 100%);
     color: #ffffff;
-    box-shadow: 0 6px 22px rgba(5, 150, 105, 0.45);
+    box-shadow: 0 6px 22px rgba(4, 120, 87, 0.45);
 
     &:hover {
-      background: linear-gradient(135deg, #047857 0%, #0f766e 100%);
-      box-shadow: 0 8px 30px rgba(5, 150, 105, 0.6);
+      background: linear-gradient(135deg, #065f46 0%, #115e59 100%);
+      box-shadow: 0 8px 30px rgba(4, 120, 87, 0.6);
       transform: translateY(-2px);
 
       .cta-arrow {
@@ -435,8 +435,8 @@
       font-weight: 600;
       padding: 0.25rem 0.6rem;
       border-radius: 6px;
-      background: rgba(255, 255, 255, 0.06);
-      border: 1px solid rgba(255, 255, 255, 0.08);
+      background: #1e293b;
+      border: 1px solid rgba(255, 255, 255, 0.12);
       color: #cbd5e1;
       transition: all 0.2s ease;
     }
@@ -445,8 +445,8 @@
   // Theme card variants
   &.highlight--local {
     .highlight-icon-wrap {
-      background: rgba(16, 185, 129, 0.15);
-      border: 1px solid rgba(16, 185, 129, 0.3);
+      background: #064e3b;
+      border: 1px solid rgba(52, 211, 153, 0.3);
       color: #34d399;
     }
     &:hover {
@@ -457,17 +457,17 @@
         background: linear-gradient(90deg, #10b981, #34d399);
       }
       .highlight-tag-pill {
-        background: rgba(16, 185, 129, 0.12);
+        background: #064e3b;
         color: #34d399;
-        border-color: rgba(16, 185, 129, 0.25);
+        border-color: rgba(52, 211, 153, 0.35);
       }
     }
   }
 
   &.highlight--predict {
     .highlight-icon-wrap {
-      background: rgba(168, 85, 247, 0.15);
-      border: 1px solid rgba(168, 85, 247, 0.3);
+      background: #3b0764;
+      border: 1px solid rgba(192, 132, 252, 0.3);
       color: #c084fc;
     }
     &:hover {
@@ -478,17 +478,17 @@
         background: linear-gradient(90deg, #a855f7, #c084fc);
       }
       .highlight-tag-pill {
-        background: rgba(168, 85, 247, 0.12);
+        background: #3b0764;
         color: #c084fc;
-        border-color: rgba(168, 85, 247, 0.25);
+        border-color: rgba(192, 132, 252, 0.35);
       }
     }
   }
 
   &.highlight--unified {
     .highlight-icon-wrap {
-      background: rgba(2, 132, 199, 0.15);
-      border: 1px solid rgba(2, 132, 199, 0.3);
+      background: #082f49;
+      border: 1px solid rgba(56, 189, 248, 0.3);
       color: #38bdf8;
     }
     &:hover {
@@ -499,17 +499,17 @@
         background: linear-gradient(90deg, #0284c7, #38bdf8);
       }
       .highlight-tag-pill {
-        background: rgba(2, 132, 199, 0.12);
+        background: #082f49;
         color: #38bdf8;
-        border-color: rgba(2, 132, 199, 0.25);
+        border-color: rgba(56, 189, 248, 0.35);
       }
     }
   }
 
   &.highlight--privacy {
     .highlight-icon-wrap {
-      background: rgba(244, 63, 94, 0.15);
-      border: 1px solid rgba(244, 63, 94, 0.3);
+      background: #4c0519;
+      border: 1px solid rgba(251, 113, 133, 0.3);
       color: #fb7185;
     }
     &:hover {
@@ -520,9 +520,9 @@
         background: linear-gradient(90deg, #f43f5e, #fb7185);
       }
       .highlight-tag-pill {
-        background: rgba(244, 63, 94, 0.12);
+        background: #4c0519;
         color: #fb7185;
-        border-color: rgba(244, 63, 94, 0.25);
+        border-color: rgba(251, 113, 133, 0.35);
       }
     }
   }
@@ -652,8 +652,8 @@
   width: 44px;
   height: 44px;
   border-radius: 12px;
-  background: linear-gradient(135deg, rgba(0, 128, 128, 0.12), rgba(0, 123, 255, 0.12));
-  color: #008080;
+  background: var(--stat-icon-bg, #ccfbf1);
+  color: var(--stat-icon-color, #0f766e);
   flex-shrink: 0;
 }
 
@@ -1064,16 +1064,16 @@
   margin: 0 auto;
 
   &.step-icon-1 {
-    background: rgba(59, 130, 246, 0.12);
-    color: #3b82f6;
+    background: var(--step-icon-1-bg, #eff6ff);
+    color: var(--step-icon-1-color, #1d4ed8);
   }
   &.step-icon-2 {
-    background: rgba(245, 158, 11, 0.12);
-    color: #f59e0b;
+    background: var(--step-icon-2-bg, #fffbeb);
+    color: var(--step-icon-2-color, #b45309);
   }
   &.step-icon-3 {
-    background: rgba(16, 185, 129, 0.12);
-    color: #10b981;
+    background: var(--step-icon-3-bg, #ecfdf5);
+    color: var(--step-icon-3-color, #047857);
   }
 }
 
@@ -1257,7 +1257,7 @@
       .highlight-icon-wrap {
         background: #ecfdf5;
         border-color: #a7f3d0;
-        color: #059669;
+        color: #047857;
       }
       &:hover {
         border-color: #10b981;
@@ -1291,7 +1291,7 @@
       .highlight-icon-wrap {
         background: #f0f9ff;
         border-color: #bae6fd;
-        color: #0284c7;
+        color: #0369a1;
       }
       &:hover {
         border-color: #38bdf8;
@@ -1308,7 +1308,7 @@
       .highlight-icon-wrap {
         background: #fff1f2;
         border-color: #fecdd3;
-        color: #e11d48;
+        color: #be123c;
       }
       &:hover {
         border-color: #f43f5e;

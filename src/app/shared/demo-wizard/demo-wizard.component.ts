@@ -34,7 +34,7 @@ export class DemoWizardComponent {
   get steps(): DemoWizardStep[] {
     return this._steps();
   }
-  private _steps = signal<DemoWizardStep[]>([]);
+  private readonly _steps = signal<DemoWizardStep[]>([]);
 
   @Input() theme: DemoWizardTheme = 'water';
   @Input() titleKey = 'DEMO.WIZARD_TITLE';
@@ -48,7 +48,7 @@ export class DemoWizardComponent {
   protected readonly SparklesIcon = Sparkles;
 
   // Current step index
-  protected currentStep = signal(0);
+  protected readonly currentStep = signal(0);
 
   protected totalSteps = computed(() => this._steps().length);
 

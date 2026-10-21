@@ -22,8 +22,7 @@ import {
   Baby,
   Mars,
   Venus,
-  AlertTriangle,
-  HelpCircle,
+  CircleQuestionMark,
   TriangleAlert,
 } from 'lucide-angular';
 import { HouseholdService, HouseholdMember } from '../../services/household.service';
@@ -40,6 +39,8 @@ import {
   MemberEditorComponent,
   MemberEditData,
 } from '../../shared/member-editor/member-editor.component';
+import { NavigationGuardState } from '../../utils/navigation-guard.utils';
+import { secureRandomItem } from '../../utils/crypto.utils';
 
 @Component({
   selector: 'app-family',
@@ -63,11 +64,11 @@ export class FamilyComponent {
   // Maximum number of family members allowed
   protected readonly MAX_FAMILY_MEMBERS = 9;
 
-  protected languageService = inject(LanguageService);
-  protected householdService = inject(HouseholdService);
-  protected fileStorage = inject(FileStorageService);
-  private validationService = inject(FormValidationService);
-  private familyImportService = inject(FamilyImportService);
+  protected readonly languageService = inject(LanguageService);
+  protected readonly householdService = inject(HouseholdService);
+  protected readonly fileStorage = inject(FileStorageService);
+  private readonly validationService = inject(FormValidationService);
+  private readonly familyImportService = inject(FamilyImportService);
 
   // Icons
   protected readonly EditIcon = Pencil;
@@ -81,20 +82,21 @@ export class FamilyComponent {
   protected readonly KidIcon = Baby;
   protected readonly MaleIcon = Mars;
   protected readonly FemaleIcon = Venus;
-  protected readonly WarningIcon = AlertTriangle;
-  protected readonly HelpIcon = HelpCircle;
+  protected readonly WarningIcon = TriangleAlert;
+  protected readonly HelpIcon = CircleQuestionMark;
   protected readonly TriangleAlertIcon = TriangleAlert;
 
   // State
-  protected isEditing = signal(false);
-  protected showSaveConfirmation = signal(false);
-  protected showAddMemberForm = signal(false);
-  protected showDeleteModal = signal(false);
-  protected memberToDelete = signal<string | null>(null);
-  public showUnsavedChangesModal = signal(false);
-  public pendingNavigation = signal<(() => void) | null>(null);
-  protected showImportConfirmModal = signal(false);
-  protected showHelpModal = signal(false);
+  protected readonly isEditing = signal(false);
+  protected readonly showSaveConfirmation = signal(false);
+  protected readonly showAddMemberForm = signal(false);
+  protected readonly showDeleteModal = signal(false);
+  protected readonly memberToDelete = signal<string | null>(null);
+  private readonly navGuard = new NavigationGuardState();
+  public readonly showUnsavedChangesModal = this.navGuard.showModal;
+  public readonly pendingNavigation = this.navGuard.pendingNavigation;
+  protected readonly showImportConfirmModal = signal(false);
+  protected readonly showHelpModal = signal(false);
 
   protected readonly helpSteps: HelpStep[] = [
     {
@@ -128,9 +130,9 @@ export class FamilyComponent {
   ];
 
   // Error modal state
-  protected showImportErrorModal = signal(false);
-  protected importErrorMessage = signal('');
-  protected importErrorInstructions = signal<string[]>([]);
+  protected readonly showImportErrorModal = signal(false);
+  protected readonly importErrorMessage = signal('');
+  protected readonly importErrorInstructions = signal<string[]>([]);
 
   // Safe computed for template - ensures array for NgFor
   protected safeMembers = computed(() => {
@@ -139,7 +141,7 @@ export class FamilyComponent {
   });
 
   // Individual member edit state
-  protected editingMemberId = signal<string | null>(null);
+  protected readonly editingMemberId = signal<string | null>(null);
 
   // Computed signal for the member currently being edited
   protected editingMember = computed(() => {
@@ -150,27 +152,27 @@ export class FamilyComponent {
   });
 
   // Draft state for editing
-  protected draftMembers = signal<HouseholdMember[]>([]);
+  protected readonly draftMembers = signal<HouseholdMember[]>([]);
 
   // New Member Form Signals
-  protected newMemberName = signal('');
-  protected newMemberSurname = signal('');
-  protected newMemberType = signal<'adult' | 'kid' | 'other' | undefined>(undefined);
-  protected newMemberGender = signal<'male' | 'female' | 'other' | undefined>(undefined);
-  protected selectedAvatar = signal<string | undefined>(undefined);
-  protected newMemberPicturePreview = signal<string | null>(null);
+  protected readonly newMemberName = signal('');
+  protected readonly newMemberSurname = signal('');
+  protected readonly newMemberType = signal<'adult' | 'kid' | 'other' | undefined>(undefined);
+  protected readonly newMemberGender = signal<'male' | 'female' | 'other' | undefined>(undefined);
+  protected readonly selectedAvatar = signal<string | undefined>(undefined);
+  protected readonly newMemberPicturePreview = signal<string | null>(null);
 
   // Validation Signals
-  protected newMemberNameError = signal('');
-  protected newMemberSurnameError = signal('');
+  protected readonly newMemberNameError = signal('');
+  protected readonly newMemberSurnameError = signal('');
 
   // Duplicate member error state
-  protected showDuplicateMemberError = signal(false);
-  protected duplicateMemberName = signal('');
+  protected readonly showDuplicateMemberError = signal(false);
+  protected readonly duplicateMemberName = signal('');
 
   // Max members limit check
   protected isAtMaxMembers = computed(() => this.draftMembers().length >= this.MAX_FAMILY_MEMBERS);
-  protected showMaxMembersError = signal(false);
+  protected readonly showMaxMembersError = signal(false);
 
   constructor() {
     effect(() => {
@@ -219,12 +221,12 @@ export class FamilyComponent {
   });
 
   @HostListener('window:beforeunload', ['$event'])
-  onBeforeUnload(event: BeforeUnloadEvent) {
+  onBeforeUnload(event: BeforeUnloadEvent): string | undefined {
     if (this.hasUnsavedChanges()) {
       event.preventDefault();
       return '';
     }
-    return;
+    return undefined;
   }
 
   editFamily() {
@@ -247,24 +249,15 @@ export class FamilyComponent {
   }
 
   confirmLeaveWithoutSaving() {
-    const navigation = this.pendingNavigation();
-    if (navigation) navigation();
-    this.showUnsavedChangesModal.set(false);
-    this.pendingNavigation.set(null);
+    this.navGuard.confirmLeave();
   }
 
   stayAndSave() {
-    this.showUnsavedChangesModal.set(false);
-    this.pendingNavigation.set(null);
+    this.navGuard.stay();
   }
 
   public triggerNavigationWarning(onLeave: () => void): boolean {
-    if (this.hasUnsavedChanges()) {
-      this.pendingNavigation.set(onLeave);
-      this.showUnsavedChangesModal.set(true);
-      return true;
-    }
-    return false;
+    return this.navGuard.triggerWarning(this.hasUnsavedChanges(), onLeave);
   }
 
   saveFamily() {
@@ -300,9 +293,8 @@ export class FamilyComponent {
       const avatar =
         this.newMemberPicturePreview() ||
         this.selectedAvatar() ||
-        this.householdService.avatars[
-          Math.floor(Math.random() * this.householdService.avatars.length)
-        ];
+        secureRandomItem(this.householdService.avatars) ||
+        this.householdService.avatars[0];
 
       const newMember: HouseholdMember = {
         id: crypto.randomUUID(),
@@ -427,7 +419,7 @@ export class FamilyComponent {
   handleNewMemberFileUpload(event: Event) {
     const input = event.target as HTMLInputElement;
     const file = input.files?.[0];
-    if (file && file.type.startsWith('image/')) {
+    if (file?.type.startsWith('image/')) {
       const reader = new FileReader();
       reader.onload = (e) => {
         this.newMemberPicturePreview.set(e.target?.result as string);
@@ -444,7 +436,7 @@ export class FamilyComponent {
     await this.familyImportService.exportMembers(this.householdService.members());
   }
 
-  async importFamily() {
+  importFamily(): void {
     this.showImportConfirmModal.set(true);
   }
 

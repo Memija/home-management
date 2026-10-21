@@ -1,12 +1,4 @@
-import {
-  Component,
-  signal,
-  computed,
-  inject,
-  effect,
-  HostListener,
-  ElementRef,
-} from '@angular/core';
+import { Component, OnInit, signal, computed, inject, effect, ElementRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { TranslatePipe } from '../pipes/translate.pipe';
@@ -25,11 +17,11 @@ import {
   Upload,
   FileSpreadsheet,
   Settings,
-  CheckCircle,
+  CircleCheck,
   Info,
   Trash2,
   FileText,
-  AlertTriangle,
+  TriangleAlert,
   RefreshCw,
   Lightbulb,
 } from 'lucide-angular';
@@ -43,6 +35,7 @@ import {
   ConsumptionInputComponent,
   type ConsumptionGroup,
 } from '../shared/consumption-input/consumption-input.component';
+import { BaseDropdownComponent } from '../shared/base-consumption.directive';
 import { ErrorModalComponent } from '../shared/error-modal/error-modal.component';
 import { HouseholdService } from '../services/household.service';
 import { ConfirmationModalComponent } from '../shared/confirmation-modal/confirmation-modal.component';
@@ -64,6 +57,7 @@ import {
   DEMO_TOUR_STEPS,
 } from './heating.constants';
 import { DemoTourComponent } from '../shared/demo-tour/demo-tour.component';
+import { secureRandom } from '../utils/crypto.utils';
 import { ConsumptionPreferencesService } from '../services/consumption-preferences.service';
 import { ChartCalculationService } from '../services/chart-calculation.service';
 import { LocalStorageService } from '../services/local-storage.service';
@@ -96,21 +90,21 @@ import { PredictionsPanelComponent } from '../shared/predictions-panel/predictio
   templateUrl: './heating.component.html',
   styleUrl: './heating.component.scss',
 })
-export class HeatingComponent {
+export class HeatingComponent extends BaseDropdownComponent implements OnInit {
   // Services
-  protected dataService = inject(HeatingDataService);
-  protected formService = inject(HeatingFormService);
-  protected roomsService = inject(HeatingRoomsService);
-  protected excelSettings = inject(ExcelSettingsService);
-  protected demoService = inject(DemoService);
-  private heatingFactsService = inject(HeatingFactsService);
-  private preferencesService = inject(ConsumptionPreferencesService);
-  private chartCalculationService = inject(ChartCalculationService);
-  private localStorageService = inject(LocalStorageService);
-  private roomUtilsService = inject(HeatingRoomUtilsService);
-  private languageService = inject(LanguageService);
-  private householdService = inject(HouseholdService);
-  private predictionService = inject(PredictionService);
+  protected readonly dataService = inject(HeatingDataService);
+  protected readonly formService = inject(HeatingFormService);
+  protected readonly roomsService = inject(HeatingRoomsService);
+  protected readonly excelSettings = inject(ExcelSettingsService);
+  protected readonly demoService = inject(DemoService);
+  private readonly heatingFactsService = inject(HeatingFactsService);
+  private readonly preferencesService = inject(ConsumptionPreferencesService);
+  private readonly chartCalculationService = inject(ChartCalculationService);
+  private readonly localStorageService = inject(LocalStorageService);
+  private readonly roomUtilsService = inject(HeatingRoomUtilsService);
+  private readonly languageService = inject(LanguageService);
+  private readonly householdService = inject(HouseholdService);
+  private readonly predictionService = inject(PredictionService);
 
   // Icons
   protected readonly ArrowLeftIcon = ArrowLeft;
@@ -121,77 +115,45 @@ export class HeatingComponent {
   protected readonly UploadIcon = Upload;
   protected readonly FileSpreadsheetIcon = FileSpreadsheet;
   protected readonly SettingsIcon = Settings;
-  protected readonly CheckCircleIcon = CheckCircle;
+  protected readonly CheckCircleIcon = CircleCheck;
   protected readonly InfoIcon = Info;
   protected readonly TrashIcon = Trash2;
   protected readonly FileTextIcon = FileText;
-  protected readonly AlertTriangleIcon = AlertTriangle;
+  protected readonly AlertTriangleIcon = TriangleAlert;
   protected readonly RefreshCwIcon = RefreshCw;
   protected readonly LightbulbIcon = Lightbulb;
 
-  // Dropdown state
-  protected isExportMenuOpen = signal(false);
-  protected isImportMenuOpen = signal(false);
-
-  private elementRef = inject(ElementRef, { optional: true });
-
-  @HostListener('document:click', ['$event'])
-  onDocumentClick(event: MouseEvent): void {
-    const target = event.target as HTMLElement | null;
-    if (!target?.closest('.action-dropdown')) {
-      this.isExportMenuOpen.set(false);
-      this.isImportMenuOpen.set(false);
-    }
-  }
-
-  toggleExportMenu(event: MouseEvent): void {
-    event.stopPropagation();
-    const next = !this.isExportMenuOpen();
-    this.isExportMenuOpen.set(next);
-    this.isImportMenuOpen.set(false);
-  }
-
-  toggleImportMenu(event: MouseEvent): void {
-    event.stopPropagation();
-    const next = !this.isImportMenuOpen();
-    this.isImportMenuOpen.set(next);
-    this.isExportMenuOpen.set(false);
-  }
-
-  closeMenus(): void {
-    this.isExportMenuOpen.set(false);
-    this.isImportMenuOpen.set(false);
-  }
+  private readonly elementRef = inject(ElementRef, { optional: true });
 
   // State delegation to HeatingDataService
-  protected records = this.dataService.records;
-  protected heatingPrediction = computed(() =>
+  protected readonly records = this.dataService.records;
+  protected readonly heatingPrediction = computed(() =>
     this.predictionService.predictHeating(this.records()),
   );
-  protected isExporting = this.dataService.isExporting;
-  protected isImporting = this.dataService.isImporting;
-  protected showImportConfirmModal = this.dataService.showImportConfirmModal;
-  protected showSuccessModal = this.dataService.showSuccessModal;
-  protected successTitle = this.dataService.successTitle;
-  protected successMessage = this.dataService.successMessage;
-  protected showErrorModal = this.dataService.showErrorModal;
-  protected errorTitle = this.dataService.errorTitle;
-  protected errorMessage = this.dataService.errorMessage;
-  protected errorDetails = this.dataService.errorDetails;
-  protected errorInstructions = this.dataService.errorInstructions;
-  protected errorType = this.dataService.errorType;
+  protected readonly isExporting = this.dataService.isExporting;
+  protected readonly isImporting = this.dataService.isImporting;
+  protected readonly showImportConfirmModal = this.dataService.showImportConfirmModal;
+  protected readonly showSuccessModal = this.dataService.showSuccessModal;
+  protected readonly successTitle = this.dataService.successTitle;
+  protected readonly successMessage = this.dataService.successMessage;
+  protected readonly showErrorModal = this.dataService.showErrorModal;
+  protected readonly errorTitle = this.dataService.errorTitle;
+  protected readonly errorMessage = this.dataService.errorMessage;
+  protected readonly errorDetails = this.dataService.errorDetails;
+  protected readonly errorInstructions = this.dataService.errorInstructions;
+  protected readonly errorType = this.dataService.errorType;
 
   // Chart preferences
-  protected chartView = this.preferencesService.heatingChartView;
-  protected displayMode = this.preferencesService.heatingDisplayMode;
-  protected selectedPredictionPeriod = signal<30 | 90 | 180 | 365 | 3650>(30);
+  protected readonly chartView = this.preferencesService.heatingChartView;
+  protected readonly displayMode = this.preferencesService.heatingDisplayMode;
+  protected readonly selectedPredictionPeriod = signal<30 | 90 | 180 | 365 | 3650>(30);
 
   protected onPredictionPeriodChange(period: 30 | 90 | 180 | 365 | 3650): void {
     this.selectedPredictionPeriod.set(period);
   }
 
   // Category names mapping for predictions
-  protected heatingCategoryNames = computed(() => {
+  protected readonly heatingCategoryNames = computed(() => {
     const map: Record<string, string> = {};
     for (const r of this.roomsService.rooms()) {
       map[r.id] = r.type ? r.type : r.name;
@@ -201,9 +163,9 @@ export class HeatingComponent {
 
   // Country selection for facts
   protected readonly availableCountries = this.heatingFactsService.getAvailableCountries();
-  protected selectedCountryCode = signal('DE');
+  protected readonly selectedCountryCode = signal('DE');
 
-  private syncCountryFromAddress = effect(() => {
+  private readonly syncCountryFromAddress = effect(() => {
     const address = this.householdService.address();
     if (address?.country) {
       // Find if this country is valid for heating facts
@@ -215,7 +177,7 @@ export class HeatingComponent {
       }
     }
   });
-  protected selectedCountryName = computed(() => {
+  protected readonly selectedCountryName = computed(() => {
     const code = this.selectedCountryCode();
     const country = this.availableCountries.find((c) => c.code === code);
     return country ? this.languageService.translate(country.nameKey) : code;
@@ -232,10 +194,10 @@ export class HeatingComponent {
   protected readonly recordsHelpSteps = RECORDS_LIST_HELP_STEPS;
 
   // Demo wizard & tour
-  protected demoWizardSteps = DEMO_WIZARD_STEPS;
-  protected demoTourSteps = DEMO_TOUR_STEPS;
-  protected showDemoWizard = signal(false);
-  protected showDemoTour = signal(false);
+  protected readonly demoWizardSteps = DEMO_WIZARD_STEPS;
+  protected readonly demoTourSteps = DEMO_TOUR_STEPS;
+  protected readonly showDemoWizard = signal(false);
+  protected readonly showDemoTour = signal(false);
 
   protected openRelevantDemoGuide(): void {
     if (this.demoService.isDemoMode()) {
@@ -257,8 +219,8 @@ export class HeatingComponent {
     calculateDynamicHeatingTotal(record as DynamicHeatingRecord);
 
   // Facts
-  private factRandomSeed = signal(Math.random());
-  protected heatingFact = computed(() => {
+  private readonly factRandomSeed = signal(secureRandom());
+  protected readonly heatingFact = computed(() => {
     const records = this.chartRecords();
     const mode = this.displayMode();
     const seed = this.factRandomSeed();
@@ -270,31 +232,31 @@ export class HeatingComponent {
   });
 
   protected refreshFact(): void {
-    this.factRandomSeed.set(Math.random());
+    this.factRandomSeed.set(secureRandom());
   }
 
   // Rooms modal
-  protected showRoomsModal = signal(false);
+  protected readonly showRoomsModal = signal(false);
 
   // Delete confirmation modal state
-  protected showDeleteModal = signal(false);
-  protected recordToDelete = signal<DynamicHeatingRecord | null>(null);
-  protected showDeleteAllModal = signal(false);
-  protected recordsToDeleteAll = signal<DynamicHeatingRecord[]>([]);
+  protected readonly showDeleteModal = signal(false);
+  protected readonly recordToDelete = signal<DynamicHeatingRecord | null>(null);
+  protected readonly showDeleteAllModal = signal(false);
+  protected readonly recordsToDeleteAll = signal<DynamicHeatingRecord[]>([]);
 
   // Spike detection
-  protected confirmedSpikes = signal<{ date: string; roomId: string }[]>(
+  protected readonly confirmedSpikes = signal<{ date: string; roomId: string }[]>(
     this.getStoredSpikes('confirmed'),
   );
-  protected dismissedSpikes = signal<{ date: string; roomId: string }[]>(
+  protected readonly dismissedSpikes = signal<{ date: string; roomId: string }[]>(
     this.getStoredSpikes('dismissed'),
   );
 
-  protected detectedSpikes = computed(() =>
+  protected readonly detectedSpikes = computed(() =>
     this.chartCalculationService.detectNewRoomSpikes(this.records()),
   );
 
-  protected unconfirmedSpike = computed(() => {
+  protected readonly unconfirmedSpike = computed(() => {
     const detected = this.detectedSpikes();
     const confirmed = this.confirmedSpikes();
     const dismissed = this.dismissedSpikes();
@@ -305,7 +267,7 @@ export class HeatingComponent {
     );
   });
 
-  protected unconfirmedSpikeRoomName = computed(() => {
+  protected readonly unconfirmedSpikeRoomName = computed(() => {
     const spike = this.unconfirmedSpike();
     if (!spike) return '';
     const room = this.roomsService.rooms().find((r) => r.id === spike.roomId);
@@ -313,7 +275,7 @@ export class HeatingComponent {
     return room.type ? this.languageService.translate(room.type) : room.name;
   });
 
-  protected formattedSpikeDate = computed(() => {
+  protected readonly formattedSpikeDate = computed(() => {
     const spike = this.unconfirmedSpike();
     if (!spike) return '';
     const date = new Date(spike.date);
@@ -324,11 +286,11 @@ export class HeatingComponent {
     });
   });
 
-  protected adjustedRecords = computed(() => {
+  protected readonly adjustedRecords = computed(() => {
     return this.chartCalculationService.adjustForNewRooms(this.records(), this.confirmedSpikes());
   });
 
-  protected chartRecords = computed(() => {
+  protected readonly chartRecords = computed(() => {
     // For Incremental Mode: Use RAW records so we detect meter resets correctly. Spikes are handled by passing confirmedSpikes to the chart.
     // For Total Mode: Use ADJUSTED records so the cumulative curve is smoothed (offsets applied).
     return this.displayMode() === 'incremental' ? this.records() : this.adjustedRecords();
@@ -359,18 +321,18 @@ export class HeatingComponent {
   }
 
   // Chart room data
-  protected chartRoomNames = computed(() =>
+  protected readonly chartRoomNames = computed(() =>
     this.roomsService.rooms().map((r) => {
       return r.type ? this.languageService.translate(r.type) : r.name;
     }),
   );
-  protected chartRoomIds = computed(() => this.roomsService.rooms().map((r) => r.id));
-  protected chartRoomColors = computed(() =>
+  protected readonly chartRoomIds = computed(() => this.roomsService.rooms().map((r) => r.id));
+  protected readonly chartRoomColors = computed(() =>
     this.roomsService.rooms().map((r) => this.roomUtilsService.getRoomColor(r)),
   );
 
   // Room IDs that have data in existing records - used to warn when deleting rooms
-  protected roomsWithData = computed(() => {
+  protected readonly roomsWithData = computed(() => {
     const roomIdsWithData = new Set<string>();
     for (const record of this.records()) {
       for (const [roomId, value] of Object.entries(record.rooms)) {
@@ -383,12 +345,12 @@ export class HeatingComponent {
   });
 
   // Form state
-  protected selectedDate = this.formService.selectedDate;
-  protected editingRecord = this.formService.editingRecord;
-  protected dateExists = computed(() => this.formService.isDateDuplicate(this.records()));
-  protected maxDate = new Date().toISOString().split('T')[0];
+  protected readonly selectedDate = this.formService.selectedDate;
+  protected readonly editingRecord = this.formService.editingRecord;
+  protected readonly dateExists = computed(() => this.formService.isDateDuplicate(this.records()));
+  protected readonly maxDate = new Date().toISOString().split('T')[0];
 
-  protected consumptionGroups = computed<ConsumptionGroup[]>(() => {
+  protected readonly consumptionGroups = computed<ConsumptionGroup[]>(() => {
     const rooms = this.roomsService.rooms();
     return [
       {
@@ -408,18 +370,18 @@ export class HeatingComponent {
   }
 
   // Chart handlers
-  protected onChartViewChange = (view: ChartView): void => {
+  protected readonly onChartViewChange = (view: ChartView): void => {
     this.preferencesService.setChartView(view, 'heating');
     this.refreshFact();
   };
 
-  protected onDisplayModeChange = (mode: DisplayMode): void => {
+  protected readonly onDisplayModeChange = (mode: DisplayMode): void => {
     this.preferencesService.setDisplayMode(mode, 'heating');
     this.refreshFact();
   };
 
-  constructor() {
-    this.dataService.loadData();
+  ngOnInit(): void {
+    void this.dataService.loadData();
   }
 
   // ===== Delegations to DataService =====
@@ -428,23 +390,23 @@ export class HeatingComponent {
     this.dataService.importData(event);
   }
   protected confirmImport() {
-    this.dataService.confirmImport();
+    void this.dataService.confirmImport();
   }
   protected cancelImport() {
     this.dataService.cancelImport();
   }
   protected importFromExcel(event: Event) {
     this.closeMenus();
-    this.dataService.importFromExcel(event);
+    void this.dataService.importFromExcel(event);
   }
   protected exportData() {
-    this.dataService.exportData();
+    void this.dataService.exportData();
   }
   protected exportToExcel() {
-    this.dataService.exportToExcel();
+    void this.dataService.exportToExcel();
   }
   protected exportToPdf() {
-    this.dataService.exportToPdf();
+    void this.dataService.exportToPdf();
   }
   protected closeSuccessModal() {
     this.dataService.closeSuccessModal();
@@ -457,7 +419,7 @@ export class HeatingComponent {
   protected onConsumptionSave() {
     const newRecord = this.formService.createRecordFromState();
     if (newRecord) {
-      this.dataService.saveRecord(newRecord, this.editingRecord());
+      void this.dataService.saveRecord(newRecord, this.editingRecord());
       this.cancelEdit();
       this.dataService.successTitle.set('HEATING.SUCCESS_TITLE');
       this.dataService.successMessage.set('HEATING.RECORD_SAVED');
@@ -501,7 +463,7 @@ export class HeatingComponent {
   protected confirmDelete() {
     const record = this.recordToDelete();
     if (record) {
-      this.dataService.deleteRecord(record);
+      void this.dataService.deleteRecord(record);
     }
     this.showDeleteModal.set(false);
     this.recordToDelete.set(null);
@@ -518,7 +480,7 @@ export class HeatingComponent {
   }
 
   protected confirmDeleteAll() {
-    this.dataService.deleteRecords(this.recordsToDeleteAll());
+    void this.dataService.deleteRecords(this.recordsToDeleteAll());
     this.showDeleteAllModal.set(false);
     this.recordsToDeleteAll.set([]);
   }
@@ -528,14 +490,14 @@ export class HeatingComponent {
     this.recordsToDeleteAll.set([]);
   }
 
-  protected deleteAllMessageKey = computed(() => {
+  protected readonly deleteAllMessageKey = computed(() => {
     const count = this.recordsToDeleteAll().length;
     return count === 1
       ? 'HOME.DELETE_ALL_CONFIRM_MESSAGE_SINGULAR'
       : 'HOME.DELETE_ALL_CONFIRM_MESSAGE_PLURAL';
   });
 
-  protected deleteAllMessageParams = computed(() => ({
+  protected readonly deleteAllMessageParams = computed(() => ({
     count: this.recordsToDeleteAll().length.toString(),
   }));
 }

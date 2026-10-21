@@ -71,44 +71,44 @@
   transition: all 0.3s ease;
 
   &.high {
-    background: rgba(16, 185, 129, 0.12);
+    background: #ecfdf5;
     color: #047857;
     border: 1px solid rgba(16, 185, 129, 0.25);
   }
 
   &.medium {
-    background: rgba(245, 158, 11, 0.12);
-    color: #b45309;
+    background: #fef3c7;
+    color: #92400e;
     border: 1px solid rgba(245, 158, 11, 0.25);
   }
 
   &.low {
-    background: rgba(239, 68, 68, 0.12);
-    color: #b91c1c;
+    background: #fee2e2;
+    color: #991b1b;
     border: 1px solid rgba(239, 68, 68, 0.25);
   }
 }
 
 .accuracy-badge {
-  background: rgba(14, 165, 233, 0.12);
-  color: #0284c7;
+  background: #f0f9ff;
+  color: #0369a1;
   border: 1px solid rgba(14, 165, 233, 0.25);
 
   &.accuracy-high {
-    background: rgba(34, 197, 94, 0.12);
+    background: #f0fdf4;
     color: #15803d;
     border: 1px solid rgba(34, 197, 94, 0.25);
   }
 
   &.accuracy-medium {
-    background: rgba(249, 115, 22, 0.12);
+    background: #fff7ed;
     color: #c2410c;
     border: 1px solid rgba(249, 115, 22, 0.25);
   }
 
   &.accuracy-low {
-    background: rgba(244, 63, 94, 0.12);
-    color: #be123c;
+    background: #fff1f2;
+    color: #9f1239;
     border: 1px solid rgba(244, 63, 94, 0.25);
   }
 }
@@ -122,11 +122,11 @@
   margin-bottom: 1.25rem;
   padding: 0.65rem 1rem;
   border-radius: 10px;
-  background: rgba(37, 99, 235, 0.1);
+  background: #eff6ff;
   color: #1d4ed8;
   font-size: 0.8rem;
   font-weight: 600;
-  word-break: break-word;
+  overflow-wrap: break-word;
   border: 1px solid rgba(37, 99, 235, 0.2);
 
   > lucide-icon:first-child {
@@ -194,12 +194,12 @@
   font-weight: 700;
 
   .rising & {
-    background: rgba(220, 38, 38, 0.1);
-    color: #b91c1c;
+    background: #fee2e2;
+    color: #991b1b;
   }
 
   .falling & {
-    background: rgba(5, 150, 105, 0.1);
+    background: #ecfdf5;
     color: #047857;
   }
 

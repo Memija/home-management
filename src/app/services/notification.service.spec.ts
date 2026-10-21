@@ -46,7 +46,8 @@ describe('NotificationService', () => {
   });
 
   it('should not show notifications until data is loaded', () => {
-    // Not loaded test
+    service['isDataLoaded'].set(false);
+    expect(service.notifications()).toEqual([]);
   });
 
   it('should show initial notifications when no data exists', async () => {
@@ -66,7 +67,7 @@ describe('NotificationService', () => {
     await new Promise((resolve) => setTimeout(resolve, 0));
 
     const notifications = service.notifications();
-    expect(notifications.length).toBe(0);
+    expect(notifications).toHaveLength(0);
   });
 
   it('should update notifications when data is set', async () => {

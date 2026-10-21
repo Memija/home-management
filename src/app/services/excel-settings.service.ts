@@ -36,23 +36,25 @@ export interface ExcelSettings {
   providedIn: 'root',
 })
 export class ExcelSettingsService {
-  private storage = inject(STORAGE_SERVICE);
-  private destroyRef = inject(DestroyRef);
-  private heatingRoomsService = inject(HeatingRoomsService);
+  private readonly storage = inject(STORAGE_SERVICE);
+  private readonly destroyRef = inject(DestroyRef);
+  private readonly heatingRoomsService = inject(HeatingRoomsService);
   private isInitialized = false;
 
   readonly settings = signal<ExcelSettings>(this.getDefaultSettings());
 
   constructor() {
-    this.loadSettings();
+    queueMicrotask(() => {
+      void this.loadSettings();
+    });
     this.storage.dataRefreshed$
       ?.pipe(takeUntilDestroyed(this.destroyRef))
-      .subscribe(() => this.loadSettings());
+      .subscribe(() => void this.loadSettings());
 
     effect(() => {
       const currentSettings = this.settings();
       if (this.isInitialized) {
-        untracked(() => this.storage.save('excel_settings', currentSettings));
+        untracked(() => void this.storage.save('excel_settings', currentSettings));
       }
     });
   }

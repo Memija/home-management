@@ -32,7 +32,7 @@ describe('file-security.utils', () => {
     });
 
     it('should handle primitives and arrays correctly', () => {
-      expect(sanitizeParsedJson(null)).toBe(null);
+      expect(sanitizeParsedJson(null)).toBeNull();
       expect(sanitizeParsedJson(42)).toBe(42);
       expect(sanitizeParsedJson('hello')).toBe('hello');
 

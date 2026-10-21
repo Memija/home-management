@@ -342,7 +342,7 @@ describe('HybridStorageService', () => {
       await service.clearCloudData();
 
       expect(firebaseStorageSpy.deleteAllUserData).toHaveBeenCalled();
-      expect(service.lastSyncTime()).toBe(null);
+      expect(service.lastSyncTime()).toBeNull();
       expect(localStorageSpy.removePreference).toHaveBeenCalledWith('last_sync_timestamp');
     });
 
@@ -381,7 +381,7 @@ describe('HybridStorageService', () => {
       });
       service = TestBed.inject(HybridStorageService);
 
-      expect(service.lastSyncTime()).toBe(null);
+      expect(service.lastSyncTime()).toBeNull();
       expect(localStorageSpy.removePreference).toHaveBeenCalledWith('last_sync_timestamp');
     });
 

@@ -10,7 +10,7 @@ const THEME_STORAGE_KEY = 'hm_theme';
   providedIn: 'root',
 })
 export class ThemeService {
-  private platformId = inject(PLATFORM_ID);
+  private readonly platformId = inject(PLATFORM_ID);
 
   /** Current theme preference */
   readonly currentTheme = signal<Theme>(this.getStoredTheme());
@@ -18,12 +18,13 @@ export class ThemeService {
   /** Resolved theme (light or dark based on system preference if 'system' is selected) */
   readonly resolvedTheme = signal<'light' | 'dark'>(this.resolveTheme(this.getStoredTheme()));
 
-  private mediaQuery: MediaQueryList | null = null;
+  private readonly mediaQuery = this.isBrowser
+    ? window.matchMedia('(prefers-color-scheme: dark)')
+    : null;
 
   constructor() {
-    if (this.isBrowser) {
+    if (this.mediaQuery) {
       // Setup media query listener for system preference changes
-      this.mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
       this.mediaQuery.addEventListener('change', this.handleSystemThemeChange.bind(this));
 
       // Apply initial theme
@@ -78,7 +79,7 @@ export class ThemeService {
   private applyTheme(theme: 'light' | 'dark'): void {
     if (!this.isBrowser) return;
 
-    document.documentElement.setAttribute('data-theme', theme);
+    document.documentElement.dataset['theme'] = theme;
   }
 
   /**

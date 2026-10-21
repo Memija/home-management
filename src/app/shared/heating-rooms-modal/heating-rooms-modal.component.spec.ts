@@ -106,7 +106,7 @@ describe('HeatingRoomsModalComponent', () => {
       component['addRoom']();
 
       const rooms = component['editingRooms']();
-      expect(rooms.length).toBe(2);
+      expect(rooms).toHaveLength(2);
       expect(component['hasChanges']()).toBe(true);
       expect(component['canAddRoom']()).toBe(false);
     });
@@ -115,13 +115,13 @@ describe('HeatingRoomsModalComponent', () => {
       component['addRoom']();
       component['addRoom']();
 
-      expect(component['editingRooms']().length).toBe(2);
+      expect(component['editingRooms']()).toHaveLength(2);
     });
 
     it('should remove a room', () => {
       component['removeRoom']('1');
 
-      expect(component['editingRooms']().length).toBe(0);
+      expect(component['editingRooms']()).toHaveLength(0);
       expect(component['hasChanges']()).toBe(true);
     });
   });

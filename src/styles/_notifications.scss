@@ -70,12 +70,12 @@
     .btn-confirm {
       padding: 0.5rem 1rem;
       font-size: 0.85rem;
-      font-weight: 500;
+      font-weight: 600;
       border: none;
       border-radius: 6px;
       cursor: pointer;
       background: var(--theme-primary, $primary);
-      color: white;
+      color: var(--theme-primary-contrast, white);
       transition: all 0.2s ease;
       box-shadow: var(--shadow-sm);
 
@@ -123,6 +123,7 @@
 // Notification Bell & Dropdown Panel (Header)
 .notification-wrapper {
   position: relative;
+  display: inline-flex;
 }
 
 .notification-bell {
@@ -164,6 +165,7 @@
   align-items: center;
   justify-content: center;
   box-shadow: 0 0 0 2px var(--card-bg);
+  pointer-events: none;
 }
 
 .notification-panel {
@@ -349,10 +351,10 @@
     align-items: center;
     gap: 0.3rem;
     padding: 0.35rem 0.75rem;
-    background: rgba(255, 255, 255, 0.2);
-    border: 1px solid rgba(255, 255, 255, 0.3);
+    background: #312e81;
+    border: 1px solid rgba(255, 255, 255, 0.4);
     border-radius: 4px;
-    color: white;
+    color: #ffffff;
     font-size: 0.85rem;
     font-weight: 500;
     cursor: pointer;
@@ -368,7 +370,7 @@
     }
 
     &:hover:not(:disabled) {
-      background: rgba(255, 255, 255, 0.3);
+      background: #1e1b4b;
     }
 
     &:disabled {

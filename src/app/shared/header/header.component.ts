@@ -29,8 +29,8 @@ import { HybridStorageService } from '../../services/hybrid-storage.service';
   styleUrl: './header.component.scss',
 })
 export class HeaderComponent {
-  private elementRef = inject(ElementRef);
-  private router = inject(Router);
+  private readonly elementRef = inject(ElementRef);
+  private readonly router = inject(Router);
   protected readonly demoService = inject(DemoService);
   protected readonly notificationService = inject(NotificationService);
   protected readonly themeService = inject(ThemeService);
@@ -53,7 +53,7 @@ export class HeaderComponent {
     return url === '/' || url === '/dashboard' || url.startsWith('/dashboard/');
   });
 
-  protected isNotificationPanelOpen = signal(false);
+  protected readonly isNotificationPanelOpen = signal(false);
 
   protected notificationCount = computed(() => this.notificationService.notifications().length);
 
@@ -77,7 +77,7 @@ export class HeaderComponent {
   protected navigateToNotification(notification: Notification): void {
     this.closePanel();
     if (notification.route) {
-      this.router
+      void this.router
         .navigate([notification.route], {
           fragment: notification.fragment,
         })
@@ -95,8 +95,8 @@ export class HeaderComponent {
     }
   }
 
-  protected exitDemo(): void {
-    this.demoService.deactivateDemo();
+  protected async exitDemo(): Promise<void> {
+    await this.demoService.deactivateDemo();
   }
 
   protected closePanel(): void {

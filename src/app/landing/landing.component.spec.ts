@@ -90,39 +90,24 @@ describe('LandingComponent', () => {
   });
 
   describe('Theme Management', () => {
-    it('should cycle theme from light to dark', () => {
-      themeServiceMock.currentTheme = signal<Theme>('light');
+    it.each([
+      { current: 'light' as Theme, expected: 'dark' as Theme },
+      { current: 'dark' as Theme, expected: 'system' as Theme },
+      { current: 'system' as Theme, expected: 'light' as Theme },
+    ])('should cycle theme from $current to $expected', ({ current, expected }) => {
+      themeServiceMock.currentTheme = signal<Theme>(current);
       component['cycleTheme']();
-      expect(themeServiceMock.setTheme).toHaveBeenCalledWith('dark');
+      expect(themeServiceMock.setTheme).toHaveBeenCalledWith(expected);
     });
 
-    it('should cycle theme from dark to system', () => {
-      themeServiceMock.currentTheme = signal<Theme>('dark');
-      component['cycleTheme']();
-      expect(themeServiceMock.setTheme).toHaveBeenCalledWith('system');
-    });
-
-    it('should cycle theme from system to light', () => {
-      themeServiceMock.currentTheme = signal<Theme>('system');
-      component['cycleTheme']();
-      expect(themeServiceMock.setTheme).toHaveBeenCalledWith('light');
-    });
-
-    it('should return correct theme icon for light theme', () => {
-      themeServiceMock.currentTheme = signal<Theme>('light');
-      themeServiceMock.resolvedTheme = signal<Theme>('light');
-      expect(component['getThemeIcon']()).toBe('☀️');
-    });
-
-    it('should return correct theme icon for dark theme', () => {
-      themeServiceMock.currentTheme = signal<Theme>('dark');
-      themeServiceMock.resolvedTheme = signal<Theme>('dark');
-      expect(component['getThemeIcon']()).toBe('🌙');
-    });
-
-    it('should return system icon if theme is system', () => {
-      themeServiceMock.currentTheme = signal<Theme>('system');
-      expect(component['getThemeIcon']()).toBe('🖥️');
+    it.each([
+      { current: 'light' as Theme, resolved: 'light' as Theme, icon: '☀️' },
+      { current: 'dark' as Theme, resolved: 'dark' as Theme, icon: '🌙' },
+      { current: 'system' as Theme, resolved: 'dark' as Theme, icon: '🖥️' },
+    ])('should return correct theme icon for $current theme', ({ current, resolved, icon }) => {
+      themeServiceMock.currentTheme = signal<Theme>(current);
+      themeServiceMock.resolvedTheme = signal<Theme>(resolved);
+      expect(component['getThemeIcon']()).toBe(icon);
     });
 
     it('should return correct title for light theme', () => {
@@ -141,7 +126,7 @@ describe('LandingComponent', () => {
 
   describe('Hero Highlights Grid', () => {
     it('should have 4 highlight cards configured', () => {
-      expect(component['highlightKeys'].length).toBe(4);
+      expect(component['highlightKeys']).toHaveLength(4);
       expect(component['highlightKeys'][0].titleKey).toBe('LANDING.HIGHLIGHTS.LOCAL_TITLE');
       expect(component['highlightKeys'][1].titleKey).toBe('LANDING.HIGHLIGHTS.PREDICT_TITLE');
       expect(component['highlightKeys'][2].titleKey).toBe('LANDING.HIGHLIGHTS.UNIFIED_TITLE');
@@ -152,7 +137,7 @@ describe('LandingComponent', () => {
       fixture.detectChanges();
       const compiled = fixture.nativeElement as HTMLElement;
       const cards = compiled.querySelectorAll('.highlight-card');
-      expect(cards.length).toBe(4);
+      expect(cards).toHaveLength(4);
     });
   });
 
@@ -243,7 +228,7 @@ describe('LandingComponent', () => {
       observerCallback([mockEntry], {} as IntersectionObserver);
 
       // Visibility state shouldn't change
-      expect(Object.keys(component['isVisible']()).length).toBe(0);
+      expect(Object.keys(component['isVisible']())).toHaveLength(0);
     });
 
     it('should update scrollY and roadProgress on window scroll', () => {

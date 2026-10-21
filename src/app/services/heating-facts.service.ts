@@ -26,7 +26,7 @@ export type HeatingFactMode = 'historical' | 'country';
   providedIn: 'root',
 })
 export class HeatingFactsService {
-  private languageService = inject(LanguageService);
+  private readonly languageService = inject(LanguageService);
 
   /**
    * Get available countries for heating facts
@@ -49,9 +49,14 @@ export class HeatingFactsService {
     countryCode?: string,
   ): HeatingFact | null {
     const lang = this.languageService.currentLang();
-    const translations = lang === 'de' ? de : lang === 'bs' ? bs : en;
-    const countryFacts =
-      lang === 'de' ? deHeatingFacts : lang === 'bs' ? bsHeatingFacts : enHeatingFacts;
+    const translationMap = { de, bs, en } as const;
+    const translations = translationMap[lang as 'de' | 'bs'] ?? en;
+    const countryFactsMap = {
+      de: deHeatingFacts,
+      bs: bsHeatingFacts,
+      en: enHeatingFacts,
+    } as const;
+    const countryFacts = countryFactsMap[lang as 'de' | 'bs'] ?? enHeatingFacts;
     const didYouKnow =
       (translations.FACTS as Record<string, string>)?.['DID_YOU_KNOW'] || 'Did you know?';
 

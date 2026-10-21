@@ -174,7 +174,7 @@ describe('PredictionsPanelComponent', () => {
 
     it('should NOT render prediction cards', () => {
       const cards = fixture.debugElement.queryAll(By.css('.prediction-card'));
-      expect(cards.length).toBe(0);
+      expect(cards).toHaveLength(0);
     });
   });
 
@@ -200,7 +200,7 @@ describe('PredictionsPanelComponent', () => {
 
     it('should render exactly 5 prediction cards (30, 90, 180, 365, 3650)', () => {
       const cards = fixture.debugElement.queryAll(By.css('.prediction-card'));
-      expect(cards.length).toBe(5);
+      expect(cards).toHaveLength(5);
     });
 
     it('should mark the 30-day card as active by default', () => {
@@ -221,32 +221,16 @@ describe('PredictionsPanelComponent', () => {
   // -------------------------------------------------------------------------
 
   describe('trendIcon computed', () => {
-    it('should return TrendingUp icon when trend is "rising"', () => {
-      setComponentInput(component, 'prediction', buildMultiPrediction({ trend: 'rising' }));
+    it.each([
+      { trend: 'rising' as const, expectedKey: 'TrendingUpIcon' },
+      { trend: 'falling' as const, expectedKey: 'TrendingDownIcon' },
+      { trend: 'stable' as const, expectedKey: 'MinusIcon' },
+      { trend: null, expectedKey: 'MinusIcon' },
+    ])('should return correct icon when trend is $trend', ({ trend, expectedKey }) => {
+      setComponentInput(component, 'prediction', trend ? buildMultiPrediction({ trend }) : null);
       fixture.detectChanges();
       const icon = component['trendIcon']();
-      expect(icon).toBe(component['TrendingUpIcon']);
-    });
-
-    it('should return TrendingDown icon when trend is "falling"', () => {
-      setComponentInput(component, 'prediction', buildMultiPrediction({ trend: 'falling' }));
-      fixture.detectChanges();
-      const icon = component['trendIcon']();
-      expect(icon).toBe(component['TrendingDownIcon']);
-    });
-
-    it('should return Minus icon when trend is "stable"', () => {
-      setComponentInput(component, 'prediction', buildMultiPrediction({ trend: 'stable' }));
-      fixture.detectChanges();
-      const icon = component['trendIcon']();
-      expect(icon).toBe(component['MinusIcon']);
-    });
-
-    it('should return Minus icon when prediction is null', () => {
-      setComponentInput(component, 'prediction', null);
-      fixture.detectChanges();
-      const icon = component['trendIcon']();
-      expect(icon).toBe(component['MinusIcon']);
+      expect(icon).toBe(component[expectedKey as keyof typeof component]);
     });
   });
 
@@ -255,28 +239,15 @@ describe('PredictionsPanelComponent', () => {
   // -------------------------------------------------------------------------
 
   describe('trendClass computed', () => {
-    it('should return "rising" when trend is rising', () => {
-      setComponentInput(component, 'prediction', buildMultiPrediction({ trend: 'rising' }));
+    it.each([
+      { trend: 'rising' as const, expected: 'rising' },
+      { trend: 'falling' as const, expected: 'falling' },
+      { trend: 'stable' as const, expected: 'stable' },
+      { trend: null, expected: 'stable' },
+    ])('should return "$expected" when trend is $trend', ({ trend, expected }) => {
+      setComponentInput(component, 'prediction', trend ? buildMultiPrediction({ trend }) : null);
       fixture.detectChanges();
-      expect(component['trendClass']()).toBe('rising');
-    });
-
-    it('should return "falling" when trend is falling', () => {
-      setComponentInput(component, 'prediction', buildMultiPrediction({ trend: 'falling' }));
-      fixture.detectChanges();
-      expect(component['trendClass']()).toBe('falling');
-    });
-
-    it('should return "stable" when trend is stable', () => {
-      setComponentInput(component, 'prediction', buildMultiPrediction({ trend: 'stable' }));
-      fixture.detectChanges();
-      expect(component['trendClass']()).toBe('stable');
-    });
-
-    it('should return "stable" when prediction is null', () => {
-      setComponentInput(component, 'prediction', null);
-      fixture.detectChanges();
-      expect(component['trendClass']()).toBe('stable');
+      expect(component['trendClass']()).toBe(expected);
     });
   });
 
@@ -285,28 +256,19 @@ describe('PredictionsPanelComponent', () => {
   // -------------------------------------------------------------------------
 
   describe('confidenceClass computed', () => {
-    it('should return "high" when confidence is high', () => {
-      setComponentInput(component, 'prediction', buildMultiPrediction({ confidence: 'high' }));
+    it.each([
+      { confidence: 'high' as const, expected: 'high' },
+      { confidence: 'medium' as const, expected: 'medium' },
+      { confidence: 'low' as const, expected: 'low' },
+      { confidence: null, expected: 'low' },
+    ])('should return "$expected" when confidence is $confidence', ({ confidence, expected }) => {
+      setComponentInput(
+        component,
+        'prediction',
+        confidence ? buildMultiPrediction({ confidence }) : null,
+      );
       fixture.detectChanges();
-      expect(component['confidenceClass']()).toBe('high');
-    });
-
-    it('should return "medium" when confidence is medium', () => {
-      setComponentInput(component, 'prediction', buildMultiPrediction({ confidence: 'medium' }));
-      fixture.detectChanges();
-      expect(component['confidenceClass']()).toBe('medium');
-    });
-
-    it('should return "low" when confidence is low', () => {
-      setComponentInput(component, 'prediction', buildMultiPrediction({ confidence: 'low' }));
-      fixture.detectChanges();
-      expect(component['confidenceClass']()).toBe('low');
-    });
-
-    it('should return "low" when prediction is null', () => {
-      setComponentInput(component, 'prediction', null);
-      fixture.detectChanges();
-      expect(component['confidenceClass']()).toBe('low');
+      expect(component['confidenceClass']()).toBe(expected);
     });
   });
 
@@ -315,50 +277,22 @@ describe('PredictionsPanelComponent', () => {
   // -------------------------------------------------------------------------
 
   describe('accuracyClass computed', () => {
-    it('should return "accuracy-high" when accuracyPercentage >= 85', () => {
-      setComponentInput(component, 'prediction', buildMultiPrediction({ accuracyPercentage: 90 }));
-      fixture.detectChanges();
-      expect(component['accuracyClass']()).toBe('accuracy-high');
-    });
-
-    it('should return "accuracy-high" when accuracyPercentage is exactly 85', () => {
-      setComponentInput(component, 'prediction', buildMultiPrediction({ accuracyPercentage: 85 }));
-      fixture.detectChanges();
-      expect(component['accuracyClass']()).toBe('accuracy-high');
-    });
-
-    it('should return "accuracy-medium" when accuracyPercentage is >= 70 and < 85', () => {
-      setComponentInput(component, 'prediction', buildMultiPrediction({ accuracyPercentage: 75 }));
-      fixture.detectChanges();
-      expect(component['accuracyClass']()).toBe('accuracy-medium');
-    });
-
-    it('should return "accuracy-medium" when accuracyPercentage is exactly 70', () => {
-      setComponentInput(component, 'prediction', buildMultiPrediction({ accuracyPercentage: 70 }));
-      fixture.detectChanges();
-      expect(component['accuracyClass']()).toBe('accuracy-medium');
-    });
-
-    it('should return "accuracy-low" when accuracyPercentage < 70', () => {
-      setComponentInput(component, 'prediction', buildMultiPrediction({ accuracyPercentage: 55 }));
-      fixture.detectChanges();
-      expect(component['accuracyClass']()).toBe('accuracy-low');
-    });
-
-    it('should return empty string when accuracyPercentage is undefined', () => {
+    it.each([
+      { accuracy: 90, expected: 'accuracy-high', desc: '>= 85' },
+      { accuracy: 85, expected: 'accuracy-high', desc: 'exactly 85' },
+      { accuracy: 75, expected: 'accuracy-medium', desc: '>= 70 and < 85' },
+      { accuracy: 70, expected: 'accuracy-medium', desc: 'exactly 70' },
+      { accuracy: 55, expected: 'accuracy-low', desc: '< 70' },
+      { accuracy: undefined, expected: '', desc: 'undefined' },
+      { accuracy: null, expected: '', desc: 'null prediction' },
+    ])('should return "$expected" when accuracyPercentage is $desc', ({ accuracy, expected }) => {
       setComponentInput(
         component,
         'prediction',
-        buildMultiPrediction({ accuracyPercentage: undefined }),
+        accuracy === null ? null : buildMultiPrediction({ accuracyPercentage: accuracy }),
       );
       fixture.detectChanges();
-      expect(component['accuracyClass']()).toBe('');
-    });
-
-    it('should return empty string when prediction is null', () => {
-      setComponentInput(component, 'prediction', null);
-      fixture.detectChanges();
-      expect(component['accuracyClass']()).toBe('');
+      expect(component['accuracyClass']()).toBe(expected);
     });
   });
 
@@ -367,23 +301,14 @@ describe('PredictionsPanelComponent', () => {
   // -------------------------------------------------------------------------
 
   describe('typeClass computed', () => {
-    it('should return "water" when type is water', () => {
-      setComponentInput(component, 'type', 'water');
-      fixture.detectChanges();
-      expect(component['typeClass']()).toBe('water');
-    });
-
-    it('should return "electricity" when type is electricity', () => {
-      setComponentInput(component, 'type', 'electricity');
-      fixture.detectChanges();
-      expect(component['typeClass']()).toBe('electricity');
-    });
-
-    it('should return "heating" when type is heating', () => {
-      setComponentInput(component, 'type', 'heating');
-      fixture.detectChanges();
-      expect(component['typeClass']()).toBe('heating');
-    });
+    it.each(['water' as const, 'electricity' as const, 'heating' as const])(
+      'should return "%s" when type is %s',
+      (type) => {
+        setComponentInput(component, 'type', type);
+        fixture.detectChanges();
+        expect(component['typeClass']()).toBe(type);
+      },
+    );
 
     it('should apply the typeClass to the section element', () => {
       setComponentInput(component, 'type', 'electricity');
@@ -415,7 +340,7 @@ describe('PredictionsPanelComponent', () => {
       setComponentInput(component, 'prediction', buildMultiPrediction({}, { bathroom: catPred }));
       fixture.detectChanges();
       const cats = component['categoryPredictions']();
-      expect(cats.length).toBe(1);
+      expect(cats).toHaveLength(1);
       expect(cats[0].key).toBe('bathroom');
       expect(cats[0].value).toEqual(catPred);
     });
@@ -451,7 +376,7 @@ describe('PredictionsPanelComponent', () => {
       );
       fixture.detectChanges();
       const items = fixture.debugElement.queryAll(By.css('.category-item'));
-      expect(items.length).toBe(2);
+      expect(items).toHaveLength(2);
     });
 
     it('should NOT render the category-predictions section when empty', () => {
@@ -467,8 +392,6 @@ describe('PredictionsPanelComponent', () => {
   // -------------------------------------------------------------------------
 
   describe('Period Selection', () => {
-    const periods: (30 | 90 | 180 | 365 | 3650)[] = [30, 90, 180, 365, 3650];
-
     beforeEach(() => {
       setComponentInput(component, 'prediction', buildMultiPrediction());
       fixture.detectChanges();
@@ -482,15 +405,19 @@ describe('PredictionsPanelComponent', () => {
       expect(spy).toHaveBeenCalledWith(90);
     });
 
-    periods.forEach((period, index) => {
-      it(`should emit ${period} when the corresponding card button is clicked`, () => {
-        const spy = vi.fn();
-        component.periodChange.subscribe(spy);
+    it.each([
+      { period: 30, index: 0 },
+      { period: 90, index: 1 },
+      { period: 180, index: 2 },
+      { period: 365, index: 3 },
+      { period: 3650, index: 4 },
+    ])('should emit $period when the corresponding card button is clicked', ({ period, index }) => {
+      const spy = vi.fn();
+      component.periodChange.subscribe(spy);
 
-        const cards = fixture.debugElement.queryAll(By.css('.prediction-card'));
-        cards[index].triggerEventHandler('click', null);
-        expect(spy).toHaveBeenCalledWith(period);
-      });
+      const cards = fixture.debugElement.queryAll(By.css('.prediction-card'));
+      cards[index].triggerEventHandler('click', null);
+      expect(spy).toHaveBeenCalledWith(period);
     });
 
     it('should mark only the selected period card as active', () => {

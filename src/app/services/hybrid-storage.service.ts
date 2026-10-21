@@ -30,12 +30,12 @@ export type StorageMode = 'local' | 'cloud';
   providedIn: 'root',
 })
 export class HybridStorageService extends StorageService {
-  private localStorage = inject(LocalStorageService);
-  private firebaseStorage = inject(FirebaseStorageService);
-  private authService = inject(AuthService);
-  private demoService = inject(DemoService);
-  private cloudSync = inject(CloudSyncService);
-  private platformId = inject(PLATFORM_ID);
+  private readonly localStorage = inject(LocalStorageService);
+  private readonly firebaseStorage = inject(FirebaseStorageService);
+  private readonly authService = inject(AuthService);
+  private readonly demoService = inject(DemoService);
+  private readonly cloudSync = inject(CloudSyncService);
+  private readonly platformId = inject(PLATFORM_ID);
 
   /** Current storage mode */
   readonly mode = signal<StorageMode>('local');

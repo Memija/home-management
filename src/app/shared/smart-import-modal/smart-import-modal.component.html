@@ -1,16 +1,11 @@
 @if (showSignal()) {
+  <!-- eslint-disable-next-line @angular-eslint/template/interactive-supports-focus -- Backdrop dismissal by design -->
   <div
     class="modal-overlay"
-    (click)="closeModal.emit()"
-    tabindex="0"
-    (keyup.enter)="closeModal.emit()"
+    (click)="$event.target === $event.currentTarget && closeModal.emit()"
+    (keydown.escape)="closeModal.emit()"
   >
-    <div
-      class="modal-content"
-      (click)="$event.stopPropagation()"
-      tabindex="0"
-      (keyup.enter)="$event.stopPropagation()"
-    >
+    <div class="modal-content">
       <div class="modal-header modal-header-premium">
         <lucide-icon [img]="ClipboardIcon" size="24" class="header-icon"></lucide-icon>
         <h3>{{ 'SMART_IMPORT.TITLE' | translate }}</h3>
@@ -28,10 +23,14 @@
       <div class="modal-body">
         @if (step() === 'input') {
           <p class="instruction">{{ 'SMART_IMPORT.INSTRUCTION' | translate }}</p>
+          <label for="smart-import-paste-area" class="sr-only">{{
+            'SMART_IMPORT.INSTRUCTION' | translate
+          }}</label>
           <textarea
             id="smart-import-paste-area"
             [(ngModel)]="rawText"
             placeholder="{{ 'SMART_IMPORT.PLACEHOLDER' | translate }}"
+            aria-label="{{ 'SMART_IMPORT.INSTRUCTION' | translate }}"
             rows="10"
             class="paste-area"
           >

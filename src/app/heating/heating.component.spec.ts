@@ -153,6 +153,7 @@ describe('HeatingComponent', () => {
     });
 
     component = TestBed.runInInjectionContext(() => new HeatingComponent());
+    component.ngOnInit();
   });
 
   afterEach(() => {

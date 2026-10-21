@@ -1,11 +1,11 @@
 @if (show) {
-  <div class="modal-overlay" (click)="onClose()" tabindex="0" (keyup.enter)="onClose()">
-    <div
-      class="modal-content help-modal"
-      (click)="$event.stopPropagation()"
-      tabindex="0"
-      (keyup.enter)="$event.stopPropagation()"
-    >
+  <!-- eslint-disable-next-line @angular-eslint/template/interactive-supports-focus -- Backdrop dismissal by design -->
+  <div
+    class="modal-overlay"
+    (click)="$event.target === $event.currentTarget && onClose()"
+    (keydown.escape)="onClose()"
+  >
+    <div class="modal-content help-modal">
       <div class="modal-header">
         <lucide-icon [img]="HelpIcon" size="28" class="help-icon"></lucide-icon>
         <h3>{{ titleKey | translate }}</h3>

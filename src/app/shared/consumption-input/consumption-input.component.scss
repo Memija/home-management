@@ -167,7 +167,7 @@
       border-radius: 8px;
 
       :host-context([data-theme='dark']) & {
-        color: #0f172a !important;
+        color: #0f172a;
       }
 
       &:hover:not(:disabled) {

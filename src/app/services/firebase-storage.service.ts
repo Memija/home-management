@@ -1,4 +1,4 @@
-import { Injectable, inject, Injector, PLATFORM_ID } from '@angular/core';
+import { Injectable, inject, PLATFORM_ID } from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
 import { Firestore } from 'firebase/firestore';
 import { StorageService } from './storage.service';
@@ -17,9 +17,8 @@ import { AuthService } from './auth.service';
 export class FirebaseStorageService extends StorageService {
   private firestoreInstance: Firestore | null = null;
   private firestoreInitPromise: Promise<Firestore> | null = null;
-  private authService = inject(AuthService);
-  private platformId = inject(PLATFORM_ID);
-  private injector = inject(Injector);
+  private readonly authService = inject(AuthService);
+  private readonly platformId = inject(PLATFORM_ID);
 
   private get isBrowser(): boolean {
     return isPlatformBrowser(this.platformId);
@@ -35,15 +34,13 @@ export class FirebaseStorageService extends StorageService {
 
   private async getFirestore(): Promise<Firestore> {
     if (this.firestoreInstance) return this.firestoreInstance;
-    if (!this.firestoreInitPromise) {
-      this.firestoreInitPromise = (async () => {
-        const { getOrCreateFirebaseApp } = await import('./firebase-app.helper');
-        const { getFirestore } = await import('firebase/firestore');
-        const app = await getOrCreateFirebaseApp(this.isBrowser);
-        this.firestoreInstance = getFirestore(app);
-        return this.firestoreInstance;
-      })();
-    }
+    this.firestoreInitPromise ??= (async () => {
+      const { getOrCreateFirebaseApp } = await import('./firebase-app.helper');
+      const { getFirestore } = await import('firebase/firestore');
+      const app = await getOrCreateFirebaseApp(this.isBrowser);
+      this.firestoreInstance = getFirestore(app);
+      return this.firestoreInstance;
+    })();
     return this.firestoreInitPromise;
   }
 
@@ -149,9 +146,7 @@ export class FirebaseStorageService extends StorageService {
   async importAll(data: Record<string, unknown>): Promise<void> {
     if (!this.isBrowser || !this.uid) return;
 
-    for (const [key, value] of Object.entries(data)) {
-      await this.save(key, value);
-    }
+    await Promise.all(Object.entries(data).map(([key, value]) => this.save(key, value)));
   }
 
   async exportRecords(recordKey: string): Promise<unknown[]> {

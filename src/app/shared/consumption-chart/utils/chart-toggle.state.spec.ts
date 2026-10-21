@@ -1,6 +1,6 @@
 import { describe, it, expect, vi } from 'vitest';
 import { ChartToggleState } from './chart-toggle.state';
-import { LocalStorageService } from '../../services/local-storage.service';
+import { LocalStorageService } from '../../../services/local-storage.service';
 
 const makeStorage = (storedValue: string | null = null): LocalStorageService =>
   ({
@@ -56,35 +56,29 @@ describe('ChartToggleState', () => {
   // ─── Average comparison ───────────────────────────────────────────────────
 
   describe('getAverageComparisonVisibility', () => {
-    it('should default to true for water when no stored value', () => {
-      const state = new ChartToggleState(makeStorage(null), 'water');
-      expect(state.getAverageComparisonVisibility()).toBe(true);
-    });
+    it.each([
+      { chartType: 'water' as const, expected: true },
+      { chartType: 'heating' as const, expected: false },
+      { chartType: 'electricity' as const, expected: false },
+      { chartType: 'home' as const, expected: false },
+    ])(
+      'should default to $expected for $chartType when no stored value',
+      ({ chartType, expected }) => {
+        const state = new ChartToggleState(makeStorage(null), chartType);
+        expect(state.getAverageComparisonVisibility()).toBe(expected);
+      },
+    );
 
-    it('should default to false for heating when no stored value', () => {
-      const state = new ChartToggleState(makeStorage(null), 'heating');
-      expect(state.getAverageComparisonVisibility()).toBe(false);
-    });
-
-    it('should default to false for electricity when no stored value', () => {
-      const state = new ChartToggleState(makeStorage(null), 'electricity');
-      expect(state.getAverageComparisonVisibility()).toBe(false);
-    });
-
-    it('should default to false for home when no stored value', () => {
-      const state = new ChartToggleState(makeStorage(null), 'home');
-      expect(state.getAverageComparisonVisibility()).toBe(false);
-    });
-
-    it('should return stored true value regardless of chartType default', () => {
-      const state = new ChartToggleState(makeStorage('true'), 'heating');
-      expect(state.getAverageComparisonVisibility()).toBe(true);
-    });
-
-    it('should return stored false value regardless of chartType default', () => {
-      const state = new ChartToggleState(makeStorage('false'), 'water');
-      expect(state.getAverageComparisonVisibility()).toBe(false);
-    });
+    it.each([
+      { stored: 'true', chartType: 'heating' as const, expected: true },
+      { stored: 'false', chartType: 'water' as const, expected: false },
+    ])(
+      'should return stored $expected value regardless of chartType default',
+      ({ stored, chartType, expected }) => {
+        const state = new ChartToggleState(makeStorage(stored), chartType);
+        expect(state.getAverageComparisonVisibility()).toBe(expected);
+      },
+    );
   });
 
   describe('saveAverageComparisonVisibility', () => {

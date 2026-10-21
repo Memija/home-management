@@ -19,14 +19,14 @@ import { ChartDataService, ChartView, DisplayMode } from '../../services/chart-d
 import { LocalStorageService } from '../../services/local-storage.service';
 import {
   LucideAngularModule,
-  BarChart3,
+  ChartBar,
   DoorOpen,
   Droplet,
   Grid3x3,
   TrendingUp,
   Activity,
   Info,
-  HelpCircle,
+  CircleQuestionMark,
   ZoomIn,
   Maximize2,
   Minimize2,
@@ -42,13 +42,13 @@ import {
   DynamicHeatingRecord,
   ElectricityRecord,
 } from '../../models/records.model';
-import { registerChartPlugins } from './chart-plugins';
+import { registerChartPlugins } from './plugins/chart-plugins';
 import { ChartDataPoint } from '../../models/consumption-chart.model';
 import { MultiPredictionResult } from '../../models/prediction.models';
-import { generateSmartLabels } from './chart-labels.utils';
-import { buildChartOptions } from './chart-options.builder';
-import { ChartToggleState } from './chart-toggle.state';
-import { appendPredictionDatasets, PredictionPeriod } from './chart-prediction.builder';
+import { generateSmartLabels } from './utils/chart-labels.utils';
+import { buildChartOptions } from './options/chart-options.builder';
+import { ChartToggleState } from './utils/chart-toggle.state';
+import { appendPredictionDatasets, PredictionPeriod } from './predictions/chart-prediction.builder';
 
 // Re-export types for consumers
 export type { ChartView, DisplayMode } from '../../services/chart-data.service';
@@ -192,18 +192,18 @@ export class ConsumptionChartComponent implements OnInit, OnDestroy {
   }
   protected predictionPeriodSignal = signal<PredictionPeriod>(30);
 
-  private languageService = inject(LanguageService);
-  private chartDataService = inject(ChartDataService);
-  private localStorageService = inject(LocalStorageService);
+  private readonly languageService = inject(LanguageService);
+  private readonly chartDataService = inject(ChartDataService);
+  private readonly localStorageService = inject(LocalStorageService);
 
-  protected readonly BarChart3Icon = BarChart3;
+  protected readonly BarChart3Icon = ChartBar;
   protected readonly DoorOpenIcon = DoorOpen;
   protected readonly DropletIcon = Droplet;
   protected readonly Grid3x3Icon = Grid3x3;
   protected readonly TrendingUpIcon = TrendingUp;
   protected readonly ActivityIcon = Activity;
   protected readonly InfoIcon = Info;
-  protected readonly HelpIcon = HelpCircle;
+  protected readonly HelpIcon = CircleQuestionMark;
   protected readonly ZoomInIcon = ZoomIn;
   protected readonly Maximize2Icon = Maximize2;
   protected readonly Minimize2Icon = Minimize2;
@@ -212,10 +212,10 @@ export class ConsumptionChartComponent implements OnInit, OnDestroy {
   protected readonly TargetIcon = Target;
 
   // Fullscreen state — synced from the native fullscreenchange event
-  protected isFullscreen = signal<boolean>(false);
+  protected readonly isFullscreen = signal<boolean>(false);
 
   // Hide controls state (used to maximize chart canvas inside fullscreen)
-  protected isControlsHidden = signal<boolean>(false);
+  protected readonly isControlsHidden = signal<boolean>(false);
 
   /**
    * Returns true when the native Fullscreen API is supported on the current element.
@@ -247,19 +247,19 @@ export class ConsumptionChartComponent implements OnInit, OnDestroy {
   };
 
   // Trendline visibility toggle - initialized in ngOnInit after chartType is set
-  protected showTrendline = signal<boolean>(true);
+  protected readonly showTrendline = signal<boolean>(true);
 
   // Average comparison visibility toggle - initialized in ngOnInit after chartType is set
-  protected showAverageComparison = signal<boolean>(true);
+  protected readonly showAverageComparison = signal<boolean>(true);
 
   // Predictions visibility toggle - initialized in ngOnInit after chartType is set
-  protected showPredictions = signal<boolean>(true);
+  protected readonly showPredictions = signal<boolean>(true);
 
   // Past forecast visibility toggle
-  protected showPastForecast = signal<boolean>(false);
+  protected readonly showPastForecast = signal<boolean>(false);
 
   // Help modal state
-  protected showHelpModal = signal(false);
+  protected readonly showHelpModal = signal(false);
 
   /** Toggle/preference helper (initialized in ngOnInit once chartType is available) */
   private toggleState!: ChartToggleState;
@@ -474,7 +474,7 @@ export class ConsumptionChartComponent implements OnInit, OnDestroy {
     if (isCurrentlyNative) {
       // Exit native fullscreen
       if (document.exitFullscreen) {
-        document.exitFullscreen();
+        void document.exitFullscreen();
       } else if ((document as unknown as FullscreenDocument).webkitExitFullscreen) {
         (document as unknown as FullscreenDocument).webkitExitFullscreen?.();
       }
@@ -535,7 +535,7 @@ export class ConsumptionChartComponent implements OnInit, OnDestroy {
     ) {
       // Native fullscreen — browser handles Escape, but we call exit to sync state
       if (document.exitFullscreen) {
-        document.exitFullscreen();
+        void document.exitFullscreen();
       } else if ((document as unknown as FullscreenDocument).webkitExitFullscreen) {
         (document as unknown as FullscreenDocument).webkitExitFullscreen?.();
       }
@@ -555,7 +555,7 @@ export class ConsumptionChartComponent implements OnInit, OnDestroy {
       (document as unknown as FullscreenDocument).webkitFullscreenElement
     ) {
       if (document.exitFullscreen) {
-        document.exitFullscreen();
+        void document.exitFullscreen();
       } else if ((document as unknown as FullscreenDocument).webkitExitFullscreen) {
         (document as unknown as FullscreenDocument).webkitExitFullscreen?.();
       }

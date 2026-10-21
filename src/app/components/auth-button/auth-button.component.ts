@@ -12,7 +12,7 @@ import { TranslatePipe } from '../../pipes/translate.pipe';
   styleUrl: './auth-button.component.scss',
 })
 export class AuthButtonComponent {
-  private authService = inject(AuthService);
+  private readonly authService = inject(AuthService);
 
   readonly LogInIcon = LogIn;
   readonly LogOutIcon = LogOut;

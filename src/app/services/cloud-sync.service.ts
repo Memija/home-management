@@ -17,9 +17,9 @@ import {
   providedIn: 'root',
 })
 export class CloudSyncService {
-  private localStorage = inject(LocalStorageService);
-  private firebaseStorage = inject(FirebaseStorageService);
-  private platformId = inject(PLATFORM_ID);
+  private readonly localStorage = inject(LocalStorageService);
+  private readonly firebaseStorage = inject(FirebaseStorageService);
+  private readonly platformId = inject(PLATFORM_ID);
 
   readonly lastSyncTime = signal<Date | null>(null);
   readonly isUploading = signal<boolean>(false);
@@ -53,7 +53,7 @@ export class CloudSyncService {
     const lastSync = this.localStorage.getPreference(LAST_SYNC_KEY);
     if (lastSync) {
       const date = new Date(lastSync);
-      if (!isNaN(date.getTime())) {
+      if (!Number.isNaN(date.getTime())) {
         this.lastSyncTime.set(date);
       } else {
         console.warn('Invalid last sync timestamp found in storage:', lastSync);
@@ -110,8 +110,8 @@ export class CloudSyncService {
     if (!this.isBrowser) return 0;
     const val = this.localStorage.getPreference(LAST_LOCAL_UPDATE_KEY);
     if (val) {
-      const parsed = parseInt(val, 10);
-      if (!isNaN(parsed) && parsed > 0) return parsed;
+      const parsed = Number.parseInt(val, 10);
+      if (!Number.isNaN(parsed) && parsed > 0) return parsed;
     }
     return getLatestLocalRecordTimestamp();
   }
@@ -141,48 +141,61 @@ export class CloudSyncService {
       const cTime = cloudTs || 0;
       const lTime = localTs || 0;
 
-      if (cTime > lTime) {
+      const action = await this.determineSyncAction(cTime, lTime, hasUserContent);
+      if (action === 'pull') {
         await doPull();
-      } else if (lTime > cTime) {
-        if (cTime > 0) {
-          await doMigrate();
-        } else {
-          const cloudData = (await this.firebaseStorage.exportAll()) || {};
-          if (Object.keys(cloudData).length > 0) {
-            const cloudMaxDate = getLatestRecordTimestampFromData(cloudData);
-            if (cloudMaxDate > lTime) {
-              await doPull();
-            } else {
-              await doMigrate();
-            }
-          } else {
-            await doMigrate();
-          }
-        }
-      } else if (cTime === 0 && lTime === 0) {
-        const cloudData = (await this.firebaseStorage.exportAll()) || {};
-        const cloudHasData = Object.keys(cloudData).length > 0;
-        const localHasData = hasUserContent;
-
-        if (cloudHasData && localHasData) {
-          const cloudMaxDate = getLatestRecordTimestampFromData(cloudData);
-          const localMaxDate = getLatestLocalRecordTimestamp();
-          if (localMaxDate > cloudMaxDate) {
-            await doMigrate();
-          } else {
-            await doPull();
-          }
-        } else if (cloudHasData) {
-          await doPull();
-        } else if (localHasData) {
-          await doMigrate();
-        }
+      } else if (action === 'migrate') {
+        await doMigrate();
       }
     } catch (error) {
       console.error('[CloudSync] Smart sync failed:', error);
     } finally {
       this.isDownloading.set(false);
     }
+  }
+
+  private async determineSyncAction(
+    cTime: number,
+    lTime: number,
+    hasUserContent: boolean,
+  ): Promise<'pull' | 'migrate' | 'none'> {
+    if (cTime > lTime) {
+      return 'pull';
+    }
+    if (lTime > cTime) {
+      if (cTime > 0) return 'migrate';
+      return this.resolveFallbackCloudMigrateOrPull(lTime);
+    }
+    if (cTime === 0 && lTime === 0) {
+      return this.resolveZeroTimestampSync(hasUserContent);
+    }
+    return 'none';
+  }
+
+  private async resolveFallbackCloudMigrateOrPull(lTime: number): Promise<'pull' | 'migrate'> {
+    const cloudData = (await this.firebaseStorage.exportAll()) || {};
+    if (Object.keys(cloudData).length > 0) {
+      const cloudMaxDate = getLatestRecordTimestampFromData(cloudData);
+      return cloudMaxDate > lTime ? 'pull' : 'migrate';
+    }
+    return 'migrate';
+  }
+
+  private async resolveZeroTimestampSync(
+    hasUserContent: boolean,
+  ): Promise<'pull' | 'migrate' | 'none'> {
+    const cloudData = (await this.firebaseStorage.exportAll()) || {};
+    const cloudHasData = Object.keys(cloudData).length > 0;
+    const localHasData = hasUserContent;
+
+    if (cloudHasData && localHasData) {
+      const cloudMaxDate = getLatestRecordTimestampFromData(cloudData);
+      const localMaxDate = getLatestLocalRecordTimestamp();
+      return localMaxDate > cloudMaxDate ? 'migrate' : 'pull';
+    }
+    if (cloudHasData) return 'pull';
+    if (localHasData) return 'migrate';
+    return 'none';
   }
 
   async migrateLocalToCloud(canUseCloud: boolean): Promise<void> {
@@ -193,43 +206,15 @@ export class CloudSyncService {
     this.isUploading.set(true);
     try {
       const allData = (await this.localStorage.exportAll()) || {};
-      const keys = Object.keys(allData);
-
-      if (keys.length === 0) {
-        console.warn('[CloudSync] No local data found to migrate');
-      }
-
-      const settingsGroup: Record<string, unknown> = {};
-      const recordKeys: string[] = [];
-
-      for (const key of keys) {
-        if ((VALID_RECORD_KEYS as readonly string[]).includes(key)) {
-          recordKeys.push(key);
-        } else if (isSettingsKey(key)) {
-          settingsGroup[key] = allData[key];
-        } else {
-          console.warn(
-            `[CloudSync] Skipping unknown key "${key}" — not in settings or records whitelist`,
-          );
-        }
-      }
+      const { settingsGroup, recordKeys } = this.categorizeMigrationKeys(allData);
 
       if (Object.keys(settingsGroup).length > 0) {
         await this.firebaseStorage.updateSettings(settingsGroup);
       }
 
-      for (const key of recordKeys) {
-        const records = (allData[key] as unknown[]) || [];
-        let finalRecords = records;
-        if (typeof this.firebaseStorage.load === 'function') {
-          const cloudRecords = await this.firebaseStorage.load<unknown[]>(key);
-          if (Array.isArray(cloudRecords) && cloudRecords.length > 0) {
-            finalRecords = mergeRecordLists(cloudRecords, records);
-          }
-        }
-        await this.firebaseStorage.save(key, finalRecords);
-        await this.localStorage.save(key, finalRecords);
-      }
+      await Promise.all(
+        recordKeys.map((key) => this.migrateSingleRecordCollection(key, allData[key])),
+      );
 
       this.updateLastSyncTime();
       await this.firebaseStorage.updateCloudTimestamp(this.getLocalTimestamp());
@@ -241,6 +226,45 @@ export class CloudSyncService {
     }
   }
 
+  private categorizeMigrationKeys(allData: Record<string, unknown>): {
+    settingsGroup: Record<string, unknown>;
+    recordKeys: string[];
+  } {
+    const settingsGroup: Record<string, unknown> = {};
+    const recordKeys: string[] = [];
+    const keys = Object.keys(allData);
+
+    if (keys.length === 0) {
+      console.warn('[CloudSync] No local data found to migrate');
+    }
+
+    for (const key of keys) {
+      if ((VALID_RECORD_KEYS as readonly string[]).includes(key)) {
+        recordKeys.push(key);
+      } else if (isSettingsKey(key)) {
+        settingsGroup[key] = allData[key];
+      } else {
+        console.warn(
+          `[CloudSync] Skipping unknown key "${key}" — not in settings or records whitelist`,
+        );
+      }
+    }
+    return { settingsGroup, recordKeys };
+  }
+
+  private async migrateSingleRecordCollection(key: string, localData: unknown): Promise<void> {
+    const records = (localData as unknown[]) || [];
+    let finalRecords = records;
+    if (typeof this.firebaseStorage.load === 'function') {
+      const cloudRecords = await this.firebaseStorage.load<unknown[]>(key);
+      if (Array.isArray(cloudRecords) && cloudRecords.length > 0) {
+        finalRecords = mergeRecordLists(cloudRecords, records);
+      }
+    }
+    await this.firebaseStorage.save(key, finalRecords);
+    await this.localStorage.save(key, finalRecords);
+  }
+
   async pullFromCloud(canUseCloud: boolean): Promise<void> {
     if (!canUseCloud) {
       throw new Error('Cannot pull: user not authenticated');
@@ -250,50 +274,11 @@ export class CloudSyncService {
     try {
       const cloudData = await this.firebaseStorage.exportAll();
 
-      for (const recKey of VALID_RECORD_KEYS) {
-        const cloudRecords = cloudData[recKey];
-        if (Array.isArray(cloudRecords)) {
-          const localRecords = await this.localStorage.load<unknown[]>(recKey);
-          if (Array.isArray(localRecords) && localRecords.length > 0) {
-            cloudData[recKey] = mergeRecordLists(localRecords, cloudRecords);
-          }
-        }
-      }
-
-      const rawSettings = cloudData['user_settings'];
-      if (rawSettings && typeof rawSettings === 'object' && !Array.isArray(rawSettings)) {
-        const settings = rawSettings as Record<string, unknown>;
-        for (const [key, value] of Object.entries(settings)) {
-          if (isSettingsKey(key)) {
-            cloudData[key] = value;
-          }
-        }
-      }
-      delete cloudData['user_settings'];
-
-      const modeValue = cloudData[STORAGE_MODE_KEY] as string | undefined;
-      const syncValue = cloudData[LAST_SYNC_KEY] as string | undefined;
-      const themeValue = cloudData['theme'] as string | undefined;
-      const langValue = cloudData['preferred_language'] as string | undefined;
-      delete cloudData[STORAGE_MODE_KEY];
-      delete cloudData[LAST_SYNC_KEY];
-      delete cloudData['theme'];
-      delete cloudData['preferred_language'];
+      await this.mergeCloudRecordsWithLocal(cloudData);
+      this.unpackUserSettings(cloudData);
+      this.restorePreferencesFromCloudData(cloudData);
 
       await this.localStorage.importAll(cloudData);
-
-      if (modeValue) {
-        this.localStorage.setPreference(STORAGE_MODE_KEY, modeValue);
-      }
-      if (syncValue) {
-        this.localStorage.setPreference(LAST_SYNC_KEY, syncValue);
-      }
-      if (themeValue) {
-        this.localStorage.setPreference('theme', themeValue);
-      }
-      if (langValue) {
-        this.localStorage.setPreference('preferred_language', langValue);
-      }
 
       this.updateLastSyncTime();
       const cloudTs = await this.firebaseStorage.getCloudUpdateTimestamp();
@@ -306,6 +291,44 @@ export class CloudSyncService {
       throw error;
     } finally {
       this.isDownloading.set(false);
+    }
+  }
+
+  private async mergeCloudRecordsWithLocal(cloudData: Record<string, unknown>): Promise<void> {
+    await Promise.all(
+      VALID_RECORD_KEYS.map(async (recKey) => {
+        const cloudRecords = cloudData[recKey];
+        if (Array.isArray(cloudRecords)) {
+          const localRecords = await this.localStorage.load<unknown[]>(recKey);
+          if (Array.isArray(localRecords) && localRecords.length > 0) {
+            cloudData[recKey] = mergeRecordLists(localRecords, cloudRecords);
+          }
+        }
+      }),
+    );
+  }
+
+  private unpackUserSettings(cloudData: Record<string, unknown>): void {
+    const rawSettings = cloudData['user_settings'];
+    if (rawSettings && typeof rawSettings === 'object' && !Array.isArray(rawSettings)) {
+      const settings = rawSettings as Record<string, unknown>;
+      for (const [key, value] of Object.entries(settings)) {
+        if (isSettingsKey(key)) {
+          cloudData[key] = value;
+        }
+      }
+    }
+    delete cloudData['user_settings'];
+  }
+
+  private restorePreferencesFromCloudData(cloudData: Record<string, unknown>): void {
+    const prefKeys = [STORAGE_MODE_KEY, LAST_SYNC_KEY, 'theme', 'preferred_language'] as const;
+    for (const key of prefKeys) {
+      const val = cloudData[key] as string | undefined;
+      delete cloudData[key];
+      if (val) {
+        this.localStorage.setPreference(key, val);
+      }
     }
   }
 

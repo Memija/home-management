@@ -8,14 +8,14 @@ import { StorageService } from './storage.service';
 export class LocalStorageService extends StorageService {
   /** Prefix for all localStorage keys (hm = homemanagement) */
   private readonly prefix = 'hm_';
-  private platformId = inject(PLATFORM_ID);
+  private readonly platformId = inject(PLATFORM_ID);
 
   private get isBrowser(): boolean {
     return isPlatformBrowser(this.platformId);
   }
 
-  async save<T>(key: string, data: T): Promise<void> {
-    if (!this.isBrowser) return;
+  save<T>(key: string, data: T): Promise<void> {
+    if (!this.isBrowser) return Promise.resolve();
 
     try {
       const serialized = JSON.stringify(data);
@@ -23,23 +23,24 @@ export class LocalStorageService extends StorageService {
     } catch (error) {
       console.error(`Error saving to localStorage with key ${key}:`, error);
     }
+    return Promise.resolve();
   }
 
-  async load<T>(key: string): Promise<T | null> {
-    if (!this.isBrowser) return null;
+  load<T>(key: string): Promise<T | null> {
+    if (!this.isBrowser) return Promise.resolve(null);
 
     try {
       const item = localStorage.getItem(this.prefix + key);
-      if (item === null) return null;
+      if (item === null) return Promise.resolve(null);
 
       try {
-        return JSON.parse(item) as T;
+        return Promise.resolve(JSON.parse(item) as T);
       } catch {
-        return item as unknown as T;
+        return Promise.resolve(item as unknown as T);
       }
     } catch (error) {
       console.error(`Error loading from localStorage with key ${key}:`, error);
-      return null;
+      return Promise.resolve(null);
     }
   }
 
@@ -61,33 +62,44 @@ export class LocalStorageService extends StorageService {
     }
   }
 
-  async delete(key: string): Promise<void> {
-    if (!this.isBrowser) return;
+  delete(key: string): Promise<void> {
+    if (!this.isBrowser) return Promise.resolve();
 
     try {
       localStorage.removeItem(this.prefix + key);
     } catch (error) {
       console.error(`Error deleting from localStorage with key ${key}:`, error);
     }
+    return Promise.resolve();
   }
 
-  async exists(key: string): Promise<boolean> {
-    if (!this.isBrowser) return false;
-    return localStorage.getItem(this.prefix + key) !== null;
+  exists(key: string): Promise<boolean> {
+    if (!this.isBrowser) return Promise.resolve(false);
+    return Promise.resolve(localStorage.getItem(this.prefix + key) !== null);
   }
 
   async exportAll(): Promise<Record<string, unknown>> {
     if (!this.isBrowser) return {};
 
-    const data: Record<string, unknown> = {};
+    const cleanKeys: string[] = [];
     for (let i = 0; i < localStorage.length; i++) {
       const key = localStorage.key(i);
       if (key?.startsWith(this.prefix)) {
-        const cleanKey = key.substring(this.prefix.length);
+        cleanKeys.push(key.substring(this.prefix.length));
+      }
+    }
+
+    const entries = await Promise.all(
+      cleanKeys.map(async (cleanKey) => {
         const value = await this.load(cleanKey);
-        if (value !== null) {
-          data[cleanKey] = value;
-        }
+        return [cleanKey, value] as const;
+      }),
+    );
+
+    const data: Record<string, unknown> = {};
+    for (const [cleanKey, value] of entries) {
+      if (value !== null) {
+        data[cleanKey] = value;
       }
     }
     return data;
@@ -96,9 +108,7 @@ export class LocalStorageService extends StorageService {
   async importAll(data: Record<string, unknown>): Promise<void> {
     if (!this.isBrowser) return;
 
-    for (const [key, value] of Object.entries(data)) {
-      await this.save(key, value);
-    }
+    await Promise.all(Object.entries(data).map(([key, value]) => this.save(key, value)));
   }
 
   // Export only specific record keys
@@ -135,8 +145,8 @@ export class LocalStorageService extends StorageService {
   /**
    * Clears all application-specific items from localStorage.
    */
-  async clearAll(): Promise<void> {
-    if (!this.isBrowser) return;
+  clearAll(): Promise<void> {
+    if (!this.isBrowser) return Promise.resolve();
 
     const keysToRemove: string[] = [];
     for (let i = 0; i < localStorage.length; i++) {
@@ -149,5 +159,7 @@ export class LocalStorageService extends StorageService {
     for (const key of keysToRemove) {
       localStorage.removeItem(key);
     }
+
+    return Promise.resolve();
   }
 }

@@ -38,25 +38,19 @@ export class FileStorageService {
       throw new Error('File exceeds maximum allowed size (10 MB)');
     }
 
-    return new Promise((resolve, reject) => {
-      const reader = new FileReader();
+    let text: string;
+    try {
+      text = await file.text();
+    } catch {
+      throw new Error('Failed to read file');
+    }
 
-      reader.onload = (event) => {
-        try {
-          const text = event.target?.result as string;
-          const data = JSON.parse(text);
-          resolve(sanitizeParsedJson(data as T));
-        } catch {
-          reject(new Error('Failed to parse JSON file'));
-        }
-      };
-
-      reader.onerror = () => {
-        reject(new Error('Failed to read file'));
-      };
-
-      reader.readAsText(file);
-    });
+    try {
+      const data = JSON.parse(text);
+      return sanitizeParsedJson(data as T);
+    } catch {
+      throw new Error('Failed to parse JSON file');
+    }
   }
 
   /**
@@ -64,8 +58,9 @@ export class FileStorageService {
    * @param data The data to export
    * @param filename The name of the file to download
    */
-  async exportData(data: unknown, filename: string): Promise<void> {
+  exportData(data: unknown, filename: string): Promise<void> {
     this.exportToFile(data, filename);
+    return Promise.resolve();
   }
 
   /**

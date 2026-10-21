@@ -9,7 +9,7 @@ import { CountryService } from './country.service';
   providedIn: 'root',
 })
 export class FormValidationService {
-  private countryService = inject(CountryService);
+  private readonly countryService = inject(CountryService);
 
   /**
    * Validates that a string contains at least one letter (including German umlauts)

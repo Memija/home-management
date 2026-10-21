@@ -1,9 +1,8 @@
-import { Component, Input, Output, EventEmitter, computed } from '@angular/core';
+import { Component, Input, Output, EventEmitter, computed, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { LucideAngularModule, LucideIconData } from 'lucide-angular';
 import { TranslatePipe } from '../../pipes/translate.pipe';
 import { LanguageService } from '../../services/language.service';
-import { inject } from '@angular/core';
 
 @Component({
   selector: 'app-delete-confirmation-modal',
@@ -13,7 +12,7 @@ import { inject } from '@angular/core';
   styleUrl: './delete-confirmation-modal.component.scss',
 })
 export class DeleteConfirmationModalComponent {
-  private languageService = inject(LanguageService);
+  private readonly languageService = inject(LanguageService);
 
   @Input() show = false;
   @Input() titleKey = '';

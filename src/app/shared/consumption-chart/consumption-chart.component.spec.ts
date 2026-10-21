@@ -19,7 +19,7 @@ import {
 } from '@angular/core';
 import { vi, afterEach, describe, it, expect, beforeEach } from 'vitest';
 import { ConsumptionRecord } from '../../models/records.model';
-import { generateSmartLabels } from './chart-labels.utils';
+import { generateSmartLabels } from './utils/chart-labels.utils';
 
 @Pipe({ name: 'translate', standalone: true })
 class MockTranslatePipe implements PipeTransform {
@@ -284,26 +284,19 @@ describe('ConsumptionChartComponent', () => {
       );
     });
 
-    it('should default to true for water chart when no stored value', () => {
-      localStorageServiceMock.getPreference.mockReturnValue(null);
-      initWithDefaults({ chartType: 'water' });
+    it.each([
+      { chartType: 'water' as const, expected: true },
+      { chartType: 'heating' as const, expected: false },
+      { chartType: 'electricity' as const, expected: false },
+    ])(
+      'should default to $expected for $chartType chart when no stored value',
+      ({ chartType, expected }) => {
+        localStorageServiceMock.getPreference.mockReturnValue(null);
+        initWithDefaults({ chartType });
 
-      expect(component['showAverageComparison']()).toBe(true);
-    });
-
-    it('should default to false for heating chart when no stored value', () => {
-      localStorageServiceMock.getPreference.mockReturnValue(null);
-      initWithDefaults({ chartType: 'heating' });
-
-      expect(component['showAverageComparison']()).toBe(false);
-    });
-
-    it('should default to false for electricity chart when no stored value', () => {
-      localStorageServiceMock.getPreference.mockReturnValue(null);
-      initWithDefaults({ chartType: 'electricity' });
-
-      expect(component['showAverageComparison']()).toBe(false);
-    });
+        expect(component['showAverageComparison']()).toBe(expected);
+      },
+    );
 
     it('should load stored value from localStorage', () => {
       localStorageServiceMock.getPreference.mockReturnValue('true');
@@ -465,25 +458,15 @@ describe('ConsumptionChartComponent', () => {
       expect(options?.maintainAspectRatio).toBe(false);
     });
 
-    it('should set y-axis label to liters for water', () => {
-      initWithDefaults({ chartType: 'water' });
+    it.each([
+      { chartType: 'water' as const, key: 'CHART.AXIS_LITERS' },
+      { chartType: 'heating' as const, key: 'CHART.AXIS_KWH' },
+      { chartType: 'electricity' as const, key: 'CHART.AXIS_KWH' },
+    ])('should set y-axis label to $key for $chartType', ({ chartType, key }) => {
+      initWithDefaults({ chartType });
       component['chartOptions']();
 
-      expect(languageServiceMock.translate).toHaveBeenCalledWith('CHART.AXIS_LITERS');
-    });
-
-    it('should set y-axis label to kWh for heating', () => {
-      initWithDefaults({ chartType: 'heating' });
-      component['chartOptions']();
-
-      expect(languageServiceMock.translate).toHaveBeenCalledWith('CHART.AXIS_KWH');
-    });
-
-    it('should set y-axis label to kWh for electricity', () => {
-      initWithDefaults({ chartType: 'electricity' });
-      component['chartOptions']();
-
-      expect(languageServiceMock.translate).toHaveBeenCalledWith('CHART.AXIS_KWH');
+      expect(languageServiceMock.translate).toHaveBeenCalledWith(key);
     });
 
     it('should have Y axis beginAtZero', () => {
@@ -538,7 +521,7 @@ describe('ConsumptionChartComponent', () => {
       initWithDefaults({ data });
       const labels = generateSmartLabels(data, languageServiceMock as unknown as LanguageService);
 
-      expect(labels.length).toBe(2);
+      expect(labels).toHaveLength(2);
       labels.forEach((label: string) => {
         expect(label).toBeTruthy();
         expect(typeof label).toBe('string');
@@ -554,7 +537,7 @@ describe('ConsumptionChartComponent', () => {
       initWithDefaults({ data });
       const labels = generateSmartLabels(data, languageServiceMock as unknown as LanguageService);
 
-      expect(labels.length).toBe(25);
+      expect(labels).toHaveLength(25);
     });
 
     it('should include year suffix when data spans multiple years', () => {
@@ -583,7 +566,7 @@ describe('ConsumptionChartComponent', () => {
       initWithDefaults({ data });
       const labels = generateSmartLabels(data, languageServiceMock as unknown as LanguageService);
 
-      expect(labels.length).toBe(1);
+      expect(labels).toHaveLength(1);
       expect(labels[0]).toBeTruthy();
     });
   });

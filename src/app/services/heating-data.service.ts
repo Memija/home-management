@@ -23,15 +23,15 @@ import {
   providedIn: 'root',
 })
 export class HeatingDataService {
-  private storage = inject(STORAGE_SERVICE);
-  private destroyRef = inject(DestroyRef);
-  private fileStorage = inject(FileStorageService);
-  private languageService = inject(LanguageService);
-  private excelService = inject(ExcelService);
-  private pdfService = inject(PdfService);
-  private importValidationService = inject(ImportValidationService);
-  private notificationService = inject(NotificationService);
-  private roomsService = inject(HeatingRoomsService);
+  private readonly storage = inject(STORAGE_SERVICE);
+  private readonly destroyRef = inject(DestroyRef);
+  private readonly fileStorage = inject(FileStorageService);
+  private readonly languageService = inject(LanguageService);
+  private readonly excelService = inject(ExcelService);
+  private readonly pdfService = inject(PdfService);
+  private readonly importValidationService = inject(ImportValidationService);
+  private readonly notificationService = inject(NotificationService);
+  private readonly roomsService = inject(HeatingRoomsService);
 
   // State signals
   readonly records = signal<DynamicHeatingRecord[]>(this.getInitialRecords());
@@ -58,10 +58,12 @@ export class HeatingDataService {
     if (initial.length > 0) {
       this.notificationService.setHeatingRecords(initial);
     }
-    this.loadData();
-    this.storage.dataRefreshed$
-      ?.pipe(takeUntilDestroyed(this.destroyRef))
-      .subscribe(() => this.loadData());
+    queueMicrotask(() => {
+      void this.loadData();
+    });
+    this.storage.dataRefreshed$?.pipe(takeUntilDestroyed(this.destroyRef)).subscribe(() => {
+      void this.loadData();
+    });
   }
 
   private getInitialRecords(): DynamicHeatingRecord[] {
@@ -73,7 +75,7 @@ export class HeatingDataService {
     return records
       .map((r) => ({ ...r, date: parseSafeDate(r.date) }))
       .filter((r) => {
-        return r.date instanceof Date && !isNaN(r.date.getTime());
+        return r.date instanceof Date && !Number.isNaN(r.date.getTime());
       });
   }
 
@@ -85,7 +87,7 @@ export class HeatingDataService {
     const parsedRecords = (records || [])
       .map((r) => ({ ...r, date: parseSafeDate(r.date) }))
       .filter((r) => {
-        return r.date instanceof Date && !isNaN(r.date.getTime());
+        return r.date instanceof Date && !Number.isNaN(r.date.getTime());
       });
     this.records.set(parsedRecords);
     this.notificationService.setHeatingRecords(this.records());
@@ -136,7 +138,7 @@ export class HeatingDataService {
     this.isExporting.set(true);
     try {
       const records = await this.storage.exportRecords('heating_consumption_records');
-      this.fileStorage.exportToFile(records, 'heating-consumption.json');
+      await Promise.resolve(this.fileStorage.exportToFile(records, 'heating-consumption.json'));
     } finally {
       this.isExporting.set(false);
     }
@@ -145,7 +147,9 @@ export class HeatingDataService {
   async exportToExcel(): Promise<void> {
     this.isExporting.set(true);
     try {
-      this.excelService.exportHeatingToExcel(this.records(), 'heating-consumption.xlsx');
+      await Promise.resolve(
+        this.excelService.exportHeatingToExcel(this.records(), 'heating-consumption.xlsx'),
+      );
     } catch (error) {
       console.error('Excel export error:', error);
       this.showError(

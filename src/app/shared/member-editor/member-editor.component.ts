@@ -56,14 +56,14 @@ export class MemberEditorComponent implements OnInit, OnChanges {
   protected readonly TriangleAlertIcon = TriangleAlert;
 
   // Edit state (initialized from member input)
-  protected editName = signal('');
-  protected editNameError = signal('');
-  protected editSurname = signal('');
-  protected editSurnameError = signal('');
-  protected editType = signal<'adult' | 'kid' | 'other' | undefined>(undefined);
-  protected editGender = signal<'male' | 'female' | 'other' | undefined>(undefined);
-  protected editAvatar = signal('');
-  protected customPicturePreview = signal<string | null>(null);
+  protected readonly editName = signal('');
+  protected readonly editNameError = signal('');
+  protected readonly editSurname = signal('');
+  protected readonly editSurnameError = signal('');
+  protected readonly editType = signal<'adult' | 'kid' | 'other' | undefined>(undefined);
+  protected readonly editGender = signal<'male' | 'female' | 'other' | undefined>(undefined);
+  protected readonly editAvatar = signal('');
+  protected readonly customPicturePreview = signal<string | null>(null);
 
   private initialized = false;
 

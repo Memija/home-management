@@ -41,14 +41,14 @@ export interface ElectricityCountry {
   styleUrl: './comparison-note.component.scss',
 })
 export class ComparisonNoteComponent {
-  private householdService = inject(HouseholdService);
-  private waterAveragesService = inject(WaterAveragesService);
-  private languageService = inject(LanguageService);
-  private countryFactsService = inject(CountryFactsService);
-  private heatingFactsService = inject(HeatingFactsService);
-  private heatingAveragesService = inject(HeatingAveragesService);
-  private electricityFactsService = inject(ElectricityCountryFactsService);
-  private electricityAveragesService = inject(ElectricityAveragesService);
+  private readonly householdService = inject(HouseholdService);
+  private readonly waterAveragesService = inject(WaterAveragesService);
+  private readonly languageService = inject(LanguageService);
+  private readonly countryFactsService = inject(CountryFactsService);
+  private readonly heatingFactsService = inject(HeatingFactsService);
+  private readonly heatingAveragesService = inject(HeatingAveragesService);
+  private readonly electricityFactsService = inject(ElectricityCountryFactsService);
+  private readonly electricityAveragesService = inject(ElectricityAveragesService);
 
   // Inputs
   @Input() set type(val: ComparisonNoteType) {
@@ -57,7 +57,7 @@ export class ComparisonNoteComponent {
   get type(): ComparisonNoteType {
     return this.typeSignal();
   }
-  protected typeSignal = signal<ComparisonNoteType>('water');
+  protected readonly typeSignal = signal<ComparisonNoteType>('water');
 
   @Input() set records(val: { date: Date }[]) {
     this.recordsSignal.set(val || []);
@@ -65,7 +65,7 @@ export class ComparisonNoteComponent {
   get records(): { date: Date }[] {
     return this.recordsSignal();
   }
-  protected recordsSignal = signal<{ date: Date }[]>([]);
+  protected readonly recordsSignal = signal<{ date: Date }[]>([]);
 
   @Input() set chartView(val: string) {
     this.chartViewSignal.set(val || 'total');
@@ -73,7 +73,7 @@ export class ComparisonNoteComponent {
   get chartView(): string {
     return this.chartViewSignal();
   }
-  protected chartViewSignal = signal<string>('total');
+  protected readonly chartViewSignal = signal<string>('total');
 
   @Input() set country(val: string | null) {
     this.comparisonCountry.set(val);
@@ -89,8 +89,8 @@ export class ComparisonNoteComponent {
   // Internal State
   protected readonly InfoIcon = Info;
   protected readonly LightbulbIcon = Lightbulb;
-  comparisonCountry = signal<string | null>(null);
-  protected factSeed = signal(Date.now()); // Used to generate new facts
+  readonly comparisonCountry = signal<string | null>(null);
+  protected readonly factSeed = signal(Date.now()); // Used to generate new facts
 
   protected familySize = computed(() => this.householdService.members().length);
   protected hasSufficientDataForComparison = computed(() => this.recordsSignal().length >= 3);
@@ -206,7 +206,7 @@ export class ComparisonNoteComponent {
     const code = this.effectiveComparisonCountryCode();
     const seed = this.factSeed();
     const view = this.chartViewSignal();
-    const viewHash = view.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0);
+    const viewHash = view.split('').reduce((acc, char) => acc + (char.codePointAt(0) ?? 0), 0);
     const index = (seed % 100) + this.recordsSignal().length + viewHash;
     return this.countryFactsService.getFactByIndex(code, index);
   });

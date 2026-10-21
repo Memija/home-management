@@ -44,17 +44,17 @@ interface ComponentWithUnsavedChanges {
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class SettingsComponent {
-  protected languageService = inject(LanguageService);
-  protected demoService = inject(DemoService);
+  protected readonly languageService = inject(LanguageService);
+  protected readonly demoService = inject(DemoService);
 
   // Icons
   protected readonly LightbulbIcon = Lightbulb;
 
   // Demo wizard & tour
-  protected demoWizardSteps = DEMO_WIZARD_STEPS;
-  protected demoTourSteps = DEMO_TOUR_STEPS;
-  protected showDemoWizard = signal(false);
-  protected showDemoTour = signal(false);
+  protected readonly demoWizardSteps = DEMO_WIZARD_STEPS;
+  protected readonly demoTourSteps = DEMO_TOUR_STEPS;
+  protected readonly showDemoWizard = signal(false);
+  protected readonly showDemoTour = signal(false);
 
   protected openRelevantDemoGuide(): void {
     if (this.demoService.isDemoMode()) {
@@ -70,7 +70,7 @@ export class SettingsComponent {
 
   // Handle browser refresh/close
   @HostListener('window:beforeunload', ['$event'])
-  onBeforeUnload(event: BeforeUnloadEvent) {
+  onBeforeUnload(event: BeforeUnloadEvent): string | undefined {
     if (
       this.familyComponent?.hasUnsavedChanges() ||
       this.addressComponent?.hasUnsavedChanges() ||
@@ -79,7 +79,7 @@ export class SettingsComponent {
       event.preventDefault();
       return '';
     }
-    return;
+    return undefined;
   }
 
   // CanDeactivate interface for route navigation

@@ -243,6 +243,10 @@
 }
 
 .camera-loader {
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  font-family: inherit;
   color: white;
   font-size: 0.9rem;
   font-weight: 500;
@@ -295,21 +299,21 @@
   &.disabled {
     opacity: 0.5;
     cursor: not-allowed;
-    background: #ccc;
-    color: #888;
+    background: #cbd5e1;
+    color: #475569;
   }
 }
 
 .btn-cancel-camera {
   width: 40px;
   height: 40px;
-  background: rgba(255, 255, 255, 0.2);
-  border: none;
-  color: white;
+  background: #0f172a;
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  color: #ffffff;
   margin-top: 0.5rem;
 
   &:hover {
-    background: rgba(255, 255, 255, 0.3);
+    background: #1e293b;
   }
 }
 

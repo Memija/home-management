@@ -96,14 +96,14 @@ $landing-font:
   height: 40px;
   border-radius: 12px;
   border: 1px solid rgba(255, 255, 255, 0.15);
-  background: rgba(255, 255, 255, 0.08);
+  background-color: #1e293b;
   cursor: pointer;
   transition: all 0.25s ease;
   padding: 0;
   color: #f8fafc;
 
   &:hover {
-    background: rgba(255, 255, 255, 0.15);
+    background-color: #334155;
     border-color: rgba(255, 255, 255, 0.3);
     transform: translateY(-2px);
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
@@ -123,7 +123,7 @@ $landing-font:
     padding: 0.35rem 0.65rem;
     border-radius: 9px;
     border: 1px solid rgba(255, 255, 255, 0.15);
-    background: rgba(255, 255, 255, 0.08);
+    background-color: #1e293b;
     color: #cbd5e1;
     font-size: 0.82rem;
     font-weight: 600;
@@ -132,7 +132,7 @@ $landing-font:
     transition: all 0.25s ease;
 
     &:hover {
-      background: rgba(255, 255, 255, 0.16);
+      background-color: #334155;
       color: #ffffff;
       transform: translateY(-1px);
     }

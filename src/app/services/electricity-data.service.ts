@@ -19,14 +19,14 @@ import { NotificationService } from './notification.service';
   providedIn: 'root',
 })
 export class ElectricityDataService {
-  private storage = inject(STORAGE_SERVICE);
-  private destroyRef = inject(DestroyRef);
-  private fileStorage = inject(FileStorageService);
-  private excelService = inject(ExcelService);
-  private pdfService = inject(PdfService);
-  private importValidationService = inject(ImportValidationService);
-  private languageService = inject(LanguageService);
-  private notificationService = inject(NotificationService);
+  private readonly storage = inject(STORAGE_SERVICE);
+  private readonly destroyRef = inject(DestroyRef);
+  private readonly fileStorage = inject(FileStorageService);
+  private readonly excelService = inject(ExcelService);
+  private readonly pdfService = inject(PdfService);
+  private readonly importValidationService = inject(ImportValidationService);
+  private readonly languageService = inject(LanguageService);
+  private readonly notificationService = inject(NotificationService);
 
   // State
   readonly records = signal<ElectricityRecord[]>(this.getInitialRecords());
@@ -115,10 +115,12 @@ export class ElectricityDataService {
     if (initial.length > 0) {
       this.notificationService.setElectricityRecords(initial);
     }
-    this.loadData();
+    queueMicrotask(() => {
+      void this.loadData();
+    });
     this.storage.dataRefreshed$
       ?.pipe(takeUntilDestroyed(this.destroyRef))
-      .subscribe(() => this.loadData());
+      .subscribe(() => void this.loadData());
   }
 
   private getInitialRecords(): ElectricityRecord[] {
@@ -129,14 +131,14 @@ export class ElectricityDataService {
     if (!data) return [];
     return data
       .map((r) => ({ ...r, date: parseSafeDate(r.date) }))
-      .filter((r) => !isNaN(r.date.getTime()));
+      .filter((r) => !Number.isNaN(r.date.getTime()));
   }
 
   async loadData() {
     const data = await this.storage.load<ElectricityRecord[]>('electricity_consumption_records');
     const parsedData = (data || [])
       .map((r) => ({ ...r, date: parseSafeDate(r.date) }))
-      .filter((r) => !isNaN(r.date.getTime()));
+      .filter((r) => !Number.isNaN(r.date.getTime()));
     this.records.set(parsedData);
     this.notificationService.setElectricityRecords(this.records());
   }
@@ -151,43 +153,45 @@ export class ElectricityDataService {
     this.filterState.set(newState);
   }
 
-  private countRecordsOutsideFilter(records: ElectricityRecord[]): number {
-    const { year, month, startDate, endDate } = this.filterState();
-    let count = 0;
+  private isRecordOutsideFilter(
+    record: ElectricityRecord,
+    filter: {
+      year: number | null;
+      month: number | null;
+      startDate: string | null;
+      endDate: string | null;
+    },
+  ): boolean {
+    const { year, month, startDate, endDate } = filter;
+    const rDate = new Date(record.date);
 
-    for (const r of records) {
-      let isOutside = false;
-      const rDate = new Date(r.date);
+    if (year && rDate.getFullYear() !== year) return true;
+    if (month !== null && rDate.getMonth() !== month) return true;
 
-      if (year && rDate.getFullYear() !== year) isOutside = true;
-      if (month !== null && rDate.getMonth() !== month) isOutside = true;
-
-      if (startDate) {
-        const recordDateStr = `${rDate.getFullYear()}-${String(rDate.getMonth() + 1).padStart(2, '0')}-${String(rDate.getDate()).padStart(2, '0')}`;
-        if (recordDateStr < startDate) isOutside = true;
-      }
-
-      if (endDate) {
-        const recordDateStr = `${rDate.getFullYear()}-${String(rDate.getMonth() + 1).padStart(2, '0')}-${String(rDate.getDate()).padStart(2, '0')}`;
-        if (recordDateStr > endDate) isOutside = true;
-      }
-
-      if (isOutside) count++;
+    if (startDate || endDate) {
+      const recordDateStr = `${rDate.getFullYear()}-${String(rDate.getMonth() + 1).padStart(2, '0')}-${String(rDate.getDate()).padStart(2, '0')}`;
+      if (startDate && recordDateStr < startDate) return true;
+      if (endDate && recordDateStr > endDate) return true;
     }
 
-    return count;
+    return false;
+  }
+
+  private countRecordsOutsideFilter(records: ElectricityRecord[]): number {
+    const filter = this.filterState();
+    return records.filter((r) => this.isRecordOutsideFilter(r, filter)).length;
   }
 
   // --- CRUD Operations ---
   async saveRecord(newRecord: ElectricityRecord) {
     const newRecordDate = new Date(newRecord.date);
-    if (isNaN(newRecordDate.getTime())) return;
+    if (Number.isNaN(newRecordDate.getTime())) return;
 
     const newRecordIso = newRecordDate.toISOString().split('T')[0];
 
     const existingRecordIndex = this.records().findIndex((r) => {
       const d = new Date(r.date);
-      return !isNaN(d.getTime()) && d.toISOString().split('T')[0] === newRecordIso;
+      return !Number.isNaN(d.getTime()) && d.toISOString().split('T')[0] === newRecordIso;
     });
 
     this.records.update((records) => {
@@ -240,7 +244,7 @@ export class ElectricityDataService {
     try {
       this.isExporting.set(true);
       const filename = 'electricity-consumption.json';
-      await this.fileStorage.exportToFile(this.filteredRecords(), filename);
+      await Promise.resolve(this.fileStorage.exportToFile(this.filteredRecords(), filename));
     } catch (error) {
       console.error('Error exporting data:', error);
     } finally {
@@ -276,7 +280,7 @@ export class ElectricityDataService {
   // --- Import Logic ---
 
   // JSON
-  async importData(event: Event) {
+  importData(event: Event): void {
     const input = event.target as HTMLInputElement;
     const file = input.files?.[0];
     if (file) {
@@ -383,7 +387,7 @@ export class ElectricityDataService {
   }
 
   // Unified Processing
-  async processImport(records: ElectricityRecord[], warnings: string[] = [], successKey: string) {
+  async processImport(records: ElectricityRecord[], warnings: string[], successKey: string) {
     if (this.isFilterActive()) {
       const recordsOutsideFilter = this.countRecordsOutsideFilter(records);
       if (recordsOutsideFilter > 0) {
@@ -438,8 +442,8 @@ export class ElectricityDataService {
     }
   }
 
-  confirmFilterWarningImport() {
-    this.finishImport(
+  async confirmFilterWarningImport() {
+    await this.finishImport(
       this.pendingImportRecords(),
       this.pendingImportWarnings(),
       this.pendingImportSuccessKey(),

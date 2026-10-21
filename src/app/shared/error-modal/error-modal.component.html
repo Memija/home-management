@@ -1,17 +1,13 @@
 @if (showSignal()) {
-  <div
-    class="modal-overlay"
-    (click)="cancelModal.emit()"
-    tabindex="0"
-    (keyup.enter)="cancelModal.emit()"
-  >
+  <!-- eslint-disable-next-line @angular-eslint/template/interactive-supports-focus -- Backdrop dismissal by design -->
+  <div class="modal-overlay" (click)="cancelModal.emit()" (keydown.escape)="cancelModal.emit()">
+    <!-- eslint-disable-next-line @angular-eslint/template/interactive-supports-focus -- Container stopPropagation by design -->
     <div
       class="modal-content error-modal"
       [class.warning]="typeSignal() === 'warning'"
       [class.success]="typeSignal() === 'success'"
       (click)="$event.stopPropagation()"
-      tabindex="0"
-      (keyup.enter)="$event.stopPropagation()"
+      (keydown)="$event.stopPropagation()"
     >
       <div class="modal-header error-header">
         @if (typeSignal() === 'warning') {

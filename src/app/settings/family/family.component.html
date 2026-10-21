@@ -262,18 +262,13 @@
 <!-- EDIT MEMBER MODAL -->
 <!-- ============================================ -->
 @if (editingMember(); as memberToEdit) {
+  <!-- eslint-disable-next-line @angular-eslint/template/interactive-supports-focus -- Backdrop dismissal by design -->
   <div
     class="modal-overlay"
-    (click)="cancelEditMember()"
-    tabindex="0"
-    (keyup.enter)="cancelEditMember()"
+    (click)="$event.target === $event.currentTarget && cancelEditMember()"
+    (keydown.escape)="cancelEditMember()"
   >
-    <div
-      class="modal-content member-modal-content"
-      (click)="$event.stopPropagation()"
-      tabindex="0"
-      (keyup.enter)="$event.stopPropagation()"
-    >
+    <div class="modal-content member-modal-content">
       <div class="modal-header">
         <div class="modal-title-with-icon">
           <lucide-icon [img]="EditIcon" size="20" class="header-icon"></lucide-icon>
@@ -310,18 +305,13 @@
 <!-- ADD MEMBER MODAL -->
 <!-- ============================================ -->
 @if (showAddMemberForm()) {
+  <!-- eslint-disable-next-line @angular-eslint/template/interactive-supports-focus -- Backdrop dismissal by design -->
   <div
     class="modal-overlay add-member-modal-overlay"
-    (click)="closeAddMemberModal()"
-    tabindex="0"
-    (keyup.enter)="closeAddMemberModal()"
+    (click)="$event.target === $event.currentTarget && closeAddMemberModal()"
+    (keydown.escape)="closeAddMemberModal()"
   >
-    <div
-      class="modal-content member-modal-content add-member-form"
-      (click)="$event.stopPropagation()"
-      tabindex="0"
-      (keyup.enter)="$event.stopPropagation()"
-    >
+    <div class="modal-content member-modal-content add-member-form">
       <div class="modal-header">
         <div class="modal-title-with-icon">
           <lucide-icon [img]="AddIcon" size="20" class="header-icon"></lucide-icon>
@@ -461,15 +451,16 @@
           <span class="form-label">{{ 'SETTINGS.SELECT_AVATAR' | translate }}</span>
           <div class="avatar-grid">
             @for (avatar of householdService.avatars; track avatar) {
-              <img
-                [src]="avatar"
+              <button
+                type="button"
+                class="avatar-btn"
                 [class.selected]="selectedAvatar() === avatar"
                 (click)="selectAvatar(avatar)"
-                alt="Hero Avatar"
-                title="{{ 'SETTINGS.SELECT_AVATAR' | translate }}"
-                tabindex="0"
-                (keyup.enter)="selectAvatar(avatar)"
-              />
+                [attr.aria-label]="'SETTINGS.SELECT_AVATAR' | translate"
+                [title]="'SETTINGS.SELECT_AVATAR' | translate"
+              >
+                <img [src]="avatar" alt="Hero Avatar" />
+              </button>
             }
           </div>
         </div>

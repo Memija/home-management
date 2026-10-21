@@ -1,11 +1,11 @@
 @if (showSignal()) {
-  <div class="modal-overlay" (click)="onCancel()" tabindex="0" (keyup.enter)="onCancel()">
-    <div
-      class="modal-content"
-      (click)="$event.stopPropagation()"
-      tabindex="0"
-      (keyup.enter)="$event.stopPropagation()"
-    >
+  <!-- eslint-disable-next-line @angular-eslint/template/interactive-supports-focus -- Backdrop dismissal by design -->
+  <div
+    class="modal-overlay"
+    (click)="$event.target === $event.currentTarget && onCancel()"
+    (keydown.escape)="onCancel()"
+  >
+    <div class="modal-content">
       <div class="modal-header">
         <lucide-icon [img]="SettingsIcon" size="24" class="settings-icon"></lucide-icon>
         <h3>{{ 'HEATING.ROOMS_SETTINGS_TITLE' | translate }}</h3>
@@ -109,7 +109,6 @@
           (click)="addRoom()"
           [disabled]="!canAddRoom()"
           title="{{ !canAddRoom() ? maxRoomsMessage() : ('HEATING.ADD_ROOM' | translate) }}"
-          aria-label="{{ !canAddRoom() ? maxRoomsMessage() : ('HEATING.ADD_ROOM' | translate) }}"
         >
           <lucide-icon [img]="PlusIcon" size="18"></lucide-icon>
           {{ 'HEATING.ADD_ROOM' | translate }}
@@ -166,18 +165,13 @@
 
 <!-- Unlock Warning Modal -->
 @if (pendingUnlockRoomId()) {
+  <!-- eslint-disable-next-line @angular-eslint/template/interactive-supports-focus -- Backdrop dismissal by design -->
   <div
     class="modal-overlay unlock-warning-overlay"
-    (click)="cancelUnlock()"
-    tabindex="0"
-    (keyup.enter)="cancelUnlock()"
+    (click)="$event.target === $event.currentTarget && cancelUnlock()"
+    (keydown.escape)="cancelUnlock()"
   >
-    <div
-      class="modal-content unlock-warning-modal"
-      (click)="$event.stopPropagation()"
-      tabindex="0"
-      (keyup.enter)="$event.stopPropagation()"
-    >
+    <div class="modal-content unlock-warning-modal">
       <div class="modal-header">
         <lucide-icon [img]="TriangleAlertIcon" size="24" class="warning-icon"></lucide-icon>
         <h3>{{ 'HEATING.UNLOCK_WARNING_TITLE' | translate }}</h3>
@@ -211,18 +205,13 @@
 
 <!-- Discard Changes Warning Modal -->
 @if (showDiscardWarning()) {
+  <!-- eslint-disable-next-line @angular-eslint/template/interactive-supports-focus -- Backdrop dismissal by design -->
   <div
     class="modal-overlay unlock-warning-overlay"
-    (click)="cancelDiscard()"
-    tabindex="0"
-    (keyup.enter)="cancelDiscard()"
+    (click)="$event.target === $event.currentTarget && cancelDiscard()"
+    (keydown.escape)="cancelDiscard()"
   >
-    <div
-      class="modal-content unlock-warning-modal"
-      (click)="$event.stopPropagation()"
-      tabindex="0"
-      (keyup.enter)="$event.stopPropagation()"
-    >
+    <div class="modal-content unlock-warning-modal">
       <div class="modal-header">
         <lucide-icon [img]="TriangleAlertIcon" size="24" class="warning-icon"></lucide-icon>
         <h3>{{ 'HEATING.DISCARD_WARNING_TITLE' | translate }}</h3>

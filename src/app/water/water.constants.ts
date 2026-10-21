@@ -1,13 +1,13 @@
 import { HelpStep } from '../shared/help-modal/help-modal.component';
 import { DemoWizardStep } from '../shared/demo-wizard/demo-wizard.component';
 import { DemoTourStep } from '../shared/demo-tour/demo-tour.component';
-import { BarChart3, Droplet, TrendingUp, Download } from 'lucide-angular';
+import { ChartBar, Droplet, TrendingUp, Download } from 'lucide-angular';
 
 export const DEMO_WIZARD_STEPS: DemoWizardStep[] = [
   {
     titleKey: 'DEMO.WATER_STEP_1_TITLE',
     descriptionKey: 'DEMO.WATER_STEP_1_DESC',
-    icon: BarChart3,
+    icon: ChartBar,
   },
   { titleKey: 'DEMO.WATER_STEP_2_TITLE', descriptionKey: 'DEMO.WATER_STEP_2_DESC', icon: Droplet },
   {

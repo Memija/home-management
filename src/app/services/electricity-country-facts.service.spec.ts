@@ -157,25 +157,15 @@ describe('ElectricityCountryFactsService', () => {
   });
 
   describe('Language switching', () => {
-    it('should use English translations when language is en', () => {
-      mockCurrentLangSignal.set('en');
+    it.each([
+      { lang: 'en', title: 'Did you know?' },
+      { lang: 'de', title: 'Wussten Sie schon?' },
+      { lang: 'fr', title: 'Did you know?' },
+    ])('should use expected title for language $lang', ({ lang, title }) => {
+      mockCurrentLangSignal.set(lang);
       const fact = service.getFactByIndex(100, 0, 'historical');
       expect(fact).not.toBeNull();
-      expect(fact!.title).toBe('Did you know?');
-    });
-
-    it('should use German translations when language is de', () => {
-      mockCurrentLangSignal.set('de');
-      const fact = service.getFactByIndex(100, 0, 'historical');
-      expect(fact).not.toBeNull();
-      expect(fact!.title).toBe('Wussten Sie schon?');
-    });
-
-    it('should default to English for unknown language', () => {
-      mockCurrentLangSignal.set('fr');
-      const fact = service.getFactByIndex(100, 0, 'historical');
-      expect(fact).not.toBeNull();
-      expect(fact!.title).toBe('Did you know?');
+      expect(fact!.title).toBe(title);
     });
   });
 

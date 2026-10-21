@@ -1,11 +1,11 @@
 @if (show && isActive()) {
   <!-- Click-blocking backdrop -->
+  <!-- eslint-disable-next-line @angular-eslint/template/interactive-supports-focus -- Backdrop dismissal by design -->
   <div
     class="tour-backdrop"
     [class.transitioning]="isTransitioning()"
     (click)="onOverlayClick()"
-    tabindex="0"
-    (keyup.enter)="onOverlayClick()"
+    (keydown.escape)="onOverlayClick()"
   ></div>
 
   <!-- Spotlight cutout -->

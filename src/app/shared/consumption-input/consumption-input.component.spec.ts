@@ -188,188 +188,98 @@ describe('ConsumptionInputComponent', () => {
   });
 
   describe('onKeyDown', () => {
-    it('should prevent minus key', () => {
+    it.each([
+      { key: '-', desc: 'minus key' },
+      { key: '+', desc: 'plus key' },
+      { key: 'e', desc: '"e" key' },
+      { key: 'E', desc: '"E" key' },
+      { key: '.', desc: 'decimal point' },
+      { key: ',', desc: 'comma' },
+    ])('should prevent $desc', ({ key }) => {
       initWithDefaults();
 
-      const event = { key: '-', preventDefault: vi.fn() } as unknown as unknown;
+      const event = { key, preventDefault: vi.fn() };
       component['onKeyDown'](event as unknown as KeyboardEvent);
-      expect((event as unknown as Event).preventDefault).toHaveBeenCalled();
+      expect(event.preventDefault).toHaveBeenCalled();
     });
 
-    it('should prevent plus key', () => {
+    it.each(['5', 'Backspace', 'Tab'])('should allow %s key', (key) => {
       initWithDefaults();
 
-      const event = { key: '+', preventDefault: vi.fn() } as unknown as unknown;
+      const event = { key, preventDefault: vi.fn() };
       component['onKeyDown'](event as unknown as KeyboardEvent);
-      expect((event as unknown as Event).preventDefault).toHaveBeenCalled();
-    });
-
-    it('should prevent "e" key', () => {
-      initWithDefaults();
-
-      const event = { key: 'e', preventDefault: vi.fn() } as unknown as unknown;
-      component['onKeyDown'](event as unknown as KeyboardEvent);
-      expect((event as unknown as Event).preventDefault).toHaveBeenCalled();
-    });
-
-    it('should prevent "E" key', () => {
-      initWithDefaults();
-
-      const event = { key: 'E', preventDefault: vi.fn() } as unknown as unknown;
-      component['onKeyDown'](event as unknown as KeyboardEvent);
-      expect((event as unknown as Event).preventDefault).toHaveBeenCalled();
-    });
-
-    it('should prevent decimal point', () => {
-      initWithDefaults();
-
-      const event = { key: '.', preventDefault: vi.fn() } as unknown as unknown;
-      component['onKeyDown'](event as unknown as KeyboardEvent);
-      expect((event as unknown as Event).preventDefault).toHaveBeenCalled();
-    });
-
-    it('should prevent comma', () => {
-      initWithDefaults();
-
-      const event = { key: ',', preventDefault: vi.fn() } as unknown as unknown;
-      component['onKeyDown'](event as unknown as KeyboardEvent);
-      expect((event as unknown as Event).preventDefault).toHaveBeenCalled();
-    });
-
-    it('should allow digit keys', () => {
-      initWithDefaults();
-
-      const event = { key: '5', preventDefault: vi.fn() } as unknown as unknown;
-      component['onKeyDown'](event as unknown as KeyboardEvent);
-      expect((event as unknown as Event).preventDefault).not.toHaveBeenCalled();
-    });
-
-    it('should allow Backspace', () => {
-      initWithDefaults();
-
-      const event = { key: 'Backspace', preventDefault: vi.fn() } as unknown as unknown;
-      component['onKeyDown'](event as unknown as KeyboardEvent);
-      expect((event as unknown as Event).preventDefault).not.toHaveBeenCalled();
-    });
-
-    it('should allow Tab', () => {
-      initWithDefaults();
-
-      const event = { key: 'Tab', preventDefault: vi.fn() } as unknown as unknown;
-      component['onKeyDown'](event as unknown as KeyboardEvent);
-      expect((event as unknown as Event).preventDefault).not.toHaveBeenCalled();
+      expect(event.preventDefault).not.toHaveBeenCalled();
     });
   });
 
   describe('onInput', () => {
-    it('should strip non-numeric characters from input value', () => {
+    it.each([
+      { input: '12abc34', expected: '1234', desc: 'strip non-numeric characters from input value' },
+      { input: '', expected: '', desc: 'allow empty input' },
+      { input: '-5', expected: '5', desc: 'clear negative values' },
+      { input: '12.5', expected: '125', desc: 'strip decimal points' },
+    ])('should $desc', ({ input, expected }) => {
       initWithDefaults();
 
-      const input = { value: '12abc34' } as HTMLInputElement;
-      const event = { target: input } as unknown as Event;
+      const inputEl = { value: input } as HTMLInputElement;
+      const event = { target: inputEl } as unknown as Event;
 
       component['onInput'](event);
-      expect(input.value).toBe('1234');
-    });
-
-    it('should allow empty input', () => {
-      initWithDefaults();
-
-      const input = { value: '' } as HTMLInputElement;
-      const event = { target: input } as unknown as Event;
-
-      component['onInput'](event);
-      expect(input.value).toBe('');
-    });
-
-    it('should clear negative values', () => {
-      initWithDefaults();
-
-      const input = { value: '-5' } as HTMLInputElement;
-      const event = { target: input } as unknown as Event;
-
-      component['onInput'](event);
-      // After stripping non-numeric: '5', parseFloat('5') = 5 which is >= 0, no clear
-      expect(input.value).toBe('5');
-    });
-
-    it('should strip decimal points', () => {
-      initWithDefaults();
-
-      const input = { value: '12.5' } as HTMLInputElement;
-      const event = { target: input } as unknown as Event;
-
-      component['onInput'](event);
-      expect(input.value).toBe('125');
+      expect(inputEl.value).toBe(expected);
     });
   });
 
   describe('hasValidInput - Standard mode (water)', () => {
-    it('should return false when all fields are null', () => {
-      initWithDefaults({ groups: makeGroups([{ a: null, b: null }]) });
-      expect(component['hasValidInput']()).toBe(false);
-    });
-
-    it('should return true when group is complete', () => {
-      initWithDefaults({ groups: makeGroups([{ a: 10, b: 20 }]) });
-      expect(component['hasValidInput']()).toBe(true);
-    });
-
-    it('should return false when group is partial (incomplete)', () => {
-      initWithDefaults({ groups: makeGroups([{ a: 10, b: null }]) });
-      expect(component['hasValidInput']()).toBe(false);
-    });
-
-    it('should return true with one complete group and one empty group', () => {
-      initWithDefaults({
-        groups: makeGroups([
+    it.each([
+      { groups: [{ a: null, b: null }], expected: false, desc: 'all fields are null' },
+      { groups: [{ a: 10, b: 20 }], expected: true, desc: 'group is complete' },
+      { groups: [{ a: 10, b: null }], expected: false, desc: 'group is partial (incomplete)' },
+      {
+        groups: [
           { a: 10, b: 20 },
           { c: null, d: null },
-        ]),
-      });
-      expect(component['hasValidInput']()).toBe(true);
-    });
-
-    it('should return false with one partial group and one empty group', () => {
-      initWithDefaults({
-        groups: makeGroups([
+        ],
+        expected: true,
+        desc: 'one complete group and one empty group',
+      },
+      {
+        groups: [
           { a: 10, b: null },
           { c: null, d: null },
-        ]),
-      });
-      expect(component['hasValidInput']()).toBe(false);
-    });
-
-    it('should return true when all groups are complete', () => {
-      initWithDefaults({
-        groups: makeGroups([
+        ],
+        expected: false,
+        desc: 'one partial group and one empty group',
+      },
+      {
+        groups: [
           { a: 10, b: 20 },
           { c: 30, d: 40 },
-        ]),
-      });
-      expect(component['hasValidInput']()).toBe(true);
+        ],
+        expected: true,
+        desc: 'all groups are complete',
+      },
+    ])('should return $expected when $desc', ({ groups, expected }) => {
+      initWithDefaults({ groups: makeGroups(groups as Record<string, number | null>[]) });
+      expect(component['hasValidInput']()).toBe(expected);
     });
   });
 
   describe('hasValidInput - Partial mode (heating)', () => {
-    it('should return true when at least one field has value', () => {
-      component.groups = makeGroups([{ a: 10, b: null }]);
+    it.each([
+      { fields: [{ a: 10, b: null }], expected: true, desc: 'at least one field has value' },
+      {
+        fields: [{ a: null, b: null }],
+        expected: false,
+        desc: 'all fields are null in partial mode',
+      },
+    ])('should return $expected when $desc', ({ fields, expected }) => {
+      component.groups = makeGroups(fields);
       component.selectedDate = '2024-06-15';
       component.maxDate = '2024-12-31';
       component.allowPartialGroups = true;
       fixture.detectChanges();
 
-      expect(component['hasValidInput']()).toBe(true);
-    });
-
-    it('should return false when all fields are null in partial mode', () => {
-      component.groups = makeGroups([{ a: null, b: null }]);
-      component.selectedDate = '2024-06-15';
-      component.maxDate = '2024-12-31';
-      component.allowPartialGroups = true;
-      fixture.detectChanges();
-
-      expect(component['hasValidInput']()).toBe(false);
+      expect(component['hasValidInput']()).toBe(expected);
     });
   });
 

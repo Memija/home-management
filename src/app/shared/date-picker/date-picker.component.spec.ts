@@ -303,37 +303,16 @@ describe('DatePickerComponent', () => {
       fixture.detectChanges();
     });
 
-    it('should return true for matching dates', () => {
-      const d = new Date(2024, 5, 15);
-      expect(component.isSameDay(d, '2024-06-15')).toBe(true);
-    });
-
-    it('should return false for different dates', () => {
-      const d = new Date(2024, 5, 15);
-      expect(component.isSameDay(d, '2024-06-16')).toBe(false);
-    });
-
-    it('should return false for different months', () => {
-      const d = new Date(2024, 5, 15);
-      expect(component.isSameDay(d, '2024-07-15')).toBe(false);
-    });
-
-    it('should return false for different years', () => {
-      const d = new Date(2024, 5, 15);
-      expect(component.isSameDay(d, '2023-06-15')).toBe(false);
-    });
-
-    it('should return false when first date is null', () => {
-      expect(component.isSameDay(null, '2024-06-15')).toBe(false);
-    });
-
-    it('should return false when second date string is empty', () => {
-      const d = new Date(2024, 5, 15);
-      expect(component.isSameDay(d, '')).toBe(false);
-    });
-
-    it('should return false when both are null/empty', () => {
-      expect(component.isSameDay(null, '')).toBe(false);
+    it.each([
+      { date: new Date(2024, 5, 15), str: '2024-06-15', expected: true, desc: 'matching dates' },
+      { date: new Date(2024, 5, 15), str: '2024-06-16', expected: false, desc: 'different dates' },
+      { date: new Date(2024, 5, 15), str: '2024-07-15', expected: false, desc: 'different months' },
+      { date: new Date(2024, 5, 15), str: '2023-06-15', expected: false, desc: 'different years' },
+      { date: null, str: '2024-06-15', expected: false, desc: 'null first date' },
+      { date: new Date(2024, 5, 15), str: '', expected: false, desc: 'empty second date' },
+      { date: null, str: '', expected: false, desc: 'both null/empty' },
+    ])('should return $expected for $desc', ({ date, str, expected }) => {
+      expect(component.isSameDay(date, str)).toBe(expected);
     });
   });
 
@@ -446,7 +425,7 @@ describe('DatePickerComponent', () => {
       const nullDays = days.filter((d: unknown) => d === null).length;
       const realDays = days.filter((d: unknown) => d !== null).length;
       expect(realDays).toBe(30);
-      expect(days.length).toBe(nullDays + realDays);
+      expect(days).toHaveLength(nullDays + realDays);
     });
 
     it('should generate correct days for February in a leap year', () => {
@@ -508,7 +487,7 @@ describe('DatePickerComponent', () => {
     it('should return 7 days', () => {
       fixture.detectChanges();
       const days = component['weekDays']();
-      expect(days.length).toBe(7);
+      expect(days).toHaveLength(7);
     });
 
     it('should start from Monday (ISO 8601)', () => {
@@ -725,7 +704,7 @@ describe('DatePickerComponent', () => {
       expect(footer).toBeTruthy();
 
       const buttons = footer.queryAll(By.css('button'));
-      expect(buttons.length).toBe(2);
+      expect(buttons).toHaveLength(2);
     });
 
     it('should render navigation buttons in header when open', () => {
@@ -735,7 +714,7 @@ describe('DatePickerComponent', () => {
       fixture.detectChanges();
 
       const navBtns = fixture.debugElement.queryAll(By.css('.nav-btn'));
-      expect(navBtns.length).toBe(2);
+      expect(navBtns).toHaveLength(2);
     });
 
     it('should render weekday headers when open', () => {
@@ -745,7 +724,7 @@ describe('DatePickerComponent', () => {
       fixture.detectChanges();
 
       const weekdays = fixture.debugElement.queryAll(By.css('.weekday'));
-      expect(weekdays.length).toBe(7);
+      expect(weekdays).toHaveLength(7);
     });
   });
 

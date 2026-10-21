@@ -12,8 +12,8 @@ import { PredictionResult, MIN_RECORDS_FOR_PREDICTION } from '../models/predicti
   providedIn: 'root',
 })
 export class PredictionCalculationService {
-  private calculationService = inject(ChartCalculationService);
-  private statsService = inject(PredictionStatsService);
+  private readonly calculationService = inject(ChartCalculationService);
+  private readonly statsService = inject(PredictionStatsService);
 
   /**
    * Calculate daily consumption rates between consecutive readings using properly
@@ -35,41 +35,8 @@ export class PredictionCalculationService {
       const daysDiff = (currentDate.getTime() - prevDate.getTime()) / (1000 * 3600 * 24);
       if (daysDiff <= 0) continue;
 
-      const inc = incrementalData[i - 1] as Record<string, unknown>; // the interval between i-1 and i
-      let delta = 0;
-
-      if (inc && 'rooms' in inc) {
-        // Heating
-        const rooms = inc['rooms'] as Record<string, number>;
-        if (category === 'total') {
-          delta = Object.values(rooms).reduce((sum, val) => sum + (val || 0), 0);
-        } else {
-          delta = rooms[category] || 0;
-        }
-      } else if (inc && 'value' in inc) {
-        // Electricity
-        delta = Number(inc['value']) || 0;
-      } else if (inc) {
-        // Water
-        if (category === 'total') {
-          delta =
-            (Number(inc['kitchenWarm']) || 0) +
-            (Number(inc['kitchenCold']) || 0) +
-            (Number(inc['bathroomWarm']) || 0) +
-            (Number(inc['bathroomCold']) || 0);
-        } else if (category === 'kitchenTotal') {
-          delta = (Number(inc['kitchenWarm']) || 0) + (Number(inc['kitchenCold']) || 0);
-        } else if (category === 'bathroomTotal') {
-          delta = (Number(inc['bathroomWarm']) || 0) + (Number(inc['bathroomCold']) || 0);
-        } else if (category === 'warmTotal') {
-          delta = (Number(inc['kitchenWarm']) || 0) + (Number(inc['bathroomWarm']) || 0);
-        } else if (category === 'coldTotal') {
-          delta = (Number(inc['kitchenCold']) || 0) + (Number(inc['bathroomCold']) || 0);
-        } else {
-          delta = Number(inc[category]) || 0;
-        }
-      }
-
+      const inc = incrementalData[i - 1] as Record<string, unknown> | undefined;
+      const delta = this.calculateIntervalDelta(inc, category);
       const dailyRate = delta / daysDiff;
 
       // Assign to the midpoint month of the interval
@@ -83,6 +50,49 @@ export class PredictionCalculationService {
     }
 
     return results;
+  }
+
+  private calculateIntervalDelta(
+    inc: Record<string, unknown> | undefined,
+    category: string,
+  ): number {
+    if (!inc) return 0;
+    if ('rooms' in inc) {
+      return this.calculateHeatingDelta(inc['rooms'] as Record<string, number>, category);
+    }
+    if ('value' in inc) {
+      return Number(inc['value']) || 0;
+    }
+    return this.calculateWaterDelta(inc, category);
+  }
+
+  private calculateHeatingDelta(rooms: Record<string, number>, category: string): number {
+    if (category === 'total') {
+      return Object.values(rooms).reduce((sum, val) => sum + (val || 0), 0);
+    }
+    return rooms[category] || 0;
+  }
+
+  private calculateWaterDelta(inc: Record<string, unknown>, category: string): number {
+    const kw = Number(inc['kitchenWarm']) || 0;
+    const kc = Number(inc['kitchenCold']) || 0;
+    const bw = Number(inc['bathroomWarm']) || 0;
+    const bc = Number(inc['bathroomCold']) || 0;
+
+    switch (category) {
+      case 'total':
+        return kw + kc + bw + bc;
+      case 'kitchenTotal':
+        return kw + kc;
+      case 'bathroomTotal':
+        return bw + bc;
+      case 'warmTotal':
+        return kw + bw;
+      case 'coldTotal':
+        return kc + bc;
+      default:
+        return Number(inc[category]) || 0;
+    }
   }
 
   /**
@@ -123,7 +133,7 @@ export class PredictionCalculationService {
       const { slope, intercept } = this.calculationService.calculateLinearRegression(dailyRates);
 
       const firstDate = new Date(pastRecords[0].date).getTime();
-      const lastDate = new Date(pastRecords[pastRecords.length - 1].date).getTime();
+      const lastDate = new Date(pastRecords.at(-1)!.date).getTime();
       const totalDays = (lastDate - firstDate) / (1000 * 3600 * 24);
       const avgInterval = pastRecords.length > 1 ? totalDays / (pastRecords.length - 1) : 7;
 
@@ -143,17 +153,11 @@ export class PredictionCalculationService {
       );
 
       if (actualNextRates.length > 0) {
-        const actualRate = actualNextRates[0].rate;
-
-        if (actualRate > 0) {
-          const diff = Math.abs(expected30 - actualRate);
-          const errorPct = diff / actualRate;
-          totalErrorPercentage += Math.min(errorPct, 1.0);
-
-          if (expected30 > 0) {
-            totalUnderOver += actualRate / expected30;
-            evaluations++;
-          }
+        const evalResult = this.recordEvaluationError(expected30, actualNextRates[0].rate);
+        totalErrorPercentage += evalResult.errorPct;
+        if (evalResult.evaluated) {
+          totalUnderOver += evalResult.underOver;
+          evaluations++;
         }
       }
     }
@@ -171,6 +175,21 @@ export class PredictionCalculationService {
     // predictions because those represent the raw prediction model at that point in time.
 
     return { accuracy, correctionFactor, historicalPredictions };
+  }
+
+  private recordEvaluationError(
+    expected30: number,
+    actualRate: number,
+  ): { errorPct: number; underOver: number; evaluated: boolean } {
+    if (actualRate <= 0) {
+      return { errorPct: 0, underOver: 0, evaluated: false };
+    }
+    const diff = Math.abs(expected30 - actualRate);
+    const errorPct = Math.min(diff / actualRate, 1.0);
+    if (expected30 > 0) {
+      return { errorPct, underOver: actualRate / expected30, evaluated: true };
+    }
+    return { errorPct, underOver: 0, evaluated: false };
   }
 
   /**
@@ -195,7 +214,7 @@ export class PredictionCalculationService {
     let totalDays = 0;
     if (records.length >= 2) {
       const firstDate = new Date(records[0].date).getTime();
-      const lastDate = new Date(records[records.length - 1].date).getTime();
+      const lastDate = new Date(records.at(-1)!.date).getTime();
       totalDays = (lastDate - firstDate) / (1000 * 3600 * 24);
     }
     const avgInterval = records.length > 1 ? totalDays / (records.length - 1) : 7;

@@ -18,7 +18,7 @@ import {
   RotateCcw,
   ChevronDown,
   ChevronUp,
-  HelpCircle,
+  CircleQuestionMark,
   Download,
   Upload,
   Pencil,
@@ -34,6 +34,7 @@ import { ExcelValidationService } from '../../services/excel-validation.service'
 import { ExcelImportService } from '../../services/excel-import.service';
 import { DeleteConfirmationModalComponent } from '../../shared/delete-confirmation-modal/delete-confirmation-modal.component';
 import { HeatingRoomsService } from '../../services/heating-rooms.service';
+import { NavigationGuardState } from '../../utils/navigation-guard.utils';
 
 @Component({
   selector: 'app-excel-settings',
@@ -53,26 +54,26 @@ import { HeatingRoomsService } from '../../services/heating-rooms.service';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ExcelSettingsComponent {
-  private localStorageService = inject(LocalStorageService);
-  private fileStorage = inject(FileStorageService);
-  private cdr = inject(ChangeDetectorRef);
-  protected validationService = inject(ExcelValidationService);
-  private importService = inject(ExcelImportService);
-  protected excelSettingsService = inject(ExcelSettingsService);
-  protected languageService = inject(LanguageService);
-  protected heatingRoomsService = inject(HeatingRoomsService);
+  private readonly localStorageService = inject(LocalStorageService);
+  private readonly fileStorage = inject(FileStorageService);
+  private readonly cdr = inject(ChangeDetectorRef);
+  protected readonly validationService = inject(ExcelValidationService);
+  private readonly importService = inject(ExcelImportService);
+  protected readonly excelSettingsService = inject(ExcelSettingsService);
+  protected readonly languageService = inject(LanguageService);
+  protected readonly heatingRoomsService = inject(HeatingRoomsService);
   protected readonly FileSpreadsheetIcon = FileSpreadsheet;
   protected readonly RotateCcwIcon = RotateCcw;
   protected readonly ChevronDownIcon = ChevronDown;
   protected readonly ChevronUpIcon = ChevronUp;
-  protected readonly HelpIcon = HelpCircle;
+  protected readonly HelpIcon = CircleQuestionMark;
   protected readonly ExportIcon = Download;
   protected readonly ImportIcon = Upload;
   protected readonly EditIcon = Pencil;
   protected readonly TriangleAlertIcon = TriangleAlert;
 
   // Help modal
-  protected showHelpModal = signal(false);
+  protected readonly showHelpModal = signal(false);
   protected readonly helpSteps: HelpStep[] = [
     {
       titleKey: 'SETTINGS.EXCEL_HELP_STEP_1_TITLE',
@@ -92,36 +93,37 @@ export class ExcelSettingsComponent {
     },
   ];
 
-  protected showModal = signal(false);
-  protected showSaveSuccess = signal(false);
-  protected showImportSuccess = signal(false);
-  protected validationError = signal('');
-  protected isPreviewCollapsed = signal(false); // Expanded by default
+  protected readonly showModal = signal(false);
+  protected readonly showSaveSuccess = signal(false);
+  protected readonly showImportSuccess = signal(false);
+  protected readonly validationError = signal('');
+  protected readonly isPreviewCollapsed = signal(false); // Expanded by default
 
   // Import confirmation & error modals
-  protected showImportConfirmModal = signal(false);
-  protected pendingImportFile = signal<File | null>(null);
-  protected showImportErrorModal = signal(false);
-  protected importErrorMessage = signal('');
-  protected importErrorDetails = signal('');
-  protected importErrorInstructions = signal<string[]>([]);
+  protected readonly showImportConfirmModal = signal(false);
+  protected readonly pendingImportFile = signal<File | null>(null);
+  protected readonly showImportErrorModal = signal(false);
+  protected readonly importErrorMessage = signal('');
+  protected readonly importErrorDetails = signal('');
+  protected readonly importErrorInstructions = signal<string[]>([]);
 
   // Navigation Guard State
-  protected showUnsavedChangesModal = signal(false);
-  protected pendingNavigation = signal<(() => void) | null>(null);
+  private readonly navGuard = new NavigationGuardState();
+  protected readonly showUnsavedChangesModal = this.navGuard.showModal;
+  protected readonly pendingNavigation = this.navGuard.pendingNavigation;
 
   // Local state for editing - using signals for reactivity
-  protected enabled = signal(false);
-  protected waterDateCol = signal('');
-  protected waterKitchenWarmCol = signal('');
-  protected waterKitchenColdCol = signal('');
-  protected waterBathroomWarmCol = signal('');
-  protected waterBathroomColdCol = signal('');
-  protected heatingDateCol = signal('');
-  protected electricityDateCol = signal('');
-  protected electricityValueCol = signal('');
+  protected readonly enabled = signal(false);
+  protected readonly waterDateCol = signal('');
+  protected readonly waterKitchenWarmCol = signal('');
+  protected readonly waterKitchenColdCol = signal('');
+  protected readonly waterBathroomWarmCol = signal('');
+  protected readonly waterBathroomColdCol = signal('');
+  protected readonly heatingDateCol = signal('');
+  protected readonly electricityDateCol = signal('');
+  protected readonly electricityValueCol = signal('');
   // Dynamic room column mappings by room ID
-  protected heatingRoomCols = signal<Record<string, string>>({});
+  protected readonly heatingRoomCols = signal<Record<string, string>>({});
 
   // Computed column arrays for validation
   protected waterColumns = computed(() => [
@@ -266,12 +268,12 @@ export class ExcelSettingsComponent {
   }
 
   @HostListener('window:beforeunload', ['$event'])
-  onBeforeUnload(event: BeforeUnloadEvent) {
+  onBeforeUnload(event: BeforeUnloadEvent): string | undefined {
     if (this.hasUnsavedChanges()) {
       event.preventDefault();
       return '';
     }
-    return;
+    return undefined;
   }
 
   /**
@@ -344,24 +346,15 @@ export class ExcelSettingsComponent {
 
   // Navigation Guard Methods
   public triggerNavigationWarning(onLeave: () => void): boolean {
-    if (this.hasUnsavedChanges()) {
-      this.pendingNavigation.set(onLeave);
-      this.showUnsavedChangesModal.set(true);
-      return true;
-    }
-    return false;
+    return this.navGuard.triggerWarning(this.hasUnsavedChanges(), onLeave);
   }
 
   confirmLeaveWithoutSaving() {
-    const navigation = this.pendingNavigation();
-    if (navigation) navigation();
-    this.showUnsavedChangesModal.set(false);
-    this.pendingNavigation.set(null);
+    this.navGuard.confirmLeave();
   }
 
   stayAndSave() {
-    this.showUnsavedChangesModal.set(false);
-    this.pendingNavigation.set(null);
+    this.navGuard.stay();
   }
 
   protected saveSettings() {
@@ -431,7 +424,7 @@ export class ExcelSettingsComponent {
     }
   }
 
-  protected async importSettings(event: Event) {
+  protected importSettings(event: Event): void {
     const input = event.target as HTMLInputElement;
     const file = input.files?.[0];
     if (file) {

@@ -20,8 +20,8 @@ interface DemoData {
   providedIn: 'root',
 })
 export class DemoService {
-  private platformId = inject(PLATFORM_ID);
-  private storage = inject(LocalStorageService);
+  private readonly platformId = inject(PLATFORM_ID);
+  private readonly storage = inject(LocalStorageService);
 
   // Demo mode state
   readonly isDemoMode = signal(false);
@@ -168,51 +168,9 @@ export class DemoService {
 
       // 3. Restore the user's exactly previous data
       if (rawBackupJson) {
-        // New exact restore method
-        try {
-          const rawBackup = JSON.parse(rawBackupJson) as Record<string, string>;
-          for (const [key, value] of Object.entries(rawBackup)) {
-            localStorage.setItem(key, value);
-          }
-        } catch (e) {
-          console.error('Failed to parse raw user backup', e);
-        }
+        this.restoreRawBackup(rawBackupJson);
       } else if (oldBackupJson) {
-        // Fallback for users who entered demo mode before this update
-        try {
-          const backup = JSON.parse(oldBackupJson) as {
-            storage?: Record<string, unknown>;
-            preferences?: Record<string, string>;
-          };
-
-          // Restore storage data
-          if (backup.storage) {
-            // Protect preference strings from being double-JSONified
-            const stringPrefKeys = [
-              'theme',
-              'preferred_language',
-              'storage_mode',
-              'last_sync_timestamp',
-            ];
-
-            for (const [key, value] of Object.entries(backup.storage)) {
-              if (stringPrefKeys.includes(key) && typeof value === 'string') {
-                this.storage.setPreference(key, value);
-              } else {
-                await this.storage.save(key, value);
-              }
-            }
-          }
-
-          // Restore preferences (like meter change confirmations)
-          if (backup.preferences) {
-            for (const [key, value] of Object.entries(backup.preferences)) {
-              this.storage.setPreference(key, value);
-            }
-          }
-        } catch (e) {
-          console.error('Failed to restore legacy user backup', e);
-        }
+        await this.restoreLegacyBackup(oldBackupJson);
       }
 
       // Ensure flags and backups are definitely removed
@@ -227,6 +185,53 @@ export class DemoService {
       console.error('Failed to deactivate demo mode:', error);
     } finally {
       this.isLoading.set(false);
+    }
+  }
+
+  private restoreRawBackup(rawBackupJson: string): void {
+    try {
+      const rawBackup = JSON.parse(rawBackupJson) as Record<string, string>;
+      for (const [key, value] of Object.entries(rawBackup)) {
+        localStorage.setItem(key, value);
+      }
+    } catch (e) {
+      console.error('Failed to parse raw user backup', e);
+    }
+  }
+
+  private async restoreLegacyBackup(oldBackupJson: string): Promise<void> {
+    try {
+      const backup = JSON.parse(oldBackupJson) as {
+        storage?: Record<string, unknown>;
+        preferences?: Record<string, string>;
+      };
+
+      if (backup.storage) {
+        const stringPrefKeys = new Set([
+          'theme',
+          'preferred_language',
+          'storage_mode',
+          'last_sync_timestamp',
+        ]);
+
+        const savePromises: Promise<void>[] = [];
+        for (const [key, value] of Object.entries(backup.storage)) {
+          if (stringPrefKeys.has(key) && typeof value === 'string') {
+            this.storage.setPreference(key, value);
+          } else {
+            savePromises.push(this.storage.save(key, value));
+          }
+        }
+        await Promise.all(savePromises);
+      }
+
+      if (backup.preferences) {
+        for (const [key, value] of Object.entries(backup.preferences)) {
+          this.storage.setPreference(key, value);
+        }
+      }
+    } catch (e) {
+      console.error('Failed to restore legacy user backup', e);
     }
   }
 

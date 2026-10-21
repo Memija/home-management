@@ -74,24 +74,3 @@ $info-bg-light: #eff6ff;
 $info-border-light: #bfdbfe;
 $info-text-dark: #1e40af;
 $info-text-darker: #1e3a8a;
-
-// ============================================
-// Shared Mixins
-// ============================================
-
-/// Hides scrollbars while preserving scroll functionality across all browsers
-/// (Firefox, Chrome 121+, Safari, iOS Safari, and legacy IE/Edge)
-@mixin hide-scrollbar {
-  // Hide scrollbar for WebKit browsers (Chrome, Safari, iOS Safari, Edge, Samsung Internet)
-  &::-webkit-scrollbar {
-    display: none;
-  }
-
-  // Hide scrollbar for IE, Edge legacy
-  -ms-overflow-style: none;
-
-  // Hide scrollbar for modern browsers with feature-query guard & SCSS interpolation
-  @supports (scrollbar-width: none) {
-    #{"scrollbar-width"}: none;
-  }
-}

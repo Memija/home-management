@@ -101,7 +101,7 @@ describe('SeasonSwitcherComponent', () => {
     fixture.detectChanges();
 
     const emojis = fixture.debugElement.queryAll(By.css('.season-emoji'));
-    expect(emojis.length).toBe(2);
+    expect(emojis).toHaveLength(2);
     expect(emojis[0].nativeElement.textContent.trim()).toBe('☀️');
   });
 

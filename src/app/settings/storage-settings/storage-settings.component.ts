@@ -9,8 +9,8 @@ import {
   Upload,
   Download,
   Check,
-  AlertTriangle,
-  HelpCircle,
+  TriangleAlert,
+  CircleQuestionMark,
 } from 'lucide-angular';
 import { HybridStorageService } from '../../services/hybrid-storage.service';
 import { AuthService } from '../../services/auth.service';
@@ -35,10 +35,10 @@ import { HelpModalComponent, HelpStep } from '../../shared/help-modal/help-modal
   styleUrl: './storage-settings.component.scss',
 })
 export class StorageSettingsComponent implements OnInit {
-  private storage = inject(HybridStorageService);
-  private auth = inject(AuthService);
-  private demo = inject(DemoService);
-  private languageService = inject(LanguageService);
+  private readonly storage = inject(HybridStorageService);
+  private readonly auth = inject(AuthService);
+  private readonly demo = inject(DemoService);
+  private readonly languageService = inject(LanguageService);
 
   // Locale for date pipe
   readonly currentLang = computed(() => this.languageService.currentLang());
@@ -50,8 +50,8 @@ export class StorageSettingsComponent implements OnInit {
   readonly UploadIcon = Upload;
   readonly DownloadIcon = Download;
   readonly CheckIcon = Check;
-  readonly AlertIcon = AlertTriangle;
-  readonly HelpIcon = HelpCircle;
+  readonly AlertIcon = TriangleAlert;
+  readonly HelpIcon = CircleQuestionMark;
 
   // Signals
   readonly mode = this.storage.mode;

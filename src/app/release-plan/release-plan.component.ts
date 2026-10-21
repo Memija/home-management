@@ -6,9 +6,8 @@ import {
   TrendingUp,
   Calendar,
   Sparkles,
-  ArrowUpCircle,
+  CircleArrowUp,
   Brain,
-  ShieldCheck,
   LucideIconData,
   CloudSun,
   Mic,
@@ -41,20 +40,11 @@ export class ReleasePlanComponent {
   readonly RocketIcon = Rocket;
   readonly CalendarIcon = Calendar;
   readonly SparklesIcon = Sparkles;
-  readonly EnhancementIcon = ArrowUpCircle;
+  readonly EnhancementIcon = CircleArrowUp;
   readonly SmartIcon = Brain;
 
   // Upcoming features
   readonly features: Feature[] = [
-    // Code Quality
-    {
-      id: 6,
-      titleKey: 'RELEASE_PLAN.FEATURE_6_TITLE',
-      descKey: 'RELEASE_PLAN.FEATURE_6_DESC',
-      icon: ShieldCheck,
-      tag: 'enhancement',
-      colorClass: 'enhancement-feature',
-    },
     {
       id: 7,
       titleKey: 'RELEASE_PLAN.FEATURE_7_TITLE',

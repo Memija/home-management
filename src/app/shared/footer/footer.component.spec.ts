@@ -61,7 +61,7 @@ describe('FooterComponent', () => {
     });
 
     it('should have GithubIcon set to lucide Github icon', () => {
-      expect(component.GithubIcon).toBe(Github);
+      expect(component.GithubIcon).toEqual(Github);
     });
 
     it('should have ShieldIcon set to lucide Shield icon', () => {
@@ -107,7 +107,7 @@ describe('FooterComponent', () => {
         expect(component[key]).toBeDefined();
       });
       const keys = Object.keys(component).filter((k) => k.endsWith('Icon'));
-      expect(keys.length).toBe(5);
+      expect(keys).toHaveLength(5);
     });
   });
 
@@ -134,7 +134,7 @@ describe('FooterComponent', () => {
 
     it('should have version parts as valid non-negative integers', () => {
       const parts = component.appVersion.split('.').map(Number);
-      expect(parts.length).toBe(3);
+      expect(parts).toHaveLength(3);
       parts.forEach((part) => {
         expect(Number.isInteger(part)).toBe(true);
         expect(part).toBeGreaterThanOrEqual(0);
@@ -168,13 +168,13 @@ describe('FooterComponent', () => {
 
     it('should be a strictly boolean value (not truthy/falsy)', () => {
       expect(component.showSupportModal).toBe(false);
-      expect(component.showSupportModal).not.toBe(0);
-      expect(component.showSupportModal).not.toBe(null);
-      expect(component.showSupportModal).not.toBe(undefined);
+      expect(typeof component.showSupportModal).toBe('boolean');
+      expect(component.showSupportModal).not.toBeNull();
+      expect(component.showSupportModal).toBeDefined();
 
       component.showSupportModal = true;
       expect(component.showSupportModal).toBe(true);
-      expect(component.showSupportModal).not.toBe(1);
+      expect(typeof component.showSupportModal).toBe('boolean');
     });
   });
 
@@ -253,7 +253,7 @@ describe('FooterComponent', () => {
       expect(component.HeartIcon).toBe(Heart);
       expect(component.RocketIcon).toBe(Rocket);
       expect(component.HistoryIcon).toBe(History);
-      expect(component.GithubIcon).toBe(Github);
+      expect(component.GithubIcon).toEqual(Github);
       expect(component.ShieldIcon).toBe(Shield);
       expect(component.appVersion).toBe(APP_VERSION);
       expect(component.showSupportModal).toBe(false);

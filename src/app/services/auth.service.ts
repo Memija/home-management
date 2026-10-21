@@ -15,12 +15,12 @@ export interface AuthUser {
   providedIn: 'root',
 })
 export class AuthService {
-  private platformId = inject(PLATFORM_ID);
+  private readonly platformId = inject(PLATFORM_ID);
   private authInstance: Auth | null = null;
   private authInitPromise: Promise<Auth> | null = null;
 
-  private userSubject = new BehaviorSubject<AuthUser | null>(null);
-  private loadingSubject = new BehaviorSubject<boolean>(true);
+  private readonly userSubject = new BehaviorSubject<AuthUser | null>(null);
+  private readonly loadingSubject = new BehaviorSubject<boolean>(true);
 
   /** Current authenticated user */
   readonly user = signal<AuthUser | null>(null);
@@ -51,7 +51,9 @@ export class AuthService {
       ) {
         this.isLoading.set(false);
       } else {
-        this.initAuthListener();
+        queueMicrotask(() => {
+          void this.initAuthListener();
+        });
       }
     } else {
       this.isLoading.set(false);
@@ -60,15 +62,13 @@ export class AuthService {
 
   private async getAuth(): Promise<Auth> {
     if (this.authInstance) return this.authInstance;
-    if (!this.authInitPromise) {
-      this.authInitPromise = (async () => {
-        const { getOrCreateFirebaseApp } = await import('./firebase-app.helper');
-        const { getAuth } = await import('firebase/auth');
-        const app = await getOrCreateFirebaseApp(isPlatformBrowser(this.platformId));
-        this.authInstance = getAuth(app);
-        return this.authInstance;
-      })();
-    }
+    this.authInitPromise ??= (async () => {
+      const { getOrCreateFirebaseApp } = await import('./firebase-app.helper');
+      const { getAuth } = await import('firebase/auth');
+      const app = await getOrCreateFirebaseApp(isPlatformBrowser(this.platformId));
+      this.authInstance = getAuth(app);
+      return this.authInstance;
+    })();
     return this.authInitPromise;
   }
 

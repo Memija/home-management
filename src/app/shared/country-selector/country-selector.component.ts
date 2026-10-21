@@ -26,8 +26,8 @@ import { TranslatePipe } from '../../pipes/translate.pipe';
   styleUrl: './country-selector.component.scss',
 })
 export class CountrySelectorComponent {
-  private countryService = inject(CountryService);
-  private languageService = inject(LanguageService);
+  private readonly countryService = inject(CountryService);
+  private readonly languageService = inject(LanguageService);
 
   /** The country code (e.g., 'de', 'us') - two-way bindable */
   @Input() set countryCode(value: string) {
@@ -62,8 +62,8 @@ export class CountrySelectorComponent {
   @Output() validationErrors = new EventEmitter<string[]>();
 
   // Internal state
-  protected _countryCode = signal('');
-  protected _countrySearch = signal('');
+  protected readonly _countryCode = signal('');
+  protected readonly _countrySearch = signal('');
 
   /** Filtered countries based on search (reactive to language changes) */
   protected filteredCountries = computed(() => {

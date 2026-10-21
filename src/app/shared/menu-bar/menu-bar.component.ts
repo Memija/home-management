@@ -1,8 +1,7 @@
 import { Component, signal } from '@angular/core';
 import { RouterLink, RouterLinkActive } from '@angular/router';
 import { TranslatePipe } from '../../pipes/translate.pipe';
-import { ContactModalComponent } from '../contact-modal/contact-modal.component';
-import { EmailClient } from '../contact-modal/contact-modal.component';
+import { ContactModalComponent, EmailClient } from '../contact-modal/contact-modal.component';
 
 @Component({
   selector: 'app-menu-bar',
@@ -13,7 +12,7 @@ import { EmailClient } from '../contact-modal/contact-modal.component';
 })
 export class MenuBarComponent {
   // Contact modal state
-  protected showContactModal = signal(false);
+  protected readonly showContactModal = signal(false);
 
   protected contactUs() {
     this.showContactModal.set(true);

@@ -95,31 +95,63 @@ export function isRecordAllZero(record: unknown): boolean {
  * - Records unique to either list are preserved.
  * - Sorted ascending by date.
  */
-export function mergeRecordLists(baseRecords: unknown[], overrideRecords: unknown[]): unknown[] {
-  const map = new Map<string, unknown>();
-  for (const r of baseRecords) {
+function addRecordsToMap(map: Map<string, unknown>, records: unknown[], isOverride: boolean): void {
+  for (const r of records) {
     if (r && typeof r === 'object' && 'date' in r) {
       const key = getDateKey(parseSafeDate((r as { date: unknown }).date));
-      if (key) map.set(key, r);
-    }
-  }
-  for (const r of overrideRecords) {
-    if (r && typeof r === 'object' && 'date' in r) {
-      const key = getDateKey(parseSafeDate((r as { date: unknown }).date));
-      if (key) {
+      if (!key) continue;
+      if (isOverride) {
         const existing = map.get(key);
         if (existing && isRecordAllZero(r) && !isRecordAllZero(existing)) {
           continue;
         }
-        map.set(key, r);
+      }
+      map.set(key, r);
+    }
+  }
+}
+
+function sortByDateAsc(a: unknown, b: unknown): number {
+  const dateA = parseSafeDate((a as { date: unknown }).date).getTime();
+  const dateB = parseSafeDate((b as { date: unknown }).date).getTime();
+  return dateA - dateB;
+}
+
+/**
+ * Merges two record lists by date.
+ * - baseRecords are added first.
+ * - overrideRecords override baseRecords with the same date (unless override is all-zero and base is not).
+ * - Records unique to either list are preserved.
+ * - Sorted ascending by date.
+ */
+export function mergeRecordLists(baseRecords: unknown[], overrideRecords: unknown[]): unknown[] {
+  const map = new Map<string, unknown>();
+  addRecordsToMap(map, baseRecords, false);
+  addRecordsToMap(map, overrideRecords, true);
+  return Array.from(map.values()).sort(sortByDateAsc);
+}
+
+function extractLatestTimestampFromRecords(records: unknown[]): number {
+  let max = 0;
+  for (const r of records) {
+    if (r && typeof r === 'object' && 'date' in r) {
+      const time = parseSafeDate((r as { date: unknown }).date).getTime();
+      if (!Number.isNaN(time) && time > max) {
+        max = time;
       }
     }
   }
-  return Array.from(map.values()).sort((a, b) => {
-    const dateA = parseSafeDate((a as { date: unknown }).date).getTime();
-    const dateB = parseSafeDate((b as { date: unknown }).date).getTime();
-    return dateA - dateB;
-  });
+  return max;
+}
+
+function parseStoredJsonArray(item: string | null): unknown[] | null {
+  if (!item) return null;
+  try {
+    const parsed = JSON.parse(item);
+    return Array.isArray(parsed) ? parsed : null;
+  } catch {
+    return null;
+  }
 }
 
 /**
@@ -130,14 +162,7 @@ export function getLatestRecordTimestampFromData(data: Record<string, unknown>):
   for (const key of VALID_RECORD_KEYS) {
     const records = data[key];
     if (Array.isArray(records)) {
-      for (const r of records) {
-        if (r && typeof r === 'object' && 'date' in r) {
-          const time = parseSafeDate((r as { date: unknown }).date).getTime();
-          if (!isNaN(time) && time > latest) {
-            latest = time;
-          }
-        }
-      }
+      latest = Math.max(latest, extractLatestTimestampFromRecords(records));
     }
   }
   return latest;
@@ -155,25 +180,35 @@ export function getLatestLocalRecordTimestamp(): number {
     'hm_heating_consumption_records',
   ];
   for (const storageKey of recordKeys) {
-    try {
-      const item = localStorage.getItem(storageKey);
-      if (!item) continue;
-      const parsed = JSON.parse(item);
-      if (Array.isArray(parsed)) {
-        for (const r of parsed) {
-          if (r && typeof r === 'object' && 'date' in r) {
-            const time = parseSafeDate(r.date).getTime();
-            if (!isNaN(time) && time > latest) {
-              latest = time;
-            }
-          }
-        }
-      }
-    } catch {
-      // Ignore parse error
+    const records = parseStoredJsonArray(localStorage.getItem(storageKey));
+    if (records) {
+      latest = Math.max(latest, extractLatestTimestampFromRecords(records));
     }
   }
   return latest;
+}
+
+function isIgnoredStorageKey(key: string, value: string | null): boolean {
+  if (!key.startsWith('hm_') || (IGNORED_STORAGE_KEYS as readonly string[]).includes(key)) {
+    return true;
+  }
+  if (
+    (key === 'hm_household_members' || key === 'hm_dismissed_notifications') &&
+    (value === '[]' || value === 'null' || value === null)
+  ) {
+    return true;
+  }
+  if (key === 'hm_household_address' && (value === 'null' || value === null)) {
+    return true;
+  }
+  const ignoredSuffixes = [
+    '_chart_view',
+    '_display_mode',
+    '_trendline_visible',
+    '_average_visible',
+    '_collapsed',
+  ];
+  return ignoredSuffixes.some((suffix) => key.endsWith(suffix));
 }
 
 /**
@@ -184,31 +219,9 @@ export function checkHasUserContent(): boolean {
 
   for (let i = 0; i < localStorage.length; i++) {
     const key = localStorage.key(i);
-    if (key?.startsWith('hm_') && !(IGNORED_STORAGE_KEYS as readonly string[]).includes(key)) {
-      const value = localStorage.getItem(key);
-
-      // Skip empty/default values for core settings
-      if (
-        key === 'hm_household_members' &&
-        (value === '[]' || value === 'null' || value === null)
-      ) {
-        continue;
-      }
-      if (key === 'hm_household_address' && (value === 'null' || value === null)) {
-        continue;
-      }
-      if (
-        key === 'hm_dismissed_notifications' &&
-        (value === '[]' || value === 'null' || value === null)
-      ) {
-        continue;
-      }
-
-      // Skip chart views, display modes, and UI state with defaults
-      if (key.endsWith('_chart_view') || key.endsWith('_display_mode')) continue;
-      if (key.endsWith('_trendline_visible') || key.endsWith('_average_visible')) continue;
-      if (key.endsWith('_collapsed')) continue;
-
+    if (!key) continue;
+    const value = localStorage.getItem(key);
+    if (!isIgnoredStorageKey(key, value)) {
       return true;
     }
   }

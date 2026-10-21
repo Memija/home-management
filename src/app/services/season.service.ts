@@ -16,8 +16,8 @@ const SEASON_ORDER: Season[] = ['spring', 'summer', 'autumn', 'winter'];
   providedIn: 'root',
 })
 export class SeasonService {
-  private platformId = inject(PLATFORM_ID);
-  private localStorageService = inject(LocalStorageService);
+  private readonly platformId = inject(PLATFORM_ID);
+  private readonly localStorageService = inject(LocalStorageService);
 
   /** Current active season */
   readonly currentSeason = signal<Season>(this.getInitialSeason());

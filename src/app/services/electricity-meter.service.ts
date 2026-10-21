@@ -6,7 +6,7 @@ import { ElectricityRecord } from '../models/records.model';
   providedIn: 'root',
 })
 export class ElectricityMeterService {
-  private localStorageService = inject(LocalStorageService);
+  private readonly localStorageService = inject(LocalStorageService);
 
   // Signals for stored state
   readonly confirmedMeterChanges = signal<string[]>(this.getStoredMeterChanges());

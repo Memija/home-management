@@ -1,12 +1,4 @@
-import {
-  Component,
-  computed,
-  inject,
-  signal,
-  effect,
-  HostListener,
-  ElementRef,
-} from '@angular/core';
+import { Component, computed, inject, signal, effect, ElementRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 
@@ -25,7 +17,7 @@ import {
   FileInput,
   FileOutput,
   Info,
-  AlertTriangle,
+  TriangleAlert,
   Zap,
   RefreshCw,
   Lightbulb,
@@ -38,6 +30,10 @@ import {
 } from '../shared/consumption-input/consumption-input.component';
 import { DeleteConfirmationModalComponent } from '../shared/delete-confirmation-modal/delete-confirmation-modal.component';
 import { ConfirmationModalComponent } from '../shared/confirmation-modal/confirmation-modal.component';
+import {
+  BaseConsumptionComponent,
+  ConsumptionDataServiceContract,
+} from '../shared/base-consumption.directive';
 import {
   DetailedRecordsComponent,
   SortOptionConfig,
@@ -68,6 +64,7 @@ import {
   DEMO_TOUR_STEPS,
 } from './electricity.constants';
 import { DemoTourComponent } from '../shared/demo-tour/demo-tour.component';
+import { secureRandom } from '../utils/crypto.utils';
 
 import { SmartImportModalComponent } from '../shared/smart-import-modal/smart-import-modal.component';
 import { PredictionService } from '../services/prediction.service';
@@ -96,35 +93,35 @@ import { PredictionsPanelComponent } from '../shared/predictions-panel/predictio
   templateUrl: './electricity.component.html',
   styleUrl: './electricity.component.scss',
 })
-export class ElectricityComponent {
+export class ElectricityComponent extends BaseConsumptionComponent<ElectricityRecord> {
   // Services
-  protected excelSettings = inject(ExcelSettingsService);
-  protected demoService = inject(DemoService);
-  private householdService = inject(HouseholdService);
-  private chartCalculationService = inject(ChartCalculationService);
-  private languageService = inject(LanguageService);
-  private electricityFactsService = inject(ElectricityCountryFactsService);
-  private preferencesService = inject(ConsumptionPreferencesService);
-  private formService = inject(ElectricityFormService);
-  private dataService = inject(ElectricityDataService);
-  private meterService = inject(ElectricityMeterService);
-  private predictionService = inject(PredictionService);
+  protected readonly excelSettings = inject(ExcelSettingsService);
+  protected readonly demoService = inject(DemoService);
+  private readonly householdService = inject(HouseholdService);
+  private readonly chartCalculationService = inject(ChartCalculationService);
+  private readonly languageService = inject(LanguageService);
+  private readonly electricityFactsService = inject(ElectricityCountryFactsService);
+  private readonly preferencesService = inject(ConsumptionPreferencesService);
+  private readonly formService = inject(ElectricityFormService);
+  private readonly dataService = inject(ElectricityDataService);
+  private readonly meterService = inject(ElectricityMeterService);
+  private readonly predictionService = inject(PredictionService);
 
   // Signals
-  protected records = this.dataService.records;
-  protected electricityPrediction = computed(() =>
+  protected readonly records = this.dataService.records;
+  protected readonly electricityPrediction = computed(() =>
     this.predictionService.predictElectricity(this.records()),
   );
-  protected chartView = this.preferencesService.electricityChartView;
-  protected displayMode = this.preferencesService.electricityDisplayMode;
-  protected effectiveComparisonCountryCode = signal('DE');
-  protected selectedPredictionPeriod = signal<30 | 90 | 180 | 365 | 3650>(30);
+  protected readonly chartView = this.preferencesService.electricityChartView;
+  protected readonly displayMode = this.preferencesService.electricityDisplayMode;
+  protected readonly effectiveComparisonCountryCode = signal('DE');
+  protected readonly selectedPredictionPeriod = signal<30 | 90 | 180 | 365 | 3650>(30);
 
   protected onPredictionPeriodChange(period: 30 | 90 | 180 | 365 | 3650): void {
     this.selectedPredictionPeriod.set(period);
   }
 
-  private syncCountryFromAddress = effect(() => {
+  private readonly syncCountryFromAddress = effect(() => {
     const address = this.householdService.address();
     if (address?.country) {
       // Find if this country is valid for electricity facts
@@ -136,7 +133,7 @@ export class ElectricityComponent {
       }
     }
   });
-  protected factRandomSeed = signal(Math.random());
+  protected readonly factRandomSeed = signal(secureRandom());
 
   protected adjustedRecords = this.records; // Start with records, can be adjustments if needed
 
@@ -172,10 +169,10 @@ export class ElectricityComponent {
   protected recordsHelpSteps = RECORDS_LIST_HELP_STEPS;
 
   // Demo wizard & tour
-  protected demoWizardSteps = DEMO_WIZARD_STEPS;
-  protected demoTourSteps = DEMO_TOUR_STEPS;
-  protected showDemoWizard = signal(false);
-  protected showDemoTour = signal(false);
+  protected readonly demoWizardSteps = DEMO_WIZARD_STEPS;
+  protected readonly demoTourSteps = DEMO_TOUR_STEPS;
+  protected readonly showDemoWizard = signal(false);
+  protected readonly showDemoTour = signal(false);
 
   protected openRelevantDemoGuide(): void {
     if (this.demoService.isDemoMode()) {
@@ -242,45 +239,13 @@ export class ElectricityComponent {
   protected readonly FileOutputIcon = FileOutput;
   protected readonly FileTextIcon = FileText;
   protected readonly InfoIcon = Info;
-  protected readonly AlertTriangleIcon = AlertTriangle;
+  protected readonly AlertTriangleIcon = TriangleAlert;
   protected readonly ZapIcon = Zap;
   protected readonly RefreshCwIcon = RefreshCw;
   protected readonly LightbulbIcon = Lightbulb;
   protected readonly ChevronDownIcon = ChevronDown;
 
-  // Dropdown state
-  protected isExportMenuOpen = signal(false);
-  protected isImportMenuOpen = signal(false);
-
-  private elementRef = inject(ElementRef, { optional: true });
-
-  @HostListener('document:click', ['$event'])
-  onDocumentClick(event: MouseEvent): void {
-    const target = event.target as HTMLElement | null;
-    if (!target?.closest('.action-dropdown')) {
-      this.isExportMenuOpen.set(false);
-      this.isImportMenuOpen.set(false);
-    }
-  }
-
-  toggleExportMenu(event: MouseEvent): void {
-    event.stopPropagation();
-    const next = !this.isExportMenuOpen();
-    this.isExportMenuOpen.set(next);
-    this.isImportMenuOpen.set(false);
-  }
-
-  toggleImportMenu(event: MouseEvent): void {
-    event.stopPropagation();
-    const next = !this.isImportMenuOpen();
-    this.isImportMenuOpen.set(next);
-    this.isExportMenuOpen.set(false);
-  }
-
-  closeMenus(): void {
-    this.isExportMenuOpen.set(false);
-    this.isImportMenuOpen.set(false);
-  }
+  private readonly elementRef = inject(ElementRef, { optional: true });
 
   protected availableElectricityCountries = availableElectricityCountries;
 
@@ -294,7 +259,7 @@ export class ElectricityComponent {
       return null;
     }
 
-    const latestRecord = records[records.length - 1];
+    const latestRecord = records.at(-1)!;
     const kwh = latestRecord.value;
     const factIndex = Math.floor(seed * 20);
     const factMode = displayMode === 'total' ? 'historical' : 'country';
@@ -304,7 +269,7 @@ export class ElectricityComponent {
   });
 
   protected refreshFact(): void {
-    this.factRandomSeed.set(Math.random());
+    this.factRandomSeed.set(secureRandom());
   }
 
   // Methods
@@ -324,54 +289,8 @@ export class ElectricityComponent {
     // Optional
   }
 
-  // Delegations
-  protected importData(event: Event) {
-    this.closeMenus();
-    this.dataService.importData(event);
-  }
-  protected importFromExcel(event: Event) {
-    this.closeMenus();
-    this.dataService.importFromExcel(event);
-  }
-
-  protected confirmImport() {
-    this.dataService.confirmImport();
-  }
-  protected cancelImport() {
-    this.dataService.cancelImport();
-  }
-
-  protected confirmFilterWarningImport() {
-    this.dataService.confirmFilterWarningImport();
-  }
-  protected cancelFilterWarningImport() {
-    this.dataService.cancelFilterWarningImport();
-  }
-
-  protected exportData() {
-    this.dataService.exportData();
-  }
-  protected exportToExcel() {
-    this.dataService.exportToExcel();
-  }
-  protected exportToPdf() {
-    this.dataService.exportToPdf();
-  }
-
-  protected confirmDelete() {
-    this.dataService.confirmDelete();
-  }
-  protected cancelDelete() {
-    this.dataService.showDeleteModal.set(false);
-    this.dataService.recordToDelete.set(null);
-  }
-
-  protected confirmDeleteAll() {
-    this.dataService.confirmDeleteAll();
-  }
-  protected cancelDeleteAll() {
-    this.dataService.showDeleteAllModal.set(false);
-    this.dataService.recordsToDelete.set([]);
+  override get baseDataService(): ConsumptionDataServiceContract<ElectricityRecord> {
+    return this.dataService;
   }
 
   protected deleteAllRecords(records: unknown[]) {
@@ -417,7 +336,7 @@ export class ElectricityComponent {
 
     const newRecord = this.formService.createRecordFromState();
     if (newRecord) {
-      this.dataService.saveRecord(newRecord);
+      void this.dataService.saveRecord(newRecord);
       this.formService.cancelEdit();
     }
   }
@@ -447,7 +366,7 @@ export class ElectricityComponent {
   }
 
   // Smart Import Logic
-  protected showSmartImportModal = signal(false);
+  protected readonly showSmartImportModal = signal(false);
 
   protected openSmartImport() {
     this.showSmartImportModal.set(true);
@@ -459,15 +378,15 @@ export class ElectricityComponent {
     // Convert parsed records to ElectricityRecords and save
     let importedCount = 0;
 
-    records.forEach((record) => {
+    for (const record of records) {
       const newRecord: ElectricityRecord = {
         date: record.date,
         value: record.value,
       };
 
-      this.dataService.saveRecord(newRecord);
+      void this.dataService.saveRecord(newRecord);
       importedCount++;
-    });
+    }
 
     if (importedCount > 0) {
       this.showSuccessModal.set(true);

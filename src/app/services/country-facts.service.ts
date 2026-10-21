@@ -3,6 +3,7 @@ import { LanguageService, Language } from './language.service';
 import { en } from '../i18n/en';
 import { de } from '../i18n/de';
 import { bs } from '../i18n/bs';
+import { secureRandomItem } from '../utils/crypto.utils';
 
 type CountryFactsMap = Record<string, string[]>;
 
@@ -10,7 +11,7 @@ type CountryFactsMap = Record<string, string[]>;
   providedIn: 'root',
 })
 export class CountryFactsService {
-  private languageService = inject(LanguageService);
+  private readonly languageService = inject(LanguageService);
 
   /**
    * Get a random fact for a specific country
@@ -21,12 +22,7 @@ export class CountryFactsService {
     const lang = this.languageService.currentLang();
     const facts = this.getFactsForCountry(countryCode.toUpperCase(), lang);
 
-    if (facts.length === 0) {
-      return '';
-    }
-
-    const randomIndex = Math.floor(Math.random() * facts.length);
-    return facts[randomIndex];
+    return secureRandomItem(facts) ?? '';
   }
 
   /**
@@ -54,7 +50,8 @@ export class CountryFactsService {
    * @returns Array of facts for the country
    */
   private getFactsForCountry(countryCode: string, lang: Language): string[] {
-    const translations = lang === 'de' ? de : lang === 'bs' ? bs : en;
+    const translationMap = { de, bs, en } as const;
+    const translations = translationMap[lang as 'de' | 'bs'] ?? en;
     const countryFacts = translations.COUNTRY_FACTS as CountryFactsMap;
 
     // Try to get country-specific facts, fall back to DEFAULT

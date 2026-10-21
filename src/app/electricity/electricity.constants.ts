@@ -1,7 +1,7 @@
 import { HelpStep } from '../shared/help-modal/help-modal.component';
 import { DemoWizardStep } from '../shared/demo-wizard/demo-wizard.component';
 import { DemoTourStep } from '../shared/demo-tour/demo-tour.component';
-import { Zap, BarChart3, AlertTriangle, ClipboardPaste } from 'lucide-angular';
+import { Zap, ChartBar, TriangleAlert, ClipboardPaste } from 'lucide-angular';
 
 export const DEMO_WIZARD_STEPS: DemoWizardStep[] = [
   {
@@ -12,12 +12,12 @@ export const DEMO_WIZARD_STEPS: DemoWizardStep[] = [
   {
     titleKey: 'DEMO.ELECTRICITY_STEP_2_TITLE',
     descriptionKey: 'DEMO.ELECTRICITY_STEP_2_DESC',
-    icon: BarChart3,
+    icon: ChartBar,
   },
   {
     titleKey: 'DEMO.ELECTRICITY_STEP_3_TITLE',
     descriptionKey: 'DEMO.ELECTRICITY_STEP_3_DESC',
-    icon: AlertTriangle,
+    icon: TriangleAlert,
   },
   {
     titleKey: 'DEMO.ELECTRICITY_STEP_4_TITLE',

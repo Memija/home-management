@@ -23,8 +23,8 @@ export const excel = {
       'Spaltenname darf keine führenden oder nachfolgenden Leerzeichen haben',
     VALIDATION_NO_WHITESPACE_HINT:
       'Entfernen Sie führende und nachfolgende Leerzeichen aus Spaltennamen',
-    VALIDATION_INVALID_CHARS: 'Spaltenname darf folgende Zeichen nicht enthalten: [ ] * / \\ ? :',
-    VALIDATION_INVALID_CHARS_HINT: 'Entfernen Sie die Zeichen [ ] * / \\ ? : aus Spaltennamen',
+    VALIDATION_INVALID_CHARS: String.raw`Spaltenname darf folgende Zeichen nicht enthalten: [ ] * / \ ? :`,
+    VALIDATION_INVALID_CHARS_HINT: String.raw`Entfernen Sie die Zeichen [ ] * / \ ? : aus Spaltennamen`,
     VALIDATION_DUPLICATES: 'Spaltennamen müssen innerhalb jedes Bereichs eindeutig sein',
     VALIDATION_DUPLICATES_HINT:
       'Jeder Spaltenname muss unterschiedlich sein - prüfen Sie auf doppelte Werte',

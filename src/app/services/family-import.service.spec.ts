@@ -95,7 +95,7 @@ describe('FamilyImportService', () => {
       const result = await service.importFromFile();
 
       expect(result.success).toBe(true);
-      expect(result.members?.length).toBe(1);
+      expect(result.members).toHaveLength(1);
       expect(result.members?.[0].name).toBe('John');
       expect(result.members?.[0].id).toBeDefined();
     });
@@ -127,8 +127,23 @@ describe('FamilyImportService', () => {
     });
 
     it('should use random avatar if invalid or missing', () => {
-      // Mock Math.random to return 0 (first avatar)
-      vi.spyOn(Math, 'random').mockReturnValue(0);
+      if (!globalThis.crypto?.getRandomValues) {
+        if (!globalThis.crypto) {
+          // @ts-expect-error polyfill crypto in test env
+          globalThis.crypto = {};
+        }
+        globalThis.crypto.getRandomValues = <T extends ArrayBufferView | null>(arr: T): T => arr;
+      }
+      vi.spyOn(globalThis.crypto, 'getRandomValues').mockImplementation((<
+        T extends ArrayBufferView | null,
+      >(
+        arr: T,
+      ): T => {
+        if (arr) {
+          (arr as unknown as Uint32Array)[0] = 0;
+        }
+        return arr;
+      }) as typeof globalThis.crypto.getRandomValues);
 
       const data = [{ name: 'A', surname: 'B', type: 'adult', gender: 'male' }];
       const result = service.validateImportedMembers(data);

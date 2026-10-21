@@ -30,7 +30,7 @@ describe('ChartDataService', () => {
       generateTrendlineData: vi.fn((data: number[]) => {
         // Simple mock: return same data for trendline
         return data.map(
-          (_, i) => data[0] + i * ((data[data.length - 1] - data[0]) / (data.length - 1 || 1)),
+          (_, i) => data[0] + i * (((data.at(-1) ?? 0) - data[0]) / (data.length - 1 || 1)),
         );
       }),
       calculateDailyAverage: vi.fn(
@@ -154,7 +154,7 @@ describe('ChartDataService', () => {
       const result = service.getHeatingChartData(params);
 
       expect(result.labels).toEqual(labels);
-      expect(result.datasets.length).toBe(1);
+      expect(result.datasets).toHaveLength(1);
       expect(result.datasets[0].label).toBe('CHART.TOTAL_WEEKLY_CONSUMPTION');
       expect(result.datasets[0].data).toEqual([20, 25]); // 10+5+3+2=20, 12+6+4+3=25
     });
@@ -189,7 +189,7 @@ describe('ChartDataService', () => {
       const result = service.getHeatingChartData(params);
 
       expect(result.labels).toEqual(labels);
-      expect(result.datasets.length).toBe(4);
+      expect(result.datasets).toHaveLength(4);
       expect(result.datasets[0].label).toBe('Living Room');
       expect(result.datasets[0].data).toEqual([10, 12]);
       expect(result.datasets[1].label).toBe('Bedroom');
@@ -211,7 +211,7 @@ describe('ChartDataService', () => {
       };
 
       const result = service.getHeatingChartData(params);
-      expect(result.datasets.length).toBe(4);
+      expect(result.datasets).toHaveLength(4);
       expect(result.datasets[0].label).toBe('Living Room');
     });
 
@@ -226,7 +226,7 @@ describe('ChartDataService', () => {
       };
 
       const result = service.getHeatingChartData(params);
-      expect(result.datasets.length).toBe(4);
+      expect(result.datasets).toHaveLength(4);
       expect(result.datasets[0].label).toBe('Living Room');
     });
 
@@ -245,7 +245,7 @@ describe('ChartDataService', () => {
 
         const result = service.getHeatingChartData(params);
 
-        expect(result.datasets.length).toBe(2); // Data + trendline
+        expect(result.datasets).toHaveLength(2); // Data + trendline
         expect(result.datasets[1].label).toBe('CHART.TRENDLINE');
         expect(calculationServiceMock['generateTrendlineData']).toHaveBeenCalled();
       });
@@ -263,7 +263,7 @@ describe('ChartDataService', () => {
 
         const result = service.getHeatingChartData(params);
 
-        expect(result.datasets.length).toBe(1);
+        expect(result.datasets).toHaveLength(1);
       });
 
       it('should add trendlines per room in by-room view', () => {
@@ -280,7 +280,7 @@ describe('ChartDataService', () => {
         const result = service.getHeatingChartData(params);
 
         // 4 rooms + 4 trendlines = 8 datasets
-        expect(result.datasets.length).toBe(8);
+        expect(result.datasets).toHaveLength(8);
         expect(result.datasets[1].label).toContain('CHART.TRENDLINE');
       });
 
@@ -311,7 +311,7 @@ describe('ChartDataService', () => {
           const result = service.getElectricityChartData(params);
 
           // Should return all labels
-          expect(result.labels?.length).toBe(3);
+          expect(result.labels).toHaveLength(3);
           expect(result.labels).toEqual(['Jan 1', 'Jan 8', 'Jan 15']);
         });
 
@@ -353,7 +353,7 @@ describe('ChartDataService', () => {
           const result = service.getHeatingChartData(params);
 
           // Heating matches logic (all labels)
-          expect(result.labels?.length).toBe(2);
+          expect(result.labels).toHaveLength(2);
           expect(result.labels).toEqual(['Jan 1', 'Jan 8']);
         });
       });
@@ -444,7 +444,7 @@ describe('ChartDataService', () => {
         const result = service.getHeatingChartData(params);
 
         // Should only have 2 datasets (room1 and room3 have data)
-        expect(result.datasets.length).toBe(2);
+        expect(result.datasets).toHaveLength(2);
         expect(result.datasets[0].label).toBe('Living Room');
         expect(result.datasets[1].label).toBe('Kitchen');
       });
@@ -601,7 +601,7 @@ describe('ChartDataService', () => {
       const result = service.getElectricityChartData(params);
 
       // Empty datasets are filtered out by filterEmptyDatasets
-      expect(result.datasets.length).toBe(0);
+      expect(result.datasets).toHaveLength(0);
       expect(result.labels).toEqual([]);
     });
   });

@@ -12,7 +12,7 @@ import {
   Briefcase,
   DoorOpen,
   UtensilsCrossed,
-  Home,
+  House,
 } from 'lucide-angular';
 import { signal } from '@angular/core';
 
@@ -135,61 +135,27 @@ describe('HeatingRoomUtilsService', () => {
         expect(service.getRoomIcon(room)).toBe(DoorOpen);
       });
 
-      it('should return Home icon for attic type', () => {
+      it('should return House icon for attic type', () => {
         const room: HeatingRoomConfig = { id: 'r1', name: 'Any Name', type: 'HEATING.ROOM_ATTIC' };
-        expect(service.getRoomIcon(room)).toBe(Home);
+        expect(service.getRoomIcon(room)).toBe(House);
       });
     });
 
     describe('with legacy name patterns (no type)', () => {
-      it('should detect living room from English name', () => {
-        const room: HeatingRoomConfig = { id: 'r1', name: 'Living Room' };
-        expect(service.getRoomIcon(room)).toBe(Armchair);
-      });
-
-      it('should detect living room from German name', () => {
-        const room: HeatingRoomConfig = { id: 'r1', name: 'Wohnzimmer' };
-        expect(service.getRoomIcon(room)).toBe(Armchair);
-      });
-
-      it('should detect bedroom from name', () => {
-        const room: HeatingRoomConfig = { id: 'r1', name: 'Master Bedroom' };
-        expect(service.getRoomIcon(room)).toBe(Bed);
-      });
-
-      it('should detect bathroom from name', () => {
-        const room: HeatingRoomConfig = { id: 'r1', name: 'Main Bathroom' };
-        expect(service.getRoomIcon(room)).toBe(Bath);
-      });
-
-      it('should detect kitchen from name', () => {
-        const room: HeatingRoomConfig = { id: 'r1', name: 'Kitchen' };
-        expect(service.getRoomIcon(room)).toBe(CookingPot);
-      });
-
-      it('should detect kids room from name', () => {
-        const room: HeatingRoomConfig = { id: 'r1', name: 'Kids Room' };
-        expect(service.getRoomIcon(room)).toBe(Baby);
-      });
-
-      it('should detect office from name', () => {
-        const room: HeatingRoomConfig = { id: 'r1', name: 'Home Office' };
-        expect(service.getRoomIcon(room)).toBe(Briefcase);
-      });
-
-      it('should detect guest room from name', () => {
-        const room: HeatingRoomConfig = { id: 'r1', name: 'Guest Room' };
-        expect(service.getRoomIcon(room)).toBe(DoorOpen);
-      });
-
-      it('should detect dining room from name', () => {
-        const room: HeatingRoomConfig = { id: 'r1', name: 'Dining Room' };
-        expect(service.getRoomIcon(room)).toBe(UtensilsCrossed);
-      });
-
-      it('should detect hallway from name', () => {
-        const room: HeatingRoomConfig = { id: 'r1', name: 'Hallway' };
-        expect(service.getRoomIcon(room)).toBe(DoorOpen);
+      it.each([
+        { name: 'Living Room', expected: Armchair },
+        { name: 'Wohnzimmer', expected: Armchair },
+        { name: 'Master Bedroom', expected: Bed },
+        { name: 'Main Bathroom', expected: Bath },
+        { name: 'Kitchen', expected: CookingPot },
+        { name: 'Kids Room', expected: Baby },
+        { name: 'Home Office', expected: Briefcase },
+        { name: 'Guest Room', expected: DoorOpen },
+        { name: 'Dining Room', expected: UtensilsCrossed },
+        { name: 'Hallway', expected: DoorOpen },
+      ])('should detect icon for $name', ({ name, expected }) => {
+        const room: HeatingRoomConfig = { id: 'r1', name };
+        expect(service.getRoomIcon(room)).toBe(expected);
       });
 
       it('should be case insensitive for name matching', () => {
@@ -204,25 +170,19 @@ describe('HeatingRoomUtilsService', () => {
     });
 
     describe('edge cases', () => {
-      it('should return Home icon for unknown room type', () => {
+      it('should return House icon for unknown room type', () => {
         const room: HeatingRoomConfig = { id: 'r1', name: 'Custom Room', type: 'UNKNOWN_TYPE' };
-        // Falls back to name-based detection, which doesn't match -> Home
-        expect(service.getRoomIcon(room)).toBe(Home);
+        // Falls back to name-based detection, which doesn't match -> House
+        expect(service.getRoomIcon(room)).toBe(House);
       });
 
-      it('should return Home icon for room with no matching pattern', () => {
-        const room: HeatingRoomConfig = { id: 'r1', name: 'Basement Storage' };
-        expect(service.getRoomIcon(room)).toBe(Home);
-      });
-
-      it('should return Home icon for empty name', () => {
-        const room: HeatingRoomConfig = { id: 'r1', name: '' };
-        expect(service.getRoomIcon(room)).toBe(Home);
-      });
-
-      it('should return Home icon for room with only spaces in name', () => {
-        const room: HeatingRoomConfig = { id: 'r1', name: '   ' };
-        expect(service.getRoomIcon(room)).toBe(Home);
+      it.each([
+        { name: 'Basement Storage', desc: 'room with no matching pattern' },
+        { name: '', desc: 'empty name' },
+        { name: '   ', desc: 'room with only spaces in name' },
+      ])('should return House icon for $desc', ({ name }) => {
+        const room: HeatingRoomConfig = { id: 'r1', name };
+        expect(service.getRoomIcon(room)).toBe(House);
       });
 
       it('should prioritize type over name', () => {
@@ -245,85 +205,86 @@ describe('HeatingRoomUtilsService', () => {
 
   describe('getRoomColor', () => {
     describe('with explicit room type', () => {
-      it('should return pink color for living room type', () => {
-        const room: HeatingRoomConfig = { id: 'r1', name: 'Any', type: 'HEATING.ROOM_LIVING_ROOM' };
+      it.each([
+        {
+          type: 'HEATING.ROOM_LIVING_ROOM',
+          border: '#e91e63',
+          bg: 'rgba(233, 30, 99, 0.1)',
+          desc: 'living room',
+        },
+        {
+          type: 'HEATING.ROOM_BEDROOM',
+          border: '#9c27b0',
+          bg: 'rgba(156, 39, 176, 0.1)',
+          desc: 'bedroom',
+        },
+        {
+          type: 'HEATING.ROOM_KIDS_ROOM',
+          border: '#ff9800',
+          bg: 'rgba(255, 152, 0, 0.1)',
+          desc: 'kids room',
+        },
+        {
+          type: 'HEATING.ROOM_KITCHEN',
+          border: '#28a745',
+          bg: 'rgba(40, 167, 69, 0.1)',
+          desc: 'kitchen',
+        },
+        {
+          type: 'HEATING.ROOM_BATHROOM',
+          border: '#00bcd4',
+          bg: 'rgba(0, 188, 212, 0.1)',
+          desc: 'bathroom',
+        },
+        {
+          type: 'HEATING.ROOM_OFFICE',
+          border: '#3f51b5',
+          bg: 'rgba(63, 81, 181, 0.1)',
+          desc: 'office',
+        },
+        {
+          type: 'HEATING.ROOM_GUEST_ROOM',
+          border: '#795548',
+          bg: 'rgba(121, 85, 72, 0.1)',
+          desc: 'guest room',
+        },
+        {
+          type: 'HEATING.ROOM_DINING_ROOM',
+          border: '#ff5722',
+          bg: 'rgba(255, 87, 34, 0.1)',
+          desc: 'dining room',
+        },
+        {
+          type: 'HEATING.ROOM_HALLWAY',
+          border: '#607d8b',
+          bg: 'rgba(96, 125, 139, 0.1)',
+          desc: 'hallway',
+        },
+        {
+          type: 'HEATING.ROOM_ATTIC',
+          border: '#9e9e9e',
+          bg: 'rgba(158, 158, 158, 0.1)',
+          desc: 'attic',
+        },
+      ])('should return color for $desc type', ({ type, border, bg }) => {
+        const room: HeatingRoomConfig = { id: 'r1', name: 'Any', type };
         const color = service.getRoomColor(room);
-        expect(color.border).toBe('#e91e63');
-        expect(color.bg).toBe('rgba(233, 30, 99, 0.1)');
-      });
-
-      it('should return purple color for bedroom type', () => {
-        const room: HeatingRoomConfig = { id: 'r1', name: 'Any', type: 'HEATING.ROOM_BEDROOM' };
-        const color = service.getRoomColor(room);
-        expect(color.border).toBe('#9c27b0');
-      });
-
-      it('should return orange color for kids room type', () => {
-        const room: HeatingRoomConfig = { id: 'r1', name: 'Any', type: 'HEATING.ROOM_KIDS_ROOM' };
-        const color = service.getRoomColor(room);
-        expect(color.border).toBe('#ff9800');
-      });
-
-      it('should return green color for kitchen type', () => {
-        const room: HeatingRoomConfig = { id: 'r1', name: 'Any', type: 'HEATING.ROOM_KITCHEN' };
-        const color = service.getRoomColor(room);
-        expect(color.border).toBe('#28a745');
-      });
-
-      it('should return cyan color for bathroom type', () => {
-        const room: HeatingRoomConfig = { id: 'r1', name: 'Any', type: 'HEATING.ROOM_BATHROOM' };
-        const color = service.getRoomColor(room);
-        expect(color.border).toBe('#00bcd4');
-      });
-
-      it('should return indigo color for office type', () => {
-        const room: HeatingRoomConfig = { id: 'r1', name: 'Any', type: 'HEATING.ROOM_OFFICE' };
-        const color = service.getRoomColor(room);
-        expect(color.border).toBe('#3f51b5');
-      });
-
-      it('should return brown color for guest room type', () => {
-        const room: HeatingRoomConfig = { id: 'r1', name: 'Any', type: 'HEATING.ROOM_GUEST_ROOM' };
-        const color = service.getRoomColor(room);
-        expect(color.border).toBe('#795548');
-      });
-
-      it('should return deep orange color for dining room type', () => {
-        const room: HeatingRoomConfig = { id: 'r1', name: 'Any', type: 'HEATING.ROOM_DINING_ROOM' };
-        const color = service.getRoomColor(room);
-        expect(color.border).toBe('#ff5722');
-      });
-
-      it('should return blue grey color for hallway type', () => {
-        const room: HeatingRoomConfig = { id: 'r1', name: 'Any', type: 'HEATING.ROOM_HALLWAY' };
-        const color = service.getRoomColor(room);
-        expect(color.border).toBe('#607d8b');
-      });
-
-      it('should return grey color for attic type', () => {
-        const room: HeatingRoomConfig = { id: 'r1', name: 'Any', type: 'HEATING.ROOM_ATTIC' };
-        const color = service.getRoomColor(room);
-        expect(color.border).toBe('#9e9e9e');
+        expect(color.border).toBe(border);
+        if (bg) {
+          expect(color.bg).toBe(bg);
+        }
       });
     });
 
     describe('with legacy name patterns (no type)', () => {
-      it('should detect and return color for living room name', () => {
-        const room: HeatingRoomConfig = { id: 'r1', name: 'Living Room' };
+      it.each([
+        { name: 'Living Room', expectedBorder: '#e91e63', desc: 'living room name' },
+        { name: 'Schlafzimmer', expectedBorder: '#9c27b0', desc: 'German bedroom name' },
+        { name: 'BATHROOM', expectedBorder: '#00bcd4', desc: 'case insensitive bathroom name' },
+      ])('should detect and return color for $desc', ({ name, expectedBorder }) => {
+        const room: HeatingRoomConfig = { id: 'r1', name };
         const color = service.getRoomColor(room);
-        expect(color.border).toBe('#e91e63');
-      });
-
-      it('should detect and return color for German bedroom name', () => {
-        const room: HeatingRoomConfig = { id: 'r1', name: 'Schlafzimmer' };
-        const color = service.getRoomColor(room);
-        expect(color.border).toBe('#9c27b0');
-      });
-
-      it('should be case insensitive', () => {
-        const room: HeatingRoomConfig = { id: 'r1', name: 'BATHROOM' };
-        const color = service.getRoomColor(room);
-        expect(color.border).toBe('#00bcd4');
+        expect(color.border).toBe(expectedBorder);
       });
     });
 
@@ -390,7 +351,7 @@ describe('HeatingRoomUtilsService', () => {
 
       const room: HeatingRoomConfig = { id: 'r1', name: 'Living Room' };
       // Pattern won't match because translation returns the key itself
-      expect(service.getRoomIcon(room)).toBe(Home);
+      expect(service.getRoomIcon(room)).toBe(House);
     });
 
     it('should handle empty patterns from translation', () => {
@@ -398,7 +359,7 @@ describe('HeatingRoomUtilsService', () => {
 
       const room: HeatingRoomConfig = { id: 'r1', name: 'Living Room' };
       // Empty patterns won't match anything
-      expect(service.getRoomIcon(room)).toBe(Home);
+      expect(service.getRoomIcon(room)).toBe(House);
     });
 
     it('should handle patterns with extra whitespace', () => {

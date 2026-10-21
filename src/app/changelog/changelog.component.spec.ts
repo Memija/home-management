@@ -1,6 +1,13 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { ChangelogComponent } from './changelog.component';
-import { LucideAngularModule, Camera, CheckCircle2, History, Zap } from 'lucide-angular';
+import {
+  LucideAngularModule,
+  Camera,
+  CircleCheck,
+  History,
+  Zap,
+  ShieldCheck,
+} from 'lucide-angular';
 import { By } from '@angular/platform-browser';
 import { LanguageService, Language } from '../services/language.service';
 import { signal } from '@angular/core';
@@ -19,7 +26,7 @@ describe('ChangelogComponent', () => {
     await TestBed.configureTestingModule({
       imports: [
         ChangelogComponent,
-        LucideAngularModule.pick({ Camera, CheckCircle2, History, Zap }),
+        LucideAngularModule.pick({ Camera, CircleCheck, History, Zap, ShieldCheck }),
       ],
       providers: [{ provide: LanguageService, useValue: mockLanguageService }],
     }).compileComponents();
@@ -46,13 +53,13 @@ describe('ChangelogComponent', () => {
 
   it('should render version blocks based on versions data', () => {
     const versionBlocks = fixture.debugElement.queryAll(By.css('.version-block'));
-    expect(versionBlocks.length).toBe(component.versions.length);
+    expect(versionBlocks).toHaveLength(component.versions.length);
 
     const versionLabel = versionBlocks[0].query(By.css('.version-pill span'));
     expect(versionLabel.nativeElement.textContent.trim()).toBe(component.versions[0].labelKey);
 
     const entries = versionBlocks[0].queryAll(By.css('.entry-card'));
-    expect(entries.length).toBe(component.versions[0].entries.length);
+    expect(entries).toHaveLength(component.versions[0].entries.length);
   });
 
   it('should render entry cards correctly', () => {
@@ -75,7 +82,7 @@ describe('ChangelogComponent', () => {
       fixture.detectChanges();
 
       const versionBlocks = fixture.debugElement.queryAll(By.css('.version-block'));
-      expect(versionBlocks.length).toBe(0);
+      expect(versionBlocks).toHaveLength(0);
     });
 
     it('should handle version with empty entries', () => {
@@ -108,7 +115,7 @@ describe('ChangelogComponent', () => {
       expect(versionBlocks.length).toBeGreaterThan(0);
 
       const entries = versionBlocks[0].queryAll(By.css('.entry-card'));
-      expect(entries.length).toBe(0);
+      expect(entries).toHaveLength(0);
     });
   });
 });

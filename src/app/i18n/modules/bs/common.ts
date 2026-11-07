@@ -111,6 +111,9 @@ export const common = {
     FEATURE_13_TITLE: 'Porodični i školski planer',
     FEATURE_13_DESC:
       'Organizujte porodične rasporede, školske rasporede časova i ponavljajuće kućne rutine na jednom mjestu. Dodijelite rasporede članovima porodice kako biste olakšali svakodnevnu koordinaciju.',
+    FEATURE_14_TITLE: 'Kućni i porodični dnevnik',
+    FEATURE_14_DESC:
+      'Vodite jedinstveni hronološki dnevnik za cijelo domaćinstvo. Zabilježite svakodnevne porodične trenutke i putovanja, pišite lične bilješke povezane s pojedinim članovima porodice te evidentirajte kućne popravke, renoviranja i servisiranje uređaja na jednom preglednom mjestu.',
     CTA_TEXT:
       'Vaša podrška pomaže nam u bržoj izgradnji ovih opcija. Hvala vam što ste dio naše zajednice!',
     BACK_TO_HOME: 'Nazad na početnu',

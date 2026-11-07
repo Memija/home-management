@@ -48,7 +48,7 @@ describe('ReleasePlanComponent', () => {
   it('should filter features by "new"', () => {
     component.setFilter('new');
     const filtered = component.filteredFeatures();
-    expect(filtered).toHaveLength(3);
+    expect(filtered).toHaveLength(4);
     filtered.forEach((feature) => {
       expect(feature.tag).toBe('new');
     });
@@ -66,16 +66,24 @@ describe('ReleasePlanComponent', () => {
   it('should filter features by "smart"', () => {
     component.setFilter('smart');
     const filtered = component.filteredFeatures();
-    expect(filtered).toHaveLength(2);
+    expect(filtered).toHaveLength(1);
     expect(filtered[0].tag).toBe('smart');
   });
 
   it('should calculate filter counts correctly', () => {
     const counts = component.filterOptions();
     expect(counts['all']).toBe(7);
-    expect(counts['new']).toBe(3);
+    expect(counts['new']).toBe(4);
     expect(counts['enhancement']).toBe(2);
-    expect(counts['smart']).toBe(2);
+    expect(counts['smart']).toBe(1);
+  });
+
+  it('should include Home & Family Diary (feature 14) in upcoming features', () => {
+    const diaryFeature = component.features.find((f) => f.id === 14);
+    expect(diaryFeature).toBeDefined();
+    expect(diaryFeature?.titleKey).toBe('RELEASE_PLAN.FEATURE_14_TITLE');
+    expect(diaryFeature?.descKey).toBe('RELEASE_PLAN.FEATURE_14_DESC');
+    expect(diaryFeature?.tag).toBe('new');
   });
 
   it('should return correct translation key for tags', () => {
@@ -93,7 +101,7 @@ describe('ReleasePlanComponent', () => {
   it('should handle switching filters back and forth', () => {
     component.setFilter('new');
     expect(component.activeFilter()).toBe('new');
-    expect(component.filteredFeatures()).toHaveLength(3);
+    expect(component.filteredFeatures()).toHaveLength(4);
 
     component.setFilter('all');
     expect(component.activeFilter()).toBe('all');

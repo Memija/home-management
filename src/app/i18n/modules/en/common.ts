@@ -110,6 +110,9 @@ export const common = {
     FEATURE_13_TITLE: 'Family & School Planner',
     FEATURE_13_DESC:
       'Organize daily family schedules, school timetables, and recurring household routines in one place. Assign schedules to family members to keep everyone synchronized and simplify everyday home coordination.',
+    FEATURE_14_TITLE: 'Home & Family Diary',
+    FEATURE_14_DESC:
+      'Keep a unified chronological journal for your entire household. Capture daily family moments and vacations, write personal reflections linked to individual family members, and log home repairs, renovations, or appliance servicing all in one searchable timeline.',
     CTA_TEXT:
       'Your support helps us build these features faster. Thank you for being part of our community!',
     BACK_TO_HOME: 'Back to Home',

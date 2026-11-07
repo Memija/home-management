@@ -1,19 +1,28 @@
 import { TestBed } from '@angular/core/testing';
-import { NotificationService } from './notification.service';
+import { NotificationService, getMotivationNotificationId } from './notification.service';
+import { ConsumptionMotivationService } from './consumption-motivation.service';
 import { STORAGE_SERVICE } from './storage.service';
 import { DemoService } from './demo.service';
+import { Subject } from 'rxjs';
 import { describe, it, expect, beforeEach, vi, afterEach } from 'vitest';
 import { ConsumptionRecord, ElectricityRecord } from '../models/records.model';
 
 describe('NotificationService', () => {
   let service: NotificationService;
-  let mockStorageService: Record<string, import('vitest').Mock>;
+  let dataRefreshedSubject: Subject<void>;
+  let mockStorageService: {
+    load: import('vitest').Mock;
+    save: import('vitest').Mock;
+    dataRefreshed$: Subject<void>;
+  };
   let mockDemoService: { isDemoMode: import('vitest').Mock };
 
   beforeEach(() => {
+    dataRefreshedSubject = new Subject<void>();
     mockStorageService = {
       load: vi.fn().mockResolvedValue(null),
       save: vi.fn().mockResolvedValue(undefined),
+      dataRefreshed$: dataRefreshedSubject,
     };
 
     mockDemoService = {
@@ -404,10 +413,258 @@ describe('NotificationService', () => {
     expect(notifications.some((n) => n.id === 'electricity-overdue')).toBe(true);
   });
 
+  describe('Consumption Motivation Notifications (Header)', () => {
+    it('should surface initial header motivation notifications for saving, stable, and minor (< 10%) trends', async () => {
+      await new Promise((resolve) => setTimeout(resolve, 0));
+
+      // Electricity: minor saving (< 10%)
+      service.setElectricityRecords([
+        { date: new Date('2026-01-01T12:00:00Z'), value: 100 },
+        { date: new Date('2026-01-11T12:00:00Z'), value: 200 },
+        { date: new Date('2026-01-21T12:00:00Z'), value: 295 },
+      ]);
+
+      // Heating: stable (0%)
+      service.setHeatingRecords([
+        { date: new Date('2026-01-01T12:00:00Z'), rooms: { living: 100 } },
+        { date: new Date('2026-01-11T12:00:00Z'), rooms: { living: 200 } },
+        { date: new Date('2026-01-21T12:00:00Z'), rooms: { living: 300 } },
+      ]);
+
+      const motivationNotifs = service.notifications().filter((n) => n.type === 'motivation');
+      expect(motivationNotifs).toHaveLength(2);
+
+      const heatingNotif = motivationNotifs.find((n) => n.id === 'heating-motivation');
+      expect(heatingNotif).toBeDefined();
+      expect(heatingNotif?.category).toBe('heating');
+      expect(heatingNotif?.accent).toBe('stable');
+      expect(heatingNotif?.priority).toBe('low');
+      expect(heatingNotif?.titleKey).toBe('MOTIVATION.HEATING.STABLE_TITLE');
+      expect(heatingNotif?.route).toBe('/dashboard/heating');
+
+      const electricityNotif = motivationNotifs.find((n) => n.id === 'electricity-motivation');
+      expect(electricityNotif).toBeDefined();
+      expect(electricityNotif?.category).toBe('electricity');
+      expect(electricityNotif?.accent).toBe('saving');
+      expect(electricityNotif?.priority).toBe('low');
+      expect(electricityNotif?.titleKey).toBe('MOTIVATION.ELECTRICITY.SAVING_TITLE');
+      expect(electricityNotif?.route).toBe('/dashboard/electricity');
+    });
+
+    it('should emit medium-priority header motivation notification when usage spikes', async () => {
+      await new Promise((resolve) => setTimeout(resolve, 0));
+
+      const records: ElectricityRecord[] = [
+        { date: new Date('2026-01-01T12:00:00Z'), value: 100 },
+        { date: new Date('2026-01-11T12:00:00Z'), value: 200 },
+        { date: new Date('2026-01-21T12:00:00Z'), value: 335 },
+      ];
+
+      service.setElectricityRecords(records);
+
+      const motivationNotif = service
+        .notifications()
+        .find((n) => n.id === getMotivationNotificationId('electricity'));
+
+      expect(motivationNotif).toBeDefined();
+      expect(motivationNotif?.priority).toBe('medium');
+      expect(motivationNotif?.titleKey).toBe('MOTIVATION.ELECTRICITY.SPIKE_TITLE');
+    });
+
+    it('should stay dismissed across data refreshes and tip cycling, reappearing ONLY after resetMotivationDismissal on next record input', async () => {
+      await new Promise((resolve) => setTimeout(resolve, 0));
+      const motivationService = TestBed.inject(ConsumptionMotivationService);
+
+      const initialRecords: ElectricityRecord[] = [
+        { date: new Date('2026-01-01T12:00:00Z'), value: 100 },
+        { date: new Date('2026-01-11T12:00:00Z'), value: 200 },
+        { date: new Date('2026-01-21T12:00:00Z'), value: 270 },
+      ];
+      service.setElectricityRecords(initialRecords);
+
+      const notifId = getMotivationNotificationId('electricity');
+      expect(service.notifications().some((n) => n.id === notifId)).toBe(true);
+
+      // User dismisses notification in header dropdown
+      service.dismissNotification(notifId);
+      expect(service.notifications().some((n) => n.id === notifId)).toBe(false);
+      expect(mockStorageService.save).toHaveBeenLastCalledWith('dismissed_notifications', [
+        'electricity-motivation',
+      ]);
+
+      // Tip refresh on Dashboard card or record refresh/deletion without resetMotivationDismissal must NOT re-show it
+      motivationService.nextTip('electricity');
+      service.setElectricityRecords([
+        ...initialRecords,
+        { date: new Date('2026-01-31T12:00:00Z'), value: 400 },
+      ]);
+      expect(service.notifications().some((n) => n.id === notifId)).toBe(false);
+
+      // Next record input calls resetMotivationDismissal -> header notification reappears
+      service.resetMotivationDismissal('electricity');
+      const retriggered = service.notifications().find((n) => n.id === notifId);
+      expect(retriggered).toBeDefined();
+      expect(retriggered?.titleKey).toBe('MOTIVATION.ELECTRICITY.SPIKE_TITLE');
+    });
+
+    it('should surface initial motivation notifications in demo mode while suppressing overdue/initial/settings reminders', async () => {
+      mockDemoService.isDemoMode.mockReturnValue(true);
+      await new Promise((resolve) => setTimeout(resolve, 0));
+
+      service.setElectricityRecords([
+        { date: new Date('2025-01-01T12:00:00Z'), value: 100 },
+        { date: new Date('2025-01-11T12:00:00Z'), value: 200 },
+        { date: new Date('2025-01-21T12:00:00Z'), value: 260 },
+      ]);
+
+      const notifications = service.notifications();
+      expect(notifications).toHaveLength(1);
+      expect(notifications[0].id).toBe('electricity-motivation');
+      expect(notifications[0].type).toBe('motivation');
+    });
+
+    it('should respect persisted motivation dismissals loaded from storage at startup', async () => {
+      mockStorageService.load.mockImplementation(async (key: string) => {
+        if (key === 'dismissed_notifications') {
+          return ['water-motivation'];
+        }
+        if (key === 'water_consumption_records') {
+          return [
+            {
+              date: '2026-01-01T12:00:00Z',
+              kitchenWarm: 0,
+              kitchenCold: 0,
+              bathroomWarm: 0,
+              bathroomCold: 0,
+            },
+            {
+              date: '2026-01-11T12:00:00Z',
+              kitchenWarm: 0,
+              kitchenCold: 0,
+              bathroomWarm: 0,
+              bathroomCold: 1000,
+            },
+            {
+              date: '2026-01-21T12:00:00Z',
+              kitchenWarm: 0,
+              kitchenCold: 0,
+              bathroomWarm: 0,
+              bathroomCold: 1700,
+            },
+          ];
+        }
+        if (key === 'electricity_consumption_records') {
+          return [
+            { date: '2026-01-01T12:00:00Z', value: 100 },
+            { date: '2026-01-11T12:00:00Z', value: 200 },
+            { date: '2026-01-21T12:00:00Z', value: 300 },
+          ];
+        }
+        return null;
+      });
+
+      await service['loadData']();
+
+      const motivationIds = service
+        .notifications()
+        .filter((n) => n.type === 'motivation')
+        .map((n) => n.id);
+      expect(motivationIds).toEqual(['electricity-motivation']);
+    });
+
+    it('should isolate resetMotivationDismissal per tracker and skip storage save when unchanged', async () => {
+      await new Promise((resolve) => setTimeout(resolve, 0));
+
+      service.dismissNotification('water-motivation');
+      service.dismissNotification('water-motivation-saving-2026-01-21');
+      service.dismissNotification('motivation-toast-water');
+      service.dismissNotification('electricity-motivation');
+      service.dismissNotification('water-overdue');
+      mockStorageService.save.mockClear();
+
+      // Resetting water clears only water motivation IDs
+      service.resetMotivationDismissal('water');
+      expect(mockStorageService.save).toHaveBeenCalledTimes(1);
+      expect(mockStorageService.save).toHaveBeenCalledWith('dismissed_notifications', [
+        'electricity-motivation',
+        'water-overdue',
+      ]);
+
+      // Calling again when already cleared is a no-op
+      mockStorageService.save.mockClear();
+      service.resetMotivationDismissal('water');
+      expect(mockStorageService.save).not.toHaveBeenCalled();
+    });
+  });
+
   it('should reset electricity overdue when records added', async () => {
     service.dismissNotification('electricity-overdue');
     service.resetElectricityOverdue();
 
     expect(mockStorageService.save).toHaveBeenLastCalledWith('dismissed_notifications', []);
+  });
+
+  it('should not save duplicate dismissal when dismissing an already dismissed notification', async () => {
+    await new Promise((resolve) => setTimeout(resolve, 0));
+
+    service.dismissNotification('water-initial');
+    mockStorageService.save.mockClear();
+
+    service.dismissNotification('water-initial');
+    expect(mockStorageService.save).not.toHaveBeenCalled();
+  });
+
+  it('should update settings and meter change state via setters', async () => {
+    await new Promise((resolve) => setTimeout(resolve, 0));
+
+    expect(service.notifications().some((n) => n.id === 'address-missing')).toBe(true);
+    expect(service.notifications().some((n) => n.id === 'family-missing')).toBe(true);
+
+    service.setAddress({
+      streetName: 'Main St',
+      streetNumber: '1',
+      zipCode: '12345',
+      city: 'Berlin',
+      country: 'DE',
+    });
+    service.setHouseholdMembers([{ id: '1', name: 'Alice', surname: 'Smith', avatar: 'avatar1' }]);
+    service.setConfirmedMeterChanges(['2026-01-10']);
+
+    expect(service.notifications().some((n) => n.id === 'address-missing')).toBe(false);
+    expect(service.notifications().some((n) => n.id === 'family-missing')).toBe(false);
+  });
+
+  it('should load heating records, confirmed meter changes, address, and family members on dataRefreshed$', async () => {
+    await new Promise((resolve) => setTimeout(resolve, 0));
+
+    mockStorageService.load.mockImplementation(async (key: string) => {
+      if (key === 'heating_consumption_records') {
+        return [{ date: '2026-01-01T12:00:00Z', rooms: { living: 100 } }];
+      }
+      if (key === 'water_confirmed_meter_changes') {
+        return ['2026-01-10'];
+      }
+      if (key === 'household_address') {
+        return {
+          streetName: 'Main St',
+          streetNumber: '1',
+          zipCode: '12345',
+          city: 'Berlin',
+          country: 'DE',
+        };
+      }
+      if (key === 'household_members') {
+        return [{ id: '1', name: 'Alice', surname: 'Smith', avatar: 'avatar1' }];
+      }
+      return null;
+    });
+
+    dataRefreshedSubject.next();
+    await new Promise((resolve) => setTimeout(resolve, 0));
+
+    const ids = service.notifications().map((n) => n.id);
+    expect(ids).not.toContain('heating-initial');
+    expect(ids).not.toContain('address-missing');
+    expect(ids).not.toContain('family-missing');
   });
 });

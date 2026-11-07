@@ -225,6 +225,8 @@ export class ConsumptionDataService {
     // Update notification service with new records
     this.notificationService.setWaterRecords(this.records());
 
+    this.notificationService.resetMotivationDismissal?.('water');
+
     this.successTitle.set('HOME.SUCCESS_TITLE');
     this.successMessage.set('HOME.RECORD_SAVED');
     this.showSuccessModal.set(true);
@@ -421,6 +423,7 @@ export class ConsumptionDataService {
   async finishImport(records: ConsumptionRecord[], warnings: string[], successKey: string) {
     try {
       this.records.update((existing) => mergeRecords(existing, records));
+      this.notificationService.resetMotivationDismissal?.('water');
       await this.storage.save('water_consumption_records', this.records());
       // Update notification service
       this.notificationService.setWaterRecords(this.records());

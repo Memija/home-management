@@ -5,48 +5,50 @@
   </div>
 
   <div class="tracker-grid">
-    <button
-      type="button"
-      routerLink="/dashboard/water"
-      class="tracker-card water-card"
-      title="{{ 'DASHBOARD.WATER_TRACKER' | translate }}: {{ 'DASHBOARD.WATER_DESC' | translate }}"
-    >
-      <div class="icon-wrapper">
-        <lucide-icon [img]="DropletsIcon" [size]="64"></lucide-icon>
-      </div>
-      <h2>{{ 'DASHBOARD.WATER_TRACKER' | translate }}</h2>
-      <p>{{ 'DASHBOARD.WATER_DESC' | translate }}</p>
-    </button>
+    @for (card of trackerCards(); track card.type) {
+      <article class="tracker-card {{ card.cardClass }}">
+        <a
+          [routerLink]="card.route"
+          class="tracker-card-link"
+          title="{{ card.titleKey | translate }}: {{ card.descKey | translate }}"
+        >
+          <div class="icon-wrapper">
+            <lucide-icon [img]="card.icon" [size]="64"></lucide-icon>
+          </div>
+          <h2>{{ card.titleKey | translate }}</h2>
+          <p class="tracker-desc">{{ card.descKey | translate }}</p>
+        </a>
 
-    <button
-      type="button"
-      routerLink="/dashboard/heating"
-      class="tracker-card heating-card"
-      title="{{ 'DASHBOARD.HEATING_TRACKER' | translate }}: {{
-        'DASHBOARD.HEATING_DESC' | translate
-      }}"
-    >
-      <div class="icon-wrapper">
-        <lucide-icon [img]="FlameIcon" [size]="64"></lucide-icon>
-      </div>
-      <h2>{{ 'DASHBOARD.HEATING_TRACKER' | translate }}</h2>
-      <p>{{ 'DASHBOARD.HEATING_DESC' | translate }}</p>
-    </button>
-
-    <button
-      type="button"
-      routerLink="/dashboard/electricity"
-      class="tracker-card electricity-card"
-      title="{{ 'DASHBOARD.ELECTRICITY_TRACKER' | translate }}: {{
-        'DASHBOARD.ELECTRICITY_DESC' | translate
-      }}"
-    >
-      <div class="icon-wrapper">
-        <lucide-icon [img]="ZapIcon" [size]="64"></lucide-icon>
-      </div>
-      <h2>{{ 'DASHBOARD.ELECTRICITY_TRACKER' | translate }}</h2>
-      <p>{{ 'DASHBOARD.ELECTRICITY_DESC' | translate }}</p>
-    </button>
+        @if (card.motivation; as insight) {
+          <div class="motivation-status motivation-{{ insight.state }}">
+            <div class="motivation-header">
+              <span class="motivation-badge">
+                <lucide-icon
+                  [img]="getMotivationIcon(insight.state)"
+                  [size]="14"
+                  aria-hidden="true"
+                ></lucide-icon>
+                <span>{{
+                  getMotivationBadgeKey(insight.state) | translate: insight.messageParams
+                }}</span>
+              </span>
+              <button
+                type="button"
+                class="motivation-refresh-btn"
+                (click)="refreshMotivation(card.type, $event)"
+                title="{{ 'MOTIVATION.NEXT_TIP' | translate }}"
+                aria-label="{{ 'MOTIVATION.NEXT_TIP' | translate }}"
+              >
+                <lucide-icon [img]="RefreshCwIcon" [size]="14" aria-hidden="true"></lucide-icon>
+              </button>
+            </div>
+            <p class="motivation-message">
+              {{ insight.messageKey | translate: insight.messageParams }}
+            </p>
+          </div>
+        }
+      </article>
+    }
   </div>
 
   <!-- Try Demo Section (conditionally moved) -->

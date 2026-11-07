@@ -303,6 +303,9 @@ describe('DemoService', () => {
         'excel_settings',
         mockExcelSettings,
       );
+      expect(mockLocalStorageService.removePreference).toHaveBeenCalledWith(
+        'dismissed_notifications',
+      );
     });
   });
 

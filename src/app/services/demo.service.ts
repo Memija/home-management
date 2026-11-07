@@ -49,6 +49,7 @@ export class DemoService {
 
   // Preference keys used by the app (stored via setPreference with hm_ prefix)
   private readonly preferenceKeys = [
+    'dismissed_notifications',
     'water_confirmed_meter_changes',
     'water_dismissed_meter_changes',
     'heating_confirmed_spikes',

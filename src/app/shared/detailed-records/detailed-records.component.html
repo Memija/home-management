@@ -3,12 +3,12 @@
     <div class="title-with-help">
       <h2>{{ 'HOME.DETAILED_RECORDS' | translate }}</h2>
       <div class="header-spacer"></div>
-      @if (helpStepsSignal().length > 0) {
+      @if (helpSteps.length > 0) {
         <button
           type="button"
           class="help-btn"
           (click)="showHelp()"
-          title="{{ helpTitleKeySignal() | translate }}"
+          title="{{ helpTitleKey | translate }}"
         >
           <lucide-icon [img]="HelpIcon" size="20"></lucide-icon>
         </button>
@@ -18,7 +18,7 @@
       @if (recordsSignal().length > 0) {
         <div class="toolbar-row filters-row">
           <div class="filters-group">
-            @if (showSearchDateSignal()) {
+            @if (showSearchDate) {
               <div class="search-box date-range">
                 <app-date-picker
                   [date]="startDate() || ''"
@@ -34,7 +34,7 @@
                 </app-date-picker>
               </div>
             }
-            @if (showYearMonthSignal()) {
+            @if (showYearMonth) {
               <div class="filter-box">
                 <div class="select-with-icon">
                   <lucide-icon [img]="CalendarIcon" size="16"></lucide-icon>
@@ -134,7 +134,7 @@
                     (ngModelChange)="setSortOption($event)"
                     title="{{ 'HOME.SORT_RECORDS' | translate }}"
                   >
-                    @for (option of sortOptionsSignal(); track option.value) {
+                    @for (option of sortOptions; track option.value) {
                       <option [value]="option.value">
                         {{ option.labelKey | translate }}
                       </option>
@@ -151,7 +151,7 @@
         <div class="actions-group">
           <ng-content select="[slot=action-buttons]"></ng-content>
         </div>
-        @if (filteredRecords().length > 0 && showEditDeleteSignal()) {
+        @if (filteredRecords().length > 0 && showEditDelete) {
           <button
             type="button"
             class="delete-all-btn"
@@ -176,13 +176,13 @@
     </div>
   } @else {
     <div class="liters-note-container">
-      @if (valuesNoteKeySignal()) {
+      @if (valuesNoteKey) {
         <p class="liters-note">
           <lucide-icon [img]="InfoIcon" size="14"></lucide-icon>
-          {{ valuesNoteKeySignal() | translate }}
+          {{ valuesNoteKey | translate }}
         </p>
       }
-      @if (allowCollapseSignal()) {
+      @if (allowCollapse) {
         <button
           type="button"
           class="collapse-toggle"
@@ -200,18 +200,17 @@
       <ul>
         @for (record of displayedRecords(); track record.date) {
           <li>
-            <div class="record-header" [class.no-details]="!hasDetailsSignal()">
+            <div class="record-header" [class.no-details]="!hasDetails">
               <span class="date">{{
                 record.date | date: 'fullDate' : undefined : currentLang()
               }}</span>
               <div class="record-actions">
-                @if (showTotalSignal()) {
+                @if (showTotal) {
                   <span class="total"
-                    >{{ totalLabelKeySignal() | translate }}:
-                    {{ calculateTotalFnSignal()(record) }}</span
+                    >{{ totalLabelKey | translate }}: {{ calculateTotalFnSignal()(record) }}</span
                   >
                 }
-                @if (showEditDeleteSignal()) {
+                @if (showEditDelete) {
                   <button
                     type="button"
                     class="edit-btn"
@@ -231,7 +230,7 @@
                 }
               </div>
             </div>
-            @if (hasDetailsSignal()) {
+            @if (hasDetails) {
               <div class="record-details">
                 @if (recordDetailsTemplate) {
                   <ng-container
@@ -327,11 +326,11 @@
   }
 </div>
 
-@if (helpStepsSignal().length > 0) {
+@if (helpSteps.length > 0) {
   <app-help-modal
     [show]="showHelpModal()"
-    [titleKey]="helpTitleKeySignal()"
-    [steps]="helpStepsSignal()"
+    [titleKey]="helpTitleKey"
+    [steps]="helpSteps"
     (closeModal)="closeHelp()"
   >
   </app-help-modal>

@@ -23,6 +23,16 @@ import {
 } from 'lucide-angular';
 import { MeterReaderService, MeterReadingResult } from '../../services/meter-reader.service';
 import { FILE_SECURITY_LIMITS, validateFileSize } from '../../utils/file-security.utils';
+import {
+  captureVideoFrameDataUrl,
+  computeDragCropRect,
+  CropRect,
+  drawCropOverlay,
+  extractCroppedImageDataUrl,
+  getCanvasCoords,
+  groupMeterFields,
+  scaleCanvasToFitImage,
+} from './image-crop.helper';
 
 export interface MeterField {
   key: string;
@@ -35,13 +45,6 @@ export interface MeterField {
 export interface MeterReadingOutput {
   fieldKey: string;
   value: number;
-}
-
-interface CropRect {
-  x: number;
-  y: number;
-  width: number;
-  height: number;
 }
 
 @Component({
@@ -71,7 +74,6 @@ export class MeterReaderModalComponent implements OnDestroy {
   protected readonly RetryIcon = RotateCcw;
   protected readonly CropIcon = Crop;
 
-  // Inputs
   @Input() show = false;
 
   @Input() set fields(val: MeterField[]) {
@@ -82,29 +84,13 @@ export class MeterReaderModalComponent implements OnDestroy {
   }
   private readonly _fields = signal<MeterField[]>([]);
 
-  // Outputs
   @Output() readonly closeModal = new EventEmitter<void>();
   @Output() readonly reading = new EventEmitter<MeterReadingOutput>();
 
   protected readonly hasNoFields = computed(() => this._fields().length === 0);
   protected readonly isSingleField = computed(() => this._fields().length === 1);
-  protected readonly groupedFields = computed(() => {
-    const groups: { label: string; fields: MeterField[] }[] = [];
-    const groupMap = new Map<string, MeterField[]>();
+  protected readonly groupedFields = computed(() => groupMeterFields(this._fields()));
 
-    for (const field of this._fields()) {
-      const label = field.groupLabel || '';
-      if (!groupMap.has(label)) {
-        groupMap.set(label, []);
-        groups.push({ label, fields: groupMap.get(label)! });
-      }
-      groupMap.get(label)!.push(field);
-    }
-
-    return groups;
-  });
-
-  // State
   protected readonly step = signal<'capture' | 'crop' | 'processing' | 'result' | 'select-field'>(
     'capture',
   );
@@ -117,7 +103,6 @@ export class MeterReaderModalComponent implements OnDestroy {
   protected readonly useCameraMode = signal(false);
   protected readonly isCameraReady = signal(false);
 
-  // Crop state
   protected readonly cropRect = signal<CropRect | null>(null);
   private isDragging = false;
   private dragStart = { x: 0, y: 0 };
@@ -126,23 +111,17 @@ export class MeterReaderModalComponent implements OnDestroy {
   protected readonly isProcessing = this.meterReaderService.isProcessing;
   protected readonly progress = this.meterReaderService.progress;
 
-  constructor() {
-    /* noop */
-  }
-
   protected initCameraStream(video: HTMLVideoElement): void {
     this.cameraVideoElement = video;
     const stream = this.cameraStream();
 
     if (stream && video) {
-      // If stream is already assigned, don't re-assign unless necessary
       if (video.srcObject !== stream) {
         video.srcObject = stream;
       }
 
       video.play().catch((err) => console.error('Error playing camera video:', err));
 
-      // Force ready state after a short delay if events don't fire
       setTimeout(() => {
         if (!this.isCameraReady() && this.cameraStream()) {
           this.isCameraReady.set(true);
@@ -201,7 +180,6 @@ export class MeterReaderModalComponent implements OnDestroy {
       });
       this.cameraStream.set(stream);
 
-      // Fallback: search for the video element manually if setter didn't catch it
       setTimeout(() => {
         const video = document.querySelector('video.camera-video') as HTMLVideoElement;
         if (video && !video.srcObject) {
@@ -225,19 +203,9 @@ export class MeterReaderModalComponent implements OnDestroy {
   }
 
   protected captureFromCamera(video: HTMLVideoElement): void {
-    const targetVideo = video || this.cameraVideoElement;
+    const dataUrl = captureVideoFrameDataUrl(video || this.cameraVideoElement);
+    if (!dataUrl) return;
 
-    if (!targetVideo || targetVideo.videoWidth === 0) {
-      return;
-    }
-
-    const canvas = document.createElement('canvas');
-    canvas.width = targetVideo.videoWidth;
-    canvas.height = targetVideo.videoHeight;
-    const ctx = canvas.getContext('2d')!;
-    ctx.drawImage(targetVideo, 0, 0, canvas.width, canvas.height);
-
-    const dataUrl = canvas.toDataURL('image/png');
     this.capturedImage.set(dataUrl);
     this.stopCamera();
     this.enterCropStep(dataUrl);
@@ -246,11 +214,7 @@ export class MeterReaderModalComponent implements OnDestroy {
   protected onFileSelected(event: Event): void {
     const input = event.target as HTMLInputElement;
     const file = input.files?.[0];
-    if (!file) return;
-
-    if (!file.type.startsWith('image/')) {
-      return;
-    }
+    if (!file || !file.type.startsWith('image/')) return;
 
     if (!validateFileSize(file, FILE_SECURITY_LIMITS.MAX_IMAGE_FILE_SIZE_BYTES)) {
       input.value = '';
@@ -264,17 +228,12 @@ export class MeterReaderModalComponent implements OnDestroy {
       this.enterCropStep(dataUrl);
     };
     reader.readAsDataURL(file);
-
-    // Reset file input for re-selection
     input.value = '';
   }
 
-  /** Enter the crop step and draw the image on the canvas */
   private enterCropStep(dataUrl: string): void {
     this.cropRect.set(null);
     this.step.set('crop');
-
-    // Draw image on canvas after view updates
     setTimeout(() => this.initCropCanvas(dataUrl), 50);
   }
 
@@ -285,93 +244,20 @@ export class MeterReaderModalComponent implements OnDestroy {
     const img = new Image();
     img.onload = () => {
       this.cropImage = img;
-      // Scale to fit the canvas container
-      const maxW = canvas.parentElement?.clientWidth ?? 600;
-      const maxH = 400;
-      const scale = Math.min(maxW / img.width, maxH / img.height, 1);
-      canvas.width = img.width * scale;
-      canvas.height = img.height * scale;
-
+      scaleCanvasToFitImage(canvas, img);
       this.drawCropCanvas();
     };
     img.src = dataUrl;
   }
 
   private drawCropCanvas(): void {
-    const canvas = this.cropCanvasRef?.nativeElement;
-    if (!canvas || !this.cropImage) return;
-    const ctx = canvas.getContext('2d')!;
-
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-    ctx.drawImage(this.cropImage, 0, 0, canvas.width, canvas.height);
-
-    const rect = this.cropRect();
-    if (rect) {
-      // Dark overlay over uncropped area
-      ctx.fillStyle = 'rgba(0, 0, 0, 0.45)';
-      ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-      // Clear crop area (show original)
-      ctx.clearRect(rect.x, rect.y, rect.width, rect.height);
-      ctx.drawImage(
-        this.cropImage,
-        (rect.x / canvas.width) * this.cropImage.width,
-        (rect.y / canvas.height) * this.cropImage.height,
-        (rect.width / canvas.width) * this.cropImage.width,
-        (rect.height / canvas.height) * this.cropImage.height,
-        rect.x,
-        rect.y,
-        rect.width,
-        rect.height,
-      );
-
-      // Selection border
-      ctx.strokeStyle = '#3b82f6';
-      ctx.lineWidth = 2;
-      ctx.setLineDash([6, 3]);
-      ctx.strokeRect(rect.x, rect.y, rect.width, rect.height);
-      ctx.setLineDash([]);
-
-      // Corner handles
-      const handleSize = 8;
-      ctx.fillStyle = '#3b82f6';
-      const corners = [
-        { x: rect.x, y: rect.y },
-        { x: rect.x + rect.width, y: rect.y },
-        { x: rect.x, y: rect.y + rect.height },
-        { x: rect.x + rect.width, y: rect.y + rect.height },
-      ];
-      corners.forEach((c) =>
-        ctx.fillRect(c.x - handleSize / 2, c.y - handleSize / 2, handleSize, handleSize),
-      );
-    }
-  }
-
-  private getCanvasCoords(event: MouseEvent | TouchEvent): { x: number; y: number } {
-    const canvas = this.cropCanvasRef?.nativeElement;
-    if (!canvas) return { x: 0, y: 0 };
-    const rect = canvas.getBoundingClientRect();
-    const scaleX = canvas.width / rect.width;
-    const scaleY = canvas.height / rect.height;
-
-    if (event instanceof MouseEvent) {
-      return {
-        x: (event.clientX - rect.left) * scaleX,
-        y: (event.clientY - rect.top) * scaleY,
-      };
-    } else {
-      const touch = event.touches[0];
-      return {
-        x: (touch.clientX - rect.left) * scaleX,
-        y: (touch.clientY - rect.top) * scaleY,
-      };
-    }
+    drawCropOverlay(this.cropCanvasRef?.nativeElement, this.cropImage, this.cropRect());
   }
 
   protected onCropStart(event: MouseEvent | TouchEvent): void {
     event.preventDefault();
     this.isDragging = true;
-    const pos = this.getCanvasCoords(event);
+    const pos = getCanvasCoords(this.cropCanvasRef?.nativeElement, event);
     this.dragStart = pos;
     this.cropRect.set({ x: pos.x, y: pos.y, width: 0, height: 0 });
   }
@@ -379,12 +265,8 @@ export class MeterReaderModalComponent implements OnDestroy {
   protected onCropMove(event: MouseEvent | TouchEvent): void {
     if (!this.isDragging) return;
     event.preventDefault();
-    const pos = this.getCanvasCoords(event);
-    const x = Math.min(pos.x, this.dragStart.x);
-    const y = Math.min(pos.y, this.dragStart.y);
-    const width = Math.abs(pos.x - this.dragStart.x);
-    const height = Math.abs(pos.y - this.dragStart.y);
-    this.cropRect.set({ x, y, width, height });
+    const pos = getCanvasCoords(this.cropCanvasRef?.nativeElement, event);
+    this.cropRect.set(computeDragCropRect(this.dragStart, pos));
     this.drawCropCanvas();
   }
 
@@ -392,7 +274,6 @@ export class MeterReaderModalComponent implements OnDestroy {
     event.preventDefault();
     this.isDragging = false;
 
-    // If the drag was too small, clear the crop
     const rect = this.cropRect();
     if (!rect || rect.width < 20 || rect.height < 20) {
       this.cropRect.set(null);
@@ -400,43 +281,22 @@ export class MeterReaderModalComponent implements OnDestroy {
     }
   }
 
-  /** Run OCR on the cropped region (or full image if no crop) */
   protected confirmCrop(): void {
     const rect = this.cropRect();
     const fullImage = this.capturedImage();
     if (!fullImage) return;
 
     if (!rect || !this.cropImage) {
-      // No crop drawn — use full image, uncropped mode
       void this.processImage(fullImage, false);
       return;
     }
 
-    // Extract the cropped region from the original full-resolution image
-    const canvas = document.createElement('canvas');
-    const scaleX =
-      this.cropImage.width / (this.cropCanvasRef?.nativeElement.width ?? this.cropImage.width);
-    const scaleY =
-      this.cropImage.height / (this.cropCanvasRef?.nativeElement.height ?? this.cropImage.height);
-    canvas.width = rect.width * scaleX;
-    canvas.height = rect.height * scaleY;
-
-    const ctx = canvas.getContext('2d')!;
-    ctx.drawImage(
+    const croppedDataUrl = extractCroppedImageDataUrl(
+      this.cropCanvasRef?.nativeElement,
       this.cropImage,
-      rect.x * scaleX,
-      rect.y * scaleY,
-      canvas.width,
-      canvas.height,
-      0,
-      0,
-      canvas.width,
-      canvas.height,
+      rect,
     );
-
-    const croppedDataUrl = canvas.toDataURL('image/png');
     this.capturedImage.set(croppedDataUrl);
-    // isCropped=true: tells the service to use single-line OCR mode
     void this.processImage(croppedDataUrl, true);
   }
 
@@ -469,7 +329,6 @@ export class MeterReaderModalComponent implements OnDestroy {
     if (value === null) return;
 
     if (this.hasNoFields()) {
-      // No fields configured — go to select-field to show the empty state message
       this.step.set('select-field');
     } else if (this.isSingleField()) {
       this.reading.emit({ fieldKey: this._fields()[0].key, value });

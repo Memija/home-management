@@ -51,8 +51,9 @@ describe('generate-firebase-config', () => {
     expect(writeFileSyncSpy).not.toHaveBeenCalled();
   });
 
-  it('should exit with error if required environment variables are missing', async () => {
+  it('should exit with error if required environment variables are missing in CI', async () => {
     existsSyncSpy.mockReturnValue(false);
+    process.env.CI = 'true';
 
     // Clear env vars to simulate missing
     delete process.env.FIREBASE_API_KEY;
@@ -67,6 +68,42 @@ describe('generate-firebase-config', () => {
     );
     expect(exitSpy).toHaveBeenCalledWith(1);
     expect(writeFileSyncSpy).not.toHaveBeenCalled();
+  });
+
+  it('should generate local fallback config with dummy keys when environment variables are missing outside CI', async () => {
+    existsSyncSpy.mockReturnValue(false);
+    delete process.env.CI;
+    delete process.env.FIREBASE_API_KEY;
+
+    await loadModule();
+
+    expect(mkdirSyncSpy).toHaveBeenCalledWith(expect.any(String), { recursive: true });
+    expect(writeFileSyncSpy).toHaveBeenCalled();
+    const [writtenPath, content] = writeFileSyncSpy.mock.calls[0];
+
+    expect(writtenPath).toMatch(/firebase\.config\.ts$/);
+    expect(content).toContain("apiKey: 'YOUR_API_KEY'");
+    expect(content).toContain("projectId: 'YOUR_PROJECT_ID'");
+    expect(consoleInfoSpy).toHaveBeenCalledWith(
+      '[config] Generated local fallback firebase.config.ts from firebase.config.template.ts',
+    );
+    expect(exitSpy).not.toHaveBeenCalled();
+  });
+
+  it('should copy from firebase.config.template.ts when template exists and CI is false', async () => {
+    existsSyncSpy.mockImplementation((filePath) =>
+      String(filePath).endsWith('firebase.config.template.ts'),
+    );
+    process.env.CI = 'false';
+    delete process.env.FIREBASE_API_KEY;
+
+    await loadModule();
+
+    expect(writeFileSyncSpy).toHaveBeenCalled();
+    const [writtenPath, content] = writeFileSyncSpy.mock.calls[0];
+    expect(writtenPath).toMatch(/firebase\.config\.ts$/);
+    expect(content).toContain("apiKey: 'YOUR_API_KEY'");
+    expect(exitSpy).not.toHaveBeenCalled();
   });
 
   it('should generate config file when required variables are present and file does not exist', async () => {

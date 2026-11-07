@@ -13,6 +13,7 @@ import { countryFacts } from './modules/sr/country-facts/index';
 import { electricity } from './modules/sr/electricity';
 import { auth } from './modules/sr/auth';
 import { landing } from './modules/sr/landing';
+import { motivation } from './modules/sr/motivation';
 import { privacy } from './modules/sr/privacy';
 
 import { electricityCountryFacts } from './modules/sr/electricity-country-facts/index';
@@ -31,6 +32,7 @@ export const sr = {
   ...electricity,
   ...auth,
   ...landing,
+  ...motivation,
   ...privacy,
   WATER_FACTS: waterFacts,
   COUNTRY_FACTS: countryFacts,

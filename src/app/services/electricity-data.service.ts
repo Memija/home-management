@@ -210,6 +210,8 @@ export class ElectricityDataService {
     this.notificationService.setElectricityRecords(this.records());
     this.notificationService.resetElectricityOverdue();
 
+    this.notificationService.resetMotivationDismissal?.('electricity');
+
     this.successTitle.set('ELECTRICITY.SUCCESS_TITLE');
     this.successMessage.set('ELECTRICITY.RECORD_SAVED');
     this.showSuccessModal.set(true);
@@ -406,6 +408,7 @@ export class ElectricityDataService {
   async finishImport(records: ElectricityRecord[], warnings: string[], successKey: string) {
     try {
       this.records.update((existing) => mergeRecords(existing, records));
+      this.notificationService.resetMotivationDismissal?.('electricity');
       await this.storage.save('electricity_consumption_records', this.records());
 
       // Update notification service with new records

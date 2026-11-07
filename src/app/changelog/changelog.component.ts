@@ -10,6 +10,7 @@ import {
   Brain,
   Zap,
   ShieldCheck,
+  TrendingUp,
   LucideIconData,
 } from 'lucide-angular';
 
@@ -50,6 +51,13 @@ export class ChangelogComponent {
           descKey: 'RELEASE_PLAN.FEATURE_6_DESC',
           icon: ShieldCheck,
           colorClass: 'enhancement-feature',
+        },
+        {
+          id: 7,
+          titleKey: 'RELEASE_PLAN.FEATURE_7_TITLE',
+          descKey: 'RELEASE_PLAN.FEATURE_7_DESC',
+          icon: TrendingUp,
+          colorClass: 'prediction-feature',
         },
       ],
     },

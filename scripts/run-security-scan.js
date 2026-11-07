@@ -145,12 +145,15 @@ function resolveRunner(tool, envChecks = {}) {
   switch (tool) {
     case 'trivy':
       if (hasCmd('trivy')) {
-        return { type: 'cli', cmd: 'trivy fs . --severity CRITICAL,HIGH --ignore-unfixed' };
+        return {
+          type: 'cli',
+          cmd: 'trivy fs . --severity CRITICAL,HIGH --ignore-unfixed --skip-dirs .firebase',
+        };
       }
       if (hasDocker()) {
         return {
           type: 'docker',
-          cmd: `docker run --rm -v "${normalizedCwd}:/src" aquasec/trivy fs /src --severity CRITICAL,HIGH --ignore-unfixed`,
+          cmd: `docker run --rm -v "${normalizedCwd}:/src" aquasec/trivy fs /src --severity CRITICAL,HIGH --ignore-unfixed --skip-dirs .firebase`,
         };
       }
       return {

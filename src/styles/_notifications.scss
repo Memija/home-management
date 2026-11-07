@@ -172,7 +172,7 @@
   position: absolute;
   top: calc(100% + 8px);
   right: 0;
-  width: 340px;
+  width: 372px;
   max-width: calc(100vw - 2rem);
   background: var(--card-bg);
   border: 1px solid var(--border-color);
@@ -202,9 +202,39 @@
   background: var(--bg-secondary);
   border-bottom: 1px solid var(--border-color);
 
-  span {
-    font-weight: 600;
-    color: var(--text-primary);
+  .notification-panel-title {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45rem;
+
+    .panel-bell-icon {
+      display: inline-flex;
+      color: var(--theme-primary, $primary);
+    }
+
+    span {
+      font-weight: 600;
+      color: var(--text-primary);
+    }
+
+    .notification-panel-count {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-width: 20px;
+      height: 20px;
+      padding: 0 6px;
+      border-radius: 999px;
+      font-size: 0.75rem;
+      font-weight: 700;
+      background: #e0f2fe;
+      color: #075985;
+
+      [data-theme='dark'] & {
+        background: #075985;
+        color: #e0f2fe;
+      }
+    }
   }
 
   .close-btn {
@@ -228,39 +258,239 @@
 }
 
 .notification-panel-body {
-  max-height: 300px;
+  max-height: 360px;
   overflow-y: auto;
 }
 
 .no-notifications {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
   padding: 2rem 1rem;
   text-align: center;
   color: var(--text-secondary);
   font-size: 0.9rem;
+
+  .empty-bell-icon {
+    opacity: 0.5;
+    color: var(--theme-primary, $primary);
+  }
 }
 
 .notification-item {
+  --cat-bg: #dbeafe;
+  --cat-color: #1d4ed8;
+  --notif-border: #{$primary};
+  --notif-status: #{$primary};
+  --notif-btn-bg: #{$primary};
+  --notif-btn-hover: #{$primary-dark};
+
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
-  padding: 0.75rem 1rem;
+  padding: 0.8rem 0.95rem;
   border-bottom: 1px solid var(--border-light);
-  gap: 0.5rem;
+  border-left: 4px solid var(--notif-border);
+  gap: 0.65rem;
+  background: var(--card-bg);
+  transition: background-color 0.2s ease;
+
+  &:hover {
+    background: var(--bg-secondary);
+  }
 
   &:last-child {
     border-bottom: none;
   }
 }
 
+// Category Icon Badge Color Palettes
+.notification-category--water {
+  --cat-bg: #e0f2fe;
+  --cat-color: #0369a1;
+
+  [data-theme='dark'] & {
+    --cat-bg: rgba(14, 165, 233, 0.2);
+    --cat-color: #38bdf8;
+  }
+}
+
+.notification-category--heating {
+  --cat-bg: #ffedd5;
+  --cat-color: #c2410c;
+
+  [data-theme='dark'] & {
+    --cat-bg: rgba(249, 115, 22, 0.2);
+    --cat-color: #fb923c;
+  }
+}
+
+.notification-category--electricity {
+  --cat-bg: #fef9c3;
+  --cat-color: #a16207;
+
+  [data-theme='dark'] & {
+    --cat-bg: rgba(234, 179, 8, 0.2);
+    --cat-color: #facc15;
+  }
+}
+
+.notification-category--address {
+  --cat-bg: #ccfbf1;
+  --cat-color: #0f766e;
+
+  [data-theme='dark'] & {
+    --cat-bg: rgba(20, 184, 166, 0.2);
+    --cat-color: #2dd4bf;
+  }
+}
+
+.notification-category--family,
+.notification-category--general {
+  --cat-bg: #dbeafe;
+  --cat-color: #1d4ed8;
+
+  [data-theme='dark'] & {
+    --cat-bg: rgba(59, 130, 246, 0.2);
+    --cat-color: #60a5fa;
+  }
+}
+
+// Accent Left-Border, Status Icon & Action Button Palettes
+.notification-accent--saving {
+  --notif-border: #10b981;
+  --notif-status: #059669;
+  --notif-btn-bg: #047857;
+  --notif-btn-hover: #065f46;
+
+  [data-theme='dark'] & {
+    --notif-status: #34d399;
+  }
+}
+
+.notification-accent--stable,
+.notification-accent--water {
+  --notif-border: #0ea5e9;
+  --notif-status: #0284c7;
+  --notif-btn-bg: #0369a1;
+  --notif-btn-hover: #075985;
+
+  [data-theme='dark'] & {
+    --notif-status: #38bdf8;
+  }
+}
+
+.notification-accent--spike {
+  --notif-border: #f59e0b;
+  --notif-status: #d97706;
+  --notif-btn-bg: #b45309;
+  --notif-btn-hover: #92400e;
+
+  [data-theme='dark'] & {
+    --notif-status: #fbbf24;
+  }
+}
+
+.notification-accent--heating {
+  --notif-border: #f97316;
+  --notif-status: #ea580c;
+  --notif-btn-bg: #c2410c;
+  --notif-btn-hover: #9a3412;
+
+  [data-theme='dark'] & {
+    --notif-status: #fb923c;
+  }
+}
+
+.notification-accent--electricity {
+  --notif-border: #eab308;
+  --notif-status: #ca8a04;
+  --notif-btn-bg: #a16207;
+  --notif-btn-hover: #854d0e;
+
+  [data-theme='dark'] & {
+    --notif-status: #facc15;
+  }
+}
+
+.notification-accent--warning,
+.notification-accent--family {
+  --notif-border: #3b82f6;
+  --notif-status: #2563eb;
+  --notif-btn-bg: #1d4ed8;
+  --notif-btn-hover: #1e40af;
+
+  [data-theme='dark'] & {
+    --notif-status: #60a5fa;
+  }
+}
+
+.notification-accent--danger {
+  --notif-border: #ef4444;
+  --notif-status: #dc2626;
+  --notif-btn-bg: #b91c1c;
+  --notif-btn-hover: #991b1b;
+
+  [data-theme='dark'] & {
+    --notif-status: #f87171;
+  }
+}
+
+.notification-accent--address,
+.notification-accent--settings {
+  --notif-border: #0d9488;
+  --notif-status: #0f766e;
+  --notif-btn-bg: #0f766e;
+  --notif-btn-hover: #115e59;
+
+  [data-theme='dark'] & {
+    --notif-status: #2dd4bf;
+  }
+}
+
+.notification-accent--info {
+  [data-theme='dark'] & {
+    --notif-border: #38bdf8;
+    --notif-status: #38bdf8;
+  }
+}
+
+.notification-item-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  flex-shrink: 0;
+  margin-top: 2px;
+  background: var(--cat-bg);
+  color: var(--cat-color);
+}
+
 .notification-item-content {
   flex: 1;
   min-width: 0;
+
+  .notification-title-row {
+    display: flex;
+    align-items: center;
+    gap: 0.35rem;
+    margin-bottom: 0.25rem;
+  }
+
+  .notification-status-icon {
+    display: inline-flex;
+    flex-shrink: 0;
+    color: var(--notif-status);
+  }
 
   strong {
     display: block;
     font-size: 0.85rem;
     color: var(--text-primary);
-    margin-bottom: 0.25rem;
+    line-height: 1.3;
   }
 
   p {
@@ -275,6 +505,7 @@
   display: flex;
   gap: 0.25rem;
   flex-shrink: 0;
+  margin-top: 2px;
 
   .action-link,
   .dismiss-btn {
@@ -284,18 +515,19 @@
     width: 28px;
     height: 28px;
     padding: 0;
-    border-radius: 4px;
+    border-radius: 6px;
     cursor: pointer;
     transition: all 0.2s ease;
   }
 
   .action-link {
-    background: $primary;
+    background: var(--notif-btn-bg);
     color: white;
     border: none;
 
     &:hover {
-      background: $primary-dark;
+      background: var(--notif-btn-hover);
+      transform: translateX(1px);
     }
   }
 

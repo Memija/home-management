@@ -10,6 +10,7 @@ describe('run-security-scan', () => {
       });
       expect(plan.type).toBe('cli');
       expect(plan.cmd).toContain('trivy fs .');
+      expect(plan.cmd).toContain('--skip-dirs .firebase');
     });
 
     it('should choose Docker when trivy is missing but Docker is available', () => {
@@ -20,6 +21,7 @@ describe('run-security-scan', () => {
       });
       expect(plan.type).toBe('docker');
       expect(plan.cmd).toContain('aquasec/trivy fs /src');
+      expect(plan.cmd).toContain('--skip-dirs .firebase');
     });
 
     it('should report missing when neither CLI nor Docker is available', () => {

@@ -67,7 +67,20 @@
         @if (isNotificationPanelOpen()) {
           <div class="notification-panel">
             <div class="notification-panel-header">
-              <span>{{ 'NOTIFICATIONS.TITLE' | translate }}</span>
+              <div class="notification-panel-title">
+                <lucide-icon
+                  [img]="BellIcon"
+                  size="16"
+                  class="panel-bell-icon"
+                  aria-hidden="true"
+                ></lucide-icon>
+                <span>{{ 'NOTIFICATIONS.TITLE' | translate }}</span>
+                @if (notificationCount() > 0) {
+                  <span class="notification-panel-count" aria-hidden="true">{{
+                    notificationCount()
+                  }}</span>
+                }
+              </div>
               <button
                 type="button"
                 class="close-btn"
@@ -79,47 +92,62 @@
               </button>
             </div>
             <div class="notification-panel-body">
-              @if (notificationService.notifications().length === 0) {
+              @if (decoratedNotifications().length === 0) {
                 <div class="no-notifications">
-                  {{ 'NOTIFICATIONS.NO_NOTIFICATIONS' | translate }}
+                  <lucide-icon
+                    [img]="BellIcon"
+                    size="24"
+                    class="empty-bell-icon"
+                    aria-hidden="true"
+                  ></lucide-icon>
+                  <span>{{ 'NOTIFICATIONS.NO_NOTIFICATIONS' | translate }}</span>
                 </div>
               } @else {
-                @for (notification of notificationService.notifications(); track notification.id) {
+                @for (item of decoratedNotifications(); track item.notification.id) {
                   <div
-                    class="notification-item"
-                    [class.high-priority]="notification.priority === 'high'"
+                    class="notification-item notification-category--{{
+                      item.category
+                    }} notification-accent--{{ item.accent }}"
+                    [class.high-priority]="item.notification.priority === 'high'"
                   >
+                    <div class="notification-item-icon" aria-hidden="true">
+                      <lucide-icon [img]="item.categoryIcon" size="18"></lucide-icon>
+                    </div>
                     <div class="notification-item-content">
-                      <strong>{{ notification.titleKey | translate }}</strong>
-                      <p>{{ notification.messageKey | translate: notification.messageParams }}</p>
+                      <div class="notification-title-row">
+                        @if (item.statusIcon; as statusIcon) {
+                          <lucide-icon
+                            [img]="statusIcon"
+                            size="14"
+                            class="notification-status-icon"
+                            aria-hidden="true"
+                          ></lucide-icon>
+                        }
+                        <strong>{{ item.notification.titleKey | translate }}</strong>
+                      </div>
+                      <p>
+                        {{
+                          item.notification.messageKey | translate: item.notification.messageParams
+                        }}
+                      </p>
                     </div>
                     <div class="notification-item-actions">
-                      @if (notification.route) {
+                      @if (item.notification.route) {
                         <button
                           type="button"
                           class="action-link"
-                          (click)="navigateToNotification(notification)"
-                          title="{{
-                            (notification.route === '/settings'
-                              ? 'NOTIFICATIONS.GO_TO_SETTINGS'
-                              : 'NOTIFICATIONS.GO_TO_TRACKER'
-                            ) | translate
-                          }}"
-                          aria-label="{{
-                            (notification.route === '/settings'
-                              ? 'NOTIFICATIONS.GO_TO_SETTINGS'
-                              : 'NOTIFICATIONS.GO_TO_TRACKER'
-                            ) | translate
-                          }}"
+                          (click)="navigateToNotification(item.notification)"
+                          title="{{ item.actionTitleKey | translate }}"
+                          aria-label="{{ item.actionTitleKey | translate }}"
                         >
                           <lucide-icon [img]="ArrowRightIcon" size="16"></lucide-icon>
                         </button>
                       }
-                      @if (notification.dismissible) {
+                      @if (item.notification.dismissible) {
                         <button
                           type="button"
                           class="dismiss-btn"
-                          (click)="dismissNotification(notification.id, $event)"
+                          (click)="dismissNotification(item.notification.id, $event)"
                           title="{{ 'NOTIFICATIONS.DISMISS' | translate }}"
                           aria-label="{{ 'NOTIFICATIONS.DISMISS' | translate }}"
                         >

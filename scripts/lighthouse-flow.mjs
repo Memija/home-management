@@ -237,7 +237,87 @@ async function auditModal(
 /**
  * Reusable suite covering all primary pages and all 10 interactive modals
  */
-async function auditSuite(flow, page, { isMobile, theme, suiteNum, totalSuites, isQuick }) {
+async function auditMotivationNotifications(flow, page, { name, isMobile = false, demoData }) {
+  console.log(`   👉 Auditing Notification Dropdown & Motivation Alerts: ${name}...`);
+  try {
+    await page.evaluate(() => {
+      const dayMs = 24 * 60 * 60 * 1000;
+      const d21 = new Date(Date.now() - 21 * dayMs).toISOString();
+      const d11 = new Date(Date.now() - 11 * dayMs).toISOString();
+      const d1 = new Date(Date.now() - 1 * dayMs).toISOString();
+
+      localStorage.removeItem('hm_demo_mode_is_active');
+      localStorage.removeItem('hm_dismissed_notifications');
+
+      localStorage.setItem(
+        'hm_water_consumption_records',
+        JSON.stringify([
+          { date: d21, kitchenWarm: 0, kitchenCold: 0, bathroomWarm: 0, bathroomCold: 0 },
+          { date: d11, kitchenWarm: 0, kitchenCold: 0, bathroomWarm: 300, bathroomCold: 700 },
+          { date: d1, kitchenWarm: 0, kitchenCold: 0, bathroomWarm: 500, bathroomCold: 1250 },
+        ]),
+      );
+      localStorage.setItem(
+        'hm_heating_consumption_records',
+        JSON.stringify([
+          { date: d21, rooms: { room_1: 100 } },
+          { date: d11, rooms: { room_1: 200 } },
+          { date: d1, rooms: { room_1: 300 } },
+        ]),
+      );
+      localStorage.setItem(
+        'hm_electricity_consumption_records',
+        JSON.stringify([
+          { date: d21, value: 1000 },
+          { date: d11, value: 1100 },
+          { date: d1, value: 1235 },
+        ]),
+      );
+    });
+
+    await page.goto(`${BASE_URL}/dashboard`, { waitUntil: 'networkidle0' });
+    await page.waitForSelector('.motivation-status', { visible: true, timeout: 6000 });
+    await page.waitForSelector('.notification-bell.has-notifications', {
+      visible: true,
+      timeout: 6000,
+    });
+
+    await page.evaluate(() => {
+      const refreshBtn = document.querySelector('.motivation-refresh-btn');
+      if (refreshBtn) refreshBtn.click();
+      const bellBtn = document.querySelector('.notification-bell');
+      if (bellBtn) bellBtn.click();
+    });
+
+    await page.waitForSelector('.notification-panel', { visible: true, timeout: 6000 });
+    await new Promise((resolve) => setTimeout(resolve, 350));
+
+    const settingsOverrides = isMobile ? MOBILE_CONFIG : DESKTOP_CONFIG;
+    await flow.snapshot({
+      name,
+      stepName: name,
+      configContext: { settingsOverrides },
+    });
+
+    await page.evaluate(() => {
+      const dismissBtn = document.querySelector('.notification-panel .dismiss-btn');
+      if (dismissBtn) dismissBtn.click();
+      const closeBtn = document.querySelector('.notification-panel .close-btn');
+      if (closeBtn) closeBtn.click();
+    });
+    console.log(`   ✅ Completed: ${name}`);
+  } catch (error) {
+    console.warn(`   ⚠️ Warning: Could not complete motivation step "${name}":`, error.message);
+  } finally {
+    await setupDemoMode(page, demoData);
+  }
+}
+
+async function auditSuite(
+  flow,
+  page,
+  { isMobile, theme, suiteNum, totalSuites, isQuick, demoData },
+) {
   const platformName = isMobile ? 'Mobile' : 'Desktop';
   const themeName = theme === 'dark' ? 'Dark' : 'Light';
   const icon = isMobile ? (theme === 'dark' ? '📱🌙' : '📱☀️') : theme === 'dark' ? '💻🌙' : '💻☀️';
@@ -258,7 +338,8 @@ async function auditSuite(flow, page, { isMobile, theme, suiteNum, totalSuites, 
     });
   }
 
-  // 2. Dashboard Page
+  // 2. Dashboard Page (with initial header notification badge & motivation banners)
+  await page.evaluate(() => localStorage.removeItem('hm_dismissed_notifications'));
   await auditPage(flow, page, {
     url: `${BASE_URL}/dashboard`,
     name: `${icon} Dashboard Page (${platformName} ${themeName})`,
@@ -408,6 +489,13 @@ async function auditSuite(flow, page, { isMobile, theme, suiteNum, totalSuites, 
     closeSelector: 'app-family app-delete-confirmation-modal .btn-secondary',
     name: `${icon} Delete Confirmation Modal (${platformName} ${themeName})`,
     isMobile,
+  });
+
+  // 17. Modal 11: Notification Bell Dropdown & All 3 Motivation States (Saving, Stable, Spike)
+  await auditMotivationNotifications(flow, page, {
+    name: `${icon} Notification Panel & Motivation Alerts (${platformName} ${themeName})`,
+    isMobile,
+    demoData,
   });
 }
 
@@ -630,6 +718,7 @@ async function runAudit() {
         suiteNum: i + 1,
         totalSuites: suites.length,
         isQuick: IS_QUICK,
+        demoData,
       });
     }
 

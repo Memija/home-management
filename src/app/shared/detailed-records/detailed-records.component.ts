@@ -34,19 +34,24 @@ import { DatePickerComponent } from '../date-picker/date-picker.component';
 import { HelpModalComponent, HelpStep } from '../help-modal/help-modal.component';
 import { LanguageService } from '../../services/language.service';
 import { LocalStorageService } from '../../services/local-storage.service';
-
 import {
   ConsumptionRecord,
   calculateWaterTotal,
   calculateKitchenTotal,
   calculateBathroomTotal,
 } from '../../models/records.model';
+import {
+  DEFAULT_SORT_OPTIONS,
+  filterDetailedRecords,
+  isMonthDisabledForRange,
+  isMonthDisabledForYear,
+  isYearDisabledForRange,
+  sortDetailedRecords,
+} from './detailed-records.utils';
 
 // Re-export for consumers
 export type { ConsumptionRecord } from '../../models/records.model';
 
-// Generic record interface - any record with a date
-// Index signature allows bracket notation access for water-specific fallback in template
 export interface GenericRecord {
   date: Date;
   kitchenWarm?: number;
@@ -57,7 +62,6 @@ export interface GenericRecord {
   rooms?: Record<string, number>;
 }
 
-// Sort option interface for configurable sorting
 export interface SortOptionConfig {
   value: string;
   labelKey: string;
@@ -83,7 +87,6 @@ export class DetailedRecordsComponent {
   private readonly languageService = inject(LanguageService);
   private readonly localStorageService = inject(LocalStorageService);
 
-  // Icons
   protected readonly EditIcon = Pencil;
   protected readonly TrashIcon = Trash2;
   protected readonly CalendarIcon = Calendar;
@@ -99,144 +102,50 @@ export class DetailedRecordsComponent {
   protected readonly ResetIcon = RotateCcw;
   protected readonly ChevronUpIcon = ChevronUp;
 
-  // Inputs - generic to support any record type with date
+  protected readonly recordsSignal = signal<GenericRecord[]>([]);
   @Input() set records(val: GenericRecord[]) {
     this.recordsSignal.set(val || []);
   }
   get records(): GenericRecord[] {
     return this.recordsSignal();
   }
-  protected readonly recordsSignal = signal<GenericRecord[]>([]);
 
   @Input() set defaultSortOption(val: string) {
-    this.defaultSortOptionSignal.set(val || 'date-desc');
     this.sortOption.set(val || 'date-desc');
   }
-  get defaultSortOption(): string {
-    return this.defaultSortOptionSignal();
-  }
-  protected readonly defaultSortOptionSignal = signal<string>('date-desc');
 
-  @Input() set showSearchDate(val: boolean) {
-    this.showSearchDateSignal.set(val);
-  }
-  get showSearchDate(): boolean {
-    return this.showSearchDateSignal();
-  }
-  protected readonly showSearchDateSignal = signal<boolean>(true);
+  @Input() showSearchDate = true;
+  @Input() showYearMonth = true;
+  @Input() showEditDelete = true;
 
-  @Input() set showYearMonth(val: boolean) {
-    this.showYearMonthSignal.set(val);
-  }
-  get showYearMonth(): boolean {
-    return this.showYearMonthSignal();
-  }
-  protected readonly showYearMonthSignal = signal<boolean>(true);
-
-  @Input() set showEditDelete(val: boolean) {
-    this.showEditDeleteSignal.set(val);
-  }
-  get showEditDelete(): boolean {
-    return this.showEditDeleteSignal();
-  }
-  protected readonly showEditDeleteSignal = signal<boolean>(true);
-
+  protected readonly recordTypeSignal = signal<string>('water');
   @Input() set recordType(val: string) {
     this.recordTypeSignal.set(val || 'water');
   }
   get recordType(): string {
     return this.recordTypeSignal();
   }
-  protected readonly recordTypeSignal = signal<string>('water');
 
-  @Input() set helpTitleKey(val: string) {
-    this.helpTitleKeySignal.set(val || 'HOME.RECORDS_HELP_TITLE');
-  }
-  get helpTitleKey(): string {
-    return this.helpTitleKeySignal();
-  }
-  protected readonly helpTitleKeySignal = signal<string>('HOME.RECORDS_HELP_TITLE');
+  @Input() helpTitleKey = 'HOME.RECORDS_HELP_TITLE';
+  @Input() helpSteps: HelpStep[] = [];
+  @Input() showTotal = true;
+  @Input() totalLabelKey = 'HOME.TOTAL';
+  @Input() hasDetails = true;
+  @Input() allowCollapse = true;
+  @Input() sortOptions: SortOptionConfig[] = DEFAULT_SORT_OPTIONS;
 
-  @Input() set helpSteps(val: HelpStep[]) {
-    this.helpStepsSignal.set(val || []);
-  }
-  get helpSteps(): HelpStep[] {
-    return this.helpStepsSignal();
-  }
-  protected readonly helpStepsSignal = signal<HelpStep[]>([]);
-
-  @Input() set showTotal(val: boolean) {
-    this.showTotalSignal.set(val);
-  }
-  get showTotal(): boolean {
-    return this.showTotalSignal();
-  }
-  protected readonly showTotalSignal = signal<boolean>(true);
-
-  @Input() set totalLabelKey(val: string) {
-    this.totalLabelKeySignal.set(val || 'HOME.TOTAL');
-  }
-  get totalLabelKey(): string {
-    return this.totalLabelKeySignal();
-  }
-  protected readonly totalLabelKeySignal = signal<string>('HOME.TOTAL');
-
-  @Input() set hasDetails(val: boolean) {
-    this.hasDetailsSignal.set(val);
-  }
-  get hasDetails(): boolean {
-    return this.hasDetailsSignal();
-  }
-  protected readonly hasDetailsSignal = signal<boolean>(true);
-
-  @Input() set allowCollapse(val: boolean) {
-    this.allowCollapseSignal.set(val);
-  }
-  get allowCollapse(): boolean {
-    return this.allowCollapseSignal();
-  }
-  protected readonly allowCollapseSignal = signal<boolean>(true);
-
-  // Configurable sort options - parent provides these
-  @Input() set sortOptions(val: SortOptionConfig[]) {
-    this.sortOptionsSignal.set(val || []);
-  }
-  get sortOptions(): SortOptionConfig[] {
-    return this.sortOptionsSignal();
-  }
-  protected readonly sortOptionsSignal = signal<SortOptionConfig[]>([
-    { value: 'date-desc', labelKey: 'HOME.SORT.DATE_DESC', direction: '↓' },
-    { value: 'date-asc', labelKey: 'HOME.SORT.DATE_ASC', direction: '↑' },
-    { value: 'total-desc', labelKey: 'HOME.SORT.TOTAL_DESC', direction: '↓' },
-    { value: 'total-asc', labelKey: 'HOME.SORT.TOTAL_ASC', direction: '↑' },
-    { value: 'kitchen-desc', labelKey: 'HOME.SORT.KITCHEN_DESC', direction: '↓' },
-    { value: 'kitchen-asc', labelKey: 'HOME.SORT.KITCHEN_ASC', direction: '↑' },
-    { value: 'bathroom-desc', labelKey: 'HOME.SORT.BATHROOM_DESC', direction: '↓' },
-    { value: 'bathroom-asc', labelKey: 'HOME.SORT.BATHROOM_ASC', direction: '↑' },
-  ]);
-
-  // Callback for calculating total - parent provides record-specific logic
+  protected readonly calculateTotalFnSignal = signal<(record: GenericRecord) => number>(() => 0);
   @Input() set calculateTotalFn(val: (record: GenericRecord) => number) {
     this.calculateTotalFnSignal.set(val || (() => 0));
   }
   get calculateTotalFn(): (record: GenericRecord) => number {
     return this.calculateTotalFnSignal();
   }
-  protected readonly calculateTotalFnSignal = signal<(record: GenericRecord) => number>(() => 0);
 
-  // Configurable note about values (e.g., "All values in liters" vs "All values in kWh")
-  @Input() set valuesNoteKey(val: string) {
-    this.valuesNoteKeySignal.set(val || 'HOME.ALL_VALUES_IN_LITERS');
-  }
-  get valuesNoteKey(): string {
-    return this.valuesNoteKeySignal();
-  }
-  protected readonly valuesNoteKeySignal = signal<string>('HOME.ALL_VALUES_IN_LITERS');
+  @Input() valuesNoteKey = 'HOME.ALL_VALUES_IN_LITERS';
 
-  // Content projection for record details template
   @ContentChild('recordDetails') recordDetailsTemplate!: TemplateRef<{ $implicit: GenericRecord }>;
 
-  // Outputs - generic
   @Output() editRecord = new EventEmitter<GenericRecord>();
   @Output() deleteRecord = new EventEmitter<GenericRecord>();
   @Output() deleteAllRecords = new EventEmitter<GenericRecord[]>();
@@ -248,7 +157,6 @@ export class DetailedRecordsComponent {
     endDate: string | null;
   }>();
 
-  // State
   protected readonly startDate = signal<string | null>(null);
   protected readonly endDate = signal<string | null>(null);
   protected readonly searchYear = signal<number | null>(null);
@@ -257,24 +165,20 @@ export class DetailedRecordsComponent {
   protected readonly paginationSize = signal<number>(5);
   protected readonly sortOption = signal<string>('date-desc');
   protected readonly showHelpModal = signal(false);
-  protected readonly isCollapsed = signal(true); // Will be initialized in constructor
+  protected readonly isCollapsed = signal(true);
 
   constructor() {
-    // Reactively load collapsed state when recordType changes
     effect(() => {
       const type = this.recordTypeSignal();
       untracked(() => {
         const key = `detailed_records_for_${type}_are_collapsed`;
         const stored = this.localStorageService.getPreference(key);
-        // If stored is null, default to true (collapsed)
         this.isCollapsed.set(stored !== null ? stored === 'true' : true);
       });
     });
 
-    // Emit filtered records and filter state whenever they change
     effect(() => {
-      const filtered = this.filteredRecords();
-      this.filteredRecordsChange.emit(filtered);
+      this.filteredRecordsChange.emit(this.filteredRecords());
     });
 
     effect(() => {
@@ -287,9 +191,6 @@ export class DetailedRecordsComponent {
     });
   }
 
-  // Removed getInitialCollapsedState as it's now handled by the effect
-
-  // Computed properties
   protected currentLang = computed(() => this.languageService.currentLang());
 
   protected availableYears = computed(() => {
@@ -297,137 +198,55 @@ export class DetailedRecordsComponent {
     return Array.from(years).sort((a, b) => b - a);
   });
 
-  protected filteredRecords = computed(() => {
-    const startDate = this.startDate();
-    const endDate = this.endDate();
-    const searchYear = this.searchYear();
-    const searchMonth = this.searchMonth();
-    let records = this.recordsSignal();
+  protected filteredRecords = computed(() =>
+    filterDetailedRecords(this.recordsSignal(), {
+      startDate: this.startDate(),
+      endDate: this.endDate(),
+      searchYear: this.searchYear(),
+      searchMonth: this.searchMonth(),
+    }),
+  );
 
-    if (startDate) {
-      records = records.filter((r) => {
-        const date = new Date(r.date);
-        const recordDate = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
-        return recordDate >= startDate;
-      });
-    }
-
-    if (endDate) {
-      records = records.filter((r) => {
-        const date = new Date(r.date);
-        const recordDate = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
-        return recordDate <= endDate;
-      });
-    }
-
-    if (searchYear) {
-      records = records.filter((r) => new Date(r.date).getFullYear() === searchYear);
-    }
-
-    if (searchMonth !== null) {
-      records = records.filter((r) => new Date(r.date).getMonth() === searchMonth);
-    }
-
-    return records;
-  });
-
-  protected isFilterActive = computed(() => {
-    return (
+  protected isFilterActive = computed(
+    () =>
       this.startDate() !== null ||
       this.endDate() !== null ||
       this.searchYear() !== null ||
-      this.searchMonth() !== null
-    );
-  });
+      this.searchMonth() !== null,
+  );
 
   protected displayedRecords = computed(() => {
-    const records = [...this.filteredRecords()];
-    const sortOption = this.sortOption();
-    const calculateTotal = this.calculateTotalFnSignal();
-
-    // Sort records using generic approach
-    records.sort((a, b) => {
-      if (sortOption === 'date-desc') {
-        return new Date(b.date).getTime() - new Date(a.date).getTime();
-      }
-      if (sortOption === 'date-asc') {
-        return new Date(a.date).getTime() - new Date(b.date).getTime();
-      }
-      if (sortOption === 'total-desc') {
-        return calculateTotal(b) - calculateTotal(a);
-      }
-      if (sortOption === 'total-asc') {
-        return calculateTotal(a) - calculateTotal(b);
-      }
-      // For water-specific sorts, fall back to legacy functions if record has required properties
-      if (sortOption === 'kitchen-desc' && 'kitchenWarm' in a) {
-        return (
-          calculateKitchenTotal(b as unknown as ConsumptionRecord) -
-          calculateKitchenTotal(a as unknown as ConsumptionRecord)
-        );
-      }
-      if (sortOption === 'kitchen-asc' && 'kitchenWarm' in a) {
-        return (
-          calculateKitchenTotal(a as unknown as ConsumptionRecord) -
-          calculateKitchenTotal(b as unknown as ConsumptionRecord)
-        );
-      }
-      if (sortOption === 'bathroom-desc' && 'bathroomWarm' in a) {
-        return (
-          calculateBathroomTotal(b as unknown as ConsumptionRecord) -
-          calculateBathroomTotal(a as unknown as ConsumptionRecord)
-        );
-      }
-      if (sortOption === 'bathroom-asc' && 'bathroomWarm' in a) {
-        return (
-          calculateBathroomTotal(a as unknown as ConsumptionRecord) -
-          calculateBathroomTotal(b as unknown as ConsumptionRecord)
-        );
-      }
-      return 0;
-    });
-
-    // Limit records based on current page and pagination size
-    return records.slice(
+    const sorted = sortDetailedRecords(
+      this.filteredRecords(),
+      this.sortOption(),
+      this.calculateTotalFnSignal(),
+    );
+    return sorted.slice(
       (this.currentPage() - 1) * this.paginationSize(),
       this.currentPage() * this.paginationSize(),
     );
   });
 
-  protected totalPages = computed(() => {
-    return Math.ceil(this.filteredRecords().length / this.paginationSize());
-  });
+  protected totalPages = computed(() =>
+    Math.ceil(this.filteredRecords().length / this.paginationSize()),
+  );
 
-  protected pageOfText = computed(() => {
-    return this.languageService.translate('HOME.PAGE_OF', {
+  protected pageOfText = computed(() =>
+    this.languageService.translate('HOME.PAGE_OF', {
       current: this.currentPage(),
       total: this.totalPages(),
-    });
-  });
+    }),
+  );
 
-  protected showingRecordsText = computed(() => {
-    return this.languageService.translate('HOME.SHOWING_RECORDS', {
+  protected showingRecordsText = computed(() =>
+    this.languageService.translate('HOME.SHOWING_RECORDS', {
       current: this.displayedRecords().length,
       total: this.filteredRecords().length,
-    });
-  });
+    }),
+  );
 
-  // Filter Constraint Helpers
   protected isYearDisabled(year: number): boolean {
-    const start = this.startDate();
-    const end = this.endDate();
-
-    if (start) {
-      const startYear = new Date(start).getFullYear();
-      if (year < startYear) return true;
-    }
-
-    if (end) {
-      const endYear = new Date(end).getFullYear();
-      if (year > endYear) return true;
-    }
-
-    return false;
+    return isYearDisabledForRange(year, this.startDate(), this.endDate());
   }
 
   protected isMonthDisabled(monthIndex: number): boolean {
@@ -446,7 +265,6 @@ export class DetailedRecordsComponent {
     return false;
   }
 
-  // Helper methods - using shared utility functions
   protected calculateTotal(record: ConsumptionRecord): number {
     return calculateWaterTotal(record);
   }
@@ -459,101 +277,58 @@ export class DetailedRecordsComponent {
     return calculateBathroomTotal(record);
   }
 
-  // Pagination methods
-  protected nextPage() {
+  protected nextPage(): void {
     if (this.currentPage() < this.totalPages()) {
       this.currentPage.update((page) => page + 1);
     }
   }
 
-  protected prevPage() {
+  protected prevPage(): void {
     if (this.currentPage() > 1) {
       this.currentPage.update((page) => page - 1);
     }
   }
 
-  protected onPaginationSizeChange(size: number) {
+  protected onPaginationSizeChange(size: number): void {
     this.paginationSize.set(size);
-    this.currentPage.set(1); // Reset to first page when changing page size
+    this.currentPage.set(1);
   }
 
-  protected setSortOption(option: unknown) {
+  protected setSortOption(option: unknown): void {
     this.sortOption.set(option as string);
   }
 
-  // Event emitters
-  protected onEditRecord(record: GenericRecord) {
+  protected onEditRecord(record: GenericRecord): void {
     this.editRecord.emit(record);
   }
 
-  protected onDeleteRecord(record: GenericRecord) {
+  protected onDeleteRecord(record: GenericRecord): void {
     this.deleteRecord.emit(record);
   }
 
-  protected onDeleteAllRecords() {
+  protected onDeleteAllRecords(): void {
     this.deleteAllRecords.emit(this.filteredRecords());
   }
 
-  protected showHelp() {
+  protected showHelp(): void {
     this.showHelpModal.set(true);
   }
 
-  protected closeHelp() {
+  protected closeHelp(): void {
     this.showHelpModal.set(false);
   }
 
-  protected toggleCollapse() {
+  protected toggleCollapse(): void {
     this.isCollapsed.update((v) => !v);
     const key = `detailed_records_for_${this.recordTypeSignal()}_are_collapsed`;
     this.localStorageService.setPreference(key, String(this.isCollapsed()));
   }
 
-  protected resetFilters() {
+  protected resetFilters(): void {
     this.startDate.set(null);
     this.endDate.set(null);
     this.searchYear.set(null);
     this.searchMonth.set(null);
     this.currentPage.set(1);
   }
-}
-
-function isMonthDisabledForYear(
-  monthIndex: number,
-  year: number,
-  start: string | null,
-  end: string | null,
-): boolean {
-  if (start) {
-    const startDate = new Date(start);
-    if (year < startDate.getFullYear()) return true;
-    if (year === startDate.getFullYear() && monthIndex < startDate.getMonth()) return true;
-  }
-
-  if (end) {
-    const endDate = new Date(end);
-    if (year > endDate.getFullYear()) return true;
-    if (year === endDate.getFullYear() && monthIndex > endDate.getMonth()) return true;
-  }
-  return false;
-}
-
-function isMonthDisabledForRange(monthIndex: number, start: string, end: string): boolean {
-  const startDate = new Date(start);
-  const endDate = new Date(end);
-
-  const monthsDiff =
-    (endDate.getFullYear() - startDate.getFullYear()) * 12 +
-    (endDate.getMonth() - startDate.getMonth());
-
-  if (monthsDiff >= 11) return false;
-
-  if (startDate.getFullYear() === endDate.getFullYear()) {
-    return monthIndex < startDate.getMonth() || monthIndex > endDate.getMonth();
-  }
-
-  if (startDate.getFullYear() < endDate.getFullYear()) {
-    return monthIndex > endDate.getMonth() && monthIndex < startDate.getMonth();
-  }
-
-  return false;
 }

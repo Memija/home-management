@@ -7,6 +7,7 @@ import {
   History,
   Zap,
   ShieldCheck,
+  TrendingUp,
 } from 'lucide-angular';
 import { By } from '@angular/platform-browser';
 import { LanguageService, Language } from '../services/language.service';
@@ -26,7 +27,7 @@ describe('ChangelogComponent', () => {
     await TestBed.configureTestingModule({
       imports: [
         ChangelogComponent,
-        LucideAngularModule.pick({ Camera, CircleCheck, History, Zap, ShieldCheck }),
+        LucideAngularModule.pick({ Camera, CircleCheck, History, Zap, ShieldCheck, TrendingUp }),
       ],
       providers: [{ provide: LanguageService, useValue: mockLanguageService }],
     }).compileComponents();

@@ -5,6 +5,7 @@ import { LanguageSwitcherComponent } from '../../components/language-switcher/la
 import { AuthButtonComponent } from '../../components/auth-button/auth-button.component';
 import {
   LucideAngularModule,
+  LucideIconData,
   Play,
   X,
   Bell,
@@ -15,11 +16,31 @@ import {
   CirclePlay,
 } from 'lucide-angular';
 import { DemoService } from '../../services/demo.service';
-import { NotificationService, Notification } from '../../services/notification.service';
+import {
+  NotificationService,
+  Notification,
+  NotificationAccent,
+  NotificationCategory,
+} from '../../services/notification.service';
+import {
+  getNotificationCategoryIcon,
+  getNotificationStatusIcon,
+  resolveNotificationAccent,
+  resolveNotificationCategory,
+} from '../../utils/notification-ui.utils';
 import { ThemeService, Theme } from '../../services/theme.service';
 import { LanguageService } from '../../services/language.service';
 import { AuthService } from '../../services/auth.service';
 import { HybridStorageService } from '../../services/hybrid-storage.service';
+
+export interface DecoratedNotification {
+  readonly notification: Notification;
+  readonly category: NotificationCategory;
+  readonly accent: NotificationAccent;
+  readonly categoryIcon: LucideIconData;
+  readonly statusIcon: LucideIconData | null;
+  readonly actionTitleKey: string;
+}
 
 @Component({
   selector: 'app-header',
@@ -55,7 +76,20 @@ export class HeaderComponent {
 
   protected readonly isNotificationPanelOpen = signal(false);
 
-  protected notificationCount = computed(() => this.notificationService.notifications().length);
+  protected readonly decoratedNotifications = computed<DecoratedNotification[]>(() =>
+    this.notificationService.notifications().map((notification) => ({
+      notification,
+      category: resolveNotificationCategory(notification),
+      accent: resolveNotificationAccent(notification),
+      categoryIcon: getNotificationCategoryIcon(notification),
+      statusIcon: getNotificationStatusIcon(notification),
+      actionTitleKey: notification.route?.endsWith('/settings')
+        ? 'NOTIFICATIONS.GO_TO_SETTINGS'
+        : 'NOTIFICATIONS.GO_TO_TRACKER',
+    })),
+  );
+
+  protected notificationCount = computed(() => this.decoratedNotifications().length);
 
   // Close dropdown when clicking outside
   @HostListener('document:click', ['$event'])

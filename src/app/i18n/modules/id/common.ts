@@ -111,6 +111,9 @@ export const common = {
     FEATURE_13_TITLE: 'Perencana Keluarga & Sekolah',
     FEATURE_13_DESC:
       'Atur jadwal keluarga, jadwal pelajaran sekolah, dan rutinitas rumah tangga yang berulang di satu tempat. Tetapkan jadwal untuk anggota keluarga guna mempermudah koordinasi harian.',
+    FEATURE_14_TITLE: 'Buku Harian Rumah & Keluarga',
+    FEATURE_14_DESC:
+      'Simpan jurnal kronologis terpadu untuk seluruh rumah tangga Anda. Abadikan momen keluarga sehari-hari dan liburan, tulis catatan pribadi untuk masing-masing anggota keluarga, serta catat perbaikan rumah, renovasi, atau servis peralatan dalam satu lini masa yang mudah dicari.',
     CTA_TEXT:
       'Dukungan Anda membantu kami membangun fitur-fitur ini lebih cepat. Terima kasih telah menjadi bagian dari komunitas kami!',
     BACK_TO_HOME: 'Kembali ke Beranda',

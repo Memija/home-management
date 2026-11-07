@@ -33,15 +33,3 @@ reason = "False positive: project uses official vendor release xlsx 0.20.3 conta
 [[IgnoredVulns]]
 id = "CVE-2026-33894"
 reason = "Dev-only dependency in sonarqube-scanner; no upstream npm patch available; not bundled in production."
-
-# sprintf-js: Transitive dev dependency of @cyclonedx/cyclonedx-npm (via xmlbuilder2 -> js-yaml -> argparse)
-# Unbounded precision specifiers; dev-only SBOM generator tool; no upstream npm patch available; not bundled in production.
-[[IgnoredVulns]]
-id = "CVE-2026-97058"
-reason = "Dev-only dependency in @cyclonedx/cyclonedx-npm for SBOM generation; no upstream npm patch available; not bundled in production."
-
-# braces: Transitive dev dependency in webpack-dev-server (via chokidar 3.x / micromatch)
-# Stack-exhaustion denial of service through deeply nested patterns; dev-only webpack dev server; no upstream npm patch for v3.x; not bundled in production.
-[[IgnoredVulns]]
-id = "CVE-2026-93687"
-reason = "Dev-only transitive dependency via webpack-dev-server; no upstream npm patch for 3.x; not bundled in production."

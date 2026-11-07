@@ -8,6 +8,7 @@ export * from './errors';
 export * from './excel';
 export * from './heating';
 export * from './landing';
+export * from './motivation';
 export * from './privacy';
 export * from './settings';
 export * from './water';

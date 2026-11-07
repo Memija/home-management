@@ -6,6 +6,7 @@ import { electricity } from './modules/pl/electricity';
 import { settings } from './modules/pl/settings';
 import { auth } from './modules/pl/auth';
 import { landing } from './modules/pl/landing';
+import { motivation } from './modules/pl/motivation';
 import { privacy } from './modules/pl/privacy';
 import { waterFacts } from './modules/pl/water-facts';
 import { errors } from './modules/pl/errors';
@@ -25,6 +26,7 @@ export const pl = {
   ...settings,
   ...auth,
   ...landing,
+  ...motivation,
   ...privacy,
   ...errors,
   ...excel,

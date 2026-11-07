@@ -100,6 +100,7 @@ export class HeatingDataService {
     newRecord: DynamicHeatingRecord,
     editingRecord: DynamicHeatingRecord | null,
   ): Promise<void> {
+    this.notificationService.resetMotivationDismissal?.('heating');
     if (editingRecord) {
       this.records.update((records) =>
         records.map((r) => (r.date.getTime() === editingRecord.date.getTime() ? newRecord : r)),
@@ -222,6 +223,7 @@ export class HeatingDataService {
 
       await this.storage.importRecords('heating_consumption_records', filtered);
       await this.loadData();
+      this.notificationService.resetMotivationDismissal?.('heating');
 
       if (skippedCount > 0) {
         const key =
@@ -287,6 +289,7 @@ export class HeatingDataService {
       await this.storage.save('heating_consumption_records', this.records());
       this.notificationService.setHeatingRecords(this.records());
 
+      this.notificationService.resetMotivationDismissal?.('heating');
       const warnings: string[] = [];
       if (missingColumns.length > 0) {
         warnings.push(

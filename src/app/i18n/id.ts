@@ -13,6 +13,7 @@ import { countryFacts } from './modules/id/country-facts/index';
 import { electricity } from './modules/id/electricity';
 import { auth } from './modules/id/auth';
 import { landing } from './modules/id/landing';
+import { motivation } from './modules/id/motivation';
 import { privacy } from './modules/id/privacy';
 import { electricityCountryFacts } from './modules/id/electricity-country-facts/index';
 import { heatingCountryFacts } from './modules/id/heating-country-facts/index';
@@ -30,6 +31,7 @@ export const id = {
   ...electricity,
   ...auth,
   ...landing,
+  ...motivation,
   ...privacy,
   WATER_FACTS: waterFacts,
   COUNTRY_FACTS: countryFacts,

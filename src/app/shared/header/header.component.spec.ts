@@ -6,6 +6,8 @@ import { DemoService } from '../../services/demo.service';
 import { NotificationService, Notification } from '../../services/notification.service';
 import { ThemeService } from '../../services/theme.service';
 import { LanguageService } from '../../services/language.service';
+import { AuthService } from '../../services/auth.service';
+import { HybridStorageService } from '../../services/hybrid-storage.service';
 import { signal, computed, Component, NO_ERRORS_SCHEMA } from '@angular/core';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { LanguageSwitcherComponent } from '../../components/language-switcher/language-switcher.component';
@@ -244,6 +246,136 @@ describe('HeaderComponent', () => {
       fixture.detectChanges();
 
       expect(component['isNotificationPanelOpen']()).toBe(true);
+    });
+
+    it('should render category icons, status icons, and semantic color classes in header dropdown', async () => {
+      TestBed.resetTestingModule();
+
+      const dismissSpy = vi.fn();
+      const navigateSpy = vi.fn().mockResolvedValue(true);
+      const templateNotifications = signal<Notification[]>([
+        {
+          id: 'water-motivation',
+          type: 'motivation',
+          category: 'water',
+          accent: 'saving',
+          titleKey: 'MOTIVATION.WATER.SAVING_TITLE',
+          messageKey: 'MOTIVATION.WATER.SAVING_1',
+          priority: 'low',
+          dismissible: true,
+          route: '/dashboard/water',
+        },
+        {
+          id: 'electricity-motivation',
+          type: 'motivation',
+          category: 'electricity',
+          accent: 'spike',
+          titleKey: 'MOTIVATION.ELECTRICITY.SPIKE_TITLE',
+          messageKey: 'MOTIVATION.ELECTRICITY.SPIKE_1',
+          priority: 'medium',
+          dismissible: true,
+          route: '/dashboard/electricity',
+        },
+        {
+          id: 'address-missing',
+          type: 'initial',
+          category: 'address',
+          accent: 'address',
+          titleKey: 'NOTIFICATIONS.ADDRESS_MISSING_TITLE',
+          messageKey: 'NOTIFICATIONS.ADDRESS_MISSING_MESSAGE',
+          priority: 'medium',
+          dismissible: true,
+          route: '/dashboard/settings',
+          fragment: 'address-section',
+        },
+      ]);
+
+      await TestBed.configureTestingModule({
+        imports: [HeaderComponent, NoopAnimationsModule],
+        providers: [
+          { provide: Router, useValue: { url: '/dashboard', navigate: navigateSpy } },
+          {
+            provide: DemoService,
+            useValue: {
+              isDemoMode: signal(false),
+              isLoading: signal(false),
+              activateDemo: vi.fn(),
+              deactivateDemo: vi.fn(),
+            },
+          },
+          {
+            provide: NotificationService,
+            useValue: {
+              dismissNotification: dismissSpy,
+              notifications: computed(() => templateNotifications()),
+            },
+          },
+          {
+            provide: ThemeService,
+            useValue: {
+              setTheme: vi.fn(),
+              currentTheme: signal<'light' | 'dark' | 'system'>('light'),
+              resolvedTheme: signal<'light' | 'dark'>('light'),
+            },
+          },
+          {
+            provide: LanguageService,
+            useValue: {
+              translate: (key: string) => key,
+              currentLang: signal<'en' | 'de'>('en'),
+            },
+          },
+          { provide: AuthService, useValue: { isAuthenticated: signal(false) } },
+          { provide: HybridStorageService, useValue: { hasUserContent: signal(true) } },
+        ],
+      })
+        .overrideComponent(HeaderComponent, {
+          remove: { imports: [LanguageSwitcherComponent, AuthButtonComponent] },
+          add: { imports: [MockLanguageSwitcherComponent, MockAuthButtonComponent] },
+        })
+        .compileComponents();
+
+      const templateFixture = TestBed.createComponent(HeaderComponent);
+      templateFixture.detectChanges();
+
+      const badge = templateFixture.nativeElement.querySelector('.notification-badge');
+      expect(badge?.textContent?.trim()).toBe('3');
+
+      const bellBtn = templateFixture.nativeElement.querySelector(
+        '.notification-bell',
+      ) as HTMLButtonElement;
+      bellBtn.click();
+      templateFixture.detectChanges();
+
+      const panelCount = templateFixture.nativeElement.querySelector('.notification-panel-count');
+      expect(panelCount?.textContent?.trim()).toBe('3');
+
+      const items = templateFixture.nativeElement.querySelectorAll('.notification-item');
+      expect(items).toHaveLength(3);
+
+      expect(items[0].classList.contains('notification-category--water')).toBe(true);
+      expect(items[0].classList.contains('notification-accent--saving')).toBe(true);
+      expect(items[0].querySelector('.notification-item-icon')).toBeTruthy();
+      expect(items[0].querySelector('.notification-status-icon')).toBeTruthy();
+      expect(items[0].querySelector('strong')?.textContent).toBe('MOTIVATION.WATER.SAVING_TITLE');
+
+      expect(items[1].classList.contains('notification-category--electricity')).toBe(true);
+      expect(items[1].classList.contains('notification-accent--spike')).toBe(true);
+      expect(items[1].querySelector('.notification-status-icon')).toBeTruthy();
+
+      expect(items[2].classList.contains('notification-category--address')).toBe(true);
+      expect(items[2].classList.contains('notification-accent--address')).toBe(true);
+      expect(items[2].querySelector('.notification-status-icon')).toBeNull();
+      const settingsActionBtn = items[2].querySelector('.action-link') as HTMLButtonElement;
+      expect(settingsActionBtn.getAttribute('aria-label')).toBe('NOTIFICATIONS.GO_TO_SETTINGS');
+
+      const dismissBtn = items[0].querySelector('.dismiss-btn') as HTMLButtonElement;
+      dismissBtn.click();
+      expect(dismissSpy).toHaveBeenCalledWith('water-motivation');
+
+      const actionBtn = items[1].querySelector('.action-link') as HTMLButtonElement;
+      actionBtn.click();
+      expect(navigateSpy).toHaveBeenCalledWith(['/dashboard/electricity'], { fragment: undefined });
     });
   });
 });

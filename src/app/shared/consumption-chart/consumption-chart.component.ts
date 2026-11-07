@@ -37,36 +37,24 @@ import {
 import { HelpModalComponent, HelpStep } from '../help-modal/help-modal.component';
 import 'hammerjs';
 import zoomPlugin from 'chartjs-plugin-zoom';
-import {
-  ConsumptionRecord,
-  DynamicHeatingRecord,
-  ElectricityRecord,
-} from '../../models/records.model';
 import { registerChartPlugins } from './plugins/chart-plugins';
 import { ChartDataPoint } from '../../models/consumption-chart.model';
 import { MultiPredictionResult } from '../../models/prediction.models';
-import { generateSmartLabels } from './utils/chart-labels.utils';
 import { buildChartOptions } from './options/chart-options.builder';
+import { buildConsumptionChartData } from './options/chart-data.builder';
 import { ChartToggleState } from './utils/chart-toggle.state';
-import { appendPredictionDatasets, PredictionPeriod } from './predictions/chart-prediction.builder';
+import { PredictionPeriod } from './predictions/chart-prediction.builder';
+import {
+  cleanupChartFullscreen,
+  exitDocumentFullscreen,
+  isDocumentFullscreen,
+  toggleChartFullscreen,
+} from './utils/chart-fullscreen.utils';
 
 // Re-export types for consumers
 export type { ChartView, DisplayMode } from '../../services/chart-data.service';
 export type { ChartDataPoint } from '../../models/consumption-chart.model';
-
-export interface FullscreenElement extends HTMLElement {
-  webkitRequestFullscreen?: () => void;
-  mozRequestFullScreen?: () => void;
-  msRequestFullscreen?: () => void;
-}
-export interface FullscreenDocument extends Document {
-  webkitFullscreenElement?: Element;
-  mozFullScreenElement?: Element;
-  msFullscreenElement?: Element;
-  webkitExitFullscreen?: () => void;
-  mozCancelFullScreen?: () => void;
-  msExitFullscreen?: () => void;
-}
+export type { FullscreenElement, FullscreenDocument } from './utils/chart-fullscreen.utils';
 
 Chart.register(...registerables, zoomPlugin);
 registerChartPlugins();
@@ -82,115 +70,101 @@ export class ConsumptionChartComponent implements OnInit, OnDestroy {
   @ViewChild(BaseChartDirective) chart?: BaseChartDirective;
   @ViewChild('chartWrapper') chartWrapperRef?: ElementRef<HTMLDivElement>;
 
+  protected readonly dataSignal = signal<ChartDataPoint[]>([]);
   @Input() set data(val: ChartDataPoint[]) {
     this.dataSignal.set(val || []);
   }
   get data(): ChartDataPoint[] {
     return this.dataSignal();
   }
-  protected dataSignal = signal<ChartDataPoint[]>([]);
 
+  protected readonly currentViewSignal = signal<ChartView>('total');
   @Input() set currentView(val: ChartView) {
     this.currentViewSignal.set(val || 'total');
   }
   get currentView(): ChartView {
     return this.currentViewSignal();
   }
-  protected currentViewSignal = signal<ChartView>('total');
 
   @Input({ required: true }) onViewChange!: (view: ChartView) => void;
   @Input({ required: true }) chartType: 'water' | 'home' | 'heating' | 'electricity' = 'water';
 
+  protected readonly displayModeSignal = signal<DisplayMode>('total');
   @Input() set displayMode(val: DisplayMode) {
     this.displayModeSignal.set(val || 'total');
   }
   get displayMode(): DisplayMode {
     return this.displayModeSignal();
   }
-  protected displayModeSignal = signal<DisplayMode>('total');
 
   @Input({ required: true }) onDisplayModeChange!: (mode: DisplayMode) => void;
 
+  protected readonly familySizeSignal = signal<number>(0);
   @Input() set familySize(val: number) {
     this.familySizeSignal.set(val || 0);
   }
   get familySize(): number {
     return this.familySizeSignal();
   }
-  protected familySizeSignal = signal<number>(0);
 
+  protected readonly countrySignal = signal<string>('');
   @Input() set country(val: string) {
     this.countrySignal.set(val || '');
   }
   get country(): string {
     return this.countrySignal();
   }
-  protected countrySignal = signal<string>('');
 
-  @Input() set helpTitleKey(val: string) {
-    this.helpTitleKeySignal.set(val || 'HOME.CHART_HELP_TITLE');
-  }
-  get helpTitleKey(): string {
-    return this.helpTitleKeySignal();
-  }
-  protected helpTitleKeySignal = signal<string>('HOME.CHART_HELP_TITLE');
+  @Input() helpTitleKey = 'HOME.CHART_HELP_TITLE';
+  @Input() helpSteps: HelpStep[] = [];
 
-  @Input() set helpSteps(val: HelpStep[]) {
-    this.helpStepsSignal.set(val || []);
-  }
-  get helpSteps(): HelpStep[] {
-    return this.helpStepsSignal();
-  }
-  protected helpStepsSignal = signal<HelpStep[]>([]);
-
+  protected readonly roomNamesSignal = signal<string[]>([]);
   @Input() set roomNames(val: string[]) {
     this.roomNamesSignal.set(val || []);
   }
   get roomNames(): string[] {
     return this.roomNamesSignal();
   }
-  protected roomNamesSignal = signal<string[]>([]);
 
+  protected readonly roomIdsSignal = signal<string[]>([]);
   @Input() set roomIds(val: string[]) {
     this.roomIdsSignal.set(val || []);
   }
   get roomIds(): string[] {
     return this.roomIdsSignal();
   }
-  protected roomIdsSignal = signal<string[]>([]);
 
+  protected readonly roomColorsSignal = signal<{ border: string; bg: string }[]>([]);
   @Input() set roomColors(val: { border: string; bg: string }[]) {
     this.roomColorsSignal.set(val || []);
   }
   get roomColors(): { border: string; bg: string }[] {
     return this.roomColorsSignal();
   }
-  protected roomColorsSignal = signal<{ border: string; bg: string }[]>([]);
 
+  protected readonly ignoredSpikesSignal = signal<{ date: string; roomId: string }[]>([]);
   @Input() set ignoredSpikes(val: { date: string; roomId: string }[]) {
     this.ignoredSpikesSignal.set(val || []);
   }
   get ignoredSpikes(): { date: string; roomId: string }[] {
     return this.ignoredSpikesSignal();
   }
-  protected ignoredSpikesSignal = signal<{ date: string; roomId: string }[]>([]);
 
+  protected readonly predictionSignal = signal<MultiPredictionResult | null>(null);
   @Input() set prediction(val: MultiPredictionResult | null) {
     this.predictionSignal.set(val);
   }
   get prediction(): MultiPredictionResult | null {
     return this.predictionSignal();
   }
-  protected predictionSignal = signal<MultiPredictionResult | null>(null);
 
-  /** Number of days for the prediction projection */
+  protected readonly predictionPeriodSignal = signal<PredictionPeriod>(30);
   @Input() set predictionPeriod(val: PredictionPeriod) {
     this.predictionPeriodSignal.set(val || 30);
   }
   get predictionPeriod(): PredictionPeriod {
     return this.predictionPeriodSignal();
   }
-  protected predictionPeriodSignal = signal<PredictionPeriod>(30);
 
   private readonly languageService = inject(LanguageService);
   private readonly chartDataService = inject(ChartDataService);
@@ -211,155 +185,53 @@ export class ConsumptionChartComponent implements OnInit, OnDestroy {
   protected readonly SmartIcon = Brain;
   protected readonly TargetIcon = Target;
 
-  // Fullscreen state — synced from the native fullscreenchange event
   protected readonly isFullscreen = signal<boolean>(false);
-
-  // Hide controls state (used to maximize chart canvas inside fullscreen)
   protected readonly isControlsHidden = signal<boolean>(false);
 
-  /**
-   * Returns true when the native Fullscreen API is supported on the current element.
-   * iOS Safari does not support it at all; most Android browsers do.
-   */
-  private get isNativeFullscreenSupported(): boolean {
-    const el = this.chartWrapperRef?.nativeElement;
-    return !!(
-      el &&
-      (el.requestFullscreen ||
-        (el as unknown as FullscreenElement).webkitRequestFullscreen ||
-        (el as unknown as FullscreenElement).mozRequestFullScreen ||
-        (el as unknown as FullscreenElement).msRequestFullscreen)
-    );
-  }
-
   private readonly onFullscreenChange = () => {
-    // Support both standard and webkit-prefixed fullscreenElement (Android Chrome)
-    const isFS = !!(
-      document.fullscreenElement ||
-      (document as unknown as FullscreenDocument).webkitFullscreenElement
-    );
+    const isFS = isDocumentFullscreen();
     this.isFullscreen.set(isFS);
     if (!isFS) {
-      this.isControlsHidden.set(false); // Reset controls visibility when exiting fullscreen
+      this.isControlsHidden.set(false);
     }
-    // Give the browser a frame to resize, then update Chart.js
     setTimeout(() => this.chart?.update(), 100);
   };
 
-  // Trendline visibility toggle - initialized in ngOnInit after chartType is set
   protected readonly showTrendline = signal<boolean>(true);
-
-  // Average comparison visibility toggle - initialized in ngOnInit after chartType is set
   protected readonly showAverageComparison = signal<boolean>(true);
-
-  // Predictions visibility toggle - initialized in ngOnInit after chartType is set
   protected readonly showPredictions = signal<boolean>(true);
-
-  // Past forecast visibility toggle
   protected readonly showPastForecast = signal<boolean>(false);
-
-  // Help modal state
   protected readonly showHelpModal = signal(false);
 
-  /** Toggle/preference helper (initialized in ngOnInit once chartType is available) */
   private toggleState!: ChartToggleState;
 
-  // Computed property to check if there's enough data for features
   protected hasSufficientDataForTrendline = computed(() => {
     const dataLength = this.dataSignal().length;
     const mode = this.displayModeSignal();
     return mode === 'incremental' ? dataLength >= 3 : dataLength >= 2;
   });
 
-  protected hasSufficientDataForComparison = computed(() => {
-    const dataLength = this.dataSignal().length;
-    return dataLength >= 3;
-  });
+  protected hasSufficientDataForComparison = computed(() => this.dataSignal().length >= 3);
 
   protected currentLang = computed(() => this.languageService.currentLang());
 
   protected chartData = computed<ChartConfiguration['data']>(() => {
-    const recs = this.dataSignal();
-    const labels = generateSmartLabels(recs, this.languageService);
-    const view = this.currentViewSignal();
-    const mode = this.displayModeSignal();
-    // Reactive to language, country, and toggle changes
     this.currentLang();
-    this.showTrendline();
-    this.showAverageComparison();
-    this.showPredictions();
-    this.showPastForecast();
-    this.predictionPeriodSignal();
-
-    // Process data based on display mode
-    const processedData =
-      mode === 'incremental'
-        ? this.chartDataService.calculateIncrementalData(recs, this.ignoredSpikesSignal())
-        : recs;
-
-    let resultData: ChartConfiguration['data'];
-
-    if (this.chartType === 'water') {
-      resultData = this.chartDataService.getWaterChartData({
-        records: processedData as ConsumptionRecord[],
-        originalRecords: recs as ConsumptionRecord[],
-        labels,
-        view,
-        mode,
-        showTrendline: this.showTrendline(),
-        showAverageComparison: this.showAverageComparison(),
-        country: this.countrySignal() ?? '',
-        familySize: this.familySizeSignal() ?? 0,
-      });
-    } else if (this.chartType === 'electricity') {
-      resultData = this.chartDataService.getElectricityChartData({
-        records: processedData as unknown as ElectricityRecord[],
-        originalRecords: recs as unknown as ElectricityRecord[],
-        labels,
-        view,
-        mode,
-        showTrendline: this.showTrendline(),
-        showAverageComparison: this.showAverageComparison(),
-        country: this.countrySignal() ?? 'DE',
-        familySize: this.familySizeSignal() ?? 0,
-      });
-    } else if (this.chartType === 'home') {
-      resultData = this.chartDataService.getWaterChartData({
-        records: processedData as ConsumptionRecord[],
-        originalRecords: recs as ConsumptionRecord[],
-        labels,
-        view,
-        mode,
-        showTrendline: false,
-        showAverageComparison: false,
-        country: '',
-        familySize: 0,
-      });
-    } else {
-      resultData = this.chartDataService.getHeatingChartData({
-        records: processedData as unknown as DynamicHeatingRecord[],
-        originalRecords: recs as unknown as DynamicHeatingRecord[],
-        labels,
-        view,
-        mode,
-        roomNames: this.roomNamesSignal(),
-        roomIds: this.roomIdsSignal(),
-        roomColors: this.roomColorsSignal(),
-        showTrendline: this.showTrendline(),
-        showAverageComparison: this.showAverageComparison(),
-        country: this.countrySignal() ?? 'DE',
-      });
-    }
-
-    if (mode !== 'incremental') {
-      return resultData;
-    }
-
-    return appendPredictionDatasets(resultData, {
+    return buildConsumptionChartData({
+      chartDataService: this.chartDataService,
       languageService: this.languageService,
       chartType: this.chartType,
-      currentView: () => this.currentViewSignal(),
-      getData: () => this.dataSignal(),
+      records: this.dataSignal(),
+      view: this.currentViewSignal(),
+      mode: this.displayModeSignal(),
+      ignoredSpikes: this.ignoredSpikesSignal(),
+      showTrendline: this.showTrendline(),
+      showAverageComparison: this.showAverageComparison(),
+      country: this.countrySignal(),
+      familySize: this.familySizeSignal(),
+      roomNames: this.roomNamesSignal(),
+      roomIds: this.roomIdsSignal(),
+      roomColors: this.roomColorsSignal(),
       prediction: this.predictionSignal(),
       predictionPeriod: this.predictionPeriodSignal(),
       showPredictions: this.showPredictions(),
@@ -386,11 +258,9 @@ export class ConsumptionChartComponent implements OnInit, OnDestroy {
     this.toggleState = new ChartToggleState(this.localStorageService, this.chartType);
     this.showTrendline.set(this.toggleState.getTrendlineVisibility());
     this.showAverageComparison.set(this.toggleState.getAverageComparisonVisibility());
-    // Initialize prediction visibility for current view now that toggleState exists
     this.showPredictions.set(this.toggleState.getPredictionsVisibility(this.currentViewSignal()));
     this.showPastForecast.set(this.toggleState.getPastForecastVisibility(this.currentViewSignal()));
     document.addEventListener('fullscreenchange', this.onFullscreenChange);
-    // webkit prefix required for Android Chrome and some other mobile browsers
     document.addEventListener('webkitfullscreenchange', this.onFullscreenChange);
   }
 
@@ -403,8 +273,6 @@ export class ConsumptionChartComponent implements OnInit, OnDestroy {
     });
   });
 
-  // ─── View / display mode ──────────────────────────────────────────────────
-
   protected setView(view: ChartView): void {
     this.onViewChange(view);
   }
@@ -412,8 +280,6 @@ export class ConsumptionChartComponent implements OnInit, OnDestroy {
   protected setDisplayMode(mode: DisplayMode): void {
     this.onDisplayModeChange(mode);
   }
-
-  // ─── Toggle handlers ──────────────────────────────────────────────────────
 
   protected toggleTrendline(): void {
     this.showTrendline.update((value) => !value);
@@ -445,8 +311,6 @@ export class ConsumptionChartComponent implements OnInit, OnDestroy {
     setTimeout(() => this.chart?.update(), 50);
   }
 
-  // ─── Help modal ───────────────────────────────────────────────────────────
-
   protected showHelp(): void {
     this.showHelpModal.set(true);
   }
@@ -455,69 +319,17 @@ export class ConsumptionChartComponent implements OnInit, OnDestroy {
     this.showHelpModal.set(false);
   }
 
-  // ─── Zoom / fullscreen / controls ─────────────────────────────────────────
-
   protected resetZoom(): void {
     this.chart?.chart?.resetZoom();
   }
 
   protected toggleFullscreen(): void {
-    const isCurrentlyFake =
-      this.isFullscreen() &&
-      !document.fullscreenElement &&
-      !(document as unknown as FullscreenDocument).webkitFullscreenElement;
-    const isCurrentlyNative = !!(
-      document.fullscreenElement ||
-      (document as unknown as FullscreenDocument).webkitFullscreenElement
+    toggleChartFullscreen(
+      this.chartWrapperRef?.nativeElement,
+      this.isFullscreen,
+      this.isControlsHidden,
+      () => setTimeout(() => this.chart?.update(), 100),
     );
-
-    if (isCurrentlyNative) {
-      // Exit native fullscreen
-      if (document.exitFullscreen) {
-        void document.exitFullscreen();
-      } else if ((document as unknown as FullscreenDocument).webkitExitFullscreen) {
-        (document as unknown as FullscreenDocument).webkitExitFullscreen?.();
-      }
-      return;
-    }
-
-    if (isCurrentlyFake) {
-      // Exit CSS fake fullscreen
-      this.chartWrapperRef?.nativeElement.classList.remove('chart-fake-fullscreen');
-      this.isFullscreen.set(false);
-      this.isControlsHidden.set(false);
-      document.body.style.overflow = '';
-      setTimeout(() => this.chart?.update(), 100);
-      return;
-    }
-
-    // Enter fullscreen — try native first, fall back to CSS fake fullscreen
-    if (this.isNativeFullscreenSupported) {
-      const el = this.chartWrapperRef?.nativeElement;
-      const request =
-        el?.requestFullscreen?.bind(el) ??
-        (el as unknown as FullscreenElement)?.webkitRequestFullscreen?.bind(el) ??
-        (el as unknown as FullscreenElement)?.mozRequestFullScreen?.bind(el) ??
-        (el as unknown as FullscreenElement)?.msRequestFullscreen?.bind(el);
-
-      if (request) {
-        Promise.resolve(request()).catch((err: unknown) => {
-          console.error('Failed to enter fullscreen, falling back to CSS mode:', err);
-          this.enterFakeFullscreen();
-        });
-        return;
-      }
-    }
-
-    // Native API unavailable (e.g. iOS Safari) — use CSS fake fullscreen
-    this.enterFakeFullscreen();
-  }
-
-  private enterFakeFullscreen(): void {
-    this.chartWrapperRef?.nativeElement.classList.add('chart-fake-fullscreen');
-    this.isFullscreen.set(true);
-    document.body.style.overflow = 'hidden';
-    setTimeout(() => this.chart?.update(), 100);
   }
 
   protected toggleControls(): void {
@@ -525,22 +337,11 @@ export class ConsumptionChartComponent implements OnInit, OnDestroy {
     setTimeout(() => this.chart?.update(), 50);
   }
 
-  // Escape key is handled natively by the browser when in fullscreen.
-  // This handler also catches fake-fullscreen (CSS overlay mode) on mobile.
   @HostListener('document:keydown.escape')
   protected onEscapeKey(): void {
-    if (
-      document.fullscreenElement ||
-      (document as unknown as FullscreenDocument).webkitFullscreenElement
-    ) {
-      // Native fullscreen — browser handles Escape, but we call exit to sync state
-      if (document.exitFullscreen) {
-        void document.exitFullscreen();
-      } else if ((document as unknown as FullscreenDocument).webkitExitFullscreen) {
-        (document as unknown as FullscreenDocument).webkitExitFullscreen?.();
-      }
+    if (isDocumentFullscreen()) {
+      exitDocumentFullscreen();
     } else if (this.isFullscreen()) {
-      // CSS fake fullscreen — handle Escape manually
       this.toggleFullscreen();
     }
   }
@@ -548,23 +349,6 @@ export class ConsumptionChartComponent implements OnInit, OnDestroy {
   ngOnDestroy(): void {
     document.removeEventListener('fullscreenchange', this.onFullscreenChange);
     document.removeEventListener('webkitfullscreenchange', this.onFullscreenChange);
-
-    // Clean up native fullscreen
-    if (
-      document.fullscreenElement ||
-      (document as unknown as FullscreenDocument).webkitFullscreenElement
-    ) {
-      if (document.exitFullscreen) {
-        void document.exitFullscreen();
-      } else if ((document as unknown as FullscreenDocument).webkitExitFullscreen) {
-        (document as unknown as FullscreenDocument).webkitExitFullscreen?.();
-      }
-    }
-
-    // Clean up CSS fake fullscreen
-    if (this.chartWrapperRef?.nativeElement.classList.contains('chart-fake-fullscreen')) {
-      this.chartWrapperRef.nativeElement.classList.remove('chart-fake-fullscreen');
-      document.body.style.overflow = '';
-    }
+    cleanupChartFullscreen(this.chartWrapperRef?.nativeElement);
   }
 }

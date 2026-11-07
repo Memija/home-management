@@ -3,7 +3,6 @@ import { TranslatePipe } from '../pipes/translate.pipe';
 import {
   LucideAngularModule,
   Rocket,
-  TrendingUp,
   Calendar,
   Sparkles,
   CircleArrowUp,
@@ -15,6 +14,7 @@ import {
   StickyNote,
   Trophy,
   CalendarCheck,
+  NotebookPen,
 } from 'lucide-angular';
 
 type FeatureTag = 'new' | 'enhancement' | 'smart';
@@ -45,14 +45,6 @@ export class ReleasePlanComponent {
 
   // Upcoming features
   readonly features: Feature[] = [
-    {
-      id: 7,
-      titleKey: 'RELEASE_PLAN.FEATURE_7_TITLE',
-      descKey: 'RELEASE_PLAN.FEATURE_7_DESC',
-      icon: TrendingUp,
-      tag: 'smart',
-      colorClass: 'prediction-feature',
-    },
     {
       id: 8,
       titleKey: 'RELEASE_PLAN.FEATURE_8_TITLE',
@@ -98,6 +90,14 @@ export class ReleasePlanComponent {
       titleKey: 'RELEASE_PLAN.FEATURE_13_TITLE',
       descKey: 'RELEASE_PLAN.FEATURE_13_DESC',
       icon: CalendarCheck,
+      tag: 'new',
+      colorClass: 'new-feature',
+    },
+    {
+      id: 14,
+      titleKey: 'RELEASE_PLAN.FEATURE_14_TITLE',
+      descKey: 'RELEASE_PLAN.FEATURE_14_DESC',
+      icon: NotebookPen,
       tag: 'new',
       colorClass: 'new-feature',
     },

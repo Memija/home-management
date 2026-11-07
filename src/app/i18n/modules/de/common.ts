@@ -111,6 +111,9 @@ export const common = {
     FEATURE_13_TITLE: 'Familienplaner und Schulplaner',
     FEATURE_13_DESC:
       'Organisieren Sie Familientermine, Schulstundenpläne und wiederkehrende Haushaltsroutinen an einem Ort. Weisen Sie Familienmitgliedern Pläne zu, um alle auf dem gleichen Stand zu halten und die tägliche Koordination zu erleichtern.',
+    FEATURE_14_TITLE: 'Haushaltstagebuch und Familientagebuch',
+    FEATURE_14_DESC:
+      'Führen Sie ein gemeinsames chronologisches Tagebuch für Ihren gesamten Haushalt. Halten Sie besondere Familienmomente und Urlaubsreisen fest, verfassen Sie persönliche Einträge für einzelne Familienmitglieder und dokumentieren Sie Reparaturen, Renovierungen sowie Wartungsarbeiten übersichtlich an einem Ort.',
     CTA_TEXT:
       'Ihre Unterstützung hilft uns, diese Funktionen schneller zu entwickeln. Danke, dass Sie Teil unserer Community sind!',
     BACK_TO_HOME: 'Zurück zur Startseite',

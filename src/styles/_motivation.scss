@@ -1,0 +1,127 @@
+// Consumption Motivation Messages — reusable status banner & theme variants
+
+.motivation-status {
+  width: 100%;
+  border-radius: 14px;
+  padding: 0.75rem 0.9rem;
+  text-align: left;
+  background-color: var(--mot-bg);
+  border: 1px solid var(--mot-border);
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
+  transition:
+    background-color 0.25s ease,
+    border-color 0.25s ease;
+
+  &.motivation-saving {
+    --mot-bg: #ecfdf5;
+    --mot-border: rgba(16, 185, 129, 0.35);
+    --mot-badge-bg: #d1fae5;
+    --mot-accent: #065f46;
+    --mot-text: #064e3b;
+
+    [data-theme='dark'] & {
+      --mot-bg: rgba(6, 78, 59, 0.55);
+      --mot-border: rgba(52, 211, 153, 0.4);
+      --mot-badge-bg: #065f46;
+      --mot-accent: #a7f3d0;
+      --mot-text: #d1fae5;
+    }
+  }
+
+  &.motivation-stable {
+    --mot-bg: #f0f9ff;
+    --mot-border: rgba(14, 165, 233, 0.3);
+    --mot-badge-bg: #e0f2fe;
+    --mot-accent: #075985;
+    --mot-text: #0c4a6e;
+
+    [data-theme='dark'] & {
+      --mot-bg: rgba(12, 74, 110, 0.55);
+      --mot-border: rgba(56, 189, 248, 0.4);
+      --mot-badge-bg: #075985;
+      --mot-accent: #bae6fd;
+      --mot-text: #e0f2fe;
+    }
+  }
+
+  &.motivation-spike {
+    --mot-bg: #fffbeb;
+    --mot-border: rgba(245, 158, 11, 0.35);
+    --mot-badge-bg: #fef3c7;
+    --mot-accent: #92400e;
+    --mot-text: #78350f;
+
+    [data-theme='dark'] & {
+      --mot-bg: rgba(120, 53, 15, 0.45);
+      --mot-border: rgba(251, 191, 36, 0.4);
+      --mot-badge-bg: #78350f;
+      --mot-accent: #fde68a;
+      --mot-text: #fef3c7;
+    }
+  }
+}
+
+.motivation-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+}
+
+.motivation-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.2rem 0.6rem;
+  border-radius: 999px;
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.01em;
+  background-color: var(--mot-badge-bg);
+  color: var(--mot-accent);
+
+  lucide-icon {
+    display: inline-flex;
+    align-items: center;
+  }
+}
+
+.motivation-refresh-btn {
+  position: relative;
+  z-index: 2;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  padding: 0;
+  border-radius: 50%;
+  border: 1px solid transparent;
+  background: transparent;
+  color: var(--mot-accent);
+  cursor: pointer;
+  flex-shrink: 0;
+  transition:
+    transform 0.25s ease,
+    background-color 0.2s ease;
+
+  &:hover {
+    transform: rotate(90deg);
+    background-color: var(--mot-badge-bg);
+  }
+
+  &:focus-visible {
+    outline: 2px solid currentColor;
+    outline-offset: 2px;
+  }
+}
+
+.motivation-message {
+  margin: 0;
+  font-size: 0.85rem;
+  line-height: 1.45;
+  font-weight: 500;
+  color: var(--mot-text);
+}

@@ -4,6 +4,7 @@ import { bs } from './bs';
 import { sr } from './sr';
 import { id } from './id';
 import { pl } from './pl';
+import { MOTIVATION_MESSAGE_POOL_SIZE } from '../models/motivation.model';
 
 // Static imports for module-level integrity checks
 import * as enModules from './modules/en';
@@ -179,6 +180,7 @@ describe('I18n — English as baseline', () => {
       'electricity',
       'auth',
       'landing',
+      'motivation',
       'privacy',
     ];
 
@@ -315,7 +317,7 @@ describe('I18n — English as baseline', () => {
   });
 
   // -------------------------------------------------------------------------
-  // 5. Global sanity: language service registration
+  // 5. Global sanity: language service registration & motivation spike rules
   // -------------------------------------------------------------------------
   it('should register all languages in LanguageService', async () => {
     const { SUPPORTED_LANGUAGES } = await import('../services/language.service');
@@ -326,5 +328,67 @@ describe('I18n — English as baseline', () => {
         `Language "${code}" is missing from SUPPORTED_LANGUAGES`,
       ).toContain(code);
     }
+  });
+
+  it('should use only percentage placeholders (never explicit daily rate/unit) across all motivation messages in all languages', () => {
+    const allLangs = [{ code: 'en', obj: en }, ...LANGUAGES];
+    const violations: string[] = [];
+    const forbiddenRatePattern = /\{\{rate\}\}|\{\{unit\}\}|kWh|\/(day|Tag|dan|дан|hari|dzień)\b/;
+
+    for (const { code, obj } of allLangs) {
+      const leaves = collectLeaves(obj as unknown as TranslationObject);
+      for (const [key, val] of leaves.entries()) {
+        if (!key.startsWith('MOTIVATION.')) continue;
+        const text = String(val);
+
+        if (forbiddenRatePattern.test(text)) {
+          violations.push(
+            `[${code}] ${key} must not contain explicit daily rate or unit: "${text}"`,
+          );
+        }
+
+        if (
+          /^MOTIVATION\.(WATER|HEATING|ELECTRICITY)\.(SAVING|SPIKE)_\d+$/.test(key) &&
+          !text.includes('{{percent}}')
+        ) {
+          violations.push(`[${code}] ${key} is missing {{percent}}: "${text}"`);
+        }
+      }
+    }
+
+    expect(violations, violations.join('\n')).toEqual([]);
+  });
+
+  it('should define all 1..MOTIVATION_MESSAGE_POOL_SIZE distinct messages per tracker and state in every language', () => {
+    const allLangs = [{ code: 'en', obj: en }, ...LANGUAGES];
+    const trackers = ['WATER', 'HEATING', 'ELECTRICITY'] as const;
+    const states = ['SAVING', 'STABLE', 'SPIKE'] as const;
+    const violations: string[] = [];
+
+    for (const { code, obj } of allLangs) {
+      const leaves = collectLeaves(obj as unknown as TranslationObject);
+      const seenTexts = new Map<string, string>();
+
+      for (const tracker of trackers) {
+        for (const state of states) {
+          for (let idx = 1; idx <= MOTIVATION_MESSAGE_POOL_SIZE; idx++) {
+            const key = `MOTIVATION.${tracker}.${state}_${idx}`;
+            const raw = leaves.get(key);
+            if (typeof raw !== 'string' || raw.trim().length === 0) {
+              violations.push(`[${code}] Missing or empty motivation message: ${key}`);
+              continue;
+            }
+            const prevKey = seenTexts.get(raw);
+            if (prevKey) {
+              violations.push(`[${code}] Duplicate motivation text in ${key} and ${prevKey}`);
+            } else {
+              seenTexts.set(raw, key);
+            }
+          }
+        }
+      }
+    }
+
+    expect(violations, violations.join('\n')).toEqual([]);
   });
 });

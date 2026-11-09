@@ -1,6 +1,11 @@
 {
+  "id": "/",
   "short_name": "Home",
   "name": "Home Management",
+  "description": "Free, privacy-first web app to track household water, heating, and electricity consumption with statistical forecasts, camera OCR, and country benchmarks.",
+  "lang": "en",
+  "dir": "ltr",
+  "categories": ["utilities", "productivity", "lifestyle"],
   "icons": [
     {
       "src": "assets/logo-128.png",
@@ -8,10 +13,33 @@
       "sizes": "128x128"
     },
     {
+      "src": "assets/logo-192.png",
+      "type": "image/png",
+      "sizes": "192x192"
+    },
+    {
+      "src": "assets/logo-512.png",
+      "type": "image/png",
+      "sizes": "512x512",
+      "purpose": "any"
+    },
+    {
       "src": "assets/logo-512.png",
       "type": "image/png",
       "sizes": "512x512",
       "purpose": "maskable"
+    }
+  ],
+  "screenshots": [
+    {
+      "src": "assets/og-image.png",
+      "type": "image/png",
+      "sizes": "1200x630"
+    },
+    {
+      "src": "assets/logo-512.png",
+      "type": "image/png",
+      "sizes": "512x512"
     }
   ],
   "start_url": ".",

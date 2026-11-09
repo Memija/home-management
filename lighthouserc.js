@@ -14,8 +14,10 @@ module.exports = {
   ci: {
     collect: {
       ...(chromePath ? { chromePath } : {}),
-      startServerCommand: 'npm run serve:ssr',
-      startServerReadyPattern: 'Node Express server listening',
+      // Audit the static build exactly as Firebase Hosting serves it in production
+      // (prerendered pages, SPA fallback, firebase.json headers incl. CSP and caching).
+      startServerCommand: 'npm run serve:hosting',
+      startServerReadyPattern: 'Firebase Hosting emulation listening',
       startServerReadyTimeout: 30000,
       url: [
         'http://localhost:4000/',

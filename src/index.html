@@ -2,39 +2,97 @@
 <html lang="en">
   <head>
     <meta charset="utf-8" />
-    <title>Home Management</title>
+    <title>Home Management – Free Water, Heating and Electricity Tracker</title>
     <meta
       name="description"
-      content="Your all-in-one household management app. Manage family members, track consumption, monitor expenses, and optimize your home's efficiency with powerful insights and visualizations."
+      content="Track water, heating and electricity consumption in one free, privacy-first app. Charts, forecasts and country comparisons. No account needed."
     />
     <base href="/" />
     <link rel="preconnect" href="https://apis.google.com" />
-    <link rel="canonical" href="https://home-management.dev/" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
     <link rel="manifest" href="manifest.webmanifest" />
     <meta property="og:site_name" content="Home Management" />
     <meta property="og:type" content="website" />
-    <meta property="og:title" content="Home Management - All-in-one Household Tracker" />
+    <meta
+      property="og:title"
+      content="Home Management – Free Water, Heating and Electricity Tracker"
+    />
     <meta
       property="og:description"
-      content="Manage family members, track consumption, monitor expenses, and optimize your home's efficiency with powerful insights and visualizations."
+      content="Track water, heating and electricity consumption in one free, privacy-first app. Charts, forecasts and country comparisons. No account needed."
     />
     <meta property="og:image" content="https://home-management.dev/assets/og-image.png" />
     <meta property="og:image:width" content="1200" />
     <meta property="og:image:height" content="630" />
+    <meta
+      property="og:image:alt"
+      content="Home Management – track water, heating and electricity consumption"
+    />
+    <meta property="og:locale" content="en_US" />
     <meta property="og:url" content="https://home-management.dev/" />
     <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:title" content="Home Management - All-in-one Household Tracker" />
+    <meta
+      name="twitter:title"
+      content="Home Management – Free Water, Heating and Electricity Tracker"
+    />
     <meta
       name="twitter:description"
-      content="Track consumption, monitor expenses, and optimize your home's efficiency with professional visualizations. Free and Open Source."
+      content="Track water, heating and electricity consumption in one free, privacy-first app. Charts, forecasts and country comparisons. No account needed."
     />
     <meta name="twitter:image" content="https://home-management.dev/assets/og-image.png" />
     <link rel="icon" type="image/png" href="assets/logo-128.png" />
     <link rel="apple-touch-icon" href="assets/logo-512.png" />
     <meta name="apple-mobile-web-app-title" content="Home Management" />
     <meta name="application-name" content="Home Management" />
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@graph": [
+          {
+            "@type": "WebSite",
+            "@id": "https://home-management.dev/#website",
+            "url": "https://home-management.dev/",
+            "name": "Home Management",
+            "inLanguage": ["en", "de", "bs", "sr", "id", "pl"],
+            "publisher": { "@id": "https://home-management.dev/#author" }
+          },
+          {
+            "@type": "WebApplication",
+            "@id": "https://home-management.dev/#app",
+            "name": "Home Management",
+            "url": "https://home-management.dev/",
+            "description": "Free, privacy-first web app to track household water, heating and electricity consumption with charts, forecasts and country comparisons. Works without an account.",
+            "applicationCategory": "UtilitiesApplication",
+            "operatingSystem": "Any",
+            "browserRequirements": "Requires JavaScript and a modern web browser",
+            "inLanguage": ["en", "de", "bs", "sr", "id", "pl"],
+            "isAccessibleForFree": true,
+            "offers": { "@type": "Offer", "price": "0", "priceCurrency": "EUR" },
+            "image": "https://home-management.dev/assets/og-image.png",
+            "featureList": [
+              "Water consumption tracking for kitchen and bathroom, warm and cold water",
+              "Per-room heating consumption tracking",
+              "Electricity consumption tracking in kWh",
+              "Comparison with national averages",
+              "Consumption forecasts with seasonal adjustment",
+              "Meter reading by photo with on-device OCR",
+              "Excel import and export, PDF reports",
+              "Local-first storage with optional cloud sync"
+            ],
+            "license": "https://github.com/Memija/home-management/blob/main/LICENSE.md",
+            "author": { "@id": "https://home-management.dev/#author" },
+            "sameAs": ["https://github.com/Memija/home-management"]
+          },
+          {
+            "@type": "Person",
+            "@id": "https://home-management.dev/#author",
+            "name": "Anel Memic",
+            "url": "https://github.com/Memija"
+          }
+        ]
+      }
+    </script>
     <script>
       if (
         window.location.hostname === 'home-management-be965.web.app' ||
@@ -47,6 +105,20 @@
             window.location.hash,
         );
       }
+      try {
+        var storedTheme = localStorage.getItem('hm_theme');
+        var isDark =
+          storedTheme === 'dark' ||
+          ((!storedTheme || storedTheme === 'system') &&
+            typeof window.matchMedia === 'function' &&
+            window.matchMedia('(prefers-color-scheme: dark)').matches);
+        document.documentElement.dataset.theme = isDark ? 'dark' : 'light';
+        var storedMembers = localStorage.getItem('hm_household_members');
+        var parsedMembers = storedMembers ? JSON.parse(storedMembers) : null;
+        var memberCount =
+          Array.isArray(parsedMembers) && parsedMembers.length > 0 ? parsedMembers.length : 2;
+        document.documentElement.dataset.householdSize = String(memberCount);
+      } catch (e) {}
     </script>
   </head>
 

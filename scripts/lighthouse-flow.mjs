@@ -497,6 +497,13 @@ async function auditSuite(
     isMobile,
     demoData,
   });
+
+  // 18. 404 Not Found Page (Aerial Landscape in Day/Night Theme)
+  await auditPage(flow, page, {
+    url: `${BASE_URL}/not-found`,
+    name: `${icon} 404 Not Found Page (${platformName} ${themeName})`,
+    isMobile,
+  });
 }
 
 /**
@@ -555,7 +562,8 @@ async function stopProcess(child) {
 }
 
 /**
- * Discovers an active web server or automatically spawns the Express SSR server
+ * Discovers an active web server or automatically spawns the Firebase Hosting emulation
+ * (scripts/serve-hosting.js), which serves the build exactly like production does
  */
 async function resolveServer() {
   if (process.env.TARGET_URL) {
@@ -574,26 +582,26 @@ async function resolveServer() {
     return { url: 'http://localhost:4200', process: null };
   }
 
-  // 2. Check if Express SSR server is already active on port 4000
+  // 2. Check if a production server (hosting emulation) is already active on port 4000
   if (await isServerReachable('http://localhost:4000')) {
-    console.log('📡 Connected to active SSR server at http://localhost:4000\n');
+    console.log('📡 Connected to active server at http://localhost:4000\n');
     return { url: 'http://localhost:4000', process: null };
   }
 
-  // 3. Neither server is active: automatically launch Express SSR server
-  const serverPath = path.resolve(process.cwd(), 'dist/home-management/server/server.mjs');
-  if (!fs.existsSync(serverPath)) {
-    console.log('📦 SSR production build not found. Building application (npm run build)...');
+  // 3. Neither server is active: automatically launch the Firebase Hosting emulation
+  const buildIndexPath = path.resolve(process.cwd(), 'dist/home-management/browser/index.csr.html');
+  if (!fs.existsSync(buildIndexPath)) {
+    console.log('📦 Production build not found. Building application (npm run build)...');
     execSync('npm run build', { stdio: 'inherit' });
   }
 
-  console.log('🚀 Spawning local Express SSR server on port 4000...');
+  console.log('🚀 Spawning Firebase Hosting emulation on port 4000...');
+  const serverPath = path.resolve(process.cwd(), 'scripts/serve-hosting.js');
   const serverProc = spawn(process.execPath, [serverPath], {
     stdio: ['ignore', 'pipe', 'pipe'],
     env: {
       ...process.env,
       PORT: '4000',
-      NG_ALLOWED_HOSTS: 'localhost,127.0.0.1',
     },
   });
 
@@ -608,11 +616,11 @@ async function resolveServer() {
   if (!isReady) {
     await stopProcess(serverProc);
     throw new Error(
-      `Failed to start Express SSR server on http://localhost:4000.\n${serverErrOutput}`,
+      `Failed to start Firebase Hosting emulation on http://localhost:4000.\n${serverErrOutput}`,
     );
   }
 
-  console.log('✅ Express SSR server ready on http://localhost:4000\n');
+  console.log('✅ Firebase Hosting emulation ready on http://localhost:4000\n');
   return { url: 'http://localhost:4000', process: serverProc };
 }
 
@@ -623,7 +631,7 @@ async function runAudit() {
 
   const handleTermination = async () => {
     if (serverProcess) {
-      console.log('\n🛑 Stopping background SSR server...');
+      console.log('\n🛑 Stopping background server...');
       await stopProcess(serverProcess);
       serverProcess = null;
     }
@@ -854,7 +862,7 @@ async function runAudit() {
       }
     }
     if (serverProcess) {
-      console.log('🛑 Stopping background SSR server...');
+      console.log('🛑 Stopping background server...');
       await stopProcess(serverProcess);
     }
   }

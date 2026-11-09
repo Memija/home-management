@@ -23,26 +23,29 @@ function inlineAngularTemplates() {
           }
         });
 
-        // Inline styleUrl / styleUrls
-        newCode = newCode.replace(
-          /styleUrl(?:s)?:\s*(?:['"`](.*?)['"`]|\[(.*?)\])/g,
-          (match, singleUrl, arrayUrls) => {
-            try {
-              const urls = singleUrl
-                ? [singleUrl]
-                : arrayUrls.split(',').map((u: string) => u.trim().replace(/['"`]/g, ''));
-              const cssContents = urls.map((url: string) => {
-                if (!url) return '';
-                const absPath = resolve(dirname(id), url);
-                // eslint-disable-next-line security/detect-non-literal-fs-filename -- inlining styles dynamically in tests
-                return readFileSync(absPath, 'utf-8');
-              });
-              return `styles: [${JSON.stringify(cssContents.join(''))}]`;
-            } catch {
-              return match;
-            }
-          },
-        );
+        // Strip styleUrl / styleUrls (JSDOM does not render styles or parse raw SCSS)
+        newCode = newCode.replace(/styleUrl(?:s)?:\s*(?:['"`](.*?)['"`]|\[(.*?)\])/g, 'styles: []');
+
+        // Support Angular signal input() and output() in JIT mode when running vitest directly
+        if (/\b(?:input|output)\s*(?:\.required)?\s*[<(]/.test(newCode)) {
+          const validModifiers = new Set(['public', 'protected', 'private', 'readonly']);
+          newCode = `import { Input as __NgJitInput, Output as __NgJitOutput } from '@angular/core';\n${newCode}`;
+          newCode = newCode.replace(
+            /^([ \t]*)(\w[^\r\n=;]*)(=[ \t]*(input(?:\.required)?|output)[ \t]*[<(])/gm,
+            (match, indent: string, lhs: string, rhs: string, fn: string) => {
+              const [declPart] = lhs.split(':');
+              const tokens = declPart.trim().split(/\s+/);
+              const propName = tokens.pop();
+              if (!propName || !/^\w+$/.test(propName) || !tokens.every((t) => validModifiers.has(t))) {
+                return match;
+              }
+              const decorator = fn.startsWith('input')
+                ? '@__NgJitInput({ isSignal: true } as unknown as string)'
+                : '@__NgJitOutput()';
+              return `${indent}${decorator} ${lhs}${rhs}`;
+            },
+          );
+        }
 
         return { code: newCode, map: null };
       }

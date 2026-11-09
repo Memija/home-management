@@ -48,10 +48,11 @@ export const common = {
   FOOTER: {
     APP_NAME: 'Home Management',
     SUPPORT_PROJECT: 'Support this Project',
+    BENCHMARKS: 'Country Benchmarks',
     CHANGELOG: 'Changelog',
     RELEASE_PLAN: 'Upcoming Features',
     CONTRIBUTE: 'Contribute',
-    PRIVACY_POLICY: 'Privacy Policy',
+    PRIVACY_POLICY: 'Privacy & Legal',
     VERSION: 'Version {{version}}',
   },
   CHANGELOG: {

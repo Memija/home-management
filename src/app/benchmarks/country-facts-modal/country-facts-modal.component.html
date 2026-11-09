@@ -1,0 +1,118 @@
+<div
+  class="modal-overlay"
+  role="dialog"
+  aria-modal="true"
+  aria-labelledby="country-facts-modal-title"
+  (click)="$event.target === $event.currentTarget ? onClose() : undefined"
+  (keydown.escape)="onClose()"
+>
+  <div class="modal-content country-facts-modal">
+    <header class="modal-header modal-header-premium facts-modal-header">
+      <div class="country-header-info">
+        <img
+          [src]="country().flagUrl"
+          alt=""
+          width="36"
+          height="24"
+          decoding="async"
+          class="modal-country-flag"
+        />
+        <div class="country-title-group">
+          <h2 id="country-facts-modal-title">{{ country().name }}</h2>
+          <p class="modal-subtitle">{{ 'SEO.BENCHMARKS.FACTS_MODAL_SUBTITLE' | translate }}</p>
+        </div>
+      </div>
+      <button
+        type="button"
+        class="close-btn"
+        (click)="onClose()"
+        title="{{ 'ACTIONS.CLOSE' | translate }}"
+        aria-label="{{ 'ACTIONS.CLOSE' | translate }}"
+      >
+        <lucide-icon [img]="XIcon" [size]="20" aria-hidden="true"></lucide-icon>
+      </button>
+    </header>
+
+    <div class="facts-category-tabs" role="tablist">
+      <button
+        type="button"
+        role="tab"
+        id="facts-tab-water"
+        aria-controls="facts-panel"
+        class="category-tab category-tab--water"
+        [class.active]="activeCategory() === 'water'"
+        [attr.aria-selected]="activeCategory() === 'water'"
+        (click)="selectCategory('water')"
+      >
+        <span class="tab-label">
+          <lucide-icon [img]="DropletsIcon" [size]="16" aria-hidden="true"></lucide-icon>
+          <span>{{ 'MENU.WATER' | translate }}</span>
+        </span>
+        <span class="tab-metric">{{ country().waterDailyLiters }} L/d</span>
+      </button>
+
+      <button
+        type="button"
+        role="tab"
+        id="facts-tab-electricity"
+        aria-controls="facts-panel"
+        class="category-tab category-tab--electricity"
+        [class.active]="activeCategory() === 'electricity'"
+        [attr.aria-selected]="activeCategory() === 'electricity'"
+        (click)="selectCategory('electricity')"
+      >
+        <span class="tab-label">
+          <lucide-icon [img]="ZapIcon" [size]="16" aria-hidden="true"></lucide-icon>
+          <span>{{ 'MENU.ELECTRICITY' | translate }}</span>
+        </span>
+        <span class="tab-metric">{{ country().electricityYearlyKwh }} kWh</span>
+      </button>
+
+      <button
+        type="button"
+        role="tab"
+        id="facts-tab-heating"
+        aria-controls="facts-panel"
+        class="category-tab category-tab--heating"
+        [class.active]="activeCategory() === 'heating'"
+        [attr.aria-selected]="activeCategory() === 'heating'"
+        (click)="selectCategory('heating')"
+      >
+        <span class="tab-label">
+          <lucide-icon [img]="FlameIcon" [size]="16" aria-hidden="true"></lucide-icon>
+          <span>{{ 'MENU.HEATING' | translate }}</span>
+        </span>
+        <span class="tab-metric">
+          @if (country().heatingYearlyKwh > 0) {
+            {{ country().heatingYearlyKwh }} kWh
+          } @else {
+            {{ 'SEO.BENCHMARKS.NO_HEATING' | translate }}
+          }
+        </span>
+      </button>
+    </div>
+
+    <div
+      id="facts-panel"
+      role="tabpanel"
+      [attr.aria-labelledby]="'facts-tab-' + activeCategory()"
+      class="modal-body facts-modal-body"
+      [attr.data-category]="activeCategory()"
+    >
+      @if (facts().length === 0) {
+        <p class="facts-loading">{{ 'SEO.BENCHMARKS.FACTS_LOADING' | translate }}</p>
+      } @else {
+        <ul class="facts-list">
+          @for (fact of facts(); track $index) {
+            <li class="fact-item">
+              <span class="fact-bullet" aria-hidden="true">
+                <lucide-icon [img]="LightbulbIcon" [size]="16"></lucide-icon>
+              </span>
+              <span class="fact-text">{{ fact }}</span>
+            </li>
+          }
+        </ul>
+      }
+    </div>
+  </div>
+</div>

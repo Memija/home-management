@@ -24,13 +24,11 @@
             <div class="motivation-header">
               <span class="motivation-badge">
                 <lucide-icon
-                  [img]="getMotivationIcon(insight.state)"
+                  [img]="card.motivationIcon!"
                   [size]="14"
                   aria-hidden="true"
                 ></lucide-icon>
-                <span>{{
-                  getMotivationBadgeKey(insight.state) | translate: insight.messageParams
-                }}</span>
+                <span>{{ card.motivationBadgeKey | translate: insight.messageParams }}</span>
               </span>
               <button
                 type="button"

@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, ChangeDetectionStrategy } from '@angular/core';
 import { TranslatePipe } from '../pipes/translate.pipe';
 import {
   LucideAngularModule,
@@ -28,6 +28,7 @@ interface ChangelogEntry {
   imports: [TranslatePipe, LucideAngularModule],
   templateUrl: './changelog.component.html',
   styleUrl: './changelog.component.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ChangelogComponent {
   readonly HistoryIcon = History;

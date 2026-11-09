@@ -1,7 +1,7 @@
 // English landing page translations
 export const landing = {
   LANDING: {
-    BADGE: 'Open Source · Free Forever',
+    BADGE: 'Source-Available · Free Forever',
     TITLE_LINE_1: 'Your Home,',
     TITLE_LINE_2: 'Fully Managed.',
     SUBTITLE:
@@ -13,7 +13,7 @@ export const landing = {
     THEME_TOGGLE: 'Toggle color theme',
     SCROLL_PROGRESS: 'Page scroll progress',
     STATS: {
-      FREE: 'Free and Open Source',
+      FREE: 'Free and Source-Available',
       TRACKERS: 'Utility Trackers',
       DATA_POINTS: 'Data Points',
       ADS: 'Ads Ever',
@@ -39,8 +39,8 @@ export const landing = {
       UNIFIED_TAG_3: 'Daily Deltas',
       PRIVACY_TITLE: 'Multilingual and Full Privacy',
       PRIVACY_DESC:
-        'Full support across 5 languages with accessible high-contrast themes and zero tracking.',
-      PRIVACY_TAG_1: '5 Languages',
+        'Full support across 6 languages with accessible high-contrast themes and zero tracking.',
+      PRIVACY_TAG_1: '6 Languages',
       PRIVACY_TAG_2: 'Zero Trackers',
       PRIVACY_TAG_3: 'Accessible Themes',
     },
@@ -85,6 +85,20 @@ export const landing = {
       STEP_3_TITLE: 'See Your Insights',
       STEP_3_DESC: 'Beautiful charts show your trends, comparisons, and per-person usage.',
     },
+    FAQ: {
+      TITLE: 'Frequently Asked Questions',
+      SUBTITLE: 'Everything you need to know about privacy, meter tracking and forecasts.',
+      Q1: 'Does Home Management require an account or subscription?',
+      A1: 'No. Home Management is 100% free for personal and household use and works immediately in your browser without registration. Optional Google sign-in is only used if you choose to sync data across devices.',
+      Q2: 'Where is my household consumption data stored?',
+      A2: 'By default, all water, heating and electricity records stay locally in your browser storage. There are no ads and no third-party tracking scripts. You can export your data or enable optional cloud backup at any time.',
+      Q3: 'How does the camera meter reader (OCR) work?',
+      A3: 'When you take or upload a photo of your utility meter, image cropping, contrast enhancement and Tesseract.js optical character recognition run entirely on your device. Your meter photos never leave your browser.',
+      Q4: 'How are consumption forecasts and country benchmarks calculated?',
+      A4: 'Forecasts combine linear and polynomial regression with seasonal adjustments and historical accuracy auto-correction. Country comparisons benchmark your per-person usage against official statistics from agencies like the Umweltbundesamt (German Environment Agency), BDEW (German Association of Energy and Water Industries), Eurostat (Statistical Office of the European Union), and the EIA (U.S. Energy Information Administration).',
+      Q5: 'Can I handle meter replacements and import existing Excel sheets?',
+      A5: 'Yes. When a meter is replaced or resets, the app calculates deltas across the swap without false spikes. You can also import historical Excel (.xlsx) files with custom column mapping or export to Excel, JSON and PDF.',
+    },
     CTA: {
       TITLE: 'Ready to Take Control?',
       SUBTITLE:
@@ -93,6 +107,7 @@ export const landing = {
     },
     FOOTER: {
       GITHUB: 'GitHub',
+      BENCHMARKS: 'Country Benchmarks',
       OPEN_APP: 'Open App',
     },
   },

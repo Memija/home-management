@@ -32,7 +32,7 @@ export const chart = {
     COMPARE_WITH_INFO_ELECTRICITY:
       'Podaci o prosječnoj potrošnji električne energije preuzeti su iz nacionalnih statistika i energetskih izvještaja za svaku državu.',
     COMPARE_WITH_INFO_HEATING:
-      'Podaci o prosječnoj potrošnji grijanja preuzeti su iz nacionalnih statistika i anketa domaćinstava za svaku državu.',
+      'Podaci o prosječnoj potrošnji grijanja preuzeti su iz nacionalnih statistika i anketa domaćinstava za tipičan stan od 100 m². Grijanje prostora poredi se po domaćinstvu umjesto po osobi jer zavisi od površine stana, izolacije objekta i vanjske klime, a ne od broja ukućana.',
     COMPARISON_REQUIRES_DATA: 'Za poređenje s držvama potrebna su barem 3 unosa',
     KITCHEN_TOTAL: 'Potrošnja u kuhinji',
     BATHROOM_TOTAL: 'Potrošnja u kupatilu',

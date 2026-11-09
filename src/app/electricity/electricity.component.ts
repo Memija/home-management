@@ -1,5 +1,12 @@
-import { Component, computed, inject, signal, effect, ElementRef } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import {
+  Component,
+  ChangeDetectionStrategy,
+  computed,
+  inject,
+  signal,
+  effect,
+  ElementRef,
+} from '@angular/core';
 import { FormsModule } from '@angular/forms';
 
 import { TranslatePipe } from '../pipes/translate.pipe';
@@ -8,18 +15,9 @@ import { DemoWizardComponent } from '../shared/demo-wizard/demo-wizard.component
 import {
   LucideAngularModule,
   Clipboard as ClipboardIcon,
-  Download,
-  Upload,
-  CircleCheck,
-  Trash2,
   FileSpreadsheet,
-  FileText,
-  FileInput,
-  FileOutput,
   Info,
-  TriangleAlert,
   Zap,
-  RefreshCw,
   Lightbulb,
   ChevronDown,
 } from 'lucide-angular';
@@ -38,7 +36,7 @@ import {
   DetailedRecordsComponent,
   SortOptionConfig,
 } from '../shared/detailed-records/detailed-records.component';
-import { ElectricityRecord } from '../models/records.model';
+import { ElectricityRecord, parseSafeDate } from '../models/records.model';
 import { ComparisonNoteComponent } from '../shared/comparison-note/comparison-note.component';
 import {
   ConsumptionChartComponent,
@@ -55,7 +53,6 @@ import { ChartCalculationService } from '../services/chart-calculation.service';
 import { LanguageService } from '../services/language.service';
 import { ElectricityMeterService } from '../services/electricity-meter.service';
 import { ElectricityCountryFactsService } from '../services/electricity-country-facts.service';
-import { availableElectricityCountries } from '../i18n/modules/en/electricity-country-facts';
 import {
   CHART_HELP_STEPS,
   RECORD_HELP_STEPS,
@@ -67,6 +64,8 @@ import { DemoTourComponent } from '../shared/demo-tour/demo-tour.component';
 import { secureRandom } from '../utils/crypto.utils';
 
 import { SmartImportModalComponent } from '../shared/smart-import-modal/smart-import-modal.component';
+import { RecordActionsDropdownComponent } from '../shared/record-actions-dropdown/record-actions-dropdown.component';
+import { SuccessModalComponent } from '../shared/success-modal/success-modal.component';
 import { PredictionService } from '../services/prediction.service';
 import { PredictionsPanelComponent } from '../shared/predictions-panel/predictions-panel.component';
 
@@ -74,7 +73,6 @@ import { PredictionsPanelComponent } from '../shared/predictions-panel/predictio
   selector: 'app-electricity',
   standalone: true,
   imports: [
-    CommonModule,
     FormsModule,
     TranslatePipe,
     LucideAngularModule,
@@ -89,9 +87,12 @@ import { PredictionsPanelComponent } from '../shared/predictions-panel/predictio
     DemoWizardComponent,
     DemoTourComponent,
     PredictionsPanelComponent,
+    RecordActionsDropdownComponent,
+    SuccessModalComponent,
   ],
   templateUrl: './electricity.component.html',
   styleUrl: './electricity.component.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ElectricityComponent extends BaseConsumptionComponent<ElectricityRecord> {
   // Services
@@ -125,9 +126,8 @@ export class ElectricityComponent extends BaseConsumptionComponent<ElectricityRe
     const address = this.householdService.address();
     if (address?.country) {
       // Find if this country is valid for electricity facts
-      const isValid = availableElectricityCountries.some(
-        (c) => c.code.toLowerCase() === address.country.toLowerCase(),
-      );
+      const countries = this.electricityFactsService.getAvailableCountries?.() ?? [];
+      const isValid = countries.some((c) => c.code.toLowerCase() === address.country.toLowerCase());
       if (isValid) {
         this.effectiveComparisonCountryCode.set(address.country.toUpperCase());
       }
@@ -187,20 +187,18 @@ export class ElectricityComponent extends BaseConsumptionComponent<ElectricityRe
   protected maxDate = new Date().toISOString().split('T')[0];
 
   // Helpers
-  protected get hasValidInput(): boolean {
-    return this.formService.hasValidInput();
-  }
+  protected readonly hasValidInput = computed(() => this.formService.hasValidInput());
 
-  protected get dateExists(): boolean {
-    return this.formService.isDateDuplicate(this.records());
-  }
+  protected readonly dateExists = computed(() => this.formService.isDateDuplicate(this.records()));
 
-  protected sortOptions = computed<SortOptionConfig[]>(() => [
+  private static readonly SORT_OPTIONS: SortOptionConfig[] = [
     { value: 'date-desc', labelKey: 'HOME.SORT.DATE_DESC', direction: '↓' },
     { value: 'date-asc', labelKey: 'HOME.SORT.DATE_ASC', direction: '↑' },
     { value: 'value-desc', labelKey: 'HOME.SORT.TOTAL_DESC', direction: '↓' },
     { value: 'value-asc', labelKey: 'HOME.SORT.TOTAL_ASC', direction: '↑' },
-  ]);
+  ];
+
+  protected sortOptions = (): SortOptionConfig[] => ElectricityComponent.SORT_OPTIONS;
 
   protected consumptionGroups = computed<ConsumptionGroup[]>(() => [
     {
@@ -225,29 +223,25 @@ export class ElectricityComponent extends BaseConsumptionComponent<ElectricityRe
   protected formattedMeterChangeDate = computed(() => {
     const dates = this.unconfirmedMeterChanges();
     if (dates.length === 0) return '';
-    return new Date(dates[0]).toLocaleDateString(this.languageService.currentLang());
+    return parseSafeDate(dates[0]).toLocaleDateString(this.languageService.currentLang());
   });
 
+  protected readonly meterChangeMessageParams = computed(() => ({
+    date: this.formattedMeterChangeDate(),
+  }));
+
   // Icons
-  protected readonly DownloadIcon = Download;
-  protected readonly UploadIcon = Upload;
-  protected readonly CheckCircleIcon = CircleCheck;
-  protected readonly TrashIcon = Trash2;
   protected readonly FileSpreadsheetIcon = FileSpreadsheet;
   protected readonly ClipboardIcon = ClipboardIcon;
-  protected readonly FileInputIcon = FileInput;
-  protected readonly FileOutputIcon = FileOutput;
-  protected readonly FileTextIcon = FileText;
   protected readonly InfoIcon = Info;
-  protected readonly AlertTriangleIcon = TriangleAlert;
   protected readonly ZapIcon = Zap;
-  protected readonly RefreshCwIcon = RefreshCw;
   protected readonly LightbulbIcon = Lightbulb;
   protected readonly ChevronDownIcon = ChevronDown;
 
   private readonly elementRef = inject(ElementRef, { optional: true });
 
-  protected availableElectricityCountries = availableElectricityCountries;
+  protected availableElectricityCountries =
+    this.electricityFactsService.getAvailableCountries?.() ?? [];
 
   // Fact
   protected electricityFact = computed(() => {
@@ -375,21 +369,19 @@ export class ElectricityComponent extends BaseConsumptionComponent<ElectricityRe
   protected onSmartImport(records: { date: Date; value: number }[]) {
     if (records.length === 0) return;
 
-    // Convert parsed records to ElectricityRecords and save
-    let importedCount = 0;
+    const newRecords: ElectricityRecord[] = records.map((record) => ({
+      date: record.date,
+      value: record.value,
+    }));
 
-    for (const record of records) {
-      const newRecord: ElectricityRecord = {
-        date: record.date,
-        value: record.value,
-      };
-
-      void this.dataService.saveRecord(newRecord);
-      importedCount++;
+    if (typeof this.dataService.saveRecordsBatch === 'function') {
+      void this.dataService.saveRecordsBatch(newRecords);
+    } else {
+      for (const newRecord of newRecords) {
+        void this.dataService.saveRecord(newRecord);
+      }
     }
 
-    if (importedCount > 0) {
-      this.showSuccessModal.set(true);
-    }
+    this.showSuccessModal.set(true);
   }
 }

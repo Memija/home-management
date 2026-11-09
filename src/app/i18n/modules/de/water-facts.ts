@@ -115,7 +115,7 @@ export const waterFacts = {
     'Dein Kaltwasser hat {value} Eiswürfelschalen gefüllt! 🧊',
     'Das sind {value} Autowäschen wert! 🚗',
     'Genug Kaltwasser für {value} Bodenwischen! 🪣',
-    'Könnte {value} Obst- und Gemüseportionen abspülen! 🥬',
+    'Könnte {value} Obstportionen und Gemüseportionen abspülen! 🥬',
     'Dein Kaltwasser hat {value} Fenster gereinigt! 🪟',
     'Das sind {value} Wassernapf-Auffüllungen für Haustiere! 🐕',
     'Genug um {value} Vogeltränken zu füllen! 🐦',

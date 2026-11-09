@@ -1,5 +1,12 @@
-import { Component, OnInit, signal, computed, inject, effect, ElementRef } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import {
+  Component,
+  ChangeDetectionStrategy,
+  OnInit,
+  signal,
+  computed,
+  inject,
+  effect,
+} from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { TranslatePipe } from '../pipes/translate.pipe';
 import { DemoService } from '../services/demo.service';
@@ -7,24 +14,7 @@ import { DemoWizardComponent } from '../shared/demo-wizard/demo-wizard.component
 import { HeatingFormService } from '../services/heating-form.service';
 import { HeatingRoomsService, HeatingRoomConfig } from '../services/heating-rooms.service';
 import { HeatingDataService } from '../services/heating-data.service';
-import {
-  LucideAngularModule,
-  ArrowLeft,
-  ChevronDown,
-  ChevronLeft,
-  ChevronRight,
-  Download,
-  Upload,
-  FileSpreadsheet,
-  Settings,
-  CircleCheck,
-  Info,
-  Trash2,
-  FileText,
-  TriangleAlert,
-  RefreshCw,
-  Lightbulb,
-} from 'lucide-angular';
+import { LucideAngularModule, Settings, Lightbulb } from 'lucide-angular';
 import {
   ConsumptionChartComponent,
   type ChartView,
@@ -49,7 +39,11 @@ import {
 } from '../shared/detailed-records/detailed-records.component';
 import { DeleteConfirmationModalComponent } from '../shared/delete-confirmation-modal/delete-confirmation-modal.component';
 import { ComparisonNoteComponent } from '../shared/comparison-note/comparison-note.component';
-import { DynamicHeatingRecord, calculateDynamicHeatingTotal } from '../models/records.model';
+import {
+  DynamicHeatingRecord,
+  calculateDynamicHeatingTotal,
+  parseSafeDate,
+} from '../models/records.model';
 import { HeatingFactsService } from '../services/heating-facts.service';
 import {
   HEATING_RECORD_HELP_STEPS,
@@ -77,12 +71,13 @@ import { LanguageService } from '../services/language.service';
 import { ExcelSettingsService } from '../services/excel-settings.service';
 import { PredictionService } from '../services/prediction.service';
 import { PredictionsPanelComponent } from '../shared/predictions-panel/predictions-panel.component';
+import { RecordActionsDropdownComponent } from '../shared/record-actions-dropdown/record-actions-dropdown.component';
+import { SuccessModalComponent } from '../shared/success-modal/success-modal.component';
 
 @Component({
   selector: 'app-heating',
   standalone: true,
   imports: [
-    CommonModule,
     FormsModule,
     TranslatePipe,
     LucideAngularModule,
@@ -97,9 +92,12 @@ import { PredictionsPanelComponent } from '../shared/predictions-panel/predictio
     DemoWizardComponent,
     DemoTourComponent,
     PredictionsPanelComponent,
+    RecordActionsDropdownComponent,
+    SuccessModalComponent,
   ],
   templateUrl: './heating.component.html',
   styleUrl: './heating.component.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class HeatingComponent
   extends BaseConsumptionComponent<DynamicHeatingRecord>
@@ -120,26 +118,11 @@ export class HeatingComponent
   private readonly predictionService = inject(PredictionService);
 
   override get baseDataService(): ConsumptionDataServiceContract<DynamicHeatingRecord> {
-    return this.dataService as unknown as ConsumptionDataServiceContract<DynamicHeatingRecord>;
+    return this.dataService;
   }
 
-  protected readonly ArrowLeftIcon = ArrowLeft;
-  protected readonly ChevronDownIcon = ChevronDown;
-  protected readonly ChevronLeftIcon = ChevronLeft;
-  protected readonly ChevronRightIcon = ChevronRight;
-  protected readonly DownloadIcon = Download;
-  protected readonly UploadIcon = Upload;
-  protected readonly FileSpreadsheetIcon = FileSpreadsheet;
   protected readonly SettingsIcon = Settings;
-  protected readonly CheckCircleIcon = CircleCheck;
-  protected readonly InfoIcon = Info;
-  protected readonly TrashIcon = Trash2;
-  protected readonly FileTextIcon = FileText;
-  protected readonly AlertTriangleIcon = TriangleAlert;
-  protected readonly RefreshCwIcon = RefreshCw;
   protected readonly LightbulbIcon = Lightbulb;
-
-  private readonly elementRef = inject(ElementRef, { optional: true });
 
   protected readonly records = this.dataService.records;
   protected readonly heatingPrediction = computed(() =>
@@ -220,7 +203,7 @@ export class HeatingComponent
 
   private readonly factRandomSeed = signal(secureRandom());
   protected readonly heatingFact = computed(() => {
-    const records = this.chartRecords();
+    const records = this.records();
     const mode = this.displayMode();
     const seed = this.factRandomSeed();
     const countryCode = this.selectedCountryCode();
@@ -236,10 +219,10 @@ export class HeatingComponent
 
   protected readonly showRoomsModal = signal(false);
 
-  protected readonly showDeleteModal = signal(false);
-  protected readonly recordToDelete = signal<DynamicHeatingRecord | null>(null);
-  protected readonly showDeleteAllModal = signal(false);
-  protected readonly recordsToDeleteAll = signal<DynamicHeatingRecord[]>([]);
+  protected readonly showDeleteModal = this.dataService.showDeleteModal;
+  protected readonly recordToDelete = this.dataService.recordToDelete;
+  protected readonly showDeleteAllModal = this.dataService.showDeleteAllModal;
+  protected readonly recordsToDeleteAll = this.dataService.recordsToDelete;
 
   protected readonly confirmedSpikes = signal<HeatingSpikeEntry[]>(
     getStoredHeatingSpikes(this.localStorageService, 'confirmed'),
@@ -267,12 +250,17 @@ export class HeatingComponent
   protected readonly formattedSpikeDate = computed(() => {
     const spike = this.unconfirmedSpike();
     if (!spike) return '';
-    return this.languageService.formatDate(new Date(spike.date), {
+    return this.languageService.formatDate(parseSafeDate(spike.date), {
       year: 'numeric',
       month: 'long',
       day: 'numeric',
     });
   });
+
+  protected readonly unconfirmedSpikeParams = computed(() => ({
+    room: this.unconfirmedSpikeRoomName(),
+    date: this.formattedSpikeDate(),
+  }));
 
   protected readonly adjustedRecords = computed(() =>
     this.chartCalculationService.adjustForNewRooms(this.records(), this.confirmedSpikes()),
@@ -292,15 +280,25 @@ export class HeatingComponent
     saveHeatingSpikes(this.localStorageService, 'dismissed', this.dismissedSpikes());
   }
 
-  protected readonly chartRoomNames = computed(() =>
-    this.roomsService
-      .rooms()
-      .map((r) => (r.type ? this.languageService.translate(r.type) : r.name)),
-  );
-  protected readonly chartRoomIds = computed(() => this.roomsService.rooms().map((r) => r.id));
-  protected readonly chartRoomColors = computed(() =>
-    this.roomsService.rooms().map((r) => this.roomUtilsService.getRoomColor(r)),
-  );
+  private readonly chartRoomMeta = computed(() => {
+    this.languageService.currentLang();
+    this.languageService.translationVersion?.();
+    const rooms = this.roomsService.rooms();
+    const names = new Array<string>(rooms.length);
+    const ids = new Array<string>(rooms.length);
+    const colors = new Array<{ border: string; bg: string }>(rooms.length);
+    for (let i = 0; i < rooms.length; i++) {
+      const r = rooms[i];
+      names[i] = r.type ? this.languageService.translate(r.type) : r.name;
+      ids[i] = r.id;
+      colors[i] = this.roomUtilsService.getRoomColor(r);
+    }
+    return { names, ids, colors };
+  });
+
+  protected readonly chartRoomNames = computed(() => this.chartRoomMeta().names);
+  protected readonly chartRoomIds = computed(() => this.chartRoomMeta().ids);
+  protected readonly chartRoomColors = computed(() => this.chartRoomMeta().colors);
 
   protected readonly roomsWithData = computed(() => getRoomIdsWithData(this.records()));
 
@@ -336,7 +334,9 @@ export class HeatingComponent
   };
 
   ngOnInit(): void {
-    void this.dataService.loadData();
+    if (!this.dataService.isInitialized?.()) {
+      void this.dataService.loadData();
+    }
   }
 
   protected closeSuccessModal(): void {
@@ -389,34 +389,9 @@ export class HeatingComponent
     this.showDeleteModal.set(true);
   }
 
-  protected override confirmDelete(): void {
-    const record = this.recordToDelete();
-    if (record) {
-      void this.dataService.deleteRecord(record);
-    }
-    this.showDeleteModal.set(false);
-    this.recordToDelete.set(null);
-  }
-
-  protected override cancelDelete(): void {
-    this.showDeleteModal.set(false);
-    this.recordToDelete.set(null);
-  }
-
   protected onDeleteAllRecords(recordsToDelete: GenericRecord[]): void {
     this.recordsToDeleteAll.set(recordsToDelete as DynamicHeatingRecord[]);
     this.showDeleteAllModal.set(true);
-  }
-
-  protected override confirmDeleteAll(): void {
-    void this.dataService.deleteRecords(this.recordsToDeleteAll());
-    this.showDeleteAllModal.set(false);
-    this.recordsToDeleteAll.set([]);
-  }
-
-  protected override cancelDeleteAll(): void {
-    this.showDeleteAllModal.set(false);
-    this.recordsToDeleteAll.set([]);
   }
 
   protected readonly deleteAllMessageKey = computed(() =>

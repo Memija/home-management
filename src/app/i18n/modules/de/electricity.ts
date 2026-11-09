@@ -49,11 +49,11 @@ export const electricity = {
       'Aktivieren Sie im Modus "Täglicher Durchschnittsverbrauch" die Option "Durchschnitt anzeigen", um den Verbrauch Ihres Haushalts mit dem nationalen Durchschnitt für einen Haushalt Ihrer Größe zu vergleichen.',
     CHART_HELP_STEP_4_TITLE: 'Interaktion',
     CHART_HELP_STEP_4_DESC:
-      'Verwenden Sie das Mausrad oder die Pinch-Geste, um hinein- oder herauszuzoomen. Ziehen Sie, um sich auf der Zeitachse zu bewegen. Klicken Sie auf "Zoom zurücksetzen", um zur Vollansicht zurückzukehren.',
+      'Verwenden Sie das Mausrad oder die Pinch-Geste, um hineinzuzoomen oder herauszuzoomen. Ziehen Sie, um sich auf der Zeitachse zu bewegen. Klicken Sie auf "Zoom zurücksetzen", um zur Vollansicht zurückzukehren.',
     // Hilfe für Detaillierte Datensätze
     RECORDS_HELP_STEP_1_TITLE: 'Datensätze filtern',
     RECORDS_HELP_STEP_1_DESC:
-      'Verwenden Sie die Datumsbereichs-, Jahres- oder Monatsfilter, um bestimmte Stromdatensätze zu finden. Klicken Sie auf "Filter zurücksetzen", um alle aktiven Filter zu löschen und alle Datensätze anzuzeigen.',
+      'Verwenden Sie die Datumsbereichsfilter, Jahresfilter oder Monatsfilter, um bestimmte Stromdatensätze zu finden. Klicken Sie auf "Filter zurücksetzen", um alle aktiven Filter zu löschen und alle Datensätze anzuzeigen.',
     RECORDS_HELP_STEP_2_TITLE: 'Sortierung & Seitennummerierung',
     RECORDS_HELP_STEP_2_DESC:
       'Sortieren Sie Datensätze nach Datum oder Verbrauchswert über das Dropdown-Menü. Steuern Sie, wie viele Datensätze pro Seite angezeigt werden (5, 10, 20 oder 50) und navigieren Sie mit den Schaltflächen Zurück/Weiter.',
@@ -62,7 +62,7 @@ export const electricity = {
       'Klicken Sie auf das Bearbeitungssymbol (✏️), um einen Datensatz zu ändern, oder auf das Papierkorbsymbol (🗑️), um ihn zu löschen. Sie können auch alle sichtbaren gefilterten Datensätze auf einmal löschen.',
     RECORDS_HELP_STEP_4_TITLE: 'Exportieren & Importieren',
     RECORDS_HELP_STEP_4_DESC:
-      'Exportieren Sie Ihre Daten als JSON-, Excel- oder PDF-Dateien. Importieren Sie zuvor exportierte JSON- oder Excel-Dateien, um Ihre Stromverbrauchsdaten wiederherzustellen. Es werden nur Datensätze mit Werten ungleich Null importiert.',
+      'Exportieren Sie Ihre Daten als JSON-Dateien, Excel-Dateien oder PDF-Dateien. Importieren Sie zuvor exportierte JSON-Dateien oder Excel-Dateien, um Ihre Stromverbrauchsdaten wiederherzustellen. Es werden nur Datensätze mit Werten ungleich Null importiert.',
     RECORDS_HELP_STEP_5_TITLE: 'Smart Import',
     RECORDS_HELP_STEP_5_DESC:
       'Verwenden Sie Smart Import, um Daten direkt aus Tabellen oder Text einzufügen. Datum und Zählerstände werden automatisch erkannt und Sie können die Daten vor dem Import prüfen und bestätigen.',

@@ -182,6 +182,7 @@ describe('I18n — English as baseline', () => {
       'landing',
       'motivation',
       'privacy',
+      'seo',
     ];
 
     const ASSIGNED_MODULES = [
@@ -327,6 +328,18 @@ describe('I18n — English as baseline', () => {
         SUPPORTED_LANGUAGES,
         `Language "${code}" is missing from SUPPORTED_LANGUAGES`,
       ).toContain(code);
+    }
+  });
+
+  it('should advertise the actual number of supported languages on the landing page', async () => {
+    const { SUPPORTED_LANGUAGES } = await import('../services/language.service');
+    const count = String(SUPPORTED_LANGUAGES.length);
+    const allLangs = [{ code: 'en', obj: en }, ...LANGUAGES];
+
+    for (const { code, obj } of allLangs) {
+      const { PRIVACY_TAG_1, PRIVACY_DESC } = obj.LANDING.HIGHLIGHTS;
+      expect(PRIVACY_TAG_1, `[${code}] LANDING.HIGHLIGHTS.PRIVACY_TAG_1`).toContain(count);
+      expect(PRIVACY_DESC, `[${code}] LANDING.HIGHLIGHTS.PRIVACY_DESC`).toContain(count);
     }
   });
 

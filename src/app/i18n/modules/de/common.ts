@@ -48,10 +48,11 @@ export const common = {
   FOOTER: {
     APP_NAME: 'Haushaltsmanagement',
     SUPPORT_PROJECT: 'Projekt unterstützen',
+    BENCHMARKS: 'Ländervergleich',
     CHANGELOG: 'Änderungsprotokoll',
     RELEASE_PLAN: 'Kommende Funktionen',
     CONTRIBUTE: 'Mitwirken',
-    PRIVACY_POLICY: 'Datenschutzerklärung',
+    PRIVACY_POLICY: 'Datenschutz & Rechtliches',
     VERSION: 'Version {{version}}',
   },
   CHANGELOG: {
@@ -104,7 +105,7 @@ export const common = {
       'Wir erweitern unsere Sprachoptionen! Bald werden Sie die gesamte Anwendung auf Bulgarisch nutzen können, was die Hausverwaltung für unsere Nutzer in Bulgarien noch zugänglicher macht.',
     FEATURE_11_TITLE: 'Benutzerdefinierte Diagramm-Notizen',
     FEATURE_11_DESC:
-      'Fügen Sie benutzerdefinierte Notizen direkt zu Ihren Diagrammen hinzu. Markieren Sie wichtige Ereignisse, Gewohnheitsänderungen oder den Austausch von Geräten, um den Kontext hinter Ihren Verbrauchsspitzen oder -rückgängen besser zu verstehen.',
+      'Fügen Sie benutzerdefinierte Notizen direkt zu Ihren Diagrammen hinzu. Markieren Sie wichtige Ereignisse, Gewohnheitsänderungen oder den Austausch von Geräten, um den Kontext hinter Ihren Verbrauchsspitzen oder Verbrauchsrückgängen besser zu verstehen.',
     FEATURE_12_TITLE: 'Gamification & Erfolge',
     FEATURE_12_DESC:
       'Machen Sie das Sparen zu einem lustigen Spiel! Verdienen Sie Abzeichen für das Erreichen von Sparzielen und übertreffen Sie Ihre persönliche Bestleistung, um die Haushaltsführung noch spannender zu machen.',
@@ -133,10 +134,10 @@ export const common = {
     // Wasserzähler-Wizard (Normalmodus)
     WATER_STEP_1_TITLE: 'Interaktive Diagramme',
     WATER_STEP_1_DESC:
-      'Wechseln Sie zwischen Gesamt-, Detail-, Raum- und Typansicht, um Ihren Wasserverbrauch aus verschiedenen Blickwinkeln zu analysieren.',
+      'Wechseln Sie zwischen Gesamtansicht, Detailansicht, Raumansicht und Typansicht, um Ihren Wasserverbrauch aus verschiedenen Blickwinkeln zu analysieren.',
     WATER_STEP_2_TITLE: 'Küche und Badezimmer',
     WATER_STEP_2_DESC:
-      'Erfassen Sie Warm- und Kaltwasser getrennt für Küche und Badezimmer. Scrollen Sie nach unten zum Eingabebereich.',
+      'Erfassen Sie Warmwasser und Kaltwasser getrennt für Küche und Badezimmer. Scrollen Sie nach unten zum Eingabebereich.',
     WATER_STEP_3_TITLE: 'Ländervergleich',
     WATER_STEP_3_DESC:
       'Sehen Sie, wie Ihr Verbrauch im Vergleich zum nationalen Durchschnitt liegt. Der Vergleich passt sich an Ihre Adresseinstellungen an.',
@@ -146,7 +147,7 @@ export const common = {
     // Wasserzähler Tour-Schritte (Demo-Modus)
     TOUR_WATER_CHART_TITLE: 'Interaktive Wasserdiagramme',
     TOUR_WATER_CHART_DESC:
-      'Analysieren Sie Ihren Verbrauch hier. Nutzen Sie die Schaltflächen oben, um zwischen "Gesamt", "Detail" oder "Pro Raum" zu wechseln. Sie können auch Einträge in der Legende anklicken, um bestimmte Bereiche ein- oder auszublenden.',
+      'Analysieren Sie Ihren Verbrauch hier. Nutzen Sie die Schaltflächen oben, um zwischen "Gesamt", "Detail" oder "Pro Raum" zu wechseln. Sie können auch Einträge in der Legende anklicken, um bestimmte Bereiche einzublenden oder auszublenden.',
     TOUR_WATER_COMPARISON_TITLE: 'Nationale Durchschnitte',
     TOUR_WATER_COMPARISON_DESC:
       'Dieses Panel vergleicht Ihren Verbrauch mit dem nationalen Durchschnitt. So sehen Sie sofort, ob Ihr Haushalt Wasser spart oder über dem Durchschnitt Ihres Landes liegt.',
@@ -217,7 +218,7 @@ export const common = {
       'Fügen Sie Ihre Haushaltsmitglieder hinzu. Dies ermöglicht die Berechnung des Pro-Kopf-Verbrauchs in den Diagrammen.',
     SETTINGS_STEP_3_TITLE: 'Excel-Integration',
     SETTINGS_STEP_3_DESC:
-      'Aktivieren Sie den Excel-Import und -Export, um Ihre Verbrauchsdaten in Tabellenkalkulationen zu bearbeiten. Konfigurieren Sie Spaltenzuordnungen für Ihr Format.',
+      'Aktivieren Sie den Excel-Import und Excel-Export, um Ihre Verbrauchsdaten in Tabellenkalkulationen zu bearbeiten. Konfigurieren Sie Spaltenzuordnungen für Ihr Format.',
     SETTINGS_STEP_4_TITLE: 'Datenspeicherung',
     SETTINGS_STEP_4_DESC:
       'Alles wird standardmäßig auf Ihrem Gerät gespeichert. Nutzen Sie "Export" für ein manuelles Backup oder "Mit Google anmelden", um Ihre Daten sicher zwischen all Ihren Geräten zu synchronisieren.',

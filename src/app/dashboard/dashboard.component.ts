@@ -37,6 +37,8 @@ export interface DashboardTrackerCard {
   readonly titleKey: string;
   readonly descKey: string;
   readonly motivation: MotivationInsight | null;
+  readonly motivationIcon: LucideIconData | null;
+  readonly motivationBadgeKey: string;
 }
 
 @Component({
@@ -62,35 +64,50 @@ export class DashboardComponent {
   protected readonly CirclePlayIcon = CirclePlay;
   protected readonly RefreshCwIcon = RefreshCw;
 
-  protected readonly trackerCards = computed<DashboardTrackerCard[]>(() => [
-    {
-      type: 'water',
-      route: getMotivationTrackerRoute('water'),
-      cardClass: 'water-card',
-      icon: this.DropletsIcon,
-      titleKey: 'DASHBOARD.WATER_TRACKER',
-      descKey: 'DASHBOARD.WATER_DESC',
-      motivation: this.notificationService.waterMotivation(),
-    },
-    {
-      type: 'heating',
-      route: getMotivationTrackerRoute('heating'),
-      cardClass: 'heating-card',
-      icon: this.FlameIcon,
-      titleKey: 'DASHBOARD.HEATING_TRACKER',
-      descKey: 'DASHBOARD.HEATING_DESC',
-      motivation: this.notificationService.heatingMotivation(),
-    },
-    {
-      type: 'electricity',
-      route: getMotivationTrackerRoute('electricity'),
-      cardClass: 'electricity-card',
-      icon: this.ZapIcon,
-      titleKey: 'DASHBOARD.ELECTRICITY_TRACKER',
-      descKey: 'DASHBOARD.ELECTRICITY_DESC',
-      motivation: this.notificationService.electricityMotivation(),
-    },
-  ]);
+  protected readonly trackerCards = computed<DashboardTrackerCard[]>(() => {
+    const waterMotivation = this.notificationService.waterMotivation();
+    const heatingMotivation = this.notificationService.heatingMotivation();
+    const electricityMotivation = this.notificationService.electricityMotivation();
+    return [
+      {
+        type: 'water',
+        route: getMotivationTrackerRoute('water'),
+        cardClass: 'water-card',
+        icon: this.DropletsIcon,
+        titleKey: 'DASHBOARD.WATER_TRACKER',
+        descKey: 'DASHBOARD.WATER_DESC',
+        motivation: waterMotivation,
+        motivationIcon: waterMotivation ? getMotivationTrendIcon(waterMotivation.state) : null,
+        motivationBadgeKey: waterMotivation ? getMotivationBadgeKey(waterMotivation.state) : '',
+      },
+      {
+        type: 'heating',
+        route: getMotivationTrackerRoute('heating'),
+        cardClass: 'heating-card',
+        icon: this.FlameIcon,
+        titleKey: 'DASHBOARD.HEATING_TRACKER',
+        descKey: 'DASHBOARD.HEATING_DESC',
+        motivation: heatingMotivation,
+        motivationIcon: heatingMotivation ? getMotivationTrendIcon(heatingMotivation.state) : null,
+        motivationBadgeKey: heatingMotivation ? getMotivationBadgeKey(heatingMotivation.state) : '',
+      },
+      {
+        type: 'electricity',
+        route: getMotivationTrackerRoute('electricity'),
+        cardClass: 'electricity-card',
+        icon: this.ZapIcon,
+        titleKey: 'DASHBOARD.ELECTRICITY_TRACKER',
+        descKey: 'DASHBOARD.ELECTRICITY_DESC',
+        motivation: electricityMotivation,
+        motivationIcon: electricityMotivation
+          ? getMotivationTrendIcon(electricityMotivation.state)
+          : null,
+        motivationBadgeKey: electricityMotivation
+          ? getMotivationBadgeKey(electricityMotivation.state)
+          : '',
+      },
+    ];
+  });
 
   protected async activateDemo(): Promise<void> {
     await this.demoService.activateDemo();

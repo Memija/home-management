@@ -61,6 +61,10 @@ describe('HeatingComponent', () => {
       errorDetails: signal(''),
       errorInstructions: signal<string[]>([]),
       errorType: signal<'error' | 'warning'>('error'),
+      showDeleteModal: signal(false),
+      recordToDelete: signal<DynamicHeatingRecord | null>(null),
+      showDeleteAllModal: signal(false),
+      recordsToDelete: signal<DynamicHeatingRecord[]>([]),
       loadData: vi.fn(),
       importData: vi.fn(),
       confirmImport: vi.fn(),
@@ -74,6 +78,19 @@ describe('HeatingComponent', () => {
       saveRecord: vi.fn(),
       deleteRecord: vi.fn(),
       deleteRecords: vi.fn(),
+      confirmDelete: vi.fn(() => {
+        const rec = mockDataService.recordToDelete?.();
+        if (rec) {
+          void mockDataService.deleteRecord?.(rec);
+        }
+        mockDataService.showDeleteModal?.set(false);
+        mockDataService.recordToDelete?.set(null);
+      }),
+      confirmDeleteAll: vi.fn(() => {
+        void mockDataService.deleteRecords?.(mockDataService.recordsToDelete?.() ?? []);
+        mockDataService.showDeleteAllModal?.set(false);
+        mockDataService.recordsToDelete?.set([]);
+      }),
     } as never;
 
     mockFormService = {

@@ -115,7 +115,7 @@ export const middleEastHeatingFacts = {
   // Jordan
   JO: [
     'Jordanien hat kalte Winter in Hochlandgebieten.',
-    'Petroleum- und Dieselheizungen sind üblich.',
+    'Petroleumheizungen und Dieselheizungen sind üblich.',
     'Jordanische Haushalte verbrauchen durchschnittlich 60 kWh/m² für Heizung.',
     'Der durchschnittliche jordanische Haushalt gibt JOD 200-400 für Heizung jährlich aus.',
     'Amman hat kalte Winternächte, die Heizung erfordern.',
@@ -208,19 +208,35 @@ export const middleEastHeatingFacts = {
     'Ostanatolien hat strenge Winter.',
   ],
 
-  // Egypt
-  EG: [
-    'Ägypten hat aufgrund des warmen Klimas minimalen Heizbedarf.',
-    'Sinai und Wüstennächte können kalt sein.',
-    'Klimaanlagen bieten bei Bedarf Heizung.',
-    'Ägyptische Haushalte verbrauchen minimale Energie für Heizung.',
-    'Der durchschnittliche Haushalt gibt sehr wenig für Heizung aus.',
-    'Flüssiggas wird in ganz Ägypten zum Kochen verwendet.',
-    'Erdgas expandiert in Kairo.',
-    'Gebäudedesign priorisiert Belüftung.',
-    'Alexandria hat kühlere Winter als Kairo.',
-    'Oberägypten hat sehr heißes Klima.',
-    'Bedeutende Heizinfrastruktur existiert nicht.',
-    'Energieverbrauch wird von Kühlung dominiert.',
+  // Palestine
+  PS: [
+    'Der durchschnittliche jährliche Heizenergieverbrauch pro Haushalt in Palästina liegt bei rund 2800 kWh (IEA / Climate Zone Estimate, 2021).',
+    'Saisonale Wintertemperaturen in Palästina machen eine zuverlässige Raumheizung für den Wohnkomfort unverzichtbar.',
+    'In Ramallah umfasst der thermische Energiebedarf der Haushalte sowohl die Warmwasserbereitung als auch die Klimatisierung.',
+    'Solarthermische Warmwasseranlagen sind für Haushalte in Palästina eine effiziente Lösung zur Senkung des Energiebedarfs.',
+    'Moderne Wärmedämmstandards in Palästina helfen dabei, die Innentemperaturen stabil zu halten und Energieverluste zu senken.',
+    'Wärmepumpen und reversible Klimageräte ermöglichen in Ramallah eine effiziente Temperierung der Wohnräume.',
+    'Die Warmwasserbereitung macht in Palästina das ganze Jahr über einen beständigen Teil des thermischen Haushaltsbedarfs aus.',
+    'Energieeffizienzrichtlinien in Palästina fördern moderne Heizsysteme, Wärmepumpen und isolierverglaste Fenster.',
+    'Städtische Haushalte in Ramallah nutzen überwiegend Strom, Flüssiggas oder Erdgas für ihren Wärmebedarf.',
+    'Eine bessere Dämmung von Dächern, Außenwänden und Fenstern senkt die Energiekosten der Haushalte in Palästina.',
+    'Intelligente Thermostate und Zeitschaltuhren unterstützen Haushalte in Palästina bei der Optimierung des Wärmeverbrauchs.',
+    'Die nationale Energiestrategie in Palästina fördert den Übergang zu emissionsarmen Systemen für Raumwärme und Warmwasser.',
+  ],
+
+  // Yemen
+  YE: [
+    'Haushalte in Jemen benötigen aufgrund des ganzjährig warmen Klimas keine Raumheizung (0 kWh/Jahr).',
+    'Aufgrund des warmen Klimas in Jemen benötigen die meisten Haushalte im Jahresverlauf nur wenig Raumheizung.',
+    'In Sanaa umfasst der thermische Energiebedarf der Haushalte sowohl die Warmwasserbereitung als auch die Klimatisierung.',
+    'Solarthermische Warmwasseranlagen sind für Haushalte in Jemen eine effiziente Lösung zur Senkung des Energiebedarfs.',
+    'Moderne Wärmedämmstandards in Jemen helfen dabei, die Innentemperaturen stabil zu halten und Energieverluste zu senken.',
+    'Wärmepumpen und reversible Klimageräte ermöglichen in Sanaa eine effiziente Temperierung der Wohnräume.',
+    'Die Warmwasserbereitung macht in Jemen das ganze Jahr über einen beständigen Teil des thermischen Haushaltsbedarfs aus.',
+    'Energieeffizienzrichtlinien in Jemen konzentrieren sich auf solare Warmwasserbereitung, reflektierende Dächer und natürliche Belüftung.',
+    'Städtische Haushalte in Sanaa nutzen überwiegend Strom, Flüssiggas oder Erdgas für ihren Wärmebedarf.',
+    'Eine bessere Dämmung von Dächern, Außenwänden und Fenstern senkt die Energiekosten der Haushalte in Jemen.',
+    'Intelligente Thermostate und Zeitschaltuhren unterstützen Haushalte in Jemen bei der Optimierung des Wärmeverbrauchs.',
+    'Die nationale Energiestrategie in Jemen fördert den Übergang zu emissionsarmen Systemen für Raumwärme und Warmwasser.',
   ],
 };

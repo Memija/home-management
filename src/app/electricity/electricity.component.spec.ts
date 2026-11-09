@@ -244,12 +244,12 @@ describe('ElectricityComponent', () => {
 
     it('should pass value for get hasValidInput', () => {
       mockFormService.hasValidInput.mockReturnValue(true);
-      expect(component['hasValidInput']).toBe(true);
+      expect(component['hasValidInput']()).toBe(true);
     });
 
     it('should pass value for dateExists', () => {
       mockFormService.isDateDuplicate.mockReturnValue(true);
-      expect(component['dateExists']).toBe(true);
+      expect(component['dateExists']()).toBe(true);
     });
   });
 

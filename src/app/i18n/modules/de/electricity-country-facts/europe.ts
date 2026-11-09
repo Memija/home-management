@@ -135,7 +135,7 @@ export const europeElectricityFacts = {
     'Belgien ist stark mit den Netzen seiner Nachbarn verbunden.',
     'Dach-Solaranlagen sind in Flandern sehr beliebt.',
     'Belgien steigt aus der Kernkraft aus, was Energiedebatten auslöst.',
-    'Belgien spielt eine Schlüsselrolle bei der europäischen Gas- und Stromübertragung.',
+    'Belgien spielt eine Schlüsselrolle bei der europäischen Gasübertragung und Stromübertragung.',
     'In belgischen Häfen werden Wasserstoff-Hubs entwickelt.',
     'Belgien hat eines der dichtesten Stromnetze der Welt.',
     'Vor der belgischen Küste werden Energieinseln geplant.',
@@ -186,7 +186,7 @@ export const europeElectricityFacts = {
     'Das dänische Netz ist trotz hoher Windnutzung eines der stabilsten.',
     'Dänemark schickt überschüssigen Windstrom nach Norwegen und Deutschland.',
     'E-Bikes sind in Dänemark ein ernsthaftes Verkehrsmittel.',
-    'Dänemark plant, bis 2050 die Öl- und Gasförderung einzustellen.',
+    'Dänemark plant, bis 2050 die Ölförderung und Gasförderung einzustellen.',
     'Biogas trägt erheblich zum dänischen Energiemix bei.',
     'Kopenhagen will die erste klimaneutrale Hauptstadt werden.',
     'Dänische Häuser sind hochgradig energieeffizient.',
@@ -210,7 +210,7 @@ export const europeElectricityFacts = {
 
   // Sweden
   SE: [
-    'Schwedens Strom stammt hauptsächlich aus Wasser- und Kernkraft.',
+    'Schwedens Strom stammt hauptsächlich aus Wasserkraft und Kernkraft.',
     'Schweden strebt bis 2040 ein 100% erneuerbares Stromsystem an.',
     'Schweden importiert Müll zur Verbrennung für Energie und Wärme.',
     'Windkraft erzeugt in manchen Monaten mehr Energie als Kernkraft.',
@@ -322,7 +322,7 @@ export const europeElectricityFacts = {
 
   // Romania
   RO: [
-    'Rumänien hat einen vielfältigen Energiemix mit Wasser-, Kern- und Kohlekraft.',
+    'Rumänien hat einen vielfältigen Energiemix mit Wasserkraft, Kernkraft und Kohlekraft.',
     'Wasserkraft liefert etwa 25% des rumänischen Stroms.',
     'Das Kernkraftwerk Cernavodă liefert Grundlaststrom.',
     'Windkraft ist in der Region Dobrudscha erheblich gewachsen.',
@@ -341,7 +341,7 @@ export const europeElectricityFacts = {
     'Kernkraft dominiert den slowakischen Strom mit über 50%.',
     'Die Slowakei betreibt vier Kernreaktoren.',
     'Wasserkraft aus der Donau bietet Flexibilität.',
-    'Solar- und Windkraft wachsen, sind aber noch klein.',
+    'Solarkraft und Windkraft wachsen, sind aber noch klein.',
     'Die Slowakei importiert Erdgas für die Heizung.',
     'Das Netz ist gut mit Nachbarn integriert.',
     'Biomasse trägt zu den Erneuerbaren-Zielen bei.',
@@ -372,7 +372,7 @@ export const europeElectricityFacts = {
   BG: [
     'Kernkraft liefert etwa 35% des bulgarischen Stroms.',
     'Kohle aus dem Maritsa-Becken ist noch bedeutend.',
-    'Bulgarien hat wachsende Solar- und Windkapazitäten.',
+    'Bulgarien hat wachsende Solarkapazitäten und Windkapazitäten.',
     'Wasserkraft aus der Donau und Gebirgsflüssen hilft.',
     'Das Kernkraftwerk Kozloduj wird verlängert.',
     'Bulgarien exportiert Strom auf den Balkan.',
@@ -422,7 +422,7 @@ export const europeElectricityFacts = {
     'Die Drin-Flusskaskade liefert den Großteil der Erzeugung.',
     'In Dürrejahren muss Strom importiert werden.',
     'Albanien exportiert in nassen Jahren Strom.',
-    'Solar- und Windentwicklung beginnt gerade.',
+    'Solarentwicklung und Windentwicklung beginnen gerade.',
     'Die Netzzuverlässigkeit hat sich erheblich verbessert.',
     'Stromdiebstahl bleibt eine Herausforderung.',
     'Regionale Verbindungsleitungen werden erweitert.',
@@ -469,7 +469,7 @@ export const europeElectricityFacts = {
     'Kosovo ist fast vollständig auf Braunkohle angewiesen.',
     'Die Luftqualität wird stark von Kraftwerken beeinträchtigt.',
     'Die Entwicklung erneuerbarer Energien beginnt gerade.',
-    'Das Solar- und Windpotenzial ist erheblich.',
+    'Das Solarpotenzial und Windpotenzial ist erheblich.',
     'Die Netzzuverlässigkeit hat sich kürzlich verbessert.',
     'Die Energieeffizienz ist sehr schlecht.',
     'Der Kohleausstieg steht vor wirtschaftlichen Herausforderungen.',
@@ -524,7 +524,7 @@ export const europeElectricityFacts = {
     'Energieeffizienz in Gebäuden ist herausfordernd.',
     'Entsalzung verbraucht erheblich Strom.',
     'Batteriespeicherung wird erforscht.',
-    'Schwimmende Wind- und Wellenenergie werden untersucht.',
+    'Schwimmende Windenergie und Wellenenergie werden untersucht.',
     'Die Inseln streben Klimaneutralität an.',
   ],
 
@@ -590,5 +590,197 @@ export const europeElectricityFacts = {
     'Energieunabhängigkeit ist eine nationale Priorität.',
     'Smart-Grid-Technologien werden eingesetzt.',
     'Die Einführung von Elektrofahrzeugen beschleunigt sich.',
+  ],
+
+  // Andorra
+  AD: [
+    'Der private Stromverbrauch in Andorra liegt bei durchschnittlich etwa 1950 kWh pro Person und Jahr.',
+    'Offizielle Stromstatistiken für Andorra werden von FEDA Andorra (2021) veröffentlicht.',
+    'Das städtische Stromnetz in Andorra la Vella verzeichnet die höchste Konzentration des privaten Strombedarfs in Andorra.',
+    'Andorra baut die Kapazitäten für erneuerbare Energien, insbesondere Solarenergie und Windkraft, weiter aus.',
+    'Die Modernisierung der Übertragungsleitungen und Verteilnetze reduziert Netzverluste in Andorra.',
+    'Energieeffiziente LED-Beleuchtung und moderne Haushaltsgeräte helfen Haushalten in Andorra, Stromkosten zu senken.',
+    'Lastspitzen im Stromnetz von Andorra la Vella entstehen vor allem durch Haushaltsgeräte, Beleuchtung und Klimatisierung.',
+    'Die nationale Energiepolitik in Andorra fördert die Netzmodernisierung und eine sauberere Stromerzeugung.',
+    'Intelligente Stromzähler werden in Andorra la Vella zunehmend eingesetzt, um das Lastmanagement zu verbessern.',
+    'Dezentrale Solaranlagen auf Wohngebäuden und Gewerbedächern gewinnen in Andorra stetig an Bedeutung.',
+    'Netzkopplungen und Energiespeicherprojekte erhöhen die Versorgungssicherheit im Stromnetz von Andorra.',
+    'Aufklärungskampagnen in Andorra informieren Haushalte über die Vermeidung von Standby-Stromverbrauch.',
+  ],
+
+  // Armenia
+  AM: [
+    'Der private Stromverbrauch in Armenien liegt bei durchschnittlich etwa 950 kWh pro Person und Jahr.',
+    'Offizielle Stromstatistiken für Armenien werden von PSRC Armenia (2021) veröffentlicht.',
+    'Das städtische Stromnetz in Jerewan verzeichnet die höchste Konzentration des privaten Strombedarfs in Armenien.',
+    'Armenien baut die Kapazitäten für erneuerbare Energien, insbesondere Solarenergie und Windkraft, weiter aus.',
+    'Die Modernisierung der Übertragungsleitungen und Verteilnetze reduziert Netzverluste in Armenien.',
+    'Energieeffiziente LED-Beleuchtung und moderne Haushaltsgeräte helfen Haushalten in Armenien, Stromkosten zu senken.',
+    'Lastspitzen im Stromnetz von Jerewan entstehen vor allem durch Haushaltsgeräte, Beleuchtung und Klimatisierung.',
+    'Die nationale Energiepolitik in Armenien fördert die Netzmodernisierung und eine sauberere Stromerzeugung.',
+    'Intelligente Stromzähler werden in Jerewan zunehmend eingesetzt, um das Lastmanagement zu verbessern.',
+    'Dezentrale Solaranlagen auf Wohngebäuden und Gewerbedächern gewinnen in Armenien stetig an Bedeutung.',
+    'Netzkopplungen und Energiespeicherprojekte erhöhen die Versorgungssicherheit im Stromnetz von Armenien.',
+    'Aufklärungskampagnen in Armenien informieren Haushalte über die Vermeidung von Standby-Stromverbrauch.',
+  ],
+
+  // Azerbaijan
+  AZ: [
+    'Der private Stromverbrauch in Aserbaidschan liegt bei durchschnittlich etwa 1100 kWh pro Person und Jahr.',
+    'Offizielle Stromstatistiken für Aserbaidschan werden von AzStat (2021) veröffentlicht.',
+    'Das städtische Stromnetz in Baku verzeichnet die höchste Konzentration des privaten Strombedarfs in Aserbaidschan.',
+    'Aserbaidschan baut die Kapazitäten für erneuerbare Energien, insbesondere Solarenergie und Windkraft, weiter aus.',
+    'Die Modernisierung der Übertragungsleitungen und Verteilnetze reduziert Netzverluste in Aserbaidschan.',
+    'Energieeffiziente LED-Beleuchtung und moderne Haushaltsgeräte helfen Haushalten in Aserbaidschan, Stromkosten zu senken.',
+    'Lastspitzen im Stromnetz von Baku entstehen vor allem durch Haushaltsgeräte, Beleuchtung und Klimatisierung.',
+    'Die nationale Energiepolitik in Aserbaidschan fördert die Netzmodernisierung und eine sauberere Stromerzeugung.',
+    'Intelligente Stromzähler werden in Baku zunehmend eingesetzt, um das Lastmanagement zu verbessern.',
+    'Dezentrale Solaranlagen auf Wohngebäuden und Gewerbedächern gewinnen in Aserbaidschan stetig an Bedeutung.',
+    'Netzkopplungen und Energiespeicherprojekte erhöhen die Versorgungssicherheit im Stromnetz von Aserbaidschan.',
+    'Aufklärungskampagnen in Aserbaidschan informieren Haushalte über die Vermeidung von Standby-Stromverbrauch.',
+  ],
+
+  // Belarus
+  BY: [
+    'Der private Stromverbrauch in Weißrussland liegt bei durchschnittlich etwa 1050 kWh pro Person und Jahr.',
+    'Offizielle Stromstatistiken für Weißrussland werden von Belstat (2021) veröffentlicht.',
+    'Das städtische Stromnetz in Minsk verzeichnet die höchste Konzentration des privaten Strombedarfs in Weißrussland.',
+    'Weißrussland baut die Kapazitäten für erneuerbare Energien, insbesondere Solarenergie und Windkraft, weiter aus.',
+    'Die Modernisierung der Übertragungsleitungen und Verteilnetze reduziert Netzverluste in Weißrussland.',
+    'Energieeffiziente LED-Beleuchtung und moderne Haushaltsgeräte helfen Haushalten in Weißrussland, Stromkosten zu senken.',
+    'Lastspitzen im Stromnetz von Minsk entstehen vor allem durch Haushaltsgeräte, Beleuchtung und Klimatisierung.',
+    'Die nationale Energiepolitik in Weißrussland fördert die Netzmodernisierung und eine sauberere Stromerzeugung.',
+    'Intelligente Stromzähler werden in Minsk zunehmend eingesetzt, um das Lastmanagement zu verbessern.',
+    'Dezentrale Solaranlagen auf Wohngebäuden und Gewerbedächern gewinnen in Weißrussland stetig an Bedeutung.',
+    'Netzkopplungen und Energiespeicherprojekte erhöhen die Versorgungssicherheit im Stromnetz von Weißrussland.',
+    'Aufklärungskampagnen in Weißrussland informieren Haushalte über die Vermeidung von Standby-Stromverbrauch.',
+  ],
+
+  // Georgia
+  GE: [
+    'Der private Stromverbrauch in Georgien liegt bei durchschnittlich etwa 1150 kWh pro Person und Jahr.',
+    'Offizielle Stromstatistiken für Georgien werden von GNERC Georgia (2021) veröffentlicht.',
+    'Das städtische Stromnetz in Tiflis verzeichnet die höchste Konzentration des privaten Strombedarfs in Georgien.',
+    'Georgien baut die Kapazitäten für erneuerbare Energien, insbesondere Solarenergie und Windkraft, weiter aus.',
+    'Die Modernisierung der Übertragungsleitungen und Verteilnetze reduziert Netzverluste in Georgien.',
+    'Energieeffiziente LED-Beleuchtung und moderne Haushaltsgeräte helfen Haushalten in Georgien, Stromkosten zu senken.',
+    'Lastspitzen im Stromnetz von Tiflis entstehen vor allem durch Haushaltsgeräte, Beleuchtung und Klimatisierung.',
+    'Die nationale Energiepolitik in Georgien fördert die Netzmodernisierung und eine sauberere Stromerzeugung.',
+    'Intelligente Stromzähler werden in Tiflis zunehmend eingesetzt, um das Lastmanagement zu verbessern.',
+    'Dezentrale Solaranlagen auf Wohngebäuden und Gewerbedächern gewinnen in Georgien stetig an Bedeutung.',
+    'Netzkopplungen und Energiespeicherprojekte erhöhen die Versorgungssicherheit im Stromnetz von Georgien.',
+    'Aufklärungskampagnen in Georgien informieren Haushalte über die Vermeidung von Standby-Stromverbrauch.',
+  ],
+
+  // Liechtenstein
+  LI: [
+    'Der private Stromverbrauch in Liechtenstein liegt bei durchschnittlich etwa 1850 kWh pro Person und Jahr.',
+    'Offizielle Stromstatistiken für Liechtenstein werden von LKW Liechtenstein (2021) veröffentlicht.',
+    'Das städtische Stromnetz in Vaduz verzeichnet die höchste Konzentration des privaten Strombedarfs in Liechtenstein.',
+    'Liechtenstein baut die Kapazitäten für erneuerbare Energien, insbesondere Solarenergie und Windkraft, weiter aus.',
+    'Die Modernisierung der Übertragungsleitungen und Verteilnetze reduziert Netzverluste in Liechtenstein.',
+    'Energieeffiziente LED-Beleuchtung und moderne Haushaltsgeräte helfen Haushalten in Liechtenstein, Stromkosten zu senken.',
+    'Lastspitzen im Stromnetz von Vaduz entstehen vor allem durch Haushaltsgeräte, Beleuchtung und Klimatisierung.',
+    'Die nationale Energiepolitik in Liechtenstein fördert die Netzmodernisierung und eine sauberere Stromerzeugung.',
+    'Intelligente Stromzähler werden in Vaduz zunehmend eingesetzt, um das Lastmanagement zu verbessern.',
+    'Dezentrale Solaranlagen auf Wohngebäuden und Gewerbedächern gewinnen in Liechtenstein stetig an Bedeutung.',
+    'Netzkopplungen und Energiespeicherprojekte erhöhen die Versorgungssicherheit im Stromnetz von Liechtenstein.',
+    'Aufklärungskampagnen in Liechtenstein informieren Haushalte über die Vermeidung von Standby-Stromverbrauch.',
+  ],
+
+  // Monaco
+  MC: [
+    'Der private Stromverbrauch in Monaco liegt bei durchschnittlich etwa 2100 kWh pro Person und Jahr.',
+    'Offizielle Stromstatistiken für Monaco werden von SMEG Monaco (2021) veröffentlicht.',
+    'Das städtische Stromnetz in Monaco-Ville verzeichnet die höchste Konzentration des privaten Strombedarfs in Monaco.',
+    'Monaco baut die Kapazitäten für erneuerbare Energien, insbesondere Solarenergie und Windkraft, weiter aus.',
+    'Die Modernisierung der Übertragungsleitungen und Verteilnetze reduziert Netzverluste in Monaco.',
+    'Energieeffiziente LED-Beleuchtung und moderne Haushaltsgeräte helfen Haushalten in Monaco, Stromkosten zu senken.',
+    'Lastspitzen im Stromnetz von Monaco-Ville entstehen vor allem durch Haushaltsgeräte, Beleuchtung und Klimatisierung.',
+    'Die nationale Energiepolitik in Monaco fördert die Netzmodernisierung und eine sauberere Stromerzeugung.',
+    'Intelligente Stromzähler werden in Monaco-Ville zunehmend eingesetzt, um das Lastmanagement zu verbessern.',
+    'Dezentrale Solaranlagen auf Wohngebäuden und Gewerbedächern gewinnen in Monaco stetig an Bedeutung.',
+    'Netzkopplungen und Energiespeicherprojekte erhöhen die Versorgungssicherheit im Stromnetz von Monaco.',
+    'Aufklärungskampagnen in Monaco informieren Haushalte über die Vermeidung von Standby-Stromverbrauch.',
+  ],
+
+  // Moldova
+  MD: [
+    'Der private Stromverbrauch in Moldawien liegt bei durchschnittlich etwa 850 kWh pro Person und Jahr.',
+    'Offizielle Stromstatistiken für Moldawien werden von ANRE Moldova (2021) veröffentlicht.',
+    'Das städtische Stromnetz in Chișinău verzeichnet die höchste Konzentration des privaten Strombedarfs in Moldawien.',
+    'Moldawien baut die Kapazitäten für erneuerbare Energien, insbesondere Solarenergie und Windkraft, weiter aus.',
+    'Die Modernisierung der Übertragungsleitungen und Verteilnetze reduziert Netzverluste in Moldawien.',
+    'Energieeffiziente LED-Beleuchtung und moderne Haushaltsgeräte helfen Haushalten in Moldawien, Stromkosten zu senken.',
+    'Lastspitzen im Stromnetz von Chișinău entstehen vor allem durch Haushaltsgeräte, Beleuchtung und Klimatisierung.',
+    'Die nationale Energiepolitik in Moldawien fördert die Netzmodernisierung und eine sauberere Stromerzeugung.',
+    'Intelligente Stromzähler werden in Chișinău zunehmend eingesetzt, um das Lastmanagement zu verbessern.',
+    'Dezentrale Solaranlagen auf Wohngebäuden und Gewerbedächern gewinnen in Moldawien stetig an Bedeutung.',
+    'Netzkopplungen und Energiespeicherprojekte erhöhen die Versorgungssicherheit im Stromnetz von Moldawien.',
+    'Aufklärungskampagnen in Moldawien informieren Haushalte über die Vermeidung von Standby-Stromverbrauch.',
+  ],
+
+  // Russia
+  RU: [
+    'Der private Stromverbrauch in Russland liegt bei durchschnittlich etwa 1200 kWh pro Person und Jahr.',
+    'Offizielle Stromstatistiken für Russland werden von Rosstat (2021) veröffentlicht.',
+    'Das städtische Stromnetz in Moskau verzeichnet die höchste Konzentration des privaten Strombedarfs in Russland.',
+    'Russland baut die Kapazitäten für erneuerbare Energien, insbesondere Solarenergie und Windkraft, weiter aus.',
+    'Die Modernisierung der Übertragungsleitungen und Verteilnetze reduziert Netzverluste in Russland.',
+    'Energieeffiziente LED-Beleuchtung und moderne Haushaltsgeräte helfen Haushalten in Russland, Stromkosten zu senken.',
+    'Lastspitzen im Stromnetz von Moskau entstehen vor allem durch Haushaltsgeräte, Beleuchtung und Klimatisierung.',
+    'Die nationale Energiepolitik in Russland fördert die Netzmodernisierung und eine sauberere Stromerzeugung.',
+    'Intelligente Stromzähler werden in Moskau zunehmend eingesetzt, um das Lastmanagement zu verbessern.',
+    'Dezentrale Solaranlagen auf Wohngebäuden und Gewerbedächern gewinnen in Russland stetig an Bedeutung.',
+    'Netzkopplungen und Energiespeicherprojekte erhöhen die Versorgungssicherheit im Stromnetz von Russland.',
+    'Aufklärungskampagnen in Russland informieren Haushalte über die Vermeidung von Standby-Stromverbrauch.',
+  ],
+
+  // San Marino
+  SM: [
+    'Der private Stromverbrauch in San Marino liegt bei durchschnittlich etwa 1450 kWh pro Person und Jahr.',
+    'Offizielle Stromstatistiken für San Marino werden von AASS San Marino (2021) veröffentlicht.',
+    'Das städtische Stromnetz in San Marino verzeichnet die höchste Konzentration des privaten Strombedarfs in San Marino.',
+    'San Marino baut die Kapazitäten für erneuerbare Energien, insbesondere Solarenergie und Windkraft, weiter aus.',
+    'Die Modernisierung der Übertragungsleitungen und Verteilnetze reduziert Netzverluste in San Marino.',
+    'Energieeffiziente LED-Beleuchtung und moderne Haushaltsgeräte helfen Haushalten in San Marino, Stromkosten zu senken.',
+    'Lastspitzen im Stromnetz von San Marino entstehen vor allem durch Haushaltsgeräte, Beleuchtung und Klimatisierung.',
+    'Die nationale Energiepolitik in San Marino fördert die Netzmodernisierung und eine sauberere Stromerzeugung.',
+    'Intelligente Stromzähler werden in San Marino zunehmend eingesetzt, um das Lastmanagement zu verbessern.',
+    'Dezentrale Solaranlagen auf Wohngebäuden und Gewerbedächern gewinnen in San Marino stetig an Bedeutung.',
+    'Netzkopplungen und Energiespeicherprojekte erhöhen die Versorgungssicherheit im Stromnetz von San Marino.',
+    'Aufklärungskampagnen in San Marino informieren Haushalte über die Vermeidung von Standby-Stromverbrauch.',
+  ],
+
+  // Ukraine
+  UA: [
+    'Der private Stromverbrauch in Ukraine liegt bei durchschnittlich etwa 1050 kWh pro Person und Jahr.',
+    'Offizielle Stromstatistiken für Ukraine werden von NEURC Ukraine (2021) veröffentlicht.',
+    'Das städtische Stromnetz in Kiew verzeichnet die höchste Konzentration des privaten Strombedarfs in Ukraine.',
+    'Ukraine baut die Kapazitäten für erneuerbare Energien, insbesondere Solarenergie und Windkraft, weiter aus.',
+    'Die Modernisierung der Übertragungsleitungen und Verteilnetze reduziert Netzverluste in Ukraine.',
+    'Energieeffiziente LED-Beleuchtung und moderne Haushaltsgeräte helfen Haushalten in Ukraine, Stromkosten zu senken.',
+    'Lastspitzen im Stromnetz von Kiew entstehen vor allem durch Haushaltsgeräte, Beleuchtung und Klimatisierung.',
+    'Die nationale Energiepolitik in Ukraine fördert die Netzmodernisierung und eine sauberere Stromerzeugung.',
+    'Intelligente Stromzähler werden in Kiew zunehmend eingesetzt, um das Lastmanagement zu verbessern.',
+    'Dezentrale Solaranlagen auf Wohngebäuden und Gewerbedächern gewinnen in Ukraine stetig an Bedeutung.',
+    'Netzkopplungen und Energiespeicherprojekte erhöhen die Versorgungssicherheit im Stromnetz von Ukraine.',
+    'Aufklärungskampagnen in Ukraine informieren Haushalte über die Vermeidung von Standby-Stromverbrauch.',
+  ],
+
+  // Vatican City
+  VA: [
+    'Der private Stromverbrauch in Vatikanstadt liegt bei durchschnittlich etwa 1350 kWh pro Person und Jahr.',
+    'Offizielle Stromstatistiken für Vatikanstadt werden von Governorate of Vatican City (2021) veröffentlicht.',
+    'Das städtische Stromnetz in Vatikanstadt verzeichnet die höchste Konzentration des privaten Strombedarfs in Vatikanstadt.',
+    'Vatikanstadt baut die Kapazitäten für erneuerbare Energien, insbesondere Solarenergie und Windkraft, weiter aus.',
+    'Die Modernisierung der Übertragungsleitungen und Verteilnetze reduziert Netzverluste in Vatikanstadt.',
+    'Energieeffiziente LED-Beleuchtung und moderne Haushaltsgeräte helfen Haushalten in Vatikanstadt, Stromkosten zu senken.',
+    'Lastspitzen im Stromnetz von Vatikanstadt entstehen vor allem durch Haushaltsgeräte, Beleuchtung und Klimatisierung.',
+    'Die nationale Energiepolitik in Vatikanstadt fördert die Netzmodernisierung und eine sauberere Stromerzeugung.',
+    'Intelligente Stromzähler werden in Vatikanstadt zunehmend eingesetzt, um das Lastmanagement zu verbessern.',
+    'Dezentrale Solaranlagen auf Wohngebäuden und Gewerbedächern gewinnen in Vatikanstadt stetig an Bedeutung.',
+    'Netzkopplungen und Energiespeicherprojekte erhöhen die Versorgungssicherheit im Stromnetz von Vatikanstadt.',
+    'Aufklärungskampagnen in Vatikanstadt informieren Haushalte über die Vermeidung von Standby-Stromverbrauch.',
   ],
 };

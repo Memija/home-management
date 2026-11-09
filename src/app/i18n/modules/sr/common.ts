@@ -48,10 +48,11 @@ export const common = {
   FOOTER: {
     APP_NAME: 'Управљање домом',
     SUPPORT_PROJECT: 'Подржите овај пројекат',
+    BENCHMARKS: 'Државни просеци',
     CHANGELOG: 'Историја измена',
     RELEASE_PLAN: 'Надолазеће функције',
     CONTRIBUTE: 'Допринеси',
-    PRIVACY_POLICY: 'Политика приватности',
+    PRIVACY_POLICY: 'Приватност и правне напомене',
     VERSION: 'Верзија {{version}}',
   },
   CHANGELOG: {

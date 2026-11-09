@@ -50,9 +50,9 @@ export const middleEastElectricityFacts = {
 
   // Turkey
   TR: [
-    'Die Türkei hat einen vielfältigen Mix aus Wasser-, Kohle-, Gas- und Windkraft.',
+    'Die Türkei hat einen vielfältigen Mix aus Wasserkraft, Kohlekraft, Gaskraft und Windkraft.',
     'Wasserkraftwerke liefern erhebliche Energie.',
-    'Wind- und Solarkapazität wächst schnell.',
+    'Windkapazität und Solarkapazität wachsen schnell.',
     'Die Türkei baut ihr erstes Kernkraftwerk.',
     'Die Geothermiekapazität gehört zu den höchsten der Welt.',
     'Die Stromnachfrage in der Türkei wächst stetig.',
@@ -62,5 +62,181 @@ export const middleEastElectricityFacts = {
     'Die Türkei produziert Solarmodule und Windturbinen.',
     'Die Strommärkte sind teilweise liberalisiert.',
     'Effizienzprogramme zielen auf Industrie und Gebäude.',
+  ],
+
+  // Qatar
+  QA: [
+    'Der private Stromverbrauch in Katar liegt bei durchschnittlich etwa 4600 kWh pro Person und Jahr.',
+    'Offizielle Stromstatistiken für Katar werden von Kahramaa Qatar (2021) veröffentlicht.',
+    'Das städtische Stromnetz in Doha verzeichnet die höchste Konzentration des privaten Strombedarfs in Katar.',
+    'Katar baut die Kapazitäten für erneuerbare Energien, insbesondere Solarenergie und Windkraft, weiter aus.',
+    'Die Modernisierung der Übertragungsleitungen und Verteilnetze reduziert Netzverluste in Katar.',
+    'Energieeffiziente LED-Beleuchtung und moderne Haushaltsgeräte helfen Haushalten in Katar, Stromkosten zu senken.',
+    'Lastspitzen im Stromnetz von Doha entstehen vor allem durch Haushaltsgeräte, Beleuchtung und Klimatisierung.',
+    'Die nationale Energiepolitik in Katar fördert die Netzmodernisierung und eine sauberere Stromerzeugung.',
+    'Intelligente Stromzähler werden in Doha zunehmend eingesetzt, um das Lastmanagement zu verbessern.',
+    'Dezentrale Solaranlagen auf Wohngebäuden und Gewerbedächern gewinnen in Katar stetig an Bedeutung.',
+    'Netzkopplungen und Energiespeicherprojekte erhöhen die Versorgungssicherheit im Stromnetz von Katar.',
+    'Aufklärungskampagnen in Katar informieren Haushalte über die Vermeidung von Standby-Stromverbrauch.',
+  ],
+
+  // Kuwait
+  KW: [
+    'Der private Stromverbrauch in Kuwait liegt bei durchschnittlich etwa 4800 kWh pro Person und Jahr.',
+    'Offizielle Stromstatistiken für Kuwait werden von MEW Kuwait (2021) veröffentlicht.',
+    'Das städtische Stromnetz in Kuwait-Stadt verzeichnet die höchste Konzentration des privaten Strombedarfs in Kuwait.',
+    'Kuwait baut die Kapazitäten für erneuerbare Energien, insbesondere Solarenergie und Windkraft, weiter aus.',
+    'Die Modernisierung der Übertragungsleitungen und Verteilnetze reduziert Netzverluste in Kuwait.',
+    'Energieeffiziente LED-Beleuchtung und moderne Haushaltsgeräte helfen Haushalten in Kuwait, Stromkosten zu senken.',
+    'Lastspitzen im Stromnetz von Kuwait-Stadt entstehen vor allem durch Haushaltsgeräte, Beleuchtung und Klimatisierung.',
+    'Die nationale Energiepolitik in Kuwait fördert die Netzmodernisierung und eine sauberere Stromerzeugung.',
+    'Intelligente Stromzähler werden in Kuwait-Stadt zunehmend eingesetzt, um das Lastmanagement zu verbessern.',
+    'Dezentrale Solaranlagen auf Wohngebäuden und Gewerbedächern gewinnen in Kuwait stetig an Bedeutung.',
+    'Netzkopplungen und Energiespeicherprojekte erhöhen die Versorgungssicherheit im Stromnetz von Kuwait.',
+    'Aufklärungskampagnen in Kuwait informieren Haushalte über die Vermeidung von Standby-Stromverbrauch.',
+  ],
+
+  // Bahrain
+  BH: [
+    'Der private Stromverbrauch in Bahrain liegt bei durchschnittlich etwa 4300 kWh pro Person und Jahr.',
+    'Offizielle Stromstatistiken für Bahrain werden von EWA Bahrain (2021) veröffentlicht.',
+    'Das städtische Stromnetz in Manama verzeichnet die höchste Konzentration des privaten Strombedarfs in Bahrain.',
+    'Bahrain baut die Kapazitäten für erneuerbare Energien, insbesondere Solarenergie und Windkraft, weiter aus.',
+    'Die Modernisierung der Übertragungsleitungen und Verteilnetze reduziert Netzverluste in Bahrain.',
+    'Energieeffiziente LED-Beleuchtung und moderne Haushaltsgeräte helfen Haushalten in Bahrain, Stromkosten zu senken.',
+    'Lastspitzen im Stromnetz von Manama entstehen vor allem durch Haushaltsgeräte, Beleuchtung und Klimatisierung.',
+    'Die nationale Energiepolitik in Bahrain fördert die Netzmodernisierung und eine sauberere Stromerzeugung.',
+    'Intelligente Stromzähler werden in Manama zunehmend eingesetzt, um das Lastmanagement zu verbessern.',
+    'Dezentrale Solaranlagen auf Wohngebäuden und Gewerbedächern gewinnen in Bahrain stetig an Bedeutung.',
+    'Netzkopplungen und Energiespeicherprojekte erhöhen die Versorgungssicherheit im Stromnetz von Bahrain.',
+    'Aufklärungskampagnen in Bahrain informieren Haushalte über die Vermeidung von Standby-Stromverbrauch.',
+  ],
+
+  // Oman
+  OM: [
+    'Der private Stromverbrauch in Oman liegt bei durchschnittlich etwa 3100 kWh pro Person und Jahr.',
+    'Offizielle Stromstatistiken für Oman werden von APSRO Oman (2021) veröffentlicht.',
+    'Das städtische Stromnetz in Maskat verzeichnet die höchste Konzentration des privaten Strombedarfs in Oman.',
+    'Oman baut die Kapazitäten für erneuerbare Energien, insbesondere Solarenergie und Windkraft, weiter aus.',
+    'Die Modernisierung der Übertragungsleitungen und Verteilnetze reduziert Netzverluste in Oman.',
+    'Energieeffiziente LED-Beleuchtung und moderne Haushaltsgeräte helfen Haushalten in Oman, Stromkosten zu senken.',
+    'Lastspitzen im Stromnetz von Maskat entstehen vor allem durch Haushaltsgeräte, Beleuchtung und Klimatisierung.',
+    'Die nationale Energiepolitik in Oman fördert die Netzmodernisierung und eine sauberere Stromerzeugung.',
+    'Intelligente Stromzähler werden in Maskat zunehmend eingesetzt, um das Lastmanagement zu verbessern.',
+    'Dezentrale Solaranlagen auf Wohngebäuden und Gewerbedächern gewinnen in Oman stetig an Bedeutung.',
+    'Netzkopplungen und Energiespeicherprojekte erhöhen die Versorgungssicherheit im Stromnetz von Oman.',
+    'Aufklärungskampagnen in Oman informieren Haushalte über die Vermeidung von Standby-Stromverbrauch.',
+  ],
+
+  // Jordan
+  JO: [
+    'Der private Stromverbrauch in Jordanien liegt bei durchschnittlich etwa 950 kWh pro Person und Jahr.',
+    'Offizielle Stromstatistiken für Jordanien werden von EMRC Jordan (2021) veröffentlicht.',
+    'Das städtische Stromnetz in Amman verzeichnet die höchste Konzentration des privaten Strombedarfs in Jordanien.',
+    'Jordanien baut die Kapazitäten für erneuerbare Energien, insbesondere Solarenergie und Windkraft, weiter aus.',
+    'Die Modernisierung der Übertragungsleitungen und Verteilnetze reduziert Netzverluste in Jordanien.',
+    'Energieeffiziente LED-Beleuchtung und moderne Haushaltsgeräte helfen Haushalten in Jordanien, Stromkosten zu senken.',
+    'Lastspitzen im Stromnetz von Amman entstehen vor allem durch Haushaltsgeräte, Beleuchtung und Klimatisierung.',
+    'Die nationale Energiepolitik in Jordanien fördert die Netzmodernisierung und eine sauberere Stromerzeugung.',
+    'Intelligente Stromzähler werden in Amman zunehmend eingesetzt, um das Lastmanagement zu verbessern.',
+    'Dezentrale Solaranlagen auf Wohngebäuden und Gewerbedächern gewinnen in Jordanien stetig an Bedeutung.',
+    'Netzkopplungen und Energiespeicherprojekte erhöhen die Versorgungssicherheit im Stromnetz von Jordanien.',
+    'Aufklärungskampagnen in Jordanien informieren Haushalte über die Vermeidung von Standby-Stromverbrauch.',
+  ],
+
+  // Lebanon
+  LB: [
+    'Der private Stromverbrauch in Libanon liegt bei durchschnittlich etwa 1200 kWh pro Person und Jahr.',
+    'Offizielle Stromstatistiken für Libanon werden von EDL Lebanon (2021) veröffentlicht.',
+    'Das städtische Stromnetz in Beirut verzeichnet die höchste Konzentration des privaten Strombedarfs in Libanon.',
+    'Libanon baut die Kapazitäten für erneuerbare Energien, insbesondere Solarenergie und Windkraft, weiter aus.',
+    'Die Modernisierung der Übertragungsleitungen und Verteilnetze reduziert Netzverluste in Libanon.',
+    'Energieeffiziente LED-Beleuchtung und moderne Haushaltsgeräte helfen Haushalten in Libanon, Stromkosten zu senken.',
+    'Lastspitzen im Stromnetz von Beirut entstehen vor allem durch Haushaltsgeräte, Beleuchtung und Klimatisierung.',
+    'Die nationale Energiepolitik in Libanon fördert die Netzmodernisierung und eine sauberere Stromerzeugung.',
+    'Intelligente Stromzähler werden in Beirut zunehmend eingesetzt, um das Lastmanagement zu verbessern.',
+    'Dezentrale Solaranlagen auf Wohngebäuden und Gewerbedächern gewinnen in Libanon stetig an Bedeutung.',
+    'Netzkopplungen und Energiespeicherprojekte erhöhen die Versorgungssicherheit im Stromnetz von Libanon.',
+    'Aufklärungskampagnen in Libanon informieren Haushalte über die Vermeidung von Standby-Stromverbrauch.',
+  ],
+
+  // Syria
+  SY: [
+    'Der private Stromverbrauch in Syrien liegt bei durchschnittlich etwa 650 kWh pro Person und Jahr.',
+    'Offizielle Stromstatistiken für Syrien werden von MOE Syria (2021) veröffentlicht.',
+    'Das städtische Stromnetz in Damaskus verzeichnet die höchste Konzentration des privaten Strombedarfs in Syrien.',
+    'Syrien baut die Kapazitäten für erneuerbare Energien, insbesondere Solarenergie und Windkraft, weiter aus.',
+    'Die Modernisierung der Übertragungsleitungen und Verteilnetze reduziert Netzverluste in Syrien.',
+    'Energieeffiziente LED-Beleuchtung und moderne Haushaltsgeräte helfen Haushalten in Syrien, Stromkosten zu senken.',
+    'Lastspitzen im Stromnetz von Damaskus entstehen vor allem durch Haushaltsgeräte, Beleuchtung und Klimatisierung.',
+    'Die nationale Energiepolitik in Syrien fördert die Netzmodernisierung und eine sauberere Stromerzeugung.',
+    'Intelligente Stromzähler werden in Damaskus zunehmend eingesetzt, um das Lastmanagement zu verbessern.',
+    'Dezentrale Solaranlagen auf Wohngebäuden und Gewerbedächern gewinnen in Syrien stetig an Bedeutung.',
+    'Netzkopplungen und Energiespeicherprojekte erhöhen die Versorgungssicherheit im Stromnetz von Syrien.',
+    'Aufklärungskampagnen in Syrien informieren Haushalte über die Vermeidung von Standby-Stromverbrauch.',
+  ],
+
+  // Iraq
+  IQ: [
+    'Der private Stromverbrauch in Irak liegt bei durchschnittlich etwa 1450 kWh pro Person und Jahr.',
+    'Offizielle Stromstatistiken für Irak werden von MOE Iraq (2021) veröffentlicht.',
+    'Das städtische Stromnetz in Bagdad verzeichnet die höchste Konzentration des privaten Strombedarfs in Irak.',
+    'Irak baut die Kapazitäten für erneuerbare Energien, insbesondere Solarenergie und Windkraft, weiter aus.',
+    'Die Modernisierung der Übertragungsleitungen und Verteilnetze reduziert Netzverluste in Irak.',
+    'Energieeffiziente LED-Beleuchtung und moderne Haushaltsgeräte helfen Haushalten in Irak, Stromkosten zu senken.',
+    'Lastspitzen im Stromnetz von Bagdad entstehen vor allem durch Haushaltsgeräte, Beleuchtung und Klimatisierung.',
+    'Die nationale Energiepolitik in Irak fördert die Netzmodernisierung und eine sauberere Stromerzeugung.',
+    'Intelligente Stromzähler werden in Bagdad zunehmend eingesetzt, um das Lastmanagement zu verbessern.',
+    'Dezentrale Solaranlagen auf Wohngebäuden und Gewerbedächern gewinnen in Irak stetig an Bedeutung.',
+    'Netzkopplungen und Energiespeicherprojekte erhöhen die Versorgungssicherheit im Stromnetz von Irak.',
+    'Aufklärungskampagnen in Irak informieren Haushalte über die Vermeidung von Standby-Stromverbrauch.',
+  ],
+
+  // Iran
+  IR: [
+    'Der private Stromverbrauch in Iran liegt bei durchschnittlich etwa 1350 kWh pro Person und Jahr.',
+    'Offizielle Stromstatistiken für Iran werden von Tavanir Iran (2021) veröffentlicht.',
+    'Das städtische Stromnetz in Teheran verzeichnet die höchste Konzentration des privaten Strombedarfs in Iran.',
+    'Iran baut die Kapazitäten für erneuerbare Energien, insbesondere Solarenergie und Windkraft, weiter aus.',
+    'Die Modernisierung der Übertragungsleitungen und Verteilnetze reduziert Netzverluste in Iran.',
+    'Energieeffiziente LED-Beleuchtung und moderne Haushaltsgeräte helfen Haushalten in Iran, Stromkosten zu senken.',
+    'Lastspitzen im Stromnetz von Teheran entstehen vor allem durch Haushaltsgeräte, Beleuchtung und Klimatisierung.',
+    'Die nationale Energiepolitik in Iran fördert die Netzmodernisierung und eine sauberere Stromerzeugung.',
+    'Intelligente Stromzähler werden in Teheran zunehmend eingesetzt, um das Lastmanagement zu verbessern.',
+    'Dezentrale Solaranlagen auf Wohngebäuden und Gewerbedächern gewinnen in Iran stetig an Bedeutung.',
+    'Netzkopplungen und Energiespeicherprojekte erhöhen die Versorgungssicherheit im Stromnetz von Iran.',
+    'Aufklärungskampagnen in Iran informieren Haushalte über die Vermeidung von Standby-Stromverbrauch.',
+  ],
+
+  // Palestine
+  PS: [
+    'Der private Stromverbrauch in Palästina liegt bei durchschnittlich etwa 750 kWh pro Person und Jahr.',
+    'Offizielle Stromstatistiken für Palästina werden von PCBS Palestine (2021) veröffentlicht.',
+    'Das städtische Stromnetz in Ramallah verzeichnet die höchste Konzentration des privaten Strombedarfs in Palästina.',
+    'Palästina baut die Kapazitäten für erneuerbare Energien, insbesondere Solarenergie und Windkraft, weiter aus.',
+    'Die Modernisierung der Übertragungsleitungen und Verteilnetze reduziert Netzverluste in Palästina.',
+    'Energieeffiziente LED-Beleuchtung und moderne Haushaltsgeräte helfen Haushalten in Palästina, Stromkosten zu senken.',
+    'Lastspitzen im Stromnetz von Ramallah entstehen vor allem durch Haushaltsgeräte, Beleuchtung und Klimatisierung.',
+    'Die nationale Energiepolitik in Palästina fördert die Netzmodernisierung und eine sauberere Stromerzeugung.',
+    'Intelligente Stromzähler werden in Ramallah zunehmend eingesetzt, um das Lastmanagement zu verbessern.',
+    'Dezentrale Solaranlagen auf Wohngebäuden und Gewerbedächern gewinnen in Palästina stetig an Bedeutung.',
+    'Netzkopplungen und Energiespeicherprojekte erhöhen die Versorgungssicherheit im Stromnetz von Palästina.',
+    'Aufklärungskampagnen in Palästina informieren Haushalte über die Vermeidung von Standby-Stromverbrauch.',
+  ],
+
+  // Yemen
+  YE: [
+    'Der private Stromverbrauch in Jemen liegt bei durchschnittlich etwa 220 kWh pro Person und Jahr.',
+    'Offizielle Stromstatistiken für Jemen werden von PEC Yemen (2021) veröffentlicht.',
+    'Das städtische Stromnetz in Sanaa verzeichnet die höchste Konzentration des privaten Strombedarfs in Jemen.',
+    'Jemen baut die Kapazitäten für erneuerbare Energien, insbesondere Solarenergie und Windkraft, weiter aus.',
+    'Die Modernisierung der Übertragungsleitungen und Verteilnetze reduziert Netzverluste in Jemen.',
+    'Energieeffiziente LED-Beleuchtung und moderne Haushaltsgeräte helfen Haushalten in Jemen, Stromkosten zu senken.',
+    'Lastspitzen im Stromnetz von Sanaa entstehen vor allem durch Haushaltsgeräte, Beleuchtung und Klimatisierung.',
+    'Die nationale Energiepolitik in Jemen fördert die Netzmodernisierung und eine sauberere Stromerzeugung.',
+    'Intelligente Stromzähler werden in Sanaa zunehmend eingesetzt, um das Lastmanagement zu verbessern.',
+    'Dezentrale Solaranlagen auf Wohngebäuden und Gewerbedächern gewinnen in Jemen stetig an Bedeutung.',
+    'Netzkopplungen und Energiespeicherprojekte erhöhen die Versorgungssicherheit im Stromnetz von Jemen.',
+    'Aufklärungskampagnen in Jemen informieren Haushalte über die Vermeidung von Standby-Stromverbrauch.',
   ],
 };

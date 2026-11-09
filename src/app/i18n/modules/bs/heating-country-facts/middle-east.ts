@@ -208,19 +208,35 @@ export const middleEastHeatingFacts = {
     'Istočna Anadolija ima oštre zime.',
   ],
 
-  // Egypt
-  EG: [
-    'Egipat ima minimalne potrebe za grijanjem zbog tople klime.',
-    'Noći na Sinaju i u pustinji mogu biti hladne.',
-    'Klimatizacija omogućava grijanje po potrebi.',
-    'Egipatski domovi troše minimalnu energiju za grijanje.',
-    'Prosječno domaćinstvo vrlo malo troši na grijanje.',
-    'LPG se koristi za kuhanje širom Egipta.',
-    'Prirodni plin se širi u Kairu.',
-    'Dizajn zgrada daje prioritet ventilaciji.',
-    'Aleksandrija ima hladnije zime od Kaira.',
-    'Gornji Egipat ima veoma toplu klimu.',
-    'Ne postoji značajna infrastruktura za grijanje.',
-    'Potrošnjom energije dominira hlađenje.',
+  // Palestine
+  PS: [
+    'Prosječna godišnja potrošnja energije za grijanje po domaćinstvu u državi Palestina procjenjuje se na oko 2800 kWh (IEA / Climate Zone Estimate, 2021).',
+    'Sezonske zimske temperature u državi Palestina čine pouzdano grijanje prostora ključnim za udobnost stanovanja.',
+    'U gradu Ramala toplotna energija u domaćinstvima obuhvata pripremu tople vode i sezonsku klimatizaciju prostora.',
+    'Solarni kolektori za toplu vodu predstavljaju efikasan način za smanjenje potrošnje energije u državi Palestina.',
+    'Savremeni standardi toplotne izolacije u državi Palestina pomažu u održavanju stabilne temperature u zatvorenom prostoru.',
+    'Toplotne pumpe i reverzibilni klima-uređaji omogućavaju efikasno grijanje i hlađenje u gradu Ramala.',
+    'Zagrijavanje sanitarne vode čini stalan cjelogodišnji udio u potrošnji toplotne energije u državi Palestina.',
+    'Smjernice za energetsku efikasnost u državi Palestina podstiču ugradnju toplotnih pumpi i kvalitetne stolarije.',
+    'Gradska domaćinstva u gradu Ramala sve više koriste električnu energiju ili plin za potrebe grijanja vode i prostora.',
+    'Smanjenje toplotnih gubitaka kroz krovove, zidove i prozore snižava ukupne troškove energije u državi Palestina.',
+    'Pametni termostati i programabilni tajmeri pomažu domaćinstvima u državi Palestina da optimizuju potrošnju toplote.',
+    'Nacionalne energetske strategije u državi Palestina podstiču prelazak na niskougljične sisteme grijanja i pripreme tople vode.',
+  ],
+
+  // Yemen
+  YE: [
+    'Domaćinstva u državi Jemen nemaju potrebu za grijanjem prostora (0 kWh godišnje) zbog cjelogodišnje tople klime.',
+    'Zbog tople klime u državi Jemen, većina domaćinstava ima minimalne potrebe za grijanjem prostora tokom godine.',
+    'U gradu Sana toplotna energija u domaćinstvima obuhvata pripremu tople vode i sezonsku klimatizaciju prostora.',
+    'Solarni kolektori za toplu vodu predstavljaju efikasan način za smanjenje potrošnje energije u državi Jemen.',
+    'Savremeni standardi toplotne izolacije u državi Jemen pomažu u održavanju stabilne temperature u zatvorenom prostoru.',
+    'Toplotne pumpe i reverzibilni klima-uređaji omogućavaju efikasno grijanje i hlađenje u gradu Sana.',
+    'Zagrijavanje sanitarne vode čini stalan cjelogodišnji udio u potrošnji toplotne energije u državi Jemen.',
+    'Smjernice za energetsku efikasnost u državi Jemen fokusiraju se na solarno grijanje vode, reflektirajuće krovove i prirodnu ventilaciju.',
+    'Gradska domaćinstva u gradu Sana sve više koriste električnu energiju ili plin za potrebe grijanja vode i prostora.',
+    'Smanjenje toplotnih gubitaka kroz krovove, zidove i prozore snižava ukupne troškove energije u državi Jemen.',
+    'Pametni termostati i programabilni tajmeri pomažu domaćinstvima u državi Jemen da optimizuju potrošnju toplote.',
+    'Nacionalne energetske strategije u državi Jemen podstiču prelazak na niskougljične sisteme grijanja i pripreme tople vode.',
   ],
 };

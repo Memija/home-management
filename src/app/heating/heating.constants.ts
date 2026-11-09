@@ -1,7 +1,15 @@
 import { HelpStep } from '../shared/help-modal/help-modal.component';
 import { DemoWizardStep } from '../shared/demo-wizard/demo-wizard.component';
 import { DemoTourStep } from '../shared/demo-tour/demo-tour.component';
+import { SortOptionConfig } from '../shared/detailed-records/detailed-records.component';
 import { Flame, LayoutGrid, TrendingUp, Settings } from 'lucide-angular';
+
+export const HEATING_SORT_OPTIONS: SortOptionConfig[] = [
+  { value: 'date-desc', labelKey: 'HOME.SORT.DATE_DESC', direction: '↓' },
+  { value: 'date-asc', labelKey: 'HOME.SORT.DATE_ASC', direction: '↑' },
+  { value: 'total-desc', labelKey: 'HOME.SORT.TOTAL_DESC', direction: '↓' },
+  { value: 'total-asc', labelKey: 'HOME.SORT.TOTAL_ASC', direction: '↑' },
+];
 
 export const DEMO_WIZARD_STEPS: DemoWizardStep[] = [
   {

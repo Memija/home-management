@@ -1,0 +1,578 @@
+:host {
+  display: block;
+  width: 100%;
+  min-height: 100vh;
+}
+
+// Default / Light Mode (Sunny Daytime Setup)
+.not-found-page {
+  --land: #4a783d;
+  --meadow: #5d8f4d;
+  --hill: #3b6330;
+
+  --lk-rip: #548244;
+  --lk-bch: #e6d3a7;
+  --lk-shl: #38d9e8;
+  --lk-mid: #1ca3c4;
+  --lk-dep: #106f9c;
+  --lk-aby: #0a4b73;
+
+  --rd-shd: #9c9686;
+  --rd-asp: #525860;
+  --rd-lin: rgba(255, 255, 255, 0.82);
+  --drv: #8a8578;
+
+  --br-shd: rgba(8, 38, 54, 0.38);
+  --br-pir: #94a3b8;
+  --br-wak: rgba(255, 255, 255, 0.72);
+  --br-abt: #b5afa6;
+  --br-pl: #f1f5f9;
+  --br-ps: #94a3b8;
+  --br-wlk: #cbd5e1;
+  --br-ng: transparent;
+  --br-lmp: #475569;
+
+  --tr-shd: rgba(14, 30, 16, 0.3);
+  --pn-b: #1f4d2b;
+  --pn-m: #2f6b3d;
+  --pn-c: #438c52;
+  --pn-t: #62b070;
+
+  --sp-b: #1a453d;
+  --sp-m: #286358;
+  --sp-c: #3b8577;
+
+  --ok-b: #315e2e;
+  --ok-m: #468040;
+  --ok-c: #62a357;
+
+  --bi-b: #4c783a;
+  --bi-m: #68994f;
+  --bi-c: #88bd68;
+
+  --hs-pat: #c4bfb4;
+  --hs-dck: #ab7d52;
+  --hs-shd: rgba(15, 28, 16, 0.34);
+  --rf-tl: #e0724a;
+  --rf-ts: #a6492a;
+  --rf-sl: #758a9c;
+  --rf-ss: #4c5c6b;
+  --rf-zl: #9badba;
+  --rf-zs: #667885;
+  --rf-cl: #ba784a;
+  --rf-cs: #82502e;
+  --rf-rdg: rgba(255, 255, 255, 0.5);
+  --rf-chm: #805b4d;
+  --rf-sky: #bae6fd;
+
+  --dk-plk: #b08052;
+  --dk-sem: #6e4d2c;
+  --dk-pil: #4d3319;
+  --bt-hul: #ffffff;
+  --bt-int: #ab7143;
+
+  --vig: rgba(14, 28, 16, 0.18);
+  --hud-bg: rgba(255, 255, 255, 0.94);
+  --hud-border: rgba(15, 23, 42, 0.14);
+  --hud-shadow: 0 18px 42px rgba(15, 23, 42, 0.2);
+  --hud-badge-bg: rgba(15, 118, 110, 0.12);
+  --hud-badge-color: #115e59;
+  --hud-badge-border: rgba(15, 118, 110, 0.32);
+  --ng-op: 0;
+  --dy-op: 1;
+}
+
+// Dark Mode (Moonlit Night Setup with Illuminated Bridges & Cabins)
+.not-found-page.theme-dark {
+  --land: #07110c;
+  --meadow: #0b1912;
+  --hill: #040b07;
+
+  --lk-rip: #0d1f15;
+  --lk-bch: #423e37;
+  --lk-shl: #0d4654;
+  --lk-mid: #083042;
+  --lk-dep: #051e30;
+  --lk-aby: #020e1a;
+
+  --rd-shd: #1c2321;
+  --rd-asp: #101519;
+  --rd-lin: rgba(226, 232, 240, 0.36);
+  --drv: #222a27;
+
+  --br-shd: rgba(0, 4, 8, 0.78);
+  --br-pir: #263240;
+  --br-wak: rgba(251, 191, 36, 0.22);
+  --br-abt: #2b333b;
+  --br-pl: #475569;
+  --br-ps: #1e293b;
+  --br-wlk: #334155;
+  --br-ng: #fbbf24;
+  --br-lmp: #fef08a;
+
+  --tr-shd: rgba(0, 4, 2, 0.68);
+  --pn-b: #06140c;
+  --pn-m: #0c2416;
+  --pn-c: #153823;
+  --pn-t: #225236;
+
+  --sp-b: #051210;
+  --sp-m: #0b221f;
+  --sp-c: #143631;
+
+  --ok-b: #0a1a0d;
+  --ok-m: #132b17;
+  --ok-c: #1e4023;
+
+  --bi-b: #112111;
+  --bi-m: #1c331a;
+  --bi-c: #2b4a26;
+
+  --hs-pat: #2d3332;
+  --hs-dck: #3d2c1e;
+  --hs-shd: rgba(0, 4, 2, 0.75);
+  --rf-tl: #8f4128;
+  --rf-ts: #592414;
+  --rf-sl: #3b4954;
+  --rf-ss: #202930;
+  --rf-zl: #4c5b66;
+  --rf-zs: #2b343b;
+  --rf-cl: #694127;
+  --rf-cs: #402514;
+  --rf-rdg: rgba(255, 255, 255, 0.2);
+  --rf-chm: #3d2c26;
+  --rf-sky: #fde047;
+
+  --dk-plk: #593e25;
+  --dk-sem: #2e1f11;
+  --dk-pil: #21150a;
+  --bt-hul: #cbd5e1;
+  --bt-int: #5e3d22;
+
+  --vig: rgba(2, 6, 4, 0.68);
+  --hud-bg: rgba(9, 17, 13, 0.92);
+  --hud-border: rgba(148, 163, 184, 0.22);
+  --hud-shadow: 0 20px 48px rgba(0, 0, 0, 0.68);
+  --hud-badge-bg: rgba(20, 184, 166, 0.18);
+  --hud-badge-color: #5eead4;
+  --hud-badge-border: rgba(45, 212, 191, 0.35);
+  --ng-op: 1;
+  --dy-op: 0.25;
+}
+
+.night-only {
+  opacity: var(--ng-op, 0);
+}
+
+.day-only {
+  opacity: var(--dy-op, 1);
+}
+
+.not-found-page {
+  position: relative;
+  width: 100%;
+  height: 100vh;
+  min-height: 640px;
+  overflow: hidden;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  padding: 1.5rem;
+  box-sizing: border-box;
+  background: var(--land);
+}
+
+.aerial-stage {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 0;
+  pointer-events: none;
+}
+
+.aerial-svg {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+.aerial-vignette {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: radial-gradient(circle at 50% 42%, transparent 52%, var(--vig) 100%);
+}
+
+// 1. Forest Floor & Topographic Contours
+.land-base {
+  fill: var(--land);
+}
+.meadow-patch {
+  fill: var(--meadow);
+  opacity: 0.65;
+}
+.hill-contour {
+  fill: var(--hill);
+  opacity: 0.5;
+}
+
+// 2. Multi-Layer Bathymetric '404' Lake & Feeder Rivers
+.lake-riparian,
+.river-riparian,
+.lake-beach,
+.river-beach,
+.lake-shallows,
+.river-shallows,
+.lake-mid,
+.river-mid,
+.lake-deep,
+.river-deep,
+.lake-abyss,
+.road-shoulder,
+.road-asphalt,
+.road-centerline,
+.house-driveway {
+  fill: none;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.lake-riparian,
+.river-riparian {
+  stroke: var(--lk-rip);
+}
+.lake-beach,
+.river-beach {
+  stroke: var(--lk-bch);
+}
+.lake-shallows,
+.river-shallows {
+  stroke: var(--lk-shl);
+}
+.lake-mid,
+.river-mid {
+  stroke: var(--lk-mid);
+}
+.lake-deep,
+.river-deep {
+  stroke: var(--lk-dep);
+}
+.lake-riparian {
+  stroke-width: 68;
+}
+.river-riparian,
+.lake-shallows {
+  stroke-width: 48;
+}
+.lake-beach {
+  stroke-width: 58;
+}
+.river-beach {
+  stroke-width: 38;
+}
+.river-shallows {
+  stroke-width: 28;
+}
+.lake-mid {
+  stroke-width: 36;
+}
+.river-mid {
+  stroke-width: 19;
+}
+.lake-deep,
+.road-shoulder {
+  stroke-width: 24;
+}
+.river-deep {
+  stroke-width: 11;
+}
+.lake-abyss {
+  stroke: var(--lk-aby);
+  stroke-width: 12;
+}
+
+// 3. Winding Valley Highways, Driveways, Day/Night Bridges & Driving Cars
+.house-driveway {
+  stroke: var(--drv);
+  stroke-width: 7;
+}
+.road-shoulder {
+  stroke: var(--rd-shd);
+}
+.road-asphalt {
+  stroke: var(--rd-asp);
+  stroke-width: 17;
+}
+.road-centerline {
+  stroke: var(--rd-lin);
+  stroke-width: 1.5;
+  stroke-dasharray: 14 14;
+}
+
+.bridge-water-shadow {
+  fill: var(--br-shd);
+}
+.bridge-pier {
+  fill: var(--br-pir);
+}
+.bridge-pier-wake {
+  fill: none;
+  stroke: var(--br-wak);
+  stroke-width: 1.6;
+  stroke-linecap: round;
+}
+.bridge-abutment {
+  fill: var(--br-abt);
+}
+.bridge-parapet-lit {
+  fill: var(--br-pl);
+}
+.bridge-parapet-shade {
+  fill: var(--br-ps);
+}
+.bridge-walkway {
+  fill: var(--br-wlk);
+}
+.bridge-deck {
+  fill: var(--rd-asp);
+}
+.bridge-lane-edge {
+  fill: none;
+  stroke: var(--rd-lin);
+  stroke-width: 0.9;
+  opacity: 0.7;
+}
+.bridge-joints {
+  fill: none;
+  stroke: rgba(15, 23, 42, 0.4);
+  stroke-width: 1;
+}
+.bridge-night-strip {
+  fill: none;
+  stroke: var(--br-ng);
+  stroke-width: 1.1;
+  opacity: 0.75;
+}
+.bridge-lamp-core {
+  fill: var(--br-lmp);
+}
+
+.car-shadow {
+  fill: rgba(2, 8, 12, 0.48);
+}
+.car-glass {
+  fill: #1e293b;
+}
+.car-body-red {
+  fill: #dc2626;
+}
+.car-roof-red,
+.car-taillight {
+  fill: #ef4444;
+}
+.car-body-white {
+  fill: #e2e8f0;
+}
+.car-roof-white {
+  fill: #f8fafc;
+}
+.car-body-blue {
+  fill: #0284c7;
+}
+.car-roof-blue {
+  fill: #38bdf8;
+}
+.car-body-sage {
+  fill: #0d9488;
+}
+
+// 4. Lakeside Wooden Docks & Moored Boats
+.dock-shadow,
+.tree-shadow {
+  fill: var(--tr-shd);
+}
+.dock-plank {
+  fill: var(--dk-plk);
+}
+.dock-seams {
+  stroke: var(--dk-sem);
+  stroke-width: 1;
+}
+.dock-piling {
+  fill: var(--dk-pil);
+}
+.boat-hull {
+  fill: var(--bt-hul);
+}
+.boat-interior {
+  fill: var(--bt-int);
+}
+.boat-seat {
+  stroke: var(--dk-plk);
+  stroke-width: 1.4;
+}
+
+// 5. Architectural Houses
+.house-patio {
+  fill: var(--hs-pat);
+}
+.house-deck {
+  fill: var(--hs-dck);
+}
+.house-shadow {
+  fill: var(--hs-shd);
+}
+.roof-terracotta-lit {
+  fill: var(--rf-tl);
+}
+.roof-terracotta-shade {
+  fill: var(--rf-ts);
+}
+.roof-slate-lit {
+  fill: var(--rf-sl);
+}
+.roof-slate-shade {
+  fill: var(--rf-ss);
+}
+.roof-zinc-lit {
+  fill: var(--rf-zl);
+}
+.roof-zinc-shade {
+  fill: var(--rf-zs);
+}
+.roof-cedar-lit {
+  fill: var(--rf-cl);
+}
+.roof-cedar-shade {
+  fill: var(--rf-cs);
+}
+.roof-ridge {
+  fill: none;
+  stroke: var(--rf-rdg);
+  stroke-width: 1.3;
+}
+.roof-chimney {
+  fill: var(--rf-chm);
+}
+.roof-skylight {
+  fill: var(--rf-sky);
+}
+
+// 6. Multi-Species Forest Canopy
+.pine-base {
+  fill: var(--pn-b);
+}
+.pine-mid {
+  fill: var(--pn-m);
+}
+.pine-crown {
+  fill: var(--pn-c);
+}
+.pine-tip {
+  fill: var(--pn-t);
+}
+.spruce-base {
+  fill: var(--sp-b);
+}
+.spruce-mid {
+  fill: var(--sp-m);
+}
+.spruce-crown {
+  fill: var(--sp-c);
+}
+.oak-base {
+  fill: var(--ok-b);
+}
+.oak-mid {
+  fill: var(--ok-m);
+}
+.oak-crown {
+  fill: var(--ok-c);
+}
+.birch-base {
+  fill: var(--bi-b);
+}
+.birch-mid {
+  fill: var(--bi-m);
+}
+.birch-crown {
+  fill: var(--bi-c);
+}
+
+// 7. Compact Floating Navigation HUD
+.not-found-hud {
+  position: relative;
+  z-index: 10;
+  pointer-events: auto;
+  max-width: 520px;
+  width: 100%;
+  padding: 1.15rem 1.5rem;
+  border-radius: 18px;
+  background: var(--hud-bg);
+  border: 1px solid var(--hud-border);
+  box-shadow: var(--hud-shadow);
+  -webkit-backdrop-filter: blur(14px);
+  backdrop-filter: blur(14px);
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.55rem;
+}
+
+.hud-header {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.65rem;
+  flex-wrap: wrap;
+}
+
+.hud-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.22rem 0.65rem;
+  border-radius: 999px;
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  background: var(--hud-badge-bg);
+  color: var(--hud-badge-color);
+  border: 1px solid var(--hud-badge-border);
+}
+
+.hud-title {
+  margin: 0;
+  font-size: clamp(1.15rem, 2vw, 1.4rem);
+  font-weight: 800;
+  color: var(--text-primary);
+}
+
+.hud-description {
+  margin: 0;
+  font-size: 0.9rem;
+  line-height: 1.45;
+  color: var(--text-secondary);
+}
+
+.hud-actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.65rem;
+  margin-top: 0.25rem;
+
+  a {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45rem;
+    padding: 0.55rem 1.1rem;
+    border-radius: 10px;
+    font-size: 0.88rem;
+    font-weight: 600;
+    text-decoration: none;
+    cursor: pointer;
+  }
+}

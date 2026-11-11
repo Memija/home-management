@@ -1,6 +1,6 @@
 import { Injectable, inject, PLATFORM_ID } from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
-import { StorageService } from './storage.service';
+import { StorageService } from './storage-base';
 
 @Injectable({
   providedIn: 'root',
@@ -27,21 +27,7 @@ export class LocalStorageService extends StorageService {
   }
 
   load<T>(key: string): Promise<T | null> {
-    if (!this.isBrowser) return Promise.resolve(null);
-
-    try {
-      const item = localStorage.getItem(this.prefix + key);
-      if (item === null) return Promise.resolve(null);
-
-      try {
-        return Promise.resolve(JSON.parse(item) as T);
-      } catch {
-        return Promise.resolve(item as unknown as T);
-      }
-    } catch (error) {
-      console.error(`Error loading from localStorage with key ${key}:`, error);
-      return Promise.resolve(null);
-    }
+    return Promise.resolve(this.loadSync<T>(key));
   }
 
   override loadSync<T>(key: string): T | null {
@@ -57,7 +43,7 @@ export class LocalStorageService extends StorageService {
         return item as unknown as T;
       }
     } catch (error) {
-      console.error(`Error synchronously loading from localStorage with key ${key}:`, error);
+      console.error(`Error loading from localStorage with key ${key}:`, error);
       return null;
     }
   }
@@ -89,15 +75,9 @@ export class LocalStorageService extends StorageService {
       }
     }
 
-    const entries = await Promise.all(
-      cleanKeys.map(async (cleanKey) => {
-        const value = await this.load(cleanKey);
-        return [cleanKey, value] as const;
-      }),
-    );
-
     const data: Record<string, unknown> = {};
-    for (const [cleanKey, value] of entries) {
+    for (const cleanKey of cleanKeys) {
+      const value = this.loadSync(cleanKey);
       if (value !== null) {
         data[cleanKey] = value;
       }

@@ -5,32 +5,26 @@ import { AppChartDataset } from '../../../models/records.model';
  * trendline are grouped together, placing global/unassigned datasets at the end.
  */
 export function reorderDatasets(datasets: AppChartDataset[]): void {
-  const groupedDatasets: AppChartDataset[] = [];
+  const categoryGroups = new Map<string, AppChartDataset[]>();
   const otherDatasets: AppChartDataset[] = [];
-  const categoryIds = Array.from(
-    new Set(
-      datasets
-        .map((ds) => (ds as AppChartDataset).categoryId || (ds as AppChartDataset).trendlineFor)
-        .filter(Boolean),
-    ),
-  );
 
-  categoryIds.forEach((catId) => {
-    groupedDatasets.push(
-      ...datasets.filter(
-        (ds) =>
-          (ds as AppChartDataset).categoryId === catId ||
-          (ds as AppChartDataset).trendlineFor === catId,
-      ),
-    );
-  });
-
-  otherDatasets.push(
-    ...datasets.filter(
-      (ds) => !(ds as AppChartDataset).categoryId && !(ds as AppChartDataset).trendlineFor,
-    ),
-  );
+  for (const ds of datasets) {
+    const catId = ds.categoryId || ds.trendlineFor;
+    if (catId) {
+      let group = categoryGroups.get(catId);
+      if (!group) {
+        group = [];
+        categoryGroups.set(catId, group);
+      }
+      group.push(ds);
+    } else {
+      otherDatasets.push(ds);
+    }
+  }
 
   datasets.length = 0;
-  datasets.push(...groupedDatasets, ...otherDatasets);
+  for (const group of categoryGroups.values()) {
+    datasets.push(...group);
+  }
+  datasets.push(...otherDatasets);
 }

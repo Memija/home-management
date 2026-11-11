@@ -269,9 +269,9 @@ describe('LanguageService', () => {
     });
 
     it('should use native formatting if no weekday or month specified', () => {
-      const spy = vi.spyOn(date, 'toLocaleDateString');
-      service.formatDate(date, { day: 'numeric', year: 'numeric' });
-      expect(spy).toHaveBeenCalled();
+      const options = { day: 'numeric', year: 'numeric' } as const;
+      const result = service.formatDate(date, options);
+      expect(result).toBe(new Intl.DateTimeFormat(service.currentLocale(), options).format(date));
     });
 
     it('should format full date in English', () => {

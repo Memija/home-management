@@ -1,18 +1,24 @@
 import { TestBed } from '@angular/core/testing';
 import { HeatingFactsService } from './heating-facts.service';
 import { LanguageService } from './language.service';
-import { describe, it, expect, beforeEach } from 'vitest';
+import { enFacts } from '../i18n/facts/en';
+import { deFacts } from '../i18n/facts/de';
+import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { signal } from '@angular/core';
 
 describe('HeatingFactsService', () => {
   let service: HeatingFactsService;
-  let mockLanguageService: { currentLang: ReturnType<typeof signal<string>> };
+  let mockLanguageService: {
+    currentLang: ReturnType<typeof signal<string>>;
+    getTranslations: import('vitest').Mock<(lang: string) => Record<string, unknown>>;
+  };
   let mockCurrentLangSignal: ReturnType<typeof signal<string>>;
 
   beforeEach(() => {
     mockCurrentLangSignal = signal('en');
     mockLanguageService = {
       currentLang: mockCurrentLangSignal,
+      getTranslations: vi.fn((lang: string) => (lang === 'de' ? deFacts : enFacts)),
     };
 
     TestBed.configureTestingModule({

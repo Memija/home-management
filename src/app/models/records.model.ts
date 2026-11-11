@@ -151,13 +151,45 @@ export function calculateElectricityTotal(record: ElectricityRecord): number {
  * Calculate total heating consumption for dynamic room records
  */
 export function calculateDynamicHeatingTotal(record: DynamicHeatingRecord): number {
-  return Object.values(record.rooms).reduce((sum, val) => sum + (val || 0), 0);
+  let sum = 0;
+  const rooms = record.rooms;
+  for (const roomId in rooms) {
+    if (Object.hasOwn(rooms, roomId)) {
+      sum += rooms[roomId] || 0;
+    }
+  }
+  return sum;
 }
 
+const dateKeyCache = new WeakMap<Date, string>();
+const isoDateKeyCache = new WeakMap<Date, string>();
+
 export function getDateKey(date: Date): string {
+  if (date instanceof Date) {
+    const cached = dateKeyCache.get(date);
+    if (cached !== undefined) return cached;
+  }
   const d = parseSafeDate(date);
   if (Number.isNaN(d.getTime())) return '';
-  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+  const key = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+  if (date instanceof Date) {
+    dateKeyCache.set(date, key);
+  }
+  return key;
+}
+
+export function getIsoDateKey(dateRaw: unknown): string {
+  if (dateRaw instanceof Date) {
+    const cached = isoDateKeyCache.get(dateRaw);
+    if (cached !== undefined) return cached;
+  }
+  const d = parseSafeDate(dateRaw);
+  if (Number.isNaN(d.getTime())) return '';
+  const key = d.toISOString().slice(0, 10);
+  if (dateRaw instanceof Date) {
+    isoDateKeyCache.set(dateRaw, key);
+  }
+  return key;
 }
 
 /**
@@ -208,7 +240,14 @@ export function isElectricityRecordAllZero(record: ElectricityRecord): boolean {
  * Check if a dynamic heating record has all consumption values set to zero
  */
 export function isDynamicHeatingRecordAllZero(record: DynamicHeatingRecord): boolean {
-  return Object.values(record.rooms).every((val) => val === 0 || val === undefined);
+  const rooms = record.rooms;
+  for (const roomId in rooms) {
+    if (Object.hasOwn(rooms, roomId)) {
+      const val = rooms[roomId];
+      if (val !== 0 && val !== undefined) return false;
+    }
+  }
+  return true;
 }
 
 /**
@@ -250,11 +289,17 @@ export function filterZeroPlaceholders<T extends { date: Date }>(
  * @returns New array of merged and sorted records
  */
 export function mergeRecords<T extends { date: Date }>(existing: T[], incoming: T[]): T[] {
-  const merged = [...existing, ...incoming];
   const uniqueMap = new Map<string, T>();
   // Use date string as key to ignore time component differences
-  merged.forEach((r) => uniqueMap.set(getDateKey(r.date), r));
+  for (const r of existing) {
+    uniqueMap.set(getDateKey(r.date), r);
+  }
+  for (const r of incoming) {
+    uniqueMap.set(getDateKey(r.date), r);
+  }
   return Array.from(uniqueMap.values()).sort(
-    (a, b) => new Date(a.date).getTime() - new Date(b.date).getTime(),
+    (a, b) =>
+      (a.date instanceof Date ? a.date.getTime() : new Date(a.date).getTime()) -
+      (b.date instanceof Date ? b.date.getTime() : new Date(b.date).getTime()),
   );
 }

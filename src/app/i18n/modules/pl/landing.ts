@@ -1,7 +1,7 @@
 // Polish landing page translations
 export const landing = {
   LANDING: {
-    BADGE: 'Open Source · Na Zawsze Darmowe',
+    BADGE: 'Dostępny Kod Źródłowy · Na Zawsze Darmowe',
     TITLE_LINE_1: 'Twój Dom,',
     TITLE_LINE_2: 'W Pełni Zarządzany.',
     SUBTITLE:
@@ -13,7 +13,7 @@ export const landing = {
     THEME_TOGGLE: 'Przełącz motyw kolorystyczny',
     SCROLL_PROGRESS: 'Postęp przewijania strony',
     STATS: {
-      FREE: 'Darmowe i Open Source',
+      FREE: 'Darmowe z Dostępnym Kodem Źródłowym',
       TRACKERS: 'Liczniki Mediów',
       DATA_POINTS: 'Punkty Danych',
       ADS: 'Żadnych Reklam',
@@ -39,8 +39,8 @@ export const landing = {
       UNIFIED_TAG_3: 'Dobowe Różnice',
       PRIVACY_TITLE: 'Wielojęzyczność i Pełna Prywatność',
       PRIVACY_DESC:
-        'Pełna obsługa w 5 językach, dostępny interfejs w trybie ciemnym i jasnym, bez żadnych trackerów.',
-      PRIVACY_TAG_1: '5 Języków',
+        'Pełna obsługa w 6 językach, dostępny interfejs w trybie ciemnym i jasnym, bez żadnych trackerów.',
+      PRIVACY_TAG_1: '6 Języków',
       PRIVACY_TAG_2: 'Bez Śledzenia',
       PRIVACY_TAG_3: 'Dostępne Motywy',
     },
@@ -84,6 +84,20 @@ export const landing = {
       STEP_3_TITLE: 'Zobacz Statystyki',
       STEP_3_DESC: 'Piękne wykresy pokażą trendy, porównania i zużycie na osobę.',
     },
+    FAQ: {
+      TITLE: 'Najczęściej Zadawane Pytania',
+      SUBTITLE: 'Wszystko, co warto wiedzieć o prywatności, odczytach liczników i prognozach.',
+      Q1: 'Czy Home Management wymaga konta lub subskrypcji?',
+      A1: 'Nie. Home Management jest w 100% darmowy do użytku osobistego i domowego oraz działa od razu w przeglądarce bez rejestracji. Opcjonalne logowanie Google służy wyłącznie do synchronizacji danych między urządzeniami.',
+      Q2: 'Gdzie przechowywane są dane o zużyciu w moim domu?',
+      A2: 'Domyślnie wszystkie odczyty wody, ogrzewania i prądu pozostają lokalnie w pamięci przeglądarki. Aplikacja nie zawiera reklam ani zewnętrznych skryptów śledzących. W każdej chwili możesz wyeksportować dane lub włączyć kopię zapasową w chmurze.',
+      Q3: 'Jak działa odczyt licznika aparatem (OCR)?',
+      A3: 'Gdy robisz lub przesyłasz zdjęcie licznika, kadrowanie obrazu, poprawa kontrastu i rozpoznawanie tekstu Tesseract.js odbywają się w całości na Twoim urządzeniu. Zdjęcia liczników nigdy nie opuszczają przeglądarki.',
+      Q4: 'Jak obliczane są prognozy zużycia i średnie krajowe?',
+      A4: 'Prognozy łączą regresję liniową i wielomianową z korektą sezonową oraz automatyczną kalibracją dokładności historycznej. Porównania krajowe zestawiają zużycie na osobę z oficjalnymi danymi instytucji takich jak GUS (Główny Urząd Statystyczny), Umweltbundesamt (Niemiecka Federalna Agencja Środowiska), BDEW (Niemieckie Stowarzyszenie Gospodarki Energetycznej i Wodnej), Eurostat (Urząd Statystyczny Unii Europejskiej) oraz EIA (Amerykańska Agencja Informacji Energetycznej).',
+      Q5: 'Czy mogę obsłużyć wymianę licznika i zaimportować arkusze Excel?',
+      A5: 'Tak. Po wymianie lub wyzerowaniu licznika aplikacja oblicza przyrosty bez fałszywych skoków. Możesz również importować historyczne pliki Excel (.xlsx) z własnym mapowaniem kolumn oraz eksportować dane do formatów Excel, JSON i PDF.',
+    },
     CTA: {
       TITLE: 'Gotowy na Przejęcie Kontroli?',
       SUBTITLE: 'Zacznij zarządzać domem już dziś. To darmowe, prywatne i zawsze takie będzie.',
@@ -91,6 +105,7 @@ export const landing = {
     },
     FOOTER: {
       GITHUB: 'GitHub',
+      BENCHMARKS: 'Średnie Krajowe',
       OPEN_APP: 'Otwórz Aplikację',
     },
   },

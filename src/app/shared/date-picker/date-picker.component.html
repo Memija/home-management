@@ -3,14 +3,14 @@
     type="button"
     class="input-wrapper"
     (click)="toggleCalendar()"
-    [disabled]="disabledSignal()"
-    [class.disabled]="disabledSignal()"
+    [disabled]="disabled()"
+    [class.disabled]="disabled()"
     [attr.aria-expanded]="isOpen()"
-    [attr.aria-label]="placeholderSignal() | translate"
+    [attr.aria-label]="placeholder() | translate"
   >
     <lucide-icon [img]="CalendarIcon" size="18" class="calendar-icon"></lucide-icon>
-    <span class="date-display" [class.placeholder]="!dateSignal()">
-      {{ formattedDate() || (placeholderSignal() | translate) }}
+    <span class="date-display" [class.placeholder]="!date()">
+      {{ formattedDate() || (placeholder() | translate) }}
     </span>
   </button>
 
@@ -45,20 +45,20 @@
           }
         </div>
         <div class="days">
-          @for (day of calendarDays(); track $index) {
+          @for (cell of calendarCells(); track $index) {
             <button
               type="button"
               class="day-cell"
-              [class.empty]="!day"
-              [class.selected]="isSameDay(day, dateSignal())"
-              [class.today]="isToday(day)"
-              [class.sunday]="isSunday(day)"
-              [class.disabled]="isDisabled(day)"
-              [disabled]="!day || isDisabled(day)"
-              (click)="selectDate(day)"
-              title="{{ day ? (day | date: 'fullDate') : '' }}"
+              [class.empty]="!cell.date"
+              [class.selected]="cell.isSelected"
+              [class.today]="cell.isToday"
+              [class.sunday]="cell.isSunday"
+              [class.disabled]="cell.isDisabled"
+              [disabled]="cell.isDisabled"
+              (click)="selectDate(cell.date)"
+              [title]="cell.fullDateTitle"
             >
-              {{ day?.getDate() }}
+              {{ cell.dayNumber }}
             </button>
           }
         </div>

@@ -1,4 +1,16 @@
-import { Directive, HostListener, WritableSignal } from '@angular/core';
+import { Directive, effect, inject, WritableSignal } from '@angular/core';
+import { DOCUMENT } from '@angular/common';
+import {
+  Download,
+  Upload,
+  FileOutput,
+  FileInput,
+  FileText,
+  CircleCheck,
+  Trash2,
+  TriangleAlert,
+  RefreshCw,
+} from 'lucide-angular';
 import { ActionDropdownState } from '../utils/action-dropdown.utils';
 
 /**
@@ -9,8 +21,8 @@ export interface ConsumptionDataServiceContract<TRecord> {
   importFromExcel(event: Event): Promise<void> | void;
   confirmImport(): Promise<void> | void;
   cancelImport(): void;
-  confirmFilterWarningImport(): Promise<void> | void;
-  cancelFilterWarningImport(): void;
+  confirmFilterWarningImport?(): Promise<void> | void;
+  cancelFilterWarningImport?(): void;
   exportData(): Promise<void> | void;
   exportToExcel(): Promise<void> | void;
   exportToPdf(): Promise<void> | void;
@@ -31,8 +43,28 @@ export abstract class BaseDropdownComponent {
   protected readonly isExportMenuOpen = this.dropdownState.isExportOpen;
   protected readonly isImportMenuOpen = this.dropdownState.isImportOpen;
 
-  @HostListener('document:click', ['$event'])
+  constructor() {
+    try {
+      const doc = inject(DOCUMENT, { optional: true });
+      if (doc) {
+        effect((onCleanup) => {
+          if (!this.dropdownState.isExportOpen() && !this.dropdownState.isImportOpen()) {
+            return;
+          }
+          const handler = (event: MouseEvent) => this.onDocumentClick(event);
+          doc.addEventListener('click', handler);
+          onCleanup(() => doc.removeEventListener('click', handler));
+        });
+      }
+    } catch {
+      // Allow direct instantiation outside an Angular injection context in unit tests
+    }
+  }
+
   onDocumentClick(event: MouseEvent): void {
+    if (!this.dropdownState.isExportOpen() && !this.dropdownState.isImportOpen()) {
+      return;
+    }
     this.dropdownState.handleDocumentClick(event.target as HTMLElement | null);
   }
 
@@ -51,10 +83,20 @@ export abstract class BaseDropdownComponent {
 
 /**
  * Base directive that encapsulates shared data service delegation (import, export, delete)
- * and dropdown state across consumption feature components (water, electricity).
+ * and dropdown state across consumption feature components (water, heating, electricity).
  */
 @Directive()
 export abstract class BaseConsumptionComponent<TRecord> extends BaseDropdownComponent {
+  protected readonly DownloadIcon = Download;
+  protected readonly UploadIcon = Upload;
+  protected readonly FileOutputIcon = FileOutput;
+  protected readonly FileInputIcon = FileInput;
+  protected readonly FileTextIcon = FileText;
+  protected readonly CheckCircleIcon = CircleCheck;
+  protected readonly TrashIcon = Trash2;
+  protected readonly AlertTriangleIcon = TriangleAlert;
+  protected readonly RefreshCwIcon = RefreshCw;
+
   abstract get baseDataService(): ConsumptionDataServiceContract<TRecord>;
 
   protected importData(event: Event): void {
@@ -76,11 +118,11 @@ export abstract class BaseConsumptionComponent<TRecord> extends BaseDropdownComp
   }
 
   protected confirmFilterWarningImport(): void {
-    void this.baseDataService.confirmFilterWarningImport();
+    void this.baseDataService.confirmFilterWarningImport?.();
   }
 
   protected cancelFilterWarningImport(): void {
-    this.baseDataService.cancelFilterWarningImport();
+    this.baseDataService.cancelFilterWarningImport?.();
   }
 
   protected exportData(): void {

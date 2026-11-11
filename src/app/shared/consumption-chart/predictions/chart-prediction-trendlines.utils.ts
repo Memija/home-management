@@ -71,12 +71,13 @@ export function extendTrendlinesAndAverages(
   languageService: LanguageService,
 ): void {
   const existingDatasetCount = datasets.length;
+  const trendlineLabel = languageService.translate('CHART.TRENDLINE');
   for (let i = 0; i < existingDatasetCount; i++) {
     const ds = datasets[i];
     const bdash = ds.borderDash as number[] | undefined;
     const dsData = ds.data as (number | null)[];
 
-    const isTrendline = ds.label?.includes(languageService.translate('CHART.TRENDLINE'));
+    const isTrendline = ds.label?.includes(trendlineLabel);
     const isCountryAverage = bdash?.[0] === 5; // [5, 5] dash = country/comparison average
 
     if (!isTrendline && !isCountryAverage) continue;

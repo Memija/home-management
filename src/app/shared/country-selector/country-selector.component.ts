@@ -1,14 +1,14 @@
 import {
   Component,
-  Input,
-  Output,
-  EventEmitter,
+  ChangeDetectionStrategy,
+  input,
+  output,
   signal,
+  linkedSignal,
   computed,
   inject,
   effect,
 } from '@angular/core';
-import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { CountryService } from '../../services/country.service';
 import { LanguageService } from '../../services/language.service';
@@ -21,49 +21,61 @@ import { TranslatePipe } from '../../pipes/translate.pipe';
 @Component({
   selector: 'app-country-selector',
   standalone: true,
-  imports: [CommonModule, FormsModule, TranslatePipe],
+  imports: [FormsModule, TranslatePipe],
   templateUrl: './country-selector.component.html',
   styleUrl: './country-selector.component.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class CountrySelectorComponent {
   private readonly countryService = inject(CountryService);
   private readonly languageService = inject(LanguageService);
 
   /** The country code (e.g., 'de', 'us') - two-way bindable */
-  @Input() set countryCode(value: string) {
-    this._countryCode.set(value);
-    // Update search field to show display name
-    if (value) {
-      const info = this.countryService.getCountryInfoByCode(value);
-      if (info) {
-        this._countrySearch.set(this.languageService.translate(info.translationKey));
-      }
-    }
-  }
-  get countryCode(): string {
-    return this._countryCode();
-  }
+  readonly countryCode = input<string>('');
 
   /** Placeholder text for the input */
-  @Input() placeholder = 'SETTINGS.SEARCH_COUNTRY';
+  readonly placeholder = input<string>('SETTINGS.SEARCH_COUNTRY');
 
-  @Input() hasError = false;
+  readonly hasError = input<boolean>(false);
 
   /** HTML id applied to the input field */
-  @Input() inputId = 'country-selector-input';
+  readonly inputId = input<string>('country-selector-input');
 
   /** HTML name applied to the input field */
-  @Input() inputName = 'country-selector';
+  readonly inputName = input<string>('country-selector');
 
   /** Emits when country code changes */
-  @Output() countryCodeChange = new EventEmitter<string>();
+  readonly countryCodeChange = output<string>();
 
   /** Emits validation errors */
-  @Output() validationErrors = new EventEmitter<string[]>();
+  readonly validationErrors = output<string[]>();
 
   // Internal state
-  protected readonly _countryCode = signal('');
+  protected readonly _countryCode = linkedSignal(() => this.countryCode());
   protected readonly _countrySearch = signal('');
+
+  private cachedCountriesRef: string[] | null = null;
+  private cachedLowerEntries: { name: string; lower: string }[] = [];
+  private cachedLowerSet = new Set<string>();
+
+  private getLowerCountryEntries(countries: string[]): {
+    entries: { name: string; lower: string }[];
+    lowerSet: Set<string>;
+  } {
+    if (this.cachedCountriesRef !== countries) {
+      const entries: { name: string; lower: string }[] = [];
+      const lowerSet = new Set<string>();
+      for (const name of countries) {
+        const lower = name.toLowerCase();
+        entries.push({ name, lower });
+        lowerSet.add(lower);
+      }
+      this.cachedCountriesRef = countries;
+      this.cachedLowerEntries = entries;
+      this.cachedLowerSet = lowerSet;
+    }
+    return { entries: this.cachedLowerEntries, lowerSet: this.cachedLowerSet };
+  }
 
   /** Filtered countries based on search (reactive to language changes) */
   protected filteredCountries = computed(() => {
@@ -72,16 +84,21 @@ export class CountrySelectorComponent {
 
     // Get countries fresh each time (translated based on current language)
     const countries = this.countryService.getCountries();
+    const { entries, lowerSet } = this.getLowerCountryEntries(countries);
 
     // If search exactly matches a country, don't show dropdown (already selected)
-    const exactMatch = countries.some((c) => c.toLowerCase() === search);
-    if (exactMatch) return [];
+    if (lowerSet.has(search)) return [];
 
     // Filter and exclude current selection if it partially matches
     const currentDisplay = this.displayName().toLowerCase();
-    return countries
-      .filter((c) => c.toLowerCase().includes(search) && c.toLowerCase() !== currentDisplay)
-      .slice(0, 10); // Limit to 10 results
+    const results: string[] = [];
+    for (const entry of entries) {
+      if (entry.lower.includes(search) && entry.lower !== currentDisplay) {
+        results.push(entry.name);
+        if (results.length === 10) break; // Limit to 10 results
+      }
+    }
+    return results;
   });
 
   /** Display name for the selected country (translated) */
@@ -99,7 +116,7 @@ export class CountrySelectorComponent {
   });
 
   constructor() {
-    // Sync search field when language changes
+    // Sync countryCode input and language changes to search field
     effect(() => {
       this.languageService.currentLang();
       const code = this._countryCode();
@@ -151,10 +168,5 @@ export class CountrySelectorComponent {
       this.countryCodeChange.emit(countryName);
     }
     this.validationErrors.emit([]);
-  }
-
-  /** TrackBy for ngFor performance */
-  trackByCountry(index: number, country: string): string {
-    return country;
   }
 }

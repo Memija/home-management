@@ -1,11 +1,19 @@
 import { Injectable, inject } from '@angular/core';
-import { ConsumptionRecord, DynamicHeatingRecord } from '../models/records.model';
+import { ConsumptionRecord, DynamicHeatingRecord, getDateKey } from '../models/records.model';
 import { LanguageService } from './language.service';
 
 export interface ValidationResult<T> {
   validRecords: T[];
   errors: string[];
 }
+
+const WATER_NUMERIC_FIELDS = [
+  'kitchenWarm',
+  'kitchenCold',
+  'bathroomWarm',
+  'bathroomCold',
+] as const;
+const ELECTRICITY_NUMERIC_FIELDS = ['value'] as const;
 
 @Injectable({
   providedIn: 'root',
@@ -20,7 +28,6 @@ export class ImportValidationService {
     const validationErrors: string[] = [];
     const validRecords: ConsumptionRecord[] = [];
     const seenDates = new Map<string, number>();
-    const numericFields = ['kitchenWarm', 'kitchenCold', 'bathroomWarm', 'bathroomCold'];
 
     for (let index = 0; index < data.length; index++) {
       const record = data[index] as Record<string, unknown>;
@@ -34,7 +41,7 @@ export class ImportValidationService {
       }
 
       // Validate numeric fields
-      const numericResult = this.validateNumericFields(record, rowNumber, numericFields);
+      const numericResult = this.validateNumericFields(record, rowNumber, WATER_NUMERIC_FIELDS);
       if (numericResult.errors.length > 0) {
         validationErrors.push(...numericResult.errors);
         continue;
@@ -62,6 +69,8 @@ export class ImportValidationService {
     const validationErrors: string[] = [];
     const validRecords: { date: Date; rooms: Record<string, number> }[] = [];
     const seenDates = new Map<string, number>();
+    const expectedRoomSet =
+      expectedRoomIds && expectedRoomIds.length > 0 ? new Set(expectedRoomIds) : null;
 
     for (let index = 0; index < data.length; index++) {
       const record = data[index] as Record<string, unknown>;
@@ -88,10 +97,11 @@ export class ImportValidationService {
       const rooms = record['rooms'] as Record<string, unknown>;
 
       // Strict validation against expected room IDs
-      if (expectedRoomIds && expectedRoomIds.length > 0) {
+      if (expectedRoomIds && expectedRoomSet) {
         const hasRoomsError = this.validateExpectedRoomIds(
           rooms,
           expectedRoomIds,
+          expectedRoomSet,
           dateStr,
           validationErrors,
         );
@@ -112,15 +122,15 @@ export class ImportValidationService {
 
   private validateExpectedRoomIds(
     rooms: Record<string, unknown>,
-    expectedRoomIds: string[],
+    expectedRoomIds: readonly string[],
+    expectedRoomSet: ReadonlySet<string>,
     dateStr: string,
     validationErrors: string[],
   ): boolean {
     let hasError = false;
-    const recordRoomKeys = Object.keys(rooms);
 
     for (const expectedId of expectedRoomIds) {
-      if (!recordRoomKeys.includes(expectedId)) {
+      if (!Object.hasOwn(rooms, expectedId)) {
         validationErrors.push(
           this.languageService.translate('ERROR.IMPORT_MISSING_ROOM_DATA', {
             date: dateStr,
@@ -131,8 +141,8 @@ export class ImportValidationService {
       }
     }
 
-    for (const key of recordRoomKeys) {
-      if (!expectedRoomIds.includes(key)) {
+    for (const key of Object.keys(rooms)) {
+      if (!expectedRoomSet.has(key)) {
         validationErrors.push(
           this.languageService.translate('ERROR.IMPORT_UNKNOWN_ROOM', {
             date: dateStr,
@@ -196,7 +206,6 @@ export class ImportValidationService {
     const validationErrors: string[] = [];
     const validRecords: import('../models/records.model').ElectricityRecord[] = [];
     const seenDates = new Map<string, number>();
-    const numericFields = ['value'];
 
     for (let index = 0; index < data.length; index++) {
       const record = data[index] as Record<string, unknown>;
@@ -210,7 +219,11 @@ export class ImportValidationService {
       }
 
       // Validate numeric fields
-      const numericResult = this.validateNumericFields(record, rowNumber, numericFields);
+      const numericResult = this.validateNumericFields(
+        record,
+        rowNumber,
+        ELECTRICITY_NUMERIC_FIELDS,
+      );
       if (numericResult.errors.length > 0) {
         validationErrors.push(...numericResult.errors);
         continue;
@@ -371,7 +384,7 @@ export class ImportValidationService {
   private validateNumericFields(
     record: Record<string, unknown>,
     rowNumber: number,
-    fields: string[],
+    fields: readonly string[],
   ): { values: Record<string, number>; errors: string[] } {
     const errors: string[] = [];
     const values: Record<string, number> = {};
@@ -409,6 +422,6 @@ export class ImportValidationService {
   }
 
   private formatLocalDate(date: Date): string {
-    return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
+    return getDateKey(date);
   }
 }

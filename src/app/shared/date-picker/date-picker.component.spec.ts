@@ -50,19 +50,19 @@ describe('DatePickerComponent', () => {
     });
 
     it('should have empty date by default', () => {
-      expect(component.date).toBe('');
+      expect(component.date()).toBe('');
     });
 
     it('should have empty maxDate by default', () => {
-      expect(component.maxDate).toBe('');
+      expect(component.maxDate()).toBe('');
     });
 
     it('should have default placeholder', () => {
-      expect(component.placeholder).toBe('Select date');
+      expect(component.placeholder()).toBe('Select date');
     });
 
     it('should not be disabled by default', () => {
-      expect(component.disabled).toBe(false);
+      expect(component.disabled()).toBe(false);
     });
 
     it('should be closed by default', () => {
@@ -87,7 +87,7 @@ describe('DatePickerComponent', () => {
     });
 
     it('should not open when disabled', () => {
-      component.disabled = true;
+      fixture.componentRef.setInput('disabled', true);
       fixture.detectChanges();
 
       component.toggleCalendar();
@@ -95,7 +95,7 @@ describe('DatePickerComponent', () => {
     });
 
     it('should set viewDate to current date when opening with a date set', () => {
-      component.date = '2024-06-15';
+      fixture.componentRef.setInput('date', '2024-06-15');
       fixture.detectChanges();
 
       component.toggleCalendar();
@@ -106,7 +106,7 @@ describe('DatePickerComponent', () => {
     });
 
     it('should not update viewDate when opening without a date', () => {
-      component.date = '';
+      fixture.componentRef.setInput('date', '');
       fixture.detectChanges();
 
       const viewDateBefore = component.viewDate();
@@ -193,7 +193,7 @@ describe('DatePickerComponent', () => {
     });
 
     it('should not emit if day exceeds maxDate', () => {
-      component.maxDate = '2024-06-10';
+      fixture.componentRef.setInput('maxDate', '2024-06-10');
       fixture.detectChanges();
 
       const spy = vi.fn();
@@ -205,7 +205,7 @@ describe('DatePickerComponent', () => {
     });
 
     it('should emit if day equals maxDate', () => {
-      component.maxDate = '2024-06-15';
+      fixture.componentRef.setInput('maxDate', '2024-06-15');
       fixture.detectChanges();
 
       const spy = vi.fn();
@@ -217,7 +217,7 @@ describe('DatePickerComponent', () => {
     });
 
     it('should emit if day is before maxDate', () => {
-      component.maxDate = '2024-06-20';
+      fixture.componentRef.setInput('maxDate', '2024-06-20');
       fixture.detectChanges();
 
       const spy = vi.fn();
@@ -391,22 +391,22 @@ describe('DatePickerComponent', () => {
     });
 
     it('should return true for dates after maxDate', () => {
-      component.maxDate = '2024-06-15';
+      fixture.componentRef.setInput('maxDate', '2024-06-15');
       expect(component.isDisabled(new Date(2024, 5, 16))).toBe(true);
     });
 
     it('should return false for dates on maxDate', () => {
-      component.maxDate = '2024-06-15';
+      fixture.componentRef.setInput('maxDate', '2024-06-15');
       expect(component.isDisabled(new Date(2024, 5, 15))).toBe(false);
     });
 
     it('should return false for dates before maxDate', () => {
-      component.maxDate = '2024-06-15';
+      fixture.componentRef.setInput('maxDate', '2024-06-15');
       expect(component.isDisabled(new Date(2024, 5, 14))).toBe(false);
     });
 
     it('should compare only date parts, ignoring time', () => {
-      component.maxDate = '2024-06-15';
+      fixture.componentRef.setInput('maxDate', '2024-06-15');
       // Same day but with time set — should still be valid
       const d = new Date(2024, 5, 15, 23, 59, 59);
       expect(component.isDisabled(d)).toBe(false);
@@ -500,14 +500,14 @@ describe('DatePickerComponent', () => {
 
   describe('formattedDate', () => {
     it('should return empty string when date is empty', () => {
-      component.date = '';
+      fixture.componentRef.setInput('date', '');
       fixture.detectChanges();
 
       expect(component['formattedDate']()).toBe('');
     });
 
     it('should return formatted date when date is set', () => {
-      component.date = '2024-06-15';
+      fixture.componentRef.setInput('date', '2024-06-15');
       fixture.detectChanges();
 
       const formatted = component['formattedDate']();
@@ -634,7 +634,7 @@ describe('DatePickerComponent', () => {
     });
 
     it('should not toggle when disabled even after multiple attempts', () => {
-      component.disabled = true;
+      fixture.componentRef.setInput('disabled', true);
       fixture.detectChanges();
 
       component.toggleCalendar();
@@ -654,7 +654,7 @@ describe('DatePickerComponent', () => {
     });
 
     it('should show placeholder when no date is set', () => {
-      component.date = '';
+      fixture.componentRef.setInput('date', '');
       fixture.detectChanges();
 
       const display = fixture.debugElement.query(By.css('.date-display'));
@@ -662,7 +662,7 @@ describe('DatePickerComponent', () => {
     });
 
     it('should not show placeholder when date is set', () => {
-      component.date = '2024-06-15';
+      fixture.componentRef.setInput('date', '2024-06-15');
       fixture.detectChanges();
 
       const display = fixture.debugElement.query(By.css('.date-display'));
@@ -670,7 +670,7 @@ describe('DatePickerComponent', () => {
     });
 
     it('should apply disabled class when disabled', () => {
-      component.disabled = true;
+      fixture.componentRef.setInput('disabled', true);
       fixture.detectChanges();
 
       const wrapper = fixture.debugElement.query(By.css('.input-wrapper'));

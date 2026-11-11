@@ -7,7 +7,6 @@ import {
   HostListener,
   ChangeDetectionStrategy,
 } from '@angular/core';
-import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import {
   LucideAngularModule,
@@ -18,10 +17,6 @@ import {
   Plus,
   Download,
   Upload,
-  User,
-  Baby,
-  Mars,
-  Venus,
   CircleQuestionMark,
   TriangleAlert,
 } from 'lucide-angular';
@@ -39,6 +34,8 @@ import {
   MemberEditorComponent,
   MemberEditData,
 } from '../../shared/member-editor/member-editor.component';
+import { FamilyMemberListComponent } from './family-member-list/family-member-list.component';
+import { FamilyAddMemberModalComponent } from './family-add-member-modal/family-add-member-modal.component';
 import { NavigationGuardState } from '../../utils/navigation-guard.utils';
 import { secureRandomItem } from '../../utils/crypto.utils';
 
@@ -46,7 +43,6 @@ import { secureRandomItem } from '../../utils/crypto.utils';
   selector: 'app-family',
   standalone: true,
   imports: [
-    CommonModule,
     FormsModule,
     LucideAngularModule,
     TranslatePipe,
@@ -55,6 +51,8 @@ import { secureRandomItem } from '../../utils/crypto.utils';
     ErrorModalComponent,
     HelpModalComponent,
     MemberEditorComponent,
+    FamilyMemberListComponent,
+    FamilyAddMemberModalComponent,
   ],
   templateUrl: './family.component.html',
   styleUrl: './family.component.scss',
@@ -78,13 +76,8 @@ export class FamilyComponent {
   protected readonly AddIcon = Plus;
   protected readonly ExportIcon = Download;
   protected readonly ImportIcon = Upload;
-  protected readonly AdultIcon = User;
-  protected readonly KidIcon = Baby;
-  protected readonly MaleIcon = Mars;
-  protected readonly FemaleIcon = Venus;
   protected readonly WarningIcon = TriangleAlert;
   protected readonly HelpIcon = CircleQuestionMark;
-  protected readonly TriangleAlertIcon = TriangleAlert;
 
   // State
   protected readonly isEditing = signal(false);
@@ -169,10 +162,35 @@ export class FamilyComponent {
   // Duplicate member error state
   protected readonly showDuplicateMemberError = signal(false);
   protected readonly duplicateMemberName = signal('');
+  protected readonly duplicateMemberErrorMessage = computed(() => {
+    this.languageService.currentLang();
+    const [name = '', surname = ''] = this.duplicateMemberName().split(' ');
+    return this.languageService.translate('SETTINGS.DUPLICATE_MEMBER_NAME', {
+      name,
+      surname,
+    });
+  });
 
   // Max members limit check
   protected isAtMaxMembers = computed(() => this.draftMembers().length >= this.MAX_FAMILY_MEMBERS);
   protected readonly showMaxMembersError = signal(false);
+  protected readonly maxMembersErrorMessage = computed(() => {
+    this.languageService.currentLang();
+    return this.languageService.translate('SETTINGS.MAX_MEMBERS_MESSAGE', {
+      max: this.MAX_FAMILY_MEMBERS,
+    });
+  });
+
+  protected readonly duplicateMemberInstructions: string[] = [
+    'SETTINGS.DUPLICATE_MEMBER_INSTRUCTION_1',
+    'SETTINGS.DUPLICATE_MEMBER_INSTRUCTION_2',
+    'SETTINGS.DUPLICATE_MEMBER_INSTRUCTION_3',
+  ];
+
+  protected readonly maxMembersInstructions: string[] = [
+    'SETTINGS.MAX_MEMBERS_INSTRUCTION_1',
+    'SETTINGS.MAX_MEMBERS_INSTRUCTION_2',
+  ];
 
   constructor() {
     effect(() => {
@@ -222,6 +240,7 @@ export class FamilyComponent {
 
   @HostListener('window:beforeunload', ['$event'])
   onBeforeUnload(event: BeforeUnloadEvent): string | undefined {
+    if (event.defaultPrevented) return undefined;
     if (this.hasUnsavedChanges()) {
       event.preventDefault();
       return '';
@@ -388,10 +407,6 @@ export class FamilyComponent {
 
   cancelEditMember() {
     this.editingMemberId.set(null);
-  }
-
-  trackMember(index: number, member: HouseholdMember): string {
-    return member.id || `${member.name}-${member.surname}-${index}`;
   }
 
   onMemberEditorSave(data: MemberEditData) {

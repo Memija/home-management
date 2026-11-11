@@ -1,0 +1,38 @@
+@if (show()) {
+  <!-- eslint-disable-next-line @angular-eslint/template/interactive-supports-focus -- Backdrop dismissal by design -->
+  <div
+    class="modal-overlay"
+    (click)="$event.target === $event.currentTarget ? onClose() : undefined"
+    (keydown.escape)="onClose()"
+  >
+    <div class="modal-content">
+      <div class="modal-header">
+        <lucide-icon [img]="CheckCircleIcon" size="32" class="success-icon"></lucide-icon>
+        <h3>{{ titleKey() | translate }}</h3>
+        <button
+          type="button"
+          class="close-btn"
+          (click)="onClose()"
+          title="{{ 'ACTIONS.CLOSE' | translate }}"
+          aria-label="{{ 'ACTIONS.CLOSE' | translate }}"
+        >
+          ×
+        </button>
+      </div>
+      <div class="modal-body">
+        <p>{{ messageKey() | translate }}</p>
+      </div>
+      <div class="modal-footer">
+        <button
+          type="button"
+          class="btn-primary"
+          (click)="onClose()"
+          title="{{ 'ACTIONS.OK' | translate }}"
+          aria-label="{{ 'ACTIONS.OK' | translate }}"
+        >
+          {{ 'ACTIONS.OK' | translate }}
+        </button>
+      </div>
+    </div>
+  </div>
+}

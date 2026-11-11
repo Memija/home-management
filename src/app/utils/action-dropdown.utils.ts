@@ -11,6 +11,7 @@ export class ActionDropdownState {
    * Closes dropdown menus if a click occurs outside of any .action-dropdown element.
    */
   handleDocumentClick(target: HTMLElement | null): void {
+    if (!this.isExportOpen() && !this.isImportOpen()) return;
     if (!target?.closest('.action-dropdown')) {
       this.closeAll();
     }

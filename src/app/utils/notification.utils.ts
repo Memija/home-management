@@ -54,39 +54,63 @@ export function isMonthlyScheduleDue(
   return isSameOrLaterDay || isEndOfShorterMonth;
 }
 
+const readingStatusCache = new WeakMap<
+  readonly { date: Date | string }[],
+  { dayBucket: number; length: number; status: ReadingStatus }
+>();
+
 /**
  * Calculates whether a tracker reading is due or overdue based on historical entry frequency.
  * @param records - Historical records containing a date field
  * @returns ReadingStatus indicating due/overdue flags and days elapsed since last entry
  */
 export function calculateReadingStatus(records: readonly { date: Date | string }[]): ReadingStatus {
-  if (records.length < 2) {
+  const n = records.length;
+  if (n < 2) {
     return { isDue: false, isOverdue: false, daysSinceLast: 0 };
   }
 
-  const sorted = [...records].sort(
-    (a, b) => parseSafeDate(a.date).getTime() - parseSafeDate(b.date).getTime(),
-  );
+  const nowMs = Date.now();
+  const dayBucket = Math.floor(nowMs / MS_PER_DAY);
+  const cached = readingStatusCache.get(records);
+  if (cached && cached.dayBucket === dayBucket && cached.length === n) {
+    return cached.status;
+  }
+
+  const timestamps = new Array<number>(n);
+  let isSorted = true;
+  for (let i = 0; i < n; i++) {
+    const t = parseSafeDate(records[i].date).getTime();
+    timestamps[i] = t;
+    if (i > 0 && t < timestamps[i - 1]) {
+      isSorted = false;
+    }
+  }
+
+  if (!isSorted) {
+    timestamps.sort((a, b) => a - b);
+  }
 
   let totalDays = 0;
-  for (let i = 1; i < sorted.length; i++) {
-    const diff =
-      parseSafeDate(sorted[i].date).getTime() - parseSafeDate(sorted[i - 1].date).getTime();
-    totalDays += diff / MS_PER_DAY;
+  for (let i = 1; i < n; i++) {
+    totalDays += (timestamps[i] - timestamps[i - 1]) / MS_PER_DAY;
   }
-  const averageDays = totalDays / (sorted.length - 1);
+  const averageDays = totalDays / (n - 1);
 
-  const lastDate = parseSafeDate(sorted.at(-1)!.date);
-  const daysSinceLast = Math.floor((Date.now() - lastDate.getTime()) / MS_PER_DAY);
+  const lastTime = timestamps[n - 1];
+  const lastDate = new Date(lastTime);
+  const today = new Date(nowMs);
+  const daysSinceLast = Math.floor((nowMs - lastTime) / MS_PER_DAY);
 
   const dueThreshold = Math.floor(averageDays);
-  const isDue =
-    daysSinceLast >= dueThreshold || isMonthlyScheduleDue(lastDate, averageDays, new Date());
+  const isDue = daysSinceLast >= dueThreshold || isMonthlyScheduleDue(lastDate, averageDays, today);
 
   const overdueThreshold = Math.floor(Math.max(averageDays * OVERDUE_MULTIPLIER, MIN_OVERDUE_DAYS));
   const isOverdue = daysSinceLast > overdueThreshold;
 
-  return { isDue, isOverdue, daysSinceLast };
+  const status: ReadingStatus = { isDue, isOverdue, daysSinceLast };
+  readingStatusCache.set(records, { dayBucket, length: n, status });
+  return status;
 }
 
 /**

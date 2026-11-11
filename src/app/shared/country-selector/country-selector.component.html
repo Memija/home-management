@@ -4,18 +4,18 @@
     autocomplete="country-name"
     [ngModel]="_countrySearch()"
     (ngModelChange)="onSearchChange($event)"
-    [class.error]="hasError"
-    placeholder="{{ placeholder | translate }}"
-    title="{{ placeholder | translate }}"
-    aria-label="{{ placeholder | translate }}"
-    id="{{ inputId }}"
-    [name]="inputName"
-    [attr.name]="inputName"
+    [class.error]="hasError()"
+    placeholder="{{ placeholder() | translate }}"
+    title="{{ placeholder() | translate }}"
+    aria-label="{{ placeholder() | translate }}"
+    id="{{ inputId() }}"
+    [name]="inputName()"
+    [attr.name]="inputName()"
   />
 
   @if (filteredCountries().length > 0) {
     <ul class="country-dropdown">
-      @for (country of filteredCountries(); track trackByCountry($index, country)) {
+      @for (country of filteredCountries(); track country) {
         <li>
           <button type="button" (click)="selectCountry(country)">
             {{ country }}

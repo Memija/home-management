@@ -51,9 +51,25 @@ export class HouseholdService {
   ];
 
   constructor() {
-    queueMicrotask(() => {
-      void this.loadData();
-    });
+    if (typeof this.storage?.loadSync === 'function') {
+      const members = this.storage.loadSync<HouseholdMember[]>('household_members');
+      const normalizedMembers = members ? this.normalizeMembers(members) : [];
+      this.members.set(normalizedMembers);
+      this.notificationService.setHouseholdMembers(normalizedMembers);
+
+      const address = this.storage.loadSync<Address>('household_address');
+      const normalizedAddress = address ? this.normalizeAddress(address) : null;
+      this.address.set(normalizedAddress);
+      this.notificationService.setAddress(normalizedAddress);
+
+      setTimeout(() => {
+        this.isInitialized = true;
+      }, 0);
+    } else {
+      queueMicrotask(() => {
+        void this.loadData();
+      });
+    }
     this.storage.dataRefreshed$
       ?.pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe(() => void this.loadData());

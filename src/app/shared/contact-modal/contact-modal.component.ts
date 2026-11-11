@@ -1,4 +1,4 @@
-import { Component, HostListener, output, signal } from '@angular/core';
+import { Component, ChangeDetectionStrategy, HostListener, output, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { TranslatePipe } from '../../pipes/translate.pipe';
 import {
@@ -21,6 +21,7 @@ export type EmailClient = 'default' | 'outlook' | 'gmail';
   imports: [FormsModule, TranslatePipe, LucideAngularModule, HelpModalComponent],
   templateUrl: './contact-modal.component.html',
   styleUrl: './contact-modal.component.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ContactModalComponent {
   protected readonly XIcon = X;

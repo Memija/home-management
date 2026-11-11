@@ -10,6 +10,7 @@ export * from './heating';
 export * from './landing';
 export * from './motivation';
 export * from './privacy';
+export * from './seo';
 export * from './settings';
 export * from './water';
 export * from './water-facts';

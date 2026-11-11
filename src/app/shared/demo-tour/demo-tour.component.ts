@@ -1,8 +1,8 @@
 import {
   Component,
-  Input,
-  Output,
-  EventEmitter,
+  ChangeDetectionStrategy,
+  input,
+  output,
   signal,
   computed,
   effect,
@@ -10,7 +10,7 @@ import {
   inject,
   PLATFORM_ID,
 } from '@angular/core';
-import { isPlatformBrowser, CommonModule } from '@angular/common';
+import { isPlatformBrowser } from '@angular/common';
 import { LucideAngularModule, ChevronLeft, ChevronRight, X, Sparkles } from 'lucide-angular';
 import { TranslatePipe } from '../../pipes/translate.pipe';
 
@@ -28,30 +28,21 @@ export type DemoTourTheme = 'water' | 'heating' | 'electricity' | 'settings';
 @Component({
   selector: 'app-demo-tour',
   standalone: true,
-  imports: [CommonModule, LucideAngularModule, TranslatePipe],
+  imports: [LucideAngularModule, TranslatePipe],
   templateUrl: './demo-tour.component.html',
   styleUrl: './demo-tour.component.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class DemoTourComponent implements OnDestroy {
-  @Input() set show(val: boolean) {
-    this._show.set(val);
-  }
-  get show(): boolean {
-    return this._show();
-  }
-  private readonly _show = signal(false);
+  readonly show = input<boolean>(false);
 
-  @Input() set steps(val: DemoTourStep[]) {
-    this._steps.set(val || []);
-  }
-  get steps(): DemoTourStep[] {
-    return this._steps();
-  }
-  private readonly _steps = signal<DemoTourStep[]>([]);
+  readonly steps = input<DemoTourStep[], DemoTourStep[] | null | undefined>([], {
+    transform: (val) => val || [],
+  });
 
-  @Input() theme: DemoTourTheme = 'water';
+  readonly theme = input<DemoTourTheme>('water');
 
-  @Output() closeModal = new EventEmitter<void>();
+  readonly closeModal = output<void>();
 
   private readonly platformId = inject(PLATFORM_ID);
 
@@ -78,9 +69,9 @@ export class DemoTourComponent implements OnDestroy {
   protected readonly tipPosition = signal<'top' | 'bottom'>('bottom');
 
   // Computeds
-  protected readonly totalSteps = computed(() => this._steps().length);
+  protected readonly totalSteps = computed(() => this.steps().length);
   protected readonly currentStepData = computed(() => {
-    const s = this._steps();
+    const s = this.steps();
     const i = this.currentStep();
     return s[i] ?? null;
   });
@@ -95,13 +86,15 @@ export class DemoTourComponent implements OnDestroy {
   });
 
   private targetElement: Element | null = null;
-  private readonly scrollHandler = () => this.recalcPositions();
-  private readonly resizeHandler = () => this.recalcPositions();
+  private rafId: number | null = null;
+  private pendingTrailingRecalc = false;
+  private readonly scrollHandler = () => this.scheduleRecalcPositions();
+  private readonly resizeHandler = () => this.scheduleRecalcPositions();
   private positionTimer: ReturnType<typeof setTimeout> | null = null;
 
   constructor() {
     effect(() => {
-      if (this._show()) {
+      if (this.show()) {
         this.startTour();
       } else {
         this.cleanup();
@@ -157,6 +150,11 @@ export class DemoTourComponent implements OnDestroy {
     this.isActive.set(false);
     this.isTransitioning.set(false);
     this.targetElement = null;
+    this.pendingTrailingRecalc = false;
+    if (this.rafId !== null && typeof cancelAnimationFrame === 'function') {
+      cancelAnimationFrame(this.rafId);
+      this.rafId = null;
+    }
     if (this.positionTimer) {
       clearTimeout(this.positionTimer);
       this.positionTimer = null;
@@ -164,6 +162,25 @@ export class DemoTourComponent implements OnDestroy {
     if (isPlatformBrowser(this.platformId)) {
       window.removeEventListener('scroll', this.scrollHandler, true);
       window.removeEventListener('resize', this.resizeHandler);
+    }
+  }
+
+  private scheduleRecalcPositions(): void {
+    if (this.rafId !== null) {
+      this.pendingTrailingRecalc = true;
+      return;
+    }
+
+    this.recalcPositions();
+
+    if (typeof requestAnimationFrame === 'function') {
+      this.rafId = requestAnimationFrame(() => {
+        this.rafId = null;
+        if (this.pendingTrailingRecalc) {
+          this.pendingTrailingRecalc = false;
+          this.recalcPositions();
+        }
+      });
     }
   }
 
@@ -179,7 +196,7 @@ export class DemoTourComponent implements OnDestroy {
   }
 
   private gotoStep(index: number, direction: 1 | -1 = 1): void {
-    const stepsArr = this._steps();
+    const stepsArr = this.steps();
     if (index < 0 || index >= stepsArr.length) {
       this.onClose();
       return;

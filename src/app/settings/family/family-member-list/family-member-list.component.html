@@ -1,0 +1,73 @@
+<div class="members-list" [class.editing]="isEditing()">
+  @if (isEditing()) {
+    <div class="list-header">
+      <h3>{{ 'SETTINGS.CURRENT_MEMBERS' | translate }}</h3>
+    </div>
+  }
+  @if (members().length === 0) {
+    <p class="empty-state">{{ 'SETTINGS.NO_MEMBERS' | translate }}</p>
+  } @else {
+    <ul>
+      @for (member of members(); track member.id) {
+        <li class="member-card">
+          <div class="member-info">
+            <div class="avatar-wrapper">
+              <img
+                [src]="member.avatar"
+                [alt]="member.name"
+                title="{{ member.name }}"
+                width="48"
+                height="48"
+                loading="lazy"
+                decoding="async"
+              />
+            </div>
+            <div class="details">
+              <span class="name">{{ member.name }} {{ member.surname }}</span>
+              <div class="badges">
+                @if (member.type && member.type !== 'other') {
+                  <span class="badge" [class.kid]="member.type === 'kid'">
+                    <lucide-icon
+                      [img]="member.type === 'kid' ? KidIcon : AdultIcon"
+                      size="14"
+                    ></lucide-icon>
+                    <span class="badge-text">{{ typeKeys[member.type] | translate }}</span>
+                  </span>
+                }
+                @if (member.gender && member.gender !== 'other') {
+                  <span class="badge gender" [class.female]="member.gender === 'female'">
+                    <lucide-icon
+                      [img]="member.gender === 'female' ? FemaleIcon : MaleIcon"
+                      size="14"
+                    ></lucide-icon>
+                    <span class="badge-text">{{ genderKeys[member.gender] | translate }}</span>
+                  </span>
+                }
+              </div>
+            </div>
+          </div>
+          <div class="member-actions">
+            <button
+              type="button"
+              class="action-icon-btn edit-action-btn edit-btn"
+              (click)="editMember.emit(member)"
+              title="{{ 'SETTINGS.EDIT_MEMBER' | translate }}"
+              aria-label="{{ 'SETTINGS.EDIT_MEMBER' | translate }}"
+            >
+              <lucide-icon [img]="EditIcon" size="16"></lucide-icon>
+            </button>
+            <button
+              type="button"
+              class="action-icon-btn remove-action-btn remove-btn"
+              (click)="removeMember.emit(member.id)"
+              title="{{ 'SETTINGS.REMOVE' | translate }}"
+              aria-label="{{ 'SETTINGS.REMOVE' | translate }}"
+            >
+              <lucide-icon [img]="DeleteIcon" size="16"></lucide-icon>
+            </button>
+          </div>
+        </li>
+      }
+    </ul>
+  }
+</div>

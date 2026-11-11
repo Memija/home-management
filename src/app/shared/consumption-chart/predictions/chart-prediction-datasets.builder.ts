@@ -120,10 +120,16 @@ export function pushCategoryPredictionDatasets(
   predData: PredictionSeriesData,
   fillBgColor: string,
   deps: PredictionBuilderDeps,
+  labels?: { minLabel?: string; maxLabel?: string; predictionLabel?: string },
 ): void {
+  const minLabel = labels?.minLabel ?? deps.languageService.translate('PREDICTIONS.MIN');
+  const maxLabel = labels?.maxLabel ?? deps.languageService.translate('PREDICTIONS.MAX');
+  const predictionLabel =
+    labels?.predictionLabel ?? deps.languageService.translate('CHART.CONSUMPTION_PREDICTION');
+
   datasets.push(
     {
-      label: deps.languageService.translate('PREDICTIONS.MIN'),
+      label: minLabel,
       data: predData.predDataMin as (number | null)[],
       type: 'line',
       borderColor: 'rgba(0, 0, 0, 0)',
@@ -137,7 +143,7 @@ export function pushCategoryPredictionDatasets(
       categoryId: categoryKey,
     } as AppChartDataset,
     {
-      label: deps.languageService.translate('PREDICTIONS.MAX'),
+      label: maxLabel,
       data: predData.predDataMax as (number | null)[],
       type: 'line',
       borderColor: 'rgba(0, 0, 0, 0)',
@@ -151,7 +157,7 @@ export function pushCategoryPredictionDatasets(
       categoryId: categoryKey,
     } as AppChartDataset,
     {
-      label: `${shortLabel} - ${deps.languageService.translate('CHART.CONSUMPTION_PREDICTION')}`,
+      label: `${shortLabel} - ${predictionLabel}`,
       data: predData.predDataExpected as (number | null)[],
       type: 'line',
       borderColor: color,
@@ -178,6 +184,7 @@ export function pushCategoryPastForecastDataset(
   historicalPredictions: (number | null)[],
   labelsLength: number,
   languageService: LanguageService,
+  pastForecastLabel?: string,
 ): void {
   const rawPast = historicalPredictions.slice(1);
   const pastData: (number | null)[] = rawPast.slice(0, labelsLength);
@@ -185,8 +192,11 @@ export function pushCategoryPastForecastDataset(
     pastData.push(null);
   }
 
+  const resolvedPastForecastLabel =
+    pastForecastLabel ?? languageService.translate('CHART.PAST_FORECAST');
+
   datasets.push({
-    label: `${shortLabel} - ${languageService.translate('CHART.PAST_FORECAST')}`,
+    label: `${shortLabel} - ${resolvedPastForecastLabel}`,
     data: pastData as (number | null)[],
     type: 'line',
     borderColor: color,
@@ -240,6 +250,7 @@ export function processSubcategoryDataset(
       predData,
       fillBgColor,
       ctx.deps,
+      ctx,
     );
   }
 
@@ -252,6 +263,7 @@ export function processSubcategoryDataset(
       categoryPred.historicalPredictions,
       ctx.labels.length,
       ctx.deps.languageService,
+      ctx.pastForecastLabel,
     );
   }
 }
@@ -274,6 +286,14 @@ export function drawSubcategoryPredictions(
     originalLabelsLength,
     predictionMonths,
     lastRecordDate,
+    minLabel: deps.showPredictions ? deps.languageService.translate('PREDICTIONS.MIN') : undefined,
+    maxLabel: deps.showPredictions ? deps.languageService.translate('PREDICTIONS.MAX') : undefined,
+    predictionLabel: deps.showPredictions
+      ? deps.languageService.translate('CHART.CONSUMPTION_PREDICTION')
+      : undefined,
+    pastForecastLabel: deps.showPastForecast
+      ? deps.languageService.translate('CHART.PAST_FORECAST')
+      : undefined,
   };
 
   const initialDatasetCount = datasets.length;

@@ -1,0 +1,30 @@
+:host {
+  display: contents;
+}
+
+.action-buttons-group {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+
+  @media (max-width: 768px) {
+    width: 100%;
+    flex-wrap: nowrap;
+
+    .action-dropdown {
+      flex: 1 1 50%;
+      min-width: 0;
+
+      .action-dropdown-trigger {
+        width: 100%;
+        justify-content: center;
+      }
+    }
+  }
+
+  button,
+  label {
+    flex-shrink: 0;
+  }
+}

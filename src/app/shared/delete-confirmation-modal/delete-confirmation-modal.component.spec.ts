@@ -68,18 +68,18 @@ describe('DeleteConfirmationModalComponent', () => {
     });
 
     it('should have correct default input values', () => {
-      expect(component.show).toBe(false);
-      expect(component.titleKey).toBe('');
-      expect(component.messageKey).toBe('');
-      expect(component.messageParams).toEqual({});
-      expect(component.cancelKey).toBe('');
-      expect(component.deleteKey).toBe('');
+      expect(component.show()).toBe(false);
+      expect(component.titleKey()).toBe('');
+      expect(component.messageKey()).toBe('');
+      expect(component.messageParams()).toEqual({});
+      expect(component.cancelKey()).toBe('');
+      expect(component.deleteKey()).toBe('');
     });
   });
 
   describe('Visibility', () => {
     it('should not render modal content when show is false', () => {
-      component.show = false;
+      fixture.componentRef.setInput('show', false);
       fixture.detectChanges();
 
       const overlay = fixture.debugElement.query(By.css('.modal-overlay'));
@@ -87,8 +87,8 @@ describe('DeleteConfirmationModalComponent', () => {
     });
 
     it('should render modal content when show is true', () => {
-      component.show = true;
-      component.icon = TriangleAlert;
+      fixture.componentRef.setInput('show', true);
+      fixture.componentRef.setInput('icon', TriangleAlert);
       fixture.detectChanges();
 
       const overlay = fixture.debugElement.query(By.css('.modal-overlay'));
@@ -96,8 +96,8 @@ describe('DeleteConfirmationModalComponent', () => {
     });
 
     it('should render all modal sections when visible', () => {
-      component.show = true;
-      component.icon = TriangleAlert;
+      fixture.componentRef.setInput('show', true);
+      fixture.componentRef.setInput('icon', TriangleAlert);
       fixture.detectChanges();
 
       expect(fixture.debugElement.query(By.css('.modal-header'))).toBeTruthy();
@@ -108,12 +108,12 @@ describe('DeleteConfirmationModalComponent', () => {
 
   describe('Content Display', () => {
     beforeEach(() => {
-      component.show = true;
-      component.icon = TriangleAlert;
-      component.titleKey = 'DELETE.TITLE';
-      component.messageKey = 'DELETE.MESSAGE';
-      component.cancelKey = 'ACTIONS.CANCEL';
-      component.deleteKey = 'ACTIONS.DELETE';
+      fixture.componentRef.setInput('show', true);
+      fixture.componentRef.setInput('icon', TriangleAlert);
+      fixture.componentRef.setInput('titleKey', 'DELETE.TITLE');
+      fixture.componentRef.setInput('messageKey', 'DELETE.MESSAGE');
+      fixture.componentRef.setInput('cancelKey', 'ACTIONS.CANCEL');
+      fixture.componentRef.setInput('deleteKey', 'ACTIONS.DELETE');
       fixture.detectChanges();
     });
 
@@ -146,10 +146,10 @@ describe('DeleteConfirmationModalComponent', () => {
 
   describe('Translated Message', () => {
     it('should translate message without params', () => {
-      component.show = true;
-      component.icon = TriangleAlert;
-      component.messageKey = 'DELETE.MESSAGE';
-      component.messageParams = {};
+      fixture.componentRef.setInput('show', true);
+      fixture.componentRef.setInput('icon', TriangleAlert);
+      fixture.componentRef.setInput('messageKey', 'DELETE.MESSAGE');
+      fixture.componentRef.setInput('messageParams', {});
       fixture.detectChanges();
 
       const message = component['translatedMessage']();
@@ -158,10 +158,10 @@ describe('DeleteConfirmationModalComponent', () => {
     });
 
     it('should replace single placeholder with param value', () => {
-      component.show = true;
-      component.icon = TriangleAlert;
-      component.messageKey = 'DELETE.MESSAGE_WITH_PARAMS';
-      component.messageParams = { count: '5', source: 'water records' };
+      fixture.componentRef.setInput('show', true);
+      fixture.componentRef.setInput('icon', TriangleAlert);
+      fixture.componentRef.setInput('messageKey', 'DELETE.MESSAGE_WITH_PARAMS');
+      fixture.componentRef.setInput('messageParams', { count: '5', source: 'water records' });
       fixture.detectChanges();
 
       const message = component['translatedMessage']();
@@ -169,8 +169,8 @@ describe('DeleteConfirmationModalComponent', () => {
     });
 
     it('should handle empty messageParams gracefully', () => {
-      component.messageKey = 'DELETE.MESSAGE';
-      component.messageParams = {};
+      fixture.componentRef.setInput('messageKey', 'DELETE.MESSAGE');
+      fixture.componentRef.setInput('messageParams', {});
       fixture.detectChanges();
 
       const message = component['translatedMessage']();
@@ -178,8 +178,8 @@ describe('DeleteConfirmationModalComponent', () => {
     });
 
     it('should handle messageKey that is not in translations', () => {
-      component.messageKey = 'UNKNOWN.KEY';
-      component.messageParams = {};
+      fixture.componentRef.setInput('messageKey', 'UNKNOWN.KEY');
+      fixture.componentRef.setInput('messageParams', {});
       fixture.detectChanges();
 
       const message = component['translatedMessage']();
@@ -188,8 +188,8 @@ describe('DeleteConfirmationModalComponent', () => {
     });
 
     it('should leave unreplaced placeholders if params are missing', () => {
-      component.messageKey = 'DELETE.MESSAGE_WITH_PARAMS';
-      component.messageParams = { count: '3' }; // missing 'source'
+      fixture.componentRef.setInput('messageKey', 'DELETE.MESSAGE_WITH_PARAMS');
+      fixture.componentRef.setInput('messageParams', { count: '3' }); // missing 'source'
       fixture.detectChanges();
 
       const message = component['translatedMessage']();
@@ -197,8 +197,8 @@ describe('DeleteConfirmationModalComponent', () => {
     });
 
     it('should react to language changes', () => {
-      component.messageKey = 'DELETE.MESSAGE';
-      component.messageParams = {};
+      fixture.componentRef.setInput('messageKey', 'DELETE.MESSAGE');
+      fixture.componentRef.setInput('messageParams', {});
       fixture.detectChanges();
 
       // Access the computed to trigger initial evaluation
@@ -213,8 +213,8 @@ describe('DeleteConfirmationModalComponent', () => {
     });
 
     it('should handle special characters in param values', () => {
-      component.messageKey = 'DELETE.MESSAGE_WITH_PARAMS';
-      component.messageParams = { count: '10', source: 'kitchen & bathroom' };
+      fixture.componentRef.setInput('messageKey', 'DELETE.MESSAGE_WITH_PARAMS');
+      fixture.componentRef.setInput('messageParams', { count: '10', source: 'kitchen & bathroom' });
       fixture.detectChanges();
 
       const message = component['translatedMessage']();
@@ -224,12 +224,12 @@ describe('DeleteConfirmationModalComponent', () => {
 
   describe('Event Emitters', () => {
     beforeEach(() => {
-      component.show = true;
-      component.icon = TriangleAlert;
-      component.titleKey = 'DELETE.TITLE';
-      component.messageKey = 'DELETE.MESSAGE';
-      component.cancelKey = 'ACTIONS.CANCEL';
-      component.deleteKey = 'ACTIONS.DELETE';
+      fixture.componentRef.setInput('show', true);
+      fixture.componentRef.setInput('icon', TriangleAlert);
+      fixture.componentRef.setInput('titleKey', 'DELETE.TITLE');
+      fixture.componentRef.setInput('messageKey', 'DELETE.MESSAGE');
+      fixture.componentRef.setInput('cancelKey', 'ACTIONS.CANCEL');
+      fixture.componentRef.setInput('deleteKey', 'ACTIONS.DELETE');
       fixture.detectChanges();
     });
 
@@ -304,9 +304,9 @@ describe('DeleteConfirmationModalComponent', () => {
 
   describe('Edge Cases', () => {
     it('should handle empty titleKey', () => {
-      component.show = true;
-      component.icon = TriangleAlert;
-      component.titleKey = '';
+      fixture.componentRef.setInput('show', true);
+      fixture.componentRef.setInput('icon', TriangleAlert);
+      fixture.componentRef.setInput('titleKey', '');
       fixture.detectChanges();
 
       const header = fixture.debugElement.query(By.css('.modal-header h3'));
@@ -314,8 +314,8 @@ describe('DeleteConfirmationModalComponent', () => {
     });
 
     it('should handle empty messageKey', () => {
-      component.messageKey = '';
-      component.messageParams = {};
+      fixture.componentRef.setInput('messageKey', '');
+      fixture.componentRef.setInput('messageParams', {});
       fixture.detectChanges();
 
       const message = component['translatedMessage']();
@@ -323,10 +323,10 @@ describe('DeleteConfirmationModalComponent', () => {
     });
 
     it('should handle empty cancelKey and deleteKey', () => {
-      component.show = true;
-      component.icon = TriangleAlert;
-      component.cancelKey = '';
-      component.deleteKey = '';
+      fixture.componentRef.setInput('show', true);
+      fixture.componentRef.setInput('icon', TriangleAlert);
+      fixture.componentRef.setInput('cancelKey', '');
+      fixture.componentRef.setInput('deleteKey', '');
       fixture.detectChanges();
 
       const cancelBtn = fixture.debugElement.query(By.css('.btn-secondary'));
@@ -336,8 +336,8 @@ describe('DeleteConfirmationModalComponent', () => {
     });
 
     it('should handle multiple rapid confirm clicks', () => {
-      component.show = true;
-      component.icon = TriangleAlert;
+      fixture.componentRef.setInput('show', true);
+      fixture.componentRef.setInput('icon', TriangleAlert);
       fixture.detectChanges();
 
       const spy = vi.fn();
@@ -351,8 +351,8 @@ describe('DeleteConfirmationModalComponent', () => {
     });
 
     it('should handle multiple rapid cancel clicks', () => {
-      component.show = true;
-      component.icon = TriangleAlert;
+      fixture.componentRef.setInput('show', true);
+      fixture.componentRef.setInput('icon', TriangleAlert);
       fixture.detectChanges();
 
       const spy = vi.fn();
@@ -366,24 +366,24 @@ describe('DeleteConfirmationModalComponent', () => {
     });
 
     it('should not render overlay when show starts as false', () => {
-      component.icon = TriangleAlert;
-      component.show = false;
+      fixture.componentRef.setInput('icon', TriangleAlert);
+      fixture.componentRef.setInput('show', false);
       fixture.detectChanges();
 
       expect(fixture.debugElement.query(By.css('.modal-overlay'))).toBeNull();
     });
 
     it('should render overlay when show starts as true', () => {
-      component.icon = TriangleAlert;
-      component.show = true;
+      fixture.componentRef.setInput('icon', TriangleAlert);
+      fixture.componentRef.setInput('show', true);
       fixture.detectChanges();
 
       expect(fixture.debugElement.query(By.css('.modal-overlay'))).toBeTruthy();
     });
 
     it('should handle messageParams with empty string values', () => {
-      component.messageKey = 'DELETE.MESSAGE_WITH_PARAMS';
-      component.messageParams = { count: '', source: '' };
+      fixture.componentRef.setInput('messageKey', 'DELETE.MESSAGE_WITH_PARAMS');
+      fixture.componentRef.setInput('messageParams', { count: '', source: '' });
       fixture.detectChanges();
 
       const message = component['translatedMessage']();
@@ -393,12 +393,12 @@ describe('DeleteConfirmationModalComponent', () => {
 
   describe('HTML Structure', () => {
     beforeEach(() => {
-      component.show = true;
-      component.icon = TriangleAlert;
-      component.titleKey = 'DELETE.TITLE';
-      component.messageKey = 'DELETE.MESSAGE';
-      component.cancelKey = 'ACTIONS.CANCEL';
-      component.deleteKey = 'ACTIONS.DELETE';
+      fixture.componentRef.setInput('show', true);
+      fixture.componentRef.setInput('icon', TriangleAlert);
+      fixture.componentRef.setInput('titleKey', 'DELETE.TITLE');
+      fixture.componentRef.setInput('messageKey', 'DELETE.MESSAGE');
+      fixture.componentRef.setInput('cancelKey', 'ACTIONS.CANCEL');
+      fixture.componentRef.setInput('deleteKey', 'ACTIONS.DELETE');
       fixture.detectChanges();
     });
 

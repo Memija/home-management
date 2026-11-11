@@ -1,12 +1,16 @@
 import { Injectable, inject, signal } from '@angular/core';
 import { LocalStorageService } from './local-storage.service';
-import { ElectricityRecord } from '../models/records.model';
+import { ElectricityRecord, parseSafeDate } from '../models/records.model';
 
 @Injectable({
   providedIn: 'root',
 })
 export class ElectricityMeterService {
   private readonly localStorageService = inject(LocalStorageService);
+  private readonly meterChangesCache = new WeakMap<
+    ElectricityRecord[],
+    { length: number; changes: string[] }
+  >();
 
   // Signals for stored state
   readonly confirmedMeterChanges = signal<string[]>(this.getStoredMeterChanges());
@@ -17,14 +21,21 @@ export class ElectricityMeterService {
    * Returns an array of dates (ISO strings) where a drop occurred.
    */
   detectMeterChanges(records: ElectricityRecord[]): string[] {
+    const cached = this.meterChangesCache.get(records);
+    if (cached && cached.length === records.length) {
+      return cached.changes;
+    }
+
     const changes: string[] = [];
     for (let i = 1; i < records.length; i++) {
       const curr = records[i];
       const prev = records[i - 1];
       if (curr.value < prev.value) {
-        changes.push(new Date(curr.date).toISOString());
+        changes.push(parseSafeDate(curr.date).toISOString());
       }
     }
+
+    this.meterChangesCache.set(records, { length: records.length, changes });
     return changes;
   }
 
@@ -32,9 +43,12 @@ export class ElectricityMeterService {
    * filters detected changes against confirmed and dismissed changes.
    */
   filterUnconfirmed(detectedChanges: string[]): string[] {
-    const confirmed = this.confirmedMeterChanges();
-    const dismissed = this.dismissedMeterChanges();
-    return detectedChanges.filter((d) => !confirmed.includes(d) && !dismissed.includes(d));
+    if (detectedChanges.length === 0) return [];
+    const ignored = new Set<string>([
+      ...this.confirmedMeterChanges(),
+      ...this.dismissedMeterChanges(),
+    ]);
+    return detectedChanges.filter((d) => !ignored.has(d));
   }
 
   confirmMeterChange(date: string): void {

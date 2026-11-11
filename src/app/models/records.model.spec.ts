@@ -6,6 +6,8 @@ import {
   calculateElectricityTotal,
   calculateDynamicHeatingTotal,
   getDateKey,
+  getIsoDateKey,
+  parseSafeDate,
   isWaterRecordAllZero,
   isElectricityRecordAllZero,
   isDynamicHeatingRecordAllZero,
@@ -89,6 +91,27 @@ describe('Records Model Utils', () => {
     it('should handle double digit months and days', () => {
       const date = new Date('2023-10-10');
       expect(getDateKey(date)).toBe('2023-10-10');
+    });
+
+    it('should return empty string for invalid dates in getDateKey and getIsoDateKey', () => {
+      expect(getDateKey(new Date('invalid'))).toBe('');
+      expect(getIsoDateKey('invalid')).toBe('');
+      expect(getIsoDateKey(null)).toBe('');
+    });
+
+    it('should format and cache Date objects in getIsoDateKey', () => {
+      const d = new Date('2025-04-15T08:30:00Z');
+      expect(getIsoDateKey(d)).toBe('2025-04-15');
+      expect(getIsoDateKey(d)).toBe('2025-04-15');
+    });
+
+    it('should parse Date, ISO string, and Firebase Timestamp objects in parseSafeDate', () => {
+      const target = new Date('2025-06-01T00:00:00Z');
+      expect(parseSafeDate(target)).toBe(target);
+      expect(parseSafeDate('2025-06-01T00:00:00Z').getTime()).toBe(target.getTime());
+      expect(parseSafeDate({ toDate: () => target })).toBe(target);
+      expect(parseSafeDate({ seconds: target.getTime() / 1000 }).getTime()).toBe(target.getTime());
+      expect(Number.isNaN(parseSafeDate(undefined).getTime())).toBe(true);
     });
   });
 

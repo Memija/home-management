@@ -1,7 +1,9 @@
+@use 'variables' as *;
+
 // Confirmation Modal - uses global styles from _modal.scss
 // Only component-specific overrides here
 
 // Info icon color override
 .modal-header .info-icon {
-  color: #007bff;
+  color: var(--primary, $primary);
 }

@@ -1,0 +1,172 @@
+@use 'variables' as *;
+
+.members-list {
+  .list-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 1rem;
+
+    h3 {
+      font-size: 1.05rem;
+      font-weight: 600;
+      margin: 0;
+    }
+  }
+
+  ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+}
+
+.member-card {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-light);
+  border-radius: 12px;
+  padding: 0.85rem 1.15rem;
+  transition: all 0.2s ease;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.03);
+
+  &:hover {
+    border-color: var(--border-color);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
+    transform: translateY(-1px);
+
+    img {
+      border-color: var(--theme-primary, $primary);
+    }
+  }
+}
+
+.member-info {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+
+  .name {
+    font-size: 1rem;
+    font-weight: 600;
+  }
+}
+
+.details {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+}
+
+.badges {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  flex-wrap: wrap;
+}
+
+.avatar-wrapper {
+  width: 52px;
+  height: 52px;
+  flex-shrink: 0;
+
+  img {
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    object-fit: cover;
+    background: var(--bg-tertiary);
+    border: 2px solid var(--border-light);
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.08);
+    transition: all 0.2s ease;
+  }
+}
+
+.badge {
+  font-size: 0.75rem;
+  font-weight: 500;
+  padding: 0.2rem 0.55rem;
+  border-radius: 16px;
+  background: var(--badge-default-bg, rgba(99, 102, 241, 0.1));
+  color: var(--badge-default-color, #4338ca);
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  line-height: 1;
+
+  &.kid {
+    background: var(--badge-kid-bg, rgba(16, 185, 129, 0.12));
+    color: var(--badge-kid-color, #047857);
+  }
+
+  &.gender {
+    background: var(--badge-gender-bg, rgba(14, 165, 233, 0.12));
+    color: var(--badge-gender-color, #0369a1);
+  }
+
+  &.female {
+    background: var(--badge-female-bg, rgba(244, 63, 94, 0.12));
+    color: var(--badge-female-color, #be123c);
+  }
+
+  @media (max-width: 600px) {
+    .badge-text {
+      display: none;
+    }
+  }
+}
+
+.member-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-shrink: 0;
+}
+
+.action-icon-btn {
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  border-radius: 7px;
+  border: 1px solid var(--border-light);
+  background: var(--card-bg);
+  color: var(--text-secondary);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: var(--shadow-sm);
+
+  &:hover {
+    transform: translateY(-1px);
+    box-shadow: var(--shadow);
+  }
+
+  &.edit-action-btn:hover {
+    background: var(--btn-edit-hover-bg, rgba(234, 88, 12, 0.12));
+    border-color: var(--btn-edit-hover-border, rgba(234, 88, 12, 0.3));
+    color: var(--btn-edit-hover-color, #ea580c);
+  }
+
+  &.remove-action-btn:hover {
+    background: rgba(220, 53, 69, 0.12);
+    border-color: rgba(220, 53, 69, 0.35);
+    color: $danger;
+  }
+}
+
+.empty-state {
+  text-align: center;
+  color: var(--text-secondary);
+  padding: 2.5rem 1.5rem;
+  background: var(--bg-secondary);
+  border-radius: 12px;
+  border: 1px dashed var(--border-light);
+  margin: 0;
+}

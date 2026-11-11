@@ -1,6 +1,6 @@
 import { ChartConfiguration } from 'chart.js';
 import { LanguageService } from '../../../services/language.service';
-import { AppChartDataset } from '../../../models/records.model';
+import { AppChartDataset, parseSafeDate } from '../../../models/records.model';
 import type { PredictionBuilderDeps } from './chart-prediction.types';
 import { getPredictionMonths } from './chart-prediction-series.utils';
 import { extendTrendlinesAndAverages } from './chart-prediction-trendlines.utils';
@@ -57,7 +57,7 @@ export function appendPredictionDatasets(
   padDatasets(datasets, originalLabelsLength);
 
   const data = getData();
-  const lastRecordDate = new Date(data.at(-1)!.date);
+  const lastRecordDate = new Date(parseSafeDate(data.at(-1)!.date).getTime());
 
   if (showPredictions) {
     // 2. Pad existing datasets with null for the future months and extend labels
@@ -98,23 +98,23 @@ export function appendPredictionDatasets(
 }
 
 function padDatasets(datasets: AppChartDataset[], targetLength: number): void {
-  datasets.forEach((ds) => {
+  for (const ds of datasets) {
     if (ds.data) {
-      const currentLength = ds.data.length;
-      if (currentLength < targetLength) {
-        const padding = new Array(targetLength - currentLength).fill(null);
-        ds.data = [...ds.data, ...padding];
+      for (let i = ds.data.length; i < targetLength; i++) {
+        ds.data.push(null);
       }
     }
-  });
+  }
 }
 
 function padDatasetsForFuture(datasets: AppChartDataset[], predictionMonths: number): void {
-  datasets.forEach((ds) => {
+  for (const ds of datasets) {
     if (ds.data) {
-      ds.data = [...ds.data, ...new Array(predictionMonths).fill(null)];
+      for (let i = 0; i < predictionMonths; i++) {
+        ds.data.push(null);
+      }
     }
-  });
+  }
 }
 
 function extendLabels(
@@ -123,9 +123,13 @@ function extendLabels(
   predictionMonths: number,
   languageService: LanguageService,
 ): void {
+  const baseYear = lastRecordDate.getFullYear();
+  const baseMonth = lastRecordDate.getMonth();
+  const futureDate = new Date(baseYear, baseMonth, 1);
+
   for (let m = 1; m <= predictionMonths; m++) {
-    const futureDate = new Date(lastRecordDate);
-    futureDate.setMonth(futureDate.getMonth() + m);
+    const totalMonths = baseMonth + m;
+    futureDate.setFullYear(baseYear + Math.floor(totalMonths / 12), totalMonths % 12, 1);
     const label = languageService.formatDate(futureDate, { month: 'short', year: 'numeric' });
     labels.push(label);
   }

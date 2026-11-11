@@ -13,6 +13,12 @@ const mockDeleteDoc = vi.fn();
 const mockCollection = vi.fn();
 const mockGetDocs = vi.fn();
 const mockDeleteField = vi.fn();
+const mockBatchDelete = vi.fn();
+const mockBatchCommit = vi.fn().mockResolvedValue(undefined);
+const mockWriteBatch = vi.fn().mockReturnValue({
+  delete: mockBatchDelete,
+  commit: mockBatchCommit,
+});
 
 let globalFirestoreMock: Record<string, unknown> = {};
 
@@ -26,6 +32,7 @@ vi.mock('firebase/firestore', () => ({
   collection: (...args: unknown[]) => mockCollection(...args),
   getDocs: (...args: unknown[]) => mockGetDocs(...args),
   deleteField: () => mockDeleteField(),
+  writeBatch: (...args: unknown[]) => mockWriteBatch(...args),
 }));
 
 vi.mock('firebase/app', () => ({
@@ -60,6 +67,11 @@ describe('FirebaseStorageService', () => {
 
     // Reset mocks
     vi.clearAllMocks();
+    mockBatchCommit.mockResolvedValue(undefined);
+    mockWriteBatch.mockReturnValue({
+      delete: mockBatchDelete,
+      commit: mockBatchCommit,
+    });
   });
 
   afterEach(() => {
@@ -261,8 +273,10 @@ describe('FirebaseStorageService', () => {
 
       await service.deleteAllUserData();
 
-      expect(mockDeleteDoc).toHaveBeenCalledWith('ref1');
-      expect(mockDeleteDoc).toHaveBeenCalledWith('ref2');
+      expect(mockWriteBatch).toHaveBeenCalledWith(firestoreMock);
+      expect(mockBatchDelete).toHaveBeenCalledWith('ref1');
+      expect(mockBatchDelete).toHaveBeenCalledWith('ref2');
+      expect(mockBatchCommit).toHaveBeenCalled();
     });
   });
   describe('Sync Metadata', () => {

@@ -208,19 +208,35 @@ export const middleEastHeatingFacts = {
     'Anatolia Wschodnia charakteryzuje się bardzo surowymi i długimi zimami.',
   ],
 
-  // Egypt
-  EG: [
-    'Egipt ma minimalne potrzeby grzewcze ze względu na swój bardzo ciepły klimat.',
-    'Noce na Synaju oraz na pustyniach potrafią być zaskakująco mroźne.',
-    'Klimatyzatory split zapewniają dogrzewanie pomieszczeń, gdy zajdzie taka potrzeba.',
-    'Egipskie domy zużywają śladowe ilości energii na cele grzewcze.',
-    'Typowe egipskie gospodarstwo domowe wydaje bardzo niewiele na ogrzewanie.',
-    'Gaz LPG służy powszechnie do gotowania w domach w całym Egipcie.',
-    'Sieć gazu ziemnego jest systematycznie rozbudowywana w Kairze i okolicy.',
-    'Projektowanie budynków w Egipcie zawsze traktuje priorytetowo wentylację.',
-    'Aleksandria ma nieco chłodniejsze i bardziej wilgotne zimy niż stolica kraju.',
-    'Górny Egipt charakteryzuje się bardzo upalnym klimatem przez cały rok.',
-    'W kraju nie istnieje żadna znacząca infrastruktura do przesyłu ciepła.',
-    'W całkowitym zużyciu energii przez budynki zdecydowanie dominuje chłodzenie.',
+  // Palestine
+  PS: [
+    'Średnie roczne zużycie energii na ogrzewanie gospodarstwa domowego w kraju Palestyna szacuje się na około 2800 kWh (IEA / Climate Zone Estimate, 2021).',
+    'Sezonowe temperatury zimowe w kraju Palestyna sprawiają, że niezawodne ogrzewanie budynków jest niezbędne dla komfortu mieszkańców.',
+    'W mieście Ramallah zużycie energii cieplnej w domach obejmuje przygotowanie ciepłej wody użytkowej oraz regulację temperatury.',
+    'Kolektory słoneczne do podgrzewania wody są skutecznym sposobem na zmniejszenie zużycia energii w kraju Palestyna.',
+    'Nowoczesne standardy izolacji termicznej budynków w kraju Palestyna pomagają utrzymać stabilną temperaturę wewnątrz pomieszczeń.',
+    'Pompy ciepła oraz klimatyzatory z funkcją grzania zapewniają efektywną kontrolę temperatury w mieście Ramallah.',
+    'Podgrzewanie ciepłej wody użytkowej stanowi stały, całoroczny udział w zapotrzebowaniu na ciepło w kraju Palestyna.',
+    'Wytyczne dotyczące efektywności energetycznej w kraju Palestyna promują nowoczesne kotły, pompy ciepła i szczelne okna.',
+    'Miejskie gospodarstwa domowe w mieście Ramallah coraz częściej wykorzystują energię elektryczną lub gaz do celów grzewczych.',
+    'Ograniczenie strat ciepła przez dachy, ściany i okna obniża całkowite koszty energii w gospodarstwach domowych w kraju Palestyna.',
+    'Inteligentne termostaty i programatory czasowe pomagają mieszkańcom kraju Palestyna optymalizować zużycie energii cieplnej.',
+    'Krajowe strategie energetyczne w kraju Palestyna wspierają przechodzenie na niskoemisyjne systemy grzewcze.',
+  ],
+
+  // Yemen
+  YE: [
+    'Gospodarstwa domowe w kraju Jemen nie wymagają ogrzewania pomieszczeń (0 kWh rocznie) ze względu na całoroczny ciepły klimat.',
+    'Ze względu na ciepły klimat w kraju Jemen większość gospodarstw domowych wymaga minimalnego ogrzewania pomieszczeń.',
+    'W mieście Sana zużycie energii cieplnej w domach obejmuje przygotowanie ciepłej wody użytkowej oraz regulację temperatury.',
+    'Kolektory słoneczne do podgrzewania wody są skutecznym sposobem na zmniejszenie zużycia energii w kraju Jemen.',
+    'Nowoczesne standardy izolacji termicznej budynków w kraju Jemen pomagają utrzymać stabilną temperaturę wewnątrz pomieszczeń.',
+    'Pompy ciepła oraz klimatyzatory z funkcją grzania zapewniają efektywną kontrolę temperatury w mieście Sana.',
+    'Podgrzewanie ciepłej wody użytkowej stanowi stały, całoroczny udział w zapotrzebowaniu na ciepło w kraju Jemen.',
+    'Wytyczne dotyczące efektywności energetycznej w kraju Jemen koncentrują się na solarnym podgrzewaniu wody i naturalnej wentylacji.',
+    'Miejskie gospodarstwa domowe w mieście Sana coraz częściej wykorzystują energię elektryczną lub gaz do celów grzewczych.',
+    'Ograniczenie strat ciepła przez dachy, ściany i okna obniża całkowite koszty energii w gospodarstwach domowych w kraju Jemen.',
+    'Inteligentne termostaty i programatory czasowe pomagają mieszkańcom kraju Jemen optymalizować zużycie energii cieplnej.',
+    'Krajowe strategie energetyczne w kraju Jemen wspierają przechodzenie na niskoemisyjne systemy grzewcze.',
   ],
 };

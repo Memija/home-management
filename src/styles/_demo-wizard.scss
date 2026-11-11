@@ -1,0 +1,300 @@
+// ============================================
+// Demo Wizard - Theme Variables & Base Styles
+// ============================================
+
+.theme-water {
+  --wiz-primary: #0ea5e9;
+  --wiz-primary-dark: #0284c7;
+  --wiz-grad-start: #0ea5e9;
+  --wiz-grad-end: #38bdf8;
+  --wiz-bg-light: #f0f9ff;
+  --wiz-icon-bg: #e0f2fe;
+}
+
+.theme-heating {
+  --wiz-primary: #f97316;
+  --wiz-primary-dark: #ea580c;
+  --wiz-grad-start: #f97316;
+  --wiz-grad-end: #fb923c;
+  --wiz-bg-light: #fff7ed;
+  --wiz-icon-bg: #ffedd5;
+}
+
+.theme-electricity {
+  --wiz-primary: #eab308;
+  --wiz-primary-dark: #ca8a04;
+  --wiz-grad-start: #eab308;
+  --wiz-grad-end: #facc15;
+  --wiz-bg-light: #fefce8;
+  --wiz-icon-bg: #fef9c3;
+}
+
+.theme-settings {
+  --wiz-primary: #10b981;
+  --wiz-primary-dark: #059669;
+  --wiz-grad-start: #10b981;
+  --wiz-grad-end: #34d399;
+  --wiz-bg-light: #ecfdf5;
+  --wiz-icon-bg: #d1fae5;
+}
+
+.demo-wizard {
+  max-width: 540px;
+  width: 92%;
+  background: var(--card-bg, #fff);
+  border-radius: 20px;
+  overflow: hidden;
+  box-shadow:
+    0 25px 60px rgba(0, 0, 0, 0.15),
+    0 0 0 1px rgba(0, 0, 0, 0.05);
+  animation: wizard-slide-in 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+
+  h3,
+  .step-title {
+    letter-spacing: -0.01em;
+  }
+
+  .wizard-progress {
+    height: 4px;
+    background: var(--border-color, #e9ecef);
+    .wizard-progress-bar {
+      height: 100%;
+      transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+      border-radius: 0 2px 2px 0;
+      background: linear-gradient(90deg, var(--wiz-grad-start), var(--wiz-grad-end));
+    }
+  }
+
+  .wizard-header,
+  .wizard-header-left,
+  .wizard-icon-badge,
+  .cat-walker,
+  .cat-frame,
+  .wizard-body,
+  .step-icon-container {
+    display: flex;
+    align-items: center;
+  }
+
+  .wizard-header {
+    justify-content: space-between;
+    padding: 1.25rem 1.5rem 0.75rem;
+    .wizard-header-left {
+      gap: 0.75rem;
+    }
+    h3 {
+      margin: 0;
+      font-size: 1.15rem;
+      font-weight: 700;
+      color: var(--text-primary);
+    }
+    .close-btn {
+      justify-content: center;
+      width: 32px;
+      height: 32px;
+      border-radius: 8px;
+      border: none;
+      background: transparent;
+      color: var(--text-secondary);
+      cursor: pointer;
+      transition: all 0.2s;
+      &:hover {
+        background: var(--hover-bg, rgba(0, 0, 0, 0.05));
+        color: var(--text-primary);
+      }
+    }
+  }
+
+  .wizard-icon-badge {
+    width: 36px;
+    height: 36px;
+    border-radius: 10px;
+    justify-content: center;
+    position: relative;
+    overflow: hidden;
+    background: var(--wiz-icon-bg);
+    color: var(--wiz-primary);
+  }
+
+  .cat-walker {
+    position: absolute;
+    width: 28px;
+    height: 28px;
+    bottom: 4px;
+    left: 0;
+    font-size: 22px;
+    justify-content: center;
+    animation: cat-walk-cycle 10s infinite ease-in-out;
+  }
+
+  .cat-frame {
+    position: absolute;
+    inset: 0;
+    justify-content: center;
+    opacity: 0;
+    filter: brightness(0);
+  }
+  .frame-walk {
+    animation: cat-show-walk 10s infinite;
+  }
+  .frame-sit {
+    animation: cat-show-sit 10s infinite;
+  }
+  .frame-play {
+    animation: cat-show-play 10s infinite;
+  }
+
+  .yarn-ball {
+    position: absolute;
+    font-size: 16px;
+    bottom: 6px;
+    right: 12px;
+    opacity: 0;
+    animation: cat-ball-actions 10s infinite ease-in-out;
+  }
+
+  .wizard-body {
+    padding: 1rem 1.5rem 0.75rem;
+    min-height: 200px;
+    justify-content: center;
+  }
+  .step-content {
+    text-align: center;
+    width: 100%;
+    animation: step-fade-in 0.3s ease;
+  }
+  .step-icon-container {
+    width: 80px;
+    height: 80px;
+    border-radius: 20px;
+    justify-content: center;
+    margin: 0 auto 1.25rem;
+    border: 2px solid var(--wiz-icon-bg);
+    background: var(--wiz-bg-light);
+    color: var(--wiz-primary);
+    transition: all 0.3s;
+  }
+
+  .step-text {
+    .step-badge {
+      display: inline-block;
+      padding: 0.2rem 0.6rem;
+      border-radius: 20px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      margin-bottom: 0.75rem;
+      background: var(--wiz-icon-bg);
+      color: var(--wiz-primary-dark);
+    }
+    .step-title {
+      font-size: 1.3rem;
+      font-weight: 700;
+      margin: 0 0 0.75rem;
+      color: var(--text-primary);
+    }
+    .step-description {
+      font-size: 0.95rem;
+      line-height: 1.65;
+      color: var(--text-secondary);
+      margin: 0 auto;
+      max-width: 420px;
+    }
+  }
+
+  .step-dots {
+    display: flex;
+    justify-content: center;
+    gap: 0.5rem;
+    padding: 1rem 0 0.5rem;
+    .dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--border-color, #dee2e6);
+      border: none;
+      padding: 0;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      &:hover:not(.active) {
+        background: var(--text-secondary, #6c757d);
+        transform: scale(1.2);
+      }
+      &.active {
+        background: var(--wiz-primary);
+        box-shadow: 0 0 0 3px var(--wiz-icon-bg);
+      }
+      &.completed {
+        background: var(--wiz-primary);
+        opacity: 0.5;
+      }
+    }
+  }
+
+  .wizard-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.75rem 1.5rem 1.25rem;
+  }
+  .wizard-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.6rem 1.25rem;
+    border-radius: 10px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    border: none;
+  }
+  .wizard-btn-secondary {
+    background: transparent;
+    color: var(--text-secondary);
+    &:hover {
+      background: var(--hover-bg, rgba(0, 0, 0, 0.05));
+      color: var(--text-primary);
+    }
+  }
+  .wizard-btn-primary {
+    color: white;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+    background: linear-gradient(135deg, var(--wiz-grad-start), var(--wiz-grad-end));
+    &:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+      background: linear-gradient(135deg, var(--wiz-primary-dark), var(--wiz-grad-start));
+    }
+    &:active {
+      transform: translateY(0);
+    }
+  }
+
+  @media (max-width: 480px) {
+    width: 96%;
+    border-radius: 16px;
+    .wizard-header {
+      padding: 1rem 1rem 0.5rem;
+    }
+    .wizard-body {
+      padding: 1rem 1rem 0.5rem;
+      min-height: 180px;
+    }
+    .step-icon-container {
+      width: 64px;
+      height: 64px;
+      border-radius: 16px;
+    }
+    .step-text {
+      .step-title {
+        font-size: 1.15rem;
+      }
+      .step-description {
+        font-size: 0.9rem;
+      }
+    }
+    .wizard-footer {
+      padding: 0.5rem 1rem 1rem;
+    }
+  }
+}

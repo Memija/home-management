@@ -1,11 +1,11 @@
-@if (show) {
+@if (show()) {
   <!-- eslint-disable-next-line @angular-eslint/template/interactive-supports-focus -- Backdrop dismissal by design -->
   <div
     class="modal-overlay"
-    (click)="$event.target === $event.currentTarget && onClose()"
+    (click)="$event.target === $event.currentTarget ? onClose() : undefined"
     (keydown.escape)="onClose()"
   >
-    <div [class]="'demo-wizard theme-' + theme">
+    <div [class]="'demo-wizard theme-' + theme()">
       <!-- Progress bar -->
       <div class="wizard-progress">
         <div class="wizard-progress-bar" [style.width.%]="progress()"></div>
@@ -22,7 +22,7 @@
             </div>
             <div class="yarn-ball" aria-hidden="true">🧶</div>
           </div>
-          <h3>{{ titleKey | translate }}</h3>
+          <h3>{{ titleKey() | translate }}</h3>
         </div>
         <button
           type="button"
@@ -55,7 +55,7 @@
 
       <!-- Step dots -->
       <div class="step-dots">
-        @for (step of steps; track $index) {
+        @for (step of steps(); track $index) {
           <button
             type="button"
             class="dot"

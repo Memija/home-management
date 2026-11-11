@@ -89,10 +89,14 @@ describe('ComparisonNoteComponent', () => {
     component = fixture.componentInstance;
 
     // Set required inputs
-    component.records = [{ date: new Date() }, { date: new Date() }, { date: new Date() }];
+    fixture.componentRef.setInput('records', [
+      { date: new Date() },
+      { date: new Date() },
+      { date: new Date() },
+    ]);
 
     // Default type
-    component.type = 'water';
+    fixture.componentRef.setInput('type', 'water');
 
     TestBed.flushEffects();
   });
@@ -115,7 +119,7 @@ describe('ComparisonNoteComponent', () => {
       expect(component['hasSufficientDataForComparison']()).toBe(true);
 
       // Change input to less records
-      component.records = [{ date: new Date() }];
+      fixture.componentRef.setInput('records', [{ date: new Date() }]);
       TestBed.flushEffects();
       expect(component['hasSufficientDataForComparison']()).toBe(false);
     });
@@ -156,20 +160,20 @@ describe('ComparisonNoteComponent', () => {
 
   describe('Facts Logic', () => {
     it('should get water fact', () => {
-      component.type = 'water';
+      fixture.componentRef.setInput('type', 'water');
       TestBed.flushEffects();
       expect(component['countryFact']()).toEqual({ message: 'Water fact', title: 'Did you know?' });
     });
 
     it('should get heating fact', () => {
-      component.type = 'heating';
+      fixture.componentRef.setInput('type', 'heating');
       TestBed.flushEffects();
       expect(component['countryFact']()).toBe('Heating fact');
       expect(component['heatingFactTitle']()).toBe('Heating Tip');
     });
 
     it('should get electricity fact', () => {
-      component.type = 'electricity';
+      fixture.componentRef.setInput('type', 'electricity');
       TestBed.flushEffects();
       expect(component['countryFact']()).toBe('Electricity fact');
       expect(component['electricityFactTitle']()).toBe('Power Tip');
@@ -186,7 +190,7 @@ describe('ComparisonNoteComponent', () => {
     it('should refresh fact on chart view change', () => {
       const initialSeed = component['factSeed']();
       vi.advanceTimersByTime(100);
-      component.chartView = 'average';
+      fixture.componentRef.setInput('chartView', 'average');
       TestBed.flushEffects();
       expect(component['factSeed']()).not.toBe(initialSeed);
     });
@@ -194,7 +198,7 @@ describe('ComparisonNoteComponent', () => {
 
   describe(' Comparison Text', () => {
     it('should translate water comparison text with correct params', () => {
-      component.type = 'water';
+      fixture.componentRef.setInput('type', 'water');
       TestBed.flushEffects();
 
       // The mock translator returns the key + params stringified
@@ -206,7 +210,7 @@ describe('ComparisonNoteComponent', () => {
     });
 
     it('should translate heating comparison text', () => {
-      component.type = 'heating';
+      fixture.componentRef.setInput('type', 'heating');
       TestBed.flushEffects();
 
       const text = component['comparisonText']();
@@ -216,7 +220,7 @@ describe('ComparisonNoteComponent', () => {
     });
 
     it('should translate electricity comparison text', () => {
-      component.type = 'electricity';
+      fixture.componentRef.setInput('type', 'electricity');
       TestBed.flushEffects();
 
       const text = component['comparisonText']();
@@ -233,6 +237,22 @@ describe('ComparisonNoteComponent', () => {
       // Germany vs United States -> G comes before U
       expect(sorted[0].code).toBe('DE');
       expect(sorted[1].code).toBe('US');
+    });
+
+    it('should exclude tropical countries with 0 kWh heating from sortedHeatingCountries', () => {
+      mockHeatingFactsService.getAvailableCountries.mockReturnValueOnce([
+        { code: 'DE', nameKey: 'COUNTRY.DE' },
+        { code: 'HT', nameKey: 'COUNTRY.HT' },
+      ]);
+      mockHeatingAveragesService.getAverageKwhPerYear.mockImplementation((code: string) =>
+        code === 'HT' ? 0 : 13500,
+      );
+
+      const heatingFixture = TestBed.createComponent(ComparisonNoteComponent);
+      const heatingComp = heatingFixture.componentInstance;
+      const sorted = heatingComp['sortedHeatingCountries']();
+
+      expect(sorted.map((c) => c.code)).toEqual(['DE']);
     });
   });
 });

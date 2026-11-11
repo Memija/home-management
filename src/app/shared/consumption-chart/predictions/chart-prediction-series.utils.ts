@@ -123,19 +123,23 @@ export function generatePredictionData(
   const hasSeasonalData = singlePred.monthlyRates?.length === 12;
   const rates = getPredictionDailyRates(singlePred, predictionPeriod);
 
-  for (let i = lastValueIndex + 1; i < totalLength; i++) {
-    const monthOffset = i - lastValueIndex;
-    const futureDate = new Date(lastRecordDate);
-    futureDate.setMonth(futureDate.getMonth() + monthOffset);
-    const calendarMonth = futureDate.getMonth();
+  // Precompute the 12 monthly points (or single flat point) outside the loop
+  const monthlyPoints: PredictionPoint[] | null = hasSeasonalData
+    ? Array.from({ length: 12 }, (_, m) =>
+        calculatePredictionPoint(singlePred, m, rates, true, chartType),
+      )
+    : null;
+  const flatPoint: PredictionPoint | null = hasSeasonalData
+    ? null
+    : calculatePredictionPoint(singlePred, 0, rates, false, chartType);
 
-    const point = calculatePredictionPoint(
-      singlePred,
-      calendarMonth,
-      rates,
-      hasSeasonalData,
-      chartType,
-    );
+  const baseMonth = lastRecordDate.getMonth();
+
+  for (let i = lastValueIndex + 1; i < totalLength; i++) {
+    const point: PredictionPoint = monthlyPoints
+      ? monthlyPoints[(baseMonth + (i - lastValueIndex)) % 12]
+      : flatPoint!;
+
     predDataExpected[i] = point.expected;
     predDataMin[i] = point.min;
     predDataMax[i] = point.max;

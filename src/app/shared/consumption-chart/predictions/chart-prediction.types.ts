@@ -42,4 +42,8 @@ export interface SubcategoryPredictionContext {
   originalLabelsLength: number;
   predictionMonths: number;
   lastRecordDate: Date;
+  minLabel?: string;
+  maxLabel?: string;
+  predictionLabel?: string;
+  pastForecastLabel?: string;
 }

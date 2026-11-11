@@ -1,22 +1,36 @@
 import {
   Component,
-  Input,
+  ChangeDetectionStrategy,
+  input,
   ViewChild,
   ElementRef,
   computed,
   effect,
   inject,
   signal,
+  untracked,
   OnInit,
   OnDestroy,
-  HostListener,
 } from '@angular/core';
+import { DOCUMENT } from '@angular/common';
 import { BaseChartDirective } from 'ng2-charts';
-import { Chart, ChartConfiguration, registerables } from 'chart.js';
+import {
+  CategoryScale,
+  Chart,
+  ChartConfiguration,
+  Filler,
+  Legend,
+  LinearScale,
+  LineController,
+  LineElement,
+  PointElement,
+  Tooltip,
+} from 'chart.js';
 import { TranslatePipe } from '../../pipes/translate.pipe';
 import { LanguageService } from '../../services/language.service';
 import { ChartDataService, ChartView, DisplayMode } from '../../services/chart-data.service';
 import { LocalStorageService } from '../../services/local-storage.service';
+import { ThemeService } from '../../services/theme.service';
 import {
   LucideAngularModule,
   ChartBar,
@@ -56,8 +70,24 @@ export type { ChartView, DisplayMode } from '../../services/chart-data.service';
 export type { ChartDataPoint } from '../../models/consumption-chart.model';
 export type { FullscreenElement, FullscreenDocument } from './utils/chart-fullscreen.utils';
 
-Chart.register(...registerables, zoomPlugin);
-registerChartPlugins();
+let chartPluginsRegistered = false;
+
+function ensureChartPluginsRegistered(): void {
+  if (chartPluginsRegistered) return;
+  chartPluginsRegistered = true;
+  Chart.register(
+    LineController,
+    LineElement,
+    PointElement,
+    CategoryScale,
+    LinearScale,
+    Tooltip,
+    Legend,
+    Filler,
+    zoomPlugin,
+  );
+  registerChartPlugins();
+}
 
 @Component({
   selector: 'app-consumption-chart',
@@ -65,110 +95,60 @@ registerChartPlugins();
   imports: [BaseChartDirective, TranslatePipe, LucideAngularModule, HelpModalComponent],
   templateUrl: './consumption-chart.component.html',
   styleUrl: './consumption-chart.component.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ConsumptionChartComponent implements OnInit, OnDestroy {
   @ViewChild(BaseChartDirective) chart?: BaseChartDirective;
   @ViewChild('chartWrapper') chartWrapperRef?: ElementRef<HTMLDivElement>;
 
-  protected readonly dataSignal = signal<ChartDataPoint[]>([]);
-  @Input() set data(val: ChartDataPoint[]) {
-    this.dataSignal.set(val || []);
-  }
-  get data(): ChartDataPoint[] {
-    return this.dataSignal();
-  }
-
-  protected readonly currentViewSignal = signal<ChartView>('total');
-  @Input() set currentView(val: ChartView) {
-    this.currentViewSignal.set(val || 'total');
-  }
-  get currentView(): ChartView {
-    return this.currentViewSignal();
-  }
-
-  @Input({ required: true }) onViewChange!: (view: ChartView) => void;
-  @Input({ required: true }) chartType: 'water' | 'home' | 'heating' | 'electricity' = 'water';
-
-  protected readonly displayModeSignal = signal<DisplayMode>('total');
-  @Input() set displayMode(val: DisplayMode) {
-    this.displayModeSignal.set(val || 'total');
-  }
-  get displayMode(): DisplayMode {
-    return this.displayModeSignal();
-  }
-
-  @Input({ required: true }) onDisplayModeChange!: (mode: DisplayMode) => void;
-
-  protected readonly familySizeSignal = signal<number>(0);
-  @Input() set familySize(val: number) {
-    this.familySizeSignal.set(val || 0);
-  }
-  get familySize(): number {
-    return this.familySizeSignal();
-  }
-
-  protected readonly countrySignal = signal<string>('');
-  @Input() set country(val: string) {
-    this.countrySignal.set(val || '');
-  }
-  get country(): string {
-    return this.countrySignal();
-  }
-
-  @Input() helpTitleKey = 'HOME.CHART_HELP_TITLE';
-  @Input() helpSteps: HelpStep[] = [];
-
-  protected readonly roomNamesSignal = signal<string[]>([]);
-  @Input() set roomNames(val: string[]) {
-    this.roomNamesSignal.set(val || []);
-  }
-  get roomNames(): string[] {
-    return this.roomNamesSignal();
-  }
-
-  protected readonly roomIdsSignal = signal<string[]>([]);
-  @Input() set roomIds(val: string[]) {
-    this.roomIdsSignal.set(val || []);
-  }
-  get roomIds(): string[] {
-    return this.roomIdsSignal();
-  }
-
-  protected readonly roomColorsSignal = signal<{ border: string; bg: string }[]>([]);
-  @Input() set roomColors(val: { border: string; bg: string }[]) {
-    this.roomColorsSignal.set(val || []);
-  }
-  get roomColors(): { border: string; bg: string }[] {
-    return this.roomColorsSignal();
-  }
-
-  protected readonly ignoredSpikesSignal = signal<{ date: string; roomId: string }[]>([]);
-  @Input() set ignoredSpikes(val: { date: string; roomId: string }[]) {
-    this.ignoredSpikesSignal.set(val || []);
-  }
-  get ignoredSpikes(): { date: string; roomId: string }[] {
-    return this.ignoredSpikesSignal();
-  }
-
-  protected readonly predictionSignal = signal<MultiPredictionResult | null>(null);
-  @Input() set prediction(val: MultiPredictionResult | null) {
-    this.predictionSignal.set(val);
-  }
-  get prediction(): MultiPredictionResult | null {
-    return this.predictionSignal();
-  }
-
-  protected readonly predictionPeriodSignal = signal<PredictionPeriod>(30);
-  @Input() set predictionPeriod(val: PredictionPeriod) {
-    this.predictionPeriodSignal.set(val || 30);
-  }
-  get predictionPeriod(): PredictionPeriod {
-    return this.predictionPeriodSignal();
-  }
+  readonly data = input<ChartDataPoint[], ChartDataPoint[] | null | undefined>([], {
+    transform: (val) => val || [],
+  });
+  readonly currentView = input<ChartView, ChartView | null | undefined>('total', {
+    transform: (val) => val || 'total',
+  });
+  readonly onViewChange = input.required<(view: ChartView) => void>();
+  readonly chartType = input.required<'water' | 'home' | 'heating' | 'electricity'>();
+  readonly displayMode = input<DisplayMode, DisplayMode | null | undefined>('total', {
+    transform: (val) => val || 'total',
+  });
+  readonly onDisplayModeChange = input.required<(mode: DisplayMode) => void>();
+  readonly familySize = input<number, number | null | undefined>(0, {
+    transform: (val) => val || 0,
+  });
+  readonly country = input<string, string | null | undefined>('', {
+    transform: (val) => val || '',
+  });
+  readonly helpTitleKey = input<string>('HOME.CHART_HELP_TITLE');
+  readonly helpSteps = input<HelpStep[]>([]);
+  readonly roomNames = input<string[], string[] | null | undefined>([], {
+    transform: (val) => val || [],
+  });
+  readonly roomIds = input<string[], string[] | null | undefined>([], {
+    transform: (val) => val || [],
+  });
+  readonly roomColors = input<
+    { border: string; bg: string }[],
+    { border: string; bg: string }[] | null | undefined
+  >([], {
+    transform: (val) => val || [],
+  });
+  readonly ignoredSpikes = input<
+    { date: string; roomId: string }[],
+    { date: string; roomId: string }[] | null | undefined
+  >([], {
+    transform: (val) => val || [],
+  });
+  readonly prediction = input<MultiPredictionResult | null>(null);
+  readonly predictionPeriod = input<PredictionPeriod, PredictionPeriod | null | undefined>(30, {
+    transform: (val) => val || 30,
+  });
 
   private readonly languageService = inject(LanguageService);
   private readonly chartDataService = inject(ChartDataService);
   private readonly localStorageService = inject(LocalStorageService);
+  private readonly themeService = inject(ThemeService, { optional: true });
+  private readonly document = inject(DOCUMENT, { optional: true });
 
   protected readonly BarChart3Icon = ChartBar;
   protected readonly DoorOpenIcon = DoorOpen;
@@ -206,60 +186,80 @@ export class ConsumptionChartComponent implements OnInit, OnDestroy {
   private toggleState!: ChartToggleState;
 
   protected hasSufficientDataForTrendline = computed(() => {
-    const dataLength = this.dataSignal().length;
-    const mode = this.displayModeSignal();
+    const dataLength = this.data().length;
+    const mode = this.displayMode();
     return mode === 'incremental' ? dataLength >= 3 : dataLength >= 2;
   });
 
-  protected hasSufficientDataForComparison = computed(() => this.dataSignal().length >= 3);
+  protected hasSufficientDataForComparison = computed(() => this.data().length >= 3);
 
-  protected currentLang = computed(() => this.languageService.currentLang());
+  protected currentLang = computed(() => {
+    this.languageService.translationVersion?.();
+    return this.languageService.currentLang();
+  });
 
   protected chartData = computed<ChartConfiguration['data']>(() => {
     this.currentLang();
     return buildConsumptionChartData({
       chartDataService: this.chartDataService,
       languageService: this.languageService,
-      chartType: this.chartType,
-      records: this.dataSignal(),
-      view: this.currentViewSignal(),
-      mode: this.displayModeSignal(),
-      ignoredSpikes: this.ignoredSpikesSignal(),
+      chartType: this.chartType(),
+      records: this.data(),
+      view: this.currentView(),
+      mode: this.displayMode(),
+      ignoredSpikes: this.ignoredSpikes(),
       showTrendline: this.showTrendline(),
       showAverageComparison: this.showAverageComparison(),
-      country: this.countrySignal(),
-      familySize: this.familySizeSignal(),
-      roomNames: this.roomNamesSignal(),
-      roomIds: this.roomIdsSignal(),
-      roomColors: this.roomColorsSignal(),
-      prediction: this.predictionSignal(),
-      predictionPeriod: this.predictionPeriodSignal(),
+      country: this.country(),
+      familySize: this.familySize(),
+      roomNames: this.roomNames(),
+      roomIds: this.roomIds(),
+      roomColors: this.roomColors(),
+      prediction: this.prediction(),
+      predictionPeriod: this.predictionPeriod(),
       showPredictions: this.showPredictions(),
       showPastForecast: this.showPastForecast(),
     });
   });
 
   constructor() {
+    ensureChartPluginsRegistered();
+
     effect(() => {
-      this.chartData();
-      this.chart?.update();
+      this.themeService?.resolvedTheme();
+      untracked(() => {
+        if (this.data().length > 0) {
+          this.chart?.update();
+        }
+      });
     });
 
     effect(() => {
-      const view = this.currentViewSignal();
+      const view = this.currentView();
       if (this.toggleState) {
         this.showPredictions.set(this.toggleState.getPredictionsVisibility(view));
         this.showPastForecast.set(this.toggleState.getPastForecastVisibility(view));
       }
     });
+
+    effect((onCleanup) => {
+      if (!this.isFullscreen() || !this.document) return;
+      const handler = (event: KeyboardEvent) => {
+        if (event.key === 'Escape') {
+          this.onEscapeKey();
+        }
+      };
+      this.document.addEventListener('keydown', handler);
+      onCleanup(() => this.document?.removeEventListener('keydown', handler));
+    });
   }
 
   ngOnInit(): void {
-    this.toggleState = new ChartToggleState(this.localStorageService, this.chartType);
+    this.toggleState = new ChartToggleState(this.localStorageService, this.chartType());
     this.showTrendline.set(this.toggleState.getTrendlineVisibility());
     this.showAverageComparison.set(this.toggleState.getAverageComparisonVisibility());
-    this.showPredictions.set(this.toggleState.getPredictionsVisibility(this.currentViewSignal()));
-    this.showPastForecast.set(this.toggleState.getPastForecastVisibility(this.currentViewSignal()));
+    this.showPredictions.set(this.toggleState.getPredictionsVisibility(this.currentView()));
+    this.showPastForecast.set(this.toggleState.getPastForecastVisibility(this.currentView()));
     document.addEventListener('fullscreenchange', this.onFullscreenChange);
     document.addEventListener('webkitfullscreenchange', this.onFullscreenChange);
   }
@@ -268,17 +268,17 @@ export class ConsumptionChartComponent implements OnInit, OnDestroy {
     this.currentLang();
     return buildChartOptions({
       languageService: this.languageService,
-      chartType: this.chartType,
-      getData: () => this.dataSignal(),
+      chartType: this.chartType(),
+      getData: () => this.data(),
     });
   });
 
   protected setView(view: ChartView): void {
-    this.onViewChange(view);
+    this.onViewChange()(view);
   }
 
   protected setDisplayMode(mode: DisplayMode): void {
-    this.onDisplayModeChange(mode);
+    this.onDisplayModeChange()(mode);
   }
 
   protected toggleTrendline(): void {
@@ -294,21 +294,19 @@ export class ConsumptionChartComponent implements OnInit, OnDestroy {
   protected togglePredictions(): void {
     const newVal = !this.showPredictions();
     this.showPredictions.set(newVal);
-    this.toggleState.savePredictionsVisibility(this.currentViewSignal(), newVal);
-    if (newVal && this.displayModeSignal() !== 'incremental') {
+    this.toggleState.savePredictionsVisibility(this.currentView(), newVal);
+    if (newVal && this.displayMode() !== 'incremental') {
       this.setDisplayMode('incremental');
     }
-    setTimeout(() => this.chart?.update(), 50);
   }
 
   protected togglePastForecast(): void {
     const newVal = !this.showPastForecast();
     this.showPastForecast.set(newVal);
-    this.toggleState.savePastForecastVisibility(this.currentViewSignal(), newVal);
-    if (newVal && this.displayModeSignal() !== 'incremental') {
+    this.toggleState.savePastForecastVisibility(this.currentView(), newVal);
+    if (newVal && this.displayMode() !== 'incremental') {
       this.setDisplayMode('incremental');
     }
-    setTimeout(() => this.chart?.update(), 50);
   }
 
   protected showHelp(): void {
@@ -337,8 +335,8 @@ export class ConsumptionChartComponent implements OnInit, OnDestroy {
     setTimeout(() => this.chart?.update(), 50);
   }
 
-  @HostListener('document:keydown.escape')
   protected onEscapeKey(): void {
+    if (!this.isFullscreen() && !isDocumentFullscreen()) return;
     if (isDocumentFullscreen()) {
       exitDocumentFullscreen();
     } else if (this.isFullscreen()) {

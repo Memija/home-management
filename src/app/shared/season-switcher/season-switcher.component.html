@@ -11,16 +11,12 @@
     </button>
 
     <div class="season-display">
-      <span class="season-emoji">{{ getSeasonEmoji() }}</span>
+      <span class="season-emoji">{{ seasonEmoji() }}</span>
       <div class="season-text">
-        <span class="season-name">{{
-          'SEASONS.' + seasonService.currentSeason().toUpperCase() + '.NAME' | translate
-        }}</span>
-        <span class="season-tagline">{{
-          'SEASONS.' + seasonService.currentSeason().toUpperCase() + '.TAGLINE' | translate
-        }}</span>
+        <span class="season-name">{{ seasonNameKey() | translate }}</span>
+        <span class="season-tagline">{{ seasonTaglineKey() | translate }}</span>
       </div>
-      <span class="season-emoji">{{ getSeasonEmoji() }}</span>
+      <span class="season-emoji">{{ seasonEmoji() }}</span>
     </div>
 
     <button

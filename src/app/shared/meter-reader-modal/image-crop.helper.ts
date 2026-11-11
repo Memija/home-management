@@ -51,7 +51,7 @@ export function scaleCanvasToFitImage(
   img: HTMLImageElement,
   maxH = 400,
 ): void {
-  const maxW = canvas.parentElement?.clientWidth ?? 600;
+  const maxW = canvas.parentElement?.clientWidth || 600;
   const scale = Math.min(maxW / img.width, maxH / img.height, 1);
   canvas.width = img.width * scale;
   canvas.height = img.height * scale;
@@ -114,9 +114,10 @@ export function drawCropOverlay(
 export function getCanvasCoords(
   canvas: HTMLCanvasElement | undefined,
   event: MouseEvent | TouchEvent,
+  cachedRect?: DOMRect | null,
 ): { x: number; y: number } {
   if (!canvas) return { x: 0, y: 0 };
-  const rect = canvas.getBoundingClientRect();
+  const rect = cachedRect ?? canvas.getBoundingClientRect();
   const scaleX = canvas.width / rect.width;
   const scaleY = canvas.height / rect.height;
 

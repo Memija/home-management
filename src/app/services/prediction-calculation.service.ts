@@ -1,7 +1,14 @@
 import { Injectable, inject } from '@angular/core';
-import { ChartCalculationService } from './chart-calculation.service';
 import { PredictionStatsService } from './prediction-stats.service';
 import { PredictionResult, MIN_RECORDS_FOR_PREDICTION } from '../models/prediction.models';
+import { calculateLinearRegression } from '../utils/chart-calculation.utils';
+
+interface IntervalGeometry {
+  readonly timestamps: number[];
+  readonly daysDiffs: number[];
+  readonly midpointMonths: number[];
+  readonly totalDays: number;
+}
 
 /**
  * Core prediction math: daily-rate extraction, historical accuracy evaluation,
@@ -12,8 +19,87 @@ import { PredictionResult, MIN_RECORDS_FOR_PREDICTION } from '../models/predicti
   providedIn: 'root',
 })
 export class PredictionCalculationService {
-  private readonly calculationService = inject(ChartCalculationService);
   private readonly statsService = inject(PredictionStatsService);
+  private readonly geometryCache = new WeakMap<{ date: Date | string }[], IntervalGeometry>();
+  private readonly intervalRatesCache = new WeakMap<unknown[], Map<string, (number | null)[]>>();
+
+  private getIntervalGeometry(records: { date: Date | string }[]): IntervalGeometry {
+    const cached = this.geometryCache.get(records);
+    if (cached && cached.timestamps.length === records.length) {
+      return cached;
+    }
+
+    const len = records.length;
+    const timestamps = new Array<number>(len);
+    const daysDiffs = new Array<number>(len);
+    const midpointMonths = new Array<number>(len);
+
+    if (len > 0) {
+      const first = records[0].date;
+      let prevMs = first instanceof Date ? first.getTime() : new Date(first).getTime();
+      timestamps[0] = prevMs;
+      daysDiffs[0] = 0;
+      midpointMonths[0] = 0;
+
+      for (let i = 1; i < len; i++) {
+        const curr = records[i].date;
+        const currentMs = curr instanceof Date ? curr.getTime() : new Date(curr).getTime();
+        timestamps[i] = currentMs;
+        const daysDiff = (currentMs - prevMs) / (1000 * 3600 * 24);
+        daysDiffs[i] = daysDiff;
+        if (daysDiff > 0) {
+          const midpointMs = prevMs + (currentMs - prevMs) / 2;
+          midpointMonths[i] = new Date(midpointMs).getMonth();
+          prevMs = currentMs;
+        } else {
+          midpointMonths[i] = 0;
+          prevMs = currentMs;
+        }
+      }
+    }
+
+    const totalDays = len >= 2 ? (timestamps[len - 1] - timestamps[0]) / (1000 * 3600 * 24) : 0;
+    const geometry: IntervalGeometry = { timestamps, daysDiffs, midpointMonths, totalDays };
+    this.geometryCache.set(records, geometry);
+    return geometry;
+  }
+
+  private getIntervalRates(
+    records: { date: Date | string }[],
+    incrementalData: unknown[],
+    category: string,
+  ): (number | null)[] {
+    let byCategory = this.intervalRatesCache.get(incrementalData);
+    if (byCategory) {
+      const cached = byCategory.get(category);
+      if (cached && cached.length === records.length) {
+        return cached;
+      }
+    } else {
+      byCategory = new Map<string, (number | null)[]>();
+      this.intervalRatesCache.set(incrementalData, byCategory);
+    }
+
+    const { daysDiffs } = this.getIntervalGeometry(records);
+    const intervalRates: (number | null)[] = new Array(records.length).fill(null);
+
+    for (let i = 1; i < records.length; i++) {
+      const daysDiff = daysDiffs[i];
+      if (daysDiff <= 0) continue;
+
+      const inc = incrementalData[i - 1] as Record<string, unknown> | undefined;
+      const delta = this.calculateIntervalDelta(inc, category);
+      const dailyRate = delta / daysDiff;
+
+      // Only include non-negative rates
+      if (dailyRate >= 0) {
+        intervalRates[i] = dailyRate;
+      }
+    }
+
+    byCategory.set(category, intervalRates);
+    return intervalRates;
+  }
 
   /**
    * Calculate daily consumption rates between consecutive readings using properly
@@ -27,25 +113,15 @@ export class PredictionCalculationService {
     category = 'total',
   ): { rate: number; month: number }[] {
     const results: { rate: number; month: number }[] = [];
+    if (records.length < 2) return results;
+
+    const { midpointMonths } = this.getIntervalGeometry(records);
+    const intervalRates = this.getIntervalRates(records, incrementalData, category);
 
     for (let i = 1; i < records.length; i++) {
-      const currentDate = new Date(records[i].date);
-      const prevDate = new Date(records[i - 1].date);
-
-      const daysDiff = (currentDate.getTime() - prevDate.getTime()) / (1000 * 3600 * 24);
-      if (daysDiff <= 0) continue;
-
-      const inc = incrementalData[i - 1] as Record<string, unknown> | undefined;
-      const delta = this.calculateIntervalDelta(inc, category);
-      const dailyRate = delta / daysDiff;
-
-      // Assign to the midpoint month of the interval
-      const midpointMs = prevDate.getTime() + (currentDate.getTime() - prevDate.getTime()) / 2;
-      const midpointMonth = new Date(midpointMs).getMonth();
-
-      // Only include non-negative rates
-      if (dailyRate >= 0) {
-        results.push({ rate: dailyRate, month: midpointMonth });
+      const dailyRate = intervalRates[i];
+      if (dailyRate !== null) {
+        results.push({ rate: dailyRate, month: midpointMonths[i] });
       }
     }
 
@@ -68,7 +144,13 @@ export class PredictionCalculationService {
 
   private calculateHeatingDelta(rooms: Record<string, number>, category: string): number {
     if (category === 'total') {
-      return Object.values(rooms).reduce((sum, val) => sum + (val || 0), 0);
+      let sum = 0;
+      for (const roomId in rooms) {
+        if (Object.hasOwn(rooms, roomId)) {
+          sum += rooms[roomId] || 0;
+        }
+      }
+      return sum;
     }
     return rooms[category] || 0;
   }
@@ -118,42 +200,64 @@ export class PredictionCalculationService {
     let totalUnderOver = 0;
     let evaluations = 0;
 
+    // Precompute timestamps and per-interval daily rates once in O(N)
+    const { timestamps } = this.getIntervalGeometry(records);
+    const intervalRates = this.getIntervalRates(records, incrementalData, category);
+
+    // Seed running dailyRates and incremental linear-regression accumulators
+    const dailyRates: number[] = [];
+    let sumX = 0;
+    let sumY = 0;
+    let sumXY = 0;
+    let sumX2 = 0;
+    const appendRate = (rate: number): void => {
+      const x = dailyRates.length;
+      dailyRates.push(rate);
+      sumX += x;
+      sumY += rate;
+      sumXY += x * rate;
+      sumX2 += x * x;
+    };
+
+    for (let i = 1; i <= MIN_RECORDS_FOR_PREDICTION; i++) {
+      const rate = intervalRates[i];
+      if (rate !== null) {
+        appendRate(rate);
+      }
+    }
+
+    const firstDate = timestamps[0];
+
     for (let splitIdx = MIN_RECORDS_FOR_PREDICTION; splitIdx < records.length - 1; splitIdx++) {
-      const pastRecords = records.slice(0, splitIdx + 1);
-      const pastIncremental = incrementalData.slice(0, splitIdx);
+      if (splitIdx > MIN_RECORDS_FOR_PREDICTION) {
+        const addedRate = intervalRates[splitIdx];
+        if (addedRate !== null) {
+          appendRate(addedRate);
+        }
+      }
 
-      const ratesWithMonths = this.calculateDailyRatesWithMonths(
-        pastRecords,
-        pastIncremental,
-        category,
-      );
-      const dailyRates = ratesWithMonths.map((r) => r.rate);
-      if (dailyRates.length < 2) continue;
+      const n = dailyRates.length;
+      if (n < 2) continue;
 
-      const { slope, intercept } = this.calculationService.calculateLinearRegression(dailyRates);
+      const denominator = n * sumX2 - sumX * sumX;
+      const slope = denominator === 0 ? 0 : (n * sumXY - sumX * sumY) / denominator;
+      const intercept = denominator === 0 ? sumY / n : (sumY - slope * sumX) / n;
 
-      const firstDate = new Date(pastRecords[0].date).getTime();
-      const lastDate = new Date(pastRecords.at(-1)!.date).getTime();
+      const lastDate = timestamps[splitIdx];
       const totalDays = (lastDate - firstDate) / (1000 * 3600 * 24);
-      const avgInterval = pastRecords.length > 1 ? totalDays / (pastRecords.length - 1) : 7;
+      const pastRecordsCount = splitIdx + 1;
+      const avgInterval = pastRecordsCount > 1 ? totalDays / (pastRecordsCount - 1) : 7;
 
-      const regRate = Math.max(
-        0,
-        slope * dailyRates.length + intercept + (slope / (avgInterval || 7)) * 30,
-      );
+      const regRate = Math.max(0, slope * n + intercept + (slope / (avgInterval || 7)) * 30);
       const expected30 = this.statsService.weightedMovingAverage(dailyRates, regRate);
 
       // Store the predicted daily rate for the next record (which is at splitIdx + 1)
       historicalPredictions[splitIdx + 1] = expected30;
 
-      const actualNextRates = this.calculateDailyRatesWithMonths(
-        records.slice(splitIdx, splitIdx + 2),
-        incrementalData.slice(splitIdx, splitIdx + 1),
-        category,
-      );
+      const actualNextRate = intervalRates[splitIdx + 1];
 
-      if (actualNextRates.length > 0) {
-        const evalResult = this.recordEvaluationError(expected30, actualNextRates[0].rate);
+      if (actualNextRate !== null) {
+        const evalResult = this.recordEvaluationError(expected30, actualNextRate);
         totalErrorPercentage += evalResult.errorPct;
         if (evalResult.evaluated) {
           totalUnderOver += evalResult.underOver;
@@ -208,15 +312,10 @@ export class PredictionCalculationService {
     isHeating = false,
   ): PredictionResult {
     // Use linear regression on daily rates to extrapolate trend
-    const { slope, intercept } = this.calculationService.calculateLinearRegression(dailyRates);
+    const { slope, intercept } = calculateLinearRegression(dailyRates);
 
     // Calculate average interval in days
-    let totalDays = 0;
-    if (records.length >= 2) {
-      const firstDate = new Date(records[0].date).getTime();
-      const lastDate = new Date(records.at(-1)!.date).getTime();
-      totalDays = (lastDate - firstDate) / (1000 * 3600 * 24);
-    }
+    const { totalDays } = this.getIntervalGeometry(records);
     const avgInterval = records.length > 1 ? totalDays / (records.length - 1) : 7;
 
     // Calculate standard deviation of historical daily rates
@@ -284,7 +383,7 @@ export class PredictionCalculationService {
     const confidence = this.statsService.calculateConfidence(dailyRates, records);
 
     // Average daily consumption
-    const historicalAvg = dailyRates.reduce((sum, r) => sum + r, 0) / dailyRates.length;
+    const historicalAvg = ratesMean;
 
     return {
       daily30: range30.expected,

@@ -12,7 +12,7 @@
           decoding="async"
         />
       </picture>
-      <h1 class="app-title">{{ 'FOOTER.APP_NAME' | translate }}</h1>
+      <span class="app-title">{{ 'FOOTER.APP_NAME' | translate }}</span>
     </div>
     <div class="header-actions">
       <!-- Theme Toggle -->
@@ -20,8 +20,8 @@
         type="button"
         class="theme-toggle"
         (click)="cycleTheme()"
-        title="{{ getThemeTitle() }}"
-        aria-label="{{ getThemeTitle() }}"
+        title="{{ themeTitle() }}"
+        aria-label="{{ themeTitle() }}"
         [class.is-dark]="themeService.resolvedTheme() === 'dark'"
         [class.is-system]="themeService.currentTheme() === 'system'"
       >

@@ -14,6 +14,7 @@ import {
   isDynamicHeatingRecordAllZero,
   parseSafeDate,
 } from '../models/records.model';
+import { ConsumptionDataServiceContract } from '../shared/base-consumption.directive';
 
 /**
  * Service for heating data management including CRUD, import/export operations.
@@ -22,7 +23,7 @@ import {
 @Injectable({
   providedIn: 'root',
 })
-export class HeatingDataService {
+export class HeatingDataService implements ConsumptionDataServiceContract<DynamicHeatingRecord> {
   private readonly storage = inject(STORAGE_SERVICE);
   private readonly destroyRef = inject(DestroyRef);
   private readonly fileStorage = inject(FileStorageService);
@@ -34,7 +35,9 @@ export class HeatingDataService {
   private readonly roomsService = inject(HeatingRoomsService);
 
   // State signals
+  private initialSyncLoaded = false;
   readonly records = signal<DynamicHeatingRecord[]>(this.getInitialRecords());
+  readonly isInitialized = signal<boolean>(this.initialSyncLoaded);
   readonly isExporting = signal(false);
   readonly isImporting = signal(false);
   readonly pendingImportFile = signal<File | null>(null);
@@ -53,14 +56,20 @@ export class HeatingDataService {
   readonly successTitle = signal('HEATING.SUCCESS_TITLE');
   readonly successMessage = signal('HEATING.RECORD_SAVED');
 
+  // Delete confirmation state signals
+  readonly showDeleteModal = signal(false);
+  readonly recordToDelete = signal<DynamicHeatingRecord | null>(null);
+  readonly showDeleteAllModal = signal(false);
+  readonly recordsToDelete = signal<DynamicHeatingRecord[]>([]);
+
   constructor() {
-    const initial = this.records();
-    if (initial.length > 0) {
-      this.notificationService.setHeatingRecords(initial);
+    if (this.initialSyncLoaded) {
+      this.notificationService.setHeatingRecords(this.records());
+    } else {
+      queueMicrotask(() => {
+        void this.loadData();
+      });
     }
-    queueMicrotask(() => {
-      void this.loadData();
-    });
     this.storage.dataRefreshed$?.pipe(takeUntilDestroyed(this.destroyRef)).subscribe(() => {
       void this.loadData();
     });
@@ -70,6 +79,7 @@ export class HeatingDataService {
     if (!this.storage || typeof this.storage.loadSync !== 'function') {
       return [];
     }
+    this.initialSyncLoaded = true;
     const records = this.storage.loadSync<DynamicHeatingRecord[]>('heating_consumption_records');
     if (!records) return [];
     return records
@@ -90,6 +100,7 @@ export class HeatingDataService {
         return r.date instanceof Date && !Number.isNaN(r.date.getTime());
       });
     this.records.set(parsedRecords);
+    this.isInitialized.set(true);
     this.notificationService.setHeatingRecords(this.records());
   }
 
@@ -131,6 +142,21 @@ export class HeatingDataService {
     this.records.update((records) => records.filter((r) => !datesToDelete.has(r.date.getTime())));
     await this.storage.save('heating_consumption_records', this.records());
     this.notificationService.setHeatingRecords(this.records());
+  }
+
+  confirmDelete(): void {
+    const record = this.recordToDelete();
+    if (record) {
+      void this.deleteRecord(record);
+    }
+    this.showDeleteModal.set(false);
+    this.recordToDelete.set(null);
+  }
+
+  confirmDeleteAll(): void {
+    void this.deleteRecords(this.recordsToDelete());
+    this.showDeleteAllModal.set(false);
+    this.recordsToDelete.set([]);
   }
 
   // ===== EXPORT METHODS =====
@@ -280,9 +306,13 @@ export class HeatingDataService {
       );
 
       this.records.update((existing) => {
-        const merged = [...existing, ...filtered];
         const uniqueMap = new Map<number, DynamicHeatingRecord>();
-        merged.forEach((r) => uniqueMap.set(r.date.getTime(), r));
+        for (const r of existing) {
+          uniqueMap.set(r.date.getTime(), r);
+        }
+        for (const r of filtered) {
+          uniqueMap.set(r.date.getTime(), r);
+        }
         return Array.from(uniqueMap.values()).sort((a, b) => a.date.getTime() - b.date.getTime());
       });
 

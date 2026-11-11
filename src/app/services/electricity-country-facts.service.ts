@@ -1,15 +1,7 @@
 import { Injectable, inject } from '@angular/core';
 import { LanguageService } from './language.service';
-import {
-  electricityCountryFacts as enElectricityFacts,
-  availableElectricityCountries,
-} from '../i18n/modules/en/electricity-country-facts';
-import { electricityCountryFacts as deElectricityFacts } from '../i18n/modules/de/electricity-country-facts';
-import { electricityCountryFacts as bsElectricityFacts } from '../i18n/modules/bs/electricity-country-facts';
-
-import { en } from '../i18n/en';
-import { de } from '../i18n/de';
-import { bs } from '../i18n/bs';
+import { AVAILABLE_COUNTRIES_WITH_WORLD } from '../models/country-codes.data';
+import { DID_YOU_KNOW_BY_LANG } from '../i18n/units';
 
 export interface ElectricityFact {
   title: string;
@@ -33,7 +25,25 @@ export class ElectricityCountryFactsService {
    * Get available countries for electricity facts
    */
   getAvailableCountries() {
-    return availableElectricityCountries;
+    return AVAILABLE_COUNTRIES_WITH_WORLD;
+  }
+
+  /**
+   * Get all electricity facts for a specific country in the active language.
+   * Lazy-loads only ELECTRICITY_COUNTRY_FACTS for the current language on demand.
+   * @param countryCode - ISO country code
+   */
+  getFacts(countryCode: string): readonly string[] {
+    const lang = this.languageService.currentLang();
+    const translations =
+      this.languageService.getTranslations?.(lang, 'ELECTRICITY_COUNTRY_FACTS') ?? {};
+    const countryFacts =
+      (translations['ELECTRICITY_COUNTRY_FACTS'] as Record<string, string[]> | undefined) ?? {};
+    const normalized = countryCode.toUpperCase();
+    if (countryFacts[normalized] && countryFacts[normalized].length > 0) {
+      return countryFacts[normalized];
+    }
+    return countryFacts['DEFAULT'] ?? [];
   }
 
   /**
@@ -50,17 +60,12 @@ export class ElectricityCountryFactsService {
     countryCode?: string,
   ): ElectricityFact | null {
     const lang = this.languageService.currentLang();
-    const translationMap = { de, bs, en } as const;
-    const translations = translationMap[lang as 'de' | 'bs'] ?? en;
-    const countryFactsMap = {
-      de: deElectricityFacts,
-      bs: bsElectricityFacts,
-      en: enElectricityFacts,
-    } as const;
-    const countryFacts = countryFactsMap[lang as 'de' | 'bs'] ?? enElectricityFacts;
+    const translations =
+      this.languageService.getTranslations?.(lang, 'ELECTRICITY_COUNTRY_FACTS') ?? {};
+    const countryFacts =
+      (translations['ELECTRICITY_COUNTRY_FACTS'] as Record<string, string[]> | undefined) ?? {};
     // Fallback title if translation missing
-    const didYouKnow =
-      (translations.FACTS as Record<string, string>)?.['DID_YOU_KNOW'] || 'Did you know?';
+    const didYouKnow = DID_YOU_KNOW_BY_LANG[lang] || 'Did you know?';
 
     if (mode === 'historical') {
       return this.getHistoricalFact(didYouKnow, index, countryFacts);

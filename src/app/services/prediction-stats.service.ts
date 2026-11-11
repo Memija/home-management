@@ -16,17 +16,17 @@ export class PredictionStatsService {
   weightedMovingAverage(rates: number[], regressionPrediction: number): number {
     if (rates.length === 0) return regressionPrediction;
 
-    // Take last N rates for the moving average (up to 6)
+    // Take last N rates for the moving average (up to 6) without allocating a slice
     const windowSize = Math.min(rates.length, 6);
-    const recentRates = rates.slice(-windowSize);
+    const startIndex = rates.length - windowSize;
 
-    // Exponential weights: more recent = higher weight
+    // Linear weights: more recent = higher weight
     let weightedSum = 0;
     let totalWeight = 0;
 
-    for (let i = 0; i < recentRates.length; i++) {
+    for (let i = 0; i < windowSize; i++) {
       const weight = i + 1; // 1, 2, 3, ... (latest has highest weight)
-      weightedSum += recentRates[i] * weight;
+      weightedSum += rates[startIndex + i] * weight;
       totalWeight += weight;
     }
 
@@ -47,13 +47,19 @@ export class PredictionStatsService {
       return { trend: 'stable', trendPercentage: 0 };
     }
 
-    // Compare first half average to second half average
+    // Compare first half average to second half average without allocating slices
     const midpoint = Math.floor(dailyRates.length / 2);
-    const firstHalf = dailyRates.slice(0, midpoint);
-    const secondHalf = dailyRates.slice(midpoint);
+    let firstSum = 0;
+    for (let i = 0; i < midpoint; i++) {
+      firstSum += dailyRates[i];
+    }
+    let secondSum = 0;
+    for (let i = midpoint; i < dailyRates.length; i++) {
+      secondSum += dailyRates[i];
+    }
 
-    const firstAvg = firstHalf.reduce((s, v) => s + v, 0) / firstHalf.length;
-    const secondAvg = secondHalf.reduce((s, v) => s + v, 0) / secondHalf.length;
+    const firstAvg = firstSum / midpoint;
+    const secondAvg = secondSum / (dailyRates.length - midpoint);
 
     if (firstAvg === 0) {
       return {

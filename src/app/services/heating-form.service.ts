@@ -1,5 +1,5 @@
 import { Injectable, signal, computed, inject } from '@angular/core';
-import { DynamicHeatingRecord } from '../models/records.model';
+import { DynamicHeatingRecord, getIsoDateKey, parseSafeDate } from '../models/records.model';
 import { HeatingRoomsService } from './heating-rooms.service';
 
 @Injectable({
@@ -35,22 +35,15 @@ export class HeatingFormService {
     if (this.editingRecord()) return false;
     const selected = this.selectedDate();
     if (!selected) return false;
-    return records.some((r) => {
-      const rDate = new Date(r.date);
-      return rDate.toISOString().split('T')[0] === selected;
-    });
+    return records.some((r) => getIsoDateKey(r.date) === selected);
   }
 
   // Actions
   startEdit(record: DynamicHeatingRecord) {
     this.editingRecord.set(record);
-    this.selectedDate.set(new Date(record.date).toISOString().split('T')[0]);
+    this.selectedDate.set(getIsoDateKey(record.date));
     // Load room values from record
-    const values: Record<string, number | null> = {};
-    for (const [roomId, value] of Object.entries(record.rooms)) {
-      values[roomId] = value;
-    }
-    this.roomValues.set(values);
+    this.roomValues.set({ ...record.rooms });
   }
 
   cancelEdit() {
@@ -83,7 +76,7 @@ export class HeatingFormService {
     }
 
     return {
-      date: new Date(this.selectedDate()),
+      date: parseSafeDate(this.selectedDate()),
       rooms,
     };
   }

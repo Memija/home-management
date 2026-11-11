@@ -1,15 +1,15 @@
 import {
   Component,
-  Input,
-  Output,
-  EventEmitter,
+  ChangeDetectionStrategy,
+  input,
+  output,
   signal,
   computed,
   effect,
   inject,
   ContentChild,
   TemplateRef,
-  untracked,
+  linkedSignal,
 } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { DatePipe, NgTemplateOutlet } from '@angular/common';
@@ -39,13 +39,15 @@ import {
   calculateWaterTotal,
   calculateKitchenTotal,
   calculateBathroomTotal,
+  parseSafeDate,
 } from '../../models/records.model';
 import {
   DEFAULT_SORT_OPTIONS,
+  MONTH_TRANSLATION_KEYS,
+  computeDateRangeBounds,
+  computeDisabledMonths,
   filterDetailedRecords,
-  isMonthDisabledForRange,
-  isMonthDisabledForYear,
-  isYearDisabledForRange,
+  getWaterDetailRows,
   sortDetailedRecords,
 } from './detailed-records.utils';
 
@@ -73,19 +75,21 @@ export interface SortOptionConfig {
   standalone: true,
   imports: [
     FormsModule,
-    DatePipe,
     NgTemplateOutlet,
     LucideAngularModule,
     TranslatePipe,
     DatePickerComponent,
     HelpModalComponent,
   ],
+  providers: [DatePipe],
   templateUrl: './detailed-records.component.html',
   styleUrl: './detailed-records.component.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class DetailedRecordsComponent {
   private readonly languageService = inject(LanguageService);
   private readonly localStorageService = inject(LocalStorageService);
+  private readonly datePipe = inject(DatePipe);
 
   protected readonly EditIcon = Pencil;
   protected readonly TrashIcon = Trash2;
@@ -101,56 +105,53 @@ export class DetailedRecordsComponent {
   protected readonly HelpIcon = CircleQuestionMark;
   protected readonly ResetIcon = RotateCcw;
   protected readonly ChevronUpIcon = ChevronUp;
+  protected readonly monthTranslationKeys = MONTH_TRANSLATION_KEYS;
+  protected readonly paginationSizes = [5, 10, 20, 50] as const;
+  protected readonly getWaterDetailRows = getWaterDetailRows;
 
-  protected readonly recordsSignal = signal<GenericRecord[]>([]);
-  @Input() set records(val: GenericRecord[]) {
-    this.recordsSignal.set(val || []);
-  }
-  get records(): GenericRecord[] {
-    return this.recordsSignal();
-  }
+  private readonly recordDatesCache = new WeakMap<
+    GenericRecord,
+    { lang: string; time: number; formatted: string }
+  >();
+  private readonly waterRowsCache = new WeakMap<
+    GenericRecord,
+    ReturnType<typeof getWaterDetailRows>
+  >();
 
-  @Input() set defaultSortOption(val: string) {
-    this.sortOption.set(val || 'date-desc');
-  }
-
-  @Input() showSearchDate = true;
-  @Input() showYearMonth = true;
-  @Input() showEditDelete = true;
-
-  protected readonly recordTypeSignal = signal<string>('water');
-  @Input() set recordType(val: string) {
-    this.recordTypeSignal.set(val || 'water');
-  }
-  get recordType(): string {
-    return this.recordTypeSignal();
-  }
-
-  @Input() helpTitleKey = 'HOME.RECORDS_HELP_TITLE';
-  @Input() helpSteps: HelpStep[] = [];
-  @Input() showTotal = true;
-  @Input() totalLabelKey = 'HOME.TOTAL';
-  @Input() hasDetails = true;
-  @Input() allowCollapse = true;
-  @Input() sortOptions: SortOptionConfig[] = DEFAULT_SORT_OPTIONS;
-
-  protected readonly calculateTotalFnSignal = signal<(record: GenericRecord) => number>(() => 0);
-  @Input() set calculateTotalFn(val: (record: GenericRecord) => number) {
-    this.calculateTotalFnSignal.set(val || (() => 0));
-  }
-  get calculateTotalFn(): (record: GenericRecord) => number {
-    return this.calculateTotalFnSignal();
-  }
-
-  @Input() valuesNoteKey = 'HOME.ALL_VALUES_IN_LITERS';
+  readonly records = input<GenericRecord[], GenericRecord[] | null | undefined>([], {
+    transform: (val) => val || [],
+  });
+  readonly defaultSortOption = input<string, string | null | undefined>('date-desc', {
+    transform: (val) => val || 'date-desc',
+  });
+  readonly showSearchDate = input<boolean>(true);
+  readonly showYearMonth = input<boolean>(true);
+  readonly showEditDelete = input<boolean>(true);
+  readonly recordType = input<string, string | null | undefined>('water', {
+    transform: (val) => val || 'water',
+  });
+  readonly helpTitleKey = input<string>('HOME.RECORDS_HELP_TITLE');
+  readonly helpSteps = input<HelpStep[]>([]);
+  readonly showTotal = input<boolean>(true);
+  readonly totalLabelKey = input<string>('HOME.TOTAL');
+  readonly hasDetails = input<boolean>(true);
+  readonly allowCollapse = input<boolean>(true);
+  readonly sortOptions = input<SortOptionConfig[]>(DEFAULT_SORT_OPTIONS);
+  readonly calculateTotalFn = input<
+    (record: GenericRecord) => number,
+    ((record: GenericRecord) => number) | null | undefined
+  >(() => 0, {
+    transform: (val) => val || (() => 0),
+  });
+  readonly valuesNoteKey = input<string>('HOME.ALL_VALUES_IN_LITERS');
 
   @ContentChild('recordDetails') recordDetailsTemplate!: TemplateRef<{ $implicit: GenericRecord }>;
 
-  @Output() editRecord = new EventEmitter<GenericRecord>();
-  @Output() deleteRecord = new EventEmitter<GenericRecord>();
-  @Output() deleteAllRecords = new EventEmitter<GenericRecord[]>();
-  @Output() filteredRecordsChange = new EventEmitter<GenericRecord[]>();
-  @Output() filterStateChange = new EventEmitter<{
+  readonly editRecord = output<GenericRecord>();
+  readonly deleteRecord = output<GenericRecord>();
+  readonly deleteAllRecords = output<GenericRecord[]>();
+  readonly filteredRecordsChange = output<GenericRecord[]>();
+  readonly filterStateChange = output<{
     year: number | null;
     month: number | null;
     startDate: string | null;
@@ -163,18 +164,20 @@ export class DetailedRecordsComponent {
   protected readonly searchMonth = signal<number | null>(null);
   protected readonly currentPage = signal<number>(1);
   protected readonly paginationSize = signal<number>(5);
-  protected readonly sortOption = signal<string>('date-desc');
+  protected readonly sortOption = linkedSignal<string>(() => this.defaultSortOption());
   protected readonly showHelpModal = signal(false);
-  protected readonly isCollapsed = signal(true);
+  protected readonly isCollapsed = linkedSignal<string, boolean>({
+    source: () => this.recordType(),
+    computation: (type) => {
+      const key = `detailed_records_for_${type}_are_collapsed`;
+      const stored = this.localStorageService.getPreference(key);
+      return stored !== null ? stored === 'true' : true;
+    },
+  });
 
   constructor() {
     effect(() => {
-      const type = this.recordTypeSignal();
-      untracked(() => {
-        const key = `detailed_records_for_${type}_are_collapsed`;
-        const stored = this.localStorageService.getPreference(key);
-        this.isCollapsed.set(stored !== null ? stored === 'true' : true);
-      });
+      this.isCollapsed();
     });
 
     effect(() => {
@@ -194,12 +197,16 @@ export class DetailedRecordsComponent {
   protected currentLang = computed(() => this.languageService.currentLang());
 
   protected availableYears = computed(() => {
-    const years = new Set(this.recordsSignal().map((r) => new Date(r.date).getFullYear()));
+    if (!this.showYearMonth()) return [];
+    const years = new Set<number>();
+    for (const r of this.records()) {
+      years.add(parseSafeDate(r.date).getFullYear());
+    }
     return Array.from(years).sort((a, b) => b - a);
   });
 
   protected filteredRecords = computed(() =>
-    filterDetailedRecords(this.recordsSignal(), {
+    filterDetailedRecords(this.records(), {
       startDate: this.startDate(),
       endDate: this.endDate(),
       searchYear: this.searchYear(),
@@ -215,15 +222,54 @@ export class DetailedRecordsComponent {
       this.searchMonth() !== null,
   );
 
-  protected displayedRecords = computed(() => {
-    const sorted = sortDetailedRecords(
-      this.filteredRecords(),
-      this.sortOption(),
-      this.calculateTotalFnSignal(),
-    );
-    return sorted.slice(
+  protected sortedRecords = computed(() =>
+    sortDetailedRecords(this.filteredRecords(), this.sortOption(), this.calculateTotalFn()),
+  );
+
+  protected displayedRecords = computed(() =>
+    this.sortedRecords().slice(
       (this.currentPage() - 1) * this.paginationSize(),
       this.currentPage() * this.paginationSize(),
+    ),
+  );
+
+  protected displayedRecordTotals = computed(() => {
+    if (!this.showTotal()) {
+      return new Map<GenericRecord, number>();
+    }
+    const calc = this.calculateTotalFn();
+    return new Map(this.displayedRecords().map((r) => [r, calc(r)]));
+  });
+
+  protected displayedRecordDates = computed(() => {
+    const lang = this.currentLang();
+    return new Map(
+      this.displayedRecords().map((r) => {
+        const time = parseSafeDate(r.date).getTime();
+        const cached = this.recordDatesCache.get(r);
+        if (cached && cached.lang === lang && cached.time === time) {
+          return [r, cached.formatted] as const;
+        }
+        const formatted = this.datePipe.transform(r.date, 'fullDate', undefined, lang) ?? '';
+        this.recordDatesCache.set(r, { lang, time, formatted });
+        return [r, formatted] as const;
+      }),
+    );
+  });
+
+  protected displayedWaterRows = computed(() => {
+    if (this.recordType() !== 'water') {
+      return new Map<GenericRecord, ReturnType<typeof getWaterDetailRows>>();
+    }
+    return new Map(
+      this.displayedRecords().map((r) => {
+        let rows = this.waterRowsCache.get(r);
+        if (!rows) {
+          rows = getWaterDetailRows(r);
+          this.waterRowsCache.set(r, rows);
+        }
+        return [r, rows] as const;
+      }),
     );
   });
 
@@ -245,24 +291,23 @@ export class DetailedRecordsComponent {
     }),
   );
 
+  private readonly yearRangeBounds = computed(() =>
+    computeDateRangeBounds(this.startDate(), this.endDate()),
+  );
+
+  protected readonly disabledMonths = computed<readonly boolean[]>(() =>
+    computeDisabledMonths(this.searchYear(), this.yearRangeBounds()),
+  );
+
   protected isYearDisabled(year: number): boolean {
-    return isYearDisabledForRange(year, this.startDate(), this.endDate());
+    const { minYear, maxYear } = this.yearRangeBounds();
+    if (minYear !== null && year < minYear) return true;
+    if (maxYear !== null && year > maxYear) return true;
+    return false;
   }
 
   protected isMonthDisabled(monthIndex: number): boolean {
-    const start = this.startDate();
-    const end = this.endDate();
-    const year = this.searchYear();
-
-    if (year !== null) {
-      return isMonthDisabledForYear(monthIndex, year, start, end);
-    }
-
-    if (start && end) {
-      return isMonthDisabledForRange(monthIndex, start, end);
-    }
-
-    return false;
+    return this.disabledMonths()[monthIndex] ?? false;
   }
 
   protected calculateTotal(record: ConsumptionRecord): number {
@@ -320,7 +365,7 @@ export class DetailedRecordsComponent {
 
   protected toggleCollapse(): void {
     this.isCollapsed.update((v) => !v);
-    const key = `detailed_records_for_${this.recordTypeSignal()}_are_collapsed`;
+    const key = `detailed_records_for_${this.recordType()}_are_collapsed`;
     this.localStorageService.setPreference(key, String(this.isCollapsed()));
   }
 

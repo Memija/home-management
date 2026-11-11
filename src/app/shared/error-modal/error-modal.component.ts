@@ -1,5 +1,4 @@
-import { Component, Input, Output, EventEmitter, signal, computed } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { Component, ChangeDetectionStrategy, input, output, computed } from '@angular/core';
 import { LucideAngularModule, CircleAlert, TriangleAlert, CircleCheck, X } from 'lucide-angular';
 import { TranslatePipe } from '../../pipes/translate.pipe';
 
@@ -13,65 +12,33 @@ export type ErrorModalType = 'error' | 'warning' | 'success';
 @Component({
   selector: 'app-error-modal',
   standalone: true,
-  imports: [CommonModule, LucideAngularModule, TranslatePipe],
+  imports: [LucideAngularModule, TranslatePipe],
   templateUrl: './error-modal.component.html',
   styleUrl: './error-modal.component.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ErrorModalComponent {
-  @Input() set show(val: boolean) {
-    this.showSignal.set(val);
-  }
-  get show(): boolean {
-    return this.showSignal();
-  }
-  protected readonly showSignal = signal(false);
+  readonly show = input<boolean>(false);
+  readonly title = input<string>('ERROR.TITLE');
+  readonly message = input<string>('');
+  readonly details = input<string, string | null | undefined>('', {
+    transform: (val) => val || '',
+  });
+  readonly instructions = input<
+    (string | ErrorInstruction)[],
+    (string | ErrorInstruction)[] | null | undefined
+  >([], {
+    transform: (val) => val || [],
+  });
+  readonly type = input<ErrorModalType>('error');
 
-  @Input() set title(val: string) {
-    this.titleSignal.set(val);
-  }
-  get title(): string {
-    return this.titleSignal();
-  }
-  protected readonly titleSignal = signal('ERROR.TITLE');
-
-  @Input() set message(val: string) {
-    this.messageSignal.set(val);
-  }
-  get message(): string {
-    return this.messageSignal();
-  }
-  protected readonly messageSignal = signal('');
-
-  @Input() set details(val: string) {
-    this.detailsSignal.set(val || '');
-  }
-  get details(): string {
-    return this.detailsSignal();
-  }
-  protected readonly detailsSignal = signal('');
-
-  @Input() set instructions(val: (string | ErrorInstruction)[]) {
-    this.instructionsSignal.set(val || []);
-  }
-  get instructions(): (string | ErrorInstruction)[] {
-    return this.instructionsSignal();
-  }
-  protected readonly instructionsSignal = signal<(string | ErrorInstruction)[]>([]);
-
-  @Input() set type(val: ErrorModalType) {
-    this.typeSignal.set(val);
-  }
-  get type(): ErrorModalType {
-    return this.typeSignal();
-  }
-  protected readonly typeSignal = signal<ErrorModalType>('error');
-
-  @Output() cancelModal = new EventEmitter<void>();
+  readonly cancelModal = output<void>();
 
   // Split details into lines for better display
   readonly detailLines = computed(() => {
-    const d = this.detailsSignal();
-    return d ? d.split('\n').filter((line) => line.trim() !== '') : [];
+    const d = this.details();
+    if (!d) return [];
+    return d.split('\n').filter((line) => line.trim() !== '');
   });
 
   protected readonly AlertCircleIcon = CircleAlert;

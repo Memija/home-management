@@ -1,7 +1,7 @@
 import { Injectable, inject, PLATFORM_ID } from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
 import { Firestore } from 'firebase/firestore';
-import { StorageService } from './storage.service';
+import { StorageService } from './storage-base';
 import { AuthService } from './auth.service';
 
 /**
@@ -211,16 +211,25 @@ export class FirebaseStorageService extends StorageService {
 
     try {
       const fs = await this.getFirestore();
-      const { collection, getDocs, deleteDoc } = await import('firebase/firestore');
+      const firestoreModule = await import('firebase/firestore');
+      const { collection, getDocs } = firestoreModule;
       const colRef = collection(fs, `users/${this.uid}/data`);
       const querySnapshot = await getDocs(colRef);
 
-      const deletePromises: Promise<void>[] = [];
-      querySnapshot.forEach((docSnap: import('firebase/firestore').QueryDocumentSnapshot) => {
-        deletePromises.push(deleteDoc(docSnap.ref));
-      });
+      if ('writeBatch' in firestoreModule && typeof firestoreModule.writeBatch === 'function') {
+        const batch = firestoreModule.writeBatch(fs);
+        querySnapshot.forEach((docSnap: import('firebase/firestore').QueryDocumentSnapshot) => {
+          batch.delete(docSnap.ref);
+        });
+        await batch.commit();
+      } else {
+        const deletePromises: Promise<void>[] = [];
+        querySnapshot.forEach((docSnap: import('firebase/firestore').QueryDocumentSnapshot) => {
+          deletePromises.push(firestoreModule.deleteDoc(docSnap.ref));
+        });
 
-      await Promise.all(deletePromises);
+        await Promise.all(deletePromises);
+      }
     } catch (error) {
       console.error('Error deleting all user data from Firestore:', error);
       throw error;

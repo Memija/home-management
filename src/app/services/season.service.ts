@@ -124,4 +124,14 @@ export class SeasonService {
       this.localStorageService.removePreference(SEASON_STORAGE_KEY);
     }
   }
+
+  /**
+   * Disable the nature tree and persist the preference so future reloads skip rendering.
+   */
+  disableForPerformance(): void {
+    this.disabled.set(true);
+    if (isPlatformBrowser(this.platformId)) {
+      this.localStorageService.setPreference('nature_tree_disabled', 'true');
+    }
+  }
 }

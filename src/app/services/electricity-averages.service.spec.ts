@@ -1,5 +1,6 @@
 import { TestBed } from '@angular/core/testing';
 import { ElectricityAveragesService } from './electricity-averages.service';
+import { ALL_COUNTRY_INFO } from '../models/country-codes.data';
 import { describe, it, expect, beforeEach } from 'vitest';
 
 describe('ElectricityAveragesService', () => {
@@ -57,8 +58,8 @@ describe('ElectricityAveragesService', () => {
 
       it('should return data for World average', () => {
         const data = service.getCountryData('world');
-        expect(data.averageKwhPerPersonPerYear).toBe(2700);
-        expect(data.source).toBe('IEA World Average');
+        expect(data.averageKwhPerPersonPerYear).toBe(850);
+        expect(data.source).toBe('IEA Residential World Average');
       });
     });
 
@@ -183,6 +184,14 @@ describe('ElectricityAveragesService', () => {
         const data = service.getCountryData('de');
         expect(data.year).toBeGreaterThanOrEqual(2020);
         expect(data.year).toBeLessThanOrEqual(2025);
+      });
+
+      it('should provide non-default electricity data for all 198 countries worldwide', () => {
+        for (const country of ALL_COUNTRY_INFO) {
+          const data = service.getCountryData(country.code);
+          expect(data.source).not.toBe('European Average Estimate');
+          expect(data.averageKwhPerPersonPerYear).toBeGreaterThan(0);
+        }
       });
     });
 

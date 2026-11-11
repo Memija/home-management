@@ -3,22 +3,22 @@
     <div class="title-with-help">
       <h2>{{ 'HOME.DETAILED_RECORDS' | translate }}</h2>
       <div class="header-spacer"></div>
-      @if (helpSteps.length > 0) {
+      @if (helpSteps().length > 0) {
         <button
           type="button"
           class="help-btn"
           (click)="showHelp()"
-          title="{{ helpTitleKey | translate }}"
+          title="{{ helpTitleKey() | translate }}"
         >
           <lucide-icon [img]="HelpIcon" size="20"></lucide-icon>
         </button>
       }
     </div>
     <div class="filters-container">
-      @if (recordsSignal().length > 0) {
+      @if (records().length > 0) {
         <div class="toolbar-row filters-row">
           <div class="filters-group">
-            @if (showSearchDate) {
+            @if (showSearchDate()) {
               <div class="search-box date-range">
                 <app-date-picker
                   [date]="startDate() || ''"
@@ -34,13 +34,13 @@
                 </app-date-picker>
               </div>
             }
-            @if (showYearMonth) {
+            @if (showYearMonth()) {
               <div class="filter-box">
                 <div class="select-with-icon">
                   <lucide-icon [img]="CalendarIcon" size="16"></lucide-icon>
-                  <label for="year-filter" class="sr-only">
-                    {{ 'HOME.FILTER_BY_YEAR' | translate }}
-                  </label>
+                  <label for="year-filter" class="sr-only">{{
+                    'HOME.FILTER_BY_YEAR' | translate
+                  }}</label>
                   <select
                     id="year-filter"
                     name="year-filter"
@@ -67,42 +67,11 @@
                     title="{{ 'HOME.FILTER_BY_MONTH' | translate }}"
                   >
                     <option value="null">{{ 'HOME.FILTER_MONTH' | translate }}</option>
-                    <option value="0" [disabled]="isMonthDisabled(0)">
-                      {{ 'HOME.MONTHS.JANUARY' | translate }}
-                    </option>
-                    <option value="1" [disabled]="isMonthDisabled(1)">
-                      {{ 'HOME.MONTHS.FEBRUARY' | translate }}
-                    </option>
-                    <option value="2" [disabled]="isMonthDisabled(2)">
-                      {{ 'HOME.MONTHS.MARCH' | translate }}
-                    </option>
-                    <option value="3" [disabled]="isMonthDisabled(3)">
-                      {{ 'HOME.MONTHS.APRIL' | translate }}
-                    </option>
-                    <option value="4" [disabled]="isMonthDisabled(4)">
-                      {{ 'HOME.MONTHS.MAY' | translate }}
-                    </option>
-                    <option value="5" [disabled]="isMonthDisabled(5)">
-                      {{ 'HOME.MONTHS.JUNE' | translate }}
-                    </option>
-                    <option value="6" [disabled]="isMonthDisabled(6)">
-                      {{ 'HOME.MONTHS.JULY' | translate }}
-                    </option>
-                    <option value="7" [disabled]="isMonthDisabled(7)">
-                      {{ 'HOME.MONTHS.AUGUST' | translate }}
-                    </option>
-                    <option value="8" [disabled]="isMonthDisabled(8)">
-                      {{ 'HOME.MONTHS.SEPTEMBER' | translate }}
-                    </option>
-                    <option value="9" [disabled]="isMonthDisabled(9)">
-                      {{ 'HOME.MONTHS.OCTOBER' | translate }}
-                    </option>
-                    <option value="10" [disabled]="isMonthDisabled(10)">
-                      {{ 'HOME.MONTHS.NOVEMBER' | translate }}
-                    </option>
-                    <option value="11" [disabled]="isMonthDisabled(11)">
-                      {{ 'HOME.MONTHS.DECEMBER' | translate }}
-                    </option>
+                    @for (monthKey of monthTranslationKeys; track monthKey; let i = $index) {
+                      <option [value]="i" [disabled]="isMonthDisabled(i)">
+                        {{ monthKey | translate }}
+                      </option>
+                    }
                   </select>
                 </div>
               </div>
@@ -134,7 +103,7 @@
                     (ngModelChange)="setSortOption($event)"
                     title="{{ 'HOME.SORT_RECORDS' | translate }}"
                   >
-                    @for (option of sortOptions; track option.value) {
+                    @for (option of sortOptions(); track option.value) {
                       <option [value]="option.value">
                         {{ option.labelKey | translate }}
                       </option>
@@ -151,7 +120,7 @@
         <div class="actions-group">
           <ng-content select="[slot=action-buttons]"></ng-content>
         </div>
-        @if (filteredRecords().length > 0 && showEditDelete) {
+        @if (filteredRecords().length > 0 && showEditDelete()) {
           <button
             type="button"
             class="delete-all-btn"
@@ -176,13 +145,13 @@
     </div>
   } @else {
     <div class="liters-note-container">
-      @if (valuesNoteKey) {
+      @if (valuesNoteKey()) {
         <p class="liters-note">
           <lucide-icon [img]="InfoIcon" size="14"></lucide-icon>
-          {{ valuesNoteKey | translate }}
+          {{ valuesNoteKey() | translate }}
         </p>
       }
-      @if (allowCollapse) {
+      @if (allowCollapse()) {
         <button
           type="button"
           class="collapse-toggle"
@@ -200,17 +169,16 @@
       <ul>
         @for (record of displayedRecords(); track record.date) {
           <li>
-            <div class="record-header" [class.no-details]="!hasDetails">
-              <span class="date">{{
-                record.date | date: 'fullDate' : undefined : currentLang()
-              }}</span>
+            <div class="record-header" [class.no-details]="!hasDetails()">
+              <span class="date">{{ displayedRecordDates().get(record) }}</span>
               <div class="record-actions">
-                @if (showTotal) {
+                @if (showTotal()) {
                   <span class="total"
-                    >{{ totalLabelKey | translate }}: {{ calculateTotalFnSignal()(record) }}</span
+                    >{{ totalLabelKey() | translate }}:
+                    {{ displayedRecordTotals().get(record) ?? calculateTotalFn()(record) }}</span
                   >
                 }
-                @if (showEditDelete) {
+                @if (showEditDelete()) {
                   <button
                     type="button"
                     class="edit-btn"
@@ -230,108 +198,94 @@
                 }
               </div>
             </div>
-            @if (hasDetails) {
+            @if (hasDetails()) {
               <div class="record-details">
-                @if (recordDetailsTemplate) {
-                  <ng-container
-                    *ngTemplateOutlet="recordDetailsTemplate; context: { $implicit: record }"
-                  ></ng-container>
-                } @else {
-                  <div class="consumption-row">
-                    <strong>{{ 'HOME.KITCHEN' | translate }}:</strong>
-                    <span class="warm-water"
-                      >{{ 'HOME.WARM_WATER' | translate }}: {{ record.kitchenWarm }}</span
-                    >
-                    <span class="cold-water"
-                      >{{ 'HOME.COLD_WATER' | translate }}: {{ record.kitchenCold }}</span
-                    >
-                  </div>
-                  <div class="consumption-row">
-                    <strong>{{ 'HOME.BATHROOM' | translate }}:</strong>
-                    <span class="warm-water"
-                      >{{ 'HOME.WARM_WATER' | translate }}: {{ record.bathroomWarm }}</span
-                    >
-                    <span class="cold-water"
-                      >{{ 'HOME.COLD_WATER' | translate }}: {{ record.bathroomCold }}</span
-                    >
-                  </div>
-                  <div class="consumption-row combined-totals">
-                    <span></span>
-                    <span class="warm-water"
-                      >{{ 'HOME.WARM_WATER' | translate }}:
-                      {{ (record.kitchenWarm || 0) + (record.bathroomWarm || 0) }}</span
-                    >
-                    <span class="cold-water"
-                      >{{ 'HOME.COLD_WATER' | translate }}:
-                      {{ (record.kitchenCold || 0) + (record.bathroomCold || 0) }}</span
-                    >
-                  </div>
-                }
+                <ng-container
+                  *ngTemplateOutlet="
+                    recordDetailsTemplate || defaultRecordDetails;
+                    context: { $implicit: record }
+                  "
+                ></ng-container>
               </div>
             }
           </li>
         }
       </ul>
     </div>
-    @if (!isCollapsed()) {
-      @if (filteredRecords().length > 0) {
-        <div class="pagination-container">
-          <div class="pagination-info">
-            <div class="filter-box pagination-size-selector">
-              <label for="pagination-size">{{ 'HOME.PAGINATION_SIZE' | translate }}:</label>
-              <select
-                id="pagination-size"
-                name="pagination-size"
-                [ngModel]="paginationSize()"
-                (ngModelChange)="onPaginationSizeChange(+$event)"
-                title="{{ 'HOME.PAGINATION_SIZE' | translate }}"
-                aria-label="{{ 'HOME.PAGINATION_SIZE' | translate }}"
-              >
-                <option [value]="5">5</option>
-                <option [value]="10">10</option>
-                <option [value]="20">20</option>
-                <option [value]="50">50</option>
-              </select>
-            </div>
-            <p class="records-info">{{ showingRecordsText() }}</p>
-            <p class="page-info">{{ pageOfText() }}</p>
-          </div>
-          <div class="pagination-controls">
-            <button
-              type="button"
-              class="pagination-btn"
-              (click)="prevPage()"
-              [disabled]="currentPage() === 1"
-              title="{{ 'HOME.PREVIOUS_PAGE' | translate }}"
-              aria-label="{{ 'HOME.PREVIOUS_PAGE' | translate }}"
+    @if (!isCollapsed() && filteredRecords().length > 0) {
+      <div class="pagination-container">
+        <div class="pagination-info">
+          <div class="filter-box pagination-size-selector">
+            <label for="pagination-size">{{ 'HOME.PAGINATION_SIZE' | translate }}:</label>
+            <select
+              id="pagination-size"
+              name="pagination-size"
+              [ngModel]="paginationSize()"
+              (ngModelChange)="onPaginationSizeChange(+$event)"
+              title="{{ 'HOME.PAGINATION_SIZE' | translate }}"
+              aria-label="{{ 'HOME.PAGINATION_SIZE' | translate }}"
             >
-              <lucide-icon [img]="ChevronLeftIcon" size="16"></lucide-icon>
-              {{ 'HOME.PREVIOUS_PAGE' | translate }}
-            </button>
-            <button
-              type="button"
-              class="pagination-btn"
-              (click)="nextPage()"
-              [disabled]="currentPage() >= totalPages()"
-              title="{{ 'HOME.NEXT_PAGE' | translate }}"
-              aria-label="{{ 'HOME.NEXT_PAGE' | translate }}"
-            >
-              {{ 'HOME.NEXT_PAGE' | translate }}
-              <lucide-icon [img]="ChevronRightIcon" size="16"></lucide-icon>
-            </button>
+              @for (size of paginationSizes; track size) {
+                <option [value]="size">{{ size }}</option>
+              }
+            </select>
           </div>
+          <p class="records-info">{{ showingRecordsText() }}</p>
+          <p class="page-info">{{ pageOfText() }}</p>
         </div>
-      }
+        <div class="pagination-controls">
+          <button
+            type="button"
+            class="pagination-btn"
+            (click)="prevPage()"
+            [disabled]="currentPage() === 1"
+            title="{{ 'HOME.PREVIOUS_PAGE' | translate }}"
+            aria-label="{{ 'HOME.PREVIOUS_PAGE' | translate }}"
+          >
+            <lucide-icon [img]="ChevronLeftIcon" size="16"></lucide-icon>
+            {{ 'HOME.PREVIOUS_PAGE' | translate }}
+          </button>
+          <button
+            type="button"
+            class="pagination-btn"
+            (click)="nextPage()"
+            [disabled]="currentPage() >= totalPages()"
+            title="{{ 'HOME.NEXT_PAGE' | translate }}"
+            aria-label="{{ 'HOME.NEXT_PAGE' | translate }}"
+          >
+            {{ 'HOME.NEXT_PAGE' | translate }}
+            <lucide-icon [img]="ChevronRightIcon" size="16"></lucide-icon>
+          </button>
+        </div>
+      </div>
     }
   }
 </div>
 
-@if (helpSteps.length > 0) {
-  <app-help-modal
-    [show]="showHelpModal()"
-    [titleKey]="helpTitleKey"
-    [steps]="helpSteps"
-    (closeModal)="closeHelp()"
-  >
-  </app-help-modal>
+<ng-template #defaultRecordDetails let-record>
+  @for (row of displayedWaterRows().get(record) ?? getWaterDetailRows(record); track $index) {
+    <div class="consumption-row" [class.combined-totals]="row.isTotal">
+      @if (row.label) {
+        <strong>{{ row.label | translate }}:</strong>
+      } @else {
+        <span></span>
+      }
+      <span class="warm-water">{{ 'HOME.WARM_WATER' | translate }}: {{ row.warm }}</span>
+      <span class="cold-water">{{ 'HOME.COLD_WATER' | translate }}: {{ row.cold }}</span>
+    </div>
+  }
+</ng-template>
+
+@if (helpSteps().length > 0) {
+  @defer (when showHelpModal()) {
+    @if (showHelpModal()) {
+      <app-help-modal
+        [show]="showHelpModal()"
+        [titleKey]="helpTitleKey()"
+        [steps]="helpSteps()"
+        (closeModal)="closeHelp()"
+      >
+      </app-help-modal>
+    }
+  }
 }

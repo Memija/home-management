@@ -2,6 +2,7 @@ import { Injectable, inject } from '@angular/core';
 import { HouseholdService, HouseholdMember } from './household.service';
 import { LanguageService } from './language.service';
 import { FileStorageService } from './file-storage.service';
+import { secureRandomItem } from '../utils/crypto.utils';
 
 export interface MemberValidationResult {
   valid: boolean;
@@ -179,10 +180,7 @@ export class FamilyImportService {
         return avatar;
       }
     }
-    const randomArray = new Uint32Array(1);
-    globalThis.crypto.getRandomValues(randomArray);
-    const randomIndex = randomArray[0] % this.householdService.avatars.length;
-    return this.householdService.avatars[randomIndex];
+    return secureRandomItem(this.householdService.avatars) ?? this.householdService.avatars[0];
   }
 
   /**

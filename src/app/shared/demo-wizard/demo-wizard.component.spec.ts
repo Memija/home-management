@@ -34,8 +34,8 @@ describe('DemoWizardComponent', () => {
     component = fixture.componentInstance;
 
     // Set required inputs
-    component.show = true;
-    component.steps = mockSteps;
+    fixture.componentRef.setInput('show', true);
+    fixture.componentRef.setInput('steps', mockSteps);
 
     fixture.detectChanges();
   });
@@ -108,24 +108,24 @@ describe('DemoWizardComponent', () => {
 
     it('should return null when step index is out of bounds after steps change', () => {
       component.goToStep(2); // At index 2
-      component.steps = [mockSteps[0]]; // Now only 1 step
+      fixture.componentRef.setInput('steps', [mockSteps[0]]); // Now only 1 step
       fixture.detectChanges();
 
       expect(component['currentStepData']()).toBeNull();
     });
 
     it('should show 100% progress if steps array has 0 or 1 element', () => {
-      component.steps = [mockSteps[0]];
+      fixture.componentRef.setInput('steps', [mockSteps[0]]);
       fixture.detectChanges();
       expect(component['progress']()).toBe(100);
 
-      component.steps = [];
+      fixture.componentRef.setInput('steps', []);
       fixture.detectChanges();
       expect(component['progress']()).toBe(100);
     });
 
     it('should handle isLastStep correctly with empty steps', () => {
-      component.steps = [];
+      fixture.componentRef.setInput('steps', []);
       fixture.detectChanges();
       expect(component['isLastStep']()).toBe(true);
     });

@@ -21,6 +21,18 @@ export type { PredictionResult, MultiPredictionResult } from '../models/predicti
 export class PredictionService {
   private readonly calculationService = inject(ChartCalculationService);
   private readonly predictionCalculation = inject(PredictionCalculationService);
+  private readonly waterCache = new WeakMap<
+    ConsumptionRecord[],
+    { length: number; result: MultiPredictionResult | null }
+  >();
+  private readonly electricityCache = new WeakMap<
+    ElectricityRecord[],
+    { length: number; result: MultiPredictionResult | null }
+  >();
+  private readonly heatingCache = new WeakMap<
+    DynamicHeatingRecord[],
+    { length: number; result: MultiPredictionResult | null }
+  >();
 
   /**
    * Generate predictions for water consumption.
@@ -30,8 +42,16 @@ export class PredictionService {
   predictWater(records: ConsumptionRecord[]): MultiPredictionResult | null {
     if (records.length < MIN_RECORDS_FOR_PREDICTION) return null;
 
+    const cached = this.waterCache.get(records);
+    if (cached && cached.length === records.length) {
+      return cached.result;
+    }
+
     const validRecords = this.filterValidDates(records);
-    if (validRecords.length < MIN_RECORDS_FOR_PREDICTION) return null;
+    if (validRecords.length < MIN_RECORDS_FOR_PREDICTION) {
+      this.waterCache.set(records, { length: records.length, result: null });
+      return null;
+    }
 
     const incrementalData = this.calculationService.calculateIncrementalData(validRecords);
 
@@ -42,7 +62,10 @@ export class PredictionService {
       'total',
     );
     const dailyRates = ratesWithMonths.map((r) => r.rate);
-    if (dailyRates.length < 2) return null;
+    if (dailyRates.length < 2) {
+      this.waterCache.set(records, { length: records.length, result: null });
+      return null;
+    }
 
     const accuracyData = this.predictionCalculation.calculateHistoricalAccuracy(
       validRecords,
@@ -93,7 +116,9 @@ export class PredictionService {
       }
     }
 
-    return { total, categories };
+    const result: MultiPredictionResult = { total, categories };
+    this.waterCache.set(records, { length: records.length, result });
+    return result;
   }
 
   /**
@@ -104,8 +129,16 @@ export class PredictionService {
   predictElectricity(records: ElectricityRecord[]): MultiPredictionResult | null {
     if (records.length < MIN_RECORDS_FOR_PREDICTION) return null;
 
+    const cached = this.electricityCache.get(records);
+    if (cached && cached.length === records.length) {
+      return cached.result;
+    }
+
     const validRecords = this.filterValidDates(records);
-    if (validRecords.length < MIN_RECORDS_FOR_PREDICTION) return null;
+    if (validRecords.length < MIN_RECORDS_FOR_PREDICTION) {
+      this.electricityCache.set(records, { length: records.length, result: null });
+      return null;
+    }
 
     const incrementalData = this.calculationService.calculateIncrementalData(validRecords);
     const ratesWithMonths = this.predictionCalculation.calculateDailyRatesWithMonths(
@@ -115,7 +148,10 @@ export class PredictionService {
     );
     const dailyRates = ratesWithMonths.map((r) => r.rate);
 
-    if (dailyRates.length < 2) return null;
+    if (dailyRates.length < 2) {
+      this.electricityCache.set(records, { length: records.length, result: null });
+      return null;
+    }
 
     const accuracyData = this.predictionCalculation.calculateHistoricalAccuracy(
       validRecords,
@@ -129,7 +165,9 @@ export class PredictionService {
       'kWh',
       accuracyData,
     );
-    return { total };
+    const result: MultiPredictionResult = { total };
+    this.electricityCache.set(records, { length: records.length, result });
+    return result;
   }
 
   /**
@@ -140,8 +178,16 @@ export class PredictionService {
   predictHeating(records: DynamicHeatingRecord[]): MultiPredictionResult | null {
     if (records.length < MIN_RECORDS_FOR_PREDICTION) return null;
 
+    const cached = this.heatingCache.get(records);
+    if (cached && cached.length === records.length) {
+      return cached.result;
+    }
+
     const validRecords = this.filterValidDates(records);
-    if (validRecords.length < MIN_RECORDS_FOR_PREDICTION) return null;
+    if (validRecords.length < MIN_RECORDS_FOR_PREDICTION) {
+      this.heatingCache.set(records, { length: records.length, result: null });
+      return null;
+    }
 
     const incrementalData = this.calculationService.calculateIncrementalData(validRecords);
 
@@ -152,7 +198,10 @@ export class PredictionService {
       'total',
     );
     const dailyRates = ratesWithMonths.map((r) => r.rate);
-    if (dailyRates.length < 2) return null;
+    if (dailyRates.length < 2) {
+      this.heatingCache.set(records, { length: records.length, result: null });
+      return null;
+    }
 
     const accuracyData = this.predictionCalculation.calculateHistoricalAccuracy(
       validRecords,
@@ -172,11 +221,15 @@ export class PredictionService {
     const categories: MultiPredictionResult['categories'] = {};
 
     const roomIds = new Set<string>();
-    validRecords.forEach((r) => {
+    for (const r of validRecords) {
       if (r.rooms) {
-        Object.keys(r.rooms).forEach((id) => roomIds.add(id));
+        for (const id in r.rooms) {
+          if (Object.hasOwn(r.rooms, id)) {
+            roomIds.add(id);
+          }
+        }
       }
-    });
+    }
 
     for (const roomId of roomIds) {
       const catRatesWithMonths = this.predictionCalculation.calculateDailyRatesWithMonths(
@@ -202,10 +255,17 @@ export class PredictionService {
       }
     }
 
-    return { total, categories };
+    const result: MultiPredictionResult = { total, categories };
+    this.heatingCache.set(records, { length: records.length, result });
+    return result;
   }
 
   private filterValidDates<T extends { date?: string | Date }>(records: T[]): T[] {
-    return records.filter((r) => r?.date && !Number.isNaN(new Date(r.date).getTime()));
+    const isValid = (r: T): boolean =>
+      Boolean(
+        r?.date &&
+        !Number.isNaN(r.date instanceof Date ? r.date.getTime() : new Date(r.date).getTime()),
+      );
+    return records.every(isValid) ? records : records.filter(isValid);
   }
 }

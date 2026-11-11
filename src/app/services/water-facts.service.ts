@@ -1,12 +1,6 @@
 import { Injectable, inject } from '@angular/core';
 import { LanguageService, Language } from './language.service';
-import { en } from '../i18n/en';
-import { de } from '../i18n/de';
-import { bs } from '../i18n/bs';
-import { sr } from '../i18n/sr';
-import { pl } from '../i18n/pl';
-import { id } from '../i18n/id';
-import { UNITS_CONFIG } from '../i18n/units';
+import { DID_YOU_KNOW_BY_LANG, UNITS_CONFIG } from '../i18n/units';
 import { getPluralWord } from '../i18n/plural-rules.helper';
 
 export interface WaterFact {
@@ -16,16 +10,14 @@ export interface WaterFact {
 
 export type WaterFactContext = 'total' | 'kitchen' | 'bathroom' | 'warm' | 'cold';
 
-type FactTranslations = typeof en | typeof de | typeof bs | typeof sr | typeof pl | typeof id;
-
-const TRANSLATIONS: Record<Language, FactTranslations> = {
-  en,
-  de,
-  bs,
-  sr,
-  pl,
-  id,
-};
+interface WaterFactsModule {
+  DID_YOU_KNOW?: string;
+  FACTS: string[];
+  KITCHEN_FACTS: string[];
+  BATHROOM_FACTS: string[];
+  WARM_FACTS: string[];
+  COLD_FACTS: string[];
+}
 
 /**
  * Conversion factors for water equivalents
@@ -66,6 +58,143 @@ const WATER_EQUIVALENTS = {
   CAR_WASH: 200,
 };
 
+const CONTEXT_EQUIVALENTS: Record<WaterFactContext, readonly number[]> = {
+  total: [
+    WATER_EQUIVALENTS.BATHTUB,
+    WATER_EQUIVALENTS.KIDDIE_POOL,
+    WATER_EQUIVALENTS.BUBBLE_BATH,
+    WATER_EQUIVALENTS.HOT_TUB,
+    WATER_EQUIVALENTS.SHOWER_5MIN,
+    WATER_EQUIVALENTS.SHOWER_5MIN,
+    WATER_EQUIVALENTS.SHOWER_MINUTES,
+    WATER_EQUIVALENTS.GLASS_WATER,
+    WATER_EQUIVALENTS.DRINKING_PER_DAY,
+    WATER_EQUIVALENTS.DRINKING_PER_DAY,
+    WATER_EQUIVALENTS.TOILET_FLUSH,
+    WATER_EQUIVALENTS.TOILET_PER_DAY,
+    WATER_EQUIVALENTS.LAUNDRY_LOAD,
+    WATER_EQUIVALENTS.HOUSEPLANT,
+    WATER_EQUIVALENTS.GARDEN_HOSE_MIN,
+    WATER_EQUIVALENTS.DOG_PER_DAY,
+    WATER_EQUIVALENTS.CAT_PER_DAY,
+    WATER_EQUIVALENTS.WATER_BALLOON,
+    WATER_EQUIVALENTS.WATERMELON,
+    1, // kg
+    WATER_EQUIVALENTS.ICE_CUBE,
+    WATER_EQUIVALENTS.KETTLE,
+    WATER_EQUIVALENTS.MOP_BUCKET,
+    WATER_EQUIVALENTS.TEETH_BRUSHING,
+    1, // kg
+  ],
+  kitchen: [
+    WATER_EQUIVALENTS.DISHWASHER,
+    WATER_EQUIVALENTS.HAND_WASH_DISHES,
+    WATER_EQUIVALENTS.KITCHEN_SINK,
+    WATER_EQUIVALENTS.TEA_CUP,
+    WATER_EQUIVALENTS.PASTA_POT,
+    WATER_EQUIVALENTS.COOKING_POT,
+    1, // liters soup
+    WATER_EQUIVALENTS.PASTA_POT,
+    WATER_EQUIVALENTS.COFFEE_POT,
+    WATER_EQUIVALENTS.PASTA_POT,
+    WATER_EQUIVALENTS.HAND_WASH_DISHES,
+    WATER_EQUIVALENTS.HAND_WASH_DISHES,
+    WATER_EQUIVALENTS.FACE_WASH,
+    WATER_EQUIVALENTS.KETTLE,
+    WATER_EQUIVALENTS.RICE_PORTION,
+    WATER_EQUIVALENTS.COOKING_POT,
+    WATER_EQUIVALENTS.ICE_CUBE,
+    WATER_EQUIVALENTS.GLASS_WATER,
+    WATER_EQUIVALENTS.PASTA_POT,
+    0.15, // baby bottle
+  ],
+  bathroom: [
+    WATER_EQUIVALENTS.BATHTUB,
+    WATER_EQUIVALENTS.BUBBLE_BATH,
+    WATER_EQUIVALENTS.SHOWER_5MIN,
+    WATER_EQUIVALENTS.TOILET_FLUSH,
+    WATER_EQUIVALENTS.TEETH_BRUSHING,
+    WATER_EQUIVALENTS.FACE_WASH,
+    WATER_EQUIVALENTS.FACE_WASH,
+    WATER_EQUIVALENTS.HAIR_WASH,
+    10, // foot bath
+    2, // shaving
+    WATER_EQUIVALENTS.KITCHEN_SINK,
+    WATER_EQUIVALENTS.HOT_TUB,
+    50, // spa session
+    WATER_EQUIVALENTS.MOP_BUCKET,
+    WATER_EQUIVALENTS.FACE_WASH,
+    WATER_EQUIVALENTS.SHOWER_5MIN,
+    WATER_EQUIVALENTS.KITCHEN_SINK,
+    WATER_EQUIVALENTS.BATHTUB,
+    WATER_EQUIVALENTS.FACE_WASH,
+    WATER_EQUIVALENTS.FACE_WASH,
+  ],
+  warm: [
+    WATER_EQUIVALENTS.BATHTUB,
+    WATER_EQUIVALENTS.SHOWER_5MIN,
+    WATER_EQUIVALENTS.BUBBLE_BATH,
+    WATER_EQUIVALENTS.DISHWASHER,
+    WATER_EQUIVALENTS.FACE_WASH,
+    WATER_EQUIVALENTS.COOKING_POT,
+    WATER_EQUIVALENTS.TEA_CUP,
+    2, // hot water bottle
+    WATER_EQUIVALENTS.FACE_WASH,
+    0.15, // baby bottle
+    WATER_EQUIVALENTS.FACE_WASH,
+    WATER_EQUIVALENTS.BATHTUB,
+    50, // spa
+    WATER_EQUIVALENTS.SHOWER_5MIN,
+    WATER_EQUIVALENTS.SHOWER_5MIN,
+    WATER_EQUIVALENTS.FACE_WASH,
+    10, // foot soak
+    10, // muscle relax
+    2, // compress
+    WATER_EQUIVALENTS.FACE_WASH,
+  ],
+  cold: [
+    WATER_EQUIVALENTS.GLASS_WATER,
+    WATER_EQUIVALENTS.GLASS_WATER,
+    WATER_EQUIVALENTS.HOUSEPLANT,
+    WATER_EQUIVALENTS.GLASS_WATER,
+    WATER_EQUIVALENTS.TOILET_FLUSH,
+    WATER_EQUIVALENTS.FACE_WASH,
+    WATER_EQUIVALENTS.GARDEN_HOSE_MIN,
+    WATER_EQUIVALENTS.HOUSEPLANT,
+    WATER_EQUIVALENTS.FACE_WASH,
+    WATER_EQUIVALENTS.GLASS_WATER,
+    WATER_EQUIVALENTS.ICE_CUBE,
+    WATER_EQUIVALENTS.CAR_WASH,
+    WATER_EQUIVALENTS.MOP_BUCKET,
+    WATER_EQUIVALENTS.FACE_WASH,
+    10, // window
+    WATER_EQUIVALENTS.DOG_PER_DAY,
+    5, // bird bath
+    WATER_EQUIVALENTS.LAUNDRY_LOAD,
+    2, // icepack
+    WATER_EQUIVALENTS.FACE_WASH,
+  ],
+};
+
+const UNIT_PATTERNS_CACHE = new Map<Language, { dayPattern: RegExp; minutePattern: RegExp }>();
+
+function getUnitPatterns(lang: Language): { dayPattern: RegExp; minutePattern: RegExp } {
+  const cached = UNIT_PATTERNS_CACHE.get(lang);
+  if (cached) return cached;
+
+  const units = UNITS_CONFIG[lang] ?? UNITS_CONFIG.en;
+  // eslint-disable-next-line security/detect-non-literal-regexp -- dayKeywords is an internal constant array
+  const dayPattern = new RegExp(String.raw`\{value\}\s*(${units.dayKeywords.join('|')})`, 'i');
+  // eslint-disable-next-line security/detect-non-literal-regexp -- minuteKeywords is an internal constant array
+  const minutePattern = new RegExp(
+    String.raw`\{value\}\s*(${units.minuteKeywords.join('|')})`,
+    'i',
+  );
+  const compiled = { dayPattern, minutePattern };
+  UNIT_PATTERNS_CACHE.set(lang, compiled);
+  return compiled;
+}
+
 @Injectable({
   providedIn: 'root',
 })
@@ -90,12 +219,19 @@ export class WaterFactsService {
     }
 
     const lang = this.languageService.currentLang();
-    const translations = TRANSLATIONS[lang] ?? TRANSLATIONS.en;
+    const translations = this.languageService.getTranslations?.(lang, 'WATER_FACTS') ?? {};
+    const waterFacts = translations['WATER_FACTS'] as WaterFactsModule | undefined;
+    if (!waterFacts) {
+      return null;
+    }
     const units = UNITS_CONFIG[lang] ?? UNITS_CONFIG.en;
     const locale = this.languageService.currentLocale();
 
     // Get the appropriate facts array based on context
-    const facts = this.getFactsForContext(translations, context);
+    const facts = this.getFactsForContext(waterFacts, context);
+    if (!facts || facts.length === 0) {
+      return null;
+    }
 
     // Use modulo to ensure we stay within bounds
     const safeIndex = Math.abs(index) % facts.length;
@@ -105,13 +241,7 @@ export class WaterFactsService {
     const value = this.calculateValueForContext(liters, safeIndex, context);
 
     // Detect time-based facts that need conversion (days, minutes)
-    // eslint-disable-next-line security/detect-non-literal-regexp -- dayKeywords is an internal constant array
-    const dayPattern = new RegExp(String.raw`\{value\}\s*(${units.dayKeywords.join('|')})`, 'i');
-    // eslint-disable-next-line security/detect-non-literal-regexp -- minuteKeywords is an internal constant array
-    const minutePattern = new RegExp(
-      String.raw`\{value\}\s*(${units.minuteKeywords.join('|')})`,
-      'i',
-    );
+    const { dayPattern, minutePattern } = getUnitPatterns(lang);
     const isDaysFact = dayPattern.test(factTemplate);
     const isMinutesFact = minutePattern.test(factTemplate);
 
@@ -148,26 +278,23 @@ export class WaterFactsService {
     }
 
     return {
-      title: translations.FACTS?.DID_YOU_KNOW || 'Did you know?',
+      title: DID_YOU_KNOW_BY_LANG[lang] || 'Did you know?',
       message,
     };
   }
 
-  private getFactsForContext(
-    translations: typeof en | typeof de | typeof bs | typeof sr | typeof pl | typeof id,
-    context: WaterFactContext,
-  ): string[] {
+  private getFactsForContext(waterFacts: WaterFactsModule, context: WaterFactContext): string[] {
     switch (context) {
       case 'kitchen':
-        return translations.WATER_FACTS.KITCHEN_FACTS;
+        return waterFacts.KITCHEN_FACTS;
       case 'bathroom':
-        return translations.WATER_FACTS.BATHROOM_FACTS;
+        return waterFacts.BATHROOM_FACTS;
       case 'warm':
-        return translations.WATER_FACTS.WARM_FACTS;
+        return waterFacts.WARM_FACTS;
       case 'cold':
-        return translations.WATER_FACTS.COLD_FACTS;
+        return waterFacts.COLD_FACTS;
       default:
-        return translations.WATER_FACTS.FACTS;
+        return waterFacts.FACTS;
     }
   }
 
@@ -176,126 +303,7 @@ export class WaterFactsService {
     factIndex: number,
     context: WaterFactContext,
   ): number {
-    // Context-specific equivalents
-    const contextEquivalents: Record<WaterFactContext, number[]> = {
-      total: [
-        WATER_EQUIVALENTS.BATHTUB,
-        WATER_EQUIVALENTS.KIDDIE_POOL,
-        WATER_EQUIVALENTS.BUBBLE_BATH,
-        WATER_EQUIVALENTS.HOT_TUB,
-        WATER_EQUIVALENTS.SHOWER_5MIN,
-        WATER_EQUIVALENTS.SHOWER_5MIN,
-        WATER_EQUIVALENTS.SHOWER_MINUTES,
-        WATER_EQUIVALENTS.GLASS_WATER,
-        WATER_EQUIVALENTS.DRINKING_PER_DAY,
-        WATER_EQUIVALENTS.DRINKING_PER_DAY,
-        WATER_EQUIVALENTS.TOILET_FLUSH,
-        WATER_EQUIVALENTS.TOILET_PER_DAY,
-        WATER_EQUIVALENTS.LAUNDRY_LOAD,
-        WATER_EQUIVALENTS.HOUSEPLANT,
-        WATER_EQUIVALENTS.GARDEN_HOSE_MIN,
-        WATER_EQUIVALENTS.DOG_PER_DAY,
-        WATER_EQUIVALENTS.CAT_PER_DAY,
-        WATER_EQUIVALENTS.WATER_BALLOON,
-        WATER_EQUIVALENTS.WATERMELON,
-        1, // kg
-        WATER_EQUIVALENTS.ICE_CUBE,
-        WATER_EQUIVALENTS.KETTLE,
-        WATER_EQUIVALENTS.MOP_BUCKET,
-        WATER_EQUIVALENTS.TEETH_BRUSHING,
-        1, // kg
-      ],
-      kitchen: [
-        WATER_EQUIVALENTS.DISHWASHER,
-        WATER_EQUIVALENTS.HAND_WASH_DISHES,
-        WATER_EQUIVALENTS.KITCHEN_SINK,
-        WATER_EQUIVALENTS.TEA_CUP,
-        WATER_EQUIVALENTS.PASTA_POT,
-        WATER_EQUIVALENTS.COOKING_POT,
-        1, // liters soup
-        WATER_EQUIVALENTS.PASTA_POT,
-        WATER_EQUIVALENTS.COFFEE_POT,
-        WATER_EQUIVALENTS.PASTA_POT,
-        WATER_EQUIVALENTS.HAND_WASH_DISHES,
-        WATER_EQUIVALENTS.HAND_WASH_DISHES,
-        WATER_EQUIVALENTS.FACE_WASH,
-        WATER_EQUIVALENTS.KETTLE,
-        WATER_EQUIVALENTS.RICE_PORTION,
-        WATER_EQUIVALENTS.COOKING_POT,
-        WATER_EQUIVALENTS.ICE_CUBE,
-        WATER_EQUIVALENTS.GLASS_WATER,
-        WATER_EQUIVALENTS.PASTA_POT,
-        0.15, // baby bottle
-      ],
-      bathroom: [
-        WATER_EQUIVALENTS.BATHTUB,
-        WATER_EQUIVALENTS.BUBBLE_BATH,
-        WATER_EQUIVALENTS.SHOWER_5MIN,
-        WATER_EQUIVALENTS.TOILET_FLUSH,
-        WATER_EQUIVALENTS.TEETH_BRUSHING,
-        WATER_EQUIVALENTS.FACE_WASH,
-        WATER_EQUIVALENTS.FACE_WASH,
-        WATER_EQUIVALENTS.HAIR_WASH,
-        10, // foot bath
-        2, // shaving
-        WATER_EQUIVALENTS.KITCHEN_SINK,
-        WATER_EQUIVALENTS.HOT_TUB,
-        50, // spa session
-        WATER_EQUIVALENTS.MOP_BUCKET,
-        WATER_EQUIVALENTS.FACE_WASH,
-        WATER_EQUIVALENTS.SHOWER_5MIN,
-        WATER_EQUIVALENTS.KITCHEN_SINK,
-        WATER_EQUIVALENTS.BATHTUB,
-        WATER_EQUIVALENTS.FACE_WASH,
-        WATER_EQUIVALENTS.FACE_WASH,
-      ],
-      warm: [
-        WATER_EQUIVALENTS.BATHTUB,
-        WATER_EQUIVALENTS.SHOWER_5MIN,
-        WATER_EQUIVALENTS.BUBBLE_BATH,
-        WATER_EQUIVALENTS.DISHWASHER,
-        WATER_EQUIVALENTS.FACE_WASH,
-        WATER_EQUIVALENTS.COOKING_POT,
-        WATER_EQUIVALENTS.TEA_CUP,
-        2, // hot water bottle
-        WATER_EQUIVALENTS.FACE_WASH,
-        0.15, // baby bottle
-        WATER_EQUIVALENTS.FACE_WASH,
-        WATER_EQUIVALENTS.BATHTUB,
-        50, // spa
-        WATER_EQUIVALENTS.SHOWER_5MIN,
-        WATER_EQUIVALENTS.SHOWER_5MIN,
-        WATER_EQUIVALENTS.FACE_WASH,
-        10, // foot soak
-        10, // muscle relax
-        2, // compress
-        WATER_EQUIVALENTS.FACE_WASH,
-      ],
-      cold: [
-        WATER_EQUIVALENTS.GLASS_WATER,
-        WATER_EQUIVALENTS.GLASS_WATER,
-        WATER_EQUIVALENTS.HOUSEPLANT,
-        WATER_EQUIVALENTS.GLASS_WATER,
-        WATER_EQUIVALENTS.TOILET_FLUSH,
-        WATER_EQUIVALENTS.FACE_WASH,
-        WATER_EQUIVALENTS.GARDEN_HOSE_MIN,
-        WATER_EQUIVALENTS.HOUSEPLANT,
-        WATER_EQUIVALENTS.FACE_WASH,
-        WATER_EQUIVALENTS.GLASS_WATER,
-        WATER_EQUIVALENTS.ICE_CUBE,
-        WATER_EQUIVALENTS.CAR_WASH,
-        WATER_EQUIVALENTS.MOP_BUCKET,
-        WATER_EQUIVALENTS.FACE_WASH,
-        10, // window
-        WATER_EQUIVALENTS.DOG_PER_DAY,
-        5, // bird bath
-        WATER_EQUIVALENTS.LAUNDRY_LOAD,
-        2, // icepack
-        WATER_EQUIVALENTS.FACE_WASH,
-      ],
-    };
-
-    const equivalents = contextEquivalents[context] || contextEquivalents.total;
+    const equivalents = CONTEXT_EQUIVALENTS[context] || CONTEXT_EQUIVALENTS.total;
     const divisor = equivalents[factIndex % equivalents.length] || 1;
     const value = Math.round(liters / divisor);
 

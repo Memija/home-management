@@ -1,14 +1,13 @@
 import {
   Component,
-  Input,
-  Output,
-  EventEmitter,
+  ChangeDetectionStrategy,
+  input,
+  output,
   signal,
   computed,
   inject,
   effect,
 } from '@angular/core';
-import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import {
   LucideAngularModule,
@@ -31,9 +30,10 @@ import { LanguageService } from '../../services/language.service';
 @Component({
   selector: 'app-heating-rooms-modal',
   standalone: true,
-  imports: [CommonModule, FormsModule, LucideAngularModule, TranslatePipe, HelpModalComponent],
+  imports: [FormsModule, LucideAngularModule, TranslatePipe, HelpModalComponent],
   templateUrl: './heating-rooms-modal.component.html',
   styleUrl: './heating-rooms-modal.component.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class HeatingRoomsModalComponent {
   private readonly languageService = inject(LanguageService);
@@ -51,37 +51,17 @@ export class HeatingRoomsModalComponent {
   protected readonly HelpIcon = CircleQuestionMark;
 
   // Inputs
-  @Input() set show(val: boolean) {
-    this.showSignal.set(val);
-  }
-  get show(): boolean {
-    return this.showSignal();
-  }
-  protected readonly showSignal = signal(false);
+  readonly show = input<boolean>(false);
 
-  @Input() set rooms(val: HeatingRoomConfig[]) {
-    this.roomsSignal.set(val || []);
-  }
-  get rooms(): HeatingRoomConfig[] {
-    return this.roomsSignal();
-  }
-  protected readonly roomsSignal = signal<HeatingRoomConfig[]>([]);
+  readonly rooms = input<HeatingRoomConfig[], HeatingRoomConfig[] | null | undefined>([], {
+    transform: (val) => val || [],
+  });
 
-  @Input() set maxRooms(val: number) {
-    this.maxRoomsSignal.set(val);
-  }
-  get maxRooms(): number {
-    return this.maxRoomsSignal();
-  }
-  protected readonly maxRoomsSignal = signal<number>(10);
+  readonly maxRooms = input<number>(10);
 
-  @Input() set roomsWithDataArray(val: string[]) {
-    this.roomsWithDataArraySignal.set(val || []);
-  }
-  get roomsWithDataArray(): string[] {
-    return this.roomsWithDataArraySignal();
-  }
-  protected readonly roomsWithDataArraySignal = signal<string[]>([]);
+  readonly roomsWithDataArray = input<string[], string[] | null | undefined>([], {
+    transform: (val) => val || [],
+  });
 
   // Cached version of roomsWithData - stored when modal opens to avoid reactivity issues
   private readonly cachedRoomsWithData = signal<Set<string>>(new Set());
@@ -89,8 +69,8 @@ export class HeatingRoomsModalComponent {
   readonly MAX_ROOM_NAME_LENGTH = 125;
 
   // Outputs
-  @Output() save = new EventEmitter<HeatingRoomConfig[]>();
-  @Output() cancelModal = new EventEmitter<void>();
+  readonly save = output<HeatingRoomConfig[]>();
+  readonly cancelModal = output<void>();
 
   // Local editing state (copy of rooms for editing)
   protected readonly editingRooms = signal<HeatingRoomConfig[]>([]);
@@ -121,17 +101,30 @@ export class HeatingRoomsModalComponent {
   ];
 
   // Computed
-  protected canAddRoom = computed(() => this.editingRooms().length < this.maxRoomsSignal());
+  protected canAddRoom = computed(() => this.editingRooms().length < this.maxRooms());
 
   protected canRemoveRoom = computed(() => this.editingRooms().length > 0);
 
-  protected hasErrors = computed(() => {
-    return (
-      this.editingRooms().length === 0 || this.editingRooms().some((r) => this.getRoomError(r.name))
-    );
+  protected readonly roomStates = computed(() => {
+    const rooms = this.editingRooms();
+    const withData = this.cachedRoomsWithData();
+    const unlocked = this.unlockedRooms();
+    return rooms.map((room) => {
+      const hasRoomData = withData.has(room.id);
+      return {
+        id: room.id,
+        name: room.name,
+        hasData: hasRoomData,
+        isLocked: hasRoomData && !unlocked.has(room.id),
+        error: this.getRoomError(room.name),
+      };
+    });
   });
 
-  protected trackByRoom = (_index: number, room: HeatingRoomConfig) => room.id;
+  protected hasErrors = computed(() => {
+    const states = this.roomStates();
+    return states.length === 0 || states.some((r) => r.error !== null);
+  });
 
   // Check if a room is locked (has data but not unlocked)
   protected isLocked(id: string): boolean {
@@ -178,7 +171,7 @@ export class HeatingRoomsModalComponent {
   constructor() {
     // Initialize editingRooms when modal opens (show becomes true)
     effect(() => {
-      if (this.showSignal()) {
+      if (this.show()) {
         this.onModalShow();
       }
     });
@@ -201,10 +194,10 @@ export class HeatingRoomsModalComponent {
   // Reset editing state when modal opens
   protected onModalShow(): void {
     // Cache roomsWithData before any other state changes - the input may get reset
-    const dataArray = this.roomsWithDataArraySignal();
+    const dataArray = this.roomsWithDataArray();
     this.cachedRoomsWithData.set(new Set(dataArray));
 
-    this.editingRooms.set([...this.roomsSignal().map((r) => ({ ...r }))]);
+    this.editingRooms.set([...this.rooms().map((r) => ({ ...r }))]);
     this.hasChanges.set(false);
     this.unlockedRooms.set(new Set()); // Reset unlock state when modal opens
     this.pendingUnlockRoomId.set(null);
@@ -212,7 +205,7 @@ export class HeatingRoomsModalComponent {
 
   // Tooltip message for disabled add button
   protected maxRoomsMessage = computed(() =>
-    this.languageService.translate('HEATING.MAX_ROOMS_REACHED', { max: this.maxRoomsSignal() }),
+    this.languageService.translate('HEATING.MAX_ROOMS_REACHED', { max: this.maxRooms() }),
   );
 
   protected addRoom(): void {

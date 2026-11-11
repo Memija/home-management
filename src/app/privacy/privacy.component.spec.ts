@@ -3,7 +3,7 @@ import { PrivacyComponent } from './privacy.component';
 import { LanguageService } from '../services/language.service';
 import { signal, PLATFORM_ID } from '@angular/core';
 import { describe, it, expect, beforeEach, vi } from 'vitest';
-import { Shield, Database, Lock, Cookie } from 'lucide-angular';
+import { Shield, Database, Lock, Cookie, Scale, Globe } from 'lucide-angular';
 
 /**
  * Unit tests for PrivacyComponent.
@@ -60,6 +60,11 @@ describe('PrivacyComponent', () => {
 
     it('should have CookieIcon set to lucide Cookie icon', () => {
       expect(component.CookieIcon).toBe(Cookie);
+    });
+
+    it('should have ScaleIcon and GlobeIcon set to lucide icons', () => {
+      expect(component.ScaleIcon).toBe(Scale);
+      expect(component.GlobeIcon).toBe(Globe);
     });
 
     it('should have all icons defined as non-null references', () => {

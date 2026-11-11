@@ -8,13 +8,18 @@ import {
   untracked,
 } from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
-import { StorageService } from './storage.service';
+import { StorageService } from './storage-base';
 import { LocalStorageService } from './local-storage.service';
 import { FirebaseStorageService } from './firebase-storage.service';
 import { AuthService } from './auth.service';
 import { DemoService } from './demo.service';
 import { CloudSyncService } from './cloud-sync.service';
-import { STORAGE_MODE_KEY, checkHasUserContent, isSettingsKey } from '../utils/storage-sync.utils';
+import {
+  STORAGE_MODE_KEY,
+  checkHasUserContent,
+  isIgnoredStorageKey,
+  isSettingsKey,
+} from '../utils/storage-sync.utils';
 
 export type StorageMode = 'local' | 'cloud';
 
@@ -203,7 +208,7 @@ export class HybridStorageService extends StorageService {
       }
     }
 
-    this.refreshLocalContentStatus();
+    this.refreshLocalContentStatus(key, data);
   }
 
   /**
@@ -387,7 +392,28 @@ export class HybridStorageService extends StorageService {
   /**
    * Refreshes the hasUserContent signal by checking if there is any local data beyond system keys.
    */
-  refreshLocalContentStatus(): void {
-    this.hasUserContent.set(this.isBrowser ? checkHasUserContent() : false);
+  refreshLocalContentStatus(savedKey?: string, savedData?: unknown): void {
+    if (!this.isBrowser) {
+      this.hasUserContent.set(false);
+      return;
+    }
+    if (savedKey !== undefined) {
+      const isNonEmptyValue =
+        savedData !== null &&
+        savedData !== undefined &&
+        (!Array.isArray(savedData) || savedData.length > 0);
+      if (this.hasUserContent() && isNonEmptyValue) {
+        return;
+      }
+      if (
+        !this.hasUserContent() &&
+        isNonEmptyValue &&
+        !isIgnoredStorageKey(`hm_${savedKey}`, null)
+      ) {
+        this.hasUserContent.set(true);
+        return;
+      }
+    }
+    this.hasUserContent.set(checkHasUserContent());
   }
 }

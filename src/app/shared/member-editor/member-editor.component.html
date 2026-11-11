@@ -118,7 +118,7 @@
   <div class="form-group">
     <span class="form-label">{{ 'SETTINGS.OR_SELECT_AVATAR' | translate }}</span>
     <div class="avatar-grid">
-      @for (avatar of avatars; track avatar; let i = $index) {
+      @for (avatar of avatars(); track avatar; let i = $index) {
         <button
           type="button"
           class="avatar-btn"
@@ -137,7 +137,7 @@
       type="button"
       class="save-btn"
       (click)="onSave()"
-      [disabled]="!editName() || !editSurname() || editNameError() || editSurnameError()"
+      [disabled]="isSaveDisabled()"
       title="{{ 'SETTINGS.SAVE_MEMBER' | translate }}"
       aria-label="{{ 'SETTINGS.SAVE_MEMBER' | translate }}"
     >

@@ -208,13 +208,13 @@ export class CloudSyncService {
       const allData = (await this.localStorage.exportAll()) || {};
       const { settingsGroup, recordKeys } = this.categorizeMigrationKeys(allData);
 
-      if (Object.keys(settingsGroup).length > 0) {
-        await this.firebaseStorage.updateSettings(settingsGroup);
-      }
-
-      await Promise.all(
-        recordKeys.map((key) => this.migrateSingleRecordCollection(key, allData[key])),
+      const tasks: Promise<unknown>[] = recordKeys.map((key) =>
+        this.migrateSingleRecordCollection(key, allData[key]),
       );
+      if (Object.keys(settingsGroup).length > 0) {
+        tasks.push(this.firebaseStorage.updateSettings(settingsGroup));
+      }
+      await Promise.all(tasks);
 
       this.updateLastSyncTime();
       await this.firebaseStorage.updateCloudTimestamp(this.getLocalTimestamp());
@@ -261,8 +261,10 @@ export class CloudSyncService {
         finalRecords = mergeRecordLists(cloudRecords, records);
       }
     }
-    await this.firebaseStorage.save(key, finalRecords);
-    await this.localStorage.save(key, finalRecords);
+    await Promise.all([
+      this.firebaseStorage.save(key, finalRecords),
+      this.localStorage.save(key, finalRecords),
+    ]);
   }
 
   async pullFromCloud(canUseCloud: boolean): Promise<void> {
@@ -272,7 +274,10 @@ export class CloudSyncService {
 
     this.isDownloading.set(true);
     try {
-      const cloudData = await this.firebaseStorage.exportAll();
+      const [cloudData, cloudTs] = await Promise.all([
+        this.firebaseStorage.exportAll(),
+        this.firebaseStorage.getCloudUpdateTimestamp(),
+      ]);
 
       await this.mergeCloudRecordsWithLocal(cloudData);
       this.unpackUserSettings(cloudData);
@@ -281,7 +286,6 @@ export class CloudSyncService {
       await this.localStorage.importAll(cloudData);
 
       this.updateLastSyncTime();
-      const cloudTs = await this.firebaseStorage.getCloudUpdateTimestamp();
       if (cloudTs) {
         this.updateLocalTimestamp(cloudTs);
       }

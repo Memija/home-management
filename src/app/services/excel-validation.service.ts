@@ -1,6 +1,8 @@
 import { Injectable, inject } from '@angular/core';
 import { LanguageService } from './language.service';
 
+const INVALID_COLUMN_CHARS_REGEX = /[[\]*/\\?:]/;
+
 @Injectable({
   providedIn: 'root',
 })
@@ -25,8 +27,7 @@ export class ExcelValidationService {
     // but here we just want to avoid special chars that might cause issues.
     // [ ] * / \ ? : are standard forbidden chars in Excel sheet names/paths
 
-    const invalidChars = /[[\]*/\\?:]/;
-    if (invalidChars.test(name)) return false;
+    if (INVALID_COLUMN_CHARS_REGEX.test(name)) return false;
 
     return true;
   }
@@ -45,8 +46,7 @@ export class ExcelValidationService {
       return this.languageService.translate('EXCEL.VALIDATION_NO_WHITESPACE');
     }
 
-    const invalidChars = /[[\]*/\\?:]/;
-    if (invalidChars.test(name)) {
+    if (INVALID_COLUMN_CHARS_REGEX.test(name)) {
       return this.languageService.translate('EXCEL.VALIDATION_INVALID_CHARS');
     }
     return '';
@@ -56,9 +56,18 @@ export class ExcelValidationService {
    * Check if a column name is duplicated within a set of values
    */
   isDuplicate(value: string, allValues: string[]): boolean {
-    if (!value || value.trim() === '') return false;
+    if (!value) return false;
     const trimmed = value.trim();
-    return allValues.map((c) => c.trim()).filter((c) => c === trimmed).length > 1;
+    if (trimmed === '') return false;
+
+    let count = 0;
+    for (const c of allValues) {
+      if (c.trim() === trimmed) {
+        count++;
+        if (count > 1) return true;
+      }
+    }
+    return false;
   }
 
   /**

@@ -33,12 +33,67 @@ export class ConsumptionPreferencesService {
   readonly dismissedMeterChanges = signal<string[]>([]);
 
   constructor() {
-    queueMicrotask(() => {
-      void this.loadPreferences();
-    });
+    if (typeof this.storage?.loadSync === 'function') {
+      this.loadPreferencesSync();
+    } else {
+      queueMicrotask(() => {
+        void this.loadPreferences();
+      });
+    }
     this.storage.dataRefreshed$
       ?.pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe(() => void this.loadPreferences());
+  }
+
+  private loadPreferencesSync(): void {
+    try {
+      this.loadPreferenceSync('water', 'total', 'incremental');
+      this.loadPreferenceSync('heating', 'total', 'total');
+      this.loadPreferenceSync('electricity', 'total', 'total');
+
+      const confirmed = this.storage.loadSync!<string[]>('water_confirmed_meter_changes');
+      if (confirmed && Array.isArray(confirmed)) {
+        this.confirmedMeterChanges.set(confirmed);
+      }
+
+      const dismissed = this.storage.loadSync!<string[]>('water_dismissed_meter_changes');
+      if (dismissed && Array.isArray(dismissed)) {
+        this.dismissedMeterChanges.set(dismissed);
+      }
+
+      const coldOnly = this.storage.loadSync!<boolean>('water_cold_only_mode');
+      if (coldOnly !== null && coldOnly !== undefined) {
+        this.coldWaterOnlyMode.set(coldOnly);
+      }
+    } catch (error) {
+      console.warn('Failed to load preferences synchronously from storage:', error);
+    }
+  }
+
+  private loadPreferenceSync(
+    type: ChartType,
+    defaultView: ChartView,
+    defaultMode: DisplayMode,
+  ): void {
+    const storedView = this.storage.loadSync!<ChartView>(`${type}_chart_view`);
+    const storedMode = this.storage.loadSync!<DisplayMode>(`${type}_display_mode`);
+    const finalView = storedView ?? defaultView;
+    const finalMode = storedMode ?? defaultMode;
+
+    switch (type) {
+      case 'water':
+        if (finalView) this.chartView.set(finalView);
+        if (finalMode) this.displayMode.set(finalMode);
+        break;
+      case 'heating':
+        if (finalView) this.heatingChartView.set(finalView);
+        if (finalMode) this.heatingDisplayMode.set(finalMode);
+        break;
+      case 'electricity':
+        if (finalView) this.electricityChartView.set(finalView);
+        if (finalMode) this.electricityDisplayMode.set(finalMode);
+        break;
+    }
   }
 
   private async loadPreferences() {

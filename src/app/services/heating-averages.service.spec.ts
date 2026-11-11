@@ -1,5 +1,6 @@
 import { TestBed } from '@angular/core/testing';
 import { HeatingAveragesService } from './heating-averages.service';
+import { ALL_COUNTRY_INFO } from '../models/country-codes.data';
 import { describe, it, expect, beforeEach } from 'vitest';
 
 describe('HeatingAveragesService', () => {
@@ -51,17 +52,30 @@ describe('HeatingAveragesService', () => {
       expect(canada.averageKwhPerYear).toBe(22000);
     });
 
-    it('should return low values for hot climate countries', () => {
-      const ethiopia = service.getCountryData('ethiopia');
-      expect(ethiopia.averageKwhPerYear).toBe(400);
+    it('should return 0 kWh (N/A) for tropical and hot-arid climate countries', () => {
+      const haiti = service.getCountryData('ht');
+      expect(haiti.averageKwhPerYear).toBe(0);
+      expect(haiti.source).toBe('N/A (Tropical climate)');
 
       const singapore = service.getCountryData('sg');
-      expect(singapore.averageKwhPerYear).toBe(200);
+      expect(singapore.averageKwhPerYear).toBe(0);
+
+      const uae = service.getCountryData('ae');
+      expect(uae.averageKwhPerYear).toBe(0);
+      expect(uae.source).toBe('N/A (Hot arid climate)');
     });
 
     it('should return medium values for mediterranean climate', () => {
       const spain = service.getCountryData('es');
       expect(spain.averageKwhPerYear).toBe(8500);
+    });
+
+    it('should provide non-default heating data for all 198 countries worldwide', () => {
+      for (const country of ALL_COUNTRY_INFO) {
+        const data = service.getCountryData(country.code);
+        expect(data.source).not.toBe('Temperate climate estimate');
+        expect(data.averageKwhPerYear).toBeGreaterThanOrEqual(0);
+      }
     });
   });
 
@@ -73,10 +87,10 @@ describe('HeatingAveragesService', () => {
 
     it('should return different values for different climates', () => {
       const finlandKwh = service.getAverageKwhPerYear('fi');
-      const ethiopiaKwh = service.getAverageKwhPerYear('et');
+      const egyptKwh = service.getAverageKwhPerYear('eg');
 
-      // Finland should use ~45x more heating than Ethiopia
-      expect(finlandKwh).toBeGreaterThan(ethiopiaKwh * 40);
+      // Finland (18,000 kWh) should use > 20x more heating than Egypt (800 kWh)
+      expect(finlandKwh).toBeGreaterThan(egyptKwh * 20);
     });
   });
 });

@@ -134,6 +134,20 @@ describe('image-crop.helper', () => {
       expect(canvas.width).toBe(600);
       expect(canvas.height).toBe(300);
     });
+
+    it('should fall back to 600px max width when parentElement clientWidth is 0', () => {
+      const canvas = {
+        width: 0,
+        height: 0,
+        parentElement: { clientWidth: 0 },
+      } as unknown as HTMLCanvasElement;
+      const img = { width: 1200, height: 600 } as unknown as HTMLImageElement;
+
+      scaleCanvasToFitImage(canvas, img);
+
+      expect(canvas.width).toBe(600);
+      expect(canvas.height).toBe(300);
+    });
   });
 
   describe('drawCropOverlay', () => {

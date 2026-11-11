@@ -1,14 +1,13 @@
 import {
   Component,
+  ChangeDetectionStrategy,
   computed,
   inject,
-  Input,
-  Output,
-  EventEmitter,
+  input,
+  output,
   effect,
-  signal,
+  linkedSignal,
 } from '@angular/core';
-import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { LucideAngularModule, Info, Lightbulb } from 'lucide-angular';
 import { HouseholdService } from '../../services/household.service';
@@ -36,9 +35,10 @@ export interface ElectricityCountry {
 @Component({
   selector: 'app-comparison-note',
   standalone: true,
-  imports: [CommonModule, FormsModule, LucideAngularModule, TranslatePipe],
+  imports: [FormsModule, LucideAngularModule, TranslatePipe],
   templateUrl: './comparison-note.component.html',
   styleUrl: './comparison-note.component.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ComparisonNoteComponent {
   private readonly householdService = inject(HouseholdService);
@@ -51,102 +51,101 @@ export class ComparisonNoteComponent {
   private readonly electricityAveragesService = inject(ElectricityAveragesService);
 
   // Inputs
-  @Input() set type(val: ComparisonNoteType) {
-    this.typeSignal.set(val || 'water');
-  }
-  get type(): ComparisonNoteType {
-    return this.typeSignal();
-  }
-  protected readonly typeSignal = signal<ComparisonNoteType>('water');
+  readonly type = input<ComparisonNoteType, ComparisonNoteType | null | undefined>('water', {
+    transform: (val) => val || 'water',
+  });
 
-  @Input() set records(val: { date: Date }[]) {
-    this.recordsSignal.set(val || []);
-  }
-  get records(): { date: Date }[] {
-    return this.recordsSignal();
-  }
-  protected readonly recordsSignal = signal<{ date: Date }[]>([]);
+  readonly records = input<{ date: Date }[], { date: Date }[] | null | undefined>([], {
+    transform: (val) => val || [],
+  });
 
-  @Input() set chartView(val: string) {
-    this.chartViewSignal.set(val || 'total');
-  }
-  get chartView(): string {
-    return this.chartViewSignal();
-  }
-  protected readonly chartViewSignal = signal<string>('total');
+  readonly chartView = input<string, string | null | undefined>('total', {
+    transform: (val) => val || 'total',
+  });
 
-  @Input() set country(val: string | null) {
-    this.comparisonCountry.set(val);
-  }
-  get country(): string | null {
-    return this.comparisonCountry();
-  }
+  readonly country = input<string | null>(null);
 
   // Outputs
-  @Output() countryCodeChange = new EventEmitter<string>();
-  @Output() countryChange = new EventEmitter<string | null>();
+  readonly countryCodeChange = output<string>();
+  readonly countryChange = output<string | null>();
 
   // Internal State
   protected readonly InfoIcon = Info;
   protected readonly LightbulbIcon = Lightbulb;
-  readonly comparisonCountry = signal<string | null>(null);
-  protected readonly factSeed = signal(Date.now()); // Used to generate new facts
+  readonly comparisonCountry = linkedSignal<string | null>(() => this.country());
+  protected readonly factSeed = linkedSignal<{ country: string; view: string }, number>({
+    source: () => ({
+      country: this.effectiveComparisonCountryCode(),
+      view: this.chartView(),
+    }),
+    computation: () => Date.now(),
+  });
 
   protected familySize = computed(() => this.householdService.members().length);
-  protected hasSufficientDataForComparison = computed(() => this.recordsSignal().length >= 3);
+  protected hasSufficientDataForComparison = computed(() => this.records().length >= 3);
 
   protected countryName = computed(() => this.householdService.address()?.country || '');
 
-  // Water countries - sorted A-Z
+  // Water countries - sorted A-Z (Schwartzian transform: translate once per country)
   protected waterCountries = computed(() => {
-    this.languageService.translate('DUMMY_TRACKING_KEY'); // Track async translation loads
+    this.languageService.translationVersion?.();
+    this.languageService.currentLang();
     const countries = this.waterAveragesService.getAvailableCountries();
-    return countries.sort((a, b) => {
-      const nameA = this.languageService.translate(a.translationKey);
-      const nameB = this.languageService.translate(b.translationKey);
-      return nameA.localeCompare(nameB);
-    });
+    return countries
+      .map((item) => ({
+        ...item,
+        codeLower: item.code.toLowerCase(),
+        name: this.languageService.translate(item.translationKey),
+      }))
+      .sort((a, b) => a.name.localeCompare(b.name));
   });
 
-  // Heating countries - sorted A-Z
+  // Heating countries - sorted A-Z (Schwartzian transform: translate once per country)
   protected sortedHeatingCountries = computed(() => {
-    this.languageService.translate('DUMMY_TRACKING_KEY'); // Track async translation loads
-    const countries = [...this.heatingFactsService.getAvailableCountries()];
-    return countries.sort((a, b) => {
-      const nameA = this.languageService.translate(a.nameKey);
-      const nameB = this.languageService.translate(b.nameKey);
-      return nameA.localeCompare(nameB);
-    });
+    this.languageService.translationVersion?.();
+    this.languageService.currentLang();
+    const countries = this.heatingFactsService.getAvailableCountries();
+    return countries
+      .map((item) => ({
+        ...item,
+        codeLower: item.code.toLowerCase(),
+        translationKey: item.nameKey,
+        name: this.languageService.translate(item.nameKey),
+        average: this.heatingAveragesService.getAverageKwhPerYear(item.code),
+      }))
+      .filter((item) => item.average > 0)
+      .sort((a, b) => a.name.localeCompare(b.name));
   });
 
-  // Electricity countries - sorted A-Z
+  // Electricity countries - sorted A-Z (Schwartzian transform: translate once per country)
   protected sortedElectricityCountries = computed(() => {
-    this.languageService.translate('DUMMY_TRACKING_KEY'); // Track async translation loads
-    const countries = [...this.electricityFactsService.getAvailableCountries()];
-    return countries.sort((a, b) => {
-      const nameA = this.languageService.translate(a.nameKey);
-      const nameB = this.languageService.translate(b.nameKey);
-      return nameA.localeCompare(nameB);
-    });
+    this.languageService.translationVersion?.();
+    this.languageService.currentLang();
+    const countries = this.electricityFactsService.getAvailableCountries();
+    return countries
+      .map((item) => ({
+        ...item,
+        codeLower: item.code.toLowerCase(),
+        translationKey: item.nameKey,
+        name: this.languageService.translate(item.nameKey),
+        average: this.electricityAveragesService.getAverageKwhPerPersonPerYear(item.code),
+      }))
+      .sort((a, b) => a.name.localeCompare(b.name));
   });
 
   protected availableCountries = computed(() => {
-    if (this.typeSignal() === 'heating') {
-      return this.sortedHeatingCountries().map((c) => ({
-        translationKey: c.nameKey,
-        code: c.code,
-        average: this.heatingAveragesService.getAverageKwhPerYear(c.code),
-      }));
+    if (this.type() === 'heating') {
+      return this.sortedHeatingCountries();
     }
-    if (this.typeSignal() === 'electricity') {
-      return this.sortedElectricityCountries().map((c) => ({
-        translationKey: c.nameKey,
-        code: c.code,
-        average: this.electricityAveragesService.getAverageKwhPerPersonPerYear(c.code),
-      }));
+    if (this.type() === 'electricity') {
+      return this.sortedElectricityCountries();
     }
     return this.waterCountries();
   });
+
+  private readonly availableCountriesMap = computed(
+    () => new Map(this.availableCountries().map((c) => [c.codeLower, c])),
+  );
 
   protected effectiveComparisonCountryCode = computed(() => {
     const selected = this.comparisonCountry();
@@ -162,52 +161,65 @@ export class ComparisonNoteComponent {
     return 'DE';
   });
 
-  protected effectiveComparisonCountryName = computed(() => {
-    const code = this.effectiveComparisonCountryCode();
-    // Register translation dependency
-    this.languageService.translate('DUMMY_TRACKING_KEY'); // Track async translation loads
+  protected readonly effectiveComparisonCountryCodeLower = computed(() =>
+    this.effectiveComparisonCountryCode().toLowerCase(),
+  );
+
+  protected readonly selectedCountryFlag = computed(() => this.getSelectedCountryFlag());
+
+  protected readonly countryFlagAlt = computed(() => {
+    this.languageService.translationVersion?.();
     this.languageService.currentLang();
+    return this.languageService.translate('CHART.COUNTRY_FLAG_ALT', {
+      country: this.effectiveComparisonCountryCode(),
+    });
+  });
 
-    // Find the country in available countries using the code
-    const countries = this.availableCountries();
-    const country = countries.find((c) => c.code.toLowerCase() === code.toLowerCase());
+  protected readonly compareWithInfoKey = computed(
+    () => `CHART.COMPARE_WITH_INFO_${this.type().toUpperCase()}`,
+  );
 
+  protected selectedCountryEntry = computed(() =>
+    this.availableCountriesMap().get(this.effectiveComparisonCountryCodeLower()),
+  );
+
+  protected effectiveComparisonCountryName = computed(() => {
+    const country = this.selectedCountryEntry();
     if (country) {
-      return this.languageService.translate(country.translationKey);
+      return country.name;
     }
-
-    // Try to translate the code directly if it's a known country code key
-    // or just return the code
-    return code.toUpperCase();
+    return this.effectiveComparisonCountryCode().toUpperCase();
   });
 
   protected countryAverage = computed(() => {
+    const entry = this.selectedCountryEntry();
+    if (entry) {
+      return entry.average;
+    }
     const code = this.effectiveComparisonCountryCode();
-
-    if (this.typeSignal() === 'heating') {
+    if (this.type() === 'heating') {
       return this.heatingAveragesService.getAverageKwhPerYear(code);
     }
-
-    if (this.typeSignal() === 'electricity') {
+    if (this.type() === 'electricity') {
       return this.electricityAveragesService.getAverageKwhPerPersonPerYear(code);
     }
-
-    const countries = this.availableCountries();
-    const country = countries.find((c) => c.code.toLowerCase() === code.toLowerCase());
-    return country?.average || 150;
+    return 150;
   });
 
   private isValidCountry(code: string): boolean {
-    return this.availableCountries().some((c) => c.code.toLowerCase() === code.toLowerCase());
+    return this.availableCountriesMap().has(code.toLowerCase());
   }
 
   // Water fact - for water comparison mode
   protected waterFact = computed(() => {
     const code = this.effectiveComparisonCountryCode();
     const seed = this.factSeed();
-    const view = this.chartViewSignal();
-    const viewHash = view.split('').reduce((acc, char) => acc + (char.codePointAt(0) ?? 0), 0);
-    const index = (seed % 100) + this.recordsSignal().length + viewHash;
+    const view = this.chartView();
+    let viewHash = 0;
+    for (let i = 0; i < view.length; i++) {
+      viewHash += view.codePointAt(i) ?? 0;
+    }
+    const index = (seed % 100) + this.records().length + viewHash;
     return this.countryFactsService.getFactByIndex(code, index);
   });
 
@@ -215,7 +227,7 @@ export class ComparisonNoteComponent {
   protected heatingFact = computed(() => {
     const code = this.effectiveComparisonCountryCode();
     const seed = this.factSeed();
-    const index = Math.floor((seed % 100) + this.recordsSignal().length);
+    const index = Math.floor((seed % 100) + this.records().length);
     return this.heatingFactsService.getFactByIndex(0, index, 'country', code);
   });
 
@@ -223,16 +235,16 @@ export class ComparisonNoteComponent {
   protected electricityFact = computed(() => {
     const code = this.effectiveComparisonCountryCode();
     const seed = this.factSeed();
-    const index = Math.floor((seed % 100) + this.recordsSignal().length);
+    const index = Math.floor((seed % 100) + this.records().length);
     return this.electricityFactsService.getFactByIndex(0, index, 'country', code);
   });
 
   // Combined fact based on type
   protected countryFact = computed(() => {
-    if (this.typeSignal() === 'heating') {
+    if (this.type() === 'heating') {
       return this.heatingFact()?.message || null;
     }
-    if (this.typeSignal() === 'electricity') {
+    if (this.type() === 'electricity') {
       return this.electricityFact()?.message || null;
     }
     return this.waterFact();
@@ -249,13 +261,13 @@ export class ComparisonNoteComponent {
 
   // Main comparison text computed in TS to ensure reactivity and stability
   protected comparisonText = computed(() => {
-    const type = this.typeSignal();
+    const type = this.type();
     const countryName = this.effectiveComparisonCountryName();
     const average = this.countryAverage();
     const size = this.familySize();
 
     // Ensure language dependency is tracked
-    this.languageService.translate('DUMMY_TRACKING_KEY'); // Track async translation loads
+    this.languageService.translationVersion?.();
     this.languageService.currentLang();
 
     if (type === 'water') {
@@ -285,20 +297,6 @@ export class ComparisonNoteComponent {
     // Emit effective country code whenever it changes
     effect(() => {
       this.countryCodeChange.emit(this.effectiveComparisonCountryCode());
-    });
-
-    // Change fact when country changes
-    effect(() => {
-      this.effectiveComparisonCountryCode();
-      // Update seed to show new fact when country changes
-      this.factSeed.set(Date.now());
-    });
-
-    // Change fact when chart view changes
-    effect(() => {
-      this.chartViewSignal();
-      // Update seed to show new fact when view changes
-      this.factSeed.set(Date.now());
     });
   }
 

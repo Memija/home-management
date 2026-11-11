@@ -1,4 +1,4 @@
-@if (show) {
+@if (show()) {
   <!-- eslint-disable-next-line @angular-eslint/template/interactive-supports-focus -- Backdrop dismissal by design -->
   <div class="modal-overlay" (click)="onCancel()" (keydown.escape)="onCancel()">
     <!-- eslint-disable-next-line @angular-eslint/template/interactive-supports-focus -- Container stopPropagation by design -->
@@ -8,8 +8,8 @@
       (keydown)="$event.stopPropagation()"
     >
       <div class="modal-header">
-        <lucide-icon [img]="icon" size="32" class="info-icon"></lucide-icon>
-        <h3>{{ titleKey | translate }}</h3>
+        <lucide-icon [img]="icon()" size="32" class="info-icon"></lucide-icon>
+        <h3>{{ titleKey() | translate }}</h3>
         <button
           type="button"
           class="close-btn"
@@ -28,19 +28,19 @@
           type="button"
           class="btn-secondary"
           (click)="onCancel()"
-          title="{{ cancelKey | translate }}"
-          aria-label="{{ cancelKey | translate }}"
+          title="{{ cancelKey() | translate }}"
+          aria-label="{{ cancelKey() | translate }}"
         >
-          {{ cancelKey | translate }}
+          {{ cancelKey() | translate }}
         </button>
         <button
           type="button"
           class="btn-primary"
           (click)="onConfirm()"
-          title="{{ confirmKey | translate }}"
-          aria-label="{{ confirmKey | translate }}"
+          title="{{ confirmKey() | translate }}"
+          aria-label="{{ confirmKey() | translate }}"
         >
-          {{ confirmKey | translate }}
+          {{ confirmKey() | translate }}
         </button>
       </div>
     </div>

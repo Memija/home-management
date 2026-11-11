@@ -1,8 +1,9 @@
 import {
   Component,
-  Input,
-  Output,
-  EventEmitter,
+  ChangeDetectionStrategy,
+  ChangeDetectorRef,
+  input,
+  output,
   signal,
   computed,
   inject,
@@ -10,7 +11,9 @@ import {
   ElementRef,
   ViewChild,
 } from '@angular/core';
+import { NgTemplateOutlet } from '@angular/common';
 import { TranslatePipe } from '../../pipes/translate.pipe';
+import { LanguageService } from '../../services/language.service';
 import {
   LucideAngularModule,
   Camera,
@@ -50,12 +53,21 @@ export interface MeterReadingOutput {
 @Component({
   selector: 'app-meter-reader-modal',
   standalone: true,
-  imports: [TranslatePipe, LucideAngularModule],
+  imports: [NgTemplateOutlet, TranslatePipe, LucideAngularModule],
   templateUrl: './meter-reader-modal.component.html',
   styleUrl: './meter-reader-modal.component.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class MeterReaderModalComponent implements OnDestroy {
-  @ViewChild('cropCanvas') cropCanvasRef?: ElementRef<HTMLCanvasElement>;
+  cropCanvasRef?: ElementRef<HTMLCanvasElement>;
+
+  @ViewChild('cropCanvas') set cropCanvas(canvas: ElementRef<HTMLCanvasElement> | undefined) {
+    this.cropCanvasRef = canvas;
+    const dataUrl = this.capturedImage();
+    if (canvas?.nativeElement && dataUrl && this.step() === 'crop') {
+      this.initCropCanvas(dataUrl);
+    }
+  }
 
   @ViewChild('cameraVideo') set cameraVideo(video: ElementRef<HTMLVideoElement> | undefined) {
     if (video?.nativeElement) {
@@ -65,7 +77,9 @@ export class MeterReaderModalComponent implements OnDestroy {
 
   private cameraVideoElement?: HTMLVideoElement;
 
+  private readonly cdr = inject(ChangeDetectorRef);
   private readonly meterReaderService = inject(MeterReaderService);
+  private readonly languageService = inject(LanguageService, { optional: true });
 
   protected readonly CameraIcon = Camera;
   protected readonly UploadIcon = Upload;
@@ -74,22 +88,40 @@ export class MeterReaderModalComponent implements OnDestroy {
   protected readonly RetryIcon = RotateCcw;
   protected readonly CropIcon = Crop;
 
-  @Input() show = false;
+  readonly show = input<boolean>(false);
 
-  @Input() set fields(val: MeterField[]) {
-    this._fields.set(val || []);
-  }
-  get fields(): MeterField[] {
-    return this._fields();
-  }
-  private readonly _fields = signal<MeterField[]>([]);
+  readonly fields = input<MeterField[], MeterField[] | null | undefined>([], {
+    transform: (val) => val || [],
+  });
 
-  @Output() readonly closeModal = new EventEmitter<void>();
-  @Output() readonly reading = new EventEmitter<MeterReadingOutput>();
+  readonly closeModal = output<void>();
+  readonly reading = output<MeterReadingOutput>();
 
-  protected readonly hasNoFields = computed(() => this._fields().length === 0);
-  protected readonly isSingleField = computed(() => this._fields().length === 1);
-  protected readonly groupedFields = computed(() => groupMeterFields(this._fields()));
+  protected readonly hasNoFields = computed(() => this.fields().length === 0);
+  protected readonly isSingleField = computed(() => this.fields().length === 1);
+  protected readonly groupedFields = computed(() => {
+    this.languageService?.currentLang();
+    this.languageService?.translationVersion?.();
+    return groupMeterFields(this.fields()).map((group) => ({
+      ...group,
+      fields: group.fields.map((field) => {
+        const lowerKey = field.key.toLowerCase();
+        const translatedName = this.languageService
+          ? this.languageService.translate(field.label)
+          : field.label;
+        const assignTitle = this.languageService
+          ? this.languageService.translate('METER_READER.ASSIGN_TO', { name: translatedName })
+          : translatedName;
+        return {
+          ...field,
+          translatedName,
+          assignTitle,
+          isWarm: lowerKey.includes('warm'),
+          isCold: lowerKey.includes('cold'),
+        };
+      }),
+    }));
+  });
 
   protected readonly step = signal<'capture' | 'crop' | 'processing' | 'result' | 'select-field'>(
     'capture',
@@ -107,6 +139,7 @@ export class MeterReaderModalComponent implements OnDestroy {
   private isDragging = false;
   private dragStart = { x: 0, y: 0 };
   private cropImage: HTMLImageElement | null = null;
+  private cachedCanvasRect: DOMRect | null = null;
 
   protected readonly isProcessing = this.meterReaderService.isProcessing;
   protected readonly progress = this.meterReaderService.progress;
@@ -152,6 +185,7 @@ export class MeterReaderModalComponent implements OnDestroy {
 
   ngOnDestroy(): void {
     this.stopCamera();
+    void this.meterReaderService.dispose?.();
   }
 
   protected onOverlayClick(event?: Event): void {
@@ -226,15 +260,23 @@ export class MeterReaderModalComponent implements OnDestroy {
       const dataUrl = reader.result as string;
       this.capturedImage.set(dataUrl);
       this.enterCropStep(dataUrl);
+      input.value = '';
+      this.cdr.markForCheck();
+    };
+    reader.onerror = () => {
+      input.value = '';
     };
     reader.readAsDataURL(file);
-    input.value = '';
   }
 
   private enterCropStep(dataUrl: string): void {
+    this.cropImage = null;
     this.cropRect.set(null);
     this.step.set('crop');
-    setTimeout(() => this.initCropCanvas(dataUrl), 50);
+    this.cdr.markForCheck();
+    if (this.cropCanvasRef?.nativeElement) {
+      this.initCropCanvas(dataUrl);
+    }
   }
 
   private initCropCanvas(dataUrl: string): void {
@@ -246,6 +288,7 @@ export class MeterReaderModalComponent implements OnDestroy {
       this.cropImage = img;
       scaleCanvasToFitImage(canvas, img);
       this.drawCropCanvas();
+      this.cdr.markForCheck();
     };
     img.src = dataUrl;
   }
@@ -257,7 +300,9 @@ export class MeterReaderModalComponent implements OnDestroy {
   protected onCropStart(event: MouseEvent | TouchEvent): void {
     event.preventDefault();
     this.isDragging = true;
-    const pos = getCanvasCoords(this.cropCanvasRef?.nativeElement, event);
+    const canvas = this.cropCanvasRef?.nativeElement;
+    this.cachedCanvasRect = canvas ? canvas.getBoundingClientRect() : null;
+    const pos = getCanvasCoords(canvas, event, this.cachedCanvasRect);
     this.dragStart = pos;
     this.cropRect.set({ x: pos.x, y: pos.y, width: 0, height: 0 });
   }
@@ -265,7 +310,7 @@ export class MeterReaderModalComponent implements OnDestroy {
   protected onCropMove(event: MouseEvent | TouchEvent): void {
     if (!this.isDragging) return;
     event.preventDefault();
-    const pos = getCanvasCoords(this.cropCanvasRef?.nativeElement, event);
+    const pos = getCanvasCoords(this.cropCanvasRef?.nativeElement, event, this.cachedCanvasRect);
     this.cropRect.set(computeDragCropRect(this.dragStart, pos));
     this.drawCropCanvas();
   }
@@ -273,6 +318,7 @@ export class MeterReaderModalComponent implements OnDestroy {
   protected onCropEnd(event: MouseEvent | TouchEvent): void {
     event.preventDefault();
     this.isDragging = false;
+    this.cachedCanvasRect = null;
 
     const rect = this.cropRect();
     if (!rect || rect.width < 20 || rect.height < 20) {
@@ -302,6 +348,7 @@ export class MeterReaderModalComponent implements OnDestroy {
 
   private async processImage(imageData: string, isCropped = false): Promise<void> {
     this.step.set('processing');
+    this.cdr.markForCheck();
 
     const result = await this.meterReaderService.readMeter(imageData, isCropped);
     this.result.set(result);
@@ -314,6 +361,7 @@ export class MeterReaderModalComponent implements OnDestroy {
     }
 
     this.step.set('result');
+    this.cdr.markForCheck();
   }
 
   protected onValueEdit(event: Event): void {
@@ -331,7 +379,7 @@ export class MeterReaderModalComponent implements OnDestroy {
     if (this.hasNoFields()) {
       this.step.set('select-field');
     } else if (this.isSingleField()) {
-      this.reading.emit({ fieldKey: this._fields()[0].key, value });
+      this.reading.emit({ fieldKey: this.fields()[0].key, value });
       this.resetState();
       this.closeModal.emit();
     } else {
@@ -363,6 +411,7 @@ export class MeterReaderModalComponent implements OnDestroy {
     } catch (err) {
       console.error('Error stopping camera:', err);
     }
+    void this.meterReaderService.dispose?.();
     this.closeModal.emit();
   }
 

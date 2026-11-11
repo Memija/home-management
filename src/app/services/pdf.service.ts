@@ -6,6 +6,16 @@ import {
   calculateElectricityTotal,
 } from '../models/records.model';
 import { LanguageService } from './language.service';
+import {
+  loadImageAsBase64,
+  sortRecordsByDateAsc,
+  renderPdfReportHeader,
+  renderPdfPageNumbers,
+  formatSignedDiff,
+  calculateWaterPdfDiff,
+  calculateHeatingPdfDiff,
+  drawHeatingYearSeparator,
+} from '../utils/pdf.utils';
 
 /**
  * Service for generating PDF exports of consumption records.
@@ -14,37 +24,61 @@ import { LanguageService } from './language.service';
 @Injectable({ providedIn: 'root' })
 export class PdfService {
   private readonly languageService = inject(LanguageService);
+  private pdfLibsPromise: Promise<{
+    jsPDF: (typeof import('jspdf'))['jsPDF'];
+    autoTable: (typeof import('jspdf-autotable'))['default'];
+  }> | null = null;
 
-  /**
-   * Load an image and convert to base64 for PDF embedding
-   */
-  private async loadImageAsBase64(url: string): Promise<string> {
-    return new Promise((resolve, reject) => {
-      const img = new Image();
-      img.crossOrigin = 'anonymous';
-      img.onload = () => {
-        const canvas = document.createElement('canvas');
-        canvas.width = img.width;
-        canvas.height = img.height;
-        const ctx = canvas.getContext('2d');
-        if (ctx) {
-          ctx.drawImage(img, 0, 0);
-          resolve(canvas.toDataURL('image/png'));
-        } else {
-          reject(new Error('Could not get canvas context'));
-        }
-      };
-      img.onerror = () => reject(new Error(`Failed to load image: ${url}`));
-      img.src = url;
-    });
+  private getPdfLibs(): Promise<{
+    jsPDF: (typeof import('jspdf'))['jsPDF'];
+    autoTable: (typeof import('jspdf-autotable'))['default'];
+  }> {
+    if (!this.pdfLibsPromise) {
+      this.pdfLibsPromise = Promise.all([import('jspdf'), import('jspdf-autotable')]).then(
+        ([{ jsPDF }, autoTableModule]) => ({
+          jsPDF,
+          autoTable: autoTableModule.default,
+        }),
+      );
+    }
+    return this.pdfLibsPromise;
   }
 
   /**
    * Format date as localized string
    */
   private formatDate(date: Date): string {
-    const d = new Date(date);
+    const d = date instanceof Date ? date : new Date(date);
     return this.languageService.formatDate(d, { day: 'numeric', month: 'long', year: 'numeric' });
+  }
+
+  /**
+   * Create a landscape jsPDF document and render the report header
+   */
+  private async createDocumentWithHeader(
+    titleKey: string,
+    themeColor: [number, number, number],
+  ): Promise<{
+    doc: import('jspdf').jsPDF;
+    autoTable: (typeof import('jspdf-autotable'))['default'];
+  }> {
+    const logoPromise = loadImageAsBase64('/assets/logo-128.png');
+    logoPromise.catch(() => undefined);
+    const { jsPDF, autoTable } = await this.getPdfLibs();
+    const doc = new jsPDF('landscape');
+
+    const generatedOn = this.languageService.translate('PDF.GENERATED_ON');
+    const generatedText = `${generatedOn}: ${new Date().toLocaleDateString(this.languageService.currentLocale())}`;
+
+    await renderPdfReportHeader(doc, {
+      appName: this.languageService.translate('FOOTER.APP_NAME'),
+      title: this.languageService.translate(titleKey),
+      generatedText,
+      themeColor,
+      logoPromise,
+    });
+
+    return { doc, autoTable };
   }
 
   /**
@@ -54,52 +88,9 @@ export class PdfService {
     records: ConsumptionRecord[],
     filename = 'water-consumption.pdf',
   ): Promise<void> {
-    // Dynamically import jsPDF and autoTable
-    const { jsPDF } = await import('jspdf');
-    const autoTable = (await import('jspdf-autotable')).default;
+    const { doc, autoTable } = await this.createDocumentWithHeader('WATER.TITLE', [59, 130, 246]);
+    const sortedRecords = sortRecordsByDateAsc(records);
 
-    // Create PDF in landscape for better table fit
-    const doc = new jsPDF('landscape');
-
-    // Try to load and add logo
-    try {
-      const logoBase64 = await this.loadImageAsBase64('/assets/logo-128.png');
-      doc.addImage(logoBase64, 'PNG', 14, 8, 15, 15);
-    } catch (error) {
-      console.warn('Could not load logo for PDF:', error);
-    }
-
-    // Application name
-    const appName = this.languageService.translate('FOOTER.APP_NAME');
-    doc.setFontSize(12);
-    doc.setFont('helvetica', 'bold');
-    doc.setTextColor(59, 130, 246); // Blue color matching app theme
-    doc.text(appName, 32, 16);
-
-    // Report title
-    const title = this.languageService.translate('WATER.TITLE');
-    doc.setFontSize(16);
-    doc.setFont('helvetica', 'normal');
-    doc.setTextColor(0);
-    doc.text(title, 14, 32);
-
-    // Generation date
-    doc.setFontSize(10);
-    doc.setTextColor(100);
-    const generatedOn = this.languageService.translate('PDF.GENERATED_ON');
-    const generatedText = `${generatedOn}: ${new Date().toLocaleDateString(this.languageService.currentLocale())}`;
-    doc.text(generatedText, 14, 40);
-
-    // Reset text color
-    doc.setTextColor(0);
-
-    // Sort records by date for proper difference calculation
-    const sortedRecords = [...records].sort(
-      (a, b) => new Date(a.date).getTime() - new Date(b.date).getTime(),
-    );
-
-    // Table headers - added Difference column
-    const differenceLabel = this.languageService.translate('PDF.DIFFERENCE');
     const headers = [
       this.languageService.translate('HOME.SELECT_DATE') || 'Date',
       `${this.languageService.translate('WATER.KITCHEN')} ${this.languageService.translate('WATER.WARM')}`,
@@ -107,50 +98,12 @@ export class PdfService {
       `${this.languageService.translate('WATER.BATHROOM')} ${this.languageService.translate('WATER.WARM')}`,
       `${this.languageService.translate('WATER.BATHROOM')} ${this.languageService.translate('WATER.COLD')}`,
       this.languageService.translate('HOME.TOTAL'),
-      differenceLabel,
+      this.languageService.translate('PDF.DIFFERENCE'),
     ];
 
-    // Table data with difference calculation
     const data = sortedRecords.map((record, index) => {
       const total = calculateWaterTotal(record);
-      let difference = '-';
-
-      if (index > 0) {
-        const prevRecord = sortedRecords[index - 1];
-
-        // Calculate difference for each meter individually to handle resets
-        let totalDiff = 0;
-
-        // Kitchen Warm
-        if (record.kitchenWarm < prevRecord.kitchenWarm) {
-          totalDiff += record.kitchenWarm; // Reset assumed
-        } else {
-          totalDiff += record.kitchenWarm - prevRecord.kitchenWarm;
-        }
-
-        // Kitchen Cold
-        if (record.kitchenCold < prevRecord.kitchenCold) {
-          totalDiff += record.kitchenCold; // Reset assumed
-        } else {
-          totalDiff += record.kitchenCold - prevRecord.kitchenCold;
-        }
-
-        // Bathroom Warm
-        if (record.bathroomWarm < prevRecord.bathroomWarm) {
-          totalDiff += record.bathroomWarm; // Reset assumed
-        } else {
-          totalDiff += record.bathroomWarm - prevRecord.bathroomWarm;
-        }
-
-        // Bathroom Cold
-        if (record.bathroomCold < prevRecord.bathroomCold) {
-          totalDiff += record.bathroomCold; // Reset assumed
-        } else {
-          totalDiff += record.bathroomCold - prevRecord.bathroomCold;
-        }
-
-        difference = (totalDiff >= 0 ? '+' : '') + totalDiff.toFixed(2);
-      }
+      const difference = index > 0 ? calculateWaterPdfDiff(record, sortedRecords[index - 1]) : '-';
 
       return [
         this.formatDate(record.date),
@@ -163,23 +116,19 @@ export class PdfService {
       ];
     });
 
-    // Add table using autoTable function - pass doc as first argument
     autoTable(doc, {
       head: [headers],
       body: data,
       startY: 48,
       theme: 'striped',
       headStyles: {
-        fillColor: [59, 130, 246], // Blue color matching app theme
+        fillColor: [59, 130, 246],
         textColor: 255,
         fontStyle: 'bold',
       },
-      styles: {
-        fontSize: 9,
-        cellPadding: 3,
-      },
+      styles: { fontSize: 9, cellPadding: 3 },
       columnStyles: {
-        0: { cellWidth: 'auto' }, // Date
+        0: { cellWidth: 'auto' },
         1: { cellWidth: 'auto', halign: 'right' },
         2: { cellWidth: 'auto', halign: 'right' },
         3: { cellWidth: 'auto', halign: 'right' },
@@ -189,21 +138,7 @@ export class PdfService {
       },
     });
 
-    // Add page numbers after table is complete - this ensures correct total page count
-    const pageCount = doc.getNumberOfPages();
-    for (let i = 1; i <= pageCount; i++) {
-      doc.setPage(i);
-      doc.setFontSize(8);
-      doc.setTextColor(150);
-      doc.text(
-        `${i} / ${pageCount}`,
-        doc.internal.pageSize.width / 2,
-        doc.internal.pageSize.height - 10,
-        { align: 'center' },
-      );
-    }
-
-    // Save the PDF
+    renderPdfPageNumbers(doc);
     doc.save(filename);
   }
 
@@ -215,101 +150,32 @@ export class PdfService {
     roomNames: string[],
     filename = 'heating-consumption.pdf',
   ): Promise<void> {
-    // Dynamically import jsPDF and autoTable
-    const { jsPDF } = await import('jspdf');
-    const autoTable = (await import('jspdf-autotable')).default;
+    const { doc, autoTable } = await this.createDocumentWithHeader('HEATING.TITLE', [245, 124, 0]);
+    const sortedRecords = sortRecordsByDateAsc(records);
 
-    // Create PDF in landscape for better table fit
-    const doc = new jsPDF('landscape');
-
-    // Try to load and add logo
-    try {
-      const logoBase64 = await this.loadImageAsBase64('/assets/logo-128.png');
-      doc.addImage(logoBase64, 'PNG', 14, 8, 15, 15);
-    } catch (error) {
-      console.warn('Could not load logo for PDF:', error);
-    }
-
-    // Application name
-    const appName = this.languageService.translate('FOOTER.APP_NAME');
-    doc.setFontSize(12);
-    doc.setFont('helvetica', 'bold');
-    doc.setTextColor(245, 124, 0); // Orange color matching heating theme
-    doc.text(appName, 32, 16);
-
-    // Report title
-    const title = this.languageService.translate('HEATING.TITLE');
-    doc.setFontSize(16);
-    doc.setFont('helvetica', 'normal');
-    doc.setTextColor(0);
-    doc.text(title, 14, 32);
-
-    // Generation date
-    doc.setFontSize(10);
-    doc.setTextColor(100);
-    const generatedOn = this.languageService.translate('PDF.GENERATED_ON');
-    const generatedText = `${generatedOn}: ${new Date().toLocaleDateString(this.languageService.currentLocale())}`;
-    doc.text(generatedText, 14, 40);
-
-    // Reset text color
-    doc.setTextColor(0);
-
-    // Sort records by date
-    const sortedRecords = [...records].sort(
-      (a, b) => new Date(a.date).getTime() - new Date(b.date).getTime(),
-    );
-
-    // Table headers - Date, dynamic rooms, Total, Difference
-    const differenceLabel = this.languageService.translate('PDF.DIFFERENCE');
     const headers = [
       this.languageService.translate('HOME.SELECT_DATE') || 'Date',
       ...roomNames,
       this.languageService.translate('HOME.TOTAL'),
-      differenceLabel,
+      this.languageService.translate('PDF.DIFFERENCE'),
     ];
 
-    // Calculate total for a record
-    const calculateTotal = (record: { rooms: Record<string, number> }) =>
-      Object.values(record.rooms).reduce((sum, val) => sum + (val || 0), 0);
-
-    // Table data
     const data = sortedRecords.map((record, index) => {
-      const total = calculateTotal(record);
-      const roomValues = roomNames.map((_, index) => {
-        const roomId = Object.keys(record.rooms)[index];
+      const roomKeys = Object.keys(record.rooms);
+      let total = 0;
+      for (const roomId of roomKeys) {
+        total += record.rooms[roomId] || 0;
+      }
+      const roomValues = roomNames.map((_, roomIdx) => {
+        const roomId = roomKeys[roomIdx];
         return (record.rooms[roomId] || 0).toFixed(2);
       });
-
-      let difference = '-';
-      if (index > 0) {
-        const prevRecord = sortedRecords[index - 1];
-        let totalDiff = 0;
-
-        // Calculate difference per room to properly handle resets
-        const allRoomIds = new Set([
-          ...Object.keys(record.rooms),
-          ...Object.keys(prevRecord.rooms),
-        ]);
-
-        allRoomIds.forEach((roomId) => {
-          const currVal = record.rooms[roomId] || 0;
-          const prevVal = prevRecord.rooms[roomId] || 0;
-
-          if (currVal < prevVal) {
-            // Reset detected
-            totalDiff += currVal;
-          } else {
-            totalDiff += currVal - prevVal;
-          }
-        });
-
-        difference = (totalDiff >= 0 ? '+' : '') + totalDiff.toFixed(2);
-      }
+      const difference =
+        index > 0 ? calculateHeatingPdfDiff(record, sortedRecords[index - 1]) : '-';
 
       return [this.formatDate(record.date), ...roomValues, total.toFixed(2), difference];
     });
 
-    // Dynamic column styles - use auto width to fit page properly
     const columnStyles: Record<
       string,
       {
@@ -318,83 +184,34 @@ export class PdfService {
         fontStyle?: 'normal' | 'bold' | 'italic' | 'bolditalic';
       }
     > = {
-      '0': { cellWidth: 'auto' }, // Date column
+      '0': { cellWidth: 'auto' },
     };
-    // Room columns with right alignment
     roomNames.forEach((_, i) => {
       columnStyles[String(i + 1)] = { cellWidth: 'auto', halign: 'right' };
     });
-    // Total column with bold styling
     columnStyles[String(roomNames.length + 1)] = {
       cellWidth: 'auto',
       halign: 'right',
       fontStyle: 'bold',
     };
-    // Difference column
     columnStyles[String(roomNames.length + 2)] = { cellWidth: 'auto', halign: 'right' };
 
-    // Add table using autoTable function
     autoTable(doc, {
       head: [headers],
       body: data,
       startY: 48,
       theme: 'striped',
       headStyles: {
-        fillColor: [245, 124, 0], // Orange color matching heating theme
+        fillColor: [245, 124, 0],
         textColor: 255,
         fontStyle: 'bold',
       },
-      styles: {
-        fontSize: 9,
-        cellPadding: 3,
-      },
+      styles: { fontSize: 9, cellPadding: 3 },
       columnStyles,
-      // Add horizontal line when year changes
-      willDrawCell: (data: {
-        section: string;
-        row: { index: number };
-        column: { index: number };
-        doc: import('jspdf').jsPDF;
-        cell: { y: number };
-      }) => {
-        if (data.section === 'body' && data.row.index > 0 && data.column.index === 0) {
-          const currentRecord = sortedRecords[data.row.index];
-          const prevRecord = sortedRecords[data.row.index - 1];
-
-          const currentYear = new Date(currentRecord.date).getFullYear();
-          const prevYear = new Date(prevRecord.date).getFullYear();
-
-          if (currentYear !== prevYear) {
-            // Draw line above specific row cells
-            // Note: willDrawCell is called for each cell. We can just draw a line at the top of the cell.
-            // But simpler to just draw one line across the page width at the Y position.
-            // We need to be careful not to draw it multiple times (once per cell).
-            // Checking data.column.index === 0 ensures we do it only once per row.
-            const doc = data.doc;
-            doc.setDrawColor(150, 150, 150); // Grey line
-            doc.setLineWidth(0.5);
-            // data.cell.y is the top y-coordinate of the current cell
-            doc.line(14, data.cell.y, doc.internal.pageSize.width - 14, data.cell.y);
-          }
-        }
-      },
+      willDrawCell: (cellData) => drawHeatingYearSeparator(cellData, sortedRecords),
     });
 
-    // Add page numbers after table is complete - this ensures correct total page count
-    const pageCount = doc.getNumberOfPages();
-    for (let i = 1; i <= pageCount; i++) {
-      doc.setPage(i);
-      doc.setFontSize(8);
-      doc.setTextColor(150);
-      doc.text(
-        `${i} / ${pageCount}`,
-        doc.internal.pageSize.width / 2,
-        doc.internal.pageSize.height - 10,
-        { align: 'center' },
-      );
-    }
-
-    // Save the PDF
+    renderPdfPageNumbers(doc);
     doc.save(filename);
   }
 
@@ -405,58 +222,24 @@ export class PdfService {
     records: ElectricityRecord[],
     filename = 'electricity-consumption.pdf',
   ): Promise<void> {
-    const { jsPDF } = await import('jspdf');
-    const autoTable = (await import('jspdf-autotable')).default;
-
-    const doc = new jsPDF('landscape');
-
-    try {
-      const logoBase64 = await this.loadImageAsBase64('/assets/logo-128.png');
-      doc.addImage(logoBase64, 'PNG', 14, 8, 15, 15);
-    } catch (error) {
-      console.warn('Could not load logo for PDF:', error);
-    }
-
-    const appName = this.languageService.translate('FOOTER.APP_NAME');
-    doc.setFontSize(12);
-    doc.setFont('helvetica', 'bold');
-    doc.setTextColor(255, 193, 7); // Amber color for electricity
-    doc.text(appName, 32, 16);
-
-    const title = this.languageService.translate('ELECTRICITY.TITLE');
-    doc.setFontSize(16);
-    doc.setFont('helvetica', 'normal');
-    doc.setTextColor(0);
-    doc.text(title, 14, 32);
-
-    doc.setFontSize(10);
-    doc.setTextColor(100);
-    const generatedOn = this.languageService.translate('PDF.GENERATED_ON');
-    const generatedText = `${generatedOn}: ${new Date().toLocaleDateString(this.languageService.currentLocale())}`;
-    doc.text(generatedText, 14, 40);
-
-    doc.setTextColor(0);
-
-    const sortedRecords = [...records].sort(
-      (a, b) => new Date(a.date).getTime() - new Date(b.date).getTime(),
+    const { doc, autoTable } = await this.createDocumentWithHeader(
+      'ELECTRICITY.TITLE',
+      [255, 193, 7],
     );
+    const sortedRecords = sortRecordsByDateAsc(records);
 
-    const differenceLabel = this.languageService.translate('PDF.DIFFERENCE');
     const headers = [
       this.languageService.translate('HOME.SELECT_DATE') || 'Date',
       this.languageService.translate('ELECTRICITY.VALUE') || 'Value (kWh)',
-      differenceLabel,
+      this.languageService.translate('PDF.DIFFERENCE'),
     ];
 
     const data = sortedRecords.map((record, index) => {
       const total = calculateElectricityTotal(record);
-      let difference = '-';
-
-      if (index > 0) {
-        const prevTotal = calculateElectricityTotal(sortedRecords[index - 1]);
-        const diff = total - prevTotal;
-        difference = (diff >= 0 ? '+' : '') + diff.toFixed(2);
-      }
+      const difference =
+        index > 0
+          ? formatSignedDiff(total - calculateElectricityTotal(sortedRecords[index - 1]))
+          : '-';
 
       return [this.formatDate(record.date), total.toFixed(2), difference];
     });
@@ -467,14 +250,11 @@ export class PdfService {
       startY: 48,
       theme: 'striped',
       headStyles: {
-        fillColor: [255, 193, 7], // Amber
-        textColor: 0, // Black text on amber
+        fillColor: [255, 193, 7],
+        textColor: 0,
         fontStyle: 'bold',
       },
-      styles: {
-        fontSize: 9,
-        cellPadding: 3,
-      },
+      styles: { fontSize: 9, cellPadding: 3 },
       columnStyles: {
         0: { cellWidth: 'auto' },
         1: { cellWidth: 'auto', halign: 'right', fontStyle: 'bold' },
@@ -482,19 +262,7 @@ export class PdfService {
       },
     });
 
-    const pageCount = doc.getNumberOfPages();
-    for (let i = 1; i <= pageCount; i++) {
-      doc.setPage(i);
-      doc.setFontSize(8);
-      doc.setTextColor(150);
-      doc.text(
-        `${i} / ${pageCount}`,
-        doc.internal.pageSize.width / 2,
-        doc.internal.pageSize.height - 10,
-        { align: 'center' },
-      );
-    }
-
+    renderPdfPageNumbers(doc);
     doc.save(filename);
   }
 }

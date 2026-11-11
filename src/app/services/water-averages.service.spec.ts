@@ -69,10 +69,23 @@ describe('WaterAveragesService', () => {
   });
 
   describe('getAvailableCountries', () => {
-    it('should return list of countries', () => {
+    it('should return list of countries including all 198 countries plus world', () => {
       const countries = service.getAvailableCountries();
-      expect(countries.length).toBeGreaterThan(0);
+      expect(countries.length).toBe(199);
       expect(countries.find((c) => c.code === 'de')).toBeDefined();
+      expect(countries.find((c) => c.code === 'fj')).toBeDefined();
+      expect(countries.find((c) => c.code === 'world')).toBeDefined();
+    });
+
+    it('should provide specific water consumption data for every available country code', () => {
+      const countries = service.getAvailableCountries();
+      for (const country of countries) {
+        const data = service.getCountryData(country.code);
+        expect(data.averageLitersPerPersonPerDay).toBe(country.average);
+        if (country.code !== 'world') {
+          expect(data.source).not.toBe('World Average Estimate');
+        }
+      }
     });
   });
 

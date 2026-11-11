@@ -1,14 +1,7 @@
 import { Injectable, inject } from '@angular/core';
 import { LanguageService } from './language.service';
-import {
-  heatingCountryFacts as enHeatingFacts,
-  availableHeatingCountries,
-} from '../i18n/modules/en/heating-country-facts';
-import { heatingCountryFacts as deHeatingFacts } from '../i18n/modules/de/heating-country-facts';
-import { heatingCountryFacts as bsHeatingFacts } from '../i18n/modules/bs/heating-country-facts';
-import { en } from '../i18n/en';
-import { de } from '../i18n/de';
-import { bs } from '../i18n/bs';
+import { AVAILABLE_COUNTRIES_WITH_WORLD } from '../models/country-codes.data';
+import { DID_YOU_KNOW_BY_LANG } from '../i18n/units';
 
 export interface HeatingFact {
   title: string;
@@ -32,7 +25,25 @@ export class HeatingFactsService {
    * Get available countries for heating facts
    */
   getAvailableCountries() {
-    return availableHeatingCountries;
+    return AVAILABLE_COUNTRIES_WITH_WORLD;
+  }
+
+  /**
+   * Get all heating facts for a specific country in the active language.
+   * Lazy-loads only HEATING_COUNTRY_FACTS for the current language on demand.
+   * @param countryCode - ISO country code
+   */
+  getFacts(countryCode: string): readonly string[] {
+    const lang = this.languageService.currentLang();
+    const translations =
+      this.languageService.getTranslations?.(lang, 'HEATING_COUNTRY_FACTS') ?? {};
+    const countryFacts =
+      (translations['HEATING_COUNTRY_FACTS'] as Record<string, string[]> | undefined) ?? {};
+    const normalized = countryCode.toUpperCase();
+    if (countryFacts[normalized] && countryFacts[normalized].length > 0) {
+      return countryFacts[normalized];
+    }
+    return countryFacts['DEFAULT'] ?? [];
   }
 
   /**
@@ -49,16 +60,11 @@ export class HeatingFactsService {
     countryCode?: string,
   ): HeatingFact | null {
     const lang = this.languageService.currentLang();
-    const translationMap = { de, bs, en } as const;
-    const translations = translationMap[lang as 'de' | 'bs'] ?? en;
-    const countryFactsMap = {
-      de: deHeatingFacts,
-      bs: bsHeatingFacts,
-      en: enHeatingFacts,
-    } as const;
-    const countryFacts = countryFactsMap[lang as 'de' | 'bs'] ?? enHeatingFacts;
-    const didYouKnow =
-      (translations.FACTS as Record<string, string>)?.['DID_YOU_KNOW'] || 'Did you know?';
+    const translations =
+      this.languageService.getTranslations?.(lang, 'HEATING_COUNTRY_FACTS') ?? {};
+    const countryFacts =
+      (translations['HEATING_COUNTRY_FACTS'] as Record<string, string[]> | undefined) ?? {};
+    const didYouKnow = DID_YOU_KNOW_BY_LANG[lang] || 'Did you know?';
 
     if (mode === 'historical') {
       return this.getHistoricalFact(didYouKnow, index, countryFacts);

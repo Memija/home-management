@@ -57,45 +57,107 @@ export class NotificationService {
     this.motivationService.evaluateElectricity(this.electricityRecords()),
   );
 
+  private waterRecordsPushed = false;
+  private heatingRecordsPushed = false;
+  private electricityRecordsPushed = false;
+  private addressPushed = false;
+  private familyMembersPushed = false;
+
   constructor() {
-    queueMicrotask(() => {
-      void this.loadData();
-    });
+    if (this.hydrateSync()) {
+      this.isDataLoaded.set(true);
+    } else {
+      queueMicrotask(() => {
+        void this.loadData();
+      });
+    }
     this.storage.dataRefreshed$
       ?.pipe(takeUntilDestroyed(this.destroyRef))
-      .subscribe(() => void this.loadData());
+      .subscribe(() => void this.loadData(true));
+  }
+
+  private hydrateSync(): boolean {
+    if (!this.storage || typeof this.storage.loadSync !== 'function') {
+      return false;
+    }
+    const dismissed = this.storage.loadSync<string[]>('dismissed_notifications');
+    this.dismissedNotifications.set(Array.isArray(dismissed) ? dismissed : []);
+
+    if (!this.waterRecordsPushed) {
+      const water = this.loadParsedRecordsSync<ConsumptionRecord>('water_consumption_records');
+      if (water) this.waterRecords.set(water);
+    }
+    if (!this.heatingRecordsPushed) {
+      const heating = this.loadParsedRecordsSync<HeatingNotificationRecord>(
+        'heating_consumption_records',
+      );
+      if (heating) this.heatingRecords.set(heating);
+    }
+    if (!this.electricityRecordsPushed) {
+      const electricity = this.loadParsedRecordsSync<ElectricityRecord>(
+        'electricity_consumption_records',
+      );
+      if (electricity) this.electricityRecords.set(electricity);
+    }
+    const confirmedChanges = this.storage.loadSync<string[]>('water_confirmed_meter_changes');
+    if (Array.isArray(confirmedChanges)) {
+      this.confirmedMeterChanges.set(confirmedChanges);
+    }
+    if (!this.addressPushed) {
+      const address = this.storage.loadSync<Address>('household_address');
+      if (address) this.address.set(address);
+    }
+    if (!this.familyMembersPushed) {
+      const familyMembers = this.storage.loadSync<HouseholdMember[]>('household_members');
+      if (familyMembers) this.familyMembers.set(familyMembers);
+    }
+    return true;
+  }
+
+  private loadParsedRecordsSync<T extends { date: Date | string }>(key: string): T[] | null {
+    const records = this.storage.loadSync?.<T[]>(key) ?? null;
+    return records ? records.map((r) => ({ ...r, date: parseSafeDate(r.date) })) : null;
   }
 
   /**
    * Load all data needed for notifications
    */
-  private async loadData(): Promise<void> {
-    await this.loadDismissedNotifications();
+  private async loadData(forceReload = false): Promise<void> {
+    const [
+      ,
+      waterRecords,
+      heatingRecords,
+      electricityRecords,
+      confirmedChanges,
+      address,
+      familyMembers,
+    ] = await Promise.all([
+      this.loadDismissedNotifications(),
+      !forceReload && this.waterRecordsPushed
+        ? Promise.resolve(null)
+        : this.loadParsedRecords<ConsumptionRecord>('water_consumption_records'),
+      !forceReload && this.heatingRecordsPushed
+        ? Promise.resolve(null)
+        : this.loadParsedRecords<HeatingNotificationRecord>('heating_consumption_records'),
+      !forceReload && this.electricityRecordsPushed
+        ? Promise.resolve(null)
+        : this.loadParsedRecords<ElectricityRecord>('electricity_consumption_records'),
+      this.storage.load<string[]>('water_confirmed_meter_changes'),
+      !forceReload && this.addressPushed
+        ? Promise.resolve(null)
+        : this.storage.load<Address>('household_address'),
+      !forceReload && this.familyMembersPushed
+        ? Promise.resolve(null)
+        : this.storage.load<HouseholdMember[]>('household_members'),
+    ]);
 
-    const waterRecords = await this.loadParsedRecords<ConsumptionRecord>(
-      'water_consumption_records',
-    );
     if (waterRecords) this.waterRecords.set(waterRecords);
-
-    const heatingRecords = await this.loadParsedRecords<HeatingNotificationRecord>(
-      'heating_consumption_records',
-    );
     if (heatingRecords) this.heatingRecords.set(heatingRecords);
-
-    const electricityRecords = await this.loadParsedRecords<ElectricityRecord>(
-      'electricity_consumption_records',
-    );
     if (electricityRecords) this.electricityRecords.set(electricityRecords);
-
-    const confirmedChanges = await this.storage.load<string[]>('water_confirmed_meter_changes');
     if (Array.isArray(confirmedChanges)) {
       this.confirmedMeterChanges.set(confirmedChanges);
     }
-
-    const address = await this.storage.load<Address>('household_address');
     if (address) this.address.set(address);
-
-    const familyMembers = await this.storage.load<HouseholdMember[]>('household_members');
     if (familyMembers) this.familyMembers.set(familyMembers);
 
     this.isDataLoaded.set(true);
@@ -109,10 +171,12 @@ export class NotificationService {
   }
 
   setWaterRecords(records: ConsumptionRecord[]): void {
+    this.waterRecordsPushed = true;
     this.waterRecords.set(records);
   }
 
   setHeatingRecords(records: HeatingNotificationRecord[]): void {
+    this.heatingRecordsPushed = true;
     this.heatingRecords.set(records);
   }
 
@@ -121,14 +185,17 @@ export class NotificationService {
   }
 
   setElectricityRecords(records: ElectricityRecord[]): void {
+    this.electricityRecordsPushed = true;
     this.electricityRecords.set(records);
   }
 
   setAddress(address: Address | null): void {
+    this.addressPushed = true;
     this.address.set(address);
   }
 
   setHouseholdMembers(members: HouseholdMember[]): void {
+    this.familyMembersPushed = true;
     this.familyMembers.set(members);
   }
 

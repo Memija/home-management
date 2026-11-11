@@ -1,6 +1,7 @@
 import { TestBed } from '@angular/core/testing';
 import { WaterFactsService } from './water-facts.service';
 import { LanguageService } from './language.service';
+import { enFacts } from '../i18n/facts/en';
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 
 describe('WaterFactsService', () => {
@@ -11,6 +12,7 @@ describe('WaterFactsService', () => {
     mockLanguageService = {
       currentLang: vi.fn().mockReturnValue('en'),
       currentLocale: vi.fn().mockReturnValue('en-US'),
+      getTranslations: vi.fn().mockReturnValue(enFacts),
     };
 
     TestBed.configureTestingModule({

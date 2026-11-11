@@ -6,6 +6,7 @@ import {
   filterZeroPlaceholders,
   isWaterRecordAllZero,
   parseSafeDate,
+  getDateKey,
 } from '../models/records.model';
 import { STORAGE_SERVICE } from './storage.service';
 import { FileStorageService } from './file-storage.service';
@@ -31,6 +32,7 @@ export class ConsumptionDataService {
   private readonly notificationService = inject(NotificationService);
 
   // Main State
+  private initialSyncLoaded = false;
   readonly records = signal<ConsumptionRecord[]>(this.getInitialRecords());
 
   // Filter State
@@ -47,34 +49,14 @@ export class ConsumptionDataService {
   });
 
   readonly filteredRecords = computed(() => {
-    const { year, month, startDate, endDate } = this.filterState();
-    let records = this.records();
+    const filter = this.filterState();
+    const records = this.records();
 
-    if (startDate) {
-      records = records.filter((r) => {
-        const date = new Date(r.date);
-        const recordDate = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
-        return recordDate >= startDate;
-      });
+    if (!filter.year && filter.month === null && !filter.startDate && !filter.endDate) {
+      return records;
     }
 
-    if (endDate) {
-      records = records.filter((r) => {
-        const date = new Date(r.date);
-        const recordDate = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
-        return recordDate <= endDate;
-      });
-    }
-
-    if (year) {
-      records = records.filter((r) => new Date(r.date).getFullYear() === year);
-    }
-
-    if (month !== null) {
-      records = records.filter((r) => new Date(r.date).getMonth() === month);
-    }
-
-    return records;
+    return records.filter((r) => !this.isRecordOutsideFilter(r, filter));
   });
 
   readonly isFilterActive = computed(() => {
@@ -113,13 +95,13 @@ export class ConsumptionDataService {
   readonly maxDate = new Date().toISOString().split('T')[0];
 
   constructor() {
-    const initial = this.records();
-    if (initial.length > 0) {
-      this.notificationService.setWaterRecords(initial);
+    if (this.initialSyncLoaded) {
+      this.notificationService.setWaterRecords(this.records());
+    } else {
+      queueMicrotask(() => {
+        void this.loadData();
+      });
     }
-    queueMicrotask(() => {
-      void this.loadData();
-    });
     this.storage.dataRefreshed$
       ?.pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe(() => void this.loadData());
@@ -129,6 +111,7 @@ export class ConsumptionDataService {
     if (!this.storage || typeof this.storage.loadSync !== 'function') {
       return [];
     }
+    this.initialSyncLoaded = true;
     const data = this.storage.loadSync<ConsumptionRecord[]>('water_consumption_records');
     if (!data) return [];
     return data
@@ -179,13 +162,13 @@ export class ConsumptionDataService {
     },
   ): boolean {
     const { year, month, startDate, endDate } = filter;
-    const rDate = new Date(record.date);
+    const rDate = parseSafeDate(record.date);
 
     if (year && rDate.getFullYear() !== year) return true;
     if (month !== null && rDate.getMonth() !== month) return true;
 
     if (startDate || endDate) {
-      const recordDateStr = `${rDate.getFullYear()}-${String(rDate.getMonth() + 1).padStart(2, '0')}-${String(rDate.getDate()).padStart(2, '0')}`;
+      const recordDateStr = getDateKey(rDate);
       if (startDate && recordDateStr < startDate) return true;
       if (endDate && recordDateStr > endDate) return true;
     }
@@ -200,24 +183,31 @@ export class ConsumptionDataService {
 
   // --- CRUD Operations ---
   async saveRecord(newRecord: ConsumptionRecord) {
-    const newRecordDate = new Date(newRecord.date);
+    const newRecordDate = parseSafeDate(newRecord.date);
     if (Number.isNaN(newRecordDate.getTime())) return;
 
-    const newRecordIso = newRecordDate.toISOString().split('T')[0];
+    const newRecordIso = getDateKey(newRecordDate);
 
     const existingRecordIndex = this.records().findIndex((r) => {
-      const d = new Date(r.date);
-      return !Number.isNaN(d.getTime()) && d.toISOString().split('T')[0] === newRecordIso;
+      const d = r.date instanceof Date ? r.date : parseSafeDate(r.date);
+      return !Number.isNaN(d.getTime()) && getDateKey(d) === newRecordIso;
     });
+
+    const normalizedRecord: ConsumptionRecord =
+      newRecord.date instanceof Date ? newRecord : { ...newRecord, date: newRecordDate };
 
     this.records.update((records) => {
       const updated = [...records];
       if (existingRecordIndex !== -1) {
-        updated[existingRecordIndex] = newRecord;
+        updated[existingRecordIndex] = normalizedRecord;
       } else {
-        updated.push(newRecord);
+        updated.push(normalizedRecord);
       }
-      return updated.sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
+      return updated.sort(
+        (a, b) =>
+          (a.date instanceof Date ? a.date.getTime() : parseSafeDate(a.date).getTime()) -
+          (b.date instanceof Date ? b.date.getTime() : parseSafeDate(b.date).getTime()),
+      );
     });
 
     await this.storage.save('water_consumption_records', this.records());
@@ -235,8 +225,9 @@ export class ConsumptionDataService {
   confirmDelete() {
     const record = this.recordToDelete();
     if (record) {
+      const targetTime = parseSafeDate(record.date).getTime();
       this.records.update((records) =>
-        records.filter((r) => new Date(r.date).getTime() !== new Date(record.date).getTime()),
+        records.filter((r) => parseSafeDate(r.date).getTime() !== targetTime),
       );
       void this.storage.save('water_consumption_records', this.records());
       // Update notification service
@@ -248,10 +239,10 @@ export class ConsumptionDataService {
 
   confirmDeleteAll() {
     const recordsToDeleteSet = new Set(
-      this.recordsToDelete().map((r) => new Date(r.date).getTime()),
+      this.recordsToDelete().map((r) => parseSafeDate(r.date).getTime()),
     );
     this.records.update((records) =>
-      records.filter((r) => !recordsToDeleteSet.has(new Date(r.date).getTime())),
+      records.filter((r) => !recordsToDeleteSet.has(parseSafeDate(r.date).getTime())),
     );
     void this.storage.save('water_consumption_records', this.records());
     // Update notification service

@@ -25,78 +25,12 @@
     <!-- ============================================ -->
     <!-- READ-ONLY VIEW -->
     <!-- ============================================ -->
-    <div class="members-list">
-      @if (safeMembers().length === 0) {
-        <p class="empty-state">{{ 'SETTINGS.NO_MEMBERS' | translate }}</p>
-      } @else {
-        <ul>
-          @for (member of safeMembers(); track trackMember($index, member)) {
-            <li class="member-card">
-              <div class="member-info">
-                <div class="avatar-wrapper">
-                  <img
-                    [src]="member.avatar"
-                    [alt]="member.name"
-                    title="{{ member.name }}"
-                    width="48"
-                    height="48"
-                    loading="lazy"
-                    decoding="async"
-                  />
-                </div>
-                <div class="details">
-                  <span class="name">{{ member.name }} {{ member.surname }}</span>
-                  <div class="badges">
-                    @if (member.type && member.type !== 'other') {
-                      <span class="badge" [class.kid]="member.type === 'kid'">
-                        <lucide-icon
-                          [img]="member.type === 'kid' ? KidIcon : AdultIcon"
-                          size="14"
-                        ></lucide-icon>
-                        <span class="badge-text">{{
-                          'SETTINGS.TYPES.' + (member.type | uppercase) | translate
-                        }}</span>
-                      </span>
-                    }
-                    @if (member.gender && member.gender !== 'other') {
-                      <span class="badge gender" [class.female]="member.gender === 'female'">
-                        <lucide-icon
-                          [img]="member.gender === 'female' ? FemaleIcon : MaleIcon"
-                          size="14"
-                        ></lucide-icon>
-                        <span class="badge-text">{{
-                          'SETTINGS.GENDERS.' + (member.gender | uppercase) | translate
-                        }}</span>
-                      </span>
-                    }
-                  </div>
-                </div>
-              </div>
-              <div class="member-actions">
-                <button
-                  type="button"
-                  class="action-icon-btn edit-action-btn edit-btn"
-                  (click)="startEditMember(member)"
-                  title="{{ 'SETTINGS.EDIT_MEMBER' | translate }}"
-                  aria-label="{{ 'SETTINGS.EDIT_MEMBER' | translate }}"
-                >
-                  <lucide-icon [img]="EditIcon" size="16"></lucide-icon>
-                </button>
-                <button
-                  type="button"
-                  class="action-icon-btn remove-action-btn remove-btn"
-                  (click)="removeMember(member.id)"
-                  title="{{ 'SETTINGS.REMOVE' | translate }}"
-                  aria-label="{{ 'SETTINGS.REMOVE' | translate }}"
-                >
-                  <lucide-icon [img]="DeleteIcon" size="16"></lucide-icon>
-                </button>
-              </div>
-            </li>
-          }
-        </ul>
-      }
-    </div>
+    <app-family-member-list
+      [members]="safeMembers()"
+      [isEditing]="false"
+      (editMember)="startEditMember($event)"
+      (removeMember)="removeMember($event)"
+    ></app-family-member-list>
 
     <!-- Action buttons for read-only view -->
     <div class="button-group">
@@ -145,73 +79,12 @@
     <!-- ============================================ -->
     <!-- BULK EDIT VIEW -->
     <!-- ============================================ -->
-    <div class="members-list editing">
-      <div class="list-header">
-        <h3>{{ 'SETTINGS.CURRENT_MEMBERS' | translate }}</h3>
-      </div>
-      @if (draftMembers().length === 0) {
-        <p class="empty-state">{{ 'SETTINGS.NO_MEMBERS' | translate }}</p>
-      } @else {
-        <ul>
-          @for (member of draftMembers(); track trackMember($index, member)) {
-            <li class="member-card">
-              <div class="member-info">
-                <div class="avatar-wrapper">
-                  <img [src]="member.avatar" [alt]="member.name" title="{{ member.name }}" />
-                </div>
-                <div class="details">
-                  <span class="name">{{ member.name }} {{ member.surname }}</span>
-                  <div class="badges">
-                    @if (member.type && member.type !== 'other') {
-                      <span class="badge" [class.kid]="member.type === 'kid'">
-                        <lucide-icon
-                          [img]="member.type === 'kid' ? KidIcon : AdultIcon"
-                          size="14"
-                        ></lucide-icon>
-                        <span class="badge-text">{{
-                          'SETTINGS.TYPES.' + (member.type | uppercase) | translate
-                        }}</span>
-                      </span>
-                    }
-                    @if (member.gender && member.gender !== 'other') {
-                      <span class="badge gender" [class.female]="member.gender === 'female'">
-                        <lucide-icon
-                          [img]="member.gender === 'female' ? FemaleIcon : MaleIcon"
-                          size="14"
-                        ></lucide-icon>
-                        <span class="badge-text">{{
-                          'SETTINGS.GENDERS.' + (member.gender | uppercase) | translate
-                        }}</span>
-                      </span>
-                    }
-                  </div>
-                </div>
-              </div>
-              <div class="member-actions">
-                <button
-                  type="button"
-                  class="action-icon-btn edit-action-btn edit-btn"
-                  (click)="startEditMember(member)"
-                  title="{{ 'SETTINGS.EDIT_MEMBER' | translate }}"
-                  aria-label="{{ 'SETTINGS.EDIT_MEMBER' | translate }}"
-                >
-                  <lucide-icon [img]="EditIcon" size="16"></lucide-icon>
-                </button>
-                <button
-                  type="button"
-                  class="action-icon-btn remove-action-btn remove-btn"
-                  (click)="removeMember(member.id)"
-                  title="{{ 'SETTINGS.REMOVE' | translate }}"
-                  aria-label="{{ 'SETTINGS.REMOVE' | translate }}"
-                >
-                  <lucide-icon [img]="DeleteIcon" size="16"></lucide-icon>
-                </button>
-              </div>
-            </li>
-          }
-        </ul>
-      }
-    </div>
+    <app-family-member-list
+      [members]="draftMembers()"
+      [isEditing]="true"
+      (editMember)="startEditMember($event)"
+      (removeMember)="removeMember($event)"
+    ></app-family-member-list>
 
     <!-- Action buttons for bulk edit view -->
     <div class="button-group">
@@ -261,328 +134,176 @@
 <!-- ============================================ -->
 <!-- EDIT MEMBER MODAL -->
 <!-- ============================================ -->
-@if (editingMember(); as memberToEdit) {
-  <!-- eslint-disable-next-line @angular-eslint/template/interactive-supports-focus -- Backdrop dismissal by design -->
-  <div
-    class="modal-overlay"
-    (click)="$event.target === $event.currentTarget && cancelEditMember()"
-    (keydown.escape)="cancelEditMember()"
-  >
-    <div class="modal-content member-modal-content">
-      <div class="modal-header">
-        <div class="modal-title-with-icon">
-          <lucide-icon [img]="EditIcon" size="20" class="header-icon"></lucide-icon>
-          <h3>
-            {{ 'SETTINGS.EDIT_MEMBER' | translate }}: {{ memberToEdit.name }}
-            {{ memberToEdit.surname }}
-          </h3>
+@defer (when editingMember()) {
+  @if (editingMember(); as memberToEdit) {
+    <!-- eslint-disable-next-line @angular-eslint/template/interactive-supports-focus -- Backdrop dismissal by design -->
+    <div
+      class="modal-overlay"
+      (click)="$event.target === $event.currentTarget ? cancelEditMember() : undefined"
+      (keydown.escape)="cancelEditMember()"
+    >
+      <div class="modal-content member-modal-content">
+        <div class="modal-header">
+          <div class="modal-title-with-icon">
+            <lucide-icon [img]="EditIcon" size="20" class="header-icon"></lucide-icon>
+            <h3>
+              {{ 'SETTINGS.EDIT_MEMBER' | translate }}: {{ memberToEdit.name }}
+              {{ memberToEdit.surname }}
+            </h3>
+          </div>
+          <button
+            type="button"
+            class="close-btn"
+            (click)="cancelEditMember()"
+            title="{{ 'SETTINGS.CANCEL' | translate }}"
+            aria-label="{{ 'SETTINGS.CANCEL' | translate }}"
+          >
+            &times;
+          </button>
         </div>
-        <button
-          type="button"
-          class="close-btn"
-          (click)="cancelEditMember()"
-          title="{{ 'SETTINGS.CANCEL' | translate }}"
-          aria-label="{{ 'SETTINGS.CANCEL' | translate }}"
-        >
-          &times;
-        </button>
-      </div>
 
-      <div class="modal-body">
-        <app-member-editor
-          [member]="memberToEdit"
-          [avatars]="householdService.avatars"
-          (save)="onMemberEditorSave($event)"
-          (cancelModal)="cancelEditMember()"
-        >
-        </app-member-editor>
+        <div class="modal-body">
+          <app-member-editor
+            [member]="memberToEdit"
+            [avatars]="householdService.avatars"
+            (save)="onMemberEditorSave($event)"
+            (cancelModal)="cancelEditMember()"
+          >
+          </app-member-editor>
+        </div>
       </div>
     </div>
-  </div>
+  }
 }
 
 <!-- ============================================ -->
 <!-- ADD MEMBER MODAL -->
 <!-- ============================================ -->
-@if (showAddMemberForm()) {
-  <!-- eslint-disable-next-line @angular-eslint/template/interactive-supports-focus -- Backdrop dismissal by design -->
-  <div
-    class="modal-overlay add-member-modal-overlay"
-    (click)="$event.target === $event.currentTarget && closeAddMemberModal()"
-    (keydown.escape)="closeAddMemberModal()"
-  >
-    <div class="modal-content member-modal-content add-member-form">
-      <div class="modal-header">
-        <div class="modal-title-with-icon">
-          <lucide-icon [img]="AddIcon" size="20" class="header-icon"></lucide-icon>
-          <h3>{{ 'SETTINGS.ADD_MEMBER_TITLE' | translate }}</h3>
-        </div>
-        <button
-          type="button"
-          class="close-btn"
-          (click)="closeAddMemberModal()"
-          title="{{ 'SETTINGS.CANCEL' | translate }}"
-          aria-label="{{ 'SETTINGS.CANCEL' | translate }}"
-        >
-          &times;
-        </button>
-      </div>
-
-      <div class="modal-body">
-        <div class="form-grid">
-          <div class="form-group">
-            <label for="new-member-name">{{ 'SETTINGS.NAME' | translate }}</label>
-            <input
-              type="text"
-              id="new-member-name"
-              name="new-member-name"
-              autocomplete="given-name"
-              [ngModel]="newMemberName()"
-              (ngModelChange)="onNameChange($event)"
-              placeholder="John"
-              [class.error]="newMemberNameError()"
-            />
-            @if (newMemberNameError()) {
-              <div class="warning-message">
-                <lucide-icon [img]="TriangleAlertIcon" size="20" class="warning-icon"></lucide-icon>
-                <span>{{ newMemberNameError() | translate }}</span>
-              </div>
-            }
-          </div>
-          <div class="form-group">
-            <label for="new-member-surname">{{ 'SETTINGS.SURNAME' | translate }}</label>
-            <input
-              type="text"
-              id="new-member-surname"
-              name="new-member-surname"
-              autocomplete="family-name"
-              [ngModel]="newMemberSurname()"
-              (ngModelChange)="onSurnameChange($event)"
-              placeholder="Doe"
-              [class.error]="newMemberSurnameError()"
-            />
-            @if (newMemberSurnameError()) {
-              <div class="warning-message">
-                <lucide-icon [img]="TriangleAlertIcon" size="20" class="warning-icon"></lucide-icon>
-                <span>{{ newMemberSurnameError() | translate }}</span>
-              </div>
-            }
-          </div>
-        </div>
-
-        <div class="form-grid">
-          <div class="form-group">
-            <span class="form-label">{{ 'SETTINGS.TYPE' | translate }}</span>
-            <div class="toggle-group">
-              <button
-                type="button"
-                class="toggle-btn toggle-adult"
-                [class.active]="newMemberType() === 'adult'"
-                (click)="newMemberType.set('adult')"
-                title="{{ 'SETTINGS.TYPES.ADULT' | translate }}"
-                aria-label="{{ 'SETTINGS.TYPES.ADULT' | translate }}"
-              >
-                <lucide-icon [img]="AdultIcon" size="16"></lucide-icon>
-                <span class="toggle-text">{{ 'SETTINGS.TYPES.ADULT' | translate }}</span>
-              </button>
-              <button
-                type="button"
-                class="toggle-btn toggle-kid"
-                [class.active]="newMemberType() === 'kid'"
-                (click)="newMemberType.set('kid')"
-                title="{{ 'SETTINGS.TYPES.KID' | translate }}"
-                aria-label="{{ 'SETTINGS.TYPES.KID' | translate }}"
-              >
-                <lucide-icon [img]="KidIcon" size="16"></lucide-icon>
-                <span class="toggle-text">{{ 'SETTINGS.TYPES.KID' | translate }}</span>
-              </button>
-            </div>
-          </div>
-          <div class="form-group">
-            <span class="form-label">{{ 'SETTINGS.GENDER' | translate }}</span>
-            <div class="toggle-group">
-              <button
-                type="button"
-                class="toggle-btn toggle-male"
-                [class.active]="newMemberGender() === 'male'"
-                (click)="newMemberGender.set('male')"
-                title="{{ 'SETTINGS.GENDERS.MALE' | translate }}"
-                aria-label="{{ 'SETTINGS.GENDERS.MALE' | translate }}"
-              >
-                <lucide-icon [img]="MaleIcon" size="16"></lucide-icon>
-                <span class="toggle-text">{{ 'SETTINGS.GENDERS.MALE' | translate }}</span>
-              </button>
-              <button
-                type="button"
-                class="toggle-btn toggle-female"
-                [class.active]="newMemberGender() === 'female'"
-                (click)="newMemberGender.set('female')"
-                title="{{ 'SETTINGS.GENDERS.FEMALE' | translate }}"
-                aria-label="{{ 'SETTINGS.GENDERS.FEMALE' | translate }}"
-              >
-                <lucide-icon [img]="FemaleIcon" size="16"></lucide-icon>
-                <span class="toggle-text">{{ 'SETTINGS.GENDERS.FEMALE' | translate }}</span>
-              </button>
-            </div>
-          </div>
-        </div>
-        <div class="form-group">
-          <span class="form-label">{{ 'SETTINGS.CUSTOM_PICTURE' | translate }}</span>
-          <label class="upload-btn">
-            <lucide-icon [img]="ImportIcon" size="14"></lucide-icon>
-            <span class="btn-text">{{ 'SETTINGS.UPLOAD_PICTURE' | translate }}</span>
-            <input
-              type="file"
-              id="new-member-file"
-              name="new-member-file"
-              accept="image/*"
-              (change)="handleNewMemberFileUpload($event)"
-              class="hidden-input"
-            />
-          </label>
-          @if (newMemberPicturePreview()) {
-            <div class="picture-preview">
-              <img [src]="newMemberPicturePreview()" alt="New member avatar preview" />
-            </div>
-          }
-        </div>
-
-        <div class="form-group">
-          <span class="form-label">{{ 'SETTINGS.SELECT_AVATAR' | translate }}</span>
-          <div class="avatar-grid">
-            @for (avatar of householdService.avatars; track avatar) {
-              <button
-                type="button"
-                class="avatar-btn"
-                [class.selected]="selectedAvatar() === avatar"
-                (click)="selectAvatar(avatar)"
-                [attr.aria-label]="'SETTINGS.SELECT_AVATAR' | translate"
-                [title]="'SETTINGS.SELECT_AVATAR' | translate"
-              >
-                <img [src]="avatar" alt="Hero Avatar" />
-              </button>
-            }
-          </div>
-        </div>
-      </div>
-
-      <div class="modal-footer">
-        <button
-          type="button"
-          class="btn-secondary cancel-btn"
-          (click)="closeAddMemberModal()"
-          title="{{ 'SETTINGS.CANCEL' | translate }}"
-          aria-label="{{ 'SETTINGS.CANCEL' | translate }}"
-        >
-          <lucide-icon [img]="CancelIcon" size="15"></lucide-icon>
-          <span class="btn-text">{{ 'SETTINGS.CANCEL' | translate }}</span>
-        </button>
-        <button
-          type="button"
-          class="btn-primary add-btn submit-add-btn"
-          (click)="addMember()"
-          [disabled]="
-            !newMemberName() ||
-            !newMemberSurname() ||
-            isAtMaxMembers() ||
-            newMemberNameError() ||
-            newMemberSurnameError()
-          "
-          title="{{ 'SETTINGS.ADD_MEMBER' | translate }}"
-          aria-label="{{ 'SETTINGS.ADD_MEMBER' | translate }}"
-        >
-          <lucide-icon [img]="AddIcon" size="15"></lucide-icon>
-          <span class="btn-text">{{ 'SETTINGS.ADD_MEMBER' | translate }}</span>
-        </button>
-      </div>
-    </div>
-  </div>
+@defer (when showAddMemberForm()) {
+  @if (showAddMemberForm()) {
+    <app-family-add-member-modal
+      [show]="showAddMemberForm()"
+      [name]="newMemberName()"
+      [surname]="newMemberSurname()"
+      [nameError]="newMemberNameError()"
+      [surnameError]="newMemberSurnameError()"
+      [memberType]="newMemberType()"
+      [memberGender]="newMemberGender()"
+      [picturePreview]="newMemberPicturePreview()"
+      [selectedAvatar]="selectedAvatar()"
+      [avatars]="householdService.avatars"
+      [isAtMaxMembers]="isAtMaxMembers()"
+      (nameChange)="onNameChange($event)"
+      (surnameChange)="onSurnameChange($event)"
+      (typeChange)="newMemberType.set($event)"
+      (genderChange)="newMemberGender.set($event)"
+      (fileUpload)="handleNewMemberFileUpload($event)"
+      (avatarSelect)="selectAvatar($event)"
+      (submitMember)="addMember()"
+      (closeModal)="closeAddMemberModal()"
+    ></app-family-add-member-modal>
+  }
 }
 
 <!-- ============================================ -->
 <!-- CONFIRMATION & UTILITY MODALS -->
 <!-- ============================================ -->
-<app-delete-confirmation-modal
-  [show]="showDeleteModal()"
-  [titleKey]="'SETTINGS.DELETE_MEMBER_CONFIRM_TITLE'"
-  [messageKey]="'SETTINGS.DELETE_MEMBER_CONFIRM_MESSAGE'"
-  [cancelKey]="'SETTINGS.CANCEL'"
-  [deleteKey]="'SETTINGS.DELETE_MEMBER_BUTTON'"
-  [icon]="DeleteIcon"
-  (confirm)="confirmDelete()"
-  (cancelModal)="cancelDelete()"
->
-</app-delete-confirmation-modal>
+@defer (when showDeleteModal()) {
+  @if (showDeleteModal()) {
+    <app-delete-confirmation-modal
+      [show]="showDeleteModal()"
+      [titleKey]="'SETTINGS.DELETE_MEMBER_CONFIRM_TITLE'"
+      [messageKey]="'SETTINGS.DELETE_MEMBER_CONFIRM_MESSAGE'"
+      [cancelKey]="'SETTINGS.CANCEL'"
+      [deleteKey]="'SETTINGS.DELETE_MEMBER_BUTTON'"
+      [icon]="DeleteIcon"
+      (confirm)="confirmDelete()"
+      (cancelModal)="cancelDelete()"
+    >
+    </app-delete-confirmation-modal>
+  }
+}
 
 <!-- Unsaved changes warning modal -->
-<app-delete-confirmation-modal
-  [show]="showUnsavedChangesModal()"
-  [titleKey]="'SETTINGS.UNSAVED_CHANGES_TITLE'"
-  [messageKey]="'SETTINGS.UNSAVED_CHANGES_MESSAGE'"
-  [cancelKey]="'SETTINGS.UNSAVED_CHANGES_STAY'"
-  [deleteKey]="'SETTINGS.UNSAVED_CHANGES_LEAVE'"
-  [icon]="WarningIcon"
-  (confirm)="confirmLeaveWithoutSaving()"
-  (cancelModal)="stayAndSave()"
->
-</app-delete-confirmation-modal>
+@defer (when showUnsavedChangesModal()) {
+  @if (showUnsavedChangesModal()) {
+    <app-delete-confirmation-modal
+      [show]="showUnsavedChangesModal()"
+      [titleKey]="'SETTINGS.UNSAVED_CHANGES_TITLE'"
+      [messageKey]="'SETTINGS.UNSAVED_CHANGES_MESSAGE'"
+      [cancelKey]="'SETTINGS.UNSAVED_CHANGES_STAY'"
+      [deleteKey]="'SETTINGS.UNSAVED_CHANGES_LEAVE'"
+      [icon]="WarningIcon"
+      (confirm)="confirmLeaveWithoutSaving()"
+      (cancelModal)="stayAndSave()"
+    >
+    </app-delete-confirmation-modal>
+  }
+}
 
-<app-confirmation-modal
-  [show]="showImportConfirmModal()"
-  [titleKey]="'SETTINGS.IMPORT_FAMILY_CONFIRM_TITLE'"
-  [messageKey]="'SETTINGS.IMPORT_FAMILY_CONFIRM_MESSAGE'"
-  [cancelKey]="'SETTINGS.CANCEL'"
-  [confirmKey]="'HOME.IMPORT_BUTTON'"
-  [icon]="ImportIcon"
-  (confirm)="confirmImportFamily()"
-  (cancelModal)="cancelImportFamily()"
->
-</app-confirmation-modal>
+@defer (when showImportConfirmModal()) {
+  @if (showImportConfirmModal()) {
+    <app-confirmation-modal
+      [show]="showImportConfirmModal()"
+      [titleKey]="'SETTINGS.IMPORT_FAMILY_CONFIRM_TITLE'"
+      [messageKey]="'SETTINGS.IMPORT_FAMILY_CONFIRM_MESSAGE'"
+      [cancelKey]="'SETTINGS.CANCEL'"
+      [confirmKey]="'HOME.IMPORT_BUTTON'"
+      [icon]="ImportIcon"
+      (confirm)="confirmImportFamily()"
+      (cancelModal)="cancelImportFamily()"
+    >
+    </app-confirmation-modal>
+  }
+}
 
-<app-error-modal
-  [show]="showImportErrorModal()"
-  [title]="'SETTINGS.IMPORT_FAMILY_ERROR_TITLE'"
-  [message]="importErrorMessage()"
-  [instructions]="importErrorInstructions()"
-  (cancelModal)="closeImportErrorModal()"
->
-</app-error-modal>
+@defer (when showImportErrorModal()) {
+  @if (showImportErrorModal()) {
+    <app-error-modal
+      [show]="showImportErrorModal()"
+      [title]="'SETTINGS.IMPORT_FAMILY_ERROR_TITLE'"
+      [message]="importErrorMessage()"
+      [instructions]="importErrorInstructions()"
+      (cancelModal)="closeImportErrorModal()"
+    >
+    </app-error-modal>
+  }
+}
 
-<app-error-modal
-  [show]="showDuplicateMemberError()"
-  [title]="'SETTINGS.DUPLICATE_MEMBER_ERROR'"
-  [message]="
-    languageService
-      .translate('SETTINGS.DUPLICATE_MEMBER_NAME')
-      .replace('{name}', duplicateMemberName().split(' ')[0] || '')
-      .replace('{surname}', duplicateMemberName().split(' ')[1] || '')
-  "
-  [instructions]="[
-    'SETTINGS.DUPLICATE_MEMBER_INSTRUCTION_1',
-    'SETTINGS.DUPLICATE_MEMBER_INSTRUCTION_2',
-    'SETTINGS.DUPLICATE_MEMBER_INSTRUCTION_3',
-  ]"
-  (cancelModal)="closeDuplicateMemberError()"
->
-</app-error-modal>
+@defer (when showDuplicateMemberError()) {
+  @if (showDuplicateMemberError()) {
+    <app-error-modal
+      [show]="showDuplicateMemberError()"
+      [title]="'SETTINGS.DUPLICATE_MEMBER_ERROR'"
+      [message]="duplicateMemberErrorMessage()"
+      [instructions]="duplicateMemberInstructions"
+      (cancelModal)="closeDuplicateMemberError()"
+    >
+    </app-error-modal>
+  }
+}
 
-<app-error-modal
-  [show]="showMaxMembersError()"
-  [title]="'SETTINGS.MAX_MEMBERS_ERROR'"
-  [message]="
-    languageService
-      .translate('SETTINGS.MAX_MEMBERS_MESSAGE')
-      .replace('{max}', MAX_FAMILY_MEMBERS.toString())
-  "
-  [instructions]="['SETTINGS.MAX_MEMBERS_INSTRUCTION_1', 'SETTINGS.MAX_MEMBERS_INSTRUCTION_2']"
-  (cancelModal)="showMaxMembersError.set(false)"
->
-</app-error-modal>
+@defer (when showMaxMembersError()) {
+  @if (showMaxMembersError()) {
+    <app-error-modal
+      [show]="showMaxMembersError()"
+      [title]="'SETTINGS.MAX_MEMBERS_ERROR'"
+      [message]="maxMembersErrorMessage()"
+      [instructions]="maxMembersInstructions"
+      (cancelModal)="showMaxMembersError.set(false)"
+    >
+    </app-error-modal>
+  }
+}
 
-<app-help-modal
-  [show]="showHelpModal()"
-  [titleKey]="'SETTINGS.FAMILY_HELP_TITLE'"
-  [steps]="helpSteps"
-  (closeModal)="closeHelp()"
->
-</app-help-modal>
+@defer (when showHelpModal()) {
+  @if (showHelpModal()) {
+    <app-help-modal
+      [show]="showHelpModal()"
+      [titleKey]="'SETTINGS.FAMILY_HELP_TITLE'"
+      [steps]="helpSteps"
+      (closeModal)="closeHelp()"
+    >
+    </app-help-modal>
+  }
+}

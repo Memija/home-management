@@ -1,4 +1,4 @@
-import { Component, signal, computed } from '@angular/core';
+import { Component, ChangeDetectionStrategy, signal, computed } from '@angular/core';
 import { TranslatePipe } from '../pipes/translate.pipe';
 import {
   LucideAngularModule,
@@ -34,6 +34,7 @@ interface Feature {
   imports: [TranslatePipe, LucideAngularModule],
   templateUrl: './release-plan.component.html',
   styleUrl: './release-plan.component.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ReleasePlanComponent {
   // Icons
@@ -129,16 +130,21 @@ export class ReleasePlanComponent {
     smart: this.SmartIcon,
   };
 
-  // Available filters with counts
-  readonly filterOptions = computed(() => {
+  // Available filters with counts (precomputed once since features is static)
+  private readonly filterCounts: Record<FeatureTag | 'all', number> = (() => {
     const counts: Record<FeatureTag | 'all', number> = {
       all: this.features.length,
-      new: this.features.filter((f) => f.tag === 'new').length,
-      enhancement: this.features.filter((f) => f.tag === 'enhancement').length,
-      smart: this.features.filter((f) => f.tag === 'smart').length,
+      new: 0,
+      enhancement: 0,
+      smart: 0,
     };
+    for (const f of this.features) {
+      counts[f.tag]++;
+    }
     return counts;
-  });
+  })();
+
+  readonly filterOptions = (): Record<FeatureTag | 'all', number> => this.filterCounts;
 
   setFilter(filter: FeatureTag | 'all'): void {
     this.activeFilter.set(filter);

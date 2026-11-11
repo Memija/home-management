@@ -1,7 +1,7 @@
 import { Injectable, inject, signal } from '@angular/core';
-import { ChartCalculationService } from './chart-calculation.service';
 import { PredictionCalculationService } from './prediction-calculation.service';
 import { PredictionStatsService } from './prediction-stats.service';
+import { applyMeterChangeOffsets, computeIncrementalData } from '../utils/chart-calculation.utils';
 import {
   AnyConsumptionRecord,
   ConsumptionRecord,
@@ -51,7 +51,6 @@ const TRACKER_ROTATION_OFFSETS: Record<MotivationTrackerType, number> = {
   providedIn: 'root',
 })
 export class ConsumptionMotivationService {
-  private readonly calculationService = inject(ChartCalculationService);
   private readonly predictionCalculation = inject(PredictionCalculationService);
   private readonly statsService = inject(PredictionStatsService);
 
@@ -60,6 +59,11 @@ export class ConsumptionMotivationService {
     heating: 0,
     electricity: 0,
   });
+
+  private readonly metricsCache = new WeakMap<
+    AnyConsumptionRecord[],
+    Map<string, TrendMetrics | null>
+  >();
 
   /**
    * Cycles to the next motivational message for the specified tracker.
@@ -95,7 +99,7 @@ export class ConsumptionMotivationService {
 
     const adjusted =
       confirmedMeterChanges.length > 0
-        ? this.calculationService.adjustForMeterChanges(sorted, confirmedMeterChanges)
+        ? applyMeterChangeOffsets(sorted, confirmedMeterChanges)
         : sorted;
 
     return this.buildInsight('water', adjusted, 'L');
@@ -142,6 +146,26 @@ export class ConsumptionMotivationService {
       return [];
     }
 
+    // Fast path: check if records already contain valid Date instances in ascending order
+    let isAlreadyValidAndSorted = true;
+    let prevTime = -Infinity;
+    for (const record of records) {
+      if (!(record?.date instanceof Date)) {
+        isAlreadyValidAndSorted = false;
+        break;
+      }
+      const time = record.date.getTime();
+      if (Number.isNaN(time) || time < prevTime) {
+        isAlreadyValidAndSorted = false;
+        break;
+      }
+      prevTime = time;
+    }
+
+    if (isAlreadyValidAndSorted) {
+      return records;
+    }
+
     return records
       .map((record) => ({ ...record, date: parseSafeDate(record.date) }))
       .filter((record) => !Number.isNaN(record.date.getTime()))
@@ -155,19 +179,35 @@ export class ConsumptionMotivationService {
     ignoredSpikes?: { date: string; roomId: string }[],
   ): MotivationInsight | null {
     const tipIndex = this.resolveTipIndex(tracker, sortedRecords.length);
-    const incrementalData = this.calculationService.calculateIncrementalData(
-      sortedRecords,
-      ignoredSpikes,
-    );
-    const ratesWithMonths = this.predictionCalculation.calculateDailyRatesWithMonths(
-      sortedRecords,
-      incrementalData,
-      'total',
-    );
+    const cacheKey = `${tracker}:${sortedRecords.length}:${
+      ignoredSpikes?.length ? ignoredSpikes.map((s) => `${s.date}:${s.roomId}`).join('|') : ''
+    }`;
 
-    if (ratesWithMonths.length < 2) return null;
+    let cachedByRecs = this.metricsCache.get(sortedRecords);
+    let metrics: TrendMetrics | null | undefined = cachedByRecs?.get(cacheKey);
 
-    const metrics = this.computeTrendMetrics(tracker, ratesWithMonths, sortedRecords.length);
+    if (metrics === undefined) {
+      const incrementalData = computeIncrementalData(sortedRecords, ignoredSpikes);
+      const ratesWithMonths = this.predictionCalculation.calculateDailyRatesWithMonths(
+        sortedRecords,
+        incrementalData,
+        'total',
+      );
+
+      metrics =
+        ratesWithMonths.length < 2
+          ? null
+          : this.computeTrendMetrics(tracker, ratesWithMonths, sortedRecords.length);
+
+      if (!cachedByRecs) {
+        cachedByRecs = new Map<string, TrendMetrics | null>();
+        this.metricsCache.set(sortedRecords, cachedByRecs);
+      }
+      cachedByRecs.set(cacheKey, metrics);
+    }
+
+    if (!metrics) return null;
+
     const latestDateIso = getDateKey(sortedRecords.at(-1)!.date);
     const trackerKey = tracker.toUpperCase();
     const stateKey = metrics.state.toUpperCase();

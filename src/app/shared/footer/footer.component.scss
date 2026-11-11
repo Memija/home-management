@@ -71,6 +71,15 @@
       }
     }
 
+    .benchmarks-link {
+      --link-rgb: 14, 165, 233;
+      --link-rgb-2: 59, 130, 246;
+
+      &:hover lucide-icon {
+        transform: translateY(-2px);
+      }
+    }
+
     .changelog-link {
       --link-rgb: 5, 150, 105;
       --link-rgb-2: 13, 148, 136;

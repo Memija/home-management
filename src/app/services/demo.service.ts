@@ -93,27 +93,34 @@ export class DemoService {
       // Load demo data from public/demo folder
       const demoData = await this.loadDemoData();
 
-      // Save demo data to storage
+      // Save demo data to storage concurrently
+      const savePromises: Promise<void>[] = [];
       if (demoData.waterRecords) {
-        await this.storage.save('water_consumption_records', demoData.waterRecords);
+        savePromises.push(this.storage.save('water_consumption_records', demoData.waterRecords));
       }
       if (demoData.heatingRecords) {
-        await this.storage.save('heating_consumption_records', demoData.heatingRecords);
+        savePromises.push(
+          this.storage.save('heating_consumption_records', demoData.heatingRecords),
+        );
       }
       if (demoData.heatingSettings) {
-        await this.storage.save('heating_room_configuration', demoData.heatingSettings);
+        savePromises.push(
+          this.storage.save('heating_room_configuration', demoData.heatingSettings),
+        );
       }
       if (demoData.family) {
-        await this.storage.save('household_members', demoData.family);
+        savePromises.push(this.storage.save('household_members', demoData.family));
       }
       if (demoData.address) {
-        await this.storage.save('household_address', demoData.address);
+        savePromises.push(this.storage.save('household_address', demoData.address));
       }
       if (demoData.electricityRecords) {
-        await this.storage.save('electricity_consumption_records', demoData.electricityRecords);
+        savePromises.push(
+          this.storage.save('electricity_consumption_records', demoData.electricityRecords),
+        );
       }
       if (demoData.excelSettings) {
-        await this.storage.save('excel_settings', demoData.excelSettings);
+        savePromises.push(this.storage.save('excel_settings', demoData.excelSettings));
       }
 
       // Clear preference keys (like meter change confirmations) so user can experience them in demo
@@ -122,12 +129,16 @@ export class DemoService {
       }
 
       // Set demo-optimal chart preferences: average (incremental) + detailed/by-room views
-      await this.storage.save('water_chart_view', 'detailed');
-      await this.storage.save('water_display_mode', 'incremental');
-      await this.storage.save('heating_chart_view', 'by-room');
-      await this.storage.save('heating_display_mode', 'incremental');
-      await this.storage.save('electricity_chart_view', 'detailed');
-      await this.storage.save('electricity_display_mode', 'incremental');
+      savePromises.push(
+        this.storage.save('water_chart_view', 'detailed'),
+        this.storage.save('water_display_mode', 'incremental'),
+        this.storage.save('heating_chart_view', 'by-room'),
+        this.storage.save('heating_display_mode', 'incremental'),
+        this.storage.save('electricity_chart_view', 'detailed'),
+        this.storage.save('electricity_display_mode', 'incremental'),
+      );
+
+      await Promise.all(savePromises);
 
       // Enable "Show Average" comparison on all chart pages for demo
       this.storage.setPreference('electricity_chart_average_visible', 'true');

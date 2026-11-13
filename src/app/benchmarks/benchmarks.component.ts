@@ -1,28 +1,14 @@
 import { isPlatformBrowser } from '@angular/common';
 import {
-  Component,
   ChangeDetectionStrategy,
+  Component,
   PLATFORM_ID,
   computed,
   inject,
   signal,
 } from '@angular/core';
 import { RouterLink } from '@angular/router';
-import {
-  ArrowDown,
-  ArrowUp,
-  ArrowUpDown,
-  BookOpen,
-  Droplets,
-  Flame,
-  Globe,
-  Info,
-  Lightbulb,
-  LucideAngularModule,
-  Search,
-  Users,
-  Zap,
-} from 'lucide-angular';
+import { Globe, LucideAngularModule } from 'lucide-angular';
 import { BenchmarkSourceLink, getBenchmarkSourceUrl } from '../models/benchmark-sources.data';
 import { TranslatePipe } from '../pipes/translate.pipe';
 import { ElectricityAveragesService } from '../services/electricity-averages.service';
@@ -30,25 +16,25 @@ import { HeatingAveragesService } from '../services/heating-averages.service';
 import { HouseholdService } from '../services/household.service';
 import { LanguageService } from '../services/language.service';
 import { WaterAveragesService } from '../services/water-averages.service';
+import { BenchmarksControlsComponent } from './benchmarks-controls/benchmarks-controls.component';
+import { BenchmarksTableComponent } from './benchmarks-table/benchmarks-table.component';
+import {
+  BenchmarkSortColumn,
+  BenchmarkSortDirection,
+  CountryBenchmarkRow,
+  HouseholdSizeParams,
+  getBenchmarkAriaSort,
+} from './benchmarks.types';
 import {
   CountryFactsModalComponent,
   FactCategory,
 } from './country-facts-modal/country-facts-modal.component';
 
-export type BenchmarkSortColumn = 'country' | 'water' | 'electricity' | 'heating';
-export type BenchmarkSortDirection = 'asc' | 'desc';
-
-export interface CountryBenchmarkRow {
-  readonly code: string;
-  readonly name: string;
-  readonly flagUrl: string;
-  readonly waterDailyLiters: number;
-  readonly electricityYearlyKwh: number;
-  readonly heatingYearlyKwh: number;
-  readonly sources: string;
-  readonly sourceLinks: readonly BenchmarkSourceLink[];
-  readonly isUserCountry: boolean;
-}
+export type {
+  BenchmarkSortColumn,
+  BenchmarkSortDirection,
+  CountryBenchmarkRow,
+} from './benchmarks.types';
 
 interface StaticCountryBenchmark {
   readonly code: string;
@@ -78,7 +64,14 @@ const DEFAULT_HOUSEHOLD_SIZE = 2;
 @Component({
   selector: 'app-benchmarks',
   standalone: true,
-  imports: [CountryFactsModalComponent, LucideAngularModule, RouterLink, TranslatePipe],
+  imports: [
+    BenchmarksControlsComponent,
+    BenchmarksTableComponent,
+    CountryFactsModalComponent,
+    LucideAngularModule,
+    RouterLink,
+    TranslatePipe,
+  ],
   templateUrl: './benchmarks.component.html',
   styleUrl: './benchmarks.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -92,19 +85,7 @@ export class BenchmarksComponent {
   private readonly platformId = inject(PLATFORM_ID);
 
   readonly isBrowser = isPlatformBrowser(this.platformId);
-
   readonly GlobeIcon = Globe;
-  readonly UsersIcon = Users;
-  readonly SearchIcon = Search;
-  readonly InfoIcon = Info;
-  readonly DropletsIcon = Droplets;
-  readonly ZapIcon = Zap;
-  readonly FlameIcon = Flame;
-  readonly BookOpenIcon = BookOpen;
-  readonly ArrowUpDownIcon = ArrowUpDown;
-  readonly ArrowUpIcon = ArrowUp;
-  readonly ArrowDownIcon = ArrowDown;
-  readonly LightbulbIcon = Lightbulb;
 
   private readonly selectedHouseholdSize = signal<number | null>(null);
   readonly sortColumn = signal<BenchmarkSortColumn>('country');
@@ -121,22 +102,20 @@ export class BenchmarksComponent {
     return userCount > 5 ? [...HOUSEHOLD_SIZE_OPTIONS, userCount] : HOUSEHOLD_SIZE_OPTIONS;
   });
 
-  readonly householdSizeParams = computed<Readonly<Record<number, { readonly count: number }>>>(
-    () => {
-      const params: Record<number, { readonly count: number }> = {
-        1: { count: 1 },
-        2: { count: 2 },
-        3: { count: 3 },
-        4: { count: 4 },
-        5: { count: 5 },
-      };
-      const userCount = this.householdService.members().length;
-      if (userCount > 5) {
-        params[userCount] = { count: userCount };
-      }
-      return params;
-    },
-  );
+  readonly householdSizeParams = computed<HouseholdSizeParams>(() => {
+    const params: Record<number, { readonly count: number }> = {
+      1: { count: 1 },
+      2: { count: 2 },
+      3: { count: 3 },
+      4: { count: 4 },
+      5: { count: 5 },
+    };
+    const userCount = this.householdService.members().length;
+    if (userCount > 5) {
+      params[userCount] = { count: userCount };
+    }
+    return params;
+  });
 
   readonly householdSize = computed<number>(() => {
     const manual = this.selectedHouseholdSize();
@@ -266,6 +245,10 @@ export class BenchmarksComponent {
     this.selectedHouseholdSize.set(size);
   }
 
+  setSearchQuery(query: string): void {
+    this.searchQuery.set(query);
+  }
+
   openCountryFacts(row: CountryBenchmarkRow): void {
     this.selectedCountryCode.set(row.code);
   }
@@ -284,12 +267,6 @@ export class BenchmarksComponent {
   }
 
   getAriaSort(column: BenchmarkSortColumn): 'ascending' | 'descending' | 'none' {
-    if (this.sortColumn() !== column) return 'none';
-    return this.sortDirection() === 'asc' ? 'ascending' : 'descending';
-  }
-
-  onSearchInput(event: Event): void {
-    const input = event.target as HTMLInputElement | null;
-    this.searchQuery.set(input?.value ?? '');
+    return getBenchmarkAriaSort(this.sortColumn(), this.sortDirection(), column);
   }
 }

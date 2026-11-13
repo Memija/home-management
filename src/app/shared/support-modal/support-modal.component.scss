@@ -56,7 +56,7 @@
 
   .modal-body {
     padding: 0;
-    background: #f9f9f9;
+    background: var(--bg-secondary, $light);
 
     iframe {
       width: 100%;

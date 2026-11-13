@@ -1,0 +1,142 @@
+<div class="table-scroll">
+  <table class="benchmarks-table">
+    <caption class="sr-only">
+      {{
+        'SEO.BENCHMARKS.TABLE_CAPTION' | translate
+      }}
+    </caption>
+    <thead>
+      <tr>
+        <th scope="col" class="country-th" [attr.aria-sort]="getAriaSort('country')">
+          <app-benchmarks-sort-header
+            column="country"
+            [label]="'SEO.BENCHMARKS.COL_COUNTRY' | translate"
+            [icon]="GlobeIcon"
+            [activeColumn]="sortColumn()"
+            [direction]="sortDirection()"
+            (sortSelected)="sortChange.emit($event)"
+          />
+        </th>
+        <th scope="col" class="num-col" [attr.aria-sort]="getAriaSort('water')">
+          <app-benchmarks-sort-header
+            column="water"
+            [label]="'SEO.BENCHMARKS.COL_WATER_DAILY' | translate"
+            [icon]="DropletsIcon"
+            [activeColumn]="sortColumn()"
+            [direction]="sortDirection()"
+            (sortSelected)="sortChange.emit($event)"
+          />
+        </th>
+        <th scope="col" class="num-col" [attr.aria-sort]="getAriaSort('electricity')">
+          <app-benchmarks-sort-header
+            column="electricity"
+            [label]="'SEO.BENCHMARKS.COL_ELECTRICITY' | translate"
+            [icon]="ZapIcon"
+            [activeColumn]="sortColumn()"
+            [direction]="sortDirection()"
+            (sortSelected)="sortChange.emit($event)"
+          />
+        </th>
+        <th scope="col" class="num-col" [attr.aria-sort]="getAriaSort('heating')">
+          <app-benchmarks-sort-header
+            column="heating"
+            [label]="'SEO.BENCHMARKS.COL_HEATING' | translate"
+            [icon]="FlameIcon"
+            [activeColumn]="sortColumn()"
+            [direction]="sortDirection()"
+            [tooltip]="'SEO.BENCHMARKS.HEATING_SIZE_TOOLTIP' | translate"
+            (sortSelected)="sortChange.emit($event)"
+          />
+        </th>
+        <th scope="col" class="sources-th">
+          <span class="th-static">
+            <lucide-icon
+              [img]="BookOpenIcon"
+              [size]="15"
+              class="col-icon--sources"
+              aria-hidden="true"
+            ></lucide-icon>
+            <span>{{ 'SEO.BENCHMARKS.COL_SOURCES' | translate }}</span>
+          </span>
+        </th>
+      </tr>
+    </thead>
+    <tbody>
+      @for (row of rows(); track row.code) {
+        <tr [class.user-country-row]="row.isUserCountry">
+          <th scope="row" class="country-cell">
+            <button
+              type="button"
+              class="country-trigger"
+              (click)="countrySelected.emit(row)"
+              aria-label="{{
+                'SEO.BENCHMARKS.VIEW_COUNTRY_FACTS' | translate: { country: row.name }
+              }}"
+            >
+              <span class="country-cell-content">
+                <img
+                  [src]="row.flagUrl"
+                  alt=""
+                  width="24"
+                  height="16"
+                  loading="lazy"
+                  decoding="async"
+                  class="country-flag"
+                />
+                <span class="country-name">{{ row.name }}</span>
+              </span>
+              <lucide-icon
+                [img]="LightbulbIcon"
+                [size]="15"
+                class="country-facts-icon"
+                aria-hidden="true"
+              ></lucide-icon>
+            </button>
+          </th>
+          <td
+            class="num-col water-val"
+            [attr.data-label]="'SEO.BENCHMARKS.COL_WATER_DAILY' | translate"
+          >
+            {{ row.waterDailyLiters }}
+          </td>
+          <td
+            class="num-col electricity-val"
+            [attr.data-label]="'SEO.BENCHMARKS.COL_ELECTRICITY' | translate"
+          >
+            {{ row.electricityYearlyKwh }}
+          </td>
+          <td
+            class="num-col heating-val"
+            [attr.data-label]="'SEO.BENCHMARKS.COL_HEATING' | translate"
+          >
+            @if (row.heatingYearlyKwh > 0) {
+              {{ row.heatingYearlyKwh }}
+            } @else {
+              <span class="na-val" title="{{ 'SEO.BENCHMARKS.NO_HEATING_TOOLTIP' | translate }}">
+                {{ 'SEO.BENCHMARKS.NO_HEATING' | translate }}
+              </span>
+            }
+          </td>
+          <td class="sources-cell" [attr.data-label]="'SEO.BENCHMARKS.COL_SOURCES' | translate">
+            @for (source of row.sourceLinks; track source.label; let last = $last) {
+              @if (source.url) {
+                <a
+                  [href]="source.url"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  class="source-link"
+                  >{{ source.label }}</a
+                >
+              } @else {
+                <span>{{ source.label }}</span>
+              }
+              @if (!last) {
+                <span class="source-sep" aria-hidden="true"> · </span>
+              }
+            }
+          </td>
+        </tr>
+      }
+    </tbody>
+  </table>
+</div>

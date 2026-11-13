@@ -81,9 +81,16 @@ export function isRecordAllZero(record: unknown): boolean {
   }
   // Check for heating record
   if ('rooms' in r && typeof r['rooms'] === 'object' && r['rooms'] !== null) {
-    return Object.values(r['rooms'] as Record<string, unknown>).every(
-      (v) => v === 0 || v === undefined,
-    );
+    const rooms = r['rooms'] as Record<string, unknown>;
+    for (const roomId in rooms) {
+      if (Object.hasOwn(rooms, roomId)) {
+        const v = rooms[roomId];
+        if (v !== 0 && v !== undefined) {
+          return false;
+        }
+      }
+    }
+    return true;
   }
   return false;
 }
@@ -188,7 +195,7 @@ export function getLatestLocalRecordTimestamp(): number {
   return latest;
 }
 
-function isIgnoredStorageKey(key: string, value: string | null): boolean {
+export function isIgnoredStorageKey(key: string, value: string | null): boolean {
   if (!key.startsWith('hm_') || (IGNORED_STORAGE_KEYS as readonly string[]).includes(key)) {
     return true;
   }

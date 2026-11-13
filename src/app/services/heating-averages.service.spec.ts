@@ -28,6 +28,7 @@ describe('HeatingAveragesService', () => {
       { input: 'de', desc: 'known country code' },
       { input: 'Germany', desc: 'known country name' },
       { input: 'GERMANY', desc: 'uppercase country name' },
+      { input: 'Deutschland', desc: 'localized country alias via COUNTRY_TO_CODE' },
     ])('should return data for $desc ($input)', ({ input }) => {
       const data = service.getCountryData(input);
       expect(data.averageKwhPerYear).toBe(13500);

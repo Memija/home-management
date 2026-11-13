@@ -1,4 +1,4 @@
-import { Component, inject, output } from '@angular/core';
+import { Component, ChangeDetectionStrategy, inject, output } from '@angular/core';
 import { TranslatePipe } from '../../pipes/translate.pipe';
 import { LucideAngularModule, X, Heart } from 'lucide-angular';
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
@@ -9,6 +9,7 @@ import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
   imports: [TranslatePipe, LucideAngularModule],
   templateUrl: './support-modal.component.html',
   styleUrl: './support-modal.component.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class SupportModalComponent {
   private readonly sanitizer = inject(DomSanitizer);

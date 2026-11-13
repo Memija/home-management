@@ -1,0 +1,356 @@
+// ============================================
+// Landing Page — Features Road, Scenery & Progress
+// ============================================
+
+// Features & Road Section
+.features-section {
+  position: relative;
+  padding: 7rem 2rem 5rem;
+  max-width: 1150px;
+  margin: 0 auto;
+
+  .section-header {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    margin-bottom: 4.5rem;
+    position: relative;
+    z-index: 1;
+
+    > div {
+      opacity: 0;
+      transform: translateY(20px);
+      transition: all 0.6s ease;
+
+      &.visible {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+  }
+
+  .section-title {
+    font-size: clamp(2rem, 4.5vw, 2.75rem);
+    font-weight: 800;
+    letter-spacing: -0.02em;
+    margin: 0 0 1rem;
+    color: var(--text-primary);
+  }
+
+  .section-subtitle {
+    font-size: 1.15rem;
+    color: var(--text-secondary);
+    max-width: 580px;
+    margin: 0 auto;
+    line-height: 1.6;
+  }
+}
+
+.features-road {
+  position: relative;
+  padding: 2rem 0;
+  z-index: 1;
+}
+
+.road-backbone {
+  position: absolute;
+  left: 50%;
+  top: 0;
+  bottom: 0;
+  transform: translateX(-50%);
+  width: 4px;
+
+  .road-line-svg {
+    width: 100%;
+    height: 100%;
+  }
+
+  @media (max-width: 768px) {
+    left: 24px;
+    transform: none;
+  }
+}
+
+.feature-stop {
+  position: relative;
+  display: flex;
+  align-items: center;
+  margin-bottom: 4.5rem;
+  opacity: 0;
+  transition: all 0.7s cubic-bezier(0.16, 1, 0.3, 1);
+
+  &.visible {
+    opacity: 1;
+  }
+
+  &.left {
+    flex-direction: row;
+    padding-right: calc(50% + 40px);
+    transform: translateX(-40px);
+
+    &.visible {
+      transform: translateX(0);
+    }
+
+    .milestone-marker {
+      position: absolute;
+      right: calc(50% - 11px);
+    }
+  }
+
+  &.right {
+    flex-direction: row-reverse;
+    padding-left: calc(50% + 40px);
+    transform: translateX(40px);
+
+    &.visible {
+      transform: translateX(0);
+    }
+
+    .milestone-marker {
+      position: absolute;
+      left: calc(50% - 11px);
+    }
+  }
+
+  @media (max-width: 768px) {
+    &.left,
+    &.right {
+      padding-left: 60px;
+      padding-right: 0;
+      flex-direction: row;
+      transform: translateX(-20px);
+
+      &.visible {
+        transform: translateX(0);
+      }
+
+      .milestone-marker {
+        left: 13px;
+        position: absolute;
+      }
+    }
+  }
+}
+
+.milestone-marker {
+  z-index: 2;
+  flex-shrink: 0;
+}
+
+.milestone-dot {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  border: 3px solid;
+  background: var(--bg-primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition:
+    transform 0.3s ease,
+    box-shadow 0.3s ease;
+  box-shadow: 0 0 12px rgba(0, 0, 0, 0.2);
+
+  .feature-stop.visible & {
+    transform: scale(1.2);
+    box-shadow: 0 0 16px var(--accent-color, #008080);
+  }
+}
+
+.milestone-inner {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+}
+
+.feature-card {
+  position: relative;
+  background: var(--card-bg);
+  border: 1px solid var(--border-color);
+  border-radius: 20px;
+  padding: 2rem;
+  flex: 1;
+  overflow: hidden;
+  box-shadow: var(--shadow);
+  transition:
+    box-shadow 0.35s ease,
+    transform 0.35s ease,
+    border-color 0.35s ease;
+
+  &:hover {
+    box-shadow:
+      var(--shadow-lg),
+      0 0 25px var(--accent-color, #008080) 20;
+    border-color: var(--accent-color, var(--border-color));
+    transform: translateY(-5px);
+  }
+}
+
+.feature-card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1.25rem;
+}
+
+.feature-icon-wrapper {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 54px;
+  height: 54px;
+  border-radius: 16px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
+}
+
+.watermark-number {
+  font-size: 2.75rem;
+  font-weight: 900;
+  line-height: 1;
+  color: var(--text-muted);
+  opacity: 0.25;
+  letter-spacing: -0.05em;
+}
+
+.feature-title {
+  font-size: 1.35rem;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  margin: 0 0 0.6rem;
+}
+
+.feature-description {
+  font-size: 0.96rem;
+  color: var(--text-secondary);
+  line-height: 1.65;
+  margin: 0;
+}
+
+// Scenery & Full-Page Road
+.page-road-scenery {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+
+  .page-road-svg {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+  }
+
+  .road-surface {
+    stroke: var(--border-color);
+    opacity: 0.25;
+  }
+
+  .scenery-item {
+    position: absolute;
+    opacity: 0;
+    transition:
+      opacity 1s ease,
+      transform 1s ease;
+    transform: scale(0.7);
+    filter: saturate(0.6);
+  }
+
+  &.visible .scenery-item {
+    opacity: 0.22;
+    transform: scale(1);
+  }
+
+  .tree {
+    font-size: 2.2rem;
+    animation: tree-sway 6s ease-in-out infinite;
+
+    &:nth-child(odd) {
+      animation-delay: 0s;
+    }
+    &:nth-child(even) {
+      animation-delay: -3s;
+    }
+  }
+
+  .house {
+    font-size: 2rem;
+    filter: saturate(0.6) drop-shadow(0 0 6px rgba(255, 183, 77, 0.6));
+    animation: window-glow 4s ease-in-out infinite alternate;
+  }
+
+  @media (max-width: 768px) {
+    display: none;
+  }
+}
+
+// Interactive Road Progress Indicator
+.road-progress {
+  position: fixed;
+  right: 24px;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 100;
+  height: 220px;
+  cursor: pointer;
+  padding: 8px;
+  margin: -8px;
+
+  &:hover {
+    .road-track {
+      width: 6px;
+      background: var(--text-muted);
+    }
+
+    .road-car {
+      transform: translate(-50%, -50%) scale(1.25);
+    }
+  }
+
+  @media (max-width: 768px) {
+    right: 12px;
+    height: 160px;
+  }
+}
+
+.road-track {
+  position: relative;
+  width: 4px;
+  height: 100%;
+  background: var(--border-color);
+  border-radius: 4px;
+  overflow: visible;
+  transition:
+    width 0.2s ease,
+    background 0.2s ease;
+}
+
+.road-fill {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  background: linear-gradient(to bottom, #008080, #007bff, #10b981);
+  border-radius: 4px;
+  transition: height 0.1s ease-out;
+}
+
+.road-car {
+  position: absolute;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 1.3rem;
+  transition:
+    top 0.1s ease-out,
+    transform 0.2s ease;
+  filter: drop-shadow(0 2px 6px rgba(0, 0, 0, 0.4));
+  cursor: grab;
+  -webkit-user-select: none;
+  user-select: none;
+
+  &:active {
+    cursor: grabbing;
+  }
+}

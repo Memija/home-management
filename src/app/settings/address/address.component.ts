@@ -1,4 +1,12 @@
-import { Component, signal, effect, inject, computed, HostListener } from '@angular/core';
+import {
+  Component,
+  ChangeDetectionStrategy,
+  signal,
+  effect,
+  inject,
+  computed,
+  HostListener,
+} from '@angular/core';
 import {
   LucideAngularModule,
   Pencil,
@@ -10,7 +18,6 @@ import {
   TriangleAlert,
 } from 'lucide-angular';
 import { FormsModule } from '@angular/forms';
-import { CommonModule } from '@angular/common';
 import { HouseholdService, Address } from '../../services/household.service';
 import { LanguageService } from '../../services/language.service';
 import { FileStorageService } from '../../services/file-storage.service';
@@ -32,7 +39,6 @@ import { NavigationGuardState } from '../../utils/navigation-guard.utils';
   standalone: true,
   imports: [
     FormsModule,
-    CommonModule,
     TranslatePipe,
     LucideAngularModule,
     ConfirmationModalComponent,
@@ -43,6 +49,7 @@ import { NavigationGuardState } from '../../utils/navigation-guard.utils';
   ],
   templateUrl: './address.component.html',
   styleUrl: './address.component.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class AddressComponent {
   protected readonly languageService = inject(LanguageService);
@@ -180,6 +187,7 @@ export class AddressComponent {
 
   @HostListener('window:beforeunload', ['$event'])
   onBeforeUnload(event: BeforeUnloadEvent): string | undefined {
+    if (event.defaultPrevented) return undefined;
     if (this.hasUnsavedChanges()) {
       event.preventDefault();
       return '';

@@ -48,10 +48,11 @@ export const common = {
   FOOTER: {
     APP_NAME: 'Zarządzanie Domem',
     SUPPORT_PROJECT: 'Wesprzyj ten Projekt',
+    BENCHMARKS: 'Średnie Krajowe',
     CHANGELOG: 'Zmiany',
     RELEASE_PLAN: 'Nadchodzące Funkcje',
     CONTRIBUTE: 'Współpracuj',
-    PRIVACY_POLICY: 'Polityka Prywatności',
+    PRIVACY_POLICY: 'Prywatność i informacje prawne',
     VERSION: 'Wersja {{version}}',
   },
   CHANGELOG: {

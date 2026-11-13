@@ -1,0 +1,377 @@
+// ============================================
+// Landing Page — Bento Highlights & Stats Cards
+// ============================================
+
+// Quick Value Metrics & Key Highlights Grid
+.hero-highlights-container {
+  width: 100%;
+  max-width: 960px;
+  margin: 3rem auto 1.5rem;
+  opacity: 0;
+  transform: translateY(24px);
+  transition:
+    opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1),
+    transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+
+  &.visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.hero-highlights-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1.25rem;
+
+  @media (max-width: 768px) {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+}
+
+.highlight-card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  text-align: left;
+  padding: 1.5rem;
+  background: rgba(15, 23, 42, 0.65);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 18px;
+  -webkit-backdrop-filter: blur(16px);
+  backdrop-filter: blur(16px);
+  box-shadow:
+    0 16px 36px -8px rgba(0, 0, 0, 0.4),
+    inset 0 1px 0 0 rgba(255, 255, 255, 0.1);
+  transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+  overflow: hidden;
+
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: transparent;
+    transition: background 0.3s ease;
+  }
+
+  .highlight-header {
+    display: flex;
+    align-items: center;
+    gap: 0.85rem;
+    margin-bottom: 0.75rem;
+
+    .highlight-icon-wrap {
+      width: 44px;
+      height: 44px;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      transition: all 0.3s ease;
+    }
+
+    .highlight-title {
+      font-size: 1.05rem;
+      font-weight: 700;
+      color: #f8fafc;
+      margin: 0;
+      letter-spacing: -0.01em;
+    }
+  }
+
+  .highlight-desc {
+    font-size: 0.84rem;
+    color: #94a3b8;
+    line-height: 1.55;
+    margin: 0 0 1.1rem;
+    flex: 1;
+  }
+
+  .highlight-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+
+    .highlight-tag-pill {
+      font-size: 0.72rem;
+      font-weight: 600;
+      padding: 0.25rem 0.6rem;
+      border-radius: 6px;
+      background: #1e293b;
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      color: #cbd5e1;
+      transition: all 0.2s ease;
+    }
+  }
+
+  // Theme card variants
+  &.highlight--local {
+    .highlight-icon-wrap {
+      background: #064e3b;
+      border: 1px solid rgba(52, 211, 153, 0.3);
+      color: #34d399;
+    }
+    &:hover {
+      border-color: rgba(16, 185, 129, 0.4);
+      box-shadow: 0 20px 40px -10px rgba(16, 185, 129, 0.2);
+      transform: translateY(-4px);
+      &::before {
+        background: linear-gradient(90deg, #10b981, #34d399);
+      }
+      .highlight-tag-pill {
+        background: #064e3b;
+        color: #34d399;
+        border-color: rgba(52, 211, 153, 0.35);
+      }
+    }
+  }
+
+  &.highlight--predict {
+    .highlight-icon-wrap {
+      background: #3b0764;
+      border: 1px solid rgba(192, 132, 252, 0.3);
+      color: #c084fc;
+    }
+    &:hover {
+      border-color: rgba(168, 85, 247, 0.4);
+      box-shadow: 0 20px 40px -10px rgba(168, 85, 247, 0.2);
+      transform: translateY(-4px);
+      &::before {
+        background: linear-gradient(90deg, #a855f7, #c084fc);
+      }
+      .highlight-tag-pill {
+        background: #3b0764;
+        color: #c084fc;
+        border-color: rgba(192, 132, 252, 0.35);
+      }
+    }
+  }
+
+  &.highlight--unified {
+    .highlight-icon-wrap {
+      background: #082f49;
+      border: 1px solid rgba(56, 189, 248, 0.3);
+      color: #38bdf8;
+    }
+    &:hover {
+      border-color: rgba(56, 189, 248, 0.4);
+      box-shadow: 0 20px 40px -10px rgba(2, 132, 199, 0.2);
+      transform: translateY(-4px);
+      &::before {
+        background: linear-gradient(90deg, #0284c7, #38bdf8);
+      }
+      .highlight-tag-pill {
+        background: #082f49;
+        color: #38bdf8;
+        border-color: rgba(56, 189, 248, 0.35);
+      }
+    }
+  }
+
+  &.highlight--privacy {
+    .highlight-icon-wrap {
+      background: #4c0519;
+      border: 1px solid rgba(251, 113, 133, 0.3);
+      color: #fb7185;
+    }
+    &:hover {
+      border-color: rgba(251, 113, 133, 0.4);
+      box-shadow: 0 20px 40px -10px rgba(244, 63, 94, 0.2);
+      transform: translateY(-4px);
+      &::before {
+        background: linear-gradient(90deg, #f43f5e, #fb7185);
+      }
+      .highlight-tag-pill {
+        background: #4c0519;
+        color: #fb7185;
+        border-color: rgba(251, 113, 133, 0.35);
+      }
+    }
+  }
+}
+
+// Stats Section
+.stats-section {
+  position: relative;
+  z-index: 1;
+  background: var(--bg-secondary);
+  border-top: 1px solid var(--border-color);
+  border-bottom: 1px solid var(--border-color);
+}
+
+.stats-container {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 3rem 2rem;
+  gap: 1.5rem;
+  opacity: 0;
+  transform: translateY(20px);
+  transition: all 0.6s ease;
+
+  &.visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  @media (max-width: 840px) {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  @media (max-width: 480px) {
+    grid-template-columns: 1fr;
+    padding: 2rem 1.25rem;
+  }
+}
+
+.stat-card {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1.25rem 1.5rem;
+  background: var(--card-bg);
+  border: 1px solid var(--border-color);
+  border-radius: 16px;
+  box-shadow: var(--shadow-sm);
+  transition:
+    transform 0.3s ease,
+    box-shadow 0.3s ease;
+
+  &:hover {
+    transform: translateY(-3px);
+    box-shadow: var(--shadow);
+  }
+}
+
+.stat-icon-wrapper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  background: var(--stat-icon-bg, #ccfbf1);
+  color: var(--stat-icon-color, #0f766e);
+  flex-shrink: 0;
+}
+
+.stat-content {
+  display: flex;
+  flex-direction: column;
+}
+
+.stat-value {
+  font-size: 1.85rem;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  background: linear-gradient(135deg, #008080, #007bff);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  line-height: 1.2;
+}
+
+.stat-label {
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+  font-weight: 500;
+}
+
+// Light Mode Overrides for Bento Highlights
+[data-theme='light'] {
+  .highlight-card {
+    background: rgba(255, 255, 255, 0.85);
+    border: 1px solid rgba(0, 0, 0, 0.08);
+    box-shadow:
+      0 12px 30px -6px rgba(0, 0, 0, 0.06),
+      inset 0 1px 0 0 rgba(255, 255, 255, 0.8);
+
+    .highlight-header .highlight-title {
+      color: #0f172a;
+    }
+
+    .highlight-desc {
+      color: #475569;
+    }
+
+    .highlight-tags .highlight-tag-pill {
+      background: #f1f5f9;
+      border-color: #e2e8f0;
+      color: #334155;
+    }
+
+    &.highlight--local {
+      .highlight-icon-wrap {
+        background: #ecfdf5;
+        border-color: #a7f3d0;
+        color: #047857;
+      }
+      &:hover {
+        border-color: #10b981;
+        box-shadow: 0 16px 36px -8px rgba(16, 185, 129, 0.18);
+        .highlight-tag-pill {
+          background: #d1fae5;
+          color: #047857;
+          border-color: #6ee7b7;
+        }
+      }
+    }
+
+    &.highlight--predict {
+      .highlight-icon-wrap {
+        background: #f5f3ff;
+        border-color: #ddd6fe;
+        color: #7c3aed;
+      }
+      &:hover {
+        border-color: #a855f7;
+        box-shadow: 0 16px 36px -8px rgba(168, 85, 247, 0.18);
+        .highlight-tag-pill {
+          background: #ede9fe;
+          color: #6d28d9;
+          border-color: #c4b5fd;
+        }
+      }
+    }
+
+    &.highlight--unified {
+      .highlight-icon-wrap {
+        background: #f0f9ff;
+        border-color: #bae6fd;
+        color: #0369a1;
+      }
+      &:hover {
+        border-color: #38bdf8;
+        box-shadow: 0 16px 36px -8px rgba(2, 132, 199, 0.18);
+        .highlight-tag-pill {
+          background: #e0f2fe;
+          color: #0369a1;
+          border-color: #7dd3fc;
+        }
+      }
+    }
+
+    &.highlight--privacy {
+      .highlight-icon-wrap {
+        background: #fff1f2;
+        border-color: #fecdd3;
+        color: #be123c;
+      }
+      &:hover {
+        border-color: #f43f5e;
+        box-shadow: 0 16px 36px -8px rgba(244, 63, 94, 0.18);
+        .highlight-tag-pill {
+          background: #ffe4e6;
+          color: #be123c;
+          border-color: #fda4af;
+        }
+      }
+    }
+  }
+}

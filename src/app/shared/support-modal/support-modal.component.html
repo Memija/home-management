@@ -1,7 +1,7 @@
 <!-- eslint-disable-next-line @angular-eslint/template/interactive-supports-focus -- Backdrop dismissal by design -->
 <div
   class="modal-overlay"
-  (click)="$event.target === $event.currentTarget && onClose()"
+  (click)="$event.target === $event.currentTarget ? onClose() : undefined"
   (keydown.escape)="onClose()"
 >
   <div class="modal-container">

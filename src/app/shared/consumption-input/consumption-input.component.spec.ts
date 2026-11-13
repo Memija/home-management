@@ -82,8 +82,8 @@ describe('ConsumptionInputComponent', () => {
       'groups',
       overrides?.groups ?? makeGroups([{ a: null, b: null }]),
     );
-    component.selectedDate = overrides?.selectedDate ?? '2024-06-15';
-    component.maxDate = overrides?.maxDate ?? '2024-12-31';
+    fixture.componentRef.setInput('selectedDate', overrides?.selectedDate ?? '2024-06-15');
+    fixture.componentRef.setInput('maxDate', overrides?.maxDate ?? '2024-12-31');
     fixture.detectChanges();
   };
 
@@ -95,15 +95,15 @@ describe('ConsumptionInputComponent', () => {
 
     it('should have correct default input values', () => {
       initWithDefaults();
-      expect(component.editingMode).toBe(false);
-      expect(component.dateExists).toBe(false);
-      expect(component.titleKey).toBe('HOME.RECORD_CONSUMPTION');
-      expect(component.editTitleKey).toBe('HOME.EDIT_RECORD');
-      expect(component.saveKey).toBe('HOME.SAVE');
-      expect(component.updateKey).toBe('HOME.UPDATE_RECORD');
-      expect(component.cancelKey).toBe('HOME.CANCEL');
-      expect(component.allowPartialGroups).toBe(false);
-      expect(component.layoutMode).toBe('grouped');
+      expect(component.editingMode()).toBe(false);
+      expect(component.dateExists()).toBe(false);
+      expect(component.titleKey()).toBe('HOME.RECORD_CONSUMPTION');
+      expect(component.editTitleKey()).toBe('HOME.EDIT_RECORD');
+      expect(component.saveKey()).toBe('HOME.SAVE');
+      expect(component.updateKey()).toBe('HOME.UPDATE_RECORD');
+      expect(component.cancelKey()).toBe('HOME.CANCEL');
+      expect(component.allowPartialGroups()).toBe(false);
+      expect(component.layoutMode()).toBe('grouped');
     });
 
     it('should have no error message by default', () => {
@@ -273,10 +273,10 @@ describe('ConsumptionInputComponent', () => {
         desc: 'all fields are null in partial mode',
       },
     ])('should return $expected when $desc', ({ fields, expected }) => {
-      component.groups = makeGroups(fields);
-      component.selectedDate = '2024-06-15';
-      component.maxDate = '2024-12-31';
-      component.allowPartialGroups = true;
+      fixture.componentRef.setInput('groups', makeGroups(fields));
+      fixture.componentRef.setInput('selectedDate', '2024-06-15');
+      fixture.componentRef.setInput('maxDate', '2024-12-31');
+      fixture.componentRef.setInput('allowPartialGroups', true);
       fixture.detectChanges();
 
       expect(component['hasValidInput']()).toBe(expected);
@@ -292,10 +292,10 @@ describe('ConsumptionInputComponent', () => {
     });
 
     it('should set error when date already exists', () => {
-      component.groups = makeGroups([{ a: 10, b: 20 }]);
-      component.selectedDate = '2024-06-15';
-      component.maxDate = '2024-12-31';
-      component.dateExists = true;
+      fixture.componentRef.setInput('groups', makeGroups([{ a: 10, b: 20 }]));
+      fixture.componentRef.setInput('selectedDate', '2024-06-15');
+      fixture.componentRef.setInput('maxDate', '2024-12-31');
+      fixture.componentRef.setInput('dateExists', true);
       fixture.detectChanges();
 
       component['onSave']();
@@ -355,10 +355,10 @@ describe('ConsumptionInputComponent', () => {
     });
 
     it('should emit save in partial mode with partial group', () => {
-      component.groups = makeGroups([{ a: 10, b: null }]);
-      component.selectedDate = '2024-06-15';
-      component.maxDate = '2024-12-31';
-      component.allowPartialGroups = true;
+      fixture.componentRef.setInput('groups', makeGroups([{ a: 10, b: null }]));
+      fixture.componentRef.setInput('selectedDate', '2024-06-15');
+      fixture.componentRef.setInput('maxDate', '2024-12-31');
+      fixture.componentRef.setInput('allowPartialGroups', true);
       fixture.detectChanges();
 
       const spy = vi.fn();
@@ -372,10 +372,10 @@ describe('ConsumptionInputComponent', () => {
     });
 
     it('should use custom error message keys', () => {
-      component.groups = makeGroups([{ a: null, b: null }]);
-      component.selectedDate = '2024-06-15';
-      component.maxDate = '2024-12-31';
-      component.noValuesErrorKey = 'CUSTOM.NO_VALUES';
+      fixture.componentRef.setInput('groups', makeGroups([{ a: null, b: null }]));
+      fixture.componentRef.setInput('selectedDate', '2024-06-15');
+      fixture.componentRef.setInput('maxDate', '2024-12-31');
+      fixture.componentRef.setInput('noValuesErrorKey', 'CUSTOM.NO_VALUES');
       fixture.detectChanges();
 
       component['onSave']();
@@ -383,10 +383,10 @@ describe('ConsumptionInputComponent', () => {
     });
 
     it('should use custom incomplete room error key', () => {
-      component.groups = makeGroups([{ a: 10, b: null }]);
-      component.selectedDate = '2024-06-15';
-      component.maxDate = '2024-12-31';
-      component.incompleteRoomErrorKey = 'CUSTOM.INCOMPLETE';
+      fixture.componentRef.setInput('groups', makeGroups([{ a: 10, b: null }]));
+      fixture.componentRef.setInput('selectedDate', '2024-06-15');
+      fixture.componentRef.setInput('maxDate', '2024-12-31');
+      fixture.componentRef.setInput('incompleteRoomErrorKey', 'CUSTOM.INCOMPLETE');
       fixture.detectChanges();
 
       component['onSave']();
@@ -394,11 +394,11 @@ describe('ConsumptionInputComponent', () => {
     });
 
     it('should use custom date warning key', () => {
-      component.groups = makeGroups([{ a: 10, b: 20 }]);
-      component.selectedDate = '2024-06-15';
-      component.maxDate = '2024-12-31';
-      component.dateExists = true;
-      component.dateWarningKey = 'CUSTOM.DATE_WARNING';
+      fixture.componentRef.setInput('groups', makeGroups([{ a: 10, b: 20 }]));
+      fixture.componentRef.setInput('selectedDate', '2024-06-15');
+      fixture.componentRef.setInput('maxDate', '2024-12-31');
+      fixture.componentRef.setInput('dateExists', true);
+      fixture.componentRef.setInput('dateWarningKey', 'CUSTOM.DATE_WARNING');
       fixture.detectChanges();
 
       component['onSave']();
@@ -440,9 +440,9 @@ describe('ConsumptionInputComponent', () => {
     });
 
     it('should handle groups with empty fields array', () => {
-      component.groups = [{ title: 'Empty', fields: [] }];
-      component.selectedDate = '2024-06-15';
-      component.maxDate = '2024-12-31';
+      fixture.componentRef.setInput('groups', [{ title: 'Empty', fields: [] }]);
+      fixture.componentRef.setInput('selectedDate', '2024-06-15');
+      fixture.componentRef.setInput('maxDate', '2024-12-31');
       fixture.detectChanges();
 
       // Empty group is considered "complete" by every() — vacuous truth
@@ -522,10 +522,10 @@ describe('ConsumptionInputComponent', () => {
     });
 
     it('should handle partial mode with no values', () => {
-      component.groups = makeGroups([{ a: null, b: null }]);
-      component.selectedDate = '2024-06-15';
-      component.maxDate = '2024-12-31';
-      component.allowPartialGroups = true;
+      fixture.componentRef.setInput('groups', makeGroups([{ a: null, b: null }]));
+      fixture.componentRef.setInput('selectedDate', '2024-06-15');
+      fixture.componentRef.setInput('maxDate', '2024-12-31');
+      fixture.componentRef.setInput('allowPartialGroups', true);
       fixture.detectChanges();
 
       component['onSave']();
@@ -536,17 +536,17 @@ describe('ConsumptionInputComponent', () => {
   describe('Layout Modes', () => {
     it('should default to grouped layout', () => {
       initWithDefaults();
-      expect(component.layoutMode).toBe('grouped');
+      expect(component.layoutMode()).toBe('grouped');
     });
 
     it('should accept flat layout', () => {
-      component.groups = makeGroups([{ a: null }]);
-      component.selectedDate = '2024-06-15';
-      component.maxDate = '2024-12-31';
-      component.layoutMode = 'flat';
+      fixture.componentRef.setInput('groups', makeGroups([{ a: null }]));
+      fixture.componentRef.setInput('selectedDate', '2024-06-15');
+      fixture.componentRef.setInput('maxDate', '2024-12-31');
+      fixture.componentRef.setInput('layoutMode', 'flat');
       fixture.detectChanges();
 
-      expect(component.layoutMode).toBe('flat');
+      expect(component.layoutMode()).toBe('flat');
     });
   });
 

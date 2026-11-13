@@ -1,5 +1,4 @@
-import { Component, input, computed, output } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { Component, ChangeDetectionStrategy, input, computed, output } from '@angular/core';
 import { TranslatePipe } from '../../pipes/translate.pipe';
 import {
   LucideAngularModule,
@@ -22,15 +21,20 @@ export type PredictionConsumptionType = 'water' | 'electricity' | 'heating';
 @Component({
   selector: 'app-predictions-panel',
   standalone: true,
-  imports: [TranslatePipe, LucideAngularModule, CommonModule],
+  imports: [TranslatePipe, LucideAngularModule],
   templateUrl: './predictions-panel.component.html',
   styleUrl: './predictions-panel.component.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class PredictionsPanelComponent {
   /** The prediction result, or null if not enough data */
   prediction = input<MultiPredictionResult | null>(null);
 
   protected totalPrediction = computed(() => this.prediction()?.total || null);
+  protected readonly correctionParams = computed(() => {
+    const corr = this.totalPrediction()?.appliedCorrection;
+    return corr ? { percent: ((corr - 1) * 100).toFixed(1) } : null;
+  });
   /** Optional mapping of category keys to translation keys or display names */
   categoryNames = input<Record<string, string>>({});
 

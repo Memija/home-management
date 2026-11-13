@@ -11,6 +11,7 @@ import { RouterLink } from '@angular/router';
 import { LucideAngularModule, Compass, House, LayoutDashboard } from 'lucide-angular';
 import { TranslatePipe } from '../pipes/translate.pipe';
 import { ThemeService } from '../services/theme.service';
+import { NotFoundSceneComponent } from './not-found-scene/not-found-scene.component';
 import { buildAerialScene, getCarTransformsAtTime } from './not-found-scene.builder';
 
 /**
@@ -21,7 +22,7 @@ import { buildAerialScene, getCarTransformsAtTime } from './not-found-scene.buil
 @Component({
   selector: 'app-not-found',
   standalone: true,
-  imports: [RouterLink, LucideAngularModule, TranslatePipe],
+  imports: [NotFoundSceneComponent, RouterLink, LucideAngularModule, TranslatePipe],
   templateUrl: './not-found.component.html',
   styleUrl: './not-found.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

@@ -1,0 +1,47 @@
+<section class="controls-bar" aria-label="{{ 'SEO.BENCHMARKS.HOUSEHOLD_SIZE' | translate }}">
+  <div class="size-control">
+    <span class="control-label">
+      <lucide-icon [img]="UsersIcon" [size]="18" aria-hidden="true"></lucide-icon>
+      {{ 'SEO.BENCHMARKS.HOUSEHOLD_SIZE' | translate }}:
+    </span>
+    <div class="size-buttons" role="group" [attr.data-hydrated]="isBrowser() ? 'true' : null">
+      @for (size of householdSizes(); track size) {
+        <button
+          type="button"
+          class="size-btn"
+          [attr.data-size]="size"
+          [class.active]="isBrowser() && householdSize() === size"
+          [attr.aria-pressed]="isBrowser() && householdSize() === size"
+          (click)="sizeChange.emit(size)"
+        >
+          @if (size === 1) {
+            {{ 'SEO.BENCHMARKS.PERSON_SINGLE' | translate }}
+          } @else {
+            {{ 'SEO.BENCHMARKS.PERSONS_MULTI' | translate: householdSizeParams()[size] }}
+          }
+        </button>
+      }
+    </div>
+  </div>
+
+  <div class="search-control">
+    <label for="benchmarks-country-search" class="sr-only">
+      {{ 'SEO.BENCHMARKS.SEARCH_LABEL' | translate }}
+    </label>
+    <lucide-icon
+      [img]="SearchIcon"
+      [size]="18"
+      class="search-icon"
+      aria-hidden="true"
+    ></lucide-icon>
+    <input
+      id="benchmarks-country-search"
+      type="search"
+      class="search-input"
+      [value]="searchQuery()"
+      (input)="onSearchInput($event)"
+      placeholder="{{ 'SEO.BENCHMARKS.SEARCH_PLACEHOLDER' | translate }}"
+      aria-label="{{ 'SEO.BENCHMARKS.SEARCH_LABEL' | translate }}"
+    />
+  </div>
+</section>

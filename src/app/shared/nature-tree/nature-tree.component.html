@@ -1,7 +1,6 @@
 @if (!seasonService.disabled()) {
   <svg
-    class="detailed-tree-svg"
-    [ngClass]="'season-' + season"
+    [class]="'detailed-tree-svg season-' + season"
     xmlns="http://www.w3.org/2000/svg"
     viewBox="0 0 2000 1200"
     preserveAspectRatio="xMidYMax slice"
@@ -47,8 +46,8 @@
             class="raindrop"
             [attr.x1]="drop.x"
             [attr.y1]="drop.y"
-            [attr.x2]="drop.x - drop.height * 0.2"
-            [attr.y2]="drop.y + drop.height"
+            [attr.x2]="drop.x2"
+            [attr.y2]="drop.y2"
             [style.animation-duration]="drop.animDuration"
             [style.animation-delay]="drop.animDelay"
           />
@@ -59,11 +58,7 @@
     <!-- Recursive Branch Template -->
     <ng-template #branchTemplate let-node="branch">
       @if (node) {
-        <g
-          [style.transform]="
-            'translate(' + node.x + 'px, ' + node.y + 'px) rotate(' + node.angle + 'deg)'
-          "
-        >
+        <g [style.transform]="node.transform">
           <g
             class="animated-branch"
             [style.animation-duration]="node.animDuration"
@@ -75,7 +70,7 @@
               x1="0"
               y1="0"
               x2="0"
-              [attr.y2]="-node.length"
+              [attr.y2]="node.negLength"
               [attr.stroke-width]="node.width"
               stroke-linecap="round"
             />
@@ -88,17 +83,12 @@
             }
 
             <!-- Leaves (Hidden in Winter) -->
-            @if (season !== 'winter') {
+            @if (season !== 'winter' && node.leaves.length > 0) {
               <g class="leaves" [class.autumn]="season === 'autumn'">
                 @for (leaf of node.leaves; track $index) {
-                  <g
-                    [style.transform]="'translate(' + leaf.offsetX + 'px, ' + leaf.offsetY + 'px)'"
-                  >
+                  <g [style.transform]="leaf.transform">
                     <g class="leaf-group" [style.animation-delay]="leaf.animDelay">
-                      <use
-                        [attr.href]="'#leaf-' + leaf.type"
-                        [attr.transform]="'rotate(' + leaf.rotation + ') scale(' + leaf.scale + ')'"
-                      />
+                      <use [attr.href]="leaf.href" [attr.transform]="leaf.useTransform" />
                     </g>
                   </g>
                 }
@@ -106,21 +96,15 @@
             }
 
             <!-- Spring Flowers -->
-            @if (season === 'spring') {
+            @if (season === 'spring' && node.flowers.length > 0) {
               <g class="flowers">
                 @for (flower of node.flowers; track $index) {
-                  <g
-                    [style.transform]="
-                      'translate(' + flower.offsetX + 'px, ' + flower.offsetY + 'px)'
-                    "
-                  >
+                  <g [style.transform]="flower.transform">
                     <g class="flower-group" [style.animation-delay]="flower.animDelay">
                       <use
                         href="#blossom"
                         [attr.fill]="flower.color"
-                        [attr.transform]="
-                          'rotate(' + flower.rotation + ') scale(' + flower.scale + ')'
-                        "
+                        [attr.transform]="flower.useTransform"
                       />
                     </g>
                   </g>
@@ -129,26 +113,26 @@
             }
 
             <!-- Lanterns (Visible in Dark Mode) -->
-            <g class="lanterns" [class.show-lanterns]="themeService.resolvedTheme() === 'dark'">
-              @for (lantern of node.lanterns; track $index) {
-                <g
-                  class="lantern-group-windy"
-                  [style.transform]="
-                    'translate(' + lantern.offsetX + 'px, ' + lantern.offsetY + 'px)'
-                  "
-                  [style.animation-delay]="lantern.animDelay"
-                >
-                  <g class="lantern-sway" [style.transform-origin]="'0px 0px'">
-                    <!-- Simplified orbs: no blur filter for performance -->
-                    <g [style.transform]="'rotate(' + -node.angle + 'deg)'">
-                      <circle cx="0" [attr.cy]="14" r="14" class="glow" />
-                      <circle cx="0" [attr.cy]="14" r="8" class="core" />
-                      <circle cx="0" [attr.cy]="14" r="4" fill="#fff" />
+            @if (node.lanterns.length > 0) {
+              <g class="lanterns" [class.show-lanterns]="isDarkMode()">
+                @for (lantern of node.lanterns; track $index) {
+                  <g
+                    class="lantern-group-windy"
+                    [style.transform]="lantern.transform"
+                    [style.animation-delay]="lantern.animDelay"
+                  >
+                    <g class="lantern-sway" [style.transform-origin]="'0px 0px'">
+                      <!-- Simplified orbs: no blur filter for performance -->
+                      <g [style.transform]="node.counterRotateTransform">
+                        <circle cx="0" [attr.cy]="14" r="14" class="glow" />
+                        <circle cx="0" [attr.cy]="14" r="8" class="core" />
+                        <circle cx="0" [attr.cy]="14" r="4" fill="#fff" />
+                      </g>
                     </g>
                   </g>
-                </g>
-              }
-            </g>
+                }
+              </g>
+            }
           </g>
         </g>
       }

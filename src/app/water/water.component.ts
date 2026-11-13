@@ -1,27 +1,18 @@
-import { Component, computed, inject, signal, effect, ElementRef } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import {
+  Component,
+  ChangeDetectionStrategy,
+  computed,
+  inject,
+  signal,
+  effect,
+  ElementRef,
+} from '@angular/core';
 import { FormsModule } from '@angular/forms';
 
 import { TranslatePipe } from '../pipes/translate.pipe';
 import { DemoService } from '../services/demo.service';
 import { DemoWizardComponent } from '../shared/demo-wizard/demo-wizard.component';
-import {
-  LucideAngularModule,
-  Download,
-  Upload,
-  CircleCheck,
-  Trash2,
-  FileText,
-  FileInput,
-  FileOutput,
-  TriangleAlert,
-  RefreshCw,
-  Droplet,
-  Lightbulb,
-  ToggleLeft,
-  ToggleRight,
-  ChevronDown,
-} from 'lucide-angular';
+import { LucideAngularModule, Droplet, Lightbulb, ToggleLeft, ToggleRight } from 'lucide-angular';
 import {
   ConsumptionInputComponent,
   type ConsumptionGroup,
@@ -38,6 +29,7 @@ import {
   calculateWaterTotal,
   calculateKitchenTotal,
   calculateBathroomTotal,
+  parseSafeDate,
 } from '../models/records.model';
 import { ComparisonNoteComponent } from '../shared/comparison-note/comparison-note.component';
 import {
@@ -65,13 +57,14 @@ import {
   DEMO_TOUR_STEPS,
 } from './water.constants';
 import { DemoTourComponent } from '../shared/demo-tour/demo-tour.component';
+import { RecordActionsDropdownComponent } from '../shared/record-actions-dropdown/record-actions-dropdown.component';
+import { SuccessModalComponent } from '../shared/success-modal/success-modal.component';
 import { secureRandom } from '../utils/crypto.utils';
 
 @Component({
   selector: 'app-water',
   standalone: true,
   imports: [
-    CommonModule,
     FormsModule,
     TranslatePipe,
     LucideAngularModule,
@@ -85,25 +78,18 @@ import { secureRandom } from '../utils/crypto.utils';
     DemoWizardComponent,
     DemoTourComponent,
     PredictionsPanelComponent,
+    RecordActionsDropdownComponent,
+    SuccessModalComponent,
   ],
   templateUrl: './water.component.html',
   styleUrl: './water.component.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class WaterComponent extends BaseConsumptionComponent<ConsumptionRecord> {
   // Icons
-  protected readonly DownloadIcon = Download;
-  protected readonly UploadIcon = Upload;
-  protected readonly FileOutputIcon = FileOutput;
-  protected readonly FileInputIcon = FileInput;
-  protected readonly FileTextIcon = FileText;
-  protected readonly CheckCircleIcon = CircleCheck;
-  protected readonly TrashIcon = Trash2;
-  protected readonly AlertTriangleIcon = TriangleAlert;
-  protected readonly RefreshCwIcon = RefreshCw;
   protected readonly LightbulbIcon = Lightbulb;
   protected readonly ToggleLeftIcon = ToggleLeft;
   protected readonly ToggleRightIcon = ToggleRight;
-  protected readonly ChevronDownIcon = ChevronDown;
 
   private readonly elementRef = inject(ElementRef, { optional: true });
 
@@ -122,15 +108,15 @@ export class WaterComponent extends BaseConsumptionComponent<ConsumptionRecord> 
 
   // Signals
   protected readonly records = this.dataService.records;
-  protected readonly waterPrediction = computed(() =>
-    this.predictionService.predictWater(this.records()),
-  );
   protected readonly adjustedRecords = computed(() => {
     const recs = this.records();
     const changes = this.confirmedMeterChanges();
     if (changes.length === 0) return recs;
     return this.chartCalculationService.adjustForMeterChanges(recs, changes);
   });
+  protected readonly waterPrediction = computed(() =>
+    this.predictionService.predictWater(this.adjustedRecords()),
+  );
 
   protected readonly chartView = this.preferencesService.chartView;
   protected readonly displayMode = this.preferencesService.displayMode;
@@ -141,7 +127,7 @@ export class WaterComponent extends BaseConsumptionComponent<ConsumptionRecord> 
     this.selectedPredictionPeriod.set(period);
   }
 
-  protected readonly waterCategoryNames = computed(() => ({
+  private static readonly WATER_CATEGORY_NAMES: Readonly<Record<string, string>> = {
     kitchenWarm: 'CHART.KITCHEN_WARM',
     kitchenCold: 'CHART.KITCHEN_COLD',
     bathroomWarm: 'CHART.BATHROOM_WARM',
@@ -150,7 +136,10 @@ export class WaterComponent extends BaseConsumptionComponent<ConsumptionRecord> 
     bathroomTotal: 'CHART.BATHROOM_TOTAL',
     warmTotal: 'CHART.WARM_WATER_TOTAL',
     coldTotal: 'CHART.COLD_WATER_TOTAL',
-  }));
+  };
+
+  protected readonly waterCategoryNames = (): Readonly<Record<string, string>> =>
+    WaterComponent.WATER_CATEGORY_NAMES;
 
   private readonly syncCountryFromAddress = effect(() => {
     const address = this.householdService.address();
@@ -261,20 +250,24 @@ export class WaterComponent extends BaseConsumptionComponent<ConsumptionRecord> 
   protected readonly showFilterWarningModal = this.dataService.showFilterWarningModal;
 
   protected readonly unconfirmedMeterChanges = computed(() => {
-    if (this.records().length < 2) return [];
-    const changes = this.chartCalculationService.detectMeterChanges(this.records());
-    return changes.filter(
-      (date) =>
-        !this.confirmedMeterChanges().includes(date) &&
-        !this.dismissedMeterChanges().includes(date),
-    );
+    const recs = this.records();
+    if (recs.length < 2) return [];
+    const changes = this.chartCalculationService.detectMeterChanges(recs);
+    if (changes.length === 0) return [];
+    const confirmed = new Set(this.confirmedMeterChanges());
+    const dismissed = new Set(this.dismissedMeterChanges());
+    return changes.filter((date) => !confirmed.has(date) && !dismissed.has(date));
   });
 
   protected readonly formattedMeterChangeDate = computed(() => {
     const dates = this.unconfirmedMeterChanges();
     if (dates.length === 0) return '';
-    return new Date(dates[0]).toLocaleDateString(this.languageService.currentLang());
+    return parseSafeDate(dates[0]).toLocaleDateString(this.languageService.currentLang());
   });
+
+  protected readonly meterChangeMessageParams = computed(() => ({
+    date: this.formattedMeterChangeDate(),
+  }));
 
   protected readonly successTitle = this.dataService.successTitle;
   protected readonly successMessage = this.dataService.successMessage;
@@ -373,7 +366,7 @@ export class WaterComponent extends BaseConsumptionComponent<ConsumptionRecord> 
   }
 
   protected saveRecord() {
-    if (this.hasValidInput && !this.dateExists) {
+    if (this.hasValidInput() && !this.dateExists()) {
       const newRecord = this.formService.createRecordFromState();
       if (newRecord) {
         void this.dataService.saveRecord(newRecord);
@@ -408,13 +401,9 @@ export class WaterComponent extends BaseConsumptionComponent<ConsumptionRecord> 
   }
 
   // Calc Helpers
-  protected get hasValidInput(): boolean {
-    return this.formService.hasValidInput();
-  }
+  protected readonly hasValidInput = computed(() => this.formService.hasValidInput());
 
-  protected get dateExists(): boolean {
-    return this.formService.isDateDuplicate(this.records());
-  }
+  protected readonly dateExists = computed(() => this.formService.isDateDuplicate(this.records()));
 
   protected readonly calculateTotal = (record: unknown): number =>
     calculateWaterTotal(record as ConsumptionRecord);

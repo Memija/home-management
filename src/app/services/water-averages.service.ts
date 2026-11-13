@@ -40,6 +40,14 @@ export class WaterAveragesService {
       return this.worldData;
     }
 
+    const code = this.countryToCode[normalized];
+    if (code) {
+      const mappedName = this.codeToCountry[code];
+      if (mappedName && this.countryData[mappedName]) {
+        return this.countryData[mappedName];
+      }
+    }
+
     return this.defaultData;
   }
 
@@ -62,7 +70,9 @@ export class WaterAveragesService {
   hasCountryData(country: string): boolean {
     if (!country) return false;
     const normalizedCountry = country.toLowerCase().trim();
-    return normalizedCountry in this.countryData;
+    if (normalizedCountry in this.countryData) return true;
+    const code = this.getCountryCode(normalizedCountry);
+    return Boolean(code && this.codeToCountry[code] in this.countryData);
   }
 
   getAllCountries(): string[] {

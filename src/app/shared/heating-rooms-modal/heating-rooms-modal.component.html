@@ -1,8 +1,8 @@
-@if (showSignal()) {
+@if (show()) {
   <!-- eslint-disable-next-line @angular-eslint/template/interactive-supports-focus -- Backdrop dismissal by design -->
   <div
     class="modal-overlay"
-    (click)="$event.target === $event.currentTarget && onCancel()"
+    (click)="$event.target === $event.currentTarget ? onCancel() : undefined"
     (keydown.escape)="onCancel()"
   >
     <div class="modal-content">
@@ -39,9 +39,9 @@
         }
 
         <div class="rooms-list">
-          @for (room of editingRooms(); track trackByRoom($index, room)) {
+          @for (room of roomStates(); track room.id) {
             <div class="room-item-container">
-              <div class="room-item" [class.locked]="isLocked(room.id)">
+              <div class="room-item" [class.locked]="room.isLocked">
                 <input
                   type="text"
                   [id]="'room-name-' + room.id"
@@ -50,53 +50,53 @@
                   (input)="updateRoomName(room.id, $any($event.target).value)"
                   placeholder="{{ 'HEATING.ROOM_NAME_PLACEHOLDER' | translate }}"
                   class="room-name-input"
-                  [class.error]="!!getRoomError(room.name)"
-                  [disabled]="isLocked(room.id)"
+                  [class.error]="!!room.error"
+                  [disabled]="room.isLocked"
                 />
 
                 <button
                   type="button"
                   class="remove-btn"
                   (click)="removeRoom(room.id)"
-                  [disabled]="!canRemoveRoom() || isLocked(room.id)"
+                  [disabled]="!canRemoveRoom() || room.isLocked"
                   title="{{ 'HEATING.REMOVE_ROOM' | translate }}"
                 >
                   <lucide-icon [img]="DeleteIcon" size="16"></lucide-icon>
                 </button>
 
-                @if (hasData(room.id)) {
+                @if (room.hasData) {
                   <button
                     type="button"
                     class="lock-btn"
-                    (click)="isLocked(room.id) ? requestUnlock(room.id) : lockRoom(room.id)"
+                    (click)="room.isLocked ? requestUnlock(room.id) : lockRoom(room.id)"
                     title="{{
-                      (isLocked(room.id)
+                      (room.isLocked
                         ? 'HEATING.ROOM_LOCKED_TOOLTIP'
                         : 'HEATING.ROOM_UNLOCKED_TOOLTIP'
                       ) | translate
                     }}"
                     aria-label="{{
-                      (isLocked(room.id)
+                      (room.isLocked
                         ? 'HEATING.ROOM_LOCKED_TOOLTIP'
                         : 'HEATING.ROOM_UNLOCKED_TOOLTIP'
                       ) | translate
                     }}"
                   >
                     <lucide-icon
-                      [img]="isLocked(room.id) ? LockIcon : LockOpenIcon"
+                      [img]="room.isLocked ? LockIcon : LockOpenIcon"
                       size="16"
                     ></lucide-icon>
                   </button>
                 }
               </div>
-              @if (getRoomError(room.name); as errorKey) {
+              @if (room.error) {
                 <div class="warning-message error-message">
                   <lucide-icon
                     [img]="TriangleAlertIcon"
                     size="20"
                     class="warning-icon"
                   ></lucide-icon>
-                  <div>{{ errorKey | translate }}</div>
+                  <div>{{ room.error | translate }}</div>
                 </div>
               }
             </div>
@@ -168,7 +168,7 @@
   <!-- eslint-disable-next-line @angular-eslint/template/interactive-supports-focus -- Backdrop dismissal by design -->
   <div
     class="modal-overlay unlock-warning-overlay"
-    (click)="$event.target === $event.currentTarget && cancelUnlock()"
+    (click)="$event.target === $event.currentTarget ? cancelUnlock() : undefined"
     (keydown.escape)="cancelUnlock()"
   >
     <div class="modal-content unlock-warning-modal">
@@ -208,7 +208,7 @@
   <!-- eslint-disable-next-line @angular-eslint/template/interactive-supports-focus -- Backdrop dismissal by design -->
   <div
     class="modal-overlay unlock-warning-overlay"
-    (click)="$event.target === $event.currentTarget && cancelDiscard()"
+    (click)="$event.target === $event.currentTarget ? cancelDiscard() : undefined"
     (keydown.escape)="cancelDiscard()"
   >
     <div class="modal-content unlock-warning-modal">
@@ -244,10 +244,12 @@
 }
 
 <!-- Help Modal -->
-<app-help-modal
-  [show]="showHelpModal()"
-  [titleKey]="'HEATING.HELP.TITLE'"
-  [steps]="helpSteps"
-  (closeModal)="closeHelp()"
->
-</app-help-modal>
+@if (showHelpModal()) {
+  <app-help-modal
+    [show]="showHelpModal()"
+    [titleKey]="'HEATING.HELP.TITLE'"
+    [steps]="helpSteps"
+    (closeModal)="closeHelp()"
+  >
+  </app-help-modal>
+}

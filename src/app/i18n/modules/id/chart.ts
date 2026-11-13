@@ -31,7 +31,7 @@ export const chart = {
     COMPARE_WITH_INFO_ELECTRICITY:
       'Data rata-rata konsumsi listrik bersumber dari statistik energi nasional.',
     COMPARE_WITH_INFO_HEATING:
-      'Data rata-rata konsumsi pemanas bersumber dari statistik energi nasional.',
+      'Data rata-rata konsumsi pemanas bersumber dari statistik energi nasional untuk hunian tipikal seluas 100 m². Pemanas ruangan dibandingkan per rumah tangga dan bukan per orang karena bergantung pada luas lantai, insulasi bangunan, dan iklim luar ruangan, bukan jumlah penghuni.',
     COMPARISON_REQUIRES_DATA: 'Setidaknya diperlukan 3 entri untuk perbandingan negara',
     KITCHEN_TOTAL: 'Konsumsi Dapur',
     BATHROOM_TOTAL: 'Konsumsi Kamar Mandi',

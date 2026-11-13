@@ -1,0 +1,21 @@
+<span [class.th-with-info]="tooltip().length > 0">
+  <button
+    type="button"
+    class="sort-btn"
+    [attr.data-col]="column()"
+    [class.active]="isActive()"
+    (click)="sortSelected.emit(column())"
+  >
+    <lucide-icon [img]="icon()" [size]="15" class="col-icon" aria-hidden="true"></lucide-icon>
+    <span>{{ label() }}</span>
+    <lucide-icon [img]="sortIcon()" [size]="14" class="sort-icon" aria-hidden="true"></lucide-icon>
+  </button>
+  @if (tooltip()) {
+    <span class="header-info-tooltip" role="button" tabindex="0" aria-label="{{ tooltip() }}">
+      <lucide-icon [img]="InfoIcon" [size]="15" aria-hidden="true"></lucide-icon>
+      <span class="tooltip-popover" role="tooltip">
+        {{ tooltip() }}
+      </span>
+    </span>
+  }
+</span>

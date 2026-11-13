@@ -208,19 +208,35 @@ export const middleEastHeatingFacts = {
     'Energi surya di Turki tumbuh sangat cepat di sektor perumahan.',
   ],
 
-  // Egypt
-  EG: [
-    'Mesir hampir tidak butuh pemanas ruangan karena iklimnya yang hangat.',
-    'AC digunakan oleh warga Mesir saat musim panas untuk pendinginan utama.',
-    'Gas alam berekspansi pesat di Mesir untuk kebutuhan dapur perumahan.',
-    'Rumah tangga di Mesir rata-rata menghabiskan nol untuk pemanasan ruangan.',
-    'LPG masih digunakan di daerah Mesir yang belum terjangkau pipa gas.',
-    'Pemanas air tenaga surya sedang dipromosikan di kota-kota baru Mesir.',
-    'Desain bangunan Mesir dirancang untuk mengatasi panas matahari gurun.',
-    'Tidak ada infrastruktur pemanasan distrik di seluruh wilayah Mesir.',
-    'Mesir menjadi pusat regional untuk energi gas alam di Timur Tengah.',
-    'Kipas angin lebih banyak digunakan daripada AC di kalangan warga miskin.',
-    'Isolasi atap adalah fokus utama peningkatan efisiensi energi di Mesir.',
-    'Musim dingin di Mesir sangat ringan dan nyaman bagi rata-rata penduduk.',
+  // Palestine
+  PS: [
+    'Rata-rata konsumsi energi pemanas rumah tangga tahunan di Palestina diperkirakan sekitar 2800 kWh (IEA / Climate Zone Estimate, 2021).',
+    'Suhu musim dingin di Palestina menjadikan sistem pemanas ruangan yang andal sangat penting bagi kenyamanan hunian.',
+    'Di Ramallah, penggunaan energi termal rumah tangga mencakup pemanas air domestik dan pengatur suhu ruangan.',
+    'Pemanas air tenaga surya merupakan cara efektif bagi rumah tangga di Palestina untuk menghemat energi pemanas air.',
+    'Standar insulasi bangunan modern di Palestina membantu menjaga kestabilan suhu dalam ruangan dan mengurangi pemborosan energi.',
+    'Pompa panas (heat pump) dan unit AC reversibel menyediakan pemanasan serta pendinginan yang efisien di Ramallah.',
+    'Pemanasan air domestik menyumbang porsi kebutuhan energi termal rumah tangga yang stabil sepanjang tahun di Palestina.',
+    'Pedoman efisiensi energi di Palestina mendorong penggunaan pemanas hemat energi, pompa panas, dan jendela berinsulasi.',
+    'Rumah tangga perkotaan di Ramallah semakin mengandalkan listrik, LPG, atau gas alam untuk kebutuhan termal domestik.',
+    'Mengurangi kehilangan panas melalui atap, dinding, dan jendela menurunkan total biaya energi rumah tangga di Palestina.',
+    'Termostat pintar dan pengatur waktu terprogram membantu rumah tangga di Palestina mengoptimalkan konsumsi energi termal.',
+    'Strategi energi nasional di Palestina mendorong transisi menuju sistem pemanas ruangan dan air rendah karbon.',
+  ],
+
+  // Yemen
+  YE: [
+    'Rumah tangga di Yaman tidak memerlukan pemanas ruangan (0 kWh/tahun) karena iklim yang hangat sepanjang tahun.',
+    'Karena iklim yang hangat di Yaman, sebagian besar rumah tangga hanya memerlukan sedikit pemanas ruangan sepanjang tahun.',
+    'Di Sanaa, penggunaan energi termal rumah tangga mencakup pemanas air domestik dan pengatur suhu ruangan.',
+    'Pemanas air tenaga surya merupakan cara efektif bagi rumah tangga di Yaman untuk menghemat energi pemanas air.',
+    'Standar insulasi bangunan modern di Yaman membantu menjaga kestabilan suhu dalam ruangan dan mengurangi pemborosan energi.',
+    'Pompa panas (heat pump) dan unit AC reversibel menyediakan pemanasan serta pendinginan yang efisien di Sanaa.',
+    'Pemanasan air domestik menyumbang porsi kebutuhan energi termal rumah tangga yang stabil sepanjang tahun di Yaman.',
+    'Pedoman efisiensi energi di Yaman berfokus pada pemanas air tenaga surya, atap reflektif, dan ventilasi alami.',
+    'Rumah tangga perkotaan di Sanaa semakin mengandalkan listrik, LPG, atau gas alam untuk kebutuhan termal domestik.',
+    'Mengurangi kehilangan panas melalui atap, dinding, dan jendela menurunkan total biaya energi rumah tangga di Yaman.',
+    'Termostat pintar dan pengatur waktu terprogram membantu rumah tangga di Yaman mengoptimalkan konsumsi energi termal.',
+    'Strategi energi nasional di Yaman mendorong transisi menuju sistem pemanas ruangan dan air rendah karbon.',
   ],
 };

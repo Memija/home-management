@@ -48,10 +48,11 @@ export const common = {
   FOOTER: {
     APP_NAME: 'Manajemen Rumah',
     SUPPORT_PROJECT: 'Dukung Proyek Ini',
+    BENCHMARKS: 'Tolok Ukur Negara',
     CHANGELOG: 'Riwayat Perubahan',
     RELEASE_PLAN: 'Fitur Mendatang',
     CONTRIBUTE: 'Berkontribusi',
-    PRIVACY_POLICY: 'Kebijakan Privasi',
+    PRIVACY_POLICY: 'Privasi & Ketentuan Hukum',
     VERSION: 'Versi {{version}}',
   },
   CHANGELOG: {

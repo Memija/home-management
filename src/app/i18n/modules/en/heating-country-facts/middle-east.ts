@@ -208,19 +208,35 @@ export const middleEastHeatingFacts = {
     'Eastern Anatolia has severe winters.',
   ],
 
-  // Egypt
-  EG: [
-    'Egypt has minimal heating needs due to warm climate.',
-    'Sinai and desert nights can be cold.',
-    'Air conditioning provides heating when needed.',
-    'Egyptian homes use minimal energy for heating.',
-    'The average household spends very little on heating.',
-    'LPG is used for cooking throughout Egypt.',
-    'Natural gas is expanding in Cairo.',
-    'Building design prioritizes ventilation.',
-    'Alexandria has cooler winters than Cairo.',
-    'Upper Egypt has very hot climate.',
-    'No significant heating infrastructure exists.',
-    'Energy consumption is dominated by cooling.',
+  // Palestine
+  PS: [
+    'Average annual household heating energy consumption in Palestine is estimated at around 2800 kWh (IEA / Climate Zone Estimate, 2021).',
+    'Seasonal winter temperatures in Palestine make reliable space heating essential for residential comfort.',
+    'In Ramallah, residential thermal energy use includes both domestic hot water and seasonal climate control.',
+    'Solar thermal water heaters are an effective way for households in Palestine to reduce water heating energy use.',
+    'Modern building insulation standards in Palestine help stabilize indoor temperatures and reduce energy waste.',
+    'Reversible heat pumps and split air-conditioning units provide efficient heating and cooling in Ramallah.',
+    'Domestic water heating accounts for a steady year-round share of household thermal energy demand in Palestine.',
+    'Energy efficiency guidelines in Palestine promote high-efficiency boilers, heat pumps, and insulated glazing.',
+    'Urban households in Ramallah increasingly rely on electricity, LPG, or natural gas for domestic thermal needs.',
+    'Reducing thermal loss through roofs, walls, and windows lowers overall household energy costs in Palestine.',
+    'Smart temperature controls and programmable timers help households in Palestine optimize thermal energy consumption.',
+    'National energy strategies in Palestine encourage transitioning toward low-carbon domestic heating and hot water systems.',
+  ],
+
+  // Yemen
+  YE: [
+    'Households in Yemen require no residential space heating (0 kWh/year) due to the year-round warm climate.',
+    'Because of the warm climate in Yemen, most households require minimal space heating throughout the year.',
+    "In Sana'a, residential thermal energy use includes both domestic hot water and seasonal climate control.",
+    'Solar thermal water heaters are an effective way for households in Yemen to reduce water heating energy use.',
+    'Modern building insulation standards in Yemen help stabilize indoor temperatures and reduce energy waste.',
+    "Reversible heat pumps and split air-conditioning units provide efficient heating and cooling in Sana'a.",
+    'Domestic water heating accounts for a steady year-round share of household thermal energy demand in Yemen.',
+    'Energy efficiency guidelines in Yemen focus on solar water heating, reflective roofing, and natural ventilation.',
+    "Urban households in Sana'a increasingly rely on electricity, LPG, or natural gas for domestic thermal needs.",
+    'Reducing thermal loss through roofs, walls, and windows lowers overall household energy costs in Yemen.',
+    'Smart temperature controls and programmable timers help households in Yemen optimize thermal energy consumption.',
+    'National energy strategies in Yemen encourage transitioning toward low-carbon domestic heating and hot water systems.',
   ],
 };

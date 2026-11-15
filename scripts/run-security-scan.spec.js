@@ -116,7 +116,7 @@ describe('run-security-scan', () => {
 
       const dockerPlan = resolveRunner('dast', { hasDocker: () => true });
       expect(dockerPlan.type).toBe('docker');
-      expect(dockerPlan.cmd).toContain('zap-baseline.py');
+      expect(dockerPlan.cmd).toContain('zap-baseline.py -t https://home-management-be965.web.app');
     });
 
     it('should check CodeQL CLI', () => {

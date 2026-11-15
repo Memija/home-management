@@ -26,11 +26,19 @@ jobs:
         with:
           persist-credentials: false
 
+      - name: Verify Public Edge HSTS Header
+        run: |
+          headers="$(curl -sSI https://home-management.dev)"
+          echo "$headers" | grep -iq '^strict-transport-security:' || {
+            echo "::error::Missing Strict-Transport-Security header on https://home-management.dev edge response"
+            exit 1
+          }
+
       - name: Run OWASP ZAP Baseline Scan
         uses: zaproxy/action-baseline@de8ad967d3548d44ef623df22cf95c3b0baf8b25 # v0.15.0
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
-          target: 'https://home-management.dev'
+          target: 'https://home-management-be965.web.app'
           rules_file_name: '.zap/rules.tsv'
           issue_title: 'OWASP ZAP: Security Finding in Deployed App'
           fail_action: false
@@ -47,7 +55,8 @@ jobs:
             echo "" >> $GITHUB_STEP_SUMMARY
             echo "| Metric | Value |" >> $GITHUB_STEP_SUMMARY
             echo "| :--- | :--- |" >> $GITHUB_STEP_SUMMARY
-            echo "| **Target URL** | \`https://home-management.dev\` |" >> $GITHUB_STEP_SUMMARY
+            echo "| **DAST Origin Target** | \`https://home-management-be965.web.app\` |" >> $GITHUB_STEP_SUMMARY
+            echo "| **Public Edge HSTS Check** | \`https://home-management.dev\` |" >> $GITHUB_STEP_SUMMARY
             echo "| **Scan Type** | Baseline DAST / Passive Scan |" >> $GITHUB_STEP_SUMMARY
             echo "| **Fail on Alert** | Disabled (\`fail_action: false\`) |" >> $GITHUB_STEP_SUMMARY
             echo "| **Status** | Passed |" >> $GITHUB_STEP_SUMMARY

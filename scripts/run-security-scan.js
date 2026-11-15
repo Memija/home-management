@@ -231,7 +231,7 @@ function resolveRunner(tool, envChecks = {}) {
       if (hasDocker()) {
         return {
           type: 'docker',
-          cmd: 'docker run --rm -t zaproxy/zap-stable zap-baseline.py -t https://home-management.dev',
+          cmd: 'docker run --rm -t zaproxy/zap-stable zap-baseline.py -t https://home-management-be965.web.app',
         };
       }
       return {

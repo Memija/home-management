@@ -118,7 +118,7 @@
     "shell-quote": "^1.12.0",
     "dompurify": "^3.4.17",
     "source-map-js": "^1.2.2",
-    "@modelcontextprotocol/sdk": "^1.32.1",
+    "@modelcontextprotocol/sdk": "^1.32.2",
     "sprintf-js": "^1.1.3",
     "ip-address": "^10.7.4",
     "http-cache-semantics": "^4.3.0",
@@ -127,14 +127,18 @@
     "undici": "^7.30.1",
     "@grpc/grpc-js": "^1.14.6",
     "fast-uri": "^3.1.9",
-    "basic-ftp": "^6.2.3",
+    "basic-ftp": "^6.2.6",
     "webpack-dev-middleware": "^7.4.6",
     "vite": "^7.3.7",
     "body-parser@^1.0.0": "^1.20.9",
     "body-parser@^2.0.0": "^2.4.0",
     "@vitest/mocker": "^4.1.12",
     "serialize-javascript": "^7.1.3",
-    "zod": "^4.6.6"
+    "zod": "^4.6.6",
+    "node-forge": "^1.4.3",
+    "re2js": "^2.10.0",
+    "hono": "^4.13.18",
+    "@hono/node-server": "^2.1.8"
   },
   "lint-staged": {
     "src/**/*.{ts,html}": [

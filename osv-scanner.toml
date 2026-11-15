@@ -28,8 +28,3 @@ reason = "False positive: project uses official vendor release xlsx 0.20.3 conta
 id = "CVE-2023-30533"
 reason = "False positive: project uses official vendor release xlsx 0.20.3 containing upstream patches."
 
-# node-forge: Transitive dev dependency of sonarqube-scanner
-# RSA PKCS#1 v1.5 verification issue; dev-only CLI scanner tool; no upstream npm patch available; not bundled in production.
-[[IgnoredVulns]]
-id = "CVE-2026-33894"
-reason = "Dev-only dependency in sonarqube-scanner; no upstream npm patch available; not bundled in production."

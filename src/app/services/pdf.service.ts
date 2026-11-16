@@ -33,14 +33,12 @@ export class PdfService {
     jsPDF: (typeof import('jspdf'))['jsPDF'];
     autoTable: (typeof import('jspdf-autotable'))['default'];
   }> {
-    if (!this.pdfLibsPromise) {
-      this.pdfLibsPromise = Promise.all([import('jspdf'), import('jspdf-autotable')]).then(
-        ([{ jsPDF }, autoTableModule]) => ({
-          jsPDF,
-          autoTable: autoTableModule.default,
-        }),
-      );
-    }
+    this.pdfLibsPromise ??= Promise.all([import('jspdf'), import('jspdf-autotable')]).then(
+      ([{ jsPDF }, autoTableModule]) => ({
+        jsPDF,
+        autoTable: autoTableModule.default,
+      }),
+    );
     return this.pdfLibsPromise;
   }
 

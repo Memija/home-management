@@ -26,7 +26,12 @@
   align-items: center;
   justify-content: center;
   gap: 0.45rem;
-  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  transition:
+    background 0.2s cubic-bezier(0.4, 0, 0.2, 1),
+    color 0.2s cubic-bezier(0.4, 0, 0.2, 1),
+    box-shadow 0.2s cubic-bezier(0.4, 0, 0.2, 1),
+    transform 0.2s cubic-bezier(0.4, 0, 0.2, 1),
+    opacity 0.2s cubic-bezier(0.4, 0, 0.2, 1);
   box-shadow: var(--shadow-sm);
 
   &:hover:not(:disabled) {
@@ -61,7 +66,13 @@
   align-items: center;
   justify-content: center;
   gap: 0.45rem;
-  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  transition:
+    background 0.2s cubic-bezier(0.4, 0, 0.2, 1),
+    border-color 0.2s cubic-bezier(0.4, 0, 0.2, 1),
+    color 0.2s cubic-bezier(0.4, 0, 0.2, 1),
+    box-shadow 0.2s cubic-bezier(0.4, 0, 0.2, 1),
+    transform 0.2s cubic-bezier(0.4, 0, 0.2, 1),
+    opacity 0.2s cubic-bezier(0.4, 0, 0.2, 1);
   box-shadow: var(--shadow-sm);
   white-space: nowrap;
   flex-shrink: 0;
@@ -275,7 +286,12 @@ label.upload-btn,
   font-weight: 500;
   color: var(--text-primary);
   cursor: pointer;
-  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  transition:
+    background 0.2s cubic-bezier(0.4, 0, 0.2, 1),
+    border-color 0.2s cubic-bezier(0.4, 0, 0.2, 1),
+    color 0.2s cubic-bezier(0.4, 0, 0.2, 1),
+    box-shadow 0.2s cubic-bezier(0.4, 0, 0.2, 1),
+    transform 0.2s cubic-bezier(0.4, 0, 0.2, 1);
   box-shadow: var(--shadow-sm);
   margin-bottom: 0;
 
@@ -337,7 +353,12 @@ label.upload-btn,
   font-weight: 500;
   color: var(--text-primary);
   text-decoration: none;
-  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  transition:
+    background 0.2s cubic-bezier(0.4, 0, 0.2, 1),
+    border-color 0.2s cubic-bezier(0.4, 0, 0.2, 1),
+    color 0.2s cubic-bezier(0.4, 0, 0.2, 1),
+    box-shadow 0.2s cubic-bezier(0.4, 0, 0.2, 1),
+    transform 0.2s cubic-bezier(0.4, 0, 0.2, 1);
   white-space: nowrap;
   flex-shrink: 0;
   box-shadow: var(--shadow-sm);
@@ -360,7 +381,10 @@ label.upload-btn,
   padding: 0.35rem;
   color: var(--text-muted);
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition:
+    color 0.2s ease,
+    background 0.2s ease,
+    transform 0.2s ease;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -393,5 +417,30 @@ label.upload-btn,
   &:hover:not(:disabled) {
     background: color.adjust($secondary, $lightness: -10%);
     box-shadow: 0 4px 12px rgba($secondary, 0.3);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  %btn-base,
+  %btn-surface,
+  label.upload-btn,
+  .upload-btn,
+  .btn-outline,
+  .help-btn {
+    transition: none;
+  }
+
+  %btn-base:hover:not(:disabled),
+  %btn-base:active:not(:disabled),
+  %btn-surface:hover:not(:disabled),
+  %btn-surface:active:not(:disabled),
+  label.upload-btn:hover,
+  label.upload-btn:active,
+  .upload-btn:hover,
+  .upload-btn:active,
+  .btn-outline:hover,
+  .btn-outline:active,
+  .help-btn:hover {
+    transform: none;
   }
 }

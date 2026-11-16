@@ -45,6 +45,77 @@ export interface ConsumptionData {
 
 const DISALLOWED_NUMBER_KEYS = new Set(['-', '+', 'e', 'E', '.', ',']);
 
+interface GroupsEvaluation {
+  fields: Record<string, number>;
+  hasPartialGroups: boolean;
+  hasCompleteGroups: boolean;
+  hasAnyValues: boolean;
+  hasAnyNonZeroValues: boolean;
+}
+
+function hasAnyNonNullField(groups: ConsumptionGroup[]): boolean {
+  return groups.some((group) => group.fields.some((field) => field.value !== null));
+}
+
+function countNullFields(fields: ConsumptionField[]): number {
+  let count = 0;
+  for (const field of fields) {
+    if (field.value === null) {
+      count++;
+    }
+  }
+  return count;
+}
+
+function hasValidCompleteGroups(groups: ConsumptionGroup[]): boolean {
+  let atLeastOneComplete = false;
+  for (const group of groups) {
+    const nullCount = countNullFields(group.fields);
+    if (nullCount > 0 && nullCount < group.fields.length) {
+      return false;
+    }
+    if (nullCount === 0) {
+      atLeastOneComplete = true;
+    }
+  }
+  return atLeastOneComplete;
+}
+
+function evaluateSingleGroup(group: ConsumptionGroup, state: GroupsEvaluation): void {
+  let nullCount = 0;
+  for (const field of group.fields) {
+    if (field.value === null) {
+      nullCount++;
+      continue;
+    }
+    state.hasAnyValues = true;
+    if (field.value > 0) {
+      state.hasAnyNonZeroValues = true;
+    }
+    state.fields[field.key] = field.value;
+  }
+
+  if (nullCount === 0) {
+    state.hasCompleteGroups = true;
+  } else if (nullCount < group.fields.length) {
+    state.hasPartialGroups = true;
+  }
+}
+
+function evaluateGroups(groups: ConsumptionGroup[]): GroupsEvaluation {
+  const state: GroupsEvaluation = {
+    fields: {},
+    hasPartialGroups: false,
+    hasCompleteGroups: false,
+    hasAnyValues: false,
+    hasAnyNonZeroValues: false,
+  };
+  for (const group of groups) {
+    evaluateSingleGroup(group, state);
+  }
+  return state;
+}
+
 @Component({
   selector: 'app-consumption-input',
   standalone: true,
@@ -139,36 +210,7 @@ export class ConsumptionInputComponent {
 
   protected hasValidInput = computed(() => {
     const grps = this.groups();
-
-    // In partial groups mode (heating), just need at least one field with a value
-    if (this.allowPartialGroups()) {
-      for (const group of grps) {
-        for (const field of group.fields) {
-          if (field.value !== null) return true;
-        }
-      }
-      return false;
-    }
-
-    // Standard mode (water): each group must be either complete or empty, and at least one complete
-    let atLeastOneComplete = false;
-    for (const group of grps) {
-      let nullCount = 0;
-      const totalFields = group.fields.length;
-      for (const field of group.fields) {
-        if (field.value === null) {
-          nullCount++;
-        }
-      }
-      if (nullCount > 0 && nullCount < totalFields) {
-        return false;
-      }
-      if (nullCount === 0) {
-        atLeastOneComplete = true;
-      }
-    }
-
-    return atLeastOneComplete;
+    return this.allowPartialGroups() ? hasAnyNonNullField(grps) : hasValidCompleteGroups(grps);
   });
 
   protected onDateChange(newDate: string) {
@@ -210,6 +252,22 @@ export class ConsumptionInputComponent {
     }
   }
 
+  private getSaveValidationError(evaluation: GroupsEvaluation): string | null {
+    if (!evaluation.hasAnyNonZeroValues) {
+      return this.noValuesErrorKey();
+    }
+    if (this.allowPartialGroups()) {
+      return evaluation.hasAnyValues ? null : this.noValuesErrorKey();
+    }
+    if (evaluation.hasPartialGroups) {
+      return this.incompleteRoomErrorKey();
+    }
+    if (!evaluation.hasCompleteGroups) {
+      return this.noValuesErrorKey();
+    }
+    return null;
+  }
+
   protected onSave() {
     if (!this.selectedDate()) {
       this.errorMessage.set('HOME.SELECT_DATE_ERROR');
@@ -221,65 +279,16 @@ export class ConsumptionInputComponent {
       return;
     }
 
-    // Check for specific validation failures and collect non-null field values in a single pass
-    const grps = this.groups();
-    const fields: Record<string, number> = {};
-    let hasPartialGroups = false;
-    let hasCompleteGroups = false;
-    let hasAnyValues = false;
-    let hasAnyNonZeroValues = false;
-
-    for (const group of grps) {
-      let nullCount = 0;
-      const totalFields = group.fields.length;
-      for (const field of group.fields) {
-        if (field.value === null) {
-          nullCount++;
-        } else {
-          hasAnyValues = true;
-          if (field.value > 0) {
-            hasAnyNonZeroValues = true;
-          }
-          fields[field.key] = field.value;
-        }
-      }
-      if (nullCount === 0) {
-        hasCompleteGroups = true;
-      } else if (nullCount < totalFields) {
-        hasPartialGroups = true;
-      }
-    }
-
-    // Prevent saving records where all values are zero or empty
-    if (!hasAnyNonZeroValues) {
-      this.errorMessage.set(this.noValuesErrorKey());
+    const evaluation = evaluateGroups(this.groups());
+    const validationError = this.getSaveValidationError(evaluation);
+    if (validationError) {
+      this.errorMessage.set(validationError);
       return;
-    }
-
-    // In partial groups mode (heating), allow saving if at least one field has a value
-    if (this.allowPartialGroups()) {
-      if (!hasAnyValues) {
-        this.errorMessage.set(this.noValuesErrorKey());
-        return;
-      }
-    } else {
-      // Standard mode (water): require complete groups
-      if (hasPartialGroups) {
-        // User started a room but didn't complete it
-        this.errorMessage.set(this.incompleteRoomErrorKey());
-        return;
-      }
-
-      if (!hasCompleteGroups) {
-        // No room has unknown data
-        this.errorMessage.set(this.noValuesErrorKey());
-        return;
-      }
     }
 
     this.save.emit({
       date: this.selectedDate(),
-      fields,
+      fields: evaluation.fields,
     });
   }
 

@@ -45,7 +45,7 @@ describe('CountryService', () => {
 
   it('should be created and contain all 198 countries worldwide', () => {
     expect(service).toBeTruthy();
-    expect(service.getAllCountryData().length).toBe(198);
+    expect(service.getAllCountryData()).toHaveLength(198);
   });
 
   describe('getCountries', () => {

@@ -10,6 +10,14 @@ interface IntervalGeometry {
   readonly totalDays: number;
 }
 
+interface RunningRegressionState {
+  readonly dailyRates: number[];
+  sumX: number;
+  sumY: number;
+  sumXY: number;
+  sumX2: number;
+}
+
 /**
  * Core prediction math: daily-rate extraction, historical accuracy evaluation,
  * and building the full PredictionResult object.
@@ -25,7 +33,7 @@ export class PredictionCalculationService {
 
   private getIntervalGeometry(records: { date: Date | string }[]): IntervalGeometry {
     const cached = this.geometryCache.get(records);
-    if (cached && cached.timestamps.length === records.length) {
+    if (cached?.timestamps.length === records.length) {
       return cached;
     }
 
@@ -72,7 +80,7 @@ export class PredictionCalculationService {
     let byCategory = this.intervalRatesCache.get(incrementalData);
     if (byCategory) {
       const cached = byCategory.get(category);
-      if (cached && cached.length === records.length) {
+      if (cached?.length === records.length) {
         return cached;
       }
     } else {
@@ -196,73 +204,46 @@ export class PredictionCalculationService {
       return { accuracy: null, correctionFactor: 1.0, historicalPredictions };
     }
 
-    let totalErrorPercentage = 0;
-    let totalUnderOver = 0;
-    let evaluations = 0;
-
     // Precompute timestamps and per-interval daily rates once in O(N)
     const { timestamps } = this.getIntervalGeometry(records);
     const intervalRates = this.getIntervalRates(records, incrementalData, category);
-
-    // Seed running dailyRates and incremental linear-regression accumulators
-    const dailyRates: number[] = [];
-    let sumX = 0;
-    let sumY = 0;
-    let sumXY = 0;
-    let sumX2 = 0;
-    const appendRate = (rate: number): void => {
-      const x = dailyRates.length;
-      dailyRates.push(rate);
-      sumX += x;
-      sumY += rate;
-      sumXY += x * rate;
-      sumX2 += x * x;
+    const regState: RunningRegressionState = {
+      dailyRates: [],
+      sumX: 0,
+      sumY: 0,
+      sumXY: 0,
+      sumX2: 0,
     };
 
-    for (let i = 1; i <= MIN_RECORDS_FOR_PREDICTION; i++) {
-      const rate = intervalRates[i];
-      if (rate !== null) {
-        appendRate(rate);
-      }
+    for (let i = 1; i < MIN_RECORDS_FOR_PREDICTION; i++) {
+      this.appendRegressionRate(regState, intervalRates[i]);
     }
 
+    let totalErrorPercentage = 0;
+    let totalUnderOver = 0;
+    let evaluations = 0;
     const firstDate = timestamps[0];
 
     for (let splitIdx = MIN_RECORDS_FOR_PREDICTION; splitIdx < records.length - 1; splitIdx++) {
-      if (splitIdx > MIN_RECORDS_FOR_PREDICTION) {
-        const addedRate = intervalRates[splitIdx];
-        if (addedRate !== null) {
-          appendRate(addedRate);
-        }
-      }
+      this.appendRegressionRate(regState, intervalRates[splitIdx]);
+      if (regState.dailyRates.length < 2) continue;
 
-      const n = dailyRates.length;
-      if (n < 2) continue;
-
-      const denominator = n * sumX2 - sumX * sumX;
-      const slope = denominator === 0 ? 0 : (n * sumXY - sumX * sumY) / denominator;
-      const intercept = denominator === 0 ? sumY / n : (sumY - slope * sumX) / n;
-
-      const lastDate = timestamps[splitIdx];
-      const totalDays = (lastDate - firstDate) / (1000 * 3600 * 24);
-      const pastRecordsCount = splitIdx + 1;
-      const avgInterval = pastRecordsCount > 1 ? totalDays / (pastRecordsCount - 1) : 7;
-
-      const regRate = Math.max(0, slope * n + intercept + (slope / (avgInterval || 7)) * 30);
-      const expected30 = this.statsService.weightedMovingAverage(dailyRates, regRate);
-
-      // Store the predicted daily rate for the next record (which is at splitIdx + 1)
+      const expected30 = this.computeSplitExpected30(
+        regState,
+        firstDate,
+        timestamps[splitIdx],
+        splitIdx,
+      );
       historicalPredictions[splitIdx + 1] = expected30;
 
       const actualNextRate = intervalRates[splitIdx + 1];
+      if (actualNextRate === null) continue;
 
-      if (actualNextRate !== null) {
-        const evalResult = this.recordEvaluationError(expected30, actualNextRate);
-        totalErrorPercentage += evalResult.errorPct;
-        if (evalResult.evaluated) {
-          totalUnderOver += evalResult.underOver;
-          evaluations++;
-        }
+      const evalResult = this.recordEvaluationError(expected30, actualNextRate);
+      totalErrorPercentage += evalResult.errorPct;
+      if (evalResult.evaluated) {
+        totalUnderOver += evalResult.underOver;
+        evaluations++;
       }
     }
 
@@ -275,10 +256,36 @@ export class PredictionCalculationService {
     const rawCorrection = totalUnderOver / evaluations;
     const correctionFactor = Math.max(0.8, Math.min(1.2, rawCorrection));
 
-    // Optional: We do not retroactively apply the final correction factor to the historical
-    // predictions because those represent the raw prediction model at that point in time.
-
     return { accuracy, correctionFactor, historicalPredictions };
+  }
+
+  private appendRegressionRate(state: RunningRegressionState, rate: number | null): void {
+    if (rate === null) return;
+    const x = state.dailyRates.length;
+    state.dailyRates.push(rate);
+    state.sumX += x;
+    state.sumY += rate;
+    state.sumXY += x * rate;
+    state.sumX2 += x * x;
+  }
+
+  private computeSplitExpected30(
+    state: RunningRegressionState,
+    firstDate: number,
+    lastDate: number,
+    splitIdx: number,
+  ): number {
+    const n = state.dailyRates.length;
+    const denominator = n * state.sumX2 - state.sumX * state.sumX;
+    const slope = denominator === 0 ? 0 : (n * state.sumXY - state.sumX * state.sumY) / denominator;
+    const intercept = denominator === 0 ? state.sumY / n : (state.sumY - slope * state.sumX) / n;
+
+    const totalDays = (lastDate - firstDate) / (1000 * 3600 * 24);
+    const pastRecordsCount = splitIdx + 1;
+    const avgInterval = pastRecordsCount > 1 ? totalDays / (pastRecordsCount - 1) : 7;
+
+    const regRate = Math.max(0, slope * n + intercept + (slope / (avgInterval || 7)) * 30);
+    return this.statsService.weightedMovingAverage(state.dailyRates, regRate);
   }
 
   private recordEvaluationError(

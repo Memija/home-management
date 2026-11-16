@@ -85,7 +85,10 @@ export class SeoService {
 
   /** Strips query string, fragment and trailing slash so canonical URLs stay consistent */
   private normalizePath(url: string): string {
-    const path = url.split(/[?#]/)[0].replace(/\/+$/, '');
+    let path = url.split(/[?#]/)[0];
+    while (path.endsWith('/')) {
+      path = path.slice(0, -1);
+    }
     return path || '/';
   }
 

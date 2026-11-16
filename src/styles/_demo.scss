@@ -34,7 +34,10 @@
     font-size: 0.9rem;
     font-weight: 500;
     cursor: pointer;
-    transition: all 0.2s ease;
+    transition:
+      background 0.2s ease,
+      border-color 0.2s ease,
+      opacity 0.2s ease;
 
     &:hover:not(:disabled) {
       background: #1e1b4b;
@@ -110,7 +113,10 @@
     font-size: 1rem;
     font-weight: 600;
     cursor: pointer;
-    transition: all 0.2s ease;
+    transition:
+      transform 0.2s ease,
+      box-shadow 0.2s ease,
+      opacity 0.2s ease;
     white-space: nowrap;
 
     &:hover:not(:disabled) {
@@ -139,7 +145,10 @@
   cursor: pointer;
   border: none;
   color: white;
-  transition: all 0.25s ease;
+  transition:
+    transform 0.25s ease,
+    box-shadow 0.25s ease,
+    color 0.25s ease;
   white-space: nowrap;
   animation: demoTourPulse 3s ease-in-out infinite;
 
@@ -185,5 +194,19 @@
   }
   50% {
     opacity: 0.85;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .demo-card .try-demo-btn,
+  .demo-tour-btn {
+    animation: none;
+    transition: none;
+  }
+
+  .demo-card .try-demo-btn:hover:not(:disabled),
+  .demo-tour-btn:hover,
+  .demo-tour-btn:active {
+    transform: none;
   }
 }

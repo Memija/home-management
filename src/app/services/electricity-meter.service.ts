@@ -22,7 +22,7 @@ export class ElectricityMeterService {
    */
   detectMeterChanges(records: ElectricityRecord[]): string[] {
     const cached = this.meterChangesCache.get(records);
-    if (cached && cached.length === records.length) {
+    if (cached?.length === records.length) {
       return cached.changes;
     }
 

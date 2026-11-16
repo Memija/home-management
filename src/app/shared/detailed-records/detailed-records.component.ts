@@ -247,7 +247,7 @@ export class DetailedRecordsComponent {
       this.displayedRecords().map((r) => {
         const time = parseSafeDate(r.date).getTime();
         const cached = this.recordDatesCache.get(r);
-        if (cached && cached.lang === lang && cached.time === time) {
+        if (cached?.lang === lang && cached.time === time) {
           return [r, cached.formatted] as const;
         }
         const formatted = this.datePipe.transform(r.date, 'fullDate', undefined, lang) ?? '';

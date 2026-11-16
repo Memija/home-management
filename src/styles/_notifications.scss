@@ -11,7 +11,10 @@
   flex-direction: column;
   gap: 1rem;
   box-shadow: var(--shadow-sm);
-  transition: all 0.2s ease;
+  transition:
+    background 0.2s ease,
+    border-color 0.2s ease,
+    box-shadow 0.2s ease;
 
   @media (min-width: 640px) {
     flex-direction: row;
@@ -76,7 +79,11 @@
       cursor: pointer;
       background: var(--theme-primary, $primary);
       color: var(--theme-primary-contrast, white);
-      transition: all 0.2s ease;
+      transition:
+        background 0.2s ease,
+        color 0.2s ease,
+        box-shadow 0.2s ease,
+        transform 0.2s ease;
       box-shadow: var(--shadow-sm);
 
       &:hover {
@@ -94,7 +101,10 @@
       cursor: pointer;
       background: transparent;
       color: var(--text-secondary);
-      transition: all 0.2s ease;
+      transition:
+        background 0.2s ease,
+        border-color 0.2s ease,
+        color 0.2s ease;
 
       &:hover {
         border-color: var(--text-muted);
@@ -138,7 +148,11 @@
   border-radius: 50%;
   color: var(--text-secondary);
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition:
+    background 0.2s ease,
+    border-color 0.2s ease,
+    color 0.2s ease,
+    transform 0.2s ease;
   position: relative;
 
   &:hover,
@@ -517,7 +531,11 @@
     padding: 0;
     border-radius: 6px;
     cursor: pointer;
-    transition: all 0.2s ease;
+    transition:
+      background 0.2s ease,
+      border-color 0.2s ease,
+      color 0.2s ease,
+      transform 0.2s ease;
   }
 
   .action-link {
@@ -590,7 +608,10 @@
     font-size: 0.85rem;
     font-weight: 500;
     cursor: pointer;
-    transition: all 0.2s;
+    transition:
+      background 0.2s ease,
+      border-color 0.2s ease,
+      opacity 0.2s ease;
 
     @media (max-width: 768px) {
       font-size: 0.75rem;
@@ -673,11 +694,34 @@
   padding: 0.25rem;
   color: $info;
   opacity: 0.6;
-  transition: all 0.2s;
+  transition:
+    opacity 0.2s ease,
+    color 0.2s ease,
+    transform 0.2s ease;
   font-size: 1.1rem;
 
   &:hover {
     opacity: 1;
     transform: rotate(180deg);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .notification-card--warning .notification-actions .btn-confirm,
+  .notification-bell,
+  .notification-panel,
+  .notification-item-actions .action-link,
+  .notification-item-actions .dismiss-btn,
+  .refresh-btn {
+    animation: none;
+    transition: none;
+  }
+
+  .notification-card--warning .notification-actions .btn-confirm:hover,
+  .notification-bell:hover,
+  .notification-bell.has-notifications,
+  .notification-item-actions .action-link:hover,
+  .refresh-btn:hover {
+    transform: none;
   }
 }

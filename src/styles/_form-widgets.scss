@@ -23,7 +23,12 @@
     align-items: center;
     justify-content: center;
     gap: 0.45rem;
-    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    transition:
+      background 0.2s cubic-bezier(0.4, 0, 0.2, 1),
+      border-color 0.2s cubic-bezier(0.4, 0, 0.2, 1),
+      color 0.2s cubic-bezier(0.4, 0, 0.2, 1),
+      box-shadow 0.2s cubic-bezier(0.4, 0, 0.2, 1),
+      transform 0.2s cubic-bezier(0.4, 0, 0.2, 1);
     box-shadow: var(--shadow-sm);
 
     lucide-icon {
@@ -168,7 +173,9 @@
       border-radius: 8px;
       cursor: pointer;
       border: 3px solid transparent;
-      transition: all 0.2s;
+      transition:
+        border-color 0.2s ease,
+        transform 0.2s ease;
       object-fit: cover;
       display: block;
     }
@@ -195,7 +202,9 @@
     border-radius: 8px;
     cursor: pointer;
     border: 3px solid transparent;
-    transition: all 0.2s;
+    transition:
+      border-color 0.2s ease,
+      transform 0.2s ease;
     object-fit: cover;
 
     &:hover {
@@ -317,7 +326,11 @@
       align-items: center;
       justify-content: center;
       padding: 0;
-      transition: all 0.15s ease;
+      transition:
+        background 0.15s ease,
+        color 0.15s ease,
+        border-color 0.15s ease,
+        border-radius 0.15s ease;
 
       // Subtle column shading for every second column (columns 2, 4, 6: Tue, Thu, Sat)
       &:nth-child(7n + 2):not(.selected):not(.today):not(:hover),
@@ -421,5 +434,26 @@
     font-size: 1rem;
     font-weight: 500;
     color: var(--text-primary);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .toggle-group button,
+  .toggle-group button lucide-icon,
+  .avatar-grid .avatar-btn img,
+  .avatar-grid img,
+  .calendar-popup {
+    animation: none;
+    transition: none;
+  }
+
+  .toggle-group button:hover:not(.active),
+  .toggle-group button:hover:not(.active) lucide-icon,
+  .toggle-group button.active:hover,
+  .toggle-group button.active:hover lucide-icon,
+  .toggle-group button:active,
+  .avatar-grid .avatar-btn:hover img,
+  .avatar-grid img:hover {
+    transform: none;
   }
 }

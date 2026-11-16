@@ -205,7 +205,7 @@ export class LanguageService {
     // 1. Check URL path prefix (e.g. /de, /bs, /sr, /id, /pl) so localized routes
     // prerender on the server and hydrate in the browser in the matching language.
     const pathname = this.document?.location?.pathname ?? '';
-    const pathSegment = pathname.split('/').filter(Boolean)[0] as Language | undefined;
+    const pathSegment = pathname.split('/').find(Boolean) as Language | undefined;
     if (pathSegment && (SUPPORTED_LANGUAGES as readonly string[]).includes(pathSegment)) {
       return pathSegment;
     }

@@ -4,7 +4,6 @@ import { americasHeatingFacts } from './americas';
 import { asiaPacificHeatingFacts } from './asia-pacific';
 import { middleEastHeatingFacts } from './middle-east';
 import { africaHeatingFacts } from './africa';
-import { AVAILABLE_COUNTRIES_WITH_WORLD } from '../../../../models/country-codes.data';
 
 // Default/historical facts about heating evolution
 const defaultHeatingFacts = {
@@ -49,4 +48,4 @@ export const heatingCountryFacts: Record<string, string[]> = {
 };
 
 // List of available countries with translation keys
-export const availableHeatingCountries = AVAILABLE_COUNTRIES_WITH_WORLD;
+export { AVAILABLE_COUNTRIES_WITH_WORLD as availableHeatingCountries } from '../../../../models/country-codes.data';

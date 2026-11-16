@@ -118,7 +118,9 @@
         var memberCount =
           Array.isArray(parsedMembers) && parsedMembers.length > 0 ? parsedMembers.length : 2;
         document.documentElement.dataset.householdSize = String(memberCount);
-      } catch (e) {}
+      } catch {
+        // Ignore storage access errors in restricted or private browsing contexts.
+      }
     </script>
   </head>
 

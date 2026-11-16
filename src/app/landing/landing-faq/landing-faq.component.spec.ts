@@ -17,7 +17,7 @@ describe('LandingFaqComponent', () => {
 
   it('should render all configured FAQ items with the first item expanded by default', () => {
     const details = fixture.nativeElement.querySelectorAll('details.faq-item');
-    expect(details.length).toBe(FAQ_KEYS.length);
+    expect(details).toHaveLength(FAQ_KEYS.length);
     expect(details[0].hasAttribute('open')).toBe(true);
     expect(details[1].hasAttribute('open')).toBe(false);
   });

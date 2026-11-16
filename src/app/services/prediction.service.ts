@@ -43,7 +43,7 @@ export class PredictionService {
     if (records.length < MIN_RECORDS_FOR_PREDICTION) return null;
 
     const cached = this.waterCache.get(records);
-    if (cached && cached.length === records.length) {
+    if (cached?.length === records.length) {
       return cached.result;
     }
 
@@ -81,7 +81,6 @@ export class PredictionService {
     );
 
     // Category predictions
-    const categories: MultiPredictionResult['categories'] = {};
     const keys = [
       'bathroomWarm',
       'kitchenWarm',
@@ -92,29 +91,7 @@ export class PredictionService {
       'warmTotal',
       'coldTotal',
     ];
-
-    for (const key of keys) {
-      const catRatesWithMonths = this.predictionCalculation.calculateDailyRatesWithMonths(
-        validRecords,
-        incrementalData,
-        key,
-      );
-      const catDailyRates = catRatesWithMonths.map((r) => r.rate);
-      if (catDailyRates.length >= 2) {
-        const catAccuracy = this.predictionCalculation.calculateHistoricalAccuracy(
-          validRecords,
-          incrementalData,
-          key,
-        );
-        categories[key] = this.predictionCalculation.buildPrediction(
-          catDailyRates,
-          catRatesWithMonths,
-          validRecords,
-          'L',
-          catAccuracy,
-        );
-      }
-    }
+    const categories = this.buildCategoryPredictions(validRecords, incrementalData, keys, 'L');
 
     const result: MultiPredictionResult = { total, categories };
     this.waterCache.set(records, { length: records.length, result });
@@ -130,7 +107,7 @@ export class PredictionService {
     if (records.length < MIN_RECORDS_FOR_PREDICTION) return null;
 
     const cached = this.electricityCache.get(records);
-    if (cached && cached.length === records.length) {
+    if (cached?.length === records.length) {
       return cached.result;
     }
 
@@ -179,7 +156,7 @@ export class PredictionService {
     if (records.length < MIN_RECORDS_FOR_PREDICTION) return null;
 
     const cached = this.heatingCache.get(records);
-    if (cached && cached.length === records.length) {
+    if (cached?.length === records.length) {
       return cached.result;
     }
 
@@ -218,46 +195,63 @@ export class PredictionService {
     );
 
     // Category predictions (rooms)
-    const categories: MultiPredictionResult['categories'] = {};
+    const roomIds = this.collectRoomIds(validRecords);
+    const categories = this.buildCategoryPredictions(
+      validRecords,
+      incrementalData,
+      roomIds,
+      'kWh',
+      true,
+    );
 
+    const result: MultiPredictionResult = { total, categories };
+    this.heatingCache.set(records, { length: records.length, result });
+    return result;
+  }
+
+  private collectRoomIds(records: DynamicHeatingRecord[]): Set<string> {
     const roomIds = new Set<string>();
-    for (const r of validRecords) {
-      if (r.rooms) {
-        for (const id in r.rooms) {
-          if (Object.hasOwn(r.rooms, id)) {
-            roomIds.add(id);
-          }
-        }
+    for (const record of records) {
+      if (!record.rooms) continue;
+      for (const id of Object.keys(record.rooms)) {
+        roomIds.add(id);
       }
     }
+    return roomIds;
+  }
 
-    for (const roomId of roomIds) {
+  private buildCategoryPredictions(
+    validRecords: { date: Date | string }[],
+    incrementalData: unknown[],
+    keys: Iterable<string>,
+    unit: string,
+    isHeating = false,
+  ): NonNullable<MultiPredictionResult['categories']> {
+    const categories: NonNullable<MultiPredictionResult['categories']> = {};
+    for (const key of keys) {
       const catRatesWithMonths = this.predictionCalculation.calculateDailyRatesWithMonths(
         validRecords,
         incrementalData,
-        roomId,
+        key,
       );
       const catDailyRates = catRatesWithMonths.map((r) => r.rate);
       if (catDailyRates.length >= 2) {
         const catAccuracy = this.predictionCalculation.calculateHistoricalAccuracy(
           validRecords,
           incrementalData,
-          roomId,
+          key,
         );
-        categories[roomId] = this.predictionCalculation.buildPrediction(
+        categories[key] = this.predictionCalculation.buildPrediction(
           catDailyRates,
           catRatesWithMonths,
           validRecords,
-          'kWh',
+          unit,
           catAccuracy,
-          true,
+          isHeating,
         );
       }
     }
-
-    const result: MultiPredictionResult = { total, categories };
-    this.heatingCache.set(records, { length: records.length, result });
-    return result;
+    return categories;
   }
 
   private filterValidDates<T extends { date?: string | Date }>(records: T[]): T[] {

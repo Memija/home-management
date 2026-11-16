@@ -85,7 +85,7 @@ describe('CountryFactsModalComponent', () => {
     expect(heatingFactsService.getFacts).not.toHaveBeenCalled();
 
     const factItems = fixture.nativeElement.querySelectorAll('.fact-item');
-    expect(factItems.length).toBe(2);
+    expect(factItems).toHaveLength(2);
     expect(factItems[0].textContent).toContain('Water fact 1');
   });
 
@@ -136,7 +136,7 @@ describe('CountryFactsModalComponent', () => {
     fixture.detectChanges();
 
     expect(fixture.nativeElement.querySelector('.facts-loading')).toBeTruthy();
-    expect(fixture.nativeElement.querySelectorAll('.fact-item').length).toBe(0);
+    expect(fixture.nativeElement.querySelectorAll('.fact-item')).toHaveLength(0);
   });
 
   it('should emit closeModal when clicking the close button', () => {

@@ -248,7 +248,7 @@ export class MeterReaderModalComponent implements OnDestroy {
   protected onFileSelected(event: Event): void {
     const input = event.target as HTMLInputElement;
     const file = input.files?.[0];
-    if (!file || !file.type.startsWith('image/')) return;
+    if (!file?.type.startsWith('image/')) return;
 
     if (!validateFileSize(file, FILE_SECURITY_LIMITS.MAX_IMAGE_FILE_SIZE_BYTES)) {
       input.value = '';

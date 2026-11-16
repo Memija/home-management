@@ -157,7 +157,7 @@ function buildUniformWaypoints(
   const step = 8;
 
   for (let i = 1; i < pts.length; i++) {
-    const prev = sampled[sampled.length - 1];
+    const prev = sampled.at(-1) ?? pts[0];
     const curr = pts[i];
     const dist = Math.hypot(curr.x - prev.x, curr.y - prev.y);
     if (dist >= step) {

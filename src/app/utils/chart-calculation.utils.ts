@@ -223,46 +223,71 @@ export function detectHeatingRoomSpikes(
   const spikes: { date: string; roomId: string; value: number; averageDelta: number }[] = [];
 
   for (let i = 1; i < validRecords.length; i++) {
-    const prevRecord = validRecords[i - 1];
-    const currRecord = validRecords[i];
-    const roomIds = Object.keys(currRecord.rooms);
-
-    let otherDeltasSum = 0;
-    let otherDeltasCount = 0;
-
-    for (const rId of roomIds) {
-      const pVal = prevRecord.rooms[rId] || 0;
-      const cVal = currRecord.rooms[rId] || 0;
-      if (pVal > 0) {
-        otherDeltasSum += Math.max(0, cVal - pVal);
-        otherDeltasCount++;
-      }
-    }
-
-    const avgOtherDelta = otherDeltasCount > 0 ? otherDeltasSum / otherDeltasCount : 0;
-    let currRecordDateStr: string | null = null;
-
-    for (const rId of roomIds) {
-      const pVal = prevRecord.rooms[rId] || 0;
-      const cVal = currRecord.rooms[rId] || 0;
-      const delta = cVal - pVal;
-
-      if (pVal === 0 && cVal > 0) {
-        const isWayOffAverage = otherDeltasCount > 0 ? delta > avgOtherDelta * 5 : delta > 100;
-
-        if (isWayOffAverage && delta > 50) {
-          currRecordDateStr ??= getIsoDateKey(currRecord.date);
-          spikes.push({
-            date: currRecordDateStr,
-            roomId: rId,
-            value: cVal,
-            averageDelta: avgOtherDelta,
-          });
-        }
-      }
-    }
+    collectRecordHeatingSpikes(validRecords[i - 1], validRecords[i], spikes);
   }
   return spikes;
+}
+
+function calculateAverageExistingRoomDelta(
+  prevRooms: Record<string, number>,
+  currRooms: Record<string, number>,
+  roomIds: string[],
+): { avgOtherDelta: number; hasOtherRooms: boolean } {
+  let otherDeltasSum = 0;
+  let otherDeltasCount = 0;
+
+  for (const rId of roomIds) {
+    const pVal = prevRooms[rId] || 0;
+    if (pVal > 0) {
+      const cVal = currRooms[rId] || 0;
+      otherDeltasSum += Math.max(0, cVal - pVal);
+      otherDeltasCount++;
+    }
+  }
+
+  return {
+    avgOtherDelta: otherDeltasCount > 0 ? otherDeltasSum / otherDeltasCount : 0,
+    hasOtherRooms: otherDeltasCount > 0,
+  };
+}
+
+function isNewRoomSpike(
+  prevVal: number,
+  currVal: number,
+  avgOtherDelta: number,
+  hasOtherRooms: boolean,
+): boolean {
+  if (prevVal !== 0 || currVal <= 50) return false;
+  const threshold = hasOtherRooms ? avgOtherDelta * 5 : 100;
+  return currVal > threshold;
+}
+
+function collectRecordHeatingSpikes(
+  prevRecord: DynamicHeatingRecord,
+  currRecord: DynamicHeatingRecord,
+  spikes: { date: string; roomId: string; value: number; averageDelta: number }[],
+): void {
+  const roomIds = Object.keys(currRecord.rooms);
+  const { avgOtherDelta, hasOtherRooms } = calculateAverageExistingRoomDelta(
+    prevRecord.rooms,
+    currRecord.rooms,
+    roomIds,
+  );
+  let currRecordDateStr: string | null = null;
+
+  for (const rId of roomIds) {
+    const pVal = prevRecord.rooms[rId] || 0;
+    const cVal = currRecord.rooms[rId] || 0;
+    if (isNewRoomSpike(pVal, cVal, avgOtherDelta, hasOtherRooms)) {
+      currRecordDateStr ??= getIsoDateKey(currRecord.date);
+      spikes.push({
+        date: currRecordDateStr,
+        roomId: rId,
+        value: cVal,
+        averageDelta: avgOtherDelta,
+      });
+    }
+  }
 }
 
 /**
@@ -282,36 +307,40 @@ export function applyHeatingRoomOffsets(
   for (let i = 0; i < validRecords.length; i++) {
     const record = validRecords[i];
     const recordDate = i > 0 ? getIsoDateKey(record.date) : '';
-    const newRooms: Record<string, number> = {};
-
-    for (const roomId in record.rooms) {
-      if (!Object.hasOwn(record.rooms, roomId)) continue;
-      const rawVal = record.rooms[roomId] || 0;
-
-      if (i > 0) {
-        const isSpike = spikeSet.has(`${recordDate}:${roomId}`);
-        if (isSpike) {
-          const currentOffset = roomOffsets[roomId] || 0;
-          roomOffsets[roomId] = currentOffset + rawVal;
-        }
-      }
-
-      let offset = roomOffsets[roomId] || 0;
-      if (rawVal < offset) {
-        offset = 0;
-        roomOffsets[roomId] = 0;
-      }
-
-      newRooms[roomId] = Math.max(0, rawVal - offset);
-    }
-
     adjustedRecords.push({
       ...record,
-      rooms: newRooms,
+      rooms: adjustRecordRoomsForSpikes(record.rooms, recordDate, spikeSet, roomOffsets),
     });
   }
 
   return adjustedRecords;
+}
+
+function adjustRecordRoomsForSpikes(
+  rooms: Record<string, number>,
+  recordDate: string,
+  spikeSet: Set<string>,
+  roomOffsets: Record<string, number>,
+): Record<string, number> {
+  const newRooms: Record<string, number> = {};
+
+  for (const roomId of Object.keys(rooms)) {
+    const rawVal = rooms[roomId] || 0;
+
+    if (recordDate && spikeSet.has(`${recordDate}:${roomId}`)) {
+      roomOffsets[roomId] = (roomOffsets[roomId] || 0) + rawVal;
+    }
+
+    let offset = roomOffsets[roomId] || 0;
+    if (rawVal < offset) {
+      offset = 0;
+      roomOffsets[roomId] = 0;
+    }
+
+    newRooms[roomId] = Math.max(0, rawVal - offset);
+  }
+
+  return newRooms;
 }
 
 /**
@@ -329,52 +358,62 @@ export function normalizeToDailyAverage(
   const normalized = new Array<CombinedData>(incrementalData.length + offset);
 
   for (let i = 0; i < incrementalData.length; i++) {
-    const item = incrementalData[i];
-    const record: CombinedData = {
-      ...item,
-      ...(item['rooms'] ? { rooms: { ...(item['rooms'] as Record<string, number>) } } : {}),
-    };
+    const record = cloneCombinedRecord(incrementalData[i]);
     normalized[i + offset] = record;
 
-    const endRecord = originalData[i + 1];
-    const startRecord = originalData[i];
-
-    if (!endRecord?.date || !startRecord?.date) continue;
-
-    const endTime = parseSafeDate(endRecord.date).getTime();
-    const startTime = parseSafeDate(startRecord.date).getTime();
-
-    if (Number.isNaN(endTime) || Number.isNaN(startTime)) continue;
-
-    let daysDiff = (endTime - startTime) / (1000 * 3600 * 24);
-    if (daysDiff <= 0.5) daysDiff = 1;
-
-    record.normalized = { days: daysDiff };
-
-    switch (type) {
-      case 'electricity':
-        normalizeElectricityRecord(record, daysDiff);
-        break;
-      case 'water':
-        normalizeWaterRecord(record, daysDiff);
-        break;
-      case 'heating':
-        normalizeHeatingRecord(record, daysDiff);
-        break;
+    const daysDiff = computeNormalizedDaysDiff(originalData[i], originalData[i + 1]);
+    if (daysDiff !== null) {
+      applyRecordNormalization(record, daysDiff, type);
     }
   }
 
   if (hasOriginalPadding) {
-    const first = normalized[1];
-    normalized[0] = {
-      ...first,
-      date: originalData[0].date,
-      ...(first['rooms'] ? { rooms: { ...(first['rooms'] as Record<string, number>) } } : {}),
-      ...(first.normalized ? { normalized: { ...first.normalized } } : {}),
-    };
+    normalized[0] = cloneCombinedRecord(normalized[1], originalData[0].date);
   }
 
   return normalized;
+}
+
+function cloneCombinedRecord(source: CombinedData, overrideDate?: Date): CombinedData {
+  return {
+    ...source,
+    ...(overrideDate === undefined ? {} : { date: overrideDate }),
+    ...(source['rooms'] ? { rooms: { ...(source['rooms'] as Record<string, number>) } } : {}),
+    ...(source.normalized ? { normalized: { ...source.normalized } } : {}),
+  };
+}
+
+function computeNormalizedDaysDiff(
+  startRecord: AnyConsumptionRecord | undefined,
+  endRecord: AnyConsumptionRecord | undefined,
+): number | null {
+  if (!endRecord?.date || !startRecord?.date) return null;
+
+  const endTime = parseSafeDate(endRecord.date).getTime();
+  const startTime = parseSafeDate(startRecord.date).getTime();
+  if (Number.isNaN(endTime) || Number.isNaN(startTime)) return null;
+
+  const daysDiff = (endTime - startTime) / (1000 * 3600 * 24);
+  return daysDiff <= 0.5 ? 1 : daysDiff;
+}
+
+function applyRecordNormalization(
+  record: CombinedData,
+  daysDiff: number,
+  type: 'electricity' | 'water' | 'heating',
+): void {
+  record.normalized = { days: daysDiff };
+  switch (type) {
+    case 'electricity':
+      normalizeElectricityRecord(record, daysDiff);
+      break;
+    case 'water':
+      normalizeWaterRecord(record, daysDiff);
+      break;
+    case 'heating':
+      normalizeHeatingRecord(record, daysDiff);
+      break;
+  }
 }
 
 function normalizeElectricityRecord(

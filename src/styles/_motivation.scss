@@ -125,3 +125,13 @@
   font-weight: 500;
   color: var(--mot-text);
 }
+
+@media (prefers-reduced-motion: reduce) {
+  .motivation-refresh-btn {
+    transition: none;
+
+    &:hover {
+      transform: none;
+    }
+  }
+}

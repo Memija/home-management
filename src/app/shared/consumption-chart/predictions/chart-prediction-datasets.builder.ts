@@ -112,16 +112,30 @@ export function drawTotalPredictions(
   }
 }
 
-export function pushCategoryPredictionDatasets(
-  datasets: AppChartDataset[],
-  categoryKey: string,
-  color: string,
-  shortLabel: string,
-  predData: PredictionSeriesData,
-  fillBgColor: string,
-  deps: PredictionBuilderDeps,
-  labels?: { minLabel?: string; maxLabel?: string; predictionLabel?: string },
-): void {
+export interface CategoryPredictionDatasetOptions {
+  datasets: AppChartDataset[];
+  categoryKey: string;
+  color: string;
+  shortLabel: string;
+  predData: PredictionSeriesData;
+  fillBgColor: string;
+  deps: PredictionBuilderDeps;
+  labels?: { minLabel?: string; maxLabel?: string; predictionLabel?: string };
+}
+
+export interface CategoryPastForecastDatasetOptions {
+  datasets: AppChartDataset[];
+  categoryKey: string;
+  color: string;
+  shortLabel: string;
+  historicalPredictions: (number | null)[];
+  labelsLength: number;
+  languageService: LanguageService;
+  pastForecastLabel?: string;
+}
+
+export function pushCategoryPredictionDatasets(options: CategoryPredictionDatasetOptions): void {
+  const { datasets, categoryKey, color, shortLabel, predData, fillBgColor, deps, labels } = options;
   const minLabel = labels?.minLabel ?? deps.languageService.translate('PREDICTIONS.MIN');
   const maxLabel = labels?.maxLabel ?? deps.languageService.translate('PREDICTIONS.MAX');
   const predictionLabel =
@@ -176,16 +190,17 @@ export function pushCategoryPredictionDatasets(
   );
 }
 
-export function pushCategoryPastForecastDataset(
-  datasets: AppChartDataset[],
-  categoryKey: string,
-  color: string,
-  shortLabel: string,
-  historicalPredictions: (number | null)[],
-  labelsLength: number,
-  languageService: LanguageService,
-  pastForecastLabel?: string,
-): void {
+export function pushCategoryPastForecastDataset(options: CategoryPastForecastDatasetOptions): void {
+  const {
+    datasets,
+    categoryKey,
+    color,
+    shortLabel,
+    historicalPredictions,
+    labelsLength,
+    languageService,
+    pastForecastLabel,
+  } = options;
   const rawPast = historicalPredictions.slice(1);
   const pastData: (number | null)[] = rawPast.slice(0, labelsLength);
   while (pastData.length < labelsLength) {
@@ -242,29 +257,29 @@ export function processSubcategoryDataset(
       ctx.deps.chartType,
     );
     const fillBgColor = (ds.backgroundColor as string) || color + '20';
-    pushCategoryPredictionDatasets(
-      ctx.datasets,
+    pushCategoryPredictionDatasets({
+      datasets: ctx.datasets,
       categoryKey,
       color,
       shortLabel,
       predData,
       fillBgColor,
-      ctx.deps,
-      ctx,
-    );
+      deps: ctx.deps,
+      labels: ctx,
+    });
   }
 
   if (ctx.deps.showPastForecast && categoryPred.historicalPredictions) {
-    pushCategoryPastForecastDataset(
-      ctx.datasets,
+    pushCategoryPastForecastDataset({
+      datasets: ctx.datasets,
       categoryKey,
       color,
       shortLabel,
-      categoryPred.historicalPredictions,
-      ctx.labels.length,
-      ctx.deps.languageService,
-      ctx.pastForecastLabel,
-    );
+      historicalPredictions: categoryPred.historicalPredictions,
+      labelsLength: ctx.labels.length,
+      languageService: ctx.deps.languageService,
+      pastForecastLabel: ctx.pastForecastLabel,
+    });
   }
 }
 

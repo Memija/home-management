@@ -226,3 +226,10 @@
     }
   }
 }
+
+@media (prefers-reduced-motion: reduce) {
+  .tracker-card,
+  .tracker-card .icon-wrapper {
+    transition: none;
+  }
+}

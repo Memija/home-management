@@ -61,6 +61,15 @@ interface InternalBenchmarkRow extends CountryBenchmarkRow {
 const HOUSEHOLD_SIZE_OPTIONS = [1, 2, 3, 4, 5] as const;
 const DEFAULT_HOUSEHOLD_SIZE = 2;
 
+function getMetricSortValue(
+  row: CountryBenchmarkRow,
+  column: Exclude<BenchmarkSortColumn, 'country'>,
+): number {
+  if (column === 'water') return row.waterDailyLiters;
+  if (column === 'electricity') return row.electricityYearlyKwh;
+  return row.heatingYearlyKwh;
+}
+
 @Component({
   selector: 'app-benchmarks',
   standalone: true,
@@ -207,18 +216,8 @@ export class BenchmarksComponent {
       if (column === 'country') {
         return a.name.localeCompare(b.name) * multiplier;
       }
-      const valA =
-        column === 'water'
-          ? a.waterDailyLiters
-          : column === 'electricity'
-            ? a.electricityYearlyKwh
-            : a.heatingYearlyKwh;
-      const valB =
-        column === 'water'
-          ? b.waterDailyLiters
-          : column === 'electricity'
-            ? b.electricityYearlyKwh
-            : b.heatingYearlyKwh;
+      const valA = getMetricSortValue(a, column);
+      const valB = getMetricSortValue(b, column);
 
       if (valA !== valB) {
         return (valA - valB) * multiplier;

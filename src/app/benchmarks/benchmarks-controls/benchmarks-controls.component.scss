@@ -35,6 +35,10 @@
   display: flex;
   flex-wrap: wrap;
   gap: 0.4rem;
+  border: 0;
+  margin: 0;
+  padding: 0;
+  min-width: 0;
 }
 
 .size-btn {
@@ -54,7 +58,7 @@
   }
 
   &.active {
-    background: linear-gradient(135deg, #0d9488, #0284c7);
+    background: linear-gradient(135deg, #0f766e, #0369a1);
     color: #ffffff;
     border-color: transparent;
   }
@@ -75,7 +79,7 @@
 :host-context([data-household-size='5'])
   .size-buttons:not([data-hydrated])
   .size-btn[data-size='5'] {
-  background: linear-gradient(135deg, #0d9488, #0284c7);
+  background: linear-gradient(135deg, #0f766e, #0369a1);
   color: #ffffff;
   border-color: transparent;
 }

@@ -4,7 +4,12 @@
       <lucide-icon [img]="UsersIcon" [size]="18" aria-hidden="true"></lucide-icon>
       {{ 'SEO.BENCHMARKS.HOUSEHOLD_SIZE' | translate }}:
     </span>
-    <div class="size-buttons" role="group" [attr.data-hydrated]="isBrowser() ? 'true' : null">
+    <fieldset
+      class="size-buttons"
+      [attr.aria-label]="'SEO.BENCHMARKS.HOUSEHOLD_SIZE' | translate"
+      [attr.data-hydrated]="isBrowser() ? 'true' : null"
+    >
+      <legend class="sr-only">{{ 'SEO.BENCHMARKS.HOUSEHOLD_SIZE' | translate }}</legend>
       @for (size of householdSizes(); track size) {
         <button
           type="button"
@@ -21,7 +26,7 @@
           }
         </button>
       }
-    </div>
+    </fieldset>
   </div>
 
   <div class="search-control">

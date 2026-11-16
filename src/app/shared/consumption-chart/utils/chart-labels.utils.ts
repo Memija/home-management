@@ -31,8 +31,32 @@ const smartLabelsCache = new WeakMap<
   }
 >();
 
+function toDate(dateValue: Date | string): Date {
+  return dateValue instanceof Date ? dateValue : new Date(dateValue);
+}
+
 function toTimestamp(dateValue: Date | string): number {
-  return dateValue instanceof Date ? dateValue.getTime() : new Date(dateValue).getTime();
+  return toDate(dateValue).getTime();
+}
+
+function extractDatesAndYearSpan(recs: ChartDataPoint[]): {
+  dates: Date[];
+  spansMultipleYears: boolean;
+} {
+  const dates = recs.map((r) => toDate(r.date));
+  const firstYear = dates[0].getFullYear();
+  const spansMultipleYears = dates.some((date) => date.getFullYear() !== firstYear);
+  return { dates, spansMultipleYears };
+}
+
+function resolveDateFormatOptions(
+  dataPointCount: number,
+  spansMultipleYears: boolean,
+): DateFormatOptions {
+  if (dataPointCount > 20) {
+    return spansMultipleYears ? HIGH_DENSITY_MULTI_YEAR_OPTIONS : HIGH_DENSITY_SINGLE_YEAR_OPTIONS;
+  }
+  return spansMultipleYears ? LOW_DENSITY_MULTI_YEAR_OPTIONS : LOW_DENSITY_SINGLE_YEAR_OPTIONS;
 }
 
 /**
@@ -54,8 +78,7 @@ export function generateSmartLabels(
   const lastTime = toTimestamp(recs[dataPointCount - 1].date);
   const cached = smartLabelsCache.get(recs);
   if (
-    cached &&
-    cached.lang === lang &&
+    cached?.lang === lang &&
     cached.length === dataPointCount &&
     cached.firstTime === firstTime &&
     cached.lastTime === lastTime
@@ -63,35 +86,10 @@ export function generateSmartLabels(
     return cached.labels;
   }
 
-  const dates: Date[] = [];
-  let firstYear: number | null = null;
-  let spansMultipleYears = false;
-
-  for (const r of recs) {
-    const date = r.date instanceof Date ? r.date : new Date(r.date);
-    dates.push(date);
-    if (!spansMultipleYears) {
-      const year = date.getFullYear();
-      if (firstYear === null) {
-        firstYear = year;
-      } else if (year !== firstYear) {
-        spansMultipleYears = true;
-      }
-    }
-  }
-
-  let formatOptions: DateFormatOptions;
-  if (dataPointCount > 20) {
-    formatOptions = spansMultipleYears
-      ? HIGH_DENSITY_MULTI_YEAR_OPTIONS
-      : HIGH_DENSITY_SINGLE_YEAR_OPTIONS;
-  } else {
-    formatOptions = spansMultipleYears
-      ? LOW_DENSITY_MULTI_YEAR_OPTIONS
-      : LOW_DENSITY_SINGLE_YEAR_OPTIONS;
-  }
-
+  const { dates, spansMultipleYears } = extractDatesAndYearSpan(recs);
+  const formatOptions = resolveDateFormatOptions(dataPointCount, spansMultipleYears);
   const labels = dates.map((date) => languageService.formatDate(date, formatOptions));
+
   smartLabelsCache.set(recs, {
     lang,
     length: dataPointCount,

@@ -65,49 +65,69 @@ export function replaceLabelWithIcon(
     .trim();
 }
 
+type CompiledLabelReplacement = readonly [
+  label: string,
+  icon: string,
+  pattern: RegExp | null,
+  labelLower: string,
+];
+
+function isMobileViewport(): boolean {
+  return typeof window !== 'undefined' && window.innerWidth <= 768;
+}
+
+function createLabelReplacements(languageService: LanguageService): CompiledLabelReplacement[] {
+  const rawPairs: [string, string][] = [
+    [languageService.translate('CHART.CONSUMPTION_PREDICTION'), '🔮'],
+    [languageService.translate('CHART.TRENDLINE'), '📈'],
+    [languageService.translate('CHART.COUNTRY_AVERAGE'), '🌐'],
+    [languageService.translate('CHART.PAST_FORECAST'), '🎯'],
+    [languageService.translate('CHART.INCREMENTAL_CONSUMPTION'), '📅'],
+    [languageService.translate('CHART.DISPLAY_MODE_INCREMENTAL'), '📅'],
+    [languageService.translate('CHART.TOTAL_WEEKLY_CONSUMPTION'), '∑'],
+    [languageService.translate('CHART.DISPLAY_MODE_TOTAL'), '∑'],
+    [languageService.translate('CHART.TOTAL_CONSUMPTION'), '∑'],
+  ];
+  return rawPairs.map(([label, icon]) => [
+    label,
+    icon,
+    buildLabelRegex(label),
+    label.toLowerCase(),
+  ]);
+}
+
+function applyLabelReplacements(text: string, replacements: CompiledLabelReplacement[]): string {
+  let result = text;
+  let resultLower = result.toLowerCase();
+  for (const [label, icon, pattern, labelLower] of replacements) {
+    if (labelLower && resultLower.includes(labelLower)) {
+      result = replaceLabelWithIcon(result, label, icon, pattern, labelLower);
+      resultLower = result.toLowerCase();
+    }
+  }
+  return result;
+}
+
 /**
  * Generates compact legend labels on mobile screens by substituting lengthy suffix strings
  * (e.g., " - Consumption prediction" or " (Daily Average Consumption)") with concise symbols/icons.
  */
 function buildGenerateLabels(languageService: LanguageService) {
-  let cachedReplacements: [string, string, RegExp | null, string][] | null = null;
+  let cachedReplacements: CompiledLabelReplacement[] | null = null;
 
   return (chart: Chart): LegendItem[] => {
     const defaultGenerator = Chart.defaults.plugins.legend.labels.generateLabels;
     const items = defaultGenerator(chart);
 
-    if (typeof window !== 'undefined' && window.innerWidth <= 768) {
-      if (!cachedReplacements) {
-        const rawPairs: [string, string][] = [
-          [languageService.translate('CHART.CONSUMPTION_PREDICTION'), '🔮'],
-          [languageService.translate('CHART.TRENDLINE'), '📈'],
-          [languageService.translate('CHART.COUNTRY_AVERAGE'), '🌐'],
-          [languageService.translate('CHART.PAST_FORECAST'), '🎯'],
-          [languageService.translate('CHART.INCREMENTAL_CONSUMPTION'), '📅'],
-          [languageService.translate('CHART.DISPLAY_MODE_INCREMENTAL'), '📅'],
-          [languageService.translate('CHART.TOTAL_WEEKLY_CONSUMPTION'), '∑'],
-          [languageService.translate('CHART.DISPLAY_MODE_TOTAL'), '∑'],
-          [languageService.translate('CHART.TOTAL_CONSUMPTION'), '∑'],
-        ];
-        cachedReplacements = rawPairs.map(([label, icon]) => [
-          label,
-          icon,
-          buildLabelRegex(label),
-          label.toLowerCase(),
-        ]);
-      }
+    if (!isMobileViewport()) {
+      return items;
+    }
 
-      for (const item of items) {
-        let text = item.text || '';
-        if (!text) continue;
-        let textLower = text.toLowerCase();
-        for (const [label, icon, pattern, labelLower] of cachedReplacements) {
-          if (labelLower && textLower.includes(labelLower)) {
-            text = replaceLabelWithIcon(text, label, icon, pattern, labelLower);
-            textLower = text.toLowerCase();
-          }
-        }
-        item.text = text;
+    cachedReplacements ??= createLabelReplacements(languageService);
+
+    for (const item of items) {
+      if (item.text) {
+        item.text = applyLabelReplacements(item.text, cachedReplacements);
       }
     }
 
@@ -295,7 +315,7 @@ function buildTooltipTitleCallback(
     // Future data point (prediction zone)
     if (pastDataLength > 0) {
       const monthOffset = dataIndex - pastDataLength + 1;
-      const futureDate = new Date(parseSafeDate(data[pastDataLength - 1].date).getTime());
+      const futureDate = new Date(parseSafeDate(data[pastDataLength - 1].date));
       futureDate.setMonth(futureDate.getMonth() + monthOffset);
       return languageService.formatDate(futureDate, TOOLTIP_DATE_OPTIONS);
     }

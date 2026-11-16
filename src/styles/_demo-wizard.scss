@@ -97,7 +97,9 @@
       background: transparent;
       color: var(--text-secondary);
       cursor: pointer;
-      transition: all 0.2s;
+      transition:
+        background 0.2s ease,
+        color 0.2s ease;
       &:hover {
         background: var(--hover-bg, rgba(0, 0, 0, 0.05));
         color: var(--text-primary);
@@ -172,7 +174,10 @@
     border: 2px solid var(--wiz-icon-bg);
     background: var(--wiz-bg-light);
     color: var(--wiz-primary);
-    transition: all 0.3s;
+    transition:
+      background 0.3s ease,
+      border-color 0.3s ease,
+      color 0.3s ease;
   }
 
   .step-text {
@@ -214,7 +219,11 @@
       border: none;
       padding: 0;
       cursor: pointer;
-      transition: all 0.3s ease;
+      transition:
+        background 0.3s ease,
+        box-shadow 0.3s ease,
+        transform 0.3s ease,
+        opacity 0.3s ease;
       &:hover:not(.active) {
         background: var(--text-secondary, #6c757d);
         transform: scale(1.2);
@@ -245,7 +254,11 @@
     font-size: 0.9rem;
     font-weight: 600;
     cursor: pointer;
-    transition: all 0.2s ease;
+    transition:
+      background 0.2s ease,
+      color 0.2s ease,
+      box-shadow 0.2s ease,
+      transform 0.2s ease;
     border: none;
   }
   .wizard-btn-secondary {
@@ -296,5 +309,31 @@
     .wizard-footer {
       padding: 0.5rem 1rem 1rem;
     }
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .demo-wizard,
+  .demo-wizard .wizard-progress .wizard-progress-bar,
+  .demo-wizard .cat-walker,
+  .demo-wizard .frame-walk,
+  .demo-wizard .frame-sit,
+  .demo-wizard .frame-play,
+  .demo-wizard .yarn-ball,
+  .demo-wizard .step-content,
+  .demo-wizard .step-dots .dot,
+  .demo-wizard .wizard-btn {
+    animation: none;
+    transition: none;
+  }
+
+  .demo-wizard .frame-sit {
+    opacity: 1;
+  }
+
+  .demo-wizard .step-dots .dot:hover:not(.active),
+  .demo-wizard .wizard-btn-primary:hover,
+  .demo-wizard .wizard-btn-primary:active {
+    transform: none;
   }
 }

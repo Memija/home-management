@@ -17,7 +17,9 @@
   > div:first-child {
     opacity: 0;
     transform: translateY(20px);
-    transition: all 0.6s ease;
+    transition:
+      opacity 0.6s ease,
+      transform 0.6s ease;
 
     &.visible {
       opacity: 1;
@@ -37,7 +39,9 @@
   gap: 0.5rem;
   opacity: 0;
   transform: translateY(30px);
-  transition: all 0.7s ease 0.2s;
+  transition:
+    opacity 0.7s ease 0.2s,
+    transform 0.7s ease 0.2s;
 
   &.visible {
     opacity: 1;
@@ -169,7 +173,9 @@
   box-shadow: 0 20px 50px rgba(0, 0, 0, 0.3);
   opacity: 0;
   transform: translateY(30px);
-  transition: all 0.7s ease;
+  transition:
+    opacity 0.7s ease,
+    transform 0.7s ease;
 
   --landing-cta-bg: linear-gradient(135deg, #16213e 0%, #1a1a2e 100%);
   --landing-cta-title-color: #f8fafc;
@@ -312,5 +318,18 @@
     &:hover {
       color: #008080;
     }
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .how-section > div:first-child,
+  .step-row,
+  .step-card,
+  .cta-container {
+    transition: none;
+  }
+
+  .step-card:hover {
+    transform: none;
   }
 }

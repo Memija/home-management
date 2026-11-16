@@ -69,7 +69,10 @@
   letter-spacing: 0.02em;
   white-space: nowrap;
   flex-shrink: 0;
-  transition: all 0.3s ease;
+  transition:
+    background 0.3s ease,
+    color 0.3s ease,
+    border-color 0.3s ease;
 
   &.high {
     background: #ecfdf5;
@@ -245,7 +248,11 @@ button.prediction-card {
   padding: 1.25rem;
   border-radius: 12px;
   text-align: center;
-  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  transition:
+    background 0.25s cubic-bezier(0.4, 0, 0.2, 1),
+    border-color 0.25s cubic-bezier(0.4, 0, 0.2, 1),
+    box-shadow 0.25s cubic-bezier(0.4, 0, 0.2, 1),
+    transform 0.25s cubic-bezier(0.4, 0, 0.2, 1);
   position: relative;
   overflow: hidden;
   background: var(--card-bg);
@@ -350,4 +357,19 @@ button.prediction-card {
   color: var(--text-secondary);
   text-transform: uppercase;
   letter-spacing: 0.05em;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .auto-correction-notice > lucide-icon:first-child,
+  .trend-indicator.rising > lucide-icon:first-child,
+  .trend-indicator.falling > lucide-icon:first-child,
+  .prediction-card,
+  .prediction-card::before {
+    animation: none;
+    transition: none;
+  }
+
+  .prediction-card:hover {
+    transform: none;
+  }
 }

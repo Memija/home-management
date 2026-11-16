@@ -194,7 +194,7 @@ describe('SeoService', () => {
     it('should reuse a single canonical link element across navigations', async () => {
       await navigate('/');
       await navigate('/dashboard/privacy');
-      expect(document.head.querySelectorAll('link[rel="canonical"]').length).toBe(1);
+      expect(document.head.querySelectorAll('link[rel="canonical"]')).toHaveLength(1);
     });
   });
 

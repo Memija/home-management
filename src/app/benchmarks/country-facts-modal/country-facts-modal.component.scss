@@ -10,6 +10,17 @@
   --m-h: #fbbf24;
 }
 
+.modal-overlay {
+  width: 100%;
+  height: 100%;
+  max-width: none;
+  max-height: none;
+  margin: 0;
+  padding: 0;
+  border: none;
+  color: inherit;
+}
+
 .country-facts-modal {
   max-width: 640px;
   width: 92%;

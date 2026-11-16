@@ -57,7 +57,7 @@ export function appendPredictionDatasets(
   padDatasets(datasets, originalLabelsLength);
 
   const data = getData();
-  const lastRecordDate = new Date(parseSafeDate(data.at(-1)!.date).getTime());
+  const lastRecordDate = new Date(parseSafeDate(data.at(-1)!.date));
 
   if (showPredictions) {
     // 2. Pad existing datasets with null for the future months and extend labels

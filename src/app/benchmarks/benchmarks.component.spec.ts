@@ -31,7 +31,7 @@ describe('BenchmarksComponent', () => {
 
   it('should render a single h1 heading and country benchmark rows', () => {
     const headings = fixture.nativeElement.querySelectorAll('h1');
-    expect(headings.length).toBe(1);
+    expect(headings).toHaveLength(1);
     expect(component.rows().length).toBeGreaterThan(50);
   });
 
@@ -127,7 +127,7 @@ describe('BenchmarksComponent', () => {
     ssrFixture.detectChanges();
 
     const activeButtons = ssrFixture.nativeElement.querySelectorAll('.size-btn.active');
-    expect(activeButtons.length).toBe(0);
+    expect(activeButtons).toHaveLength(0);
   });
 
   it('should sort rows by country, water, electricity, and heating in both directions', () => {

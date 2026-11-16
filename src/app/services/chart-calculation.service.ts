@@ -226,7 +226,8 @@ export class ChartCalculationService {
     ignoredSpikes: { date: string; roomId: string }[],
   ): DynamicHeatingRecord[] {
     if (ignoredSpikes.length === 0 || records.length < 2) return records;
-    const cacheKey = `${records.length}:${ignoredSpikes.map((s) => `${s.date}:${s.roomId}`).join('|')}`;
+    const spikesKey = ignoredSpikes.map((s) => `${s.date}:${s.roomId}`).join('|');
+    const cacheKey = `${records.length}:${spikesKey}`;
     let cachedByRecs = this.heatingOffsetsCache.get(records);
     if (cachedByRecs) {
       const cached = cachedByRecs.get(cacheKey);

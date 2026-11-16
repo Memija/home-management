@@ -4,7 +4,6 @@ import { americasElectricityFacts } from './americas';
 import { asiaPacificElectricityFacts } from './asia-pacific';
 import { middleEastElectricityFacts } from './middle-east';
 import { africaElectricityFacts } from './africa';
-import { AVAILABLE_COUNTRIES_WITH_WORLD } from '../../../../models/country-codes.data';
 
 // Default/historical facts about electricity
 const defaultElectricityFacts = {
@@ -49,4 +48,4 @@ export const electricityCountryFacts: Record<string, string[]> = {
 };
 
 // List of available countries with translation keys
-export const availableElectricityCountries = AVAILABLE_COUNTRIES_WITH_WORLD;
+export { AVAILABLE_COUNTRIES_WITH_WORLD as availableElectricityCountries } from '../../../../models/country-codes.data';

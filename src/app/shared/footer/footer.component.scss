@@ -52,7 +52,10 @@
       cursor: pointer;
       border: 1px solid rgba(var(--link-rgb), 0.2);
       background: linear-gradient(135deg, rgba(var(--link-rgb), 0.1), rgba(var(--link-rgb-2), 0.1));
-      transition: all 0.3s ease;
+      transition:
+        color 0.3s ease,
+        transform 0.3s ease,
+        border-color 0.3s ease;
 
       lucide-icon {
         transition: transform 0.3s ease;
@@ -176,5 +179,17 @@
 
   50% {
     transform: scale(1.35);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .app-footer .footer-content {
+    a,
+    button,
+    lucide-icon,
+    .donate-link:hover lucide-icon {
+      transition: none;
+      animation: none;
+    }
   }
 }

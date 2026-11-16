@@ -99,7 +99,10 @@
   padding: 2.5rem;
   display: flex;
   gap: 1.5rem;
-  transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
+  transition:
+    transform 0.4s cubic-bezier(0.165, 0.84, 0.44, 1),
+    box-shadow 0.4s cubic-bezier(0.165, 0.84, 0.44, 1),
+    border-color 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
   position: relative;
   overflow: hidden;
   box-shadow: var(--shadow-sm);
@@ -202,5 +205,11 @@
       width: 40px;
       height: 40px;
     }
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .privacy-card {
+    transition: none;
   }
 }

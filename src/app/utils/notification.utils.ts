@@ -73,7 +73,7 @@ export function calculateReadingStatus(records: readonly { date: Date | string }
   const nowMs = Date.now();
   const dayBucket = Math.floor(nowMs / MS_PER_DAY);
   const cached = readingStatusCache.get(records);
-  if (cached && cached.dayBucket === dayBucket && cached.length === n) {
+  if (cached?.dayBucket === dayBucket && cached.length === n) {
     return cached.status;
   }
 

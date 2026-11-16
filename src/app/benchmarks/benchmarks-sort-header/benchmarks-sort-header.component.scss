@@ -1,3 +1,11 @@
+:host {
+  --tooltip-hover-color: #b45309;
+}
+
+:host-context([data-theme='dark']) {
+  --tooltip-hover-color: #fbbf24;
+}
+
 .th-with-info {
   display: inline-flex;
   align-items: center;
@@ -91,8 +99,12 @@
   justify-content: center;
   width: 24px;
   height: 24px;
+  padding: 0;
+  border: none;
   border-radius: 6px;
+  background: transparent;
   color: var(--text-secondary);
+  font: inherit;
   cursor: help;
   outline: none;
   transition:
@@ -101,7 +113,7 @@
 
   &:hover,
   &:focus-visible {
-    color: #f59e0b;
+    color: var(--tooltip-hover-color);
     background: rgba(245, 158, 11, 0.12);
 
     .tooltip-popover {
@@ -157,5 +169,11 @@
       right: 0.75rem;
       width: auto;
     }
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .header-info-tooltip .tooltip-popover {
+    transition: none;
   }
 }

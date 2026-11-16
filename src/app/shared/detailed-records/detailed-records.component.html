@@ -223,7 +223,6 @@
               [ngModel]="paginationSize()"
               (ngModelChange)="onPaginationSizeChange(+$event)"
               title="{{ 'HOME.PAGINATION_SIZE' | translate }}"
-              aria-label="{{ 'HOME.PAGINATION_SIZE' | translate }}"
             >
               @for (size of paginationSizes; track size) {
                 <option [value]="size">{{ size }}</option>

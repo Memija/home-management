@@ -72,7 +72,7 @@ describe('WaterAveragesService', () => {
   describe('getAvailableCountries', () => {
     it('should return list of countries including all 198 countries plus world', () => {
       const countries = service.getAvailableCountries();
-      expect(countries.length).toBe(199);
+      expect(countries).toHaveLength(199);
       expect(countries.find((c) => c.code === 'de')).toBeDefined();
       expect(countries.find((c) => c.code === 'fj')).toBeDefined();
       expect(countries.find((c) => c.code === 'world')).toBeDefined();

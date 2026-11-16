@@ -11,11 +11,11 @@
     <lucide-icon [img]="sortIcon()" [size]="14" class="sort-icon" aria-hidden="true"></lucide-icon>
   </button>
   @if (tooltip()) {
-    <span class="header-info-tooltip" role="button" tabindex="0" aria-label="{{ tooltip() }}">
+    <button type="button" class="header-info-tooltip" [attr.aria-label]="tooltip()">
       <lucide-icon [img]="InfoIcon" [size]="15" aria-hidden="true"></lucide-icon>
       <span class="tooltip-popover" role="tooltip">
         {{ tooltip() }}
       </span>
-    </span>
+    </button>
   }
 </span>

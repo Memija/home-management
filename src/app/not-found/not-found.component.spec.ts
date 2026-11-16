@@ -46,18 +46,18 @@ describe('NotFoundComponent', () => {
 
   it('should deterministically build the aerial forest, houses, docks, two bridges, and driving cars', () => {
     expect(component.scene.trees.length).toBeGreaterThan(250);
-    expect(component.scene.houses.length).toBe(17);
-    expect(component.scene.docks.length).toBe(6);
-    expect(component.scene.bridges.length).toBe(2);
-    expect(component.scene.cars.length).toBe(10);
+    expect(component.scene.houses).toHaveLength(17);
+    expect(component.scene.docks).toHaveLength(6);
+    expect(component.scene.bridges).toHaveLength(2);
+    expect(component.scene.cars).toHaveLength(10);
     expect(buildAerialScene()).toBe(component.scene);
   });
 
   it('should advance car transforms along the road waypoints over time', () => {
     const t0 = getCarTransformsAtTime(component.scene.cars, 0);
     const t5 = getCarTransformsAtTime(component.scene.cars, 5);
-    expect(t0.length).toBe(10);
-    expect(t5.length).toBe(10);
+    expect(t0).toHaveLength(10);
+    expect(t5).toHaveLength(10);
     expect(t5[0]).not.toBe(t0[0]);
   });
 

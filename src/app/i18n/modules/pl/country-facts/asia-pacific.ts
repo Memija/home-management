@@ -644,15 +644,15 @@ export const asiaPacificFacts = {
   TO: [
     'Gospodarstwa domowe w kraju Tonga zużywają średnio 115 litrów wody na osobę dziennie.',
     'Krajowe statystyki zużycia wody dla kraju Tonga monitoruje TWB Tonga (2021).',
-    'Publiczna sieć wodociągowa w mieście Nuku\'alofa obsługuje największy obszar miejski w kraju Tonga.',
+    "Publiczna sieć wodociągowa w mieście Nuku'alofa obsługuje największy obszar miejski w kraju Tonga.",
     'Modernizacja miejskich wodociągów w celu ograniczenia wycieków jest priorytetem w kraju Tonga.',
     'Jakość wody pitnej w kraju Tonga jest kontrolowana poprzez regularne badania komunalne i krajowe.',
     'Rolnictwo i przemysł odpowiadają za znaczną część całkowitego poboru wody słodkiej w kraju Tonga.',
     'Programy oszczędzania wody w kraju Tonga promują stosowanie wodooszczędnej armatury i sprzętu AGD.',
     'Sezonowe wzorce opadów bezpośrednio wpływają na poziom zbiorników retencyjnych i wód gruntowych w kraju Tonga.',
-    'Infrastruktura oczyszczania ścieków wokół miasta Nuku\'alofa jest stale rozbudowywana w celu ochrony zlewni.',
+    "Infrastruktura oczyszczania ścieków wokół miasta Nuku'alofa jest stale rozbudowywana w celu ochrony zlewni.",
     'Zrównoważone gospodarowanie wodami podziemnymi ma kluczowe znaczenie dla bezpieczeństwa wodnego w kraju Tonga.',
-    'Inteligentne wodomierze są coraz częściej wdrażane przez przedsiębiorstwa wodociągowe w mieście Nuku\'alofa.',
+    "Inteligentne wodomierze są coraz częściej wdrażane przez przedsiębiorstwa wodociągowe w mieście Nuku'alofa.",
     'Inwestycje w odporność klimatyczną w kraju Tonga koncentrują się na ochronie przed suszą i powodziami.',
   ],
 

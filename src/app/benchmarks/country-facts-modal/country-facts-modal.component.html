@@ -1,6 +1,7 @@
-<div
+<!-- eslint-disable-next-line @angular-eslint/template/interactive-supports-focus -- Backdrop dismissal by design -->
+<dialog
+  open
   class="modal-overlay"
-  role="dialog"
   aria-modal="true"
   aria-labelledby="country-facts-modal-title"
   (click)="$event.target === $event.currentTarget ? onClose() : undefined"
@@ -115,4 +116,4 @@
       }
     </div>
   </div>
-</div>
+</dialog>

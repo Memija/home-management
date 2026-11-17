@@ -110,27 +110,6 @@
   font-weight: 600;
 }
 
-.capture-option-btn,
-.field-option-btn {
-  transition:
-    background 0.2s ease,
-    border-color 0.2s ease,
-    box-shadow 0.2s ease,
-    transform 0.2s ease;
-}
-
-.btn-cancel-camera {
-  transition: background 0.2s ease;
-}
-
-.btn-capture {
-  transition:
-    background 0.2s ease,
-    color 0.2s ease,
-    opacity 0.2s ease,
-    transform 0.2s ease;
-}
-
 .progress-fill {
   transition: stroke-dashoffset 0.2s ease;
 }
@@ -180,6 +159,11 @@
 .capture-option-btn,
 .field-option-btn {
   border: 2px solid var(--border-color);
+  transition:
+    background 0.2s ease,
+    border-color 0.2s ease,
+    box-shadow 0.2s ease,
+    transform 0.2s ease;
 
   &:hover {
     border-color: var(--theme-primary, $primary);
@@ -313,6 +297,11 @@
   border: 3px solid rgba(255, 255, 255, 0.8);
   color: #1d4ed8;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  transition:
+    background 0.2s ease,
+    color 0.2s ease,
+    opacity 0.2s ease,
+    transform 0.2s ease;
 
   &:hover:not(.disabled) {
     transform: scale(1.1);
@@ -334,6 +323,7 @@
   border: 1px solid rgba(255, 255, 255, 0.25);
   color: #ffffff;
   margin-top: 0.5rem;
+  transition: background 0.2s ease;
 
   &:hover {
     background: #1e293b;

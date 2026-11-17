@@ -120,7 +120,7 @@ const routes: Routes = [
         loadComponent: () =>
           import('./settings/settings.component').then((m) => m.SettingsComponent),
         canDeactivate: [canDeactivateSettings],
-        data: seo({ page: 'SETTINGS', robots: SEO_ROBOTS_NOINDEX }),
+        data: seo({ page: 'SETTINGS' }),
       },
     ],
   },

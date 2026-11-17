@@ -73,7 +73,7 @@ export class NotificationService {
     }
     this.storage.dataRefreshed$
       ?.pipe(takeUntilDestroyed(this.destroyRef))
-      .subscribe(() => void this.loadData(true));
+      .subscribe(() => void this.reloadAllData());
   }
 
   private hydrateSync(): boolean {
@@ -108,9 +108,9 @@ export class NotificationService {
   }
 
   /**
-   * Load all data needed for notifications
+   * Load unpushed data needed for initial notifications
    */
-  private async loadData(forceReload = false): Promise<void> {
+  private async loadData(): Promise<void> {
     const [
       ,
       waterRecords,
@@ -121,22 +121,20 @@ export class NotificationService {
       familyMembers,
     ] = await Promise.all([
       this.loadDismissedNotifications(),
-      this.loadIfUnpushed(forceReload, this.waterRecordsPushed, () =>
-        this.loadParsedRecords<ConsumptionRecord>('water_consumption_records'),
-      ),
-      this.loadIfUnpushed(forceReload, this.heatingRecordsPushed, () =>
-        this.loadParsedRecords<HeatingNotificationRecord>('heating_consumption_records'),
-      ),
-      this.loadIfUnpushed(forceReload, this.electricityRecordsPushed, () =>
-        this.loadParsedRecords<ElectricityRecord>('electricity_consumption_records'),
-      ),
+      this.waterRecordsPushed
+        ? Promise.resolve(null)
+        : this.loadParsedRecords<ConsumptionRecord>('water_consumption_records'),
+      this.heatingRecordsPushed
+        ? Promise.resolve(null)
+        : this.loadParsedRecords<HeatingNotificationRecord>('heating_consumption_records'),
+      this.electricityRecordsPushed
+        ? Promise.resolve(null)
+        : this.loadParsedRecords<ElectricityRecord>('electricity_consumption_records'),
       this.storage.load<string[]>('water_confirmed_meter_changes'),
-      this.loadIfUnpushed(forceReload, this.addressPushed, () =>
-        this.storage.load<Address>('household_address'),
-      ),
-      this.loadIfUnpushed(forceReload, this.familyMembersPushed, () =>
-        this.storage.load<HouseholdMember[]>('household_members'),
-      ),
+      this.addressPushed ? Promise.resolve(null) : this.storage.load<Address>('household_address'),
+      this.familyMembersPushed
+        ? Promise.resolve(null)
+        : this.storage.load<HouseholdMember[]>('household_members'),
     ]);
 
     this.applyLoadedState({
@@ -150,12 +148,37 @@ export class NotificationService {
     this.isDataLoaded.set(true);
   }
 
-  private loadIfUnpushed<T>(
-    forceReload: boolean,
-    isPushed: boolean,
-    loader: () => Promise<T | null>,
-  ): Promise<T | null> {
-    return !forceReload && isPushed ? Promise.resolve(null) : loader();
+  /**
+   * Reload all notification data unconditionally after storage refresh
+   */
+  private async reloadAllData(): Promise<void> {
+    const [
+      ,
+      waterRecords,
+      heatingRecords,
+      electricityRecords,
+      confirmedChanges,
+      address,
+      familyMembers,
+    ] = await Promise.all([
+      this.loadDismissedNotifications(),
+      this.loadParsedRecords<ConsumptionRecord>('water_consumption_records'),
+      this.loadParsedRecords<HeatingNotificationRecord>('heating_consumption_records'),
+      this.loadParsedRecords<ElectricityRecord>('electricity_consumption_records'),
+      this.storage.load<string[]>('water_confirmed_meter_changes'),
+      this.storage.load<Address>('household_address'),
+      this.storage.load<HouseholdMember[]>('household_members'),
+    ]);
+
+    this.applyLoadedState({
+      waterRecords,
+      heatingRecords,
+      electricityRecords,
+      confirmedChanges,
+      address,
+      familyMembers,
+    });
+    this.isDataLoaded.set(true);
   }
 
   private applyLoadedState(state: {

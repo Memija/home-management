@@ -48,6 +48,64 @@ const ROOM_TYPE_COLORS: Record<string, { border: string; bg: string }> = {
 
 const DEFAULT_ROOM_COLOR = { border: '#ffa726', bg: 'rgba(255, 167, 38, 0.1)' };
 
+interface CompiledRoomPattern {
+  readonly patterns: string[];
+  readonly icon: LucideIconData;
+  readonly color: { border: string; bg: string };
+}
+
+const ROOM_PATTERN_DEFINITIONS: readonly {
+  patternKey: string;
+  icon: LucideIconData;
+  roomType: string;
+}[] = [
+  {
+    patternKey: 'HEATING.ROOM_PATTERNS_LIVING',
+    icon: Armchair,
+    roomType: 'HEATING.ROOM_LIVING_ROOM',
+  },
+  {
+    patternKey: 'HEATING.ROOM_PATTERNS_BEDROOM',
+    icon: Bed,
+    roomType: 'HEATING.ROOM_BEDROOM',
+  },
+  {
+    patternKey: 'HEATING.ROOM_PATTERNS_BATHROOM',
+    icon: Bath,
+    roomType: 'HEATING.ROOM_BATHROOM',
+  },
+  {
+    patternKey: 'HEATING.ROOM_PATTERNS_KITCHEN',
+    icon: CookingPot,
+    roomType: 'HEATING.ROOM_KITCHEN',
+  },
+  {
+    patternKey: 'HEATING.ROOM_PATTERNS_KIDS',
+    icon: Baby,
+    roomType: 'HEATING.ROOM_KIDS_ROOM',
+  },
+  {
+    patternKey: 'HEATING.ROOM_PATTERNS_OFFICE',
+    icon: Briefcase,
+    roomType: 'HEATING.ROOM_OFFICE',
+  },
+  {
+    patternKey: 'HEATING.ROOM_PATTERNS_GUEST',
+    icon: DoorOpen,
+    roomType: 'HEATING.ROOM_GUEST_ROOM',
+  },
+  {
+    patternKey: 'HEATING.ROOM_PATTERNS_DINING',
+    icon: UtensilsCrossed,
+    roomType: 'HEATING.ROOM_DINING_ROOM',
+  },
+  {
+    patternKey: 'HEATING.ROOM_PATTERNS_HALLWAY',
+    icon: DoorOpen,
+    roomType: 'HEATING.ROOM_HALLWAY',
+  },
+];
+
 /**
  * Service for heating room utilities including icon and color resolution.
  * Provides consistent room visualization across the heating feature.
@@ -57,6 +115,7 @@ const DEFAULT_ROOM_COLOR = { border: '#ffa726', bg: 'rgba(255, 167, 38, 0.1)' };
 })
 export class HeatingRoomUtilsService {
   private readonly languageService = inject(LanguageService);
+  private readonly patternsCache = new Map<string, CompiledRoomPattern[]>();
 
   /**
    * Get the icon for a room based on its type or name heuristics.
@@ -78,61 +137,49 @@ export class HeatingRoomUtilsService {
     return this.guessLegacyColor(room.name);
   }
 
+  private getCompiledPatterns(): CompiledRoomPattern[] {
+    const langKey = this.languageService.currentLang?.() ?? 'default';
+    let compiled = this.patternsCache.get(langKey);
+    if (!compiled) {
+      compiled = ROOM_PATTERN_DEFINITIONS.map(({ patternKey, icon, roomType }) => {
+        const patternsString = this.languageService.translate(patternKey);
+        const patterns = patternsString
+          .split(',')
+          .map((p) => p.trim().toLowerCase())
+          .filter(Boolean);
+        return {
+          patterns,
+          icon,
+          color: ROOM_TYPE_COLORS[roomType] ?? DEFAULT_ROOM_COLOR,
+        };
+      });
+      this.patternsCache.set(langKey, compiled);
+    }
+    return compiled;
+  }
+
+  private matchLegacyPattern(name: string): CompiledRoomPattern | undefined {
+    if (!name) return undefined;
+    const lower = name.toLowerCase();
+    for (const entry of this.getCompiledPatterns()) {
+      if (entry.patterns.some((pattern) => lower.includes(pattern))) {
+        return entry;
+      }
+    }
+    return undefined;
+  }
+
   /**
    * Guess icon based on room name patterns (for legacy data).
    */
   private guessLegacyIcon(name: string): LucideIconData {
-    const lower = name.toLowerCase();
-
-    const patternMapping: { patternKey: string; icon: LucideIconData }[] = [
-      { patternKey: 'HEATING.ROOM_PATTERNS_LIVING', icon: Armchair },
-      { patternKey: 'HEATING.ROOM_PATTERNS_BEDROOM', icon: Bed },
-      { patternKey: 'HEATING.ROOM_PATTERNS_BATHROOM', icon: Bath },
-      { patternKey: 'HEATING.ROOM_PATTERNS_KITCHEN', icon: CookingPot },
-      { patternKey: 'HEATING.ROOM_PATTERNS_KIDS', icon: Baby },
-      { patternKey: 'HEATING.ROOM_PATTERNS_OFFICE', icon: Briefcase },
-      { patternKey: 'HEATING.ROOM_PATTERNS_GUEST', icon: DoorOpen },
-      { patternKey: 'HEATING.ROOM_PATTERNS_DINING', icon: UtensilsCrossed },
-      { patternKey: 'HEATING.ROOM_PATTERNS_HALLWAY', icon: DoorOpen },
-    ];
-
-    for (const { patternKey, icon } of patternMapping) {
-      const patternsString = this.languageService.translate(patternKey);
-      const patterns = patternsString.split(',').map((p) => p.trim().toLowerCase());
-      if (patterns.some((pattern) => pattern && lower.includes(pattern))) {
-        return icon;
-      }
-    }
-
-    return House;
+    return this.matchLegacyPattern(name)?.icon ?? House;
   }
 
   /**
    * Guess color based on room name patterns (for legacy data).
    */
   private guessLegacyColor(name: string): { border: string; bg: string } {
-    const lower = name.toLowerCase();
-
-    const patternMapping: { patternKey: string; roomType: string }[] = [
-      { patternKey: 'HEATING.ROOM_PATTERNS_LIVING', roomType: 'HEATING.ROOM_LIVING_ROOM' },
-      { patternKey: 'HEATING.ROOM_PATTERNS_BEDROOM', roomType: 'HEATING.ROOM_BEDROOM' },
-      { patternKey: 'HEATING.ROOM_PATTERNS_BATHROOM', roomType: 'HEATING.ROOM_BATHROOM' },
-      { patternKey: 'HEATING.ROOM_PATTERNS_KITCHEN', roomType: 'HEATING.ROOM_KITCHEN' },
-      { patternKey: 'HEATING.ROOM_PATTERNS_KIDS', roomType: 'HEATING.ROOM_KIDS_ROOM' },
-      { patternKey: 'HEATING.ROOM_PATTERNS_OFFICE', roomType: 'HEATING.ROOM_OFFICE' },
-      { patternKey: 'HEATING.ROOM_PATTERNS_GUEST', roomType: 'HEATING.ROOM_GUEST_ROOM' },
-      { patternKey: 'HEATING.ROOM_PATTERNS_DINING', roomType: 'HEATING.ROOM_DINING_ROOM' },
-      { patternKey: 'HEATING.ROOM_PATTERNS_HALLWAY', roomType: 'HEATING.ROOM_HALLWAY' },
-    ];
-
-    for (const { patternKey, roomType } of patternMapping) {
-      const patternsString = this.languageService.translate(patternKey);
-      const patterns = patternsString.split(',').map((p) => p.trim().toLowerCase());
-      if (patterns.some((pattern) => pattern && lower.includes(pattern))) {
-        return ROOM_TYPE_COLORS[roomType] ?? DEFAULT_ROOM_COLOR;
-      }
-    }
-
-    return DEFAULT_ROOM_COLOR;
+    return this.matchLegacyPattern(name)?.color ?? DEFAULT_ROOM_COLOR;
   }
 }

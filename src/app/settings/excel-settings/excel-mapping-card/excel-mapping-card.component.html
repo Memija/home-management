@@ -1,0 +1,25 @@
+<div class="form-group">
+  <label for="{{ fieldId() }}">{{ label() }}</label>
+  <input
+    id="{{ fieldId() }}"
+    type="text"
+    [value]="value()"
+    (input)="onInput($event)"
+    class="form-control"
+    placeholder="{{ placeholder() }}"
+    title="{{ label() }}"
+    [class.error]="!!(value() && validationError()) || isDuplicate()"
+  />
+  @if (value() && validationError()) {
+    <div class="warning-message">
+      <lucide-icon [img]="TriangleAlertIcon" size="16" class="warning-icon"></lucide-icon>
+      <span>{{ validationError() }}</span>
+    </div>
+  }
+  @if (!validationError() && isDuplicate()) {
+    <div class="warning-message">
+      <lucide-icon [img]="TriangleAlertIcon" size="16" class="warning-icon"></lucide-icon>
+      <span>{{ 'EXCEL.VALIDATION_DUPLICATES' | translate }}</span>
+    </div>
+  }
+</div>

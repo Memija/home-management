@@ -1,6 +1,8 @@
 import { TestBed } from '@angular/core/testing';
 import { ElectricityCountryFactsService } from './electricity-country-facts.service';
 import { LanguageService } from './language.service';
+import { enFacts } from '../i18n/facts/en';
+import { deFacts } from '../i18n/facts/de';
 import { signal, WritableSignal } from '@angular/core';
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 
@@ -9,6 +11,7 @@ describe('ElectricityCountryFactsService', () => {
   let mockLanguageService: {
     currentLang: WritableSignal<string>;
     translate: import('vitest').Mock<(key: string) => string>;
+    getTranslations: import('vitest').Mock<(lang: string) => Record<string, unknown>>;
   };
   let mockCurrentLangSignal: WritableSignal<string>;
 
@@ -22,6 +25,7 @@ describe('ElectricityCountryFactsService', () => {
         }
         return key;
       }),
+      getTranslations: vi.fn((lang: string) => (lang === 'de' ? deFacts : enFacts)),
     };
 
     TestBed.configureTestingModule({

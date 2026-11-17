@@ -25,6 +25,8 @@ export interface UnitTranslations {
   minuteKeywords: string[];
 }
 
+const pluralRulesCache = new Map<string, Intl.PluralRules>();
+
 /**
  * Resolves the appropriate plural word using the browser / Node Intl.PluralRules API
  *
@@ -40,7 +42,11 @@ export function getPluralWord(
 ): string {
   try {
     const primaryLocale = Array.isArray(locale) ? locale[0] : locale;
-    const pluralRules = new Intl.PluralRules(primaryLocale);
+    let pluralRules = pluralRulesCache.get(primaryLocale);
+    if (!pluralRules) {
+      pluralRules = new Intl.PluralRules(primaryLocale);
+      pluralRulesCache.set(primaryLocale, pluralRules);
+    }
     const category = pluralRules.select(count);
     return forms[category] ?? forms.other;
   } catch {

@@ -1,6 +1,6 @@
 import { Chart, ChartConfiguration, ChartEvent, LegendItem, TooltipItem } from 'chart.js';
 import { LanguageService } from '../../../services/language.service';
-import { AppChartDataset } from '../../../models/records.model';
+import { AppChartDataset, parseSafeDate } from '../../../models/records.model';
 import { ChartDataPoint } from '../../../models/consumption-chart.model';
 
 export interface ChartOptionsBuilderDeps {
@@ -17,10 +17,10 @@ export interface ChartOptionsBuilderDeps {
  * prediction dataset entry).
  */
 function buildLegendFilter(languageService: LanguageService) {
+  const minTranslation = languageService.translate('PREDICTIONS.MIN');
+  const maxTranslation = languageService.translate('PREDICTIONS.MAX');
   return (legendItem: LegendItem, data: ChartConfiguration['data']): boolean => {
     const label = legendItem.text;
-    const minTranslation = languageService.translate('PREDICTIONS.MIN');
-    const maxTranslation = languageService.translate('PREDICTIONS.MAX');
     if (label === minTranslation || label === maxTranslation) return false;
     // Hide prediction extension overlays (predicted trendline continuations)
     const ds = data.datasets?.[legendItem.datasetIndex ?? -1];
@@ -33,22 +33,79 @@ export function escapeRegExp(str: string): string {
   return str.replace(/[.*+?^${}()|[\]\\]/g, String.raw`\$&`);
 }
 
+function buildLabelRegex(label: string): RegExp | null {
+  if (!label) return null;
+  const escaped = escapeRegExp(label);
+  // eslint-disable-next-line security/detect-non-literal-regexp -- label is escaped with escapeRegExp and sourced from internal i18n
+  return new RegExp(
+    String.raw`(\s*[(（\[]\s*${escaped}\s*[)）\]]|\s*[-—–]\s*${escaped}\s*|${escaped})`,
+    'giu',
+  );
+}
+
 /**
  * Replaces occurrences of a translated label (with optional leading separators like " - " or " ("
  * and optional closing parens) with a compact icon symbol.
  */
-export function replaceLabelWithIcon(text: string, label: string, icon: string): string {
-  if (!label || !text.toLowerCase().includes(label.toLowerCase())) return text;
-  const escaped = escapeRegExp(label);
-  // eslint-disable-next-line security/detect-non-literal-regexp -- label is escaped with escapeRegExp and sourced from internal i18n
-  const pattern = new RegExp(
-    String.raw`(\s*[(（\[]\s*${escaped}\s*[)）\]]|\s*[-—–]\s*${escaped}\s*|${escaped})`,
-    'giu',
-  );
+export function replaceLabelWithIcon(
+  text: string,
+  label: string,
+  icon: string,
+  compiledPattern?: RegExp | null,
+  labelLower?: string,
+): string {
+  if (!label) return text;
+  const normalizedLabel = labelLower ?? label.toLowerCase();
+  if (!text.toLowerCase().includes(normalizedLabel)) return text;
+  const pattern = compiledPattern ?? buildLabelRegex(label);
+  if (!pattern) return text;
   return text
     .replace(pattern, ` ${icon}`)
     .replace(/\s{2,}/g, ' ')
     .trim();
+}
+
+type CompiledLabelReplacement = readonly [
+  label: string,
+  icon: string,
+  pattern: RegExp | null,
+  labelLower: string,
+];
+
+function isMobileViewport(): boolean {
+  return typeof window !== 'undefined' && window.innerWidth <= 768;
+}
+
+function createLabelReplacements(languageService: LanguageService): CompiledLabelReplacement[] {
+  const rawPairs: [string, string][] = [
+    [languageService.translate('CHART.CONSUMPTION_PREDICTION'), '🔮'],
+    [languageService.translate('CHART.TRENDLINE'), '📈'],
+    [languageService.translate('CHART.COUNTRY_AVERAGE'), '🌐'],
+    [languageService.translate('CHART.PAST_FORECAST'), '🎯'],
+    [languageService.translate('CHART.INCREMENTAL_CONSUMPTION'), '📅'],
+    [languageService.translate('CHART.DISPLAY_MODE_INCREMENTAL'), '📅'],
+    [languageService.translate('CHART.TOTAL_WEEKLY_CONSUMPTION'), '∑'],
+    [languageService.translate('CHART.DISPLAY_MODE_TOTAL'), '∑'],
+    [languageService.translate('CHART.TOTAL_CONSUMPTION'), '∑'],
+  ];
+  return rawPairs.map(([label, icon]) => [
+    label,
+    icon,
+    buildLabelRegex(label),
+    label.toLowerCase(),
+  ]);
+}
+
+function applyLabelReplacements(text: string, replacements: CompiledLabelReplacement[]): string {
+  let result = text;
+  let resultLower = result.toLowerCase();
+  for (const [label, icon, pattern, labelLower] of replacements) {
+    if (labelLower && resultLower.includes(labelLower)) {
+      result = replaceLabelWithIcon(result, label, icon, pattern, labelLower);
+      resultLower = result.toLowerCase();
+    }
+  }
+  return result;
 }
 
 /**
@@ -56,30 +113,22 @@ export function replaceLabelWithIcon(text: string, label: string, icon: string):
  * (e.g., " - Consumption prediction" or " (Daily Average Consumption)") with concise symbols/icons.
  */
 function buildGenerateLabels(languageService: LanguageService) {
+  let cachedReplacements: CompiledLabelReplacement[] | null = null;
+
   return (chart: Chart): LegendItem[] => {
     const defaultGenerator = Chart.defaults.plugins.legend.labels.generateLabels;
     const items = defaultGenerator(chart);
 
-    if (typeof window !== 'undefined' && window.innerWidth <= 768) {
-      const replacements: [string, string][] = [
-        [languageService.translate('CHART.CONSUMPTION_PREDICTION'), '🔮'],
-        [languageService.translate('CHART.TRENDLINE'), '📈'],
-        [languageService.translate('CHART.COUNTRY_AVERAGE'), '🌐'],
-        [languageService.translate('CHART.PAST_FORECAST'), '🎯'],
-        [languageService.translate('CHART.INCREMENTAL_CONSUMPTION'), '📅'],
-        [languageService.translate('CHART.DISPLAY_MODE_INCREMENTAL'), '📅'],
-        [languageService.translate('CHART.TOTAL_WEEKLY_CONSUMPTION'), '∑'],
-        [languageService.translate('CHART.DISPLAY_MODE_TOTAL'), '∑'],
-        [languageService.translate('CHART.TOTAL_CONSUMPTION'), '∑'],
-      ];
+    if (!isMobileViewport()) {
+      return items;
+    }
 
-      items.forEach((item) => {
-        let text = item.text || '';
-        for (const [label, icon] of replacements) {
-          text = replaceLabelWithIcon(text, label, icon);
-        }
-        item.text = text;
-      });
+    cachedReplacements ??= createLabelReplacements(languageService);
+
+    for (const item of items) {
+      if (item.text) {
+        item.text = applyLabelReplacements(item.text, cachedReplacements);
+      }
     }
 
     return items;
@@ -94,6 +143,13 @@ function buildGenerateLabels(languageService: LanguageService) {
  * in all supported languages.
  */
 function buildLegendClickHandler(languageService: LanguageService) {
+  const predictionsLabel = languageService.translate('CHART.CONSUMPTION_PREDICTION');
+  const trendlineLabel = languageService.translate('CHART.TRENDLINE');
+  const countryAverageLabel = languageService.translate('CHART.COUNTRY_AVERAGE');
+  const totalViewLabel = languageService.translate('CHART.TOTAL_WEEKLY_CONSUMPTION');
+  const minLabel = languageService.translate('PREDICTIONS.MIN');
+  const maxLabel = languageService.translate('PREDICTIONS.MAX');
+
   return (_e: ChartEvent, legendItem: LegendItem, legend: { chart: Chart }): void => {
     const chart = legend.chart;
     const clickedIndex = legendItem.datasetIndex;
@@ -108,14 +164,11 @@ function buildLegendClickHandler(languageService: LanguageService) {
     chart.setDatasetVisibility(clickedIndex, isHidden);
 
     // ── Sync prediction min/max band when the expected-prediction line is clicked ──
-    const predictionsLabel = languageService.translate('CHART.CONSUMPTION_PREDICTION');
     if (clickedLabel.includes(predictionsLabel)) {
-      syncPredictionBand(chart, clickedDataset, isHidden, languageService);
+      syncPredictionBand(chart, clickedDataset, isHidden, minLabel, maxLabel);
     }
 
     // ── Sync trendline / country-average datasets with their parent series ──
-    const trendlineLabel = languageService.translate('CHART.TRENDLINE');
-    const countryAverageLabel = languageService.translate('CHART.COUNTRY_AVERAGE');
     const isTrendlineOrAverage =
       clickedLabel.includes(trendlineLabel) || clickedLabel.includes(countryAverageLabel);
 
@@ -127,7 +180,7 @@ function buildLegendClickHandler(languageService: LanguageService) {
         isHidden,
         trendlineLabel,
         countryAverageLabel,
-        languageService,
+        totalViewLabel,
       );
     }
 
@@ -143,10 +196,9 @@ function syncPredictionBand(
   chart: Chart,
   clickedDataset: ChartConfiguration['data']['datasets'][0],
   isHidden: boolean,
-  languageService: LanguageService,
+  minLabel: string,
+  maxLabel: string,
 ): void {
-  const minLabel = languageService.translate('PREDICTIONS.MIN');
-  const maxLabel = languageService.translate('PREDICTIONS.MAX');
   const clickedCategoryId = (clickedDataset as AppChartDataset | undefined)?.categoryId;
 
   chart.data.datasets.forEach(
@@ -179,9 +231,8 @@ function syncRelatedDatasets(
   isHidden: boolean,
   trendlineLabel: string,
   countryAverageLabel: string,
-  languageService: LanguageService,
+  totalViewLabel: string,
 ): void {
-  const totalViewLabel = languageService.translate('CHART.TOTAL_WEEKLY_CONSUMPTION');
   const isTotalView = clickedLabel.includes(totalViewLabel);
 
   if (isTotalView) {
@@ -232,6 +283,13 @@ function syncRelatedDatasets(
 
 // ─── Tooltip helpers ──────────────────────────────────────────────────────────
 
+const TOOLTIP_DATE_OPTIONS = {
+  weekday: 'long',
+  year: 'numeric',
+  month: 'long',
+  day: 'numeric',
+} as const;
+
 /**
  * Builds the tooltip title callback: shows the full locale-aware date for
  * historical data points, and an estimated future date for prediction points.
@@ -249,25 +307,17 @@ function buildTooltipTitleCallback(
     const pastDataLength = data.length;
 
     if (dataIndex < pastDataLength) {
-      return languageService.formatDate(new Date(data[dataIndex].date), {
-        weekday: 'long',
-        year: 'numeric',
-        month: 'long',
-        day: 'numeric',
-      });
+      const rawDate = data[dataIndex].date;
+      const dateObj = parseSafeDate(rawDate);
+      return languageService.formatDate(dateObj, TOOLTIP_DATE_OPTIONS);
     }
 
     // Future data point (prediction zone)
     if (pastDataLength > 0) {
       const monthOffset = dataIndex - pastDataLength + 1;
-      const futureDate = new Date(data[pastDataLength - 1].date);
+      const futureDate = new Date(parseSafeDate(data[pastDataLength - 1].date));
       futureDate.setMonth(futureDate.getMonth() + monthOffset);
-      return languageService.formatDate(futureDate, {
-        weekday: 'long',
-        year: 'numeric',
-        month: 'long',
-        day: 'numeric',
-      });
+      return languageService.formatDate(futureDate, TOOLTIP_DATE_OPTIONS);
     }
 
     return item.label;

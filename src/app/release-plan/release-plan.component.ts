@@ -1,9 +1,8 @@
-import { Component, signal, computed } from '@angular/core';
+import { Component, ChangeDetectionStrategy, signal, computed } from '@angular/core';
 import { TranslatePipe } from '../pipes/translate.pipe';
 import {
   LucideAngularModule,
   Rocket,
-  TrendingUp,
   Calendar,
   Sparkles,
   CircleArrowUp,
@@ -15,6 +14,7 @@ import {
   StickyNote,
   Trophy,
   CalendarCheck,
+  NotebookPen,
 } from 'lucide-angular';
 
 type FeatureTag = 'new' | 'enhancement' | 'smart';
@@ -34,6 +34,7 @@ interface Feature {
   imports: [TranslatePipe, LucideAngularModule],
   templateUrl: './release-plan.component.html',
   styleUrl: './release-plan.component.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ReleasePlanComponent {
   // Icons
@@ -45,14 +46,6 @@ export class ReleasePlanComponent {
 
   // Upcoming features
   readonly features: Feature[] = [
-    {
-      id: 7,
-      titleKey: 'RELEASE_PLAN.FEATURE_7_TITLE',
-      descKey: 'RELEASE_PLAN.FEATURE_7_DESC',
-      icon: TrendingUp,
-      tag: 'smart',
-      colorClass: 'prediction-feature',
-    },
     {
       id: 8,
       titleKey: 'RELEASE_PLAN.FEATURE_8_TITLE',
@@ -101,6 +94,14 @@ export class ReleasePlanComponent {
       tag: 'new',
       colorClass: 'new-feature',
     },
+    {
+      id: 14,
+      titleKey: 'RELEASE_PLAN.FEATURE_14_TITLE',
+      descKey: 'RELEASE_PLAN.FEATURE_14_DESC',
+      icon: NotebookPen,
+      tag: 'new',
+      colorClass: 'new-feature',
+    },
   ];
 
   // Filter state
@@ -129,16 +130,21 @@ export class ReleasePlanComponent {
     smart: this.SmartIcon,
   };
 
-  // Available filters with counts
-  readonly filterOptions = computed(() => {
+  // Available filters with counts (precomputed once since features is static)
+  private readonly filterCounts: Record<FeatureTag | 'all', number> = (() => {
     const counts: Record<FeatureTag | 'all', number> = {
       all: this.features.length,
-      new: this.features.filter((f) => f.tag === 'new').length,
-      enhancement: this.features.filter((f) => f.tag === 'enhancement').length,
-      smart: this.features.filter((f) => f.tag === 'smart').length,
+      new: 0,
+      enhancement: 0,
+      smart: 0,
     };
+    for (const f of this.features) {
+      counts[f.tag]++;
+    }
     return counts;
-  });
+  })();
+
+  readonly filterOptions = (): Record<FeatureTag | 'all', number> => this.filterCounts;
 
   setFilter(filter: FeatureTag | 'all'): void {
     this.activeFilter.set(filter);

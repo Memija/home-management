@@ -1,23 +1,23 @@
-@if (showSignal()) {
+@if (show()) {
   <!-- eslint-disable-next-line @angular-eslint/template/interactive-supports-focus -- Backdrop dismissal by design -->
   <div class="modal-overlay" (click)="cancelModal.emit()" (keydown.escape)="cancelModal.emit()">
     <!-- eslint-disable-next-line @angular-eslint/template/interactive-supports-focus -- Container stopPropagation by design -->
     <div
       class="modal-content error-modal"
-      [class.warning]="typeSignal() === 'warning'"
-      [class.success]="typeSignal() === 'success'"
+      [class.warning]="type() === 'warning'"
+      [class.success]="type() === 'success'"
       (click)="$event.stopPropagation()"
       (keydown)="$event.stopPropagation()"
     >
       <div class="modal-header error-header">
-        @if (typeSignal() === 'warning') {
+        @if (type() === 'warning') {
           <lucide-icon [img]="AlertTriangleIcon" size="32" class="error-icon warning"></lucide-icon>
-        } @else if (typeSignal() === 'success') {
+        } @else if (type() === 'success') {
           <lucide-icon [img]="CheckCircleIcon" size="32" class="error-icon success"></lucide-icon>
         } @else {
           <lucide-icon [img]="AlertCircleIcon" size="32" class="error-icon"></lucide-icon>
         }
-        <h3>{{ titleSignal() | translate }}</h3>
+        <h3>{{ title() | translate }}</h3>
         <button
           type="button"
           class="close-btn"
@@ -29,9 +29,9 @@
         </button>
       </div>
       <div class="modal-body">
-        <p class="error-message">{{ messageSignal() }}</p>
-        @if (detailsSignal()) {
-          <div class="error-details" [class.warning]="typeSignal() === 'warning'">
+        <p class="error-message">{{ message() }}</p>
+        @if (details()) {
+          <div class="error-details" [class.warning]="type() === 'warning'">
             <strong>{{ 'ERROR.DETAILS' | translate }}:</strong>
             <div class="error-list">
               @for (line of detailLines(); track $index) {
@@ -43,12 +43,12 @@
             </div>
           </div>
         }
-        @if (instructionsSignal().length > 0) {
+        @if (instructions().length > 0) {
           <div class="error-instructions">
             <strong>{{ 'ERROR.HOW_TO_FIX' | translate }}:</strong>
             <ul>
-              @for (instruction of instructionsSignal(); track $index) {
-                @if (isString(instruction)) {
+              @for (instruction of instructions(); track $index) {
+                @if (typeof instruction === 'string') {
                   <li>{{ instruction | translate }}</li>
                 } @else {
                   <li>{{ instruction.key | translate: instruction.params }}</li>

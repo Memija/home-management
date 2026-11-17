@@ -41,10 +41,10 @@ describe('HeatingRoomsModalComponent', () => {
     fixture = TestBed.createComponent(HeatingRoomsModalComponent);
     component = fixture.componentInstance;
 
-    component.show = false;
-    component.rooms = [];
-    component.maxRooms = 5;
-    component.roomsWithDataArray = [];
+    fixture.componentRef.setInput('show', false);
+    fixture.componentRef.setInput('rooms', []);
+    fixture.componentRef.setInput('maxRooms', 5);
+    fixture.componentRef.setInput('roomsWithDataArray', []);
 
     fixture.detectChanges();
   });
@@ -56,8 +56,8 @@ describe('HeatingRoomsModalComponent', () => {
   describe('Initialization and modal show', () => {
     it('should initialize editingRooms and cache roomsWithData on modal show', () => {
       const initialRooms = [{ id: '1', name: 'Living Room' }];
-      component.rooms = initialRooms;
-      component.roomsWithDataArray = ['1'];
+      fixture.componentRef.setInput('rooms', initialRooms);
+      fixture.componentRef.setInput('roomsWithDataArray', ['1']);
 
       component['onModalShow']();
 
@@ -70,10 +70,10 @@ describe('HeatingRoomsModalComponent', () => {
 
   describe('Room validation', () => {
     beforeEach(() => {
-      component.rooms = [
+      fixture.componentRef.setInput('rooms', [
         { id: '1', name: 'Room 1' },
         { id: '2', name: 'Room 2' },
-      ];
+      ]);
       component['onModalShow']();
     });
 
@@ -97,8 +97,8 @@ describe('HeatingRoomsModalComponent', () => {
 
   describe('Adding and removing rooms', () => {
     beforeEach(() => {
-      component.rooms = [{ id: '1', name: 'Room 1' }];
-      component.maxRooms = 2;
+      fixture.componentRef.setInput('rooms', [{ id: '1', name: 'Room 1' }]);
+      fixture.componentRef.setInput('maxRooms', 2);
       component['onModalShow']();
     });
 
@@ -128,8 +128,8 @@ describe('HeatingRoomsModalComponent', () => {
 
   describe('Lock and unlock state', () => {
     beforeEach(() => {
-      component.rooms = [{ id: '1', name: 'Room 1' }];
-      component.roomsWithDataArray = ['1'];
+      fixture.componentRef.setInput('rooms', [{ id: '1', name: 'Room 1' }]);
+      fixture.componentRef.setInput('roomsWithDataArray', ['1']);
       component['onModalShow']();
     });
 
@@ -166,7 +166,7 @@ describe('HeatingRoomsModalComponent', () => {
 
   describe('Discard warning and saving', () => {
     beforeEach(() => {
-      component.rooms = [{ id: '1', name: 'Room 1' }];
+      fixture.componentRef.setInput('rooms', [{ id: '1', name: 'Room 1' }]);
       component['onModalShow']();
     });
 

@@ -1,0 +1,115 @@
+:host {
+  --disclaimer-color: #0369a1;
+  --disclaimer-hover: #075985;
+  display: block;
+}
+
+:host-context([data-theme='dark']) {
+  --disclaimer-color: #38bdf8;
+  --disclaimer-hover: #7dd3fc;
+}
+
+.benchmarks-page {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 2rem 1.25rem 4rem;
+}
+
+.benchmarks-hero {
+  text-align: center;
+  margin-bottom: 2rem;
+  padding: 1.5rem 1rem 0.5rem;
+
+  h1 {
+    font-size: clamp(1.9rem, 3.6vw, 2.6rem);
+    font-weight: 700;
+    margin: 0;
+    color: var(--text-primary);
+    letter-spacing: -0.02em;
+    line-height: 1.15;
+
+    &::after {
+      content: '';
+      display: block;
+      width: 72px;
+      height: 4px;
+      background: linear-gradient(90deg, #0ea5e9, #2563eb);
+      margin: 1rem auto 0;
+      border-radius: 10px;
+    }
+  }
+}
+
+.hero-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 88px;
+  height: 88px;
+  margin: 0 auto 1.25rem;
+  border-radius: 24px;
+  background: linear-gradient(135deg, #0369a1, #1d4ed8);
+  color: #ffffff;
+  box-shadow: 0 16px 28px -6px rgba(14, 165, 233, 0.4);
+}
+
+.table-card {
+  border-radius: 16px;
+  background: var(--card-bg);
+  border: 1px solid var(--card-border);
+  box-shadow: var(--card-specular), var(--shadow-card);
+  overflow: hidden;
+}
+
+.empty-state {
+  padding: 2.5rem 1rem;
+  text-align: center;
+  color: var(--text-secondary);
+}
+
+.benchmarks-disclaimer-footnote {
+  margin: 0;
+  padding: 0.75rem 1rem;
+  text-align: center;
+  background: var(--bg-secondary);
+  border-top: 1px solid var(--border-color);
+  border-radius: 0 0 15px 15px;
+  color: var(--text-secondary);
+  font-size: 0.8rem;
+  line-height: 1.5;
+}
+
+.disclaimer-link {
+  margin-left: 0.25rem;
+  color: var(--disclaimer-color);
+  font-weight: 600;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+
+  &:hover,
+  &:focus-visible {
+    color: var(--disclaimer-hover);
+  }
+}
+
+@media (max-width: 768px) {
+  .benchmarks-page {
+    padding: 1.25rem 0.75rem 3rem;
+  }
+
+  .benchmarks-hero {
+    margin-bottom: 1.25rem;
+    padding: 0.75rem 0.5rem 0.25rem;
+  }
+
+  .hero-icon {
+    width: 68px;
+    height: 68px;
+    border-radius: 18px;
+    margin-bottom: 0.85rem;
+  }
+
+  .table-card {
+    overflow: visible;
+  }
+}

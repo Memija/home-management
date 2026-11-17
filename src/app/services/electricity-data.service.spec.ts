@@ -69,6 +69,7 @@ describe('ElectricityDataService', () => {
     notificationServiceMock = {
       setElectricityRecords: vi.fn(),
       resetElectricityOverdue: vi.fn(),
+      resetMotivationDismissal: vi.fn(),
     };
 
     TestBed.configureTestingModule({
@@ -289,6 +290,11 @@ describe('ElectricityDataService', () => {
       expect(service.showSuccessModal()).toBe(true);
     });
 
+    it('should reset motivation toast dismissal when saving a new electricity record', async () => {
+      await service.saveRecord({ date: new Date('2023-03-01'), value: 260 });
+      expect(notificationServiceMock.resetMotivationDismissal).toHaveBeenCalledWith('electricity');
+    });
+
     it('should update an existing record with the same date', async () => {
       const updatedRecord: ElectricityRecord = {
         date: new Date('2023-01-01'),
@@ -337,6 +343,7 @@ describe('ElectricityDataService', () => {
 
       expect(service.records()).toHaveLength(2);
       expect(storageServiceMock.save).toHaveBeenCalled();
+      expect(notificationServiceMock.resetMotivationDismissal).not.toHaveBeenCalled();
       expect(service.showDeleteModal()).toBe(false);
       expect(service.recordToDelete()).toBeNull();
     });
@@ -361,6 +368,7 @@ describe('ElectricityDataService', () => {
 
       expect(service.records()).toHaveLength(1);
       expect(storageServiceMock.save).toHaveBeenCalled();
+      expect(notificationServiceMock.resetMotivationDismissal).not.toHaveBeenCalled();
       expect(service.showDeleteAllModal()).toBe(false);
       expect(service.recordsToDelete()).toEqual([]);
     });
@@ -519,6 +527,7 @@ describe('ElectricityDataService', () => {
       await service.confirmImport();
 
       expect(storageServiceMock.save).toHaveBeenCalled();
+      expect(notificationServiceMock.resetMotivationDismissal).toHaveBeenCalledWith('electricity');
       expect(service.showSuccessModal()).toBe(true);
       expect(service.showImportConfirmModal()).toBe(false);
       expect(service.pendingImportFile()).toBeNull();
@@ -592,6 +601,7 @@ describe('ElectricityDataService', () => {
       await service.importFromExcel(event);
 
       expect(storageServiceMock.save).toHaveBeenCalled();
+      expect(notificationServiceMock.resetMotivationDismissal).toHaveBeenCalledWith('electricity');
       expect(service.isImporting()).toBe(false);
     });
 

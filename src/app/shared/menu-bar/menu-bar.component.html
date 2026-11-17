@@ -3,7 +3,7 @@
     <a
       routerLink="/dashboard"
       routerLinkActive="active"
-      [routerLinkActiveOptions]="{ exact: true }"
+      [routerLinkActiveOptions]="exactRouteOptions"
       class="menu-item"
     >
       <span class="emoji-icon">🏠</span>
@@ -38,9 +38,11 @@
   </div>
 </nav>
 
-@if (showContactModal()) {
-  <app-contact-modal
-    (closeModal)="onCloseModal()"
-    (compose)="onComposeEmail($event)"
-  ></app-contact-modal>
+@defer (when showContactModal()) {
+  @if (showContactModal()) {
+    <app-contact-modal
+      (closeModal)="onCloseModal()"
+      (compose)="onComposeEmail($event)"
+    ></app-contact-modal>
+  }
 }

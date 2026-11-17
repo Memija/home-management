@@ -1,5 +1,12 @@
-import { Component, inject, signal, computed, OnInit } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import {
+  Component,
+  ChangeDetectionStrategy,
+  inject,
+  signal,
+  computed,
+  OnInit,
+} from '@angular/core';
+import { DatePipe } from '@angular/common';
 import { TranslatePipe } from '../../pipes/translate.pipe';
 import {
   LucideAngularModule,
@@ -24,7 +31,7 @@ import { HelpModalComponent, HelpStep } from '../../shared/help-modal/help-modal
   selector: 'app-storage-settings',
   standalone: true,
   imports: [
-    CommonModule,
+    DatePipe,
     TranslatePipe,
     LucideAngularModule,
     DeleteConfirmationModalComponent,
@@ -33,6 +40,7 @@ import { HelpModalComponent, HelpStep } from '../../shared/help-modal/help-modal
   ],
   templateUrl: './storage-settings.component.html',
   styleUrl: './storage-settings.component.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class StorageSettingsComponent implements OnInit {
   private readonly storage = inject(HybridStorageService);
@@ -78,12 +86,14 @@ export class StorageSettingsComponent implements OnInit {
     { titleKey: 'STORAGE.HELP_STEP3_TITLE', descriptionKey: 'STORAGE.HELP_STEP3_DESC' },
   ];
 
+  private readonly toggleDisabled = computed(() => !this.isAuthenticated() || this.isDemoMode());
+
   ngOnInit(): void {
     this.storage.refreshLocalContentStatus();
   }
 
   get isToggleDisabled(): boolean {
-    return !this.isAuthenticated() || this.isDemoMode();
+    return this.toggleDisabled();
   }
 
   showHelp(): void {

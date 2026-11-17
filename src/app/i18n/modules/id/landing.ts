@@ -1,7 +1,7 @@
 // Indonesian landing page translations
 export const landing = {
   LANDING: {
-    BADGE: 'Open Source · Gratis Selamanya',
+    BADGE: 'Kode Sumber Tersedia · Gratis Selamanya',
     TITLE_LINE_1: 'Rumah Anda,',
     TITLE_LINE_2: 'Terkelola Sepenuhnya.',
     SUBTITLE:
@@ -13,7 +13,7 @@ export const landing = {
     THEME_TOGGLE: 'Ganti tema warna',
     SCROLL_PROGRESS: 'Kemajuan gulir halaman',
     STATS: {
-      FREE: 'Gratis dan Open Source',
+      FREE: 'Gratis dan Kode Sumber Tersedia',
       TRACKERS: 'Pelacak Utilitas',
       DATA_POINTS: 'Titik Data',
       ADS: 'Iklan Selamanya',
@@ -39,8 +39,8 @@ export const landing = {
       UNIFIED_TAG_3: 'Selisih Harian',
       PRIVACY_TITLE: 'Multi-Bahasa dan Privasi Penuh',
       PRIVACY_DESC:
-        'Dukungan penuh di 5 bahasa dengan tema kontras tinggi yang mudah diakses tanpa pelacak.',
-      PRIVACY_TAG_1: '5 Bahasa',
+        'Dukungan penuh di 6 bahasa dengan tema kontras tinggi yang mudah diakses tanpa pelacak.',
+      PRIVACY_TAG_1: '6 Bahasa',
       PRIVACY_TAG_2: 'Tanpa Pelacak',
       PRIVACY_TAG_3: 'Tema Aksesibel',
     },
@@ -81,6 +81,20 @@ export const landing = {
       STEP_3_TITLE: 'Lihat Wawasan Anda',
       STEP_3_DESC: 'Grafik yang indah menunjukkan tren, perbandingan, dan penggunaan per orang.',
     },
+    FAQ: {
+      TITLE: 'Pertanyaan yang Sering Diajukan',
+      SUBTITLE: 'Semua yang perlu Anda ketahui tentang privasi, pembacaan meteran, dan prakiraan.',
+      Q1: 'Apakah Home Management memerlukan akun atau langganan?',
+      A1: 'Tidak. Home Management 100% gratis untuk penggunaan pribadi dan rumah tangga serta langsung berfungsi di browser Anda tanpa pendaftaran. Masuk dengan Google bersifat opsional dan hanya digunakan jika Anda ingin menyinkronkan data antarperangkat.',
+      Q2: 'Di mana data konsumsi rumah tangga saya disimpan?',
+      A2: 'Secara default, semua catatan air, pemanas, dan listrik disimpan secara lokal di penyimpanan browser Anda. Tidak ada iklan dan tidak ada pelacak pihak ketiga. Anda dapat mengekspor data atau mengaktifkan cadangan cloud kapan saja.',
+      Q3: 'Bagaimana cara kerja pembaca meteran kamera (OCR)?',
+      A3: 'Saat Anda mengambil atau mengunggah foto meteran, pemotongan gambar, peningkatan kontras, dan pengenalan karakter optik Tesseract.js berjalan sepenuhnya di perangkat Anda. Foto meteran Anda tidak pernah dikirim ke server.',
+      Q4: 'Bagaimana prakiraan konsumsi dan tolok ukur negara dihitung?',
+      A4: 'Prakiraan menggabungkan regresi linier dan polinomial dengan penyesuaian musiman serta koreksi akurasi historis otomatis. Perbandingan negara membandingkan pemakaian per orang dengan statistik resmi dari lembaga seperti Umweltbundesamt (Badan Lingkungan Hidup Federal Jerman), BDEW (Asosiasi Industri Energi dan Air Jerman), Eurostat (Kantor Statistik Uni Eropa), dan EIA (Badan Informasi Energi AS).',
+      Q5: 'Bisakah saya mencatat penggantian meteran dan mengimpor file Excel yang ada?',
+      A5: 'Ya. Saat meteran diganti atau direset, aplikasi menghitung selisih secara akurat tanpa lonjakan palsu. Anda juga dapat mengimpor file Excel (.xlsx) dengan pemetaan kolom khusus atau mengekspor ke Excel, JSON, dan PDF.',
+    },
     CTA: {
       TITLE: 'Siap untuk Mengambil Kendali?',
       SUBTITLE:
@@ -89,6 +103,7 @@ export const landing = {
     },
     FOOTER: {
       GITHUB: 'GitHub',
+      BENCHMARKS: 'Tolok Ukur Negara',
       OPEN_APP: 'Buka Aplikasi',
     },
   },

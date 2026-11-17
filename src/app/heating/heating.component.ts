@@ -1,5 +1,12 @@
-import { Component, OnInit, signal, computed, inject, effect, ElementRef } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import {
+  Component,
+  ChangeDetectionStrategy,
+  OnInit,
+  signal,
+  computed,
+  inject,
+  effect,
+} from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { TranslatePipe } from '../pipes/translate.pipe';
 import { DemoService } from '../services/demo.service';
@@ -7,25 +14,7 @@ import { DemoWizardComponent } from '../shared/demo-wizard/demo-wizard.component
 import { HeatingFormService } from '../services/heating-form.service';
 import { HeatingRoomsService, HeatingRoomConfig } from '../services/heating-rooms.service';
 import { HeatingDataService } from '../services/heating-data.service';
-import {
-  LucideAngularModule,
-  ArrowLeft,
-  ChevronDown,
-  ChevronLeft,
-  ChevronRight,
-  Download,
-  Upload,
-  FileSpreadsheet,
-  Settings,
-  CircleCheck,
-  Info,
-  Trash2,
-  FileText,
-  TriangleAlert,
-  RefreshCw,
-  Lightbulb,
-} from 'lucide-angular';
-
+import { LucideAngularModule, Settings, Lightbulb } from 'lucide-angular';
 import {
   ConsumptionChartComponent,
   type ChartView,
@@ -35,7 +24,10 @@ import {
   ConsumptionInputComponent,
   type ConsumptionGroup,
 } from '../shared/consumption-input/consumption-input.component';
-import { BaseDropdownComponent } from '../shared/base-consumption.directive';
+import {
+  BaseConsumptionComponent,
+  ConsumptionDataServiceContract,
+} from '../shared/base-consumption.directive';
 import { ErrorModalComponent } from '../shared/error-modal/error-modal.component';
 import { HouseholdService } from '../services/household.service';
 import { ConfirmationModalComponent } from '../shared/confirmation-modal/confirmation-modal.component';
@@ -47,7 +39,11 @@ import {
 } from '../shared/detailed-records/detailed-records.component';
 import { DeleteConfirmationModalComponent } from '../shared/delete-confirmation-modal/delete-confirmation-modal.component';
 import { ComparisonNoteComponent } from '../shared/comparison-note/comparison-note.component';
-import { DynamicHeatingRecord, calculateDynamicHeatingTotal } from '../models/records.model';
+import {
+  DynamicHeatingRecord,
+  calculateDynamicHeatingTotal,
+  parseSafeDate,
+} from '../models/records.model';
 import { HeatingFactsService } from '../services/heating-facts.service';
 import {
   HEATING_RECORD_HELP_STEPS,
@@ -55,7 +51,16 @@ import {
   CHART_HELP_STEPS,
   DEMO_WIZARD_STEPS,
   DEMO_TOUR_STEPS,
+  HEATING_SORT_OPTIONS,
 } from './heating.constants';
+import {
+  buildHeatingCategoryNames,
+  findUnconfirmedSpike,
+  getRoomIdsWithData,
+  getStoredHeatingSpikes,
+  HeatingSpikeEntry,
+  saveHeatingSpikes,
+} from './heating.utils';
 import { DemoTourComponent } from '../shared/demo-tour/demo-tour.component';
 import { secureRandom } from '../utils/crypto.utils';
 import { ConsumptionPreferencesService } from '../services/consumption-preferences.service';
@@ -66,12 +71,13 @@ import { LanguageService } from '../services/language.service';
 import { ExcelSettingsService } from '../services/excel-settings.service';
 import { PredictionService } from '../services/prediction.service';
 import { PredictionsPanelComponent } from '../shared/predictions-panel/predictions-panel.component';
+import { RecordActionsDropdownComponent } from '../shared/record-actions-dropdown/record-actions-dropdown.component';
+import { SuccessModalComponent } from '../shared/success-modal/success-modal.component';
 
 @Component({
   selector: 'app-heating',
   standalone: true,
   imports: [
-    CommonModule,
     FormsModule,
     TranslatePipe,
     LucideAngularModule,
@@ -86,12 +92,17 @@ import { PredictionsPanelComponent } from '../shared/predictions-panel/predictio
     DemoWizardComponent,
     DemoTourComponent,
     PredictionsPanelComponent,
+    RecordActionsDropdownComponent,
+    SuccessModalComponent,
   ],
   templateUrl: './heating.component.html',
   styleUrl: './heating.component.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class HeatingComponent extends BaseDropdownComponent implements OnInit {
-  // Services
+export class HeatingComponent
+  extends BaseConsumptionComponent<DynamicHeatingRecord>
+  implements OnInit
+{
   protected readonly dataService = inject(HeatingDataService);
   protected readonly formService = inject(HeatingFormService);
   protected readonly roomsService = inject(HeatingRoomsService);
@@ -106,26 +117,13 @@ export class HeatingComponent extends BaseDropdownComponent implements OnInit {
   private readonly householdService = inject(HouseholdService);
   private readonly predictionService = inject(PredictionService);
 
-  // Icons
-  protected readonly ArrowLeftIcon = ArrowLeft;
-  protected readonly ChevronDownIcon = ChevronDown;
-  protected readonly ChevronLeftIcon = ChevronLeft;
-  protected readonly ChevronRightIcon = ChevronRight;
-  protected readonly DownloadIcon = Download;
-  protected readonly UploadIcon = Upload;
-  protected readonly FileSpreadsheetIcon = FileSpreadsheet;
+  override get baseDataService(): ConsumptionDataServiceContract<DynamicHeatingRecord> {
+    return this.dataService;
+  }
+
   protected readonly SettingsIcon = Settings;
-  protected readonly CheckCircleIcon = CircleCheck;
-  protected readonly InfoIcon = Info;
-  protected readonly TrashIcon = Trash2;
-  protected readonly FileTextIcon = FileText;
-  protected readonly AlertTriangleIcon = TriangleAlert;
-  protected readonly RefreshCwIcon = RefreshCw;
   protected readonly LightbulbIcon = Lightbulb;
 
-  private readonly elementRef = inject(ElementRef, { optional: true });
-
-  // State delegation to HeatingDataService
   protected readonly records = this.dataService.records;
   protected readonly heatingPrediction = computed(() =>
     this.predictionService.predictHeating(this.records()),
@@ -143,7 +141,6 @@ export class HeatingComponent extends BaseDropdownComponent implements OnInit {
   protected readonly errorInstructions = this.dataService.errorInstructions;
   protected readonly errorType = this.dataService.errorType;
 
-  // Chart preferences
   protected readonly chartView = this.preferencesService.heatingChartView;
   protected readonly displayMode = this.preferencesService.heatingDisplayMode;
   protected readonly selectedPredictionPeriod = signal<30 | 90 | 180 | 365 | 3650>(30);
@@ -152,23 +149,16 @@ export class HeatingComponent extends BaseDropdownComponent implements OnInit {
     this.selectedPredictionPeriod.set(period);
   }
 
-  // Category names mapping for predictions
-  protected readonly heatingCategoryNames = computed(() => {
-    const map: Record<string, string> = {};
-    for (const r of this.roomsService.rooms()) {
-      map[r.id] = r.type ? r.type : r.name;
-    }
-    return map;
-  });
+  protected readonly heatingCategoryNames = computed(() =>
+    buildHeatingCategoryNames(this.roomsService.rooms()),
+  );
 
-  // Country selection for facts
   protected readonly availableCountries = this.heatingFactsService.getAvailableCountries();
   protected readonly selectedCountryCode = signal('DE');
 
   private readonly syncCountryFromAddress = effect(() => {
     const address = this.householdService.address();
     if (address?.country) {
-      // Find if this country is valid for heating facts
       const isValid = this.availableCountries.some(
         (c) => c.code.toLowerCase() === address.country.toLowerCase(),
       );
@@ -177,6 +167,7 @@ export class HeatingComponent extends BaseDropdownComponent implements OnInit {
       }
     }
   });
+
   protected readonly selectedCountryName = computed(() => {
     const code = this.selectedCountryCode();
     const country = this.availableCountries.find((c) => c.code === code);
@@ -188,12 +179,10 @@ export class HeatingComponent extends BaseDropdownComponent implements OnInit {
     this.refreshFact();
   }
 
-  // Help steps
   protected readonly helpSteps = HEATING_RECORD_HELP_STEPS;
   protected readonly chartHelpSteps = CHART_HELP_STEPS;
   protected readonly recordsHelpSteps = RECORDS_LIST_HELP_STEPS;
 
-  // Demo wizard & tour
   protected readonly demoWizardSteps = DEMO_WIZARD_STEPS;
   protected readonly demoTourSteps = DEMO_TOUR_STEPS;
   protected readonly showDemoWizard = signal(false);
@@ -207,21 +196,14 @@ export class HeatingComponent extends BaseDropdownComponent implements OnInit {
     }
   }
 
-  // Sort options
-  protected readonly heatingSortOptions: SortOptionConfig[] = [
-    { value: 'date-desc', labelKey: 'HOME.SORT.DATE_DESC', direction: '↓' },
-    { value: 'date-asc', labelKey: 'HOME.SORT.DATE_ASC', direction: '↑' },
-    { value: 'total-desc', labelKey: 'HOME.SORT.TOTAL_DESC', direction: '↓' },
-    { value: 'total-asc', labelKey: 'HOME.SORT.TOTAL_ASC', direction: '↑' },
-  ];
+  protected readonly heatingSortOptions: SortOptionConfig[] = HEATING_SORT_OPTIONS;
 
   protected readonly calculateTotal = (record: GenericRecord): number =>
     calculateDynamicHeatingTotal(record as DynamicHeatingRecord);
 
-  // Facts
   private readonly factRandomSeed = signal(secureRandom());
   protected readonly heatingFact = computed(() => {
-    const records = this.chartRecords();
+    const records = this.records();
     const mode = this.displayMode();
     const seed = this.factRandomSeed();
     const countryCode = this.selectedCountryCode();
@@ -235,37 +217,27 @@ export class HeatingComponent extends BaseDropdownComponent implements OnInit {
     this.factRandomSeed.set(secureRandom());
   }
 
-  // Rooms modal
   protected readonly showRoomsModal = signal(false);
 
-  // Delete confirmation modal state
-  protected readonly showDeleteModal = signal(false);
-  protected readonly recordToDelete = signal<DynamicHeatingRecord | null>(null);
-  protected readonly showDeleteAllModal = signal(false);
-  protected readonly recordsToDeleteAll = signal<DynamicHeatingRecord[]>([]);
+  protected readonly showDeleteModal = this.dataService.showDeleteModal;
+  protected readonly recordToDelete = this.dataService.recordToDelete;
+  protected readonly showDeleteAllModal = this.dataService.showDeleteAllModal;
+  protected readonly recordsToDeleteAll = this.dataService.recordsToDelete;
 
-  // Spike detection
-  protected readonly confirmedSpikes = signal<{ date: string; roomId: string }[]>(
-    this.getStoredSpikes('confirmed'),
+  protected readonly confirmedSpikes = signal<HeatingSpikeEntry[]>(
+    getStoredHeatingSpikes(this.localStorageService, 'confirmed'),
   );
-  protected readonly dismissedSpikes = signal<{ date: string; roomId: string }[]>(
-    this.getStoredSpikes('dismissed'),
+  protected readonly dismissedSpikes = signal<HeatingSpikeEntry[]>(
+    getStoredHeatingSpikes(this.localStorageService, 'dismissed'),
   );
 
   protected readonly detectedSpikes = computed(() =>
     this.chartCalculationService.detectNewRoomSpikes(this.records()),
   );
 
-  protected readonly unconfirmedSpike = computed(() => {
-    const detected = this.detectedSpikes();
-    const confirmed = this.confirmedSpikes();
-    const dismissed = this.dismissedSpikes();
-    return detected.find(
-      (s) =>
-        !confirmed.some((c) => c.date === s.date && c.roomId === s.roomId) &&
-        !dismissed.some((d) => d.date === s.date && d.roomId === s.roomId),
-    );
-  });
+  protected readonly unconfirmedSpike = computed(() =>
+    findUnconfirmedSpike(this.detectedSpikes(), this.confirmedSpikes(), this.dismissedSpikes()),
+  );
 
   protected readonly unconfirmedSpikeRoomName = computed(() => {
     const spike = this.unconfirmedSpike();
@@ -278,98 +250,79 @@ export class HeatingComponent extends BaseDropdownComponent implements OnInit {
   protected readonly formattedSpikeDate = computed(() => {
     const spike = this.unconfirmedSpike();
     if (!spike) return '';
-    const date = new Date(spike.date);
-    return this.languageService.formatDate(date, {
+    return this.languageService.formatDate(parseSafeDate(spike.date), {
       year: 'numeric',
       month: 'long',
       day: 'numeric',
     });
   });
 
-  protected readonly adjustedRecords = computed(() => {
-    return this.chartCalculationService.adjustForNewRooms(this.records(), this.confirmedSpikes());
-  });
+  protected readonly unconfirmedSpikeParams = computed(() => ({
+    room: this.unconfirmedSpikeRoomName(),
+    date: this.formattedSpikeDate(),
+  }));
 
-  protected readonly chartRecords = computed(() => {
-    // For Incremental Mode: Use RAW records so we detect meter resets correctly. Spikes are handled by passing confirmedSpikes to the chart.
-    // For Total Mode: Use ADJUSTED records so the cumulative curve is smoothed (offsets applied).
-    return this.displayMode() === 'incremental' ? this.records() : this.adjustedRecords();
-  });
+  protected readonly adjustedRecords = computed(() =>
+    this.chartCalculationService.adjustForNewRooms(this.records(), this.confirmedSpikes()),
+  );
 
-  private getStoredSpikes(type: 'confirmed' | 'dismissed'): { date: string; roomId: string }[] {
-    const key = `heating_${type}_spikes`;
-    const stored = this.localStorageService.getPreference(key);
-    try {
-      return stored ? JSON.parse(stored) : [];
-    } catch {
-      return [];
-    }
-  }
+  protected readonly chartRecords = computed(() =>
+    this.displayMode() === 'incremental' ? this.records() : this.adjustedRecords(),
+  );
 
-  private saveSpikes(type: 'confirmed' | 'dismissed', spikes: { date: string; roomId: string }[]) {
-    this.localStorageService.setPreference(`heating_${type}_spikes`, JSON.stringify(spikes));
-  }
-
-  protected confirmSpike(spike: { date: string; roomId: string }) {
+  protected confirmSpike(spike: HeatingSpikeEntry): void {
     this.confirmedSpikes.update((s) => [...s, { date: spike.date, roomId: spike.roomId }]);
-    this.saveSpikes('confirmed', this.confirmedSpikes());
+    saveHeatingSpikes(this.localStorageService, 'confirmed', this.confirmedSpikes());
   }
 
-  protected dismissSpike(spike: { date: string; roomId: string }) {
+  protected dismissSpike(spike: HeatingSpikeEntry): void {
     this.dismissedSpikes.update((s) => [...s, { date: spike.date, roomId: spike.roomId }]);
-    this.saveSpikes('dismissed', this.dismissedSpikes());
+    saveHeatingSpikes(this.localStorageService, 'dismissed', this.dismissedSpikes());
   }
 
-  // Chart room data
-  protected readonly chartRoomNames = computed(() =>
-    this.roomsService.rooms().map((r) => {
-      return r.type ? this.languageService.translate(r.type) : r.name;
-    }),
-  );
-  protected readonly chartRoomIds = computed(() => this.roomsService.rooms().map((r) => r.id));
-  protected readonly chartRoomColors = computed(() =>
-    this.roomsService.rooms().map((r) => this.roomUtilsService.getRoomColor(r)),
-  );
-
-  // Room IDs that have data in existing records - used to warn when deleting rooms
-  protected readonly roomsWithData = computed(() => {
-    const roomIdsWithData = new Set<string>();
-    for (const record of this.records()) {
-      for (const [roomId, value] of Object.entries(record.rooms)) {
-        if (value && value > 0) {
-          roomIdsWithData.add(roomId);
-        }
-      }
+  private readonly chartRoomMeta = computed(() => {
+    this.languageService.currentLang();
+    this.languageService.translationVersion?.();
+    const rooms = this.roomsService.rooms();
+    const names = new Array<string>(rooms.length);
+    const ids = new Array<string>(rooms.length);
+    const colors = new Array<{ border: string; bg: string }>(rooms.length);
+    for (let i = 0; i < rooms.length; i++) {
+      const r = rooms[i];
+      names[i] = r.type ? this.languageService.translate(r.type) : r.name;
+      ids[i] = r.id;
+      colors[i] = this.roomUtilsService.getRoomColor(r);
     }
-    return Array.from(roomIdsWithData);
+    return { names, ids, colors };
   });
 
-  // Form state
+  protected readonly chartRoomNames = computed(() => this.chartRoomMeta().names);
+  protected readonly chartRoomIds = computed(() => this.chartRoomMeta().ids);
+  protected readonly chartRoomColors = computed(() => this.chartRoomMeta().colors);
+
+  protected readonly roomsWithData = computed(() => getRoomIdsWithData(this.records()));
+
   protected readonly selectedDate = this.formService.selectedDate;
   protected readonly editingRecord = this.formService.editingRecord;
   protected readonly dateExists = computed(() => this.formService.isDateDuplicate(this.records()));
   protected readonly maxDate = new Date().toISOString().split('T')[0];
 
-  protected readonly consumptionGroups = computed<ConsumptionGroup[]>(() => {
-    const rooms = this.roomsService.rooms();
-    return [
-      {
-        title: 'HEATING.READINGS_BY_ROOM',
-        fields: rooms.map((room) => ({
-          key: room.id,
-          label: room.name,
-          value: this.formService.getRoomValue(room.id),
-          icon: this.roomUtilsService.getRoomIcon(room),
-        })),
-      },
-    ];
-  });
+  protected readonly consumptionGroups = computed<ConsumptionGroup[]>(() => [
+    {
+      title: 'HEATING.READINGS_BY_ROOM',
+      fields: this.roomsService.rooms().map((room) => ({
+        key: room.id,
+        label: room.name,
+        value: this.formService.getRoomValue(room.id),
+        icon: this.roomUtilsService.getRoomIcon(room),
+      })),
+    },
+  ]);
 
   protected getRoomValue(record: DynamicHeatingRecord, roomId: string): number {
     return record.rooms[roomId] || 0;
   }
 
-  // Chart handlers
   protected readonly onChartViewChange = (view: ChartView): void => {
     this.preferencesService.setChartView(view, 'heating');
     this.refreshFact();
@@ -381,42 +334,20 @@ export class HeatingComponent extends BaseDropdownComponent implements OnInit {
   };
 
   ngOnInit(): void {
-    void this.dataService.loadData();
+    if (!this.dataService.isInitialized?.()) {
+      void this.dataService.loadData();
+    }
   }
 
-  // ===== Delegations to DataService =====
-  protected importData(event: Event) {
-    this.closeMenus();
-    this.dataService.importData(event);
-  }
-  protected confirmImport() {
-    void this.dataService.confirmImport();
-  }
-  protected cancelImport() {
-    this.dataService.cancelImport();
-  }
-  protected importFromExcel(event: Event) {
-    this.closeMenus();
-    void this.dataService.importFromExcel(event);
-  }
-  protected exportData() {
-    void this.dataService.exportData();
-  }
-  protected exportToExcel() {
-    void this.dataService.exportToExcel();
-  }
-  protected exportToPdf() {
-    void this.dataService.exportToPdf();
-  }
-  protected closeSuccessModal() {
+  protected closeSuccessModal(): void {
     this.dataService.closeSuccessModal();
   }
-  protected closeErrorModal() {
+
+  protected closeErrorModal(): void {
     this.dataService.closeErrorModal();
   }
 
-  // Form handlers
-  protected onConsumptionSave() {
+  protected onConsumptionSave(): void {
     const newRecord = this.formService.createRecordFromState();
     if (newRecord) {
       void this.dataService.saveRecord(newRecord, this.editingRecord());
@@ -427,75 +358,47 @@ export class HeatingComponent extends BaseDropdownComponent implements OnInit {
     }
   }
 
-  protected onFieldChange(event: { key: string; value: number | null }) {
+  protected onFieldChange(event: { key: string; value: number | null }): void {
     this.formService.updateField(event.key, event.value);
   }
 
-  protected cancelEdit() {
+  protected cancelEdit(): void {
     this.formService.cancelEdit();
   }
 
-  // Room modal handlers
-  protected openRoomsModal() {
+  protected openRoomsModal(): void {
     this.showRoomsModal.set(true);
   }
 
-  protected onRoomsSave(rooms: HeatingRoomConfig[]) {
+  protected onRoomsSave(rooms: HeatingRoomConfig[]): void {
     this.roomsService.setRooms(rooms);
     this.showRoomsModal.set(false);
   }
 
-  protected onRoomsCancel() {
+  protected onRoomsCancel(): void {
     this.showRoomsModal.set(false);
   }
 
-  // Record handlers
-  protected onEditRecord(record: GenericRecord) {
+  protected onEditRecord(record: GenericRecord): void {
     this.formService.startEdit(record as DynamicHeatingRecord);
     document.querySelector('app-consumption-input')?.scrollIntoView({ behavior: 'smooth' });
   }
 
-  protected onDeleteRecord(record: GenericRecord) {
+  protected onDeleteRecord(record: GenericRecord): void {
     this.recordToDelete.set(record as DynamicHeatingRecord);
     this.showDeleteModal.set(true);
   }
 
-  protected confirmDelete() {
-    const record = this.recordToDelete();
-    if (record) {
-      void this.dataService.deleteRecord(record);
-    }
-    this.showDeleteModal.set(false);
-    this.recordToDelete.set(null);
-  }
-
-  protected cancelDelete() {
-    this.showDeleteModal.set(false);
-    this.recordToDelete.set(null);
-  }
-
-  protected onDeleteAllRecords(recordsToDelete: GenericRecord[]) {
+  protected onDeleteAllRecords(recordsToDelete: GenericRecord[]): void {
     this.recordsToDeleteAll.set(recordsToDelete as DynamicHeatingRecord[]);
     this.showDeleteAllModal.set(true);
   }
 
-  protected confirmDeleteAll() {
-    void this.dataService.deleteRecords(this.recordsToDeleteAll());
-    this.showDeleteAllModal.set(false);
-    this.recordsToDeleteAll.set([]);
-  }
-
-  protected cancelDeleteAll() {
-    this.showDeleteAllModal.set(false);
-    this.recordsToDeleteAll.set([]);
-  }
-
-  protected readonly deleteAllMessageKey = computed(() => {
-    const count = this.recordsToDeleteAll().length;
-    return count === 1
+  protected readonly deleteAllMessageKey = computed(() =>
+    this.recordsToDeleteAll().length === 1
       ? 'HOME.DELETE_ALL_CONFIRM_MESSAGE_SINGULAR'
-      : 'HOME.DELETE_ALL_CONFIRM_MESSAGE_PLURAL';
-  });
+      : 'HOME.DELETE_ALL_CONFIRM_MESSAGE_PLURAL',
+  );
 
   protected readonly deleteAllMessageParams = computed(() => ({
     count: this.recordsToDeleteAll().length.toString(),

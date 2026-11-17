@@ -129,13 +129,16 @@ describe('ConsumptionChartComponent', () => {
     chartType?: 'water' | 'heating' | 'electricity' | 'home';
     displayMode?: DisplayMode;
   }) => {
-    component.data = overrides?.data ?? makeWaterData(['2024-01-15', '2024-02-15']);
-    component.currentView = overrides?.currentView ?? 'total';
-    component.chartType = overrides?.chartType ?? 'water';
-    component.onViewChange = vi.fn();
-    component.onDisplayModeChange = vi.fn();
+    fixture.componentRef.setInput(
+      'data',
+      overrides?.data ?? makeWaterData(['2024-01-15', '2024-02-15']),
+    );
+    fixture.componentRef.setInput('currentView', overrides?.currentView ?? 'total');
+    fixture.componentRef.setInput('chartType', overrides?.chartType ?? 'water');
+    fixture.componentRef.setInput('onViewChange', vi.fn());
+    fixture.componentRef.setInput('onDisplayModeChange', vi.fn());
     if (overrides?.displayMode) {
-      component.displayMode = overrides.displayMode;
+      fixture.componentRef.setInput('displayMode', overrides.displayMode);
     }
     fixture.detectChanges();
     component.ngOnInit();
@@ -149,12 +152,12 @@ describe('ConsumptionChartComponent', () => {
 
     it('should default displayMode to total', () => {
       initWithDefaults();
-      expect(component.displayMode).toBe('total');
+      expect(component.displayMode()).toBe('total');
     });
 
     it('should default helpTitleKey', () => {
       initWithDefaults();
-      expect(component.helpTitleKey).toBe('HOME.CHART_HELP_TITLE');
+      expect(component.helpTitleKey()).toBe('HOME.CHART_HELP_TITLE');
     });
 
     it('should have help modal hidden by default', () => {
@@ -164,14 +167,14 @@ describe('ConsumptionChartComponent', () => {
 
     it('should default empty help steps', () => {
       initWithDefaults();
-      expect(component.helpSteps).toEqual([]);
+      expect(component.helpSteps()).toEqual([]);
     });
   });
 
   describe('setView', () => {
     it('should call onViewChange callback', () => {
       initWithDefaults();
-      const spy = component.onViewChange as ReturnType<typeof vi.fn>;
+      const spy = component.onViewChange() as ReturnType<typeof vi.fn>;
 
       component['setView']('by-room');
       expect(spy).toHaveBeenCalledWith('by-room');
@@ -179,7 +182,7 @@ describe('ConsumptionChartComponent', () => {
 
     it('should handle all view types', () => {
       initWithDefaults();
-      const spy = component.onViewChange as ReturnType<typeof vi.fn>;
+      const spy = component.onViewChange() as ReturnType<typeof vi.fn>;
 
       const views: ChartView[] = ['total', 'by-room', 'by-type', 'detailed'];
       views.forEach((view) => {
@@ -192,7 +195,7 @@ describe('ConsumptionChartComponent', () => {
   describe('setDisplayMode', () => {
     it('should call onDisplayModeChange callback', () => {
       initWithDefaults();
-      const spy = component.onDisplayModeChange as ReturnType<typeof vi.fn>;
+      const spy = component.onDisplayModeChange() as ReturnType<typeof vi.fn>;
 
       component['setDisplayMode']('incremental');
       expect(spy).toHaveBeenCalledWith('incremental');
@@ -200,7 +203,7 @@ describe('ConsumptionChartComponent', () => {
 
     it('should handle both modes', () => {
       initWithDefaults();
-      const spy = component.onDisplayModeChange as ReturnType<typeof vi.fn>;
+      const spy = component.onDisplayModeChange() as ReturnType<typeof vi.fn>;
 
       component['setDisplayMode']('total');
       expect(spy).toHaveBeenCalledWith('total');
@@ -608,20 +611,20 @@ describe('ConsumptionChartComponent', () => {
 
     it('should handle familySize and country defaults', () => {
       initWithDefaults();
-      expect(component.familySize).toBe(0);
-      expect(component.country).toBe('');
+      expect(component.familySize()).toBe(0);
+      expect(component.country()).toBe('');
     });
 
     it('should handle room-related inputs defaults for non-heating charts', () => {
       initWithDefaults({ chartType: 'water' });
-      expect(component.roomNames).toEqual([]);
-      expect(component.roomIds).toEqual([]);
-      expect(component.roomColors).toEqual([]);
+      expect(component.roomNames()).toEqual([]);
+      expect(component.roomIds()).toEqual([]);
+      expect(component.roomColors()).toEqual([]);
     });
 
     it('should handle ignoredSpikes default', () => {
       initWithDefaults();
-      expect(component.ignoredSpikes).toEqual([]);
+      expect(component.ignoredSpikes()).toEqual([]);
     });
   });
 

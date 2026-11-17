@@ -109,29 +109,29 @@ describe('DetailedRecordsComponent', () => {
 
   describe('Creation and Defaults', () => {
     it('should create', () => {
-      component.records = [];
+      fixture.componentRef.setInput('records', []);
       fixture.detectChanges();
       expect(component).toBeTruthy();
     });
 
     it('should have correct default input values', () => {
-      component.records = [];
+      fixture.componentRef.setInput('records', []);
       fixture.detectChanges();
 
-      expect(component.showSearchDate).toBe(true);
-      expect(component.showYearMonth).toBe(true);
-      expect(component.showEditDelete).toBe(true);
-      expect(component.recordType).toBe('water');
-      expect(component.showTotal).toBe(true);
-      expect(component.hasDetails).toBe(true);
-      expect(component.allowCollapse).toBe(true);
-      expect(component.helpTitleKey).toBe('HOME.RECORDS_HELP_TITLE');
-      expect(component.totalLabelKey).toBe('HOME.TOTAL');
-      expect(component.valuesNoteKey).toBe('HOME.ALL_VALUES_IN_LITERS');
+      expect(component.showSearchDate()).toBe(true);
+      expect(component.showYearMonth()).toBe(true);
+      expect(component.showEditDelete()).toBe(true);
+      expect(component.recordType()).toBe('water');
+      expect(component.showTotal()).toBe(true);
+      expect(component.hasDetails()).toBe(true);
+      expect(component.allowCollapse()).toBe(true);
+      expect(component.helpTitleKey()).toBe('HOME.RECORDS_HELP_TITLE');
+      expect(component.totalLabelKey()).toBe('HOME.TOTAL');
+      expect(component.valuesNoteKey()).toBe('HOME.ALL_VALUES_IN_LITERS');
     });
 
     it('should default sort option to date-desc', () => {
-      component.records = [];
+      fixture.componentRef.setInput('records', []);
       fixture.detectChanges();
       expect(component['sortOption']()).toBe('date-desc');
     });
@@ -139,19 +139,19 @@ describe('DetailedRecordsComponent', () => {
     it('should initialize sortOption from defaultSortOption input default', () => {
       // The constructor reads defaultSortOption() at creation time,
       // so sortOption matches the input signal's default value ('date-desc')
-      component.records = [];
+      fixture.componentRef.setInput('records', []);
       fixture.detectChanges();
       expect(component['sortOption']()).toBe('date-desc');
     });
 
     it('should default pagination size to 5', () => {
-      component.records = [];
+      fixture.componentRef.setInput('records', []);
       fixture.detectChanges();
       expect(component['paginationSize']()).toBe(5);
     });
 
     it('should start on page 1', () => {
-      component.records = [];
+      fixture.componentRef.setInput('records', []);
       fixture.detectChanges();
       expect(component['currentPage']()).toBe(1);
     });
@@ -160,28 +160,28 @@ describe('DetailedRecordsComponent', () => {
   describe('Collapse State', () => {
     it('should default to collapsed when no stored preference', () => {
       localStorageServiceMock.getPreference.mockReturnValue(null);
-      component.records = [];
+      fixture.componentRef.setInput('records', []);
       fixture.detectChanges();
       expect(component['isCollapsed']()).toBe(true);
     });
 
     it('should restore collapsed state from localStorage as true', () => {
       localStorageServiceMock.getPreference.mockReturnValue('true');
-      component.records = [];
+      fixture.componentRef.setInput('records', []);
       fixture.detectChanges();
       expect(component['isCollapsed']()).toBe(true);
     });
 
     it('should restore collapsed state from localStorage as false', () => {
       localStorageServiceMock.getPreference.mockReturnValue('false');
-      component.records = [];
+      fixture.componentRef.setInput('records', []);
       fixture.detectChanges();
       expect(component['isCollapsed']()).toBe(false);
     });
 
     it('should use the correct localStorage key based on recordType', () => {
-      component.records = [];
-      component.recordType = 'electricity';
+      fixture.componentRef.setInput('records', []);
+      fixture.componentRef.setInput('recordType', 'electricity');
       fixture.detectChanges();
       expect(localStorageServiceMock.getPreference).toHaveBeenCalledWith(
         'detailed_records_for_electricity_are_collapsed',
@@ -190,7 +190,7 @@ describe('DetailedRecordsComponent', () => {
 
     it('should toggle collapse from true to false', () => {
       localStorageServiceMock.getPreference.mockReturnValue('true');
-      component.records = [makeRecord('2024-01-15')];
+      fixture.componentRef.setInput('records', [makeRecord('2024-01-15')]);
       fixture.detectChanges();
 
       expect(component['isCollapsed']()).toBe(true);
@@ -200,7 +200,7 @@ describe('DetailedRecordsComponent', () => {
 
     it('should toggle collapse from false to true', () => {
       localStorageServiceMock.getPreference.mockReturnValue('false');
-      component.records = [makeRecord('2024-01-15')];
+      fixture.componentRef.setInput('records', [makeRecord('2024-01-15')]);
       fixture.detectChanges();
 
       expect(component['isCollapsed']()).toBe(false);
@@ -210,8 +210,8 @@ describe('DetailedRecordsComponent', () => {
 
     it('should persist collapse state to localStorage on toggle', () => {
       localStorageServiceMock.getPreference.mockReturnValue('true');
-      component.records = [makeRecord('2024-01-15')];
-      component.recordType = 'heating';
+      fixture.componentRef.setInput('records', [makeRecord('2024-01-15')]);
+      fixture.componentRef.setInput('recordType', 'heating');
       fixture.detectChanges();
 
       component['toggleCollapse']();
@@ -219,6 +219,18 @@ describe('DetailedRecordsComponent', () => {
         'detailed_records_for_heating_are_collapsed',
         'false',
       );
+    });
+
+    it('should render record totals and reading details in collapsed preview state', () => {
+      localStorageServiceMock.getPreference.mockReturnValue('true');
+      fixture.componentRef.setInput('records', [makeWaterRecord('2024-01-15', 10, 20, 15, 25)]);
+      fixture.componentRef.setInput('calculateTotalFn', () => 70);
+      fixture.detectChanges();
+
+      expect(component['isCollapsed']()).toBe(true);
+      const nativeEl = fixture.nativeElement as HTMLElement;
+      expect(nativeEl.querySelector('.history-list li .total')).toBeTruthy();
+      expect(nativeEl.querySelector('.history-list li .record-details')).toBeTruthy();
     });
   });
 
@@ -232,7 +244,7 @@ describe('DetailedRecordsComponent', () => {
     ];
 
     beforeEach(() => {
-      component.records = records;
+      fixture.componentRef.setInput('records', records);
       fixture.detectChanges();
     });
 
@@ -291,7 +303,7 @@ describe('DetailedRecordsComponent', () => {
     ];
 
     beforeEach(() => {
-      component.records = records;
+      fixture.componentRef.setInput('records', records);
       fixture.detectChanges();
     });
 
@@ -339,12 +351,12 @@ describe('DetailedRecordsComponent', () => {
 
   describe('Available Years', () => {
     it('should return unique years sorted descending', () => {
-      component.records = [
+      fixture.componentRef.setInput('records', [
         makeRecord('2022-03-10'),
         makeRecord('2024-01-15'),
         makeRecord('2024-06-10'),
         makeRecord('2023-12-25'),
-      ];
+      ]);
       fixture.detectChanges();
 
       const years = component['availableYears']();
@@ -352,17 +364,17 @@ describe('DetailedRecordsComponent', () => {
     });
 
     it('should return empty array when no records', () => {
-      component.records = [];
+      fixture.componentRef.setInput('records', []);
       fixture.detectChanges();
       expect(component['availableYears']()).toEqual([]);
     });
 
     it('should handle records all in the same year', () => {
-      component.records = [
+      fixture.componentRef.setInput('records', [
         makeRecord('2024-01-01'),
         makeRecord('2024-06-15'),
         makeRecord('2024-12-31'),
-      ];
+      ]);
       fixture.detectChanges();
 
       expect(component['availableYears']()).toEqual([2024]);
@@ -371,7 +383,7 @@ describe('DetailedRecordsComponent', () => {
 
   describe('isFilterActive', () => {
     beforeEach(() => {
-      component.records = [];
+      fixture.componentRef.setInput('records', []);
       fixture.detectChanges();
     });
 
@@ -407,7 +419,7 @@ describe('DetailedRecordsComponent', () => {
 
   describe('Reset Filters', () => {
     it('should clear all filters and reset page', () => {
-      component.records = [];
+      fixture.componentRef.setInput('records', []);
       fixture.detectChanges();
 
       component['startDate'].set('2024-01-01');
@@ -440,8 +452,8 @@ describe('DetailedRecordsComponent', () => {
       (r['bathroomCold'] || 0);
 
     beforeEach(() => {
-      component.records = records;
-      component.calculateTotalFn = totalFn;
+      fixture.componentRef.setInput('records', records);
+      fixture.componentRef.setInput('calculateTotalFn', totalFn);
       fixture.detectChanges();
     });
 
@@ -502,7 +514,7 @@ describe('DetailedRecordsComponent', () => {
         makeRecord('2024-01-10', { value: 100 }),
         makeRecord('2024-06-20', { value: 200 }),
       ];
-      component.records = genericRecords;
+      fixture.componentRef.setInput('records', genericRecords);
       fixture.detectChanges();
       component['setSortOption']('bathroom-desc');
 
@@ -520,25 +532,25 @@ describe('DetailedRecordsComponent', () => {
       );
 
     it('should return first page of records', () => {
-      component.records = createRecords(12);
+      fixture.componentRef.setInput('records', createRecords(12));
       fixture.detectChanges();
       expect(component['displayedRecords']()).toHaveLength(5);
     });
 
     it('should calculate total pages correctly', () => {
-      component.records = createRecords(12);
+      fixture.componentRef.setInput('records', createRecords(12));
       fixture.detectChanges();
       expect(component['totalPages']()).toBe(3); // ceil(12/5)
     });
 
     it('should calculate total pages as 1 for records <= page size', () => {
-      component.records = createRecords(3);
+      fixture.componentRef.setInput('records', createRecords(3));
       fixture.detectChanges();
       expect(component['totalPages']()).toBe(1);
     });
 
     it('should navigate to next page', () => {
-      component.records = createRecords(12);
+      fixture.componentRef.setInput('records', createRecords(12));
       fixture.detectChanges();
 
       component['nextPage']();
@@ -547,7 +559,7 @@ describe('DetailedRecordsComponent', () => {
     });
 
     it('should show remaining records on last page', () => {
-      component.records = createRecords(12);
+      fixture.componentRef.setInput('records', createRecords(12));
       fixture.detectChanges();
 
       component['currentPage'].set(3);
@@ -555,7 +567,7 @@ describe('DetailedRecordsComponent', () => {
     });
 
     it('should not go past the last page', () => {
-      component.records = createRecords(12);
+      fixture.componentRef.setInput('records', createRecords(12));
       fixture.detectChanges();
 
       component['currentPage'].set(3);
@@ -564,7 +576,7 @@ describe('DetailedRecordsComponent', () => {
     });
 
     it('should navigate to previous page', () => {
-      component.records = createRecords(12);
+      fixture.componentRef.setInput('records', createRecords(12));
       fixture.detectChanges();
 
       component['currentPage'].set(2);
@@ -573,7 +585,7 @@ describe('DetailedRecordsComponent', () => {
     });
 
     it('should not go below page 1', () => {
-      component.records = createRecords(12);
+      fixture.componentRef.setInput('records', createRecords(12));
       fixture.detectChanges();
 
       component['prevPage']();
@@ -581,7 +593,7 @@ describe('DetailedRecordsComponent', () => {
     });
 
     it('should reset to page 1 when pagination size changes', () => {
-      component.records = createRecords(20);
+      fixture.componentRef.setInput('records', createRecords(20));
       fixture.detectChanges();
 
       component['currentPage'].set(3);
@@ -592,7 +604,7 @@ describe('DetailedRecordsComponent', () => {
     });
 
     it('should show all records when page size is larger than total', () => {
-      component.records = createRecords(3);
+      fixture.componentRef.setInput('records', createRecords(3));
       fixture.detectChanges();
 
       component['onPaginationSizeChange'](50);
@@ -601,7 +613,7 @@ describe('DetailedRecordsComponent', () => {
     });
 
     it('should handle zero records gracefully', () => {
-      component.records = [];
+      fixture.componentRef.setInput('records', []);
       fixture.detectChanges();
 
       expect(component['displayedRecords']()).toHaveLength(0);
@@ -611,11 +623,11 @@ describe('DetailedRecordsComponent', () => {
 
   describe('Computed Texts', () => {
     it('should generate page-of text', () => {
-      component.records = [
+      fixture.componentRef.setInput('records', [
         makeRecord('2024-01-01'),
         makeRecord('2024-02-01'),
         makeRecord('2024-03-01'),
-      ];
+      ]);
       fixture.detectChanges();
 
       component['pageOfText']();
@@ -626,7 +638,10 @@ describe('DetailedRecordsComponent', () => {
     });
 
     it('should generate showing-records text', () => {
-      component.records = [makeRecord('2024-01-01'), makeRecord('2024-02-01')];
+      fixture.componentRef.setInput('records', [
+        makeRecord('2024-01-01'),
+        makeRecord('2024-02-01'),
+      ]);
       fixture.detectChanges();
 
       component['showingRecordsText']();
@@ -641,7 +656,7 @@ describe('DetailedRecordsComponent', () => {
     const record = makeRecord('2024-05-15', { value: 42 });
 
     beforeEach(() => {
-      component.records = [record];
+      fixture.componentRef.setInput('records', [record]);
       fixture.detectChanges();
     });
 
@@ -675,7 +690,7 @@ describe('DetailedRecordsComponent', () => {
         makeRecord('2024-06-20'),
         makeRecord('2024-12-25'),
       ];
-      component.records = records;
+      fixture.componentRef.setInput('records', records);
       fixture.detectChanges();
 
       component['searchYear'].set(2024);
@@ -691,7 +706,7 @@ describe('DetailedRecordsComponent', () => {
 
   describe('Help Modal', () => {
     beforeEach(() => {
-      component.records = [];
+      fixture.componentRef.setInput('records', []);
       fixture.detectChanges();
     });
 
@@ -709,7 +724,7 @@ describe('DetailedRecordsComponent', () => {
 
   describe('isYearDisabled', () => {
     beforeEach(() => {
-      component.records = [];
+      fixture.componentRef.setInput('records', []);
       fixture.detectChanges();
     });
 
@@ -746,7 +761,7 @@ describe('DetailedRecordsComponent', () => {
 
   describe('isMonthDisabled', () => {
     beforeEach(() => {
-      component.records = [];
+      fixture.componentRef.setInput('records', []);
       fixture.detectChanges();
     });
 
@@ -849,7 +864,7 @@ describe('DetailedRecordsComponent', () => {
 
   describe('Edge Cases', () => {
     it('should handle empty records array for all computeds', () => {
-      component.records = [];
+      fixture.componentRef.setInput('records', []);
       fixture.detectChanges();
 
       expect(component['filteredRecords']()).toEqual([]);
@@ -860,7 +875,7 @@ describe('DetailedRecordsComponent', () => {
     });
 
     it('should handle single record', () => {
-      component.records = [makeRecord('2024-06-15')];
+      fixture.componentRef.setInput('records', [makeRecord('2024-06-15')]);
       fixture.detectChanges();
 
       expect(component['filteredRecords']()).toHaveLength(1);
@@ -870,10 +885,10 @@ describe('DetailedRecordsComponent', () => {
     });
 
     it('should handle records with same date', () => {
-      component.records = [
+      fixture.componentRef.setInput('records', [
         makeRecord('2024-06-15', { value: 10 }),
         makeRecord('2024-06-15', { value: 20 }),
-      ];
+      ]);
       fixture.detectChanges();
 
       expect(component['filteredRecords']()).toHaveLength(2);
@@ -884,7 +899,7 @@ describe('DetailedRecordsComponent', () => {
       const records = Array.from({ length: 5 }, (_, i) =>
         makeRecord(`2024-01-${String(i + 1).padStart(2, '0')}`),
       );
-      component.records = records;
+      fixture.componentRef.setInput('records', records);
       fixture.detectChanges();
 
       expect(component['totalPages']()).toBe(1);
@@ -896,8 +911,8 @@ describe('DetailedRecordsComponent', () => {
         makeRecord('2024-01-01', { value: 0 }),
         makeRecord('2024-02-01', { value: 0 }),
       ];
-      component.records = records;
-      component.calculateTotalFn = () => 0;
+      fixture.componentRef.setInput('records', records);
+      fixture.componentRef.setInput('calculateTotalFn', () => 0);
       fixture.detectChanges();
 
       component['setSortOption']('total-desc');
@@ -905,11 +920,11 @@ describe('DetailedRecordsComponent', () => {
     });
 
     it('should handle rapid filter changes without errors', () => {
-      component.records = [
+      fixture.componentRef.setInput('records', [
         makeRecord('2024-01-15'),
         makeRecord('2024-06-15'),
         makeRecord('2024-12-15'),
-      ];
+      ]);
       fixture.detectChanges();
 
       component['searchYear'].set(2024);
@@ -924,17 +939,23 @@ describe('DetailedRecordsComponent', () => {
     });
 
     it('should handle new records input reactively', () => {
-      component.records = [makeRecord('2024-01-15')];
+      fixture.componentRef.setInput('records', [makeRecord('2024-01-15')]);
       fixture.detectChanges();
       expect(component['filteredRecords']()).toHaveLength(1);
 
-      component.records = [makeRecord('2024-01-15'), makeRecord('2024-06-20')];
+      fixture.componentRef.setInput('records', [
+        makeRecord('2024-01-15'),
+        makeRecord('2024-06-20'),
+      ]);
       fixture.detectChanges();
       expect(component['filteredRecords']()).toHaveLength(2);
     });
 
     it('should handle records at year boundaries', () => {
-      component.records = [makeRecord('2023-12-31'), makeRecord('2024-01-01')];
+      fixture.componentRef.setInput('records', [
+        makeRecord('2023-12-31'),
+        makeRecord('2024-01-01'),
+      ]);
       fixture.detectChanges();
 
       component['searchYear'].set(2023);
@@ -945,7 +966,10 @@ describe('DetailedRecordsComponent', () => {
     });
 
     it('should handle month 0 (January) correctly in filter — not falsy-skipped', () => {
-      component.records = [makeRecord('2024-01-15'), makeRecord('2024-02-15')];
+      fixture.componentRef.setInput('records', [
+        makeRecord('2024-01-15'),
+        makeRecord('2024-02-15'),
+      ]);
       fixture.detectChanges();
 
       component['searchMonth'].set(0);
@@ -956,10 +980,10 @@ describe('DetailedRecordsComponent', () => {
 
   describe('Sort Options Configuration', () => {
     it('should have default sort options', () => {
-      component.records = [];
+      fixture.componentRef.setInput('records', []);
       fixture.detectChanges();
 
-      const options = component.sortOptions;
+      const options = component.sortOptions();
       expect(options).toHaveLength(8);
       expect(options[0]).toEqual({
         value: 'date-desc',
@@ -973,16 +997,16 @@ describe('DetailedRecordsComponent', () => {
         { value: 'date-desc', labelKey: 'CUSTOM.NEWEST', direction: '↓' },
         { value: 'date-asc', labelKey: 'CUSTOM.OLDEST', direction: '↑' },
       ];
-      component.records = [];
-      component.sortOptions = customOptions;
+      fixture.componentRef.setInput('records', []);
+      fixture.componentRef.setInput('sortOptions', customOptions);
       fixture.detectChanges();
 
-      expect(component.sortOptions).toHaveLength(2);
-      expect(component.sortOptions[0].labelKey).toBe('CUSTOM.NEWEST');
+      expect(component.sortOptions()).toHaveLength(2);
+      expect(component.sortOptions()[0].labelKey).toBe('CUSTOM.NEWEST');
     });
 
     it('should update sort option via setSortOption', () => {
-      component.records = [];
+      fixture.componentRef.setInput('records', []);
       fixture.detectChanges();
 
       component['setSortOption']('total-asc');

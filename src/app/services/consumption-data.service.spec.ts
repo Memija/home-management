@@ -74,6 +74,7 @@ describe('ConsumptionDataService', () => {
 
     notificationServiceMock = {
       setWaterRecords: vi.fn(),
+      resetMotivationDismissal: vi.fn(),
     };
 
     TestBed.configureTestingModule({
@@ -156,6 +157,7 @@ describe('ConsumptionDataService', () => {
       expect(service.records()).toHaveLength(3);
       expect(storageServiceMock.save).toHaveBeenCalled();
       expect(notificationServiceMock.setWaterRecords).toHaveBeenCalled();
+      expect(notificationServiceMock.resetMotivationDismissal).toHaveBeenCalledWith('water');
       expect(service.showSuccessModal()).toBe(true);
     });
 
@@ -183,6 +185,7 @@ describe('ConsumptionDataService', () => {
 
       expect(service.records()).toHaveLength(1);
       expect(storageServiceMock.save).toHaveBeenCalled();
+      expect(notificationServiceMock.resetMotivationDismissal).not.toHaveBeenCalled();
       expect(service.showDeleteModal()).toBe(false);
     });
 
@@ -196,6 +199,7 @@ describe('ConsumptionDataService', () => {
 
       expect(service.records()).toHaveLength(1);
       expect(storageServiceMock.save).toHaveBeenCalled();
+      expect(notificationServiceMock.resetMotivationDismissal).not.toHaveBeenCalled();
       expect(service.showDeleteAllModal()).toBe(false);
     });
   });
@@ -232,6 +236,7 @@ describe('ConsumptionDataService', () => {
       await service.confirmImport();
 
       expect(storageServiceMock.save).toHaveBeenCalled();
+      expect(notificationServiceMock.resetMotivationDismissal).toHaveBeenCalledWith('water');
       expect(service.showSuccessModal()).toBe(true);
     });
 
@@ -248,6 +253,7 @@ describe('ConsumptionDataService', () => {
       await service.importFromExcel(event);
 
       expect(storageServiceMock.save).toHaveBeenCalled();
+      expect(notificationServiceMock.resetMotivationDismissal).toHaveBeenCalledWith('water');
     });
   });
 

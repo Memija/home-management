@@ -1,6 +1,15 @@
 <footer class="app-footer">
   <div class="footer-content">
     <a
+      routerLink="/dashboard/benchmarks"
+      class="benchmarks-link"
+      title="{{ 'FOOTER.BENCHMARKS' | translate }}"
+    >
+      <lucide-icon [img]="GlobeIcon" [size]="16"></lucide-icon>
+      <span>{{ 'FOOTER.BENCHMARKS' | translate }}</span>
+    </a>
+    <span class="divider">•</span>
+    <a
       routerLink="/dashboard/changelog"
       class="changelog-link"
       title="{{ 'FOOTER.CHANGELOG' | translate }}"
@@ -48,12 +57,14 @@
       <span>{{ 'FOOTER.PRIVACY_POLICY' | translate }}</span>
     </a>
     <span class="divider">•</span>
-    <span class="version" title="{{ 'FOOTER.VERSION' | translate: { version: appVersion } }}">{{
-      'FOOTER.VERSION' | translate: { version: appVersion }
+    <span class="version" title="{{ 'FOOTER.VERSION' | translate: versionParams }}">{{
+      'FOOTER.VERSION' | translate: versionParams
     }}</span>
   </div>
 </footer>
 
-@if (showSupportModal) {
-  <app-support-modal (closeModal)="showSupportModal = false"></app-support-modal>
+@defer (when showSupportModal) {
+  @if (showSupportModal) {
+    <app-support-modal (closeModal)="showSupportModal = false"></app-support-modal>
+  }
 }

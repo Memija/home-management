@@ -96,7 +96,7 @@ export const heating = {
       'Aktivieren Sie im Modus "Täglicher Durchschnitt" die Option "Durchschnitt anzeigen", um Ihren Verbrauch zu vergleichen. Hinweis: Der Vergleich basiert auf kWh und kann bei anderen Einheiten (z. B. Heizkostenverteilern) ungenau sein.',
     CHART_HELP_STEP_4_TITLE: 'Interaktion',
     CHART_HELP_STEP_4_DESC:
-      'Nutzen Sie Mausrad oder "Pinch"-Geste zum Zoomen. Ziehen Sie zum Verschieben. Klicken Sie auf "Zoom zurücksetzen" für die Vollansicht. Klicken Sie auf Legenden, um Räume ein-/auszublenden.',
+      'Nutzen Sie Mausrad oder "Pinch"-Geste zum Zoomen. Ziehen Sie zum Verschieben. Klicken Sie auf "Zoom zurücksetzen" für die Vollansicht. Klicken Sie auf Legenden, um Räume einzublenden oder auszublenden.',
     ALL_VALUES_IN_UNIT: 'Alle Werte sind in kWh',
     NO_VALUES_ERROR: 'Bitte geben Sie einen Wert für mindestens einen Raum ein.',
     INCOMPLETE_ROOM_ERROR: 'Bitte vervollständigen Sie alle begonnenen Räume.',
@@ -115,7 +115,7 @@ export const heating = {
     // Help Modal for Records List
     RECORDS_HELP_STEP_1_TITLE: 'Datensätze filtern',
     RECORDS_HELP_STEP_1_DESC:
-      'Verwenden Sie die Datumsbereichs-, Jahres- oder Monatsfilter, um Ihre Heizungsaufzeichnungen einzugrenzen. Klicken Sie auf "Filter zurücksetzen", um alle aktiven Filter zu löschen und alle Datensätze anzuzeigen.',
+      'Verwenden Sie die Datumsbereichsfilter, Jahresfilter oder Monatsfilter, um Ihre Heizungsaufzeichnungen einzugrenzen. Klicken Sie auf "Filter zurücksetzen", um alle aktiven Filter zu löschen und alle Datensätze anzuzeigen.',
     RECORDS_HELP_STEP_2_TITLE: 'Sortierung & Seitennummerierung',
     RECORDS_HELP_STEP_2_DESC:
       'Sortieren Sie Datensätze nach Datum oder Gesamtverbrauch über das Dropdown-Menü. Steuern Sie, wie viele Datensätze pro Seite angezeigt werden (5, 10, 20 oder 50) und navigieren Sie mit den Schaltflächen Zurück/Weiter.',
@@ -124,7 +124,7 @@ export const heating = {
       'Klicken Sie auf das Bearbeitungssymbol (✏️), um einen Datensatz zu ändern, oder auf das Papierkorbsymbol (🗑️), um ihn zu löschen. Sie können auch alle sichtbaren gefilterten Datensätze auf einmal löschen.',
     RECORDS_HELP_STEP_4_TITLE: 'Exportieren & Importieren',
     RECORDS_HELP_STEP_4_DESC:
-      'Exportieren Sie Ihre Daten als JSON-, Excel- oder PDF-Dateien. Importieren Sie zuvor exportierte JSON- oder Excel-Dateien, um Ihre Heizungsverbrauchsdaten wiederherzustellen. Es werden nur Datensätze mit Werten ungleich Null importiert.',
+      'Exportieren Sie Ihre Daten als JSON-Dateien, Excel-Dateien oder PDF-Dateien. Importieren Sie zuvor exportierte JSON-Dateien oder Excel-Dateien, um Ihre Heizungsverbrauchsdaten wiederherzustellen. Es werden nur Datensätze mit Werten ungleich Null importiert.',
     // Help Modal for Room Settings
     HELP: {
       TITLE: 'Raumeinstellungen Hilfe',

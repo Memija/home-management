@@ -1,0 +1,45 @@
+# Home Management
+
+> Home Management is a free, privacy-first web app for tracking household water, heating and electricity consumption. It runs in the browser without an account, with optional Google sign-in to sync data across devices.
+
+Home Management helps households log utility meter readings, understand their consumption and spot waste early. Data is stored locally in the browser by default (local-first); cloud sync via Firebase is opt-in. There are no ads and no third-party tracking. Meter photo recognition (OCR) runs entirely on the device.
+
+- Website: https://home-management.dev/
+- App: https://home-management.dev/dashboard
+- Country Benchmarks: https://home-management.dev/dashboard/benchmarks
+- Full technical & methodology reference: https://home-management.dev/llms-full.txt
+- Price: free for personal and other noncommercial use
+- License: source-available under the Prosperity Public License 3.0.0 (noncommercial use is free; commercial use requires a license after a 30-day trial)
+- Languages: English (`/`), German (`/de`), Bosnian (`/bs`), Serbian (`/sr`), Indonesian (`/id`), Polish (`/pl`)
+- Platform: any modern web browser; installable as a progressive web app (PWA)
+
+## Features
+
+- Water tracking: warm and cold water meters for kitchen and bathroom, cold-water-only mode, meter replacement handling, spike and leak alerts
+- Heating tracking: per-room consumption with configurable rooms and radiators, seasonal patterns, room-level spike detection
+- Electricity tracking: kWh meter readings with daily, weekly and monthly trends and meter swap handling
+- Comparisons: household and per-person consumption, benchmarked against national averages for 60+ countries
+- Forecasting: statistical predictions (linear and polynomial regression, moving averages) with seasonal adjustment
+- Meter reading by photo: client-side OCR with Tesseract.js; images never leave the device
+- Import and export: Excel (.xlsx) import with column mapping, Excel/JSON export, PDF reports, and smart text import from pasted notes or emails
+- Demo mode: explore all features with realistic sample data without entering anything
+- Themes and accessibility: light and dark themes, keyboard navigation, responsive layout
+
+## Key pages
+
+- [Home (English)](https://home-management.dev/): product overview, feature list, and FAQ
+- [Startseite (Deutsch)](https://home-management.dev/de): German product overview and FAQ
+- [Početna (Bosanski)](https://home-management.dev/bs): Bosnian product overview and FAQ
+- [Почетна (Српски)](https://home-management.dev/sr): Serbian product overview and FAQ
+- [Beranda (Bahasa Indonesia)](https://home-management.dev/id): Indonesian product overview and FAQ
+- [Strona główna (Polski)](https://home-management.dev/pl): Polish product overview and FAQ
+- [Country Utility Benchmarks](https://home-management.dev/dashboard/benchmarks): national water, electricity, and heating averages by country and household size
+- [Privacy Policy](https://home-management.dev/dashboard/privacy): what data is stored, how it is used and how users stay in control
+- [Changelog](https://home-management.dev/dashboard/changelog): notable changes in each release
+- [Upcoming Features](https://home-management.dev/dashboard/release-plan): features planned for the next releases
+- [Full LLM Reference](https://home-management.dev/llms-full.txt): detailed calculation methodology, OCR architecture, and reference benchmark tables
+
+## Optional
+
+- [Source code](https://github.com/Memija/home-management): GitHub repository (Angular 21, TypeScript)
+- [License](https://github.com/Memija/home-management/blob/main/LICENSE.md): Prosperity Public License 3.0.0

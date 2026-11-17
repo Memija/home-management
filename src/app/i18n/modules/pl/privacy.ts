@@ -20,5 +20,15 @@ export const privacy = {
     COOKIES_TITLE: 'Pliki Cookies',
     COOKIES_P1:
       'Używamy wyłącznie "Niezbędnych" plików cookies wymaganych do uwierzytelniania i podstawowych funkcji aplikacji. Nie stosujemy plików cookies śledzących, analitycznych ani marketingowych.',
+    DISCLAIMER_TITLE: 'Wyłączenie odpowiedzialności dotyczące danych, prognoz i wskaźników',
+    DISCLAIMER_P1:
+      'Wszystkie wskaźniki zużycia, szacunki mediów, prognozy i analizy w aplikacji Home Management są udostępniane wyłącznie w ogólnych celach informacyjnych i edukacyjnych w stanie takim, w jakim się znajdują, bez jakichkolwiek wyraźnych ani dorozumianych gwarancji dokładności, kompletności, aktualności czy przydatności do określonego celu.',
+    DISCLAIMER_P2:
+      'Prezentowane wartości stanowią ogólne szacunki statystyczne, które mogą zawierać błędy, pominięcia lub nieaktualne dane i nie mogą stanowić podstawy do podejmowania decyzji finansowych, rozliczeniowych, prawnych, regulacyjnych ani inżynieryjnych.',
+    LINKS_TITLE: 'Linki zewnętrzne i źródła podmiotów trzecich',
+    LINKS_P1:
+      'Linki źródłowe w aplikacji prowadzą do zewnętrznych serwisów internetowych podmiotów trzecich prowadzonych przez niezależne urzędy statystyczne, organy regulacyjne i organizacje międzynarodowe, nad którymi Home Management nie sprawuje żadnej kontroli.',
+    LINKS_P2:
+      'Zewnętrzne adresy internetowe mogą w każdej chwili ulec zmianie, przeniesieniu lub stać się niedostępne bez uprzedzenia. Home Management nie ponosi żadnej odpowiedzialności za dokładność, dostępność, treść ani bezpieczeństwo jakichkolwiek stron zewnętrznych ani za jakiekolwiek szkody wynikające z polegania na danych podmiotów trzecich.',
   },
 };

@@ -7,10 +7,11 @@ import {
   History,
   Zap,
   ShieldCheck,
+  TrendingUp,
 } from 'lucide-angular';
 import { By } from '@angular/platform-browser';
 import { LanguageService, Language } from '../services/language.service';
-import { signal } from '@angular/core';
+import { ChangeDetectorRef, signal } from '@angular/core';
 
 describe('ChangelogComponent', () => {
   let component: ChangelogComponent;
@@ -26,7 +27,7 @@ describe('ChangelogComponent', () => {
     await TestBed.configureTestingModule({
       imports: [
         ChangelogComponent,
-        LucideAngularModule.pick({ Camera, CircleCheck, History, Zap, ShieldCheck }),
+        LucideAngularModule.pick({ Camera, CircleCheck, History, Zap, ShieldCheck, TrendingUp }),
       ],
       providers: [{ provide: LanguageService, useValue: mockLanguageService }],
     }).compileComponents();
@@ -79,6 +80,7 @@ describe('ChangelogComponent', () => {
     it('should handle empty versions array', () => {
       // Empty the array to remove all versions
       component.versions.length = 0;
+      fixture.debugElement.injector.get(ChangeDetectorRef).markForCheck();
       fixture.detectChanges();
 
       const versionBlocks = fixture.debugElement.queryAll(By.css('.version-block'));
@@ -100,6 +102,7 @@ describe('ChangelogComponent', () => {
 
       // We wrap detectChanges in try/catch just in case the push above executes and triggers the known lucide-angular test error
       try {
+        fixture.debugElement.injector.get(ChangeDetectorRef).markForCheck();
         fixture.detectChanges();
       } catch (e: unknown) {
         if (

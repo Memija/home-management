@@ -4,7 +4,7 @@
   padding: 0.75rem 1rem;
   background: var(--info-bg);
   border-radius: 8px;
-  border-left: 4px solid #17a2b8;
+  border-left: 4px solid $info;
   transition: background 0.3s;
 
   &.disabled {
@@ -57,7 +57,7 @@
     white-space: nowrap;
 
     :host-context([data-theme='dark']) & {
-      color: #e2e8f0;
+      color: var(--text-primary);
     }
 
     &.disabled {
@@ -112,7 +112,7 @@
 }
 
 .info-icon {
-  color: #17a2b8;
+  color: $info;
   cursor: help;
   flex-shrink: 0;
   width: 16px;

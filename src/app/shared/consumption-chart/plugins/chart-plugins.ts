@@ -14,6 +14,37 @@ export interface SummerSunPeriod {
   isPrediction?: boolean;
 }
 
+const historicalPeriodsCache = new WeakMap<
+  (DynamicHeatingRecord | { date: Date })[],
+  SummerSunPeriod[]
+>();
+
+const yearChangesCache = new WeakMap<{ date: Date }[], { index: number; year: number }[]>();
+
+function getRecordYear(record: { date: Date }): number {
+  const d = record.date;
+  return d instanceof Date ? d.getFullYear() : new Date(d).getFullYear();
+}
+
+function findYearChanges(records: { date: Date }[]): { index: number; year: number }[] {
+  const cached = yearChangesCache.get(records);
+  if (cached) return cached;
+
+  const yearChanges: { index: number; year: number }[] = [];
+  let prevYear = getRecordYear(records[0]);
+
+  for (let i = 1; i < records.length; i++) {
+    const currYear = getRecordYear(records[i]);
+    if (currYear > prevYear) {
+      yearChanges.push({ index: i, year: currYear });
+    }
+    prevYear = currYear;
+  }
+
+  yearChangesCache.set(records, yearChanges);
+  return yearChanges;
+}
+
 function getHeatingRecordTotal(record: DynamicHeatingRecord | { date: Date }): number {
   if ('rooms' in record && typeof record.rooms === 'object') {
     return calculateDynamicHeatingTotal(record as DynamicHeatingRecord);
@@ -24,11 +55,17 @@ function getHeatingRecordTotal(record: DynamicHeatingRecord | { date: Date }): n
 function findHistoricalPeriods(
   records: (DynamicHeatingRecord | { date: Date })[],
 ): SummerSunPeriod[] {
+  const cached = historicalPeriodsCache.get(records);
+  if (cached) return cached;
+
   const historicalPeriods: SummerSunPeriod[] = [];
   let histPeriodStart: number | null = null;
+  let prevTotal = getHeatingRecordTotal(records[0]);
 
   for (let i = 1; i < records.length; i++) {
-    const isFlat = getHeatingRecordTotal(records[i]) === getHeatingRecordTotal(records[i - 1]);
+    const currTotal = getHeatingRecordTotal(records[i]);
+    const isFlat = currTotal === prevTotal;
+    prevTotal = currTotal;
 
     if (isFlat && histPeriodStart === null) {
       histPeriodStart = i - 1;
@@ -50,24 +87,32 @@ function findHistoricalPeriods(
     });
   }
 
+  historicalPeriodsCache.set(records, historicalPeriods);
   return historicalPeriods;
 }
 
 function getActivePredictionDatasets(chart: Chart): AppChartDataset[] {
   const datasets = (chart.data?.datasets || []) as AppChartDataset[];
-  const predDatasets = datasets.filter(
-    (ds) =>
+  const predDatasets: AppChartDataset[] = [];
+  const visible: AppChartDataset[] = [];
+  const canCheckVisibility = typeof chart.isDatasetVisible === 'function';
+
+  for (let i = 0; i < datasets.length; i++) {
+    const ds = datasets[i];
+    if (
       Boolean(ds.data) &&
       ds.borderDash?.[0] === 4 &&
       ds.borderDash?.[1] === 4 &&
-      !ds.isPredictionExtension,
-  );
-  if (predDatasets.length === 0) return [];
+      !ds.isPredictionExtension
+    ) {
+      predDatasets.push(ds);
+      if (!canCheckVisibility || chart.isDatasetVisible(i)) {
+        visible.push(ds);
+      }
+    }
+  }
 
-  const visible = predDatasets.filter((ds) => {
-    const dsIdx = (chart.data?.datasets || []).indexOf(ds);
-    return typeof chart.isDatasetVisible === 'function' ? chart.isDatasetVisible(dsIdx) : true;
-  });
+  if (predDatasets.length === 0) return [];
   return visible.length > 0 ? visible : predDatasets;
 }
 
@@ -341,20 +386,12 @@ export const newYearMarkerPlugin = {
 
     if (!xScale || !chartArea || records.length < 2) return;
 
-    // Find indices where year changes
-    const yearChanges: number[] = [];
-    for (let i = 1; i < records.length; i++) {
-      const prevYear = new Date(records[i - 1].date).getFullYear();
-      const currYear = new Date(records[i].date).getFullYear();
-      if (currYear > prevYear) {
-        yearChanges.push(i);
-      }
-    }
+    // Find indices where year changes (cached per records array reference)
+    const yearChanges = findYearChanges(records);
 
     // Draw marker for each year change
-    yearChanges.forEach((index) => {
+    yearChanges.forEach(({ index, year }) => {
       const x = xScale.getPixelForValue(index);
-      const year = new Date(records[index].date).getFullYear();
 
       ctx.save();
 

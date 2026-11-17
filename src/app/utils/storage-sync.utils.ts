@@ -59,6 +59,20 @@ export function isSettingsKey(key: string): boolean {
   return false;
 }
 
+const WATER_RECORD_KEYS = ['kitchenWarm', 'kitchenCold', 'bathroomWarm', 'bathroomCold'] as const;
+
+function isZeroOrUndefined(value: unknown): boolean {
+  return value === 0 || value === undefined;
+}
+
+function isWaterRecordAllZero(record: Record<string, unknown>): boolean {
+  return WATER_RECORD_KEYS.every((key) => isZeroOrUndefined(record[key]));
+}
+
+function isHeatingRoomsAllZero(rooms: Record<string, unknown>): boolean {
+  return Object.values(rooms).every(isZeroOrUndefined);
+}
+
 /**
  * Checks if a consumption record contains all-zero or empty values.
  */
@@ -66,24 +80,14 @@ export function isRecordAllZero(record: unknown): boolean {
   if (!record || typeof record !== 'object') return true;
   const r = record as Record<string, unknown>;
 
-  // Check for water record
   if ('kitchenWarm' in r || 'kitchenCold' in r) {
-    return (
-      (r['kitchenWarm'] === 0 || r['kitchenWarm'] === undefined) &&
-      (r['kitchenCold'] === 0 || r['kitchenCold'] === undefined) &&
-      (r['bathroomWarm'] === 0 || r['bathroomWarm'] === undefined) &&
-      (r['bathroomCold'] === 0 || r['bathroomCold'] === undefined)
-    );
+    return isWaterRecordAllZero(r);
   }
-  // Check for electricity record
   if ('value' in r) {
-    return r['value'] === 0 || r['value'] === undefined;
+    return isZeroOrUndefined(r['value']);
   }
-  // Check for heating record
   if ('rooms' in r && typeof r['rooms'] === 'object' && r['rooms'] !== null) {
-    return Object.values(r['rooms'] as Record<string, unknown>).every(
-      (v) => v === 0 || v === undefined,
-    );
+    return isHeatingRoomsAllZero(r['rooms'] as Record<string, unknown>);
   }
   return false;
 }
@@ -188,7 +192,7 @@ export function getLatestLocalRecordTimestamp(): number {
   return latest;
 }
 
-function isIgnoredStorageKey(key: string, value: string | null): boolean {
+export function isIgnoredStorageKey(key: string, value: string | null): boolean {
   if (!key.startsWith('hm_') || (IGNORED_STORAGE_KEYS as readonly string[]).includes(key)) {
     return true;
   }

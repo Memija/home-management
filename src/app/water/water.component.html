@@ -24,7 +24,7 @@
         <div class="notification-text">
           <strong>{{ 'CHART.METER_CHANGE_DETECTED' | translate }}</strong>
           <p>
-            {{ 'CHART.METER_CHANGE_MESSAGE' | translate: { date: formattedMeterChangeDate() } }}
+            {{ 'CHART.METER_CHANGE_MESSAGE' | translate: meterChangeMessageParams() }}
           </p>
         </div>
       </div>
@@ -52,12 +52,14 @@
   }
 
   @if (records().length > 0 && familySize() > 0 && displayMode() === 'incremental') {
-    <app-comparison-note
-      [records]="records()"
-      [chartView]="chartView()"
-      [country]="effectiveComparisonCountryCode()"
-      (countryCodeChange)="handleCountryCodeChange($event)"
-    ></app-comparison-note>
+    @defer (on immediate) {
+      <app-comparison-note
+        [records]="records()"
+        [chartView]="chartView()"
+        [country]="effectiveComparisonCountryCode()"
+        (countryCodeChange)="handleCountryCodeChange($event)"
+      ></app-comparison-note>
+    }
   }
 
   @if (displayMode() === 'total' && waterFact()) {
@@ -82,20 +84,22 @@
     </div>
   }
 
-  <app-consumption-chart
-    [data]="adjustedRecords()"
-    [currentView]="chartView()"
-    [onViewChange]="onChartViewChange"
-    [chartType]="'water'"
-    [displayMode]="displayMode()"
-    [onDisplayModeChange]="onDisplayModeChange"
-    [familySize]="familySize()"
-    [country]="effectiveComparisonCountryCode()"
-    [helpSteps]="chartHelpSteps"
-    [prediction]="waterPrediction()"
-    [predictionPeriod]="selectedPredictionPeriod()"
-  >
-  </app-consumption-chart>
+  @defer (when adjustedRecords().length > 0) {
+    <app-consumption-chart
+      [data]="adjustedRecords()"
+      [currentView]="chartView()"
+      [onViewChange]="onChartViewChange"
+      [chartType]="'water'"
+      [displayMode]="displayMode()"
+      [onDisplayModeChange]="onDisplayModeChange"
+      [familySize]="familySize()"
+      [country]="effectiveComparisonCountryCode()"
+      [helpSteps]="chartHelpSteps"
+      [prediction]="waterPrediction()"
+      [predictionPeriod]="selectedPredictionPeriod()"
+    >
+    </app-consumption-chart>
+  }
 
   <app-predictions-panel
     [prediction]="waterPrediction()"
@@ -105,143 +109,52 @@
     (periodChange)="onPredictionPeriodChange($event)"
   ></app-predictions-panel>
 
-  <app-detailed-records
-    [records]="records()"
-    [defaultSortOption]="'date-desc'"
-    [showSearchDate]="true"
-    [showYearMonth]="true"
-    [showEditDelete]="true"
-    [recordType]="'water'"
-    [helpSteps]="recordsHelpSteps"
-    [calculateTotalFn]="calculateTotal"
-    (editRecord)="editRecord($event)"
-    (deleteRecord)="deleteRecord($event)"
-    (deleteAllRecords)="deleteAllRecords($event)"
-    (filteredRecordsChange)="onFilteredRecordsChange()"
-    (filterStateChange)="onFilterStateChange($event)"
-  >
-    <!-- Import/Export dropdowns projected into detailed-records -->
-    <div slot="action-buttons" class="action-buttons-group">
-      <!-- Export ▾ dropdown -->
-      <div class="action-dropdown">
-        <button
-          type="button"
-          class="action-dropdown-trigger"
-          [class.open]="isExportMenuOpen()"
-          (click)="toggleExportMenu($event)"
-          [disabled]="filteredRecords().length === 0"
-          title="{{
-            (filteredRecords().length === 0 ? 'WATER.EXPORT_DISABLED_TOOLTIP' : 'WATER.EXPORT')
-              | translate
-          }}"
-          aria-haspopup="menu"
-          [attr.aria-expanded]="isExportMenuOpen() ? 'true' : 'false'"
-        >
-          <lucide-icon [img]="DownloadIcon" size="16"></lucide-icon>
-          {{ 'WATER.EXPORT' | translate }}
-          <lucide-icon [img]="ChevronDownIcon" size="14" class="chevron-icon"></lucide-icon>
-        </button>
-        <div class="action-dropdown-menu" [class.open]="isExportMenuOpen()">
-          <button
-            type="button"
-            class="action-dropdown-item json-item"
-            (click)="exportData(); closeMenus()"
-            [disabled]="isExporting()"
-            title="{{ 'WATER.EXPORT' | translate }} (JSON)"
-            aria-label="{{ 'WATER.EXPORT' | translate }} (JSON)"
-          >
-            <lucide-icon [img]="DownloadIcon" size="16"></lucide-icon>
-            {{ 'WATER.EXPORT' | translate }} (JSON)
-          </button>
-          @if (excelSettings.isEnabled()) {
-            <button
-              type="button"
-              class="action-dropdown-item excel-item"
-              (click)="exportToExcel(); closeMenus()"
-              [disabled]="isExporting()"
-              title="{{ 'WATER.EXPORT_EXCEL' | translate }}"
-              aria-label="{{ 'WATER.EXPORT_EXCEL' | translate }}"
-            >
-              <lucide-icon [img]="FileOutputIcon" size="16"></lucide-icon>
-              {{ 'WATER.EXPORT_EXCEL' | translate }}
-            </button>
-            <button
-              type="button"
-              class="action-dropdown-item pdf-item"
-              (click)="exportToPdf(); closeMenus()"
-              [disabled]="isExporting()"
-              title="{{ 'WATER.EXPORT_PDF' | translate }}"
-              aria-label="{{ 'WATER.EXPORT_PDF' | translate }}"
-            >
-              <lucide-icon [img]="FileTextIcon" size="16"></lucide-icon>
-              {{ 'WATER.EXPORT_PDF' | translate }}
-            </button>
-          }
-        </div>
-      </div>
-
-      <!-- Import ▾ dropdown -->
-      <div class="action-dropdown">
-        <button
-          type="button"
-          class="action-dropdown-trigger"
-          [class.open]="isImportMenuOpen()"
-          (click)="toggleImportMenu($event)"
-          [disabled]="isImporting()"
-          title="{{ 'WATER.IMPORT' | translate }}"
-          aria-haspopup="menu"
-          [attr.aria-expanded]="isImportMenuOpen() ? 'true' : 'false'"
-        >
-          <lucide-icon [img]="UploadIcon" size="16"></lucide-icon>
-          {{ 'WATER.IMPORT' | translate }}
-          <lucide-icon [img]="ChevronDownIcon" size="14" class="chevron-icon"></lucide-icon>
-        </button>
-        <div class="action-dropdown-menu" [class.open]="isImportMenuOpen()">
-          <label
-            for="import-file"
-            class="action-dropdown-item json-item"
-            [class.disabled]="isImporting()"
-          >
-            <lucide-icon [img]="UploadIcon" size="16"></lucide-icon>
-            {{ 'WATER.IMPORT' | translate }} (JSON)
-            <input
-              type="file"
-              id="import-file"
-              accept=".json"
-              (change)="importData($event)"
-              class="hidden-input"
-              [disabled]="isImporting()"
-            />
-          </label>
-          @if (excelSettings.isEnabled()) {
-            <label
-              for="import-excel-file"
-              class="action-dropdown-item excel-item"
-              [class.disabled]="isImporting()"
-            >
-              <lucide-icon [img]="FileInputIcon" size="16"></lucide-icon>
-              {{ 'WATER.IMPORT_EXCEL' | translate }}
-              <input
-                type="file"
-                id="import-excel-file"
-                accept=".xlsx,.xls"
-                (change)="importFromExcel($event)"
-                class="hidden-input"
-                [disabled]="isImporting()"
-              />
-            </label>
-          }
-        </div>
-      </div>
+  @defer (on viewport) {
+    <app-detailed-records
+      [records]="records()"
+      [defaultSortOption]="'date-desc'"
+      [showSearchDate]="true"
+      [showYearMonth]="true"
+      [showEditDelete]="true"
+      [recordType]="'water'"
+      [helpSteps]="recordsHelpSteps"
+      [calculateTotalFn]="calculateTotal"
+      (editRecord)="editRecord($event)"
+      (deleteRecord)="deleteRecord($event)"
+      (deleteAllRecords)="deleteAllRecords($event)"
+      (filteredRecordsChange)="onFilteredRecordsChange()"
+      (filterStateChange)="onFilterStateChange($event)"
+    >
+      <!-- Import/Export dropdowns projected into detailed-records -->
+      <app-record-actions-dropdown
+        slot="action-buttons"
+        [exportDisabled]="filteredRecords().length === 0"
+        [isExporting]="isExporting()"
+        [isImporting]="isImporting()"
+        [excelEnabled]="excelSettings.isEnabled()"
+        [isExportMenuOpen]="isExportMenuOpen()"
+        [isImportMenuOpen]="isImportMenuOpen()"
+        (toggleExport)="toggleExportMenu($event)"
+        (toggleImport)="toggleImportMenu($event)"
+        (exportJson)="exportData(); closeMenus()"
+        (exportExcel)="exportToExcel(); closeMenus()"
+        (exportPdf)="exportToPdf(); closeMenus()"
+        (importJson)="importData($event)"
+        (importExcel)="importFromExcel($event)"
+      ></app-record-actions-dropdown>
+    </app-detailed-records>
+  } @placeholder {
+    <div class="loading-placeholder loading-placeholder--records">
+      {{ 'APP.LOADING_RECORDS' | translate }}
     </div>
-  </app-detailed-records>
+  }
 
   <app-consumption-input
     [groups]="consumptionGroups()"
     [selectedDate]="selectedDate()"
     [maxDate]="maxDate"
     [editingMode]="!!editingRecord()"
-    [dateExists]="dateExists"
+    [dateExists]="dateExists()"
     [helpSteps]="helpSteps"
     [noValuesErrorKey]="
       coldWaterOnlyMode() ? 'WATER.COLD_ONLY_NO_VALUES_ERROR' : 'HOME.PARTIAL_INPUT_ERROR'
@@ -271,118 +184,118 @@
   </app-consumption-input>
 </div>
 
-@if (showSuccessModal()) {
-  <!-- eslint-disable-next-line @angular-eslint/template/interactive-supports-focus -- Backdrop dismissal by design -->
-  <div
-    class="modal-overlay"
-    (click)="$event.target === $event.currentTarget && closeSuccessModal()"
-    (keydown.escape)="closeSuccessModal()"
-  >
-    <div class="modal-content">
-      <div class="modal-header">
-        <lucide-icon [img]="CheckCircleIcon" size="32" class="success-icon"></lucide-icon>
-        <h3>{{ successTitle() | translate }}</h3>
-        <button
-          type="button"
-          class="close-btn"
-          (click)="closeSuccessModal()"
-          title="{{ 'ACTIONS.CLOSE' | translate }}"
-          aria-label="{{ 'ACTIONS.CLOSE' | translate }}"
-        >
-          ×
-        </button>
-      </div>
-      <div class="modal-body">
-        <p>{{ successMessage() | translate }}</p>
-      </div>
-      <div class="modal-footer">
-        <button
-          type="button"
-          class="btn-primary"
-          (click)="closeSuccessModal()"
-          title="{{ 'ACTIONS.OK' | translate }}"
-          aria-label="{{ 'ACTIONS.OK' | translate }}"
-        >
-          {{ 'ACTIONS.OK' | translate }}
-        </button>
-      </div>
-    </div>
-  </div>
+@defer (when showSuccessModal()) {
+  @if (showSuccessModal()) {
+    <app-success-modal
+      [show]="showSuccessModal()"
+      [titleKey]="successTitle()"
+      [messageKey]="successMessage()"
+      (closeModal)="closeSuccessModal()"
+    ></app-success-modal>
+  }
 }
 
-<app-delete-confirmation-modal
-  [show]="showDeleteModal()"
-  [titleKey]="'HOME.DELETE_CONFIRM_TITLE'"
-  [messageKey]="'HOME.DELETE_CONFIRM_MESSAGE'"
-  [cancelKey]="'HOME.CANCEL'"
-  [deleteKey]="'HOME.DELETE_BUTTON'"
-  [icon]="TrashIcon"
-  (confirm)="confirmDelete()"
-  (cancelModal)="cancelDelete()"
->
-</app-delete-confirmation-modal>
+@defer (when showDeleteModal()) {
+  @if (showDeleteModal()) {
+    <app-delete-confirmation-modal
+      [show]="showDeleteModal()"
+      [titleKey]="'HOME.DELETE_CONFIRM_TITLE'"
+      [messageKey]="'HOME.DELETE_CONFIRM_MESSAGE'"
+      [cancelKey]="'HOME.CANCEL'"
+      [deleteKey]="'HOME.DELETE_BUTTON'"
+      [icon]="TrashIcon"
+      (confirm)="confirmDelete()"
+      (cancelModal)="cancelDelete()"
+    >
+    </app-delete-confirmation-modal>
+  }
+}
 
-<app-delete-confirmation-modal
-  [show]="showDeleteAllModal()"
-  [titleKey]="'HOME.DELETE_ALL_CONFIRM_TITLE'"
-  [messageKey]="deleteAllMessageKey()"
-  [messageParams]="deleteAllMessageParams()"
-  [cancelKey]="'HOME.CANCEL'"
-  [deleteKey]="'HOME.DELETE_ALL_BUTTON'"
-  [icon]="TrashIcon"
-  (confirm)="confirmDeleteAll()"
-  (cancelModal)="cancelDeleteAll()"
->
-</app-delete-confirmation-modal>
+@defer (when showDeleteAllModal()) {
+  @if (showDeleteAllModal()) {
+    <app-delete-confirmation-modal
+      [show]="showDeleteAllModal()"
+      [titleKey]="'HOME.DELETE_ALL_CONFIRM_TITLE'"
+      [messageKey]="deleteAllMessageKey()"
+      [messageParams]="deleteAllMessageParams()"
+      [cancelKey]="'HOME.CANCEL'"
+      [deleteKey]="'HOME.DELETE_ALL_BUTTON'"
+      [icon]="TrashIcon"
+      (confirm)="confirmDeleteAll()"
+      (cancelModal)="cancelDeleteAll()"
+    >
+    </app-delete-confirmation-modal>
+  }
+}
 
-<app-confirmation-modal
-  [show]="showImportConfirmModal()"
-  [titleKey]="'HOME.IMPORT_CONFIRM_TITLE'"
-  [messageKey]="'HOME.IMPORT_CONFIRM_MESSAGE'"
-  [cancelKey]="'HOME.CANCEL'"
-  [confirmKey]="'HOME.IMPORT_BUTTON'"
-  [icon]="UploadIcon"
-  (confirm)="confirmImport()"
-  (cancelModal)="cancelImport()"
->
-</app-confirmation-modal>
+@defer (when showImportConfirmModal()) {
+  @if (showImportConfirmModal()) {
+    <app-confirmation-modal
+      [show]="showImportConfirmModal()"
+      [titleKey]="'HOME.IMPORT_CONFIRM_TITLE'"
+      [messageKey]="'HOME.IMPORT_CONFIRM_MESSAGE'"
+      [cancelKey]="'HOME.CANCEL'"
+      [confirmKey]="'HOME.IMPORT_BUTTON'"
+      [icon]="UploadIcon"
+      (confirm)="confirmImport()"
+      (cancelModal)="cancelImport()"
+    >
+    </app-confirmation-modal>
+  }
+}
 
-<app-confirmation-modal
-  [show]="showFilterWarningModal()"
-  [titleKey]="'WATER.IMPORT_FILTER_WARNING_TITLE'"
-  [messageKey]="'WATER.IMPORT_FILTER_WARNING_MESSAGE'"
-  [cancelKey]="'WATER.IMPORT_CANCEL'"
-  [confirmKey]="'WATER.IMPORT_CONTINUE'"
-  [icon]="AlertTriangleIcon"
-  (confirm)="confirmFilterWarningImport()"
-  (cancelModal)="cancelFilterWarningImport()"
->
-</app-confirmation-modal>
+@defer (when showFilterWarningModal()) {
+  @if (showFilterWarningModal()) {
+    <app-confirmation-modal
+      [show]="showFilterWarningModal()"
+      [titleKey]="'WATER.IMPORT_FILTER_WARNING_TITLE'"
+      [messageKey]="'WATER.IMPORT_FILTER_WARNING_MESSAGE'"
+      [cancelKey]="'WATER.IMPORT_CANCEL'"
+      [confirmKey]="'WATER.IMPORT_CONTINUE'"
+      [icon]="AlertTriangleIcon"
+      (confirm)="confirmFilterWarningImport()"
+      (cancelModal)="cancelFilterWarningImport()"
+    >
+    </app-confirmation-modal>
+  }
+}
 
-<app-error-modal
-  [show]="showErrorModal()"
-  [title]="errorTitle()"
-  [message]="errorMessage()"
-  [details]="errorDetails()"
-  [instructions]="errorInstructions()"
-  (cancelModal)="closeErrorModal()"
-  [type]="errorType()"
->
-</app-error-modal>
+@defer (when showErrorModal()) {
+  @if (showErrorModal()) {
+    <app-error-modal
+      [show]="showErrorModal()"
+      [title]="errorTitle()"
+      [message]="errorMessage()"
+      [details]="errorDetails()"
+      [instructions]="errorInstructions()"
+      (cancelModal)="closeErrorModal()"
+      [type]="errorType()"
+    >
+    </app-error-modal>
+  }
+}
 
-<app-demo-wizard
-  [show]="showDemoWizard()"
-  [steps]="demoWizardSteps"
-  [theme]="'water'"
-  [titleKey]="'DEMO.WIZARD_TITLE'"
-  (closeModal)="showDemoWizard.set(false)"
->
-</app-demo-wizard>
+@defer (when showDemoWizard()) {
+  @if (showDemoWizard()) {
+    <app-demo-wizard
+      [show]="showDemoWizard()"
+      [steps]="demoWizardSteps"
+      [theme]="'water'"
+      [titleKey]="'DEMO.WIZARD_TITLE'"
+      (closeModal)="showDemoWizard.set(false)"
+    >
+    </app-demo-wizard>
+  }
+}
 
-<app-demo-tour
-  [show]="showDemoTour()"
-  [steps]="demoTourSteps"
-  [theme]="'water'"
-  (closeModal)="showDemoTour.set(false)"
->
-</app-demo-tour>
+@defer (when showDemoTour()) {
+  @if (showDemoTour()) {
+    <app-demo-tour
+      [show]="showDemoTour()"
+      [steps]="demoTourSteps"
+      [theme]="'water'"
+      (closeModal)="showDemoTour.set(false)"
+    >
+    </app-demo-tour>
+  }
+}

@@ -1,0 +1,122 @@
+<div class="action-buttons-group">
+  @let k = keys();
+  <div class="action-dropdown">
+    <button
+      type="button"
+      class="action-dropdown-trigger"
+      [class.open]="isExportMenuOpen()"
+      (click)="toggleExport.emit($event)"
+      [disabled]="exportDisabled()"
+      title="{{ (exportDisabled() ? k.exportDisabledTooltip : k.export) | translate }}"
+      aria-haspopup="menu"
+      [attr.aria-expanded]="isExportMenuOpen() ? 'true' : 'false'"
+    >
+      <lucide-icon [img]="DownloadIcon" size="16"></lucide-icon>
+      {{ k.export | translate }}
+      <lucide-icon [img]="ChevronDownIcon" size="14" class="chevron-icon"></lucide-icon>
+    </button>
+    <div class="action-dropdown-menu" [class.open]="isExportMenuOpen()">
+      <button
+        type="button"
+        class="action-dropdown-item json-item"
+        (click)="exportJson.emit()"
+        [disabled]="isExporting()"
+        title="{{ k.export | translate }} (JSON)"
+        aria-label="{{ k.export | translate }} (JSON)"
+      >
+        <lucide-icon [img]="DownloadIcon" size="16"></lucide-icon>
+        {{ k.export | translate }} (JSON)
+      </button>
+      @if (excelEnabled()) {
+        <button
+          type="button"
+          class="action-dropdown-item excel-item"
+          (click)="exportExcel.emit()"
+          [disabled]="isExporting()"
+          title="{{ k.exportExcel | translate }}"
+          aria-label="{{ k.exportExcel | translate }}"
+        >
+          <lucide-icon [img]="FileOutputIcon" size="16"></lucide-icon>
+          {{ k.exportExcel | translate }}
+        </button>
+        <button
+          type="button"
+          class="action-dropdown-item pdf-item"
+          (click)="exportPdf.emit()"
+          [disabled]="isExporting()"
+          title="{{ k.exportPdf | translate }}"
+          aria-label="{{ k.exportPdf | translate }}"
+        >
+          <lucide-icon [img]="FileTextIcon" size="16"></lucide-icon>
+          {{ k.exportPdf | translate }}
+        </button>
+      }
+    </div>
+  </div>
+
+  <div class="action-dropdown">
+    <button
+      type="button"
+      class="action-dropdown-trigger"
+      [class.open]="isImportMenuOpen()"
+      (click)="toggleImport.emit($event)"
+      [disabled]="isImporting()"
+      title="{{ k.import | translate }}"
+      aria-haspopup="menu"
+      [attr.aria-expanded]="isImportMenuOpen() ? 'true' : 'false'"
+    >
+      <lucide-icon [img]="UploadIcon" size="16"></lucide-icon>
+      {{ k.import | translate }}
+      <lucide-icon [img]="ChevronDownIcon" size="14" class="chevron-icon"></lucide-icon>
+    </button>
+    <div class="action-dropdown-menu" [class.open]="isImportMenuOpen()">
+      <label
+        [for]="jsonInputIdSignal()"
+        class="action-dropdown-item json-item"
+        [class.disabled]="isImporting()"
+      >
+        <lucide-icon [img]="UploadIcon" size="16"></lucide-icon>
+        {{ k.import | translate }} (JSON)
+        <input
+          type="file"
+          [id]="jsonInputIdSignal()"
+          accept=".json"
+          (change)="importJson.emit($event)"
+          class="hidden-input"
+          [disabled]="isImporting()"
+        />
+      </label>
+      @if (excelEnabled()) {
+        <label
+          [for]="excelInputIdSignal()"
+          class="action-dropdown-item excel-item"
+          [class.disabled]="isImporting()"
+        >
+          <lucide-icon [img]="FileInputIcon" size="16"></lucide-icon>
+          {{ k.importExcel | translate }}
+          <input
+            type="file"
+            [id]="excelInputIdSignal()"
+            accept=".xlsx,.xls"
+            (change)="importExcel.emit($event)"
+            class="hidden-input"
+            [disabled]="isImporting()"
+          />
+        </label>
+      }
+      @if (showSmartImport()) {
+        <button
+          type="button"
+          class="action-dropdown-item smart-item"
+          (click)="smartImport.emit()"
+          [disabled]="isImporting()"
+          title="{{ 'SMART_IMPORT.TITLE' | translate }}"
+          aria-label="{{ 'SMART_IMPORT.TITLE' | translate }}"
+        >
+          <lucide-icon [img]="ClipboardIcon" size="16"></lucide-icon>
+          {{ 'SMART_IMPORT.TITLE' | translate }}
+        </button>
+      }
+    </div>
+  </div>
+</div>

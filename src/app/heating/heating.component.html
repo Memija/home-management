@@ -25,10 +25,7 @@
         <div class="notification-text">
           <strong>{{ 'HEATING.NEW_ROOM_DETECTED_TITLE' | translate }}</strong>
           <p>
-            {{
-              'HEATING.NEW_ROOM_DETECTED_MESSAGE'
-                | translate: { room: unconfirmedSpikeRoomName(), date: formattedSpikeDate() }
-            }}
+            {{ 'HEATING.NEW_ROOM_DETECTED_MESSAGE' | translate: unconfirmedSpikeParams() }}
           </p>
         </div>
       </div>
@@ -56,15 +53,17 @@
   }
 
   <!-- Country Energy Facts - Incremental Mode -->
-  @if (chartRecords().length > 0 && displayMode() === 'incremental') {
-    <app-comparison-note
-      [type]="'heating'"
-      [records]="chartRecords()"
-      [chartView]="chartView()"
-      [country]="selectedCountryCode()"
-      (countryCodeChange)="onCountryChange($event)"
-    >
-    </app-comparison-note>
+  @if (displayMode() === 'incremental' && chartRecords().length > 0) {
+    @defer (on immediate) {
+      <app-comparison-note
+        [type]="'heating'"
+        [records]="chartRecords()"
+        [chartView]="chartView()"
+        [country]="selectedCountryCode()"
+        (countryCodeChange)="onCountryChange($event)"
+      >
+      </app-comparison-note>
+    }
   }
 
   <!-- Historical Facts - Total Mode -->
@@ -90,23 +89,25 @@
     </div>
   }
 
-  <app-consumption-chart
-    [data]="chartRecords()"
-    [currentView]="chartView()"
-    [onViewChange]="onChartViewChange"
-    [chartType]="'heating'"
-    [displayMode]="displayMode()"
-    [onDisplayModeChange]="onDisplayModeChange"
-    [roomNames]="chartRoomNames()"
-    [roomIds]="chartRoomIds()"
-    [roomColors]="chartRoomColors()"
-    [country]="selectedCountryCode()"
-    [ignoredSpikes]="confirmedSpikes()"
-    [helpSteps]="chartHelpSteps"
-    [prediction]="heatingPrediction()"
-    [predictionPeriod]="selectedPredictionPeriod()"
-  >
-  </app-consumption-chart>
+  @defer (when chartRecords().length > 0) {
+    <app-consumption-chart
+      [data]="chartRecords()"
+      [currentView]="chartView()"
+      [onViewChange]="onChartViewChange"
+      [chartType]="'heating'"
+      [displayMode]="displayMode()"
+      [onDisplayModeChange]="onDisplayModeChange"
+      [roomNames]="chartRoomNames()"
+      [roomIds]="chartRoomIds()"
+      [roomColors]="chartRoomColors()"
+      [country]="selectedCountryCode()"
+      [ignoredSpikes]="confirmedSpikes()"
+      [helpSteps]="chartHelpSteps"
+      [prediction]="heatingPrediction()"
+      [predictionPeriod]="selectedPredictionPeriod()"
+    >
+    </app-consumption-chart>
+  }
 
   <app-predictions-panel
     [prediction]="heatingPrediction()"
@@ -129,119 +130,24 @@
       (deleteAllRecords)="onDeleteAllRecords($event)"
     >
       <!-- Import/Export dropdowns projected into detailed-records -->
-      <div slot="action-buttons" class="action-buttons-group">
-        <!-- Export ▾ dropdown -->
-        <div class="action-dropdown">
-          <button
-            type="button"
-            class="action-dropdown-trigger"
-            [class.open]="isExportMenuOpen()"
-            (click)="toggleExportMenu($event)"
-            [disabled]="records().length === 0"
-            title="{{
-              (records().length === 0 ? 'HEATING.EXPORT_DISABLED_TOOLTIP' : 'HEATING.EXPORT')
-                | translate
-            }}"
-            aria-haspopup="menu"
-            [attr.aria-expanded]="isExportMenuOpen() ? 'true' : 'false'"
-          >
-            <lucide-icon [img]="DownloadIcon" size="16"></lucide-icon>
-            {{ 'HEATING.EXPORT' | translate }}
-            <lucide-icon [img]="ChevronDownIcon" size="14" class="chevron-icon"></lucide-icon>
-          </button>
-          <div class="action-dropdown-menu" [class.open]="isExportMenuOpen()">
-            <button
-              type="button"
-              class="action-dropdown-item json-item"
-              (click)="exportData(); closeMenus()"
-              [disabled]="isExporting()"
-              title="{{ 'HEATING.EXPORT' | translate }} (JSON)"
-              aria-label="{{ 'HEATING.EXPORT' | translate }} (JSON)"
-            >
-              <lucide-icon [img]="DownloadIcon" size="16"></lucide-icon>
-              {{ 'HEATING.EXPORT' | translate }} (JSON)
-            </button>
-            @if (excelSettings.isEnabled()) {
-              <button
-                type="button"
-                class="action-dropdown-item excel-item"
-                (click)="exportToExcel(); closeMenus()"
-                [disabled]="isExporting()"
-                title="{{ 'HEATING.EXPORT_EXCEL' | translate }}"
-                aria-label="{{ 'HEATING.EXPORT_EXCEL' | translate }}"
-              >
-                <lucide-icon [img]="FileSpreadsheetIcon" size="16"></lucide-icon>
-                {{ 'HEATING.EXPORT_EXCEL' | translate }}
-              </button>
-              <button
-                type="button"
-                class="action-dropdown-item pdf-item"
-                (click)="exportToPdf(); closeMenus()"
-                [disabled]="isExporting()"
-                title="{{ 'HEATING.EXPORT_PDF' | translate }}"
-                aria-label="{{ 'HEATING.EXPORT_PDF' | translate }}"
-              >
-                <lucide-icon [img]="FileTextIcon" size="16"></lucide-icon>
-                {{ 'HEATING.EXPORT_PDF' | translate }}
-              </button>
-            }
-          </div>
-        </div>
-
-        <!-- Import ▾ dropdown -->
-        <div class="action-dropdown">
-          <button
-            type="button"
-            class="action-dropdown-trigger"
-            [class.open]="isImportMenuOpen()"
-            (click)="toggleImportMenu($event)"
-            [disabled]="isImporting()"
-            title="{{ 'HEATING.IMPORT' | translate }}"
-            aria-haspopup="menu"
-            [attr.aria-expanded]="isImportMenuOpen() ? 'true' : 'false'"
-          >
-            <lucide-icon [img]="UploadIcon" size="16"></lucide-icon>
-            {{ 'HEATING.IMPORT' | translate }}
-            <lucide-icon [img]="ChevronDownIcon" size="14" class="chevron-icon"></lucide-icon>
-          </button>
-          <div class="action-dropdown-menu" [class.open]="isImportMenuOpen()">
-            <label
-              for="import-file-heating"
-              class="action-dropdown-item json-item"
-              [class.disabled]="isImporting()"
-            >
-              <lucide-icon [img]="UploadIcon" size="16"></lucide-icon>
-              {{ 'HEATING.IMPORT' | translate }} (JSON)
-              <input
-                type="file"
-                id="import-file-heating"
-                accept=".json"
-                (change)="importData($event)"
-                class="hidden-input"
-                [disabled]="isImporting()"
-              />
-            </label>
-            @if (excelSettings.isEnabled()) {
-              <label
-                for="import-excel-file-heating"
-                class="action-dropdown-item excel-item"
-                [class.disabled]="isImporting()"
-              >
-                <lucide-icon [img]="FileSpreadsheetIcon" size="16"></lucide-icon>
-                {{ 'HEATING.IMPORT_EXCEL' | translate }}
-                <input
-                  type="file"
-                  id="import-excel-file-heating"
-                  accept=".xlsx,.xls"
-                  (change)="importFromExcel($event)"
-                  class="hidden-input"
-                  [disabled]="isImporting()"
-                />
-              </label>
-            }
-          </div>
-        </div>
-      </div>
+      <app-record-actions-dropdown
+        slot="action-buttons"
+        idSuffix="heating"
+        translationPrefix="HEATING"
+        [exportDisabled]="records().length === 0"
+        [isExporting]="isExporting()"
+        [isImporting]="isImporting()"
+        [excelEnabled]="excelSettings.isEnabled()"
+        [isExportMenuOpen]="isExportMenuOpen()"
+        [isImportMenuOpen]="isImportMenuOpen()"
+        (toggleExport)="toggleExportMenu($event)"
+        (toggleImport)="toggleImportMenu($event)"
+        (exportJson)="exportData(); closeMenus()"
+        (exportExcel)="exportToExcel(); closeMenus()"
+        (exportPdf)="exportToPdf(); closeMenus()"
+        (importJson)="importData($event)"
+        (importExcel)="importFromExcel($event)"
+      ></app-record-actions-dropdown>
       <!-- Heating-specific record details template -->
       <ng-template #recordDetails let-record>
         <div class="room-values-container">
@@ -260,16 +166,20 @@
     </div>
   }
 
-  <app-error-modal
-    [show]="showErrorModal()"
-    [title]="errorTitle()"
-    [message]="errorMessage()"
-    [details]="errorDetails()"
-    [instructions]="errorInstructions()"
-    (cancelModal)="closeErrorModal()"
-    [type]="errorType()"
-  >
-  </app-error-modal>
+  @defer (when showErrorModal()) {
+    @if (showErrorModal()) {
+      <app-error-modal
+        [show]="showErrorModal()"
+        [title]="errorTitle()"
+        [message]="errorMessage()"
+        [details]="errorDetails()"
+        [instructions]="errorInstructions()"
+        (cancelModal)="closeErrorModal()"
+        [type]="errorType()"
+      >
+      </app-error-modal>
+    }
+  }
 
   <app-consumption-input
     [groups]="consumptionGroups()"
@@ -301,103 +211,100 @@
   </app-consumption-input>
 </div>
 
-<app-confirmation-modal
-  [show]="showImportConfirmModal()"
-  [titleKey]="'HOME.IMPORT_CONFIRM_TITLE'"
-  [messageKey]="'HOME.IMPORT_CONFIRM_MESSAGE'"
-  [cancelKey]="'HOME.CANCEL'"
-  [confirmKey]="'HOME.IMPORT_BUTTON'"
-  [icon]="UploadIcon"
-  (confirm)="confirmImport()"
-  (cancelModal)="cancelImport()"
->
-</app-confirmation-modal>
-
-<app-heating-rooms-modal
-  [show]="showRoomsModal()"
-  [rooms]="roomsService.rooms()"
-  [roomsWithDataArray]="roomsWithData()"
-  (save)="onRoomsSave($event)"
-  (cancelModal)="onRoomsCancel()"
->
-</app-heating-rooms-modal>
-@if (showSuccessModal()) {
-  <!-- eslint-disable-next-line @angular-eslint/template/interactive-supports-focus -- Backdrop dismissal by design -->
-  <div
-    class="modal-overlay"
-    (click)="$event.target === $event.currentTarget && closeSuccessModal()"
-    (keydown.escape)="closeSuccessModal()"
-  >
-    <div class="modal-content">
-      <div class="modal-header">
-        <lucide-icon [img]="CheckCircleIcon" size="32" class="success-icon"></lucide-icon>
-        <h3>{{ successTitle() | translate }}</h3>
-        <button
-          type="button"
-          class="close-btn"
-          (click)="closeSuccessModal()"
-          title="{{ 'ACTIONS.CLOSE' | translate }}"
-          aria-label="{{ 'ACTIONS.CLOSE' | translate }}"
-        >
-          ×
-        </button>
-      </div>
-      <div class="modal-body">
-        <p>{{ successMessage() | translate }}</p>
-      </div>
-      <div class="modal-footer">
-        <button
-          type="button"
-          class="btn-primary"
-          (click)="closeSuccessModal()"
-          title="{{ 'ACTIONS.OK' | translate }}"
-          aria-label="{{ 'ACTIONS.OK' | translate }}"
-        >
-          {{ 'ACTIONS.OK' | translate }}
-        </button>
-      </div>
-    </div>
-  </div>
+@defer (when showImportConfirmModal()) {
+  @if (showImportConfirmModal()) {
+    <app-confirmation-modal
+      [show]="showImportConfirmModal()"
+      [titleKey]="'HOME.IMPORT_CONFIRM_TITLE'"
+      [messageKey]="'HOME.IMPORT_CONFIRM_MESSAGE'"
+      [cancelKey]="'HOME.CANCEL'"
+      [confirmKey]="'HOME.IMPORT_BUTTON'"
+      [icon]="UploadIcon"
+      (confirm)="confirmImport()"
+      (cancelModal)="cancelImport()"
+    >
+    </app-confirmation-modal>
+  }
 }
 
-<app-delete-confirmation-modal
-  [show]="showDeleteModal()"
-  [titleKey]="'HOME.DELETE_CONFIRM_TITLE'"
-  [messageKey]="'HOME.DELETE_CONFIRM_MESSAGE'"
-  [cancelKey]="'HOME.CANCEL'"
-  [deleteKey]="'HOME.DELETE_BUTTON'"
-  [icon]="TrashIcon"
-  (confirm)="confirmDelete()"
-  (cancelModal)="cancelDelete()"
->
-</app-delete-confirmation-modal>
+@defer (when showRoomsModal()) {
+  @if (showRoomsModal()) {
+    <app-heating-rooms-modal
+      [show]="showRoomsModal()"
+      [rooms]="roomsService.rooms()"
+      [roomsWithDataArray]="roomsWithData()"
+      (save)="onRoomsSave($event)"
+      (cancelModal)="onRoomsCancel()"
+    >
+    </app-heating-rooms-modal>
+  }
+}
 
-<app-delete-confirmation-modal
-  [show]="showDeleteAllModal()"
-  [titleKey]="'HOME.DELETE_ALL_CONFIRM_TITLE'"
-  [messageKey]="deleteAllMessageKey()"
-  [messageParams]="deleteAllMessageParams()"
-  [cancelKey]="'HOME.CANCEL'"
-  [deleteKey]="'HOME.DELETE_ALL_BUTTON'"
-  [icon]="TrashIcon"
-  (confirm)="confirmDeleteAll()"
-  (cancelModal)="cancelDeleteAll()"
->
-</app-delete-confirmation-modal>
+@defer (when showSuccessModal()) {
+  @if (showSuccessModal()) {
+    <app-success-modal
+      [show]="showSuccessModal()"
+      [titleKey]="successTitle()"
+      [messageKey]="successMessage()"
+      (closeModal)="closeSuccessModal()"
+    ></app-success-modal>
+  }
+}
 
-<app-demo-wizard
-  [show]="showDemoWizard()"
-  [steps]="demoWizardSteps"
-  [theme]="'heating'"
-  [titleKey]="'DEMO.WIZARD_TITLE'"
-  (closeModal)="showDemoWizard.set(false)"
->
-</app-demo-wizard>
+@defer (when showDeleteModal()) {
+  @if (showDeleteModal()) {
+    <app-delete-confirmation-modal
+      [show]="showDeleteModal()"
+      [titleKey]="'HOME.DELETE_CONFIRM_TITLE'"
+      [messageKey]="'HOME.DELETE_CONFIRM_MESSAGE'"
+      [cancelKey]="'HOME.CANCEL'"
+      [deleteKey]="'HOME.DELETE_BUTTON'"
+      [icon]="TrashIcon"
+      (confirm)="confirmDelete()"
+      (cancelModal)="cancelDelete()"
+    >
+    </app-delete-confirmation-modal>
+  }
+}
 
-<app-demo-tour
-  [show]="showDemoTour()"
-  [steps]="demoTourSteps"
-  [theme]="'heating'"
-  (closeModal)="showDemoTour.set(false)"
->
-</app-demo-tour>
+@defer (when showDeleteAllModal()) {
+  @if (showDeleteAllModal()) {
+    <app-delete-confirmation-modal
+      [show]="showDeleteAllModal()"
+      [titleKey]="'HOME.DELETE_ALL_CONFIRM_TITLE'"
+      [messageKey]="deleteAllMessageKey()"
+      [messageParams]="deleteAllMessageParams()"
+      [cancelKey]="'HOME.CANCEL'"
+      [deleteKey]="'HOME.DELETE_ALL_BUTTON'"
+      [icon]="TrashIcon"
+      (confirm)="confirmDeleteAll()"
+      (cancelModal)="cancelDeleteAll()"
+    >
+    </app-delete-confirmation-modal>
+  }
+}
+
+@defer (when showDemoWizard()) {
+  @if (showDemoWizard()) {
+    <app-demo-wizard
+      [show]="showDemoWizard()"
+      [steps]="demoWizardSteps"
+      [theme]="'heating'"
+      [titleKey]="'DEMO.WIZARD_TITLE'"
+      (closeModal)="showDemoWizard.set(false)"
+    >
+    </app-demo-wizard>
+  }
+}
+
+@defer (when showDemoTour()) {
+  @if (showDemoTour()) {
+    <app-demo-tour
+      [show]="showDemoTour()"
+      [steps]="demoTourSteps"
+      [theme]="'heating'"
+      (closeModal)="showDemoTour.set(false)"
+    >
+    </app-demo-tour>
+  }
+}

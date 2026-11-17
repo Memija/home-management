@@ -1,5 +1,5 @@
-import { Component, Input, Output, EventEmitter, inject, signal } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { Component, ChangeDetectionStrategy, input, output, inject, signal } from '@angular/core';
+import { DatePipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { LucideAngularModule, X, Clipboard, ArrowRight } from 'lucide-angular';
 import { TranslatePipe } from '../../pipes/translate.pipe';
@@ -8,23 +8,18 @@ import { SmartImportService, ParsedRecord } from '../../services/smart-import.se
 @Component({
   selector: 'app-smart-import-modal',
   standalone: true,
-  imports: [CommonModule, FormsModule, LucideAngularModule, TranslatePipe],
+  imports: [DatePipe, FormsModule, LucideAngularModule, TranslatePipe],
   templateUrl: './smart-import-modal.component.html',
   styleUrl: './smart-import-modal.component.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class SmartImportModalComponent {
   private readonly smartImportService = inject(SmartImportService);
 
-  @Input() set show(val: boolean) {
-    this.showSignal.set(val);
-  }
-  get show(): boolean {
-    return this.showSignal();
-  }
-  protected readonly showSignal = signal<boolean>(false);
+  readonly show = input<boolean>(false);
 
-  @Output() closeModal = new EventEmitter<void>();
-  @Output() import = new EventEmitter<ParsedRecord[]>();
+  readonly closeModal = output<void>();
+  readonly import = output<ParsedRecord[]>();
 
   protected readonly ClipboardIcon = Clipboard;
   protected readonly XIcon = X;

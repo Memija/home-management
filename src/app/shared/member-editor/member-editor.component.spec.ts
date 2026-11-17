@@ -35,8 +35,8 @@ describe('MemberEditorComponent', () => {
     component = fixture.componentInstance;
 
     // Set required input properties
-    component.member = mockMember;
-    component.avatars = mockAvatars;
+    fixture.componentRef.setInput('member', mockMember);
+    fixture.componentRef.setInput('avatars', mockAvatars);
 
     fixture.detectChanges();
   });
@@ -69,7 +69,7 @@ describe('MemberEditorComponent', () => {
         type: 'kid',
       };
 
-      component.member = updatedMember;
+      fixture.componentRef.setInput('member', updatedMember);
       component.ngOnChanges();
       fixture.detectChanges();
 

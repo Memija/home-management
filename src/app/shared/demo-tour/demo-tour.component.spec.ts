@@ -64,8 +64,8 @@ describe('DemoTourComponent', () => {
     fixture = TestBed.createComponent(DemoTourComponent);
     component = fixture.componentInstance;
 
-    component.show = false;
-    component.steps = mockSteps;
+    fixture.componentRef.setInput('show', false);
+    fixture.componentRef.setInput('steps', mockSteps);
 
     fixture.detectChanges();
   });
@@ -83,7 +83,7 @@ describe('DemoTourComponent', () => {
     it('should start tour when show input becomes true', () => {
       const addEventListenerSpy = vi.spyOn(window, 'addEventListener');
 
-      component.show = true;
+      fixture.componentRef.setInput('show', true);
       fixture.detectChanges();
 
       expect(addEventListenerSpy).toHaveBeenCalledWith('resize', expect.any(Function));
@@ -112,8 +112,8 @@ describe('DemoTourComponent', () => {
       const ssrFixture = TestBed.createComponent(DemoTourComponent);
       const ssrComponent = ssrFixture.componentInstance;
 
-      ssrComponent.show = true;
-      ssrComponent.steps = mockSteps;
+      ssrFixture.componentRef.setInput('show', true);
+      ssrFixture.componentRef.setInput('steps', mockSteps);
       ssrFixture.detectChanges();
 
       expect(ssrComponent['isActive']()).toBe(false);
@@ -122,7 +122,7 @@ describe('DemoTourComponent', () => {
 
   describe('Step Navigation', () => {
     beforeEach(() => {
-      component.show = true;
+      fixture.componentRef.setInput('show', true);
       fixture.detectChanges();
       vi.advanceTimersByTime(650); // wait for startTour delays
     });
@@ -190,7 +190,7 @@ describe('DemoTourComponent', () => {
     });
 
     it('should handle empty steps in computeds', () => {
-      component.steps = [];
+      fixture.componentRef.setInput('steps', []);
       fixture.detectChanges();
 
       expect(component['totalSteps']()).toBe(0);
@@ -209,7 +209,7 @@ describe('DemoTourComponent', () => {
         return originalQuerySelector(selector);
       });
 
-      component.show = true;
+      fixture.componentRef.setInput('show', true);
       fixture.detectChanges();
 
       vi.advanceTimersByTime(200);
@@ -228,7 +228,7 @@ describe('DemoTourComponent', () => {
       });
       const closeSpy = vi.spyOn(component.closeModal, 'emit');
 
-      component.show = true;
+      fixture.componentRef.setInput('show', true);
       fixture.detectChanges();
       vi.advanceTimersByTime(200);
 
@@ -236,7 +236,7 @@ describe('DemoTourComponent', () => {
     });
 
     it('should handle resize events', () => {
-      component.show = true;
+      fixture.componentRef.setInput('show', true);
       fixture.detectChanges();
       component['targetElement'] = mockElement;
 

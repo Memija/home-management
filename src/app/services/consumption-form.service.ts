@@ -1,5 +1,5 @@
 import { Injectable, signal, computed } from '@angular/core';
-import { ConsumptionRecord } from '../models/records.model';
+import { ConsumptionRecord, getIsoDateKey } from '../models/records.model';
 
 @Injectable({
   providedIn: 'root',
@@ -26,19 +26,15 @@ export class ConsumptionFormService {
     if (this.editingRecord()) return false;
     const selected = this.selectedDate();
     if (!selected) return false;
-    return records.some((r) => {
-      const rDate = new Date(r.date);
-      if (Number.isNaN(rDate.getTime())) return false;
-      return rDate.toISOString().split('T')[0] === selected;
-    });
+    return records.some((r) => getIsoDateKey(r.date) === selected);
   }
 
   // Actions
   startEdit(record: ConsumptionRecord) {
     this.editingRecord.set(record);
-    const date = new Date(record.date);
-    if (!Number.isNaN(date.getTime())) {
-      this.selectedDate.set(date.toISOString().split('T')[0]);
+    const isoDate = getIsoDateKey(record.date);
+    if (isoDate) {
+      this.selectedDate.set(isoDate);
     }
     this.kitchenWarm.set(record.kitchenWarm);
     this.kitchenCold.set(record.kitchenCold);

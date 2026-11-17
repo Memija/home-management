@@ -1,5 +1,4 @@
-import { Component, inject } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { Component, ChangeDetectionStrategy, inject, signal } from '@angular/core';
 import { LucideAngularModule, LogIn, LogOut, User } from 'lucide-angular';
 import { AuthService } from '../../services/auth.service';
 import { TranslatePipe } from '../../pipes/translate.pipe';
@@ -7,12 +6,14 @@ import { TranslatePipe } from '../../pipes/translate.pipe';
 @Component({
   selector: 'app-auth-button',
   standalone: true,
-  imports: [CommonModule, LucideAngularModule, TranslatePipe],
+  imports: [LucideAngularModule, TranslatePipe],
   templateUrl: './auth-button.component.html',
   styleUrl: './auth-button.component.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class AuthButtonComponent {
   private readonly authService = inject(AuthService);
+  private readonly _isSigningIn = signal(false);
 
   readonly LogInIcon = LogIn;
   readonly LogOutIcon = LogOut;
@@ -23,7 +24,13 @@ export class AuthButtonComponent {
   readonly isAuthenticated = this.authService.isAuthenticated;
   readonly isAuthSupported = this.authService.isAuthSupported;
 
-  isSigningIn = false;
+  get isSigningIn(): boolean {
+    return this._isSigningIn();
+  }
+
+  set isSigningIn(value: boolean) {
+    this._isSigningIn.set(value);
+  }
 
   async signIn(): Promise<void> {
     this.isSigningIn = true;

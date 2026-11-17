@@ -1,0 +1,403 @@
+<div class="aerial-stage" [class.theme-dark]="resolvedTheme() === 'dark'" aria-hidden="true">
+  <svg
+    class="aerial-svg"
+    viewBox="0 0 1920 1080"
+    preserveAspectRatio="xMidYMid slice"
+    xmlns="http://www.w3.org/2000/svg"
+  >
+    <defs>
+      <filter
+        id="natural-shoreline"
+        x="-8%"
+        y="-8%"
+        width="116%"
+        height="116%"
+        color-interpolation-filters="sRGB"
+      >
+        <feTurbulence
+          type="fractalNoise"
+          baseFrequency="0.016"
+          numOctaves="4"
+          seed="42"
+          result="noise"
+        />
+        <feDisplacementMap
+          in="SourceGraphic"
+          in2="noise"
+          scale="20"
+          xChannelSelector="R"
+          yChannelSelector="G"
+        />
+      </filter>
+
+      <radialGradient id="night-lamp-glow" cx="50%" cy="50%" r="50%">
+        <stop offset="0%" stop-color="#fde047" stop-opacity="0.45" />
+        <stop offset="55%" stop-color="#f59e0b" stop-opacity="0.16" />
+        <stop offset="100%" stop-color="#f59e0b" stop-opacity="0" />
+      </radialGradient>
+
+      <linearGradient id="headlight-grad" x1="0%" y1="50%" x2="100%" y2="50%">
+        <stop offset="0%" stop-color="#fef08a" stop-opacity="0.65" />
+        <stop offset="55%" stop-color="#fde047" stop-opacity="0.22" />
+        <stop offset="100%" stop-color="#fde047" stop-opacity="0" />
+      </linearGradient>
+
+      <path
+        id="lake-404-channels"
+        d="M 635,575 L 635,150 L 355,430 L 725,430
+           M 960,170 C 1042,170 1085,242 1085,365 C 1085,488 1042,560 960,560 C 878,560 835,488 835,365 C 835,242 878,170 960,170 Z
+           M 1415,575 L 1415,150 L 1135,430 L 1505,430"
+      />
+      <path
+        id="river-feeders"
+        d="M -40,295 C 90,305 165,338 231,348 C 295,358 325,395 355,430
+           M 725,430 Q 782,436 835,410
+           M 1085,410 Q 1110,432 1135,430
+           M 1505,430 C 1575,445 1635,462 1703,468 C 1790,474 1875,505 1960,535"
+      />
+      <path id="valley-roads" [attr.d]="scene().roadNetworkPath" />
+
+      <g id="car-sedan-red">
+        @if (resolvedTheme() === 'dark') {
+          <polygon class="night-only" points="5,-2 24,-7 24,7 5,2" fill="url(#headlight-grad)" />
+          <circle class="night-only" fill="#ef4444" cx="-5.5" cy="-1.6" r="1.1" />
+          <circle class="night-only" fill="#ef4444" cx="-5.5" cy="1.6" r="1.1" />
+        }
+        <rect fill="rgba(2, 8, 12, 0.48)" x="-5" y="-2" width="11" height="5.2" rx="1.8" />
+        <rect fill="#dc2626" x="-5.5" y="-2.5" width="11" height="5" rx="1.8" />
+        <polygon fill="#1e293b" points="-2.8,-2 2.4,-2 1.2,-1.8 -2,-1.8" />
+        <rect fill="#1e293b" x="-3" y="-2" width="5.5" height="4" rx="0.9" />
+        <rect fill="#ef4444" x="-2" y="-1.7" width="3.2" height="3.4" rx="0.6" />
+      </g>
+
+      <g id="car-suv-white">
+        @if (resolvedTheme() === 'dark') {
+          <polygon
+            class="night-only"
+            points="5.5,-2.2 26,-7.5 26,7.5 5.5,2.2"
+            fill="url(#headlight-grad)"
+          />
+          <circle class="night-only" fill="#ef4444" cx="-6" cy="-1.8" r="1.2" />
+          <circle class="night-only" fill="#ef4444" cx="-6" cy="1.8" r="1.2" />
+        }
+        <rect fill="rgba(2, 8, 12, 0.48)" x="-5.5" y="-2.2" width="12" height="5.6" rx="1.6" />
+        <rect fill="#e2e8f0" x="-6" y="-2.7" width="12" height="5.4" rx="1.6" />
+        <rect fill="#1e293b" x="-3.8" y="-2.2" width="6.6" height="4.4" rx="0.8" />
+        <rect fill="#f8fafc" x="-2.8" y="-1.9" width="4.2" height="3.8" rx="0.5" />
+      </g>
+
+      <g id="car-coupe-blue">
+        @if (resolvedTheme() === 'dark') {
+          <polygon
+            class="night-only"
+            points="5,-1.9 24,-6.8 24,6.8 5,1.9"
+            fill="url(#headlight-grad)"
+          />
+          <circle class="night-only" fill="#ef4444" cx="-5.2" cy="-1.5" r="1.1" />
+          <circle class="night-only" fill="#ef4444" cx="-5.2" cy="1.5" r="1.1" />
+        }
+        <rect fill="rgba(2, 8, 12, 0.48)" x="-4.8" y="-1.9" width="10.6" height="4.8" rx="2" />
+        <rect fill="#0284c7" x="-5.3" y="-2.4" width="10.6" height="4.8" rx="2" />
+        <rect fill="#1e293b" x="-2.8" y="-1.9" width="5.2" height="3.8" rx="1" />
+        <rect fill="#38bdf8" x="-1.8" y="-1.6" width="2.8" height="3.2" rx="0.6" />
+      </g>
+
+      <g id="car-camper-sage">
+        @if (resolvedTheme() === 'dark') {
+          <polygon
+            class="night-only"
+            points="6,-2.2 25,-7.5 25,7.5 6,2.2"
+            fill="url(#headlight-grad)"
+          />
+          <circle class="night-only" fill="#ef4444" cx="-6.4" cy="-1.9" r="1.2" />
+          <circle class="night-only" fill="#ef4444" cx="-6.4" cy="1.9" r="1.2" />
+        }
+        <rect fill="rgba(2, 8, 12, 0.48)" x="-6" y="-2.3" width="12.8" height="5.8" rx="1.5" />
+        <rect fill="#0d9488" x="-6.4" y="-2.8" width="12.8" height="5.6" rx="1.5" />
+        <rect fill="#1e293b" x="1.2" y="-2.3" width="2.6" height="4.6" rx="0.6" />
+        <rect fill="#f8fafc" x="-5.2" y="-2.1" width="6" height="4.2" rx="0.6" />
+      </g>
+
+      <g id="tree-pine">
+        <ellipse fill="var(--tr-shd)" cx="6" cy="8" rx="22" ry="20" />
+        <path
+          fill="var(--pn-b)"
+          d="M0,-24 L5,-15 L14,-20 L12,-10 L23,-11 L16,-2 L24,4 L14,8 L19,18 L9,14 L6,24 L0,15 L-6,24 L-9,14 L-19,18 L-14,8 L-24,4 L-16,-2 L-23,-11 L-12,-10 L-14,-20 L-5,-15 Z"
+        />
+        <path
+          fill="var(--pn-m)"
+          d="M0,-18 L4,-10 L13,-13 L9,-4 L18,-2 L10,3 L14,12 L5,9 L2,17 L-2,10 L-9,15 L-8,6 L-17,5 L-10,-2 L-16,-10 L-6,-9 Z"
+        />
+        <path
+          fill="var(--pn-c)"
+          d="M-2,-12 L3,-6 L9,-8 L5,-1 L10,3 L2,4 L0,9 L-4,3 L-11,4 L-6,-2 L-10,-8 L-3,-6 Z"
+        />
+        <circle fill="var(--pn-t)" cx="-1" cy="-2" r="2.2" />
+      </g>
+
+      <g id="tree-spruce">
+        <ellipse fill="var(--tr-shd)" cx="6" cy="8" rx="20" ry="19" />
+        <path
+          fill="var(--sp-b)"
+          d="M0,-22 L4,-13 L12,-19 L9,-9 L20,-12 L13,-3 L22,2 L12,6 L18,15 L8,11 L8,21 L1,13 L-4,22 L-6,12 L-16,17 L-11,7 L-21,5 L-13,-1 L-21,-9 L-10,-8 L-14,-18 L-4,-12 Z"
+        />
+        <path
+          fill="var(--sp-m)"
+          d="M-1,-15 L4,-8 L11,-11 L7,-3 L15,1 L7,5 L10,12 L2,8 L-2,14 L-5,7 L-13,9 L-8,2 L-15,-4 L-7,-6 L-9,-13 L-2,-8 Z"
+        />
+        <path
+          fill="var(--sp-c)"
+          d="M-2,-9 L3,-4 L7,-5 L4,1 L7,5 L1,4 L-2,8 L-4,2 L-9,2 L-5,-3 L-7,-7 L-2,-5 Z"
+        />
+      </g>
+
+      <g id="tree-oak">
+        <ellipse fill="var(--tr-shd)" cx="7" cy="9" rx="25" ry="23" />
+        <path
+          fill="var(--ok-b)"
+          d="M-8,-22 C-2,-26 7,-25 12,-20 C19,-21 25,-14 23,-6 C27,0 25,9 19,14 C18,21 10,25 3,22 C-3,26 -12,24 -16,18 C-23,17 -27,9 -23,1 C-26,-6 -22,-15 -15,-17 C-14,-21 -11,-23 -8,-22 Z"
+        />
+        <path
+          fill="var(--ok-m)"
+          d="M-6,-17 C0,-20 8,-18 11,-12 C17,-11 19,-3 15,3 C17,9 11,16 4,15 C-2,19 -10,16 -13,10 C-19,8 -20,-1 -15,-6 C-17,-12 -12,-17 -6,-17 Z"
+        />
+        <circle fill="var(--ok-c)" cx="-5" cy="-6" r="8.5" />
+        <circle fill="var(--ok-c)" cx="5" cy="-4" r="7" />
+        <circle fill="var(--ok-c)" cx="-2" cy="4" r="7.5" />
+      </g>
+
+      <g id="tree-birch">
+        <ellipse fill="var(--tr-shd)" cx="5" cy="7" rx="18" ry="17" />
+        <path
+          fill="var(--bi-b)"
+          d="M-5,-18 C2,-21 10,-18 13,-12 C19,-10 20,-1 16,5 C18,12 12,18 4,17 C-2,20 -10,18 -14,12 C-19,9 -20,0 -15,-6 C-16,-13 -11,-18 -5,-18 Z"
+        />
+        <circle fill="var(--bi-m)" cx="-4" cy="-5" r="9" />
+        <circle fill="var(--bi-m)" cx="5" cy="2" r="8" />
+        <circle fill="var(--bi-c)" cx="-5" cy="-6" r="5.5" />
+        <circle fill="var(--bi-c)" cx="3" cy="-1" r="4.5" />
+      </g>
+
+      <g id="house-gable-terracotta">
+        <rect fill="var(--hs-pat)" x="-26" y="-20" width="52" height="40" rx="3" />
+        @if (resolvedTheme() === 'dark') {
+          <circle class="night-only" cx="0" cy="0" r="30" fill="url(#night-lamp-glow)" />
+        }
+        <rect fill="var(--hs-shd)" x="-17" y="-11" width="44" height="32" rx="2" />
+        <rect fill="var(--rf-tl)" x="-22" y="-16" width="22" height="32" />
+        <rect fill="var(--rf-ts)" x="0" y="-16" width="22" height="32" />
+        <line
+          fill="none"
+          stroke="var(--rf-rdg)"
+          stroke-width="1.3"
+          x1="0"
+          y1="-16"
+          x2="0"
+          y2="16"
+        />
+        <rect fill="var(--rf-sky)" x="-12" y="-6" width="6" height="9" rx="1" />
+        <rect fill="var(--rf-chm)" x="7" y="-9" width="6" height="6" />
+      </g>
+
+      <g id="house-hip-slate">
+        <rect fill="var(--hs-pat)" x="-28" y="-21" width="56" height="42" rx="3" />
+        @if (resolvedTheme() === 'dark') {
+          <circle class="night-only" cx="0" cy="0" r="32" fill="url(#night-lamp-glow)" />
+        }
+        <rect fill="var(--hs-shd)" x="-18" y="-11" width="46" height="34" rx="2" />
+        <polygon fill="var(--rf-sl)" points="-23,-17 23,-17 11,-5 -11,-5" />
+        <polygon fill="var(--rf-sl)" points="-23,-17 -11,-5 -11,5 -23,17" />
+        <polygon fill="var(--rf-ss)" points="-11,5 11,5 23,17 -23,17" />
+        <polygon fill="var(--rf-ss)" points="11,-5 23,-17 23,17 11,5" />
+        <path
+          fill="none"
+          stroke="var(--rf-rdg)"
+          stroke-width="1.3"
+          d="M-23,-17 L-11,-5 M23,-17 L11,-5 M-23,17 L-11,5 M23,17 L11,5 M-11,-5 L11,-5 L11,5 L-11,5 Z"
+        />
+        <rect fill="var(--rf-sky)" x="-6" y="-13" width="10" height="5" rx="1" />
+      </g>
+
+      <g id="house-l-villa">
+        <rect fill="var(--hs-dck)" x="-26" y="-22" width="52" height="44" rx="3" />
+        @if (resolvedTheme() === 'dark') {
+          <circle class="night-only" cx="0" cy="0" r="32" fill="url(#night-lamp-glow)" />
+        }
+        <path fill="var(--hs-shd)" d="M-17,-13 H27 V7 H7 V25 H-17 Z" />
+        <polygon fill="var(--rf-zl)" points="-22,-18 22,-18 12,-8 -12,-8" />
+        <polygon fill="var(--rf-zl)" points="-22,-18 -12,-8 -12,20 -22,20" />
+        <polygon fill="var(--rf-zs)" points="-12,-8 22,-8 22,2 2,2 2,20 -12,20" />
+        <path
+          fill="none"
+          stroke="var(--rf-rdg)"
+          stroke-width="1.3"
+          d="M-22,-18 L-12,-8 H22 M-12,-8 V20"
+        />
+        <rect fill="var(--rf-sky)" x="4" y="-15" width="8" height="4" rx="1" />
+        <rect fill="var(--rf-chm)" x="-8" y="4" width="5" height="5" />
+      </g>
+
+      <g id="house-cabin-wood">
+        <rect fill="var(--hs-dck)" x="-24" y="-18" width="48" height="36" rx="2" />
+        @if (resolvedTheme() === 'dark') {
+          <circle class="night-only" cx="0" cy="0" r="28" fill="url(#night-lamp-glow)" />
+        }
+        <rect fill="var(--hs-shd)" x="-15" y="-9" width="38" height="28" rx="2" />
+        <rect fill="var(--rf-cl)" x="-19" y="-14" width="19" height="28" />
+        <rect fill="var(--rf-cs)" x="0" y="-14" width="19" height="28" />
+        <line
+          fill="none"
+          stroke="var(--rf-rdg)"
+          stroke-width="1.3"
+          x1="0"
+          y1="-14"
+          x2="0"
+          y2="14"
+        />
+        <rect fill="var(--rf-sky)" x="-11" y="2" width="5" height="7" rx="1" />
+        <rect fill="var(--rf-chm)" x="5" y="-8" width="5" height="5" />
+      </g>
+
+      <g id="wooden-dock">
+        <rect fill="var(--tr-shd)" x="-2" y="-5" width="38" height="14" rx="2" />
+        <rect fill="var(--dk-plk)" x="-4" y="-6" width="36" height="12" rx="1.5" />
+        <path
+          stroke="var(--dk-sem)"
+          stroke-width="1"
+          d="M2,-6 V6 M8,-6 V6 M14,-6 V6 M20,-6 V6 M26,-6 V6"
+        />
+        <circle fill="var(--dk-pil)" cx="0" cy="-5" r="1.8" />
+        <circle fill="var(--dk-pil)" cx="0" cy="5" r="1.8" />
+        <circle fill="var(--dk-pil)" cx="29" cy="-5" r="1.8" />
+        <circle fill="var(--dk-pil)" cx="29" cy="5" r="1.8" />
+        @if (resolvedTheme() === 'dark') {
+          <circle class="night-only" cx="29" cy="-5" r="9" fill="url(#night-lamp-glow)" />
+        }
+        <path fill="var(--bt-hul)" d="M 14,12 C 22,9 32,9 38,14 C 32,19 22,19 14,16 Z" />
+        <path fill="var(--bt-int)" d="M 17,13 C 23,11 30,11 34,14 C 30,17 23,17 17,15 Z" />
+        <line stroke="var(--dk-plk)" stroke-width="1.4" x1="23" y1="11.5" x2="23" y2="16.5" />
+        <line stroke="var(--dk-plk)" stroke-width="1.4" x1="29" y1="11.5" x2="29" y2="16.5" />
+      </g>
+
+      <g id="highway-bridge">
+        <rect fill="var(--br-shd)" x="-8" y="-32" width="25" height="64" rx="2" />
+        <path
+          class="day-only"
+          fill="none"
+          stroke="var(--br-wak)"
+          stroke-width="1.6"
+          stroke-linecap="round"
+          d="M-16,-14 H18 M-16,14 H18"
+        />
+        <rect fill="var(--br-pir)" x="-15" y="-16" width="30" height="4.5" rx="2.2" />
+        <rect fill="var(--br-pir)" x="-15" y="11.5" width="30" height="4.5" rx="2.2" />
+        <path
+          fill="var(--br-abt)"
+          d="M-14,-37 L-12.5,-29 H12.5 L14,-37 Z M-12.5,29 L-14,37 H14 L12.5,29 Z"
+        />
+        <rect fill="var(--br-wlk)" x="-12.5" y="-33" width="25" height="66" rx="1" />
+        <rect fill="var(--rd-asp)" x="-8.5" y="-38" width="17" height="76" />
+        <path
+          fill="none"
+          stroke="var(--rd-lin)"
+          stroke-width="0.9"
+          opacity="0.7"
+          d="M-7.2,-35 V35 M7.2,-35 V35"
+        />
+        <path
+          fill="none"
+          stroke="rgba(15, 23, 42, 0.4)"
+          stroke-width="1"
+          d="M-12,-31 H12 M-12,0 H12 M-12,31 H12"
+        />
+        <line class="road-centerline" x1="0" y1="-37" x2="0" y2="37" />
+        <rect fill="var(--br-pl)" x="-13" y="-33" width="1.8" height="66" rx="0.8" />
+        <rect fill="var(--br-ps)" x="11.2" y="-33" width="1.8" height="66" rx="0.8" />
+        @if (resolvedTheme() === 'dark') {
+          <g class="night-only">
+            <path
+              fill="none"
+              stroke="var(--br-ng)"
+              stroke-width="1.1"
+              opacity="0.75"
+              d="M-11,-31 V31 M11,-31 V31"
+            />
+            <ellipse cx="-6" cy="-20" rx="8" ry="10" fill="url(#night-lamp-glow)" />
+            <ellipse cx="6" cy="-20" rx="8" ry="10" fill="url(#night-lamp-glow)" />
+            <ellipse cx="-6" cy="0" rx="8" ry="10" fill="url(#night-lamp-glow)" />
+            <ellipse cx="6" cy="0" rx="8" ry="10" fill="url(#night-lamp-glow)" />
+            <ellipse cx="-6" cy="20" rx="8" ry="10" fill="url(#night-lamp-glow)" />
+            <ellipse cx="6" cy="20" rx="8" ry="10" fill="url(#night-lamp-glow)" />
+          </g>
+        }
+        <g fill="var(--br-lmp)">
+          <circle cx="-11.5" cy="-20" r="1.3" />
+          <circle cx="11.5" cy="-20" r="1.3" />
+          <circle cx="-11.5" cy="0" r="1.3" />
+          <circle cx="11.5" cy="0" r="1.3" />
+          <circle cx="-11.5" cy="20" r="1.3" />
+          <circle cx="11.5" cy="20" r="1.3" />
+        </g>
+      </g>
+    </defs>
+
+    <rect fill="var(--land)" width="1920" height="1080" />
+    <g>
+      <ellipse class="meadow-patch" cx="340" cy="240" rx="260" ry="150" />
+      <ellipse class="meadow-patch" cx="1580" cy="250" rx="280" ry="160" />
+      <ellipse class="meadow-patch" cx="960" cy="860" rx="520" ry="180" />
+      <ellipse class="hill-contour" cx="190" cy="890" rx="340" ry="210" />
+      <ellipse class="hill-contour" cx="1740" cy="880" rx="360" ry="220" />
+    </g>
+
+    <g filter="url(#natural-shoreline)">
+      <use href="#river-feeders" class="river-riparian" />
+      <use href="#lake-404-channels" class="lake-riparian" />
+      <use href="#river-feeders" class="river-beach" />
+      <use href="#lake-404-channels" class="lake-beach" />
+      <use href="#river-feeders" class="river-shallows" />
+      <use href="#lake-404-channels" class="lake-shallows" />
+      <use href="#river-feeders" class="river-mid" />
+      <use href="#lake-404-channels" class="lake-mid" />
+      <use href="#river-feeders" class="river-deep" />
+      <use href="#lake-404-channels" class="lake-deep" />
+      <use href="#lake-404-channels" class="lake-abyss" />
+    </g>
+
+    <g>
+      @for (house of scene().houses; track house.id) {
+        @if (house.drivewayPath) {
+          <path class="house-driveway" [attr.d]="house.drivewayPath" />
+        }
+      }
+      <use href="#valley-roads" class="road-shoulder" />
+      <use href="#valley-roads" class="road-asphalt" />
+      <use href="#valley-roads" class="road-centerline" />
+      @for (bridge of scene().bridges; track bridge.id) {
+        <use href="#highway-bridge" [attr.transform]="bridge.transform" />
+      }
+      @for (car of scene().cars; track car.id) {
+        <use [attr.href]="'#car-' + car.variant" [attr.transform]="carTransforms()[car.id]" />
+      }
+    </g>
+
+    <g>
+      @for (dock of scene().docks; track $index) {
+        <use href="#wooden-dock" [attr.transform]="dock.transform" />
+      }
+    </g>
+
+    <g>
+      @for (house of scene().houses; track house.id) {
+        <use [attr.href]="'#house-' + house.variant" [attr.transform]="house.transform" />
+      }
+    </g>
+
+    <g>
+      @for (tree of scene().trees; track tree.id) {
+        <use [attr.href]="'#tree-' + tree.variant" [attr.transform]="tree.transform" />
+      }
+    </g>
+  </svg>
+  <div class="aerial-vignette"></div>
+</div>

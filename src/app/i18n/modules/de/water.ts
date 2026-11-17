@@ -53,7 +53,7 @@ export const water = {
       'Wählen Sie das Datum, an dem Sie die Wasserzählerstände abgelesen haben.',
     RECORD_HELP_STEP_3_TITLE: 'Werte eingeben',
     RECORD_HELP_STEP_3_DESC:
-      'Geben Sie die Zählerwerte für Warm- und Kaltwasser in jedem Raum ein. Sie können Werte für einen oder beide Räume eingeben.',
+      'Geben Sie die Zählerwerte für Warmwasser und Kaltwasser in jedem Raum ein. Sie können Werte für einen oder beide Räume eingeben.',
     RECORD_HELP_STEP_4_TITLE: 'Eintrag speichern',
     RECORD_HELP_STEP_4_DESC: 'Klicken Sie auf Speichern, um Ihren Verbrauchseintrag zu speichern.',
     CHART_HELP_TITLE: 'Das Diagramm verstehen',
@@ -75,13 +75,13 @@ export const water = {
       'Dieser Bereich zeigt alle gespeicherten Wasserverbrauchseinträge mit detaillierter Aufschlüsselung nach Raum und Wassertyp.',
     RECORDS_HELP_STEP_2_TITLE: 'Einträge filtern',
     RECORDS_HELP_STEP_2_DESC:
-      'Verwenden Sie die Datumsauswahl, Jahres- und Monatsfilter. Nutzen Sie "Filter zurücksetzen", um alle Filter zu löschen. Sie können auch nach Datum oder Verbrauchswerten sortieren.',
+      'Verwenden Sie die Datumsauswahl, Jahresfilter und Monatsfilter. Nutzen Sie "Filter zurücksetzen", um alle Filter zu löschen. Sie können auch nach Datum oder Verbrauchswerten sortieren.',
     RECORDS_HELP_STEP_3_TITLE: 'Bearbeiten und Löschen',
     RECORDS_HELP_STEP_3_DESC:
       'Klicken Sie auf das Bearbeiten-Symbol zum Ändern oder das Papierkorb-Symbol zum Löschen. "Alle löschen" entfernt alle gefilterten Einträge.',
     RECORDS_HELP_STEP_4_TITLE: 'Import und Export',
     RECORDS_HELP_STEP_4_DESC:
-      'Exportieren Sie Ihre Daten in verschiedenen Formaten: JSON, Excel oder PDF. Importieren Sie aus JSON- oder Excel-Dateien über die entsprechenden Schaltflächen.',
+      'Exportieren Sie Ihre Daten in verschiedenen Formaten: JSON, Excel oder PDF. Importieren Sie aus JSON-Dateien oder Excel-Dateien über die entsprechenden Schaltflächen.',
     READINGS_FOR: 'Ablesung für',
     KITCHEN: 'Küche',
     BATHROOM: 'Badezimmer',
@@ -101,9 +101,9 @@ export const water = {
     SELECT_DATE: 'Datum auswählen',
     SELECT_DATE_ERROR: 'Bitte wählen Sie ein Datum aus.',
     PARTIAL_INPUT_ERROR:
-      'Bitte geben Sie sowohl Warm- als auch Kaltwasserwerte für mindestens einen Raum ein.',
+      'Bitte geben Sie sowohl Warmwasserwerte als auch Kaltwasserwerte für mindestens einen Raum ein.',
     INCOMPLETE_ROOM_ERROR:
-      'Bitte vervollständigen Sie die Warm- und Kaltwasserwerte für alle begonnenen Räume.',
+      'Bitte vervollständigen Sie die Warmwasserwerte und Kaltwasserwerte für alle begonnenen Räume.',
     LOAD_MORE_RECORDS: 'Weitere Datensätze laden',
     SHOWING_RECORDS: '{{current}} von {{total}} Datensätzen angezeigt',
     PAGINATION_SIZE: 'Datensätze pro Seite',

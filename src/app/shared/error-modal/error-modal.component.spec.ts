@@ -28,8 +28,8 @@ describe('ErrorModalComponent', () => {
     component = fixture.componentInstance;
 
     // Default inputs
-    component.show = true;
-    component.message = 'Default Error Message';
+    fixture.componentRef.setInput('show', true);
+    fixture.componentRef.setInput('message', 'Default Error Message');
     fixture.detectChanges();
   });
 
@@ -39,7 +39,7 @@ describe('ErrorModalComponent', () => {
 
   describe('Display and Rendering', () => {
     it('should not render anything when show is false', () => {
-      component.show = false;
+      fixture.componentRef.setInput('show', false);
       fixture.detectChanges();
 
       const overlay = fixture.nativeElement.querySelector('.modal-overlay');
@@ -64,13 +64,13 @@ describe('ErrorModalComponent', () => {
       expect(content.classList.contains('success')).toBe(false);
 
       // Warning type
-      component.type = 'warning';
+      fixture.componentRef.setInput('type', 'warning');
       fixture.detectChanges();
       content = fixture.nativeElement.querySelector('.modal-content');
       expect(content.classList.contains('warning')).toBe(true);
 
       // Success type
-      component.type = 'success';
+      fixture.componentRef.setInput('type', 'success');
       fixture.detectChanges();
       content = fixture.nativeElement.querySelector('.modal-content');
       expect(content.classList.contains('success')).toBe(true);
@@ -79,7 +79,7 @@ describe('ErrorModalComponent', () => {
 
   describe('detailLines computation', () => {
     it('should calculate detailLines correctly from a multiline string', () => {
-      component.details = 'Line 1\nLine 2\n\nLine 3\n  \n';
+      fixture.componentRef.setInput('details', 'Line 1\nLine 2\n\nLine 3\n  \n');
       fixture.detectChanges();
 
       const lines = component.detailLines();
@@ -89,7 +89,7 @@ describe('ErrorModalComponent', () => {
     });
 
     it('should handle undefined or empty details gracefully', () => {
-      component.details = '';
+      fixture.componentRef.setInput('details', '');
       fixture.detectChanges();
 
       expect(component.detailLines()).toHaveLength(0);
@@ -112,7 +112,7 @@ describe('ErrorModalComponent', () => {
         { key: 'OBJECT_INSTRUCTION', params: { code: 123, word: 'fail' } },
       ];
 
-      component.instructions = testInstructions;
+      fixture.componentRef.setInput('instructions', testInstructions);
       fixture.detectChanges();
 
       const instructionElements = fixture.nativeElement.querySelectorAll('.error-instructions li');
@@ -125,7 +125,7 @@ describe('ErrorModalComponent', () => {
     });
 
     it('should not render instructions section if the array is empty', () => {
-      component.instructions = [];
+      fixture.componentRef.setInput('instructions', []);
       fixture.detectChanges();
 
       expect(fixture.nativeElement.querySelector('.error-instructions')).toBeNull();

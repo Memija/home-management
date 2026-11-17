@@ -871,6 +871,20 @@ describe('FamilyComponent', () => {
       component.closeDuplicateMemberError();
       expect(component['duplicateMemberName']()).toBe('');
     });
+
+    it('should compute duplicateMemberErrorMessage and maxMembersErrorMessage via languageService.translate', () => {
+      component['duplicateMemberName'].set('John Doe');
+      expect(component['duplicateMemberErrorMessage']()).toBe('SETTINGS.DUPLICATE_MEMBER_NAME');
+      expect(languageServiceMock.translate).toHaveBeenCalledWith('SETTINGS.DUPLICATE_MEMBER_NAME', {
+        name: 'John',
+        surname: 'Doe',
+      });
+
+      expect(component['maxMembersErrorMessage']()).toBe('SETTINGS.MAX_MEMBERS_MESSAGE');
+      expect(languageServiceMock.translate).toHaveBeenCalledWith('SETTINGS.MAX_MEMBERS_MESSAGE', {
+        max: 9,
+      });
+    });
   });
 
   describe('Help Modal', () => {

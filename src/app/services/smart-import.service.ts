@@ -23,6 +23,16 @@ const MONTH_KEYS = [
   'MONTHS.DECEMBER',
 ];
 
+const DE_DATE_REGEX = /(\d{1,2})\.(\d{1,2})\.(\d{4})/;
+const ISO_DATE_REGEX = /(\d{4})-(\d{1,2})-(\d{1,2})/;
+const TEXT_DATE_DAY_FIRST_REGEX = /\b(\d{1,2})\.\s*(\p{L}+)\s+(\d{4})\b/iu;
+const TEXT_DATE_MONTH_FIRST_REGEX = /\b(\p{L}+)\s+(\d{1,2})(?:,\s*|\s+)(\d{4})\b/iu;
+const UNIT_STRIP_REGEX = /kWh|m3|L/gi;
+const TEXT_DATE_DAY_FIRST_STRIP_REGEX = /\b\d{1,2}\.?\s*\p{L}+\s+\d{4}\b/giu;
+const TEXT_DATE_MONTH_FIRST_STRIP_REGEX = /\b\p{L}+\s+\d{1,2}(?:,\s*|\s+)\d{4}\b/giu;
+const NUMBER_MATCH_REGEX = /\d[\d.,]*/g;
+const SEPARATOR_STRIP_REGEX = /[.,]/g;
+
 @Injectable({
   providedIn: 'root',
 })
@@ -80,7 +90,7 @@ export class SmartImportService {
 
     for (const record of records) {
       // Create a date key in YYYY-MM-DD format for comparison
-      const dateKey = record.date.toISOString().split('T')[0];
+      const dateKey = record.date.toISOString().slice(0, 10);
 
       if (!seen.has(dateKey)) {
         seen.set(dateKey, record);
@@ -104,21 +114,23 @@ export class SmartImportService {
       if (!trimmedLine) continue;
 
       const date = this.extractDate(trimmedLine);
-      const value = this.extractValue(trimmedLine);
 
       if (date) {
         // Found a date line - store it
         pendingDate = date;
         pendingDateLine = trimmedLine;
-      } else if (pendingDate && value !== null) {
-        // Found a value line after a date line
-        records.push({
-          date: pendingDate,
-          value: value,
-          originalLine: `${pendingDateLine} | ${trimmedLine}`,
-        });
-        pendingDate = null;
-        pendingDateLine = '';
+      } else if (pendingDate) {
+        const value = this.extractValue(trimmedLine);
+        if (value !== null) {
+          // Found a value line after a date line
+          records.push({
+            date: pendingDate,
+            value: value,
+            originalLine: `${pendingDateLine} | ${trimmedLine}`,
+          });
+          pendingDate = null;
+          pendingDateLine = '';
+        }
       }
     }
 
@@ -127,8 +139,7 @@ export class SmartImportService {
 
   private extractDate(line: string): Date | null {
     // Regex for DD.MM.YYYY (German/European)
-    const deDateRegex = /(\d{1,2})\.(\d{1,2})\.(\d{4})/;
-    const deMatch = deDateRegex.exec(line);
+    const deMatch = DE_DATE_REGEX.exec(line);
     if (deMatch) {
       const day = Number.parseInt(deMatch[1], 10);
       const month = Number.parseInt(deMatch[2], 10) - 1; // Months are 0-indexed
@@ -137,8 +148,7 @@ export class SmartImportService {
     }
 
     // Regex for YYYY-MM-DD (ISO)
-    const isoDateRegex = /(\d{4})-(\d{1,2})-(\d{1,2})/;
-    const isoMatch = isoDateRegex.exec(line);
+    const isoMatch = ISO_DATE_REGEX.exec(line);
     if (isoMatch) {
       const year = Number.parseInt(isoMatch[1], 10);
       const month = Number.parseInt(isoMatch[2], 10) - 1;
@@ -148,8 +158,7 @@ export class SmartImportService {
 
     // Regex for text format: "1. Januar 2026" or "Donnerstag, 1. Januar 2026"
     // Uses \p{L} to match any Unicode letter (works for German, French, Spanish, etc.)
-    const textDateDayFirstRegex = /\b(\d{1,2})\.\s*(\p{L}+)\s+(\d{4})\b/iu;
-    const dayFirstMatch = textDateDayFirstRegex.exec(line);
+    const dayFirstMatch = TEXT_DATE_DAY_FIRST_REGEX.exec(line);
     if (dayFirstMatch) {
       const day = Number.parseInt(dayFirstMatch[1], 10);
       const monthName = dayFirstMatch[2].toLowerCase();
@@ -163,8 +172,7 @@ export class SmartImportService {
 
     // Regex for text format: "January 1, 2026" or "Thursday, January 1, 2026"
     // Uses \p{L} to match any Unicode letter (works for any language)
-    const textDateMonthFirstRegex = /\b(\p{L}+)\s+(\d{1,2})(?:,\s*|\s+)(\d{4})\b/iu;
-    const monthFirstMatch = textDateMonthFirstRegex.exec(line);
+    const monthFirstMatch = TEXT_DATE_MONTH_FIRST_REGEX.exec(line);
     if (monthFirstMatch) {
       const monthName = monthFirstMatch[1].toLowerCase();
       const day = Number.parseInt(monthFirstMatch[2], 10);
@@ -224,23 +232,23 @@ export class SmartImportService {
 
   private extractValue(line: string): number | null {
     // Remove common units and other noise to isolate the number
-    const cleanLine = line.replace(/kWh|m3|L/gi, '').trim();
+    const cleanLine = line.replace(UNIT_STRIP_REGEX, '').trim();
 
     // Remove date-like patterns from string to avoid false positives (like year 2024 or day/month)
     let lineWithoutDate = cleanLine
-      .replace(/(\d{1,2})\.(\d{1,2})\.(\d{4})/, '') // DD.MM.YYYY
-      .replace(/(\d{4})-(\d{1,2})-(\d{1,2})/, ''); // YYYY-MM-DD
+      .replace(DE_DATE_REGEX, '') // DD.MM.YYYY
+      .replace(ISO_DATE_REGEX, ''); // YYYY-MM-DD
 
     // Remove text date patterns (works for any language with Unicode \p{L})
     // Pattern 1: Day first - "1. Januar 2026", "Donnerstag, 1. Januar 2026", "1 janvier 2026"
-    lineWithoutDate = lineWithoutDate.replace(/\b\d{1,2}\.?\s*\p{L}+\s+\d{4}\b/giu, '');
+    lineWithoutDate = lineWithoutDate.replace(TEXT_DATE_DAY_FIRST_STRIP_REGEX, '');
     // Pattern 2: Month first - "January 1, 2026", "Thursday, January 1, 2026"
-    lineWithoutDate = lineWithoutDate.replace(/\b\p{L}+\s+\d{1,2}(?:,\s*|\s+)\d{4}\b/giu, '');
+    lineWithoutDate = lineWithoutDate.replace(TEXT_DATE_MONTH_FIRST_STRIP_REGEX, '');
 
     // Find ALL sequences of digits that may contain . or ,
     // We match any sequence starting with a digit, containing digits, dots, or commas
     // Use global flag to find all matches, then take the LAST one (typically the value in tabular data)
-    const numberMatches = lineWithoutDate.match(/\d[\d.,]*/g);
+    const numberMatches = lineWithoutDate.match(NUMBER_MATCH_REGEX);
 
     if (numberMatches && numberMatches.length > 0) {
       // Take the last match - in tabular data, the value is usually the last number
@@ -277,7 +285,7 @@ export class SmartImportService {
       }
 
       // Strict rule: "do not include . or ," -> Strip them out completely
-      const strippedString = rawNumberString.replace(/[.,]/g, '');
+      const strippedString = rawNumberString.replace(SEPARATOR_STRIP_REGEX, '');
 
       // Parse as integer
       const value = Number.parseInt(strippedString, 10);

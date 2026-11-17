@@ -1,0 +1,38 @@
+<main
+  class="not-found-page"
+  [class.theme-dark]="resolvedTheme() === 'dark'"
+  [class.theme-light]="resolvedTheme() === 'light'"
+>
+  <app-not-found-scene
+    [scene]="scene"
+    [carTransforms]="carTransforms()"
+    [resolvedTheme]="resolvedTheme()"
+  />
+
+  <section class="not-found-hud" aria-labelledby="not-found-title">
+    <div class="hud-header">
+      <span class="hud-badge">
+        <lucide-icon [img]="CompassIcon" [size]="15"></lucide-icon>
+        <span>404</span>
+      </span>
+      <h1 id="not-found-title" class="hud-title">
+        {{ 'SEO.NOT_FOUND.TITLE' | translate }}
+      </h1>
+    </div>
+
+    <p class="hud-description">
+      {{ 'SEO.NOT_FOUND.DESCRIPTION' | translate }}
+    </p>
+
+    <div class="hud-actions">
+      <a routerLink="/" class="btn-primary">
+        <lucide-icon [img]="HomeIcon" [size]="18"></lucide-icon>
+        <span>{{ 'APP.BACK' | translate }}</span>
+      </a>
+      <a routerLink="/dashboard" class="btn-secondary">
+        <lucide-icon [img]="DashboardIcon" [size]="18"></lucide-icon>
+        <span>{{ 'DASHBOARD.BACK_TO_DASHBOARD' | translate }}</span>
+      </a>
+    </div>
+  </section>
+</main>

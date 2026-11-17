@@ -1,5 +1,4 @@
-import { Component, Input, Output, EventEmitter, signal, computed } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { Component, ChangeDetectionStrategy, input, output, signal, computed } from '@angular/core';
 import {
   LucideAngularModule,
   X,
@@ -21,25 +20,22 @@ export type DemoWizardTheme = 'water' | 'heating' | 'electricity' | 'settings';
 @Component({
   selector: 'app-demo-wizard',
   standalone: true,
-  imports: [CommonModule, LucideAngularModule, TranslatePipe],
+  imports: [LucideAngularModule, TranslatePipe],
   templateUrl: './demo-wizard.component.html',
   styleUrl: './demo-wizard.component.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class DemoWizardComponent {
-  @Input() show = false;
+  readonly show = input<boolean>(false);
 
-  @Input() set steps(val: DemoWizardStep[]) {
-    this._steps.set(val || []);
-  }
-  get steps(): DemoWizardStep[] {
-    return this._steps();
-  }
-  private readonly _steps = signal<DemoWizardStep[]>([]);
+  readonly steps = input<DemoWizardStep[], DemoWizardStep[] | null | undefined>([], {
+    transform: (val) => val || [],
+  });
 
-  @Input() theme: DemoWizardTheme = 'water';
-  @Input() titleKey = 'DEMO.WIZARD_TITLE';
+  readonly theme = input<DemoWizardTheme>('water');
+  readonly titleKey = input<string>('DEMO.WIZARD_TITLE');
 
-  @Output() closeModal = new EventEmitter<void>();
+  readonly closeModal = output<void>();
 
   // Icons
   protected readonly CloseIcon = X;
@@ -50,10 +46,10 @@ export class DemoWizardComponent {
   // Current step index
   protected readonly currentStep = signal(0);
 
-  protected totalSteps = computed(() => this._steps().length);
+  protected totalSteps = computed(() => this.steps().length);
 
   protected currentStepData = computed(() => {
-    const stepsArray = this._steps();
+    const stepsArray = this.steps();
     const index = this.currentStep();
     return stepsArray[index] || null;
   });

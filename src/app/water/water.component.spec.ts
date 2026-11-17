@@ -692,22 +692,22 @@ describe('WaterComponent', () => {
   describe('Form Interactions', () => {
     it('should return hasValidInput from form service', () => {
       mockFormService.hasValidInput.mockReturnValue(true);
-      expect(component['hasValidInput']).toBe(true);
+      expect(component['hasValidInput']()).toBe(true);
     });
 
     it('should return false for hasValidInput when form has no values', () => {
       mockFormService.hasValidInput.mockReturnValue(false);
-      expect(component['hasValidInput']).toBe(false);
+      expect(component['hasValidInput']()).toBe(false);
     });
 
     it('should return dateExists from form service', () => {
       mockFormService.isDateDuplicate.mockReturnValue(true);
-      expect(component['dateExists']).toBe(true);
+      expect(component['dateExists']()).toBe(true);
     });
 
     it('should return false for dateExists when no duplicate date', () => {
       mockFormService.isDateDuplicate.mockReturnValue(false);
-      expect(component['dateExists']).toBe(false);
+      expect(component['dateExists']()).toBe(false);
     });
 
     it('should save record when input is valid and date does not exist', () => {

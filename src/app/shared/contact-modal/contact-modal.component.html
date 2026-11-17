@@ -188,10 +188,12 @@
   </dialog>
 </div>
 
-<app-help-modal
-  [show]="showHelpModal()"
-  [titleKey]="'CONTACT.HELP_TITLE'"
-  [steps]="helpSteps"
-  (closeModal)="showHelpModal.set(false)"
->
-</app-help-modal>
+@if (showHelpModal()) {
+  <app-help-modal
+    [show]="showHelpModal()"
+    [titleKey]="'CONTACT.HELP_TITLE'"
+    [steps]="helpSteps"
+    (closeModal)="showHelpModal.set(false)"
+  >
+  </app-help-modal>
+}

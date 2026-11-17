@@ -1,7 +1,7 @@
 // German landing page translations
 export const landing = {
   LANDING: {
-    BADGE: 'Open Source · Für immer kostenlos',
+    BADGE: 'Quellcode verfügbar · Für immer kostenlos',
     TITLE_LINE_1: 'Dein Zuhause,',
     TITLE_LINE_2: 'Voll verwaltet.',
     SUBTITLE:
@@ -13,7 +13,7 @@ export const landing = {
     THEME_TOGGLE: 'Farbdesign umschalten',
     SCROLL_PROGRESS: 'Seitenscrollfortschritt',
     STATS: {
-      FREE: 'Kostenlos und Open Source',
+      FREE: 'Kostenlos mit verfügbarem Quellcode',
       TRACKERS: 'Verbrauchszähler',
       DATA_POINTS: 'Datenpunkte',
       ADS: 'Werbung je',
@@ -39,8 +39,8 @@ export const landing = {
       UNIFIED_TAG_3: 'Tagesverbrauch',
       PRIVACY_TITLE: 'Mehrsprachigkeit und voller Datenschutz',
       PRIVACY_DESC:
-        'Vollständige Unterstützung in 5 Sprachen mit barrierefreien kontrastreichen Designs und ohne Tracker.',
-      PRIVACY_TAG_1: '5 Sprachen',
+        'Vollständige Unterstützung in 6 Sprachen mit barrierefreien kontrastreichen Designs und ohne Tracker.',
+      PRIVACY_TAG_1: '6 Sprachen',
       PRIVACY_TAG_2: 'Keine Tracker',
       PRIVACY_TAG_3: 'Barrierefreie Designs',
     },
@@ -86,6 +86,20 @@ export const landing = {
       STEP_3_TITLE: 'Einblicke sehen',
       STEP_3_DESC: 'Schöne Diagramme zeigen deine Trends, Vergleiche und den Pro-Kopf-Verbrauch.',
     },
+    FAQ: {
+      TITLE: 'Häufig gestellte Fragen',
+      SUBTITLE: 'Alles Wichtige zu Datenschutz, Zählererfassung und Verbrauchsprognosen.',
+      Q1: 'Benötigt Home Management ein Konto oder ein Abonnement?',
+      A1: 'Nein. Home Management ist für den privaten Haushaltsgebrauch zu 100 % kostenlos und funktioniert sofort im Browser ohne Registrierung. Eine optionale Google-Anmeldung wird nur benötigt, wenn Sie Daten geräteübergreifend synchronisieren möchten.',
+      Q2: 'Wo werden meine Haushaltsverbrauchsdaten gespeichert?',
+      A2: 'Standardmäßig bleiben alle Daten für Wasserverbrauch, Heizungsverbrauch und Stromverbrauch lokal in Ihrem Browserspeicher. Es gibt keine Werbung und keine Drittanbieter-Tracker. Sie können Ihre Daten jederzeit exportieren oder optional in der Cloud sichern.',
+      Q3: 'Wie funktioniert die Kamera-Zählerablesung (OCR)?',
+      A3: 'Wenn Sie ein Foto Ihres Zählers aufnehmen oder hochladen, laufen Bildzuschnitt, Kontrastoptimierung und die Texterkennung mit Tesseract.js vollständig auf Ihrem Gerät ab. Ihre Zählerfotos verlassen niemals Ihren Browser.',
+      Q4: 'Wie werden Verbrauchsprognosen und Ländervergleiche berechnet?',
+      A4: 'Prognosen kombinieren lineare und polynomische Regression mit saisonalen Gewichtungen und automatischer Genauigkeitskorrektur. Ländervergleiche stellen Ihren Pro-Kopf-Verbrauch offiziellen Statistiken von Behörden und Verbänden wie dem Umweltbundesamt, dem BDEW (Bundesverband der Energiewirtschaft und Wasserwirtschaft), Eurostat (Statistisches Amt der Europäischen Union) und der EIA (U.S. Energy Information Administration) gegenüber.',
+      Q5: 'Kann ich Zählerwechsel erfassen und bestehende Excel-Tabellen importieren?',
+      A5: 'Ja. Bei einem Zählertausch berechnet die App die Verbrauchsdifferenz nahtlos ohne künstliche Ausreißer. Zudem können Sie historische Excel-Dateien (.xlsx) mit freier Spaltenzuordnung importieren sowie nach Excel, JSON und PDF exportieren.',
+    },
     CTA: {
       TITLE: 'Bereit die Kontrolle zu übernehmen?',
       SUBTITLE:
@@ -94,6 +108,7 @@ export const landing = {
     },
     FOOTER: {
       GITHUB: 'GitHub',
+      BENCHMARKS: 'Ländervergleich',
       OPEN_APP: 'App öffnen',
     },
   },

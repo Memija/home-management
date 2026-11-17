@@ -242,44 +242,60 @@
   }
 </div>
 
-<app-delete-confirmation-modal
-  [show]="showUnsavedChangesModal()"
-  [titleKey]="'SETTINGS.UNSAVED_CHANGES_TITLE'"
-  [messageKey]="'SETTINGS.UNSAVED_CHANGES_MESSAGE_GENERIC'"
-  [cancelKey]="'SETTINGS.UNSAVED_CHANGES_STAY'"
-  [deleteKey]="'SETTINGS.UNSAVED_CHANGES_LEAVE'"
-  [icon]="TriangleAlertIcon"
-  (confirm)="confirmLeaveWithoutSaving()"
-  (cancelModal)="stayAndSave()"
->
-</app-delete-confirmation-modal>
+@defer (when showUnsavedChangesModal()) {
+  @if (showUnsavedChangesModal()) {
+    <app-delete-confirmation-modal
+      [show]="showUnsavedChangesModal()"
+      [titleKey]="'SETTINGS.UNSAVED_CHANGES_TITLE'"
+      [messageKey]="'SETTINGS.UNSAVED_CHANGES_MESSAGE_GENERIC'"
+      [cancelKey]="'SETTINGS.UNSAVED_CHANGES_STAY'"
+      [deleteKey]="'SETTINGS.UNSAVED_CHANGES_LEAVE'"
+      [icon]="TriangleAlertIcon"
+      (confirm)="confirmLeaveWithoutSaving()"
+      (cancelModal)="stayAndSave()"
+    >
+    </app-delete-confirmation-modal>
+  }
+}
 
-<app-confirmation-modal
-  [show]="showImportConfirmModal()"
-  [titleKey]="'SETTINGS.IMPORT_ADDRESS_CONFIRM_TITLE'"
-  [messageKey]="'SETTINGS.IMPORT_ADDRESS_CONFIRM_MESSAGE'"
-  [cancelKey]="'SETTINGS.CANCEL'"
-  [confirmKey]="'HOME.IMPORT_BUTTON'"
-  [icon]="ImportIcon"
-  (confirm)="confirmImportAddress()"
-  (cancelModal)="cancelImportAddress()"
->
-</app-confirmation-modal>
+@defer (when showImportConfirmModal()) {
+  @if (showImportConfirmModal()) {
+    <app-confirmation-modal
+      [show]="showImportConfirmModal()"
+      [titleKey]="'SETTINGS.IMPORT_ADDRESS_CONFIRM_TITLE'"
+      [messageKey]="'SETTINGS.IMPORT_ADDRESS_CONFIRM_MESSAGE'"
+      [cancelKey]="'SETTINGS.CANCEL'"
+      [confirmKey]="'HOME.IMPORT_BUTTON'"
+      [icon]="ImportIcon"
+      (confirm)="confirmImportAddress()"
+      (cancelModal)="cancelImportAddress()"
+    >
+    </app-confirmation-modal>
+  }
+}
 
-<app-error-modal
-  [show]="showImportErrorModal()"
-  [title]="'SETTINGS.IMPORT_ADDRESS_CONFIRM_TITLE'"
-  [message]="importErrorMessage()"
-  [details]="importErrorDetails()"
-  [instructions]="importErrorInstructions()"
-  (cancelModal)="closeImportErrorModal()"
->
-</app-error-modal>
+@defer (when showImportErrorModal()) {
+  @if (showImportErrorModal()) {
+    <app-error-modal
+      [show]="showImportErrorModal()"
+      [title]="'SETTINGS.IMPORT_ADDRESS_CONFIRM_TITLE'"
+      [message]="importErrorMessage()"
+      [details]="importErrorDetails()"
+      [instructions]="importErrorInstructions()"
+      (cancelModal)="closeImportErrorModal()"
+    >
+    </app-error-modal>
+  }
+}
 
-<app-help-modal
-  [show]="showHelpModal()"
-  [titleKey]="'SETTINGS.ADDRESS_HELP_TITLE'"
-  [steps]="helpSteps"
-  (closeModal)="showHelpModal.set(false)"
->
-</app-help-modal>
+@defer (when showHelpModal()) {
+  @if (showHelpModal()) {
+    <app-help-modal
+      [show]="showHelpModal()"
+      [titleKey]="'SETTINGS.ADDRESS_HELP_TITLE'"
+      [steps]="helpSteps"
+      (closeModal)="showHelpModal.set(false)"
+    >
+    </app-help-modal>
+  }
+}

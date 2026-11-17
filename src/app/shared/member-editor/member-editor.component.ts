@@ -1,5 +1,14 @@
-import { Component, Input, Output, EventEmitter, signal, OnInit, OnChanges } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import {
+  Component,
+  ChangeDetectionStrategy,
+  computed,
+  input,
+  output,
+  signal,
+  effect,
+  OnInit,
+  OnChanges,
+} from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import {
   LucideAngularModule,
@@ -28,22 +37,23 @@ export interface MemberEditData {
 @Component({
   selector: 'app-member-editor',
   standalone: true,
-  imports: [CommonModule, FormsModule, LucideAngularModule, TranslatePipe],
+  imports: [FormsModule, LucideAngularModule, TranslatePipe],
   templateUrl: './member-editor.component.html',
   styleUrl: './member-editor.component.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class MemberEditorComponent implements OnInit, OnChanges {
   /** The member being edited */
-  @Input() member?: HouseholdMember;
+  readonly member = input<HouseholdMember | undefined>(undefined);
 
   /** Available avatar options */
-  @Input() avatars: string[] = [];
+  readonly avatars = input<string[]>([]);
 
   /** Emits the updated member data on save */
-  @Output() save = new EventEmitter<MemberEditData>();
+  readonly save = output<MemberEditData>();
 
   /** Emits when editing is cancelled */
-  @Output() cancelModal = new EventEmitter<void>();
+  readonly cancelModal = output<void>();
 
   // Icons
   protected readonly SaveIcon = Save;
@@ -64,11 +74,26 @@ export class MemberEditorComponent implements OnInit, OnChanges {
   protected readonly editGender = signal<'male' | 'female' | 'other' | undefined>(undefined);
   protected readonly editAvatar = signal('');
   protected readonly customPicturePreview = signal<string | null>(null);
+  protected readonly isSaveDisabled = computed(
+    () =>
+      !this.editName() ||
+      !this.editSurname() ||
+      Boolean(this.editNameError()) ||
+      Boolean(this.editSurnameError()),
+  );
 
   private initialized = false;
 
+  constructor() {
+    effect(() => {
+      this.initializeFromMember();
+    });
+  }
+
   ngOnInit(): void {
-    this.initializeFromMember();
+    if (!this.initialized) {
+      this.initializeFromMember();
+    }
   }
 
   ngOnChanges(): void {
@@ -78,12 +103,13 @@ export class MemberEditorComponent implements OnInit, OnChanges {
   }
 
   private initializeFromMember(): void {
-    if (!this.member) return;
-    this.editName.set(this.member.name);
-    this.editSurname.set(this.member.surname);
-    this.editType.set(this.member.type);
-    this.editGender.set(this.member.gender);
-    this.editAvatar.set(this.member.avatar);
+    const member = this.member();
+    if (!member) return;
+    this.editName.set(member.name);
+    this.editSurname.set(member.surname);
+    this.editType.set(member.type);
+    this.editGender.set(member.gender);
+    this.editAvatar.set(member.avatar);
     this.customPicturePreview.set(null);
     this.editNameError.set('');
     this.editSurnameError.set('');
@@ -124,7 +150,7 @@ export class MemberEditorComponent implements OnInit, OnChanges {
     const avatar = this.customPicturePreview() || this.editAvatar();
 
     this.save.emit({
-      id: this.member?.id || '',
+      id: this.member()?.id || '',
       name: this.editName(),
       surname: this.editSurname(),
       type: this.editType(),

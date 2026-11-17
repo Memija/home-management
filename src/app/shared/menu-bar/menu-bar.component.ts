@@ -1,7 +1,9 @@
-import { Component, signal } from '@angular/core';
+import { Component, ChangeDetectionStrategy, signal } from '@angular/core';
 import { RouterLink, RouterLinkActive } from '@angular/router';
 import { TranslatePipe } from '../../pipes/translate.pipe';
 import { ContactModalComponent, EmailClient } from '../contact-modal/contact-modal.component';
+
+const EXACT_ROUTE_OPTIONS = { exact: true };
 
 @Component({
   selector: 'app-menu-bar',
@@ -9,8 +11,13 @@ import { ContactModalComponent, EmailClient } from '../contact-modal/contact-mod
   imports: [RouterLink, RouterLinkActive, TranslatePipe, ContactModalComponent],
   templateUrl: './menu-bar.component.html',
   styleUrl: './menu-bar.component.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class MenuBarComponent {
+  protected get exactRouteOptions(): { exact: boolean } {
+    return EXACT_ROUTE_OPTIONS;
+  }
+
   // Contact modal state
   protected readonly showContactModal = signal(false);
 

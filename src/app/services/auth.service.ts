@@ -2,7 +2,6 @@ import { Injectable, inject, signal, computed, PLATFORM_ID } from '@angular/core
 import { isPlatformBrowser } from '@angular/common';
 import { Auth, User as FirebaseUser } from 'firebase/auth';
 import { environment } from '../../environments/environment';
-import { BehaviorSubject } from 'rxjs';
 
 export interface AuthUser {
   uid: string;
@@ -18,9 +17,6 @@ export class AuthService {
   private readonly platformId = inject(PLATFORM_ID);
   private authInstance: Auth | null = null;
   private authInitPromise: Promise<Auth> | null = null;
-
-  private readonly userSubject = new BehaviorSubject<AuthUser | null>(null);
-  private readonly loadingSubject = new BehaviorSubject<boolean>(true);
 
   /** Current authenticated user */
   readonly user = signal<AuthUser | null>(null);
@@ -85,13 +81,10 @@ export class AuthService {
           photoURL: firebaseUser.photoURL,
         };
         this.user.set(authUser);
-        this.userSubject.next(authUser);
       } else {
         this.user.set(null);
-        this.userSubject.next(null);
       }
       this.isLoading.set(false);
-      this.loadingSubject.next(false);
     });
   }
 

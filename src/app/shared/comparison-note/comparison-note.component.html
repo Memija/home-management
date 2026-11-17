@@ -14,7 +14,7 @@
           <lucide-icon [img]="InfoIcon" size="14" class="info-icon"></lucide-icon>
           <span class="info-tooltip">{{
             hasSufficientDataForComparison()
-              ? ('CHART.COMPARE_WITH_INFO_' + typeSignal().toUpperCase() | translate)
+              ? (compareWithInfoKey() | translate)
               : ('CHART.COMPARISON_REQUIRES_DATA' | translate)
           }}</span>
         </span>
@@ -22,15 +22,9 @@
       </label>
       <div class="select-with-flag" [class.disabled]="!hasSufficientDataForComparison()">
         <img
-          [src]="getSelectedCountryFlag()"
-          alt="Country flag"
-          [alt]="
-            'CHART.COUNTRY_FLAG_ALT' | translate: { country: effectiveComparisonCountryCode() }
-          "
-          title="Country flag"
-          [title]="
-            'CHART.COUNTRY_FLAG_ALT' | translate: { country: effectiveComparisonCountryCode() }
-          "
+          [src]="selectedCountryFlag()"
+          alt="{{ countryFlagAlt() }}"
+          title="{{ countryFlagAlt() }}"
           class="country-flag"
         />
         <select
@@ -42,16 +36,14 @@
           @for (country of availableCountries(); track country.code) {
             <option
               [value]="country.code"
-              [selected]="
-                country.code.toLowerCase() === effectiveComparisonCountryCode().toLowerCase()
-              "
+              [selected]="country.codeLower === effectiveComparisonCountryCodeLower()"
             >
-              @if (typeSignal() === 'water') {
-                {{ country.translationKey | translate }} ({{ country.average }} L)
-              } @else if (typeSignal() === 'electricity') {
-                {{ country.translationKey | translate }} ({{ country.average }} kWh/p/a)
+              @if (type() === 'water') {
+                {{ country.name }} ({{ country.average }} L)
+              } @else if (type() === 'electricity') {
+                {{ country.name }} ({{ country.average }} kWh/p/a)
               } @else {
-                {{ country.translationKey | translate }} ({{ country.average }} kWh/a)
+                {{ country.name }} ({{ country.average }} kWh/a)
               }
             </option>
           }
@@ -65,9 +57,9 @@
     <div class="country-fact">
       <lucide-icon [img]="LightbulbIcon" class="fact-icon" size="20"></lucide-icon>
       <div class="fact-content">
-        @if (typeSignal() === 'heating') {
+        @if (type() === 'heating') {
           <div class="fact-label">{{ heatingFactTitle() }}</div>
-        } @else if (typeSignal() === 'electricity') {
+        } @else if (type() === 'electricity') {
           <div class="fact-label">{{ electricityFactTitle() }}</div>
         } @else {
           <div class="fact-label">{{ 'CHART.DID_YOU_KNOW' | translate }}</div>

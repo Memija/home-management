@@ -1,0 +1,189 @@
+@if (show()) {
+  <!-- eslint-disable-next-line @angular-eslint/template/interactive-supports-focus -- Backdrop dismissal by design -->
+  <div
+    class="modal-overlay add-member-modal-overlay"
+    (click)="$event.target === $event.currentTarget ? closeModal.emit() : undefined"
+    (keydown.escape)="closeModal.emit()"
+  >
+    <div class="modal-content member-modal-content add-member-form">
+      <div class="modal-header">
+        <div class="modal-title-with-icon">
+          <lucide-icon [img]="AddIcon" size="20" class="header-icon"></lucide-icon>
+          <h3>{{ 'SETTINGS.ADD_MEMBER_TITLE' | translate }}</h3>
+        </div>
+        <button
+          type="button"
+          class="close-btn"
+          (click)="closeModal.emit()"
+          title="{{ 'SETTINGS.CANCEL' | translate }}"
+          aria-label="{{ 'SETTINGS.CANCEL' | translate }}"
+        >
+          &times;
+        </button>
+      </div>
+
+      <div class="modal-body">
+        <div class="form-grid">
+          <div class="form-group">
+            <label for="new-member-name">{{ 'SETTINGS.NAME' | translate }}</label>
+            <input
+              type="text"
+              id="new-member-name"
+              name="new-member-name"
+              autocomplete="given-name"
+              [ngModel]="name()"
+              (ngModelChange)="nameChange.emit($event)"
+              placeholder="John"
+              [class.error]="nameError()"
+            />
+            @if (nameError()) {
+              <div class="warning-message">
+                <lucide-icon [img]="TriangleAlertIcon" size="20" class="warning-icon"></lucide-icon>
+                <span>{{ nameError() | translate }}</span>
+              </div>
+            }
+          </div>
+          <div class="form-group">
+            <label for="new-member-surname">{{ 'SETTINGS.SURNAME' | translate }}</label>
+            <input
+              type="text"
+              id="new-member-surname"
+              name="new-member-surname"
+              autocomplete="family-name"
+              [ngModel]="surname()"
+              (ngModelChange)="surnameChange.emit($event)"
+              placeholder="Doe"
+              [class.error]="surnameError()"
+            />
+            @if (surnameError()) {
+              <div class="warning-message">
+                <lucide-icon [img]="TriangleAlertIcon" size="20" class="warning-icon"></lucide-icon>
+                <span>{{ surnameError() | translate }}</span>
+              </div>
+            }
+          </div>
+        </div>
+
+        <div class="form-grid">
+          <div class="form-group">
+            <span class="form-label">{{ 'SETTINGS.TYPE' | translate }}</span>
+            <div class="toggle-group">
+              <button
+                type="button"
+                class="toggle-btn toggle-adult"
+                [class.active]="memberType() === 'adult'"
+                (click)="typeChange.emit('adult')"
+                title="{{ 'SETTINGS.TYPES.ADULT' | translate }}"
+                aria-label="{{ 'SETTINGS.TYPES.ADULT' | translate }}"
+              >
+                <lucide-icon [img]="AdultIcon" size="16"></lucide-icon>
+                <span class="toggle-text">{{ 'SETTINGS.TYPES.ADULT' | translate }}</span>
+              </button>
+              <button
+                type="button"
+                class="toggle-btn toggle-kid"
+                [class.active]="memberType() === 'kid'"
+                (click)="typeChange.emit('kid')"
+                title="{{ 'SETTINGS.TYPES.KID' | translate }}"
+                aria-label="{{ 'SETTINGS.TYPES.KID' | translate }}"
+              >
+                <lucide-icon [img]="KidIcon" size="16"></lucide-icon>
+                <span class="toggle-text">{{ 'SETTINGS.TYPES.KID' | translate }}</span>
+              </button>
+            </div>
+          </div>
+          <div class="form-group">
+            <span class="form-label">{{ 'SETTINGS.GENDER' | translate }}</span>
+            <div class="toggle-group">
+              <button
+                type="button"
+                class="toggle-btn toggle-male"
+                [class.active]="memberGender() === 'male'"
+                (click)="genderChange.emit('male')"
+                title="{{ 'SETTINGS.GENDERS.MALE' | translate }}"
+                aria-label="{{ 'SETTINGS.GENDERS.MALE' | translate }}"
+              >
+                <lucide-icon [img]="MaleIcon" size="16"></lucide-icon>
+                <span class="toggle-text">{{ 'SETTINGS.GENDERS.MALE' | translate }}</span>
+              </button>
+              <button
+                type="button"
+                class="toggle-btn toggle-female"
+                [class.active]="memberGender() === 'female'"
+                (click)="genderChange.emit('female')"
+                title="{{ 'SETTINGS.GENDERS.FEMALE' | translate }}"
+                aria-label="{{ 'SETTINGS.GENDERS.FEMALE' | translate }}"
+              >
+                <lucide-icon [img]="FemaleIcon" size="16"></lucide-icon>
+                <span class="toggle-text">{{ 'SETTINGS.GENDERS.FEMALE' | translate }}</span>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <span class="form-label">{{ 'SETTINGS.CUSTOM_PICTURE' | translate }}</span>
+          <label class="upload-btn">
+            <lucide-icon [img]="ImportIcon" size="14"></lucide-icon>
+            <span class="btn-text">{{ 'SETTINGS.UPLOAD_PICTURE' | translate }}</span>
+            <input
+              type="file"
+              id="new-member-file"
+              name="new-member-file"
+              accept="image/*"
+              (change)="fileUpload.emit($event)"
+              class="hidden-input"
+            />
+          </label>
+          @if (picturePreview()) {
+            <div class="picture-preview">
+              <img [src]="picturePreview()" alt="New member avatar preview" />
+            </div>
+          }
+        </div>
+
+        <div class="form-group">
+          <span class="form-label">{{ 'SETTINGS.SELECT_AVATAR' | translate }}</span>
+          <div class="avatar-grid">
+            @for (avatar of avatars(); track avatar) {
+              <button
+                type="button"
+                class="avatar-btn"
+                [class.selected]="selectedAvatar() === avatar"
+                (click)="avatarSelect.emit(avatar)"
+                [attr.aria-label]="'SETTINGS.SELECT_AVATAR' | translate"
+                [title]="'SETTINGS.SELECT_AVATAR' | translate"
+              >
+                <img [src]="avatar" alt="Hero Avatar" />
+              </button>
+            }
+          </div>
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        <button
+          type="button"
+          class="btn-secondary cancel-btn"
+          (click)="closeModal.emit()"
+          title="{{ 'SETTINGS.CANCEL' | translate }}"
+          aria-label="{{ 'SETTINGS.CANCEL' | translate }}"
+        >
+          <lucide-icon [img]="CancelIcon" size="15"></lucide-icon>
+          <span class="btn-text">{{ 'SETTINGS.CANCEL' | translate }}</span>
+        </button>
+        <button
+          type="button"
+          class="btn-primary add-btn submit-add-btn"
+          (click)="submitMember.emit()"
+          [disabled]="isSubmitDisabled"
+          title="{{ 'SETTINGS.ADD_MEMBER' | translate }}"
+          aria-label="{{ 'SETTINGS.ADD_MEMBER' | translate }}"
+        >
+          <lucide-icon [img]="AddIcon" size="15"></lucide-icon>
+          <span class="btn-text">{{ 'SETTINGS.ADD_MEMBER' | translate }}</span>
+        </button>
+      </div>
+    </div>
+  </div>
+}

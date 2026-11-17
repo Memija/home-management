@@ -1,8 +1,9 @@
 import {
   Component,
+  ChangeDetectionStrategy,
+  computed,
   inject,
   signal,
-  HostListener,
   OnInit,
   OnDestroy,
   PLATFORM_ID,
@@ -50,14 +51,44 @@ import {
   SlidersHorizontal,
 } from 'lucide-angular';
 
+import {
+  ALL_SCENERY,
+  FEATURE_KEYS,
+  FLOATING_BADGES,
+  HERO_ROAD_PATH,
+  HIGHLIGHT_KEYS,
+  HOW_STEPS,
+  LEFT_SCENERY,
+  PAGE_ROAD_PATH,
+  RIGHT_SCENERY,
+  STAT_KEYS,
+} from './landing.constants';
+import { LandingFaqComponent } from './landing-faq/landing-faq.component';
+
 @Component({
   selector: 'app-landing',
   standalone: true,
-  imports: [RouterLink, LanguageSwitcherComponent, TranslatePipe, LucideAngularModule],
+  imports: [
+    RouterLink,
+    LanguageSwitcherComponent,
+    LandingFaqComponent,
+    TranslatePipe,
+    LucideAngularModule,
+  ],
   templateUrl: './landing.component.html',
   styleUrl: './landing.component.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class LandingComponent implements OnInit, OnDestroy {
+  private static readonly THEME_ORDER: readonly Theme[] = ['light', 'dark', 'system'];
+  private static readonly THEME_KEYS: Record<Theme, string> = {
+    light: 'SETTINGS.THEME_LIGHT',
+    dark: 'SETTINGS.THEME_DARK',
+    system: 'SETTINGS.THEME_SYSTEM',
+  };
+  protected readonly heroOrbs = ['orb-teal', 'orb-blue', 'orb-indigo'] as const;
+  protected readonly ctaRings = [1, 2, 3] as const;
+
   protected readonly themeService = inject(ThemeService);
   protected readonly languageService = inject(LanguageService);
   private readonly platformId = inject(PLATFORM_ID);
@@ -98,189 +129,54 @@ export class LandingComponent implements OnInit, OnDestroy {
   readonly SlidersHorizontalIcon = SlidersHorizontal;
 
   protected readonly scrollY = signal(0);
+  protected readonly isScrolled = computed(() => this.scrollY() > 50);
   protected readonly roadProgress = signal(0);
   protected readonly isVisible = signal<Record<string, boolean>>({});
 
   private isDragging = false;
+  private dragRoadRect: DOMRect | null = null;
+  private dragMaxScroll: number | null = null;
+  private cachedMaxScroll = 0;
+  private readonly onWindowScrollBound = this.onWindowScroll.bind(this);
+  private readonly onWindowResizeBound = this.onWindowResize.bind(this);
   private readonly onDragMoveBound = this.onDragMove.bind(this);
   private readonly onDragEndBound = this.onDragEnd.bind(this);
 
-  protected readonly highlightKeys = [
-    {
-      icon: ShieldCheck,
-      titleKey: 'LANDING.HIGHLIGHTS.LOCAL_TITLE',
-      descKey: 'LANDING.HIGHLIGHTS.LOCAL_DESC',
-      tags: [
-        'LANDING.HIGHLIGHTS.LOCAL_TAG_1',
-        'LANDING.HIGHLIGHTS.LOCAL_TAG_2',
-        'LANDING.HIGHLIGHTS.LOCAL_TAG_3',
-      ],
-      themeClass: 'highlight--local',
-      color: '#10b981',
-    },
-    {
-      icon: Brain,
-      titleKey: 'LANDING.HIGHLIGHTS.PREDICT_TITLE',
-      descKey: 'LANDING.HIGHLIGHTS.PREDICT_DESC',
-      tags: [
-        'LANDING.HIGHLIGHTS.PREDICT_TAG_1',
-        'LANDING.HIGHLIGHTS.PREDICT_TAG_2',
-        'LANDING.HIGHLIGHTS.PREDICT_TAG_3',
-      ],
-      themeClass: 'highlight--predict',
-      color: '#a855f7',
-    },
-    {
-      icon: Layers,
-      titleKey: 'LANDING.HIGHLIGHTS.UNIFIED_TITLE',
-      descKey: 'LANDING.HIGHLIGHTS.UNIFIED_DESC',
-      tags: [
-        'LANDING.HIGHLIGHTS.UNIFIED_TAG_1',
-        'LANDING.HIGHLIGHTS.UNIFIED_TAG_2',
-        'LANDING.HIGHLIGHTS.UNIFIED_TAG_3',
-      ],
-      themeClass: 'highlight--unified',
-      color: '#0284c7',
-    },
-    {
-      icon: Globe,
-      titleKey: 'LANDING.HIGHLIGHTS.PRIVACY_TITLE',
-      descKey: 'LANDING.HIGHLIGHTS.PRIVACY_DESC',
-      tags: [
-        'LANDING.HIGHLIGHTS.PRIVACY_TAG_1',
-        'LANDING.HIGHLIGHTS.PRIVACY_TAG_2',
-        'LANDING.HIGHLIGHTS.PRIVACY_TAG_3',
-      ],
-      themeClass: 'highlight--privacy',
-      color: '#f43f5e',
-    },
-  ];
-
-  protected readonly featureKeys = [
-    {
-      icon: Droplets,
-      titleKey: 'LANDING.FEATURES.WATER_TITLE',
-      descKey: 'LANDING.FEATURES.WATER_DESC',
-      color: '#3b82f6',
-    },
-    {
-      icon: Flame,
-      titleKey: 'LANDING.FEATURES.HEATING_TITLE',
-      descKey: 'LANDING.FEATURES.HEATING_DESC',
-      color: '#f59e0b',
-    },
-    {
-      icon: Zap,
-      titleKey: 'LANDING.FEATURES.ELECTRICITY_TITLE',
-      descKey: 'LANDING.FEATURES.ELECTRICITY_DESC',
-      color: '#8b5cf6',
-    },
-    {
-      icon: Users,
-      titleKey: 'LANDING.FEATURES.FAMILY_TITLE',
-      descKey: 'LANDING.FEATURES.FAMILY_DESC',
-      color: '#10b981',
-    },
-    {
-      icon: ChartBar,
-      titleKey: 'LANDING.FEATURES.ANALYTICS_TITLE',
-      descKey: 'LANDING.FEATURES.ANALYTICS_DESC',
-      color: '#ec4899',
-    },
-    {
-      icon: Brain,
-      titleKey: 'LANDING.FEATURES.PREDICTIONS_TITLE',
-      descKey: 'LANDING.FEATURES.PREDICTIONS_DESC',
-      color: '#a855f7',
-    },
-    {
-      icon: Globe,
-      titleKey: 'LANDING.FEATURES.COUNTRY_TITLE',
-      descKey: 'LANDING.FEATURES.COUNTRY_DESC',
-      color: '#f97316',
-    },
-    {
-      icon: Cloud,
-      titleKey: 'LANDING.FEATURES.CLOUD_TITLE',
-      descKey: 'LANDING.FEATURES.CLOUD_DESC',
-      color: '#06b6d4',
-    },
-    {
-      icon: FileSpreadsheet,
-      titleKey: 'LANDING.FEATURES.EXPORT_TITLE',
-      descKey: 'LANDING.FEATURES.EXPORT_DESC',
-      color: '#14b8a6',
-    },
-  ];
-
-  protected readonly statKeys = [
-    { value: '100%', labelKey: 'LANDING.STATS.FREE', icon: Sparkles },
-    { value: '3', labelKey: 'LANDING.STATS.TRACKERS', icon: Layers },
-    { value: '∞', labelKey: 'LANDING.STATS.DATA_POINTS', icon: LucideInfinity },
-    { value: '0', labelKey: 'LANDING.STATS.ADS', icon: ShieldCheck },
-  ];
-
-  protected readonly leftScenery = [
-    { top: 8, left: 28, delay: 0.1, type: 'tree', icon: '🌳' },
-    { top: 16, left: 24, delay: 0.15, type: 'house', icon: '🏡' },
-    { top: 24, left: 28, delay: 0.2, type: 'tree', icon: '🌲' },
-    { top: 34, left: 34, delay: 0.25, type: 'tree', icon: '🌳' },
-    { top: 44, left: 38, delay: 0.3, type: 'house', icon: '🏠' },
-    { top: 52, left: 34, delay: 0.35, type: 'tree', icon: '🌲' },
-    { top: 62, left: 28, delay: 0.4, type: 'tree', icon: '🌳' },
-    { top: 72, left: 24, delay: 0.45, type: 'house', icon: '🏡' },
-    { top: 82, left: 28, delay: 0.5, type: 'tree', icon: '🌲' },
-    { top: 92, left: 32, delay: 0.55, type: 'tree', icon: '🌳' },
-  ];
-
-  protected readonly rightScenery = [
-    { top: 10, left: 62, delay: 0.12, type: 'tree', icon: '🌲' },
-    { top: 20, left: 64, delay: 0.18, type: 'house', icon: '🏘️' },
-    { top: 30, left: 66, delay: 0.24, type: 'tree', icon: '🌳' },
-    { top: 40, left: 72, delay: 0.3, type: 'house', icon: '🏠' },
-    { top: 48, left: 74, delay: 0.36, type: 'tree', icon: '🌲' },
-    { top: 58, left: 70, delay: 0.42, type: 'tree', icon: '🌳' },
-    { top: 66, left: 64, delay: 0.48, type: 'house', icon: '🏡' },
-    { top: 76, left: 60, delay: 0.54, type: 'tree', icon: '🌲' },
-    { top: 86, left: 64, delay: 0.6, type: 'tree', icon: '🌳' },
-    { top: 94, left: 66, delay: 0.66, type: 'house', icon: '🏠' },
-  ];
-
-  protected readonly floatingBadges = [
-    { icon: Droplets, top: '16%', left: '8%', delay: '0s', size: '20', color: '#3b82f6' },
-    {
-      icon: Flame,
-      top: '24%',
-      left: 'auto',
-      right: '10%',
-      delay: '-4s',
-      size: '18',
-      color: '#f59e0b',
-    },
-    { icon: Zap, top: '62%', left: '10%', delay: '-8s', size: '18', color: '#8b5cf6' },
-    {
-      icon: ChartBar,
-      top: '72%',
-      left: 'auto',
-      right: '8%',
-      delay: '-12s',
-      size: '18',
-      color: '#ec4899',
-    },
-    {
-      icon: House,
-      top: '44%',
-      left: 'auto',
-      right: '18%',
-      delay: '-16s',
-      size: '22',
-      color: '#10b981',
-    },
-  ];
+  protected readonly highlightKeys = HIGHLIGHT_KEYS;
+  protected readonly featureKeys = FEATURE_KEYS;
+  protected readonly statKeys = STAT_KEYS;
+  protected readonly leftScenery = LEFT_SCENERY;
+  protected readonly rightScenery = RIGHT_SCENERY;
+  protected readonly allScenery = ALL_SCENERY;
+  protected readonly floatingBadges = FLOATING_BADGES;
+  protected readonly howSteps = HOW_STEPS;
+  protected readonly heroRoadPath = HERO_ROAD_PATH;
+  protected readonly pageRoadPath = PAGE_ROAD_PATH;
 
   private observer: IntersectionObserver | null = null;
+  private scrollRafId: number | null = null;
 
-  @HostListener('window:scroll')
+  protected readonly themeIcon = computed(() => this.getThemeIcon());
+  protected readonly themeTitle = computed(() => {
+    this.languageService.currentLang();
+    this.languageService.translationVersion?.();
+    return this.getThemeTitle();
+  });
+  private readonly clampedParallaxScroll = computed(() => Math.min(this.scrollY(), 900));
+  protected readonly floatingIconsParallax = computed(() => this.getParallaxTransform(-0.25));
+
+  onWindowScroll(): void {
+    if (this.scrollRafId !== null) return;
+    this.scrollRafId = requestAnimationFrame(() => {
+      this.scrollRafId = null;
+      this.onScroll();
+    });
+  }
+
+  onWindowResize(): void {
+    this.cachedMaxScroll = Math.max(0, document.documentElement.scrollHeight - window.innerHeight);
+  }
+
   onScroll(): void {
     this.scrollY.set(window.scrollY);
     this.updateRoadProgress();
@@ -288,13 +184,21 @@ export class LandingComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     if (isPlatformBrowser(this.platformId)) {
+      window.addEventListener('scroll', this.onWindowScrollBound, { passive: true });
+      window.addEventListener('resize', this.onWindowResizeBound, { passive: true });
       this.setupIntersectionObserver();
     }
   }
 
   ngOnDestroy(): void {
     this.observer?.disconnect();
+    if (this.scrollRafId !== null && typeof cancelAnimationFrame !== 'undefined') {
+      cancelAnimationFrame(this.scrollRafId);
+      this.scrollRafId = null;
+    }
     if (isPlatformBrowser(this.platformId)) {
+      window.removeEventListener('scroll', this.onWindowScrollBound);
+      window.removeEventListener('resize', this.onWindowResizeBound);
       document.removeEventListener('mousemove', this.onDragMoveBound);
       document.removeEventListener('mouseup', this.onDragEndBound);
     }
@@ -303,18 +207,29 @@ export class LandingComponent implements OnInit, OnDestroy {
   private setupIntersectionObserver(): void {
     this.observer = new IntersectionObserver(
       (entries) => {
-        entries.forEach((entry) => {
+        const currentVisible = this.isVisible();
+        let newlyVisible: Record<string, boolean> | null = null;
+        for (const entry of entries) {
           const target = entry.target as HTMLElement;
           const id = target.dataset['animate'];
           if (id && entry.isIntersecting) {
-            this.isVisible.update((prev) => ({ ...prev, [id]: true }));
+            if (!currentVisible[id]) {
+              newlyVisible ??= {};
+              newlyVisible[id] = true;
+            }
+            this.observer?.unobserve(target);
           }
-        });
+        }
+        if (newlyVisible) {
+          const batch = newlyVisible;
+          this.isVisible.update((prev) => ({ ...prev, ...batch }));
+        }
       },
       { threshold: 0.15, rootMargin: '0px 0px -50px 0px' },
     );
 
     setTimeout(() => {
+      this.onWindowResize();
       document.querySelectorAll('[data-animate]').forEach((el) => {
         this.observer?.observe(el);
       });
@@ -322,12 +237,19 @@ export class LandingComponent implements OnInit, OnDestroy {
   }
 
   protected getParallaxTransform(speed: number): string {
-    return `translateY(${this.scrollY() * speed}px)`;
+    return `translateY(${this.clampedParallaxScroll() * speed}px)`;
   }
 
   private updateRoadProgress(): void {
-    const maxScroll = document.documentElement.scrollHeight - window.innerHeight;
-    this.roadProgress.set(maxScroll > 0 ? Math.min((this.scrollY() / maxScroll) * 100, 100) : 0);
+    const maxScroll =
+      this.cachedMaxScroll > 0
+        ? this.cachedMaxScroll
+        : document.documentElement.scrollHeight - window.innerHeight;
+    if (this.cachedMaxScroll <= 0 && maxScroll > 0) {
+      this.cachedMaxScroll = maxScroll;
+    }
+    const rawProgress = maxScroll > 0 ? Math.min((this.scrollY() / maxScroll) * 100, 100) : 0;
+    this.roadProgress.set(Math.round(rawProgress * 10) / 10);
   }
 
   protected onRoadClick(event: MouseEvent): void {
@@ -354,33 +276,39 @@ export class LandingComponent implements OnInit, OnDestroy {
     event.preventDefault();
     event.stopPropagation();
     this.isDragging = true;
+    const roadEl = document.querySelector('.road-progress') as HTMLElement | null;
+    this.dragRoadRect = roadEl ? roadEl.getBoundingClientRect() : null;
+    this.dragMaxScroll = document.documentElement.scrollHeight - window.innerHeight;
     document.addEventListener('mousemove', this.onDragMoveBound);
     document.addEventListener('mouseup', this.onDragEndBound);
   }
 
   private onDragMove(event: MouseEvent): void {
     if (!this.isDragging) return;
-    const roadEl = document.querySelector('.road-progress') as HTMLElement;
-    if (!roadEl) return;
-    const rect = roadEl.getBoundingClientRect();
+    const rect =
+      this.dragRoadRect ??
+      (document.querySelector('.road-progress') as HTMLElement | null)?.getBoundingClientRect();
+    if (!rect) return;
     const posY = Math.max(0, Math.min(event.clientY - rect.top, rect.height));
     const percentage = posY / rect.height;
-    const maxScroll = document.documentElement.scrollHeight - window.innerHeight;
+    const maxScroll =
+      this.dragMaxScroll ?? document.documentElement.scrollHeight - window.innerHeight;
     window.scrollTo({ top: percentage * maxScroll });
   }
 
   private onDragEnd(): void {
     this.isDragging = false;
+    this.dragRoadRect = null;
+    this.dragMaxScroll = null;
     document.removeEventListener('mousemove', this.onDragMoveBound);
     document.removeEventListener('mouseup', this.onDragEndBound);
   }
 
   protected cycleTheme(): void {
     const current = this.themeService.currentTheme();
-    const themeOrder: Theme[] = ['light', 'dark', 'system'];
-    const currentIndex = themeOrder.indexOf(current);
-    const nextIndex = (currentIndex + 1) % themeOrder.length;
-    this.themeService.setTheme(themeOrder[nextIndex]);
+    const currentIndex = LandingComponent.THEME_ORDER.indexOf(current);
+    const nextIndex = (currentIndex + 1) % LandingComponent.THEME_ORDER.length;
+    this.themeService.setTheme(LandingComponent.THEME_ORDER[nextIndex]);
   }
 
   protected getThemeIcon(): string {
@@ -391,18 +319,13 @@ export class LandingComponent implements OnInit, OnDestroy {
 
   protected getThemeTitle(): string {
     const current = this.themeService.currentTheme();
-    const resolved = this.themeService.resolvedTheme();
-
-    const themeNames: Record<Theme, string> = {
-      light: this.languageService.translate('SETTINGS.THEME_LIGHT'),
-      dark: this.languageService.translate('SETTINGS.THEME_DARK'),
-      system: this.languageService.translate('SETTINGS.THEME_SYSTEM'),
-    };
+    const currentName = this.languageService.translate(LandingComponent.THEME_KEYS[current]);
 
     if (current === 'system') {
-      const resolvedName = themeNames[resolved];
-      return `${themeNames.system} (${resolvedName})`;
+      const resolved = this.themeService.resolvedTheme();
+      const resolvedName = this.languageService.translate(LandingComponent.THEME_KEYS[resolved]);
+      return `${currentName} (${resolvedName})`;
     }
-    return themeNames[current];
+    return currentName;
   }
 }

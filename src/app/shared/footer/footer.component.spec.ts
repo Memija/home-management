@@ -95,8 +95,9 @@ describe('FooterComponent', () => {
       expect(component.GithubIcon).not.toBe(component.ShieldIcon);
     });
 
-    it('should have exactly five icon properties', () => {
+    it('should have all six icon properties', () => {
       const iconKeys = [
+        'GlobeIcon',
         'HeartIcon',
         'RocketIcon',
         'HistoryIcon',
@@ -107,7 +108,7 @@ describe('FooterComponent', () => {
         expect(component[key]).toBeDefined();
       });
       const keys = Object.keys(component).filter((k) => k.endsWith('Icon'));
-      expect(keys).toHaveLength(5);
+      expect(keys).toHaveLength(6);
     });
   });
 
@@ -202,6 +203,7 @@ describe('FooterComponent', () => {
 
     it('should not have unexpected enumerable properties beyond the public API', () => {
       const expectedKeys = [
+        'GlobeIcon',
         'HeartIcon',
         'RocketIcon',
         'HistoryIcon',

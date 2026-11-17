@@ -20,5 +20,15 @@ export const privacy = {
     COOKIES_TITLE: 'Kolačići',
     COOKIES_P1:
       'Koristimo samo "Strogo Neophodne" kolačiće potrebne za autentifikaciju i osnovnu funkcionalnost aplikacije. Nisu prisutni kolačići za praćenje, analitiku ili marketing.',
+    DISCLAIMER_TITLE: 'Odricanje od odgovornosti za podatke, prognoze i prosjeke',
+    DISCLAIMER_P1:
+      'Svi prikazani prosjeci potrošnje, procjene, prognoze i analize u aplikaciji Home Management pružaju se isključivo u opće informativne i edukativne svrhe, u viđenom stanju i bez ikakvih izričitih ili prećutnih garancija tačnosti, potpunosti, ažurnosti ili prikladnosti za određenu namjenu.',
+    DISCLAIMER_P2:
+      'Prikazane vrijednosti predstavljaju opće statističke procjene koje mogu sadržavati greške, propuste ili zastarjele podatke te se ne smiju koristiti kao osnov za finansijske, obračunske, pravne, regulatorne ili tehničke odluke.',
+    LINKS_TITLE: 'Vanjski linkovi i izvori trećih strana',
+    LINKS_P1:
+      'Izvorni linkovi u aplikaciji vode na vanjske web stranice trećih strana kojima upravljaju nezavisni zavodi za statistiku, regulatorna tijela i međunarodne organizacije nad kojima Home Management nema nikakvu kontrolu.',
+    LINKS_P2:
+      'Vanjske adrese mogu se u svakom trenutku promijeniti, premjestiti ili postati nedostupne bez prethodne najave. Home Management ne preuzima nikakvu odgovornost za tačnost, dostupnost, sadržaj ili sigurnost bilo koje vanjske stranice niti za bilo kakvu štetu nastalu oslanjanjem na podatke trećih strana.',
   },
 };

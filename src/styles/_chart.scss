@@ -1,64 +1,6 @@
-// Shared Chart Styles
-
-.chart-section {
-  margin-bottom: 2rem;
-  padding: 1.5rem;
-  background: var(--card-bg);
-  border: 1px solid var(--card-border);
-  border-radius: 12px;
-  box-shadow: var(--shadow-card);
-  transition:
-    background 0.3s ease,
-    border-color 0.2s ease,
-    box-shadow 0.3s ease;
-
-  .chart-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 1rem;
-    flex-wrap: wrap;
-    gap: 1rem;
-
-    h2 {
-      margin: 0;
-      color: var(--text-primary);
-    }
-
-    .chart-filters {
-      display: flex;
-      gap: 0.5rem;
-      flex-wrap: wrap;
-
-      button {
-        padding: 0.5rem 1rem;
-        border: 1px solid var(--border-color);
-        background: var(--card-bg);
-        color: var(--text-primary);
-        border-radius: 6px;
-        cursor: pointer;
-        font-size: 0.9rem;
-        font-weight: 500;
-        transition: all 0.2s ease;
-
-        &:hover {
-          background: var(--bg-secondary);
-          border-color: var(--theme-primary, #005cbf);
-        }
-      }
-    }
-  }
-
-  .chart-container {
-    position: relative;
-    height: 300px;
-    width: 100%;
-  }
-}
-
 // ==========================================================================
-// Native Fullscreen API — applied globally because Angular encapsulation
-// prevents :fullscreen from matching in component-scoped stylesheets
+// Native Fullscreen API & CSS Fake Fullscreen — applied globally because
+// Angular encapsulation prevents :fullscreen from matching in component CSS
 // ==========================================================================
 
 // Wrapper is a transparent passthrough by default
@@ -66,9 +8,10 @@
   display: contents;
 }
 
-// When the browser enters fullscreen mode on this element
 .chart-fullscreen-wrapper:fullscreen,
-.chart-fullscreen-wrapper:-webkit-full-screen {
+.chart-fullscreen-wrapper:-webkit-full-screen,
+.chart-fullscreen-wrapper.chart-fake-fullscreen,
+.chart-fake-fullscreen {
   display: flex;
   align-items: stretch;
   background: var(--bg-secondary, #f0f2f5);
@@ -101,17 +44,16 @@
   }
 }
 
-// Small screens: tighten padding
+.chart-fullscreen-wrapper.chart-fake-fullscreen,
+.chart-fake-fullscreen {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+}
+
 @media (max-width: 768px) {
   .chart-fullscreen-wrapper:fullscreen,
-  .chart-fullscreen-wrapper:-webkit-full-screen {
-    padding: 8px;
-
-    .chart-section {
-      border-radius: 10px;
-    }
-  }
-
+  .chart-fullscreen-wrapper:-webkit-full-screen,
   .chart-fullscreen-wrapper.chart-fake-fullscreen,
   .chart-fake-fullscreen {
     padding: 8px;
@@ -122,9 +64,6 @@
   }
 }
 
-// Touch/mobile devices: hide controls in fullscreen regardless of orientation.
-// Using (pointer: coarse) instead of a width breakpoint means this rule holds
-// even after rotating to landscape (where width may exceed 768px).
 @media (pointer: coarse) {
   .chart-fullscreen-wrapper:fullscreen,
   .chart-fullscreen-wrapper:-webkit-full-screen,
@@ -134,47 +73,5 @@
     .toggle-controls-btn {
       display: none;
     }
-  }
-}
-
-// ==========================================================================
-// CSS Fake Fullscreen — fallback for browsers without the Fullscreen API
-// (primarily iOS Safari which has never supported requestFullscreen)
-// ==========================================================================
-
-.chart-fullscreen-wrapper.chart-fake-fullscreen,
-.chart-fake-fullscreen {
-  position: fixed;
-  inset: 0;
-  z-index: 9999;
-  display: flex;
-  align-items: stretch;
-  background: var(--bg-secondary, #f0f2f5);
-  padding: 16px;
-  box-sizing: border-box;
-
-  .chart-section {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    margin-bottom: 0;
-    border-radius: 16px;
-    overflow: hidden;
-  }
-
-  .chart-header {
-    flex-shrink: 0;
-    margin-bottom: 16px;
-  }
-
-  .chart-container {
-    flex: 1;
-    height: auto;
-    min-height: 0;
-  }
-
-  .zoom-hint {
-    flex-shrink: 0;
-    padding-bottom: 8px;
   }
 }

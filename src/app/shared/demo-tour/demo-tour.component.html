@@ -1,4 +1,4 @@
-@if (show && isActive()) {
+@if (show() && isActive()) {
   <!-- Click-blocking backdrop -->
   <!-- eslint-disable-next-line @angular-eslint/template/interactive-supports-focus -- Backdrop dismissal by design -->
   <div
@@ -10,7 +10,7 @@
 
   <!-- Spotlight cutout -->
   <div
-    [class]="'tour-spotlight theme-' + theme"
+    [class]="'tour-spotlight theme-' + theme()"
     [class.transitioning]="isTransitioning()"
     [style.top.px]="spotTop()"
     [style.left.px]="spotLeft()"
@@ -20,12 +20,12 @@
 
   <!-- Progress bar -->
   <div class="tour-progress-bar">
-    <div [class]="'tour-progress-fill theme-' + theme" [style.width.%]="progress()"></div>
+    <div [class]="'tour-progress-fill theme-' + theme()" [style.width.%]="progress()"></div>
   </div>
 
   <!-- Tooltip bubble -->
   <div
-    [class]="'tour-tooltip position-' + tipPosition() + ' theme-' + theme"
+    [class]="'tour-tooltip position-' + tipPosition() + ' theme-' + theme()"
     [class.transitioning]="isTransitioning()"
     [style.top.px]="tipTop()"
     [style.left.px]="tipLeft()"

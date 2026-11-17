@@ -1,0 +1,267 @@
+.aerial-stage {
+  --land: #4a783d;
+  --meadow: #5d8f4d;
+  --hill: #3b6330;
+  --lk-rip: #548244;
+  --lk-bch: #e6d3a7;
+  --lk-shl: #38d9e8;
+  --lk-mid: #1ca3c4;
+  --lk-dep: #106f9c;
+  --lk-aby: #0a4b73;
+  --rd-shd: #9c9686;
+  --rd-asp: #525860;
+  --rd-lin: rgba(255, 255, 255, 0.82);
+  --drv: #8a8578;
+  --br-shd: rgba(8, 38, 54, 0.38);
+  --br-pir: #94a3b8;
+  --br-wak: rgba(255, 255, 255, 0.72);
+  --br-abt: #b5afa6;
+  --br-pl: #f1f5f9;
+  --br-ps: #94a3b8;
+  --br-wlk: #cbd5e1;
+  --br-ng: transparent;
+  --br-lmp: #475569;
+  --tr-shd: rgba(14, 30, 16, 0.3);
+  --pn-b: #1f4d2b;
+  --pn-m: #2f6b3d;
+  --pn-c: #438c52;
+  --pn-t: #62b070;
+  --sp-b: #1a453d;
+  --sp-m: #286358;
+  --sp-c: #3b8577;
+  --ok-b: #315e2e;
+  --ok-m: #468040;
+  --ok-c: #62a357;
+  --bi-b: #4c783a;
+  --bi-m: #68994f;
+  --bi-c: #88bd68;
+  --hs-pat: #c4bfb4;
+  --hs-dck: #ab7d52;
+  --hs-shd: rgba(15, 28, 16, 0.34);
+  --rf-tl: #e0724a;
+  --rf-ts: #a6492a;
+  --rf-sl: #758a9c;
+  --rf-ss: #4c5c6b;
+  --rf-zl: #9badba;
+  --rf-zs: #667885;
+  --rf-cl: #ba784a;
+  --rf-cs: #82502e;
+  --rf-rdg: rgba(255, 255, 255, 0.5);
+  --rf-chm: #805b4d;
+  --rf-sky: #bae6fd;
+  --dk-plk: #b08052;
+  --dk-sem: #6e4d2c;
+  --dk-pil: #4d3319;
+  --bt-hul: #ffffff;
+  --bt-int: #ab7143;
+  --vig: rgba(14, 28, 16, 0.18);
+  --ng-op: 0;
+  --dy-op: 1;
+
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 0;
+  pointer-events: none;
+
+  &.theme-dark {
+    --land: #07110c;
+    --meadow: #0b1912;
+    --hill: #040b07;
+    --lk-rip: #0d1f15;
+    --lk-bch: #423e37;
+    --lk-shl: #0d4654;
+    --lk-mid: #083042;
+    --lk-dep: #051e30;
+    --lk-aby: #020e1a;
+    --rd-shd: #1c2321;
+    --rd-asp: #101519;
+    --rd-lin: rgba(226, 232, 240, 0.36);
+    --drv: #222a27;
+    --br-shd: rgba(0, 4, 8, 0.78);
+    --br-pir: #263240;
+    --br-wak: rgba(251, 191, 36, 0.22);
+    --br-abt: #2b333b;
+    --br-pl: #475569;
+    --br-ps: #1e293b;
+    --br-wlk: #334155;
+    --br-ng: #fbbf24;
+    --br-lmp: #fef08a;
+    --tr-shd: rgba(0, 4, 2, 0.68);
+    --pn-b: #06140c;
+    --pn-m: #0c2416;
+    --pn-c: #153823;
+    --pn-t: #225236;
+    --sp-b: #051210;
+    --sp-m: #0b221f;
+    --sp-c: #143631;
+    --ok-b: #0a1a0d;
+    --ok-m: #132b17;
+    --ok-c: #1e4023;
+    --bi-b: #112111;
+    --bi-m: #1c331a;
+    --bi-c: #2b4a26;
+    --hs-pat: #2d3332;
+    --hs-dck: #3d2c1e;
+    --hs-shd: rgba(0, 4, 2, 0.75);
+    --rf-tl: #8f4128;
+    --rf-ts: #592414;
+    --rf-sl: #3b4954;
+    --rf-ss: #202930;
+    --rf-zl: #4c5b66;
+    --rf-zs: #2b343b;
+    --rf-cl: #694127;
+    --rf-cs: #402514;
+    --rf-rdg: rgba(255, 255, 255, 0.2);
+    --rf-chm: #3d2c26;
+    --rf-sky: #fde047;
+    --dk-plk: #593e25;
+    --dk-sem: #2e1f11;
+    --dk-pil: #21150a;
+    --bt-hul: #cbd5e1;
+    --bt-int: #5e3d22;
+    --vig: rgba(2, 6, 4, 0.68);
+    --ng-op: 1;
+    --dy-op: 0.25;
+  }
+}
+
+.aerial-svg {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+.aerial-vignette {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: radial-gradient(circle at 50% 42%, transparent 52%, var(--vig) 100%);
+}
+
+.night-only {
+  opacity: var(--ng-op, 0);
+}
+
+.day-only {
+  opacity: var(--dy-op, 1);
+}
+
+.meadow-patch {
+  fill: var(--meadow);
+  opacity: 0.65;
+}
+
+.hill-contour {
+  fill: var(--hill);
+  opacity: 0.5;
+}
+
+.lake-riparian,
+.river-riparian,
+.lake-beach,
+.river-beach,
+.lake-shallows,
+.river-shallows,
+.lake-mid,
+.river-mid,
+.lake-deep,
+.river-deep,
+.lake-abyss,
+.road-shoulder,
+.road-asphalt,
+.road-centerline,
+.house-driveway {
+  fill: none;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.lake-riparian,
+.river-riparian {
+  stroke: var(--lk-rip);
+}
+
+.lake-beach,
+.river-beach {
+  stroke: var(--lk-bch);
+}
+
+.lake-shallows,
+.river-shallows {
+  stroke: var(--lk-shl);
+}
+
+.lake-mid,
+.river-mid {
+  stroke: var(--lk-mid);
+}
+
+.lake-deep,
+.river-deep {
+  stroke: var(--lk-dep);
+}
+
+.lake-riparian {
+  stroke-width: 68;
+}
+
+.river-riparian,
+.lake-shallows {
+  stroke-width: 48;
+}
+
+.lake-beach {
+  stroke-width: 58;
+}
+
+.river-beach {
+  stroke-width: 38;
+}
+
+.river-shallows {
+  stroke-width: 28;
+}
+
+.lake-mid {
+  stroke-width: 36;
+}
+
+.river-mid {
+  stroke-width: 19;
+}
+
+.lake-deep,
+.road-shoulder {
+  stroke-width: 24;
+}
+
+.river-deep {
+  stroke-width: 11;
+}
+
+.lake-abyss {
+  stroke: var(--lk-aby);
+  stroke-width: 12;
+}
+
+.house-driveway {
+  stroke: var(--drv);
+  stroke-width: 7;
+}
+
+.road-shoulder {
+  stroke: var(--rd-shd);
+}
+
+.road-asphalt {
+  stroke: var(--rd-asp);
+  stroke-width: 17;
+}
+
+.road-centerline {
+  stroke: var(--rd-lin);
+  stroke-width: 1.5;
+  stroke-dasharray: 14 14;
+}

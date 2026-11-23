@@ -8,7 +8,6 @@
       content="Track water, heating and electricity consumption in one free, privacy-first app. Charts, forecasts and country comparisons. No account needed."
     />
     <base href="/" />
-    <link rel="preconnect" href="https://apis.google.com" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
     <link rel="manifest" href="manifest.webmanifest" />
@@ -125,6 +124,10 @@
   </head>
 
   <body>
-    <app-root></app-root>
+    <app-root>
+      <div class="hm-boot-shell" aria-hidden="true">
+        <div class="hm-boot-spinner"></div>
+      </div>
+    </app-root>
   </body>
 </html>

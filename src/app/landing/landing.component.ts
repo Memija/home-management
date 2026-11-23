@@ -129,6 +129,7 @@ export class LandingComponent implements OnInit, OnDestroy {
   readonly SlidersHorizontalIcon = SlidersHorizontal;
 
   protected readonly scrollY = signal(0);
+  protected readonly isMobileViewport = signal(false);
   protected readonly isScrolled = computed(() => this.scrollY() > 50);
   protected readonly roadProgress = signal(0);
   protected readonly isVisible = signal<Record<string, boolean>>({});
@@ -163,17 +164,24 @@ export class LandingComponent implements OnInit, OnDestroy {
     return this.getThemeTitle();
   });
   private readonly clampedParallaxScroll = computed(() => Math.min(this.scrollY(), 900));
-  protected readonly floatingIconsParallax = computed(() => this.getParallaxTransform(-0.25));
+  protected readonly floatingIconsParallax = computed(() =>
+    this.isMobileViewport() ? 'none' : this.getParallaxTransform(-0.25),
+  );
 
   onWindowScroll(): void {
     if (this.scrollRafId !== null) return;
     this.scrollRafId = requestAnimationFrame(() => {
       this.scrollRafId = null;
+      if (this.isMobileViewport()) {
+        this.onMobileScroll();
+        return;
+      }
       this.onScroll();
     });
   }
 
   onWindowResize(): void {
+    this.isMobileViewport.set(window.innerWidth <= 768);
     this.cachedMaxScroll = Math.max(0, document.documentElement.scrollHeight - window.innerHeight);
   }
 
@@ -182,8 +190,27 @@ export class LandingComponent implements OnInit, OnDestroy {
     this.updateRoadProgress();
   }
 
+  private onMobileScroll(): void {
+    const y = window.scrollY;
+    if (this.scrollY() > 50 !== y > 50) {
+      this.scrollY.set(y);
+    }
+    const maxScroll =
+      this.cachedMaxScroll > 0
+        ? this.cachedMaxScroll
+        : document.documentElement.scrollHeight - window.innerHeight;
+    if (this.cachedMaxScroll <= 0 && maxScroll > 0) {
+      this.cachedMaxScroll = maxScroll;
+    }
+    const nextProgress = maxScroll > 0 ? Math.min(Math.round((y / maxScroll) * 100), 100) : 0;
+    if (nextProgress !== this.roadProgress()) {
+      this.roadProgress.set(nextProgress);
+    }
+  }
+
   ngOnInit(): void {
     if (isPlatformBrowser(this.platformId)) {
+      this.isMobileViewport.set(window.innerWidth <= 768);
       window.addEventListener('scroll', this.onWindowScrollBound, { passive: true });
       window.addEventListener('resize', this.onWindowResizeBound, { passive: true });
       this.setupIntersectionObserver();

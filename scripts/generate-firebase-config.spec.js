@@ -132,6 +132,7 @@ describe('generate-firebase-config', () => {
     expect(content).toContain("messagingSenderId: 'test-sender'");
     expect(content).toContain("appId: 'test-app-id'");
     expect(content).toContain("recaptchaSiteKey: 'YOUR_RECAPTCHA_V3_SITE_KEY'");
+    expect(content).toContain("turnstileSiteKey: ''");
 
     expect(consoleInfoSpy).toHaveBeenCalledWith(
       '[config] Generated firebase.config.ts from environment variables',

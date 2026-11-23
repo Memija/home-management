@@ -3,6 +3,40 @@ import { isPlatformBrowser } from '@angular/common';
 import { Auth, User as FirebaseUser } from 'firebase/auth';
 import { environment } from '../../environments/environment';
 
+const AUTH_SESSION_HINT_KEY = 'hm_has_auth_session';
+const STORAGE_MODE_KEY = 'hm_storage_mode';
+
+function hasPersistedAuthSessionHint(): boolean {
+  try {
+    if (
+      localStorage.getItem(AUTH_SESSION_HINT_KEY) === 'true' ||
+      localStorage.getItem(STORAGE_MODE_KEY) === 'cloud'
+    ) {
+      return true;
+    }
+    for (let i = 0; i < localStorage.length; i++) {
+      if (localStorage.key(i)?.startsWith('firebase:authUser:')) {
+        return true;
+      }
+    }
+  } catch {
+    // Ignore storage access errors in restricted contexts
+  }
+  return false;
+}
+
+function setPersistedAuthSessionHint(active: boolean): void {
+  try {
+    if (active) {
+      localStorage.setItem(AUTH_SESSION_HINT_KEY, 'true');
+    } else {
+      localStorage.removeItem(AUTH_SESSION_HINT_KEY);
+    }
+  } catch {
+    // Ignore storage write errors
+  }
+}
+
 export interface AuthUser {
   uid: string;
   email: string | null;
@@ -17,6 +51,7 @@ export class AuthService {
   private readonly platformId = inject(PLATFORM_ID);
   private authInstance: Auth | null = null;
   private authInitPromise: Promise<Auth> | null = null;
+  private listenerInitialized = false;
 
   /** Current authenticated user */
   readonly user = signal<AuthUser | null>(null);
@@ -41,10 +76,10 @@ export class AuthService {
         (hostname === 'localhost' && environment.allowLocalAuth);
 
       this.isAuthSupported.set(isAuthorized);
-      if (
-        typeof window !== 'undefined' &&
-        localStorage.getItem('hm_demo_mode_is_active') === 'true'
-      ) {
+      const isDemoActive =
+        typeof window !== 'undefined' && localStorage.getItem('hm_demo_mode_is_active') === 'true';
+
+      if (isDemoActive || !hasPersistedAuthSessionHint()) {
         this.isLoading.set(false);
       } else {
         queueMicrotask(() => {
@@ -69,6 +104,9 @@ export class AuthService {
   }
 
   private async initAuthListener(): Promise<void> {
+    if (this.listenerInitialized) return;
+    this.listenerInitialized = true;
+
     const auth = await this.getAuth();
     const { onAuthStateChanged } = await import('firebase/auth');
 
@@ -80,8 +118,10 @@ export class AuthService {
           displayName: firebaseUser.displayName,
           photoURL: firebaseUser.photoURL,
         };
+        setPersistedAuthSessionHint(true);
         this.user.set(authUser);
       } else {
+        setPersistedAuthSessionHint(false);
         this.user.set(null);
       }
       this.isLoading.set(false);
@@ -94,6 +134,7 @@ export class AuthService {
    */
   async signInWithGoogle(): Promise<AuthUser> {
     try {
+      await this.initAuthListener();
       const auth = await this.getAuth();
       const { GoogleAuthProvider, signInWithPopup } = await import('firebase/auth');
       const provider = new GoogleAuthProvider();
@@ -105,6 +146,9 @@ export class AuthService {
         displayName: result.user.displayName,
         photoURL: result.user.photoURL,
       };
+      setPersistedAuthSessionHint(true);
+      this.user.set(authUser);
+      this.isLoading.set(false);
 
       return authUser;
     } catch (error) {
@@ -121,6 +165,8 @@ export class AuthService {
       const auth = await this.getAuth();
       const { signOut } = await import('firebase/auth');
       await signOut(auth);
+      setPersistedAuthSessionHint(false);
+      this.user.set(null);
     } catch (error) {
       console.error('Sign out failed:', error);
       throw error;

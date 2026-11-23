@@ -36,7 +36,11 @@ function inlineAngularTemplates() {
               const [declPart] = lhs.split(':');
               const tokens = declPart.trim().split(/\s+/);
               const propName = tokens.pop();
-              if (!propName || !/^\w+$/.test(propName) || !tokens.every((t) => validModifiers.has(t))) {
+              if (
+                !propName ||
+                !/^\w+$/.test(propName) ||
+                !tokens.every((t) => validModifiers.has(t))
+              ) {
                 return match;
               }
               const decorator = fn.startsWith('input')
@@ -53,13 +57,28 @@ function inlineAngularTemplates() {
   };
 }
 
+function mockCloudflareBuiltins() {
+  return {
+    name: 'mock-cloudflare-builtins',
+    resolveId(id: string) {
+      return id === 'cloudflare:email' ? '\0cloudflare:email' : null;
+    },
+    load(id: string) {
+      if (id === '\0cloudflare:email') {
+        return 'export class EmailMessage { constructor(from, to, raw) { this.from = from; this.to = to; this.raw = raw; } }';
+      }
+      return null;
+    },
+  };
+}
+
 export default defineConfig({
-  plugins: [inlineAngularTemplates()],
+  plugins: [inlineAngularTemplates(), mockCloudflareBuiltins()],
   test: {
     globals: true,
     environment: 'jsdom',
     setupFiles: ['src/test-setup-vitest.ts'],
-    include: ['src/**/*.spec.ts', 'scripts/**/*.spec.js'],
+    include: ['src/**/*.spec.ts', 'scripts/**/*.spec.js', 'workers/**/*.spec.js'],
     coverage: {
       provider: 'v8',
       reporter: ['lcov', 'text-summary'],

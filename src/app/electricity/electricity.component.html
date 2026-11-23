@@ -101,12 +101,14 @@
     </app-consumption-chart>
   }
 
-  <app-predictions-panel
-    [prediction]="electricityPrediction()"
-    type="electricity"
-    [selectedPeriod]="selectedPredictionPeriod()"
-    (periodChange)="onPredictionPeriodChange($event)"
-  ></app-predictions-panel>
+  @defer (on idle) {
+    <app-predictions-panel
+      [prediction]="electricityPrediction()"
+      type="electricity"
+      [selectedPeriod]="selectedPredictionPeriod()"
+      (periodChange)="onPredictionPeriodChange($event)"
+    ></app-predictions-panel>
+  }
 
   @defer (on viewport) {
     <app-detailed-records
@@ -157,22 +159,24 @@
     </div>
   }
 
-  <app-consumption-input
-    [groups]="consumptionGroups()"
-    [selectedDate]="selectedDate()"
-    [maxDate]="maxDate"
-    [editingMode]="!!editingRecord()"
-    [dateExists]="dateExists()"
-    [helpSteps]="helpSteps"
-    [helpTitleKey]="'ELECTRICITY.RECORD_HELP_TITLE'"
-    [noValuesErrorKey]="'ELECTRICITY.PARTIAL_INPUT_ERROR'"
-    [incompleteRoomErrorKey]="'ELECTRICITY.INCOMPLETE_INPUT_ERROR'"
-    (dateChange)="onDateChange($event)"
-    (fieldChange)="onFieldChange($event)"
-    (save)="onConsumptionSave($event)"
-    (cancelModal)="cancelEdit()"
-  >
-  </app-consumption-input>
+  @defer (on idle; when records().length === 0) {
+    <app-consumption-input
+      [groups]="consumptionGroups()"
+      [selectedDate]="selectedDate()"
+      [maxDate]="maxDate"
+      [editingMode]="!!editingRecord()"
+      [dateExists]="dateExists()"
+      [helpSteps]="helpSteps"
+      [helpTitleKey]="'ELECTRICITY.RECORD_HELP_TITLE'"
+      [noValuesErrorKey]="'ELECTRICITY.PARTIAL_INPUT_ERROR'"
+      [incompleteRoomErrorKey]="'ELECTRICITY.INCOMPLETE_INPUT_ERROR'"
+      (dateChange)="onDateChange($event)"
+      (fieldChange)="onFieldChange($event)"
+      (save)="onConsumptionSave($event)"
+      (cancelModal)="cancelEdit()"
+    >
+    </app-consumption-input>
+  }
 </div>
 
 @defer (when showSuccessModal()) {

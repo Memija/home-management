@@ -8,6 +8,8 @@ export const privacy = {
       'Używamy uwierzytelniania Google, aby umożliwić Ci logowanie. Gromadzimy Twój adres e-mail, nazwę wyświetlaną, adres URL zdjęcia profilowego oraz unikalny identyfikator użytkownika (UID).',
     COLLECTION_P2:
       'Bezpiecznie przechowujemy również Twoje dane z aplikacji, takie jak rekordy zużycia wody, ogrzewania i prądu oraz konfigurację rodziny w Firebase Firestore, powiązane bezpośrednio z Twoim UID.',
+    COLLECTION_P3:
+      'Gdy wysyłasz zapytanie przez formularz kontaktowy, podane imię, adres e-mail, kategoria, temat i wiadomość są przesyłane wyłącznie w celu dostarczenia zgłoszenia i udzielenia odpowiedzi.',
     USAGE_TITLE: 'Wykorzystanie Danych',
     USAGE_P1:
       'Twoje dane są wykorzystywane wyłącznie w celu zapewnienia funkcjonalności aplikacji (np. generowania analityki zużycia, wizualizacji trendów i obliczania wydajności gospodarstwa). Nie udostępniamy, nie sprzedajemy ani nie rozpowszechniamy tych danych stronom trzecim.',

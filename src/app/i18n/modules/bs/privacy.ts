@@ -8,6 +8,8 @@ export const privacy = {
       'Koristimo Google Autentifikaciju kako bismo vam omogućili prijavu u aplikaciju. Time prikupljamo vašu email adresu, prikazano ime, URL adresu slike profila i jedinstveni identifikator korisnika (UID).',
     COLLECTION_P2:
       'Također sigurno pohranjujemo vaše podatke iz aplikacije, kao što su zapisi o potrošnji vode, grijanja i struje, te postavke porodice, unutar Firebase Firestore baze podataka, direktno povezane s vašim UID-om.',
+    COLLECTION_P3:
+      'Kada pošaljete upit putem kontakt forme, vaše navedeno ime, email adresa, kategorija, naslov i poruka prenose se isključivo radi dostave i odgovora na vaš upit.',
     USAGE_TITLE: 'Korištenje Podataka',
     USAGE_P1:
       'Vaši podaci se koriste isključivo u svrhu pružanja internih funkcionalnosti aplikacije (npr. generisanje personalizovanih analiza potrošnje, vizualizacija trendova i proračun efikasnosti domaćinstva). Ne dijelimo, ne prodajemo i ne distribuiramo ove podatke trećim stranama.',

@@ -7,6 +7,8 @@ export const privacy = {
       'We use Google Authentication to allow you to log into the application. By doing so, we collect your email address, display name, profile picture url, and unique user identifier (UID (Unique Identifier)).',
     COLLECTION_P2:
       'We also securely store your application data, such as water, heating, and electricity consumption records, and family setup, inside Firebase Firestore, linked directly to your UID (Unique Identifier).',
+    COLLECTION_P3:
+      'When you submit an inquiry via the Contact Us form, your provided name, email address, category, subject, and message are transmitted solely to deliver and reply to your message.',
     USAGE_TITLE: 'Data Usage',
     USAGE_P1:
       'Your data is used strictly for the purpose of providing the internal application functionality (e.g., generating personalized consumption analytics, visualizing usage trends, and calculating household efficiency insights). We do not share, sell, or distribute this data to third parties.',

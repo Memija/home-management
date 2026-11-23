@@ -4,6 +4,7 @@
   "scripts": {
     "ng": "ng",
     "start": "ng serve home-management",
+    "start:contact-api": "npx --yes wrangler dev --config workers/contact-api/wrangler.toml --port 8787 --var ALLOW_LOCALHOST_ORIGIN:true",
     "watch": "ng build home-management --watch --configuration development",
     "build": "node scripts/generate-firebase-config.js && ng build home-management && node scripts/generate-sitemap.js",
     "serve:ssr": "node dist/home-management/server/server.mjs",
@@ -39,6 +40,7 @@
     "deploy": "firebase deploy",
     "deploy:hosting": "npm run build && firebase deploy --only hosting",
     "deploy:firestore": "firebase deploy --only firestore:rules",
+    "deploy:contact-api": "npx --yes wrangler deploy --config workers/contact-api/wrangler.toml",
     "validate": "npm run format:check && npm run lint && npm run security:gitleaks && npm run security:audit && npm run audit:licenses && npm run build && npm run test:coverage && npm run test:lighthouse",
     "prepare": "husky"
   },

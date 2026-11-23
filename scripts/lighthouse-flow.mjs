@@ -355,11 +355,13 @@ async function auditSuite(
     isMobile,
     beforeSnapshot: async (p) => {
       await p.evaluate(() => {
-        const sel = document.querySelector('.custom-select');
+        const sel =
+          document.querySelector('app-contact-modal .select-trigger') ||
+          document.querySelector('.custom-select');
         if (sel) sel.click();
       });
       try {
-        await p.waitForSelector('#email-client-dropdown', { visible: true, timeout: 3000 });
+        await p.waitForSelector('#contact-category-dropdown', { visible: true, timeout: 3000 });
       } catch {
         await new Promise((r) => setTimeout(r, 300));
       }

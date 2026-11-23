@@ -7,6 +7,8 @@ export const privacy = {
       'Wir verwenden die Google-Authentifizierung, damit Sie sich in der Anwendung anmelden können. Dabei erfassen wir Ihre E-Mail-Adresse, Ihren Anzeigenamen, die URL Ihres Profilbildes und Ihre eindeutige Benutzerkennung (UID (Eindeutige Kennung)).',
     COLLECTION_P2:
       'Wir speichern Ihre Anwendungsdaten wie Wasserverbrauchsaufzeichnungen, Heizungsverbrauchsaufzeichnungen und Stromverbrauchsaufzeichnungen sowie die Familieneinrichtung sicher in Firebase Firestore, direkt verknüpft mit Ihrer UID (Eindeutige Kennung).',
+    COLLECTION_P3:
+      'Wenn Sie eine Anfrage über das Kontaktformular absenden, werden Ihr angegebener Name, Ihre E-Mail-Adresse, die Anfragekategorie, der Betreff und Ihre Nachricht ausschließlich zur Zustellung und Beantwortung Ihrer Nachricht übermittelt.',
     USAGE_TITLE: 'Datennutzung',
     USAGE_P1:
       'Ihre Daten werden ausschließlich zum Zweck der Bereitstellung der internen Anwendungsfunktionen verwendet (z. B. Erstellung personalisierter Verbrauchsanalysen, Visualisierung von Nutzungstrends und Berechnung von Erkenntnissen zur Haushaltseffizienz). Wir geben diese Daten nicht an Dritte weiter, verkaufen sie nicht und verteilen sie nicht.',

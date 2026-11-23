@@ -7,6 +7,8 @@ export const privacy = {
       'Kami menggunakan Autentikasi Google untuk memungkinkan Anda masuk ke aplikasi. Dengan demikian, kami mengumpulkan alamat email, nama tampilan, url foto profil, dan pengidentifikasi pengguna unik (UID).',
     COLLECTION_P2:
       'Kami juga menyimpan data aplikasi Anda dengan aman, seperti catatan konsumsi air, pemanas, dan listrik, di dalam Firebase Firestore, yang ditautkan langsung ke UID Anda.',
+    COLLECTION_P3:
+      'Saat Anda mengirimkan pertanyaan melalui formulir Hubungi Kami, nama, alamat email, kategori, subjek, dan pesan yang Anda berikan dikirimkan semata-mata untuk meneruskan dan membalas pesan Anda.',
     USAGE_TITLE: 'Penggunaan Data',
     USAGE_P1:
       'Data Anda digunakan secara ketat untuk tujuan menyediakan fungsionalitas aplikasi internal. Kami tidak membagikan, menjual, atau mendistribusikan data ini kepada pihak ketiga.',

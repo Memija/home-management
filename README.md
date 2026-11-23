@@ -124,9 +124,11 @@ The application adheres to clean-code principles, modular architecture, and mode
 ```text
 home-management/
 ├── .github/workflows/          # CI/CD pipelines (SonarCloud, CodeQL, ZAP DAST, Trivy, OSV, etc.)
+├── public/                     # Static assets, PWA manifest, avatars, and demo datasets
 ├── scripts/                    # Security scanners, Lighthouse flows, and Firebase config generators
 ├── src/
 │   ├── app/
+│   │   ├── benchmarks/         # Global utility consumption benchmark comparison table
 │   │   ├── changelog/          # In-app version release history and notes
 │   │   ├── components/         # Global navigation and language switchers
 │   │   ├── config/             # Runtime Firebase credentials (gitignored in dev)
@@ -137,18 +139,22 @@ home-management/
 │   │   ├── landing/            # Responsive public landing page and feature showcase
 │   │   ├── layout/             # Application shell layout, header, and footer
 │   │   ├── models/             # Domain models, calculation contracts, and TypeScript schemas
+│   │   ├── not-found/          # Custom 404 Not Found page
 │   │   ├── pipes/              # Custom pipes (TranslatePipe, date formatting)
 │   │   ├── privacy/            # Privacy policy and local data handling guidelines
 │   │   ├── release-plan/       # Interactive roadmap and planned features
 │   │   ├── services/           # Core domain services (storage, predictions, OCR, auth, averages)
 │   │   ├── settings/           # Household, address, cloud sync, and Excel mapping settings
 │   │   ├── shared/             # Reusable UI components (charts, modals, inputs, nature tree)
+│   │   ├── utils/              # Shared calculation, security, Excel/PDF, and sync helpers
 │   │   └── water/              # Water tracker (kitchen/bath, cold-water-only, spike alerts)
 │   ├── environments/           # Environment profiles (production, development)
 │   ├── styles/                 # Global design system partials (_variables, _buttons, _modal, etc.)
 │   ├── main.server.ts          # Server-Side Rendering entry point
 │   ├── main.ts                 # Browser client bootstrap
 │   └── server.ts               # Express SSR application server
+├── workers/
+│   └── contact-api/            # Serverless Cloudflare Worker for in-app /api/contact delivery
 ├── angular.json                # Angular CLI workspace configuration
 ├── package.json                # Project dependencies and operational scripts
 └── sonar-project.properties    # SonarCloud quality analysis rules
@@ -233,42 +239,46 @@ Navigate to **Water**, **Electricity**, or **Heating** from the dashboard:
 
 ## 🧪 Available Scripts
 
-| Category         | Script                                  | Description                                                                     |
-| :--------------- | :-------------------------------------- | :------------------------------------------------------------------------------ |
-| **Development**  | `npm start`                             | Launches local development server                                               |
-|                  | `npm run watch`                         | Builds application in watch mode for development                                |
-|                  | `npm run build`                         | Builds SSR application bundle and generates client-side fallback                |
-|                  | `npm run serve:ssr`                     | Serves SSR production build with Node Express server                            |
-|                  | `npm run config:generate`               | Generates Firebase runtime configuration from environment variables             |
-| **Code Quality** | `npm run lint`                          | Lints TypeScript and HTML via `angular-eslint` & `eslint`                       |
-|                  | `npm run format`                        | Auto-formats code with Prettier                                                 |
-|                  | `npm run format:check`                  | Verifies formatting without modifying files                                     |
-| **Testing**      | `npm test`                              | Executes unit tests via Vitest with jsdom                                       |
-|                  | `npm run test:coverage`                 | Runs Vitest tests with V8 coverage reporting (`lcov` and text)                  |
-| **Performance**  | `npm run test:lighthouse`               | Executes Lighthouse CI audits for mobile and desktop presets                    |
-|                  | `npm run test:lighthouse:mobile`        | Runs Lighthouse CI audit specifically for mobile preset                         |
-|                  | `npm run test:lighthouse:desktop`       | Runs Lighthouse CI audit specifically for desktop preset                        |
-|                  | `npm run test:lighthouse:flows`         | Runs automated Lighthouse user-journey interaction flows (all suites)           |
-|                  | `npm run test:lighthouse:flows:quick`   | Executes quick smoke audit of user journeys with single iteration               |
-|                  | `npm run test:lighthouse:flows:desktop` | Audits Desktop user journey flow & modals                                       |
-|                  | `npm run test:lighthouse:flows:desktop:light` | Audits Desktop user journeys under Light theme                            |
-|                  | `npm run test:lighthouse:flows:desktop:dark`  | Audits Desktop user journeys under Dark theme                             |
-|                  | `npm run test:lighthouse:flows:mobile`  | Audits Mobile user journey flow & modals                                        |
-|                  | `npm run test:lighthouse:flows:mobile:light`  | Audits Mobile user journeys under Light theme                             |
-|                  | `npm run test:lighthouse:flows:mobile:dark`   | Audits Mobile user journeys under Dark theme                              |
-| **Security**     | `npm run security:all`                  | Executes full local security scan suite (Trivy, OSV, Gitleaks, Zizmor, SBOM)    |
-|                  | `npm run security:audit`                | Audits dependencies for critical vulnerabilities (`npm audit`)                  |
-|                  | `npm run security:secrets`              | Scans git staged changes for accidentally committed credentials & keys          |
-|                  | `npm run security:gitleaks`             | Scans git history and workspace for secrets with Gitleaks                       |
-|                  | `npm run security:osv`                  | Identifies open-source vulnerabilities via Google OSV-Scanner                   |
-|                  | `npm run security:sbom`                 | Generates a CycloneDX Software Bill of Materials (`cyclonedx.sbom.json`)        |
-|                  | `npm run security:trivy`                | Scans repository filesystem and dependencies for known CVEs via Aqua Trivy      |
-|                  | `npm run security:zizmor`               | Audits GitHub Actions workflows with Zizmor                                     |
-|                  | `npm run audit:licenses`                | Validates dependency licenses against approved open-source list                 |
-| **Deployment**   | `npm run deploy`                        | Builds the project and deploys hosting and Firestore rules to Firebase          |
-|                  | `npm run deploy:hosting`                | Builds the project and deploys only Firebase Hosting                            |
-|                  | `npm run deploy:firestore`              | Deploys Cloud Firestore security rules to Firebase                              |
-| **Pre-Flight**   | `npm run validate`                      | Runs formatting, linting, Gitleaks, license audit, build, tests, and Lighthouse |
+| Category         | Script                                        | Description                                                                     |
+| :--------------- | :-------------------------------------------- | :------------------------------------------------------------------------------ |
+| **Development**  | `npm start`                                   | Launches local development server                                               |
+|                  | `npm run start:contact-api`                   | Runs local `/api/contact` Cloudflare Worker dev server on port `8787`           |
+|                  | `npm run watch`                               | Builds application in watch mode for development                                |
+|                  | `npm run build`                               | Builds SSR/SSG application bundle, client fallback, and `sitemap.xml`           |
+|                  | `npm run serve:ssr`                           | Serves SSR production build with Node Express server                            |
+|                  | `npm run serve:hosting`                       | Serves production build locally via Firebase Hosting emulation                  |
+|                  | `npm run config:generate`                     | Generates Firebase runtime configuration from environment variables             |
+| **Code Quality** | `npm run lint`                                | Lints TypeScript and HTML via `angular-eslint` & `eslint`                       |
+|                  | `npm run format`                              | Auto-formats code with Prettier                                                 |
+|                  | `npm run format:check`                        | Verifies formatting without modifying files                                     |
+|                  | `npm run sonar:scan`                          | Runs SonarQube / SonarCloud static analysis scanner                             |
+| **Testing**      | `npm test`                                    | Executes unit tests via Vitest with jsdom                                       |
+|                  | `npm run test:coverage`                       | Runs Vitest tests with V8 coverage reporting (`lcov` and text)                  |
+| **Performance**  | `npm run test:lighthouse`                     | Executes Lighthouse CI audits for mobile and desktop presets                    |
+|                  | `npm run test:lighthouse:mobile`              | Runs Lighthouse CI audit specifically for mobile preset                         |
+|                  | `npm run test:lighthouse:desktop`             | Runs Lighthouse CI audit specifically for desktop preset                        |
+|                  | `npm run test:lighthouse:flows`               | Runs automated Lighthouse user-journey interaction flows (all suites)           |
+|                  | `npm run test:lighthouse:flows:quick`         | Executes quick smoke audit of user journeys with single iteration               |
+|                  | `npm run test:lighthouse:flows:desktop`       | Audits Desktop user journey flow & modals                                       |
+|                  | `npm run test:lighthouse:flows:desktop:light` | Audits Desktop user journeys under Light theme                                  |
+|                  | `npm run test:lighthouse:flows:desktop:dark`  | Audits Desktop user journeys under Dark theme                                   |
+|                  | `npm run test:lighthouse:flows:mobile`        | Audits Mobile user journey flow & modals                                        |
+|                  | `npm run test:lighthouse:flows:mobile:light`  | Audits Mobile user journeys under Light theme                                   |
+|                  | `npm run test:lighthouse:flows:mobile:dark`   | Audits Mobile user journeys under Dark theme                                    |
+| **Security**     | `npm run security:all`                        | Executes full local security scan suite (Trivy, OSV, Gitleaks, Zizmor, SBOM)    |
+|                  | `npm run security:audit`                      | Audits dependencies for critical vulnerabilities (`npm audit`)                  |
+|                  | `npm run security:secrets`                    | Scans git staged changes for accidentally committed credentials & keys          |
+|                  | `npm run security:gitleaks`                   | Scans git history and workspace for secrets with Gitleaks                       |
+|                  | `npm run security:osv`                        | Identifies open-source vulnerabilities via Google OSV-Scanner                   |
+|                  | `npm run security:sbom`                       | Generates a CycloneDX Software Bill of Materials (`cyclonedx.sbom.json`)        |
+|                  | `npm run security:trivy`                      | Scans repository filesystem and dependencies for known CVEs via Aqua Trivy      |
+|                  | `npm run security:zizmor`                     | Audits GitHub Actions workflows with Zizmor                                     |
+|                  | `npm run audit:licenses`                      | Validates dependency licenses against approved open-source list                 |
+| **Deployment**   | `npm run deploy`                              | Builds the project and deploys hosting and Firestore rules to Firebase          |
+|                  | `npm run deploy:hosting`                      | Builds the project and deploys only Firebase Hosting                            |
+|                  | `npm run deploy:firestore`                    | Deploys Cloud Firestore security rules to Firebase                              |
+|                  | `npm run deploy:contact-api`                  | Deploys the `/api/contact` Cloudflare Worker via Wrangler                       |
+| **Pre-Flight**   | `npm run validate`                            | Runs formatting, linting, Gitleaks, license audit, build, tests, and Lighthouse |
 
 ---
 

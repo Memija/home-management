@@ -42,7 +42,18 @@
   @if (showContactModal()) {
     <app-contact-modal
       (closeModal)="onCloseModal()"
-      (compose)="onComposeEmail($event)"
+      (submitted)="onContactSubmitted()"
     ></app-contact-modal>
+  }
+}
+
+@defer (when showContactSuccessModal()) {
+  @if (showContactSuccessModal()) {
+    <app-success-modal
+      [show]="showContactSuccessModal()"
+      [titleKey]="'CONTACT.SUCCESS_TITLE'"
+      [messageKey]="'CONTACT.SUCCESS_MESSAGE'"
+      (closeModal)="onCloseSuccessModal()"
+    ></app-success-modal>
   }
 }

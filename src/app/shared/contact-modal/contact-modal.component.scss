@@ -1,8 +1,15 @@
 @use 'sass:color';
 @use 'variables' as *;
 
-// Contact modal - uses global styles from _modal.scss and _forms.scss
-// Component-specific overrides only
+// Contact modal — builds on global _modal.scss and _forms.scss partials
+
+.hp-field {
+  position: absolute;
+  left: -9999px;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+}
 
 .modal-body {
   padding: 1.5rem;
@@ -12,15 +19,33 @@
     flex-direction: column;
   }
 
-  // Error message specific styling for contact form
-  .form-group .error-message {
+  .form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.875rem;
+
+    @media (max-width: 560px) {
+      grid-template-columns: 1fr;
+      gap: 0;
+    }
+  }
+
+  .field-label {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-weight: 500;
+    color: var(--text-primary);
+  }
+
+  .form-group .error-message,
+  .submit-error-banner {
     display: flex;
     align-items: center;
     gap: 0.5rem;
     padding: 0.5rem 0.75rem;
     background: $alert-danger-bg;
     border: 1px solid $alert-danger-border;
-    border-radius: 4px;
+    border-radius: 6px;
     color: $alert-danger-text;
     font-size: 0.875rem;
 
@@ -30,29 +55,82 @@
     }
   }
 
-  textarea {
-    resize: vertical;
-    min-height: 200px;
+  .submit-error-banner {
+    margin-top: 0.25rem;
+    margin-bottom: 0.5rem;
   }
 
-  .custom-select.dropup {
-    margin-top: 0.5rem;
+  textarea {
+    resize: vertical;
+    min-height: 140px;
+  }
+
+  .turnstile-wrapper {
+    margin: 0.25rem 0 0.5rem;
+  }
+
+  .direct-email-bar {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.45rem;
+    margin-top: 0.25rem;
+    font-size: 0.82rem;
+    color: var(--text-secondary);
+  }
+
+  .copy-email-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    padding: 0.2rem 0.5rem;
+    border: 1px solid var(--border-color);
+    border-radius: 6px;
+    background: var(--bg-secondary);
+    color: var(--text-primary);
+    font-size: 0.8rem;
+    cursor: pointer;
+    transition:
+      background-color 0.15s ease,
+      border-color 0.15s ease;
+
+    code {
+      font-family: inherit;
+      font-weight: 600;
+    }
+
+    &:hover {
+      border-color: var(--theme-primary, $primary);
+    }
+  }
+
+  .copied-badge {
+    font-weight: 600;
+    color: #047857;
   }
 
   .modal-actions {
     display: flex;
-    gap: 1rem;
+    gap: 0.875rem;
     justify-content: flex-end;
     margin-top: 1rem;
 
     button {
-      padding: 0.75rem 1.5rem;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.45rem;
+      padding: 0.72rem 1.35rem;
       border: none;
       border-radius: 6px;
-      font-size: 1rem;
-      font-weight: 500;
+      font-size: 0.95rem;
+      font-weight: 600;
       cursor: pointer;
-      transition: all 0.2s;
+      transition:
+        background-color 0.2s ease,
+        border-color 0.2s ease,
+        color 0.2s ease,
+        opacity 0.2s ease;
 
       &:disabled {
         opacity: 0.6;
@@ -63,7 +141,7 @@
     .btn-secondary {
       background: var(--card-bg, $secondary);
       border: 1px solid var(--border-color, transparent);
-      color: var(--text-primary, white);
+      color: var(--text-primary, #ffffff);
 
       &:hover:not(:disabled) {
         background: var(--bg-secondary, color.adjust($secondary, $lightness: -10%));
@@ -72,11 +150,32 @@
 
     .btn-primary {
       background: var(--theme-primary, $primary);
-      color: var(--theme-primary-contrast, white);
+      color: var(--theme-primary-contrast, #ffffff);
 
       &:hover:not(:disabled) {
         background: var(--theme-primary-dark, $primary-dark);
       }
     }
+  }
+}
+
+.spin-icon {
+  animation: contact-spin 0.8s linear infinite;
+}
+
+@keyframes contact-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .modal-body .copy-email-btn,
+  .modal-body .modal-actions button {
+    transition: none;
+  }
+
+  .spin-icon {
+    animation: none;
   }
 }

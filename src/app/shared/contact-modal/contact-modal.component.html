@@ -23,6 +23,7 @@
         <button
           type="button"
           class="close-btn"
+          [disabled]="isSubmitting()"
           (click)="onClose()"
           title="{{ 'ACTIONS.CLOSE' | translate }}"
           aria-label="{{ 'ACTIONS.CLOSE' | translate }}"
@@ -33,40 +34,102 @@
     </div>
 
     <div class="modal-body">
-      <form (ngSubmit)="onCompose()">
-        <div class="form-group">
-          <label for="contact-name">{{ 'CONTACT.NAME' | translate }}</label>
+      <form (ngSubmit)="onSubmit()">
+        <!-- Honeypot anti-bot field (hidden from real users & screen readers) -->
+        <div class="hp-field" aria-hidden="true">
+          <label for="contact-website">Website</label>
           <input
             type="text"
-            id="contact-name"
-            name="name"
-            [ngModel]="name()"
-            (ngModelChange)="name.set($event)"
-            [placeholder]="'CONTACT.NAME_PLACEHOLDER' | translate"
-            autocomplete="name"
-            required
+            id="contact-website"
+            name="website"
+            tabindex="-1"
+            autocomplete="off"
+            [ngModel]="website()"
+            (ngModelChange)="website.set($event)"
           />
         </div>
 
+        <div class="form-row">
+          <div class="form-group">
+            <label for="contact-name">{{ 'CONTACT.NAME' | translate }}</label>
+            <input
+              type="text"
+              id="contact-name"
+              name="name"
+              [maxLength]="fieldLimits.nameMax"
+              [disabled]="isSubmitting()"
+              [ngModel]="name()"
+              (ngModelChange)="name.set($event)"
+              [placeholder]="'CONTACT.NAME_PLACEHOLDER' | translate"
+              autocomplete="name"
+              required
+            />
+          </div>
+
+          <div class="form-group">
+            <label for="contact-email">{{ 'CONTACT.EMAIL' | translate }}</label>
+            <input
+              type="email"
+              id="contact-email"
+              name="email"
+              [maxLength]="fieldLimits.emailMax"
+              [disabled]="isSubmitting()"
+              [ngModel]="email()"
+              (ngModelChange)="onEmailChange($event)"
+              [placeholder]="'CONTACT.EMAIL_PLACEHOLDER' | translate"
+              [class.invalid]="emailError()"
+              autocomplete="email"
+              required
+            />
+            @if (emailError()) {
+              <div class="error-message" role="alert">
+                <lucide-icon [img]="TriangleAlertIcon" size="16" class="error-icon"></lucide-icon>
+                <span>{{ 'CONTACT.INVALID_EMAIL' | translate }}</span>
+              </div>
+            }
+          </div>
+        </div>
+
         <div class="form-group">
-          <label for="contact-email">{{ 'CONTACT.EMAIL' | translate }}</label>
-          <input
-            type="email"
-            id="contact-email"
-            name="email"
-            [ngModel]="email()"
-            (ngModelChange)="onEmailChange($event)"
-            [placeholder]="'CONTACT.EMAIL_PLACEHOLDER' | translate"
-            [class.invalid]="emailError()"
-            autocomplete="email"
-            required
-          />
-          @if (emailError()) {
-            <div class="error-message">
-              <lucide-icon [img]="TriangleAlertIcon" size="16" class="error-icon"></lucide-icon>
-              <span>{{ 'CONTACT.INVALID_EMAIL' | translate }}</span>
+          <span class="field-label" id="contact-category-label">{{
+            'CONTACT.CATEGORY' | translate
+          }}</span>
+          <div class="custom-select">
+            <button
+              type="button"
+              class="select-trigger"
+              [disabled]="isSubmitting()"
+              (click)="toggleDropdown()"
+              aria-labelledby="contact-category-label"
+              [attr.aria-expanded]="dropdownOpen() ? 'true' : 'false'"
+              aria-haspopup="true"
+              aria-controls="contact-category-dropdown"
+            >
+              <div class="select-content">
+                <lucide-icon [img]="getCategoryIcon(category())" size="18"></lucide-icon>
+                <span>{{ getCategoryLabelKey(category()) | translate }}</span>
+              </div>
+              <lucide-icon
+                [img]="ChevronDownIcon"
+                size="16"
+                class="chevron"
+                [style.transform]="dropdownOpen() ? 'rotate(180deg)' : 'rotate(0deg)'"
+              ></lucide-icon>
+            </button>
+            <div class="dropdown-menu" id="contact-category-dropdown" [hidden]="!dropdownOpen()">
+              @for (cat of categories; track cat) {
+                <button
+                  type="button"
+                  class="dropdown-item"
+                  [class.selected]="category() === cat"
+                  (click)="selectCategory(cat); $event.stopPropagation()"
+                >
+                  <lucide-icon [img]="getCategoryIcon(cat)" size="18"></lucide-icon>
+                  <span>{{ getCategoryLabelKey(cat) | translate }}</span>
+                </button>
+              }
             </div>
-          }
+          </div>
         </div>
 
         <div class="form-group">
@@ -75,6 +138,8 @@
             type="text"
             id="contact-subject"
             name="subject"
+            [maxLength]="fieldLimits.subjectMax"
+            [disabled]="isSubmitting()"
             [ngModel]="subject()"
             (ngModelChange)="subject.set($event)"
             [placeholder]="'CONTACT.SUBJECT_PLACEHOLDER' | translate"
@@ -88,85 +153,57 @@
           <textarea
             id="contact-message"
             name="message"
-            rows="8"
+            rows="6"
+            [maxLength]="fieldLimits.messageMax"
+            [disabled]="isSubmitting()"
             [ngModel]="message()"
-            (ngModelChange)="message.set($event)"
+            (ngModelChange)="onMessageChange($event)"
             [placeholder]="'CONTACT.MESSAGE_PLACEHOLDER' | translate"
+            [class.invalid]="messageError()"
             autocomplete="off"
             required
           ></textarea>
+          @if (messageError()) {
+            <div class="error-message" role="alert">
+              <lucide-icon [img]="TriangleAlertIcon" size="16" class="error-icon"></lucide-icon>
+              <span>{{ 'CONTACT.MESSAGE_TOO_SHORT' | translate }}</span>
+            </div>
+          }
         </div>
 
-        <div class="form-group">
-          <div class="custom-select dropup">
-            <button
-              type="button"
-              class="select-trigger"
-              (click)="toggleDropdown()"
-              title="{{ 'CONTACT.EMAIL_CLIENT' | translate }}"
-              [attr.aria-expanded]="dropdownOpen() ? 'true' : 'false'"
-              aria-haspopup="true"
-              aria-controls="email-client-dropdown"
-            >
-              <div class="select-content">
-                @if (emailClient() === 'default') {
-                  <lucide-icon [img]="LaptopIcon" size="20"></lucide-icon>
-                } @else if (emailClient() === 'outlook') {
-                  <img src="/assets/outlook_logo.png" alt="Outlook" class="logo-icon" />
-                } @else if (emailClient() === 'gmail') {
-                  <img src="/assets/gmail_logo.png" alt="Gmail" class="logo-icon" />
-                }
-                <span>
-                  @if (emailClient() === 'default') {
-                    {{ 'CONTACT.DEFAULT_CLIENT' | translate }}
-                  } @else {
-                    {{ getClientLabel(emailClient()) }}
-                  }
-                </span>
-              </div>
-              <lucide-icon
-                [img]="ChevronDownIcon"
-                size="16"
-                class="chevron"
-                [style.transform]="dropdownOpen() ? 'rotate(180deg)' : 'rotate(0deg)'"
-              ></lucide-icon>
-            </button>
-            <div class="dropdown-menu" id="email-client-dropdown" [hidden]="!dropdownOpen()">
-              <button
-                type="button"
-                class="dropdown-item"
-                [class.selected]="emailClient() === 'default'"
-                (click)="selectEmailClient('default'); $event.stopPropagation()"
-              >
-                <lucide-icon [img]="LaptopIcon" size="20"></lucide-icon>
-                <span>{{ 'CONTACT.DEFAULT_CLIENT' | translate }}</span>
-              </button>
-              <button
-                type="button"
-                class="dropdown-item"
-                [class.selected]="emailClient() === 'outlook'"
-                (click)="selectEmailClient('outlook'); $event.stopPropagation()"
-              >
-                <img src="/assets/outlook_logo.png" alt="Outlook" class="logo-icon" />
-                <span>Outlook</span>
-              </button>
-              <button
-                type="button"
-                class="dropdown-item"
-                [class.selected]="emailClient() === 'gmail'"
-                (click)="selectEmailClient('gmail'); $event.stopPropagation()"
-              >
-                <img src="/assets/gmail_logo.png" alt="Gmail" class="logo-icon" />
-                <span>Gmail</span>
-              </button>
-            </div>
+        @if (hasTurnstile()) {
+          <div class="turnstile-wrapper" #turnstileHost></div>
+        }
+
+        @if (submitErrorKey(); as errKey) {
+          <div class="submit-error-banner" role="alert">
+            <lucide-icon [img]="TriangleAlertIcon" size="18" class="error-icon"></lucide-icon>
+            <span>{{ errKey | translate }}</span>
           </div>
+        }
+
+        <div class="direct-email-bar">
+          <span>{{ 'CONTACT.DIRECT_EMAIL_HINT' | translate }}</span>
+          <button
+            type="button"
+            class="copy-email-btn"
+            (click)="copySupportEmail()"
+            title="{{ 'CONTACT.COPY_EMAIL' | translate }}"
+            aria-label="{{ 'CONTACT.COPY_EMAIL' | translate }}"
+          >
+            <code>{{ supportEmail }}</code>
+            <lucide-icon [img]="emailCopied() ? CheckIcon : CopyIcon" size="14"></lucide-icon>
+            @if (emailCopied()) {
+              <span class="copied-badge">{{ 'CONTACT.EMAIL_COPIED' | translate }}</span>
+            }
+          </button>
         </div>
 
         <div class="modal-actions">
           <button
             type="button"
             class="btn-secondary"
+            [disabled]="isSubmitting()"
             (click)="onClose()"
             title="{{ 'CONTACT.CANCEL' | translate }}"
             aria-label="{{ 'CONTACT.CANCEL' | translate }}"
@@ -176,11 +213,16 @@
           <button
             type="submit"
             class="btn-primary"
-            [disabled]="!name() || !email() || !subject() || !message() || emailError()"
-            title="{{ 'CONTACT.SEND' | translate }}"
-            aria-label="{{ 'CONTACT.SEND' | translate }}"
+            [disabled]="!canSubmit()"
+            title="{{ (isSubmitting() ? 'CONTACT.SENDING' : 'CONTACT.SEND') | translate }}"
+            aria-label="{{ (isSubmitting() ? 'CONTACT.SENDING' : 'CONTACT.SEND') | translate }}"
           >
-            {{ 'CONTACT.SEND' | translate }}
+            <lucide-icon
+              [img]="isSubmitting() ? LoaderIcon : SendIcon"
+              size="16"
+              [class.spin-icon]="isSubmitting()"
+            ></lucide-icon>
+            <span>{{ (isSubmitting() ? 'CONTACT.SENDING' : 'CONTACT.SEND') | translate }}</span>
           </button>
         </div>
       </form>

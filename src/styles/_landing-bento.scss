@@ -51,6 +51,12 @@
     transform 0.35s cubic-bezier(0.16, 1, 0.3, 1);
   overflow: hidden;
 
+  @media (max-width: 768px) {
+    background: rgba(15, 23, 42, 0.9);
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+  }
+
   &::before {
     content: '';
     position: absolute;

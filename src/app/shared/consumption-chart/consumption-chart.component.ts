@@ -49,8 +49,6 @@ import {
   Target,
 } from 'lucide-angular';
 import { HelpModalComponent, HelpStep } from '../help-modal/help-modal.component';
-import 'hammerjs';
-import zoomPlugin from 'chartjs-plugin-zoom';
 import { registerChartPlugins } from './plugins/chart-plugins';
 import { ChartDataPoint } from '../../models/consumption-chart.model';
 import { MultiPredictionResult } from '../../models/prediction.models';
@@ -71,6 +69,7 @@ export type { ChartDataPoint } from '../../models/consumption-chart.model';
 export type { FullscreenElement, FullscreenDocument } from './utils/chart-fullscreen.utils';
 
 let chartPluginsRegistered = false;
+let zoomPluginPromise: Promise<void> | null = null;
 
 function ensureChartPluginsRegistered(): void {
   if (chartPluginsRegistered) return;
@@ -84,9 +83,22 @@ function ensureChartPluginsRegistered(): void {
     Tooltip,
     Legend,
     Filler,
-    zoomPlugin,
   );
   registerChartPlugins();
+}
+
+function ensureZoomPluginLoaded(onRegistered?: () => void): void {
+  if (typeof window === 'undefined') return;
+  zoomPluginPromise ??= (async () => {
+    await import('hammerjs');
+    const { default: zoomPlugin } = await import('chartjs-plugin-zoom');
+    Chart.register(zoomPlugin);
+  })();
+  if (onRegistered) {
+    void zoomPluginPromise.then(onRegistered).catch(() => {
+      // Non-critical zoom enhancement
+    });
+  }
 }
 
 @Component({
@@ -262,6 +274,9 @@ export class ConsumptionChartComponent implements OnInit, OnDestroy {
     this.showPastForecast.set(this.toggleState.getPastForecastVisibility(this.currentView()));
     document.addEventListener('fullscreenchange', this.onFullscreenChange);
     document.addEventListener('webkitfullscreenchange', this.onFullscreenChange);
+    ensureZoomPluginLoaded(() => {
+      this.chart?.update('none');
+    });
   }
 
   protected chartOptions = computed<ChartConfiguration['options']>(() => {
@@ -318,7 +333,9 @@ export class ConsumptionChartComponent implements OnInit, OnDestroy {
   }
 
   protected resetZoom(): void {
-    this.chart?.chart?.resetZoom();
+    if (typeof this.chart?.chart?.resetZoom === 'function') {
+      this.chart.chart.resetZoom();
+    }
   }
 
   protected toggleFullscreen(): void {

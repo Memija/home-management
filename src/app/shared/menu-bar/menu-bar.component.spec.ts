@@ -1,9 +1,9 @@
-import { TestBed } from '@angular/core/testing';
-import { MenuBarComponent } from './menu-bar.component';
-import { provideRouter } from '@angular/router';
-import { vi, describe, it, expect, beforeEach, afterEach } from 'vitest';
-import { LanguageService } from '../../services/language.service';
 import { signal } from '@angular/core';
+import { TestBed } from '@angular/core/testing';
+import { provideRouter } from '@angular/router';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import { LanguageService } from '../../services/language.service';
+import { MenuBarComponent } from './menu-bar.component';
 
 describe('MenuBarComponent', () => {
   let component: MenuBarComponent;
@@ -25,82 +25,29 @@ describe('MenuBarComponent', () => {
     vi.restoreAllMocks();
   });
 
-  it('should create', () => {
+  it('should create with contact and success modals hidden by default', () => {
     expect(component).toBeTruthy();
+    expect(component['showContactModal']()).toBe(false);
+    expect(component['showContactSuccessModal']()).toBe(false);
+    expect(component['exactRouteOptions']).toEqual({ exact: true });
   });
 
-  it('should open contact modal on contactUs()', () => {
-    expect(component['showContactModal']()).toBe(false);
+  it('should open and close the contact modal', () => {
     component['contactUs']();
     expect(component['showContactModal']()).toBe(true);
-  });
 
-  it('should close contact modal on onCloseModal()', () => {
-    component['showContactModal'].set(true);
     component['onCloseModal']();
     expect(component['showContactModal']()).toBe(false);
   });
 
-  describe('onComposeEmail', () => {
-    let windowOpenSpy: unknown;
-    const testData = {
-      name: 'John Doe',
-      email: 'john@example.com',
-      subject: 'Test Subject',
-      message: 'Hello, this is a test.\nNewline included.',
-      client: 'default' as const,
-    };
+  it('should transition from contact modal to success modal on submission and close success modal', () => {
+    component['showContactModal'].set(true);
 
-    beforeEach(() => {
-      windowOpenSpy = vi.spyOn(window, 'open').mockImplementation(() => null);
-      component['showContactModal'].set(true);
-    });
+    component['onContactSubmitted']();
+    expect(component['showContactModal']()).toBe(false);
+    expect(component['showContactSuccessModal']()).toBe(true);
 
-    it('should handle "gmail" client correctly', () => {
-      component['onComposeEmail']({ ...testData, client: 'gmail' });
-      const expectedSubject = encodeURIComponent('[John Doe] Test Subject');
-      const expectedBody = encodeURIComponent(
-        'From: John Doe (john@example.com)\n\nHello, this is a test.\nNewline included.',
-      );
-      const expectedUrl = `https://mail.google.com/mail/?view=cm&to=homemngdev@gmail.com&su=${expectedSubject}&body=${expectedBody}`;
-      expect(windowOpenSpy).toHaveBeenCalledWith(expectedUrl, '_blank', 'noopener,noreferrer');
-      expect(component['showContactModal']()).toBe(false);
-    });
-
-    it('should handle "outlook" client correctly', () => {
-      component['onComposeEmail']({ ...testData, client: 'outlook' });
-      const expectedSubject = encodeURIComponent('[John Doe] Test Subject');
-      const expectedBody = encodeURIComponent(
-        'From: John Doe (john@example.com)\n\nHello, this is a test.\nNewline included.',
-      );
-      const expectedUrl = `https://outlook.live.com/mail/0/deeplink/compose?to=homemngdev@gmail.com&subject=${expectedSubject}&body=${expectedBody}`;
-      expect(windowOpenSpy).toHaveBeenCalledWith(expectedUrl, '_blank', 'noopener,noreferrer');
-      expect(component['showContactModal']()).toBe(false);
-    });
-
-    it('should handle "default" client correctly', () => {
-      component['onComposeEmail']({ ...testData, client: 'default' });
-      const expectedSubject = encodeURIComponent('[John Doe] Test Subject');
-      const expectedBody = encodeURIComponent(
-        'From: John Doe (john@example.com)\n\nHello, this is a test.\nNewline included.',
-      );
-      const expectedUrl = `mailto:homemngdev@gmail.com?subject=${expectedSubject}&body=${expectedBody}`;
-      expect(windowOpenSpy).toHaveBeenCalledWith(expectedUrl, '_blank', 'noopener,noreferrer');
-      expect(component['showContactModal']()).toBe(false);
-    });
-
-    it('should properly encode URI components for edge cases', () => {
-      component['onComposeEmail']({
-        name: 'A & B',
-        email: 'test+1@example.com',
-        subject: '100% Free?!',
-        message: 'Symbols: /?#&=',
-        client: 'default',
-      });
-      const expectedSubject = encodeURIComponent('[A & B] 100% Free?!');
-      const expectedBody = encodeURIComponent('From: A & B (test+1@example.com)\n\nSymbols: /?#&=');
-      const expectedUrl = `mailto:homemngdev@gmail.com?subject=${expectedSubject}&body=${expectedBody}`;
-      expect(windowOpenSpy).toHaveBeenCalledWith(expectedUrl, '_blank', 'noopener,noreferrer');
-    });
+    component['onCloseSuccessModal']();
+    expect(component['showContactSuccessModal']()).toBe(false);
   });
 });

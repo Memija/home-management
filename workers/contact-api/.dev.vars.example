@@ -1,0 +1,7 @@
+# Local `wrangler dev` overrides (`workers/contact-api/.dev.vars` is gitignored and never deployed).
+# Allows http://localhost:4200 during `wrangler dev --remote` when url.hostname is home-management.dev.
+ALLOW_LOCALHOST_ORIGIN=true
+
+# Optional overrides:
+# TURNSTILE_SECRET_KEY=
+# RESEND_API_KEY=

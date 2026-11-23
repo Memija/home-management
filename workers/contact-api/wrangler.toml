@@ -1,0 +1,20 @@
+name = "home-management-contact-api"
+main = "worker.mjs"
+compatibility_date = "2026-11-17"
+
+routes = [
+  { pattern = "home-management.dev/api/contact", zone_name = "home-management.dev" }
+]
+
+# Native Cloudflare Email Routing binding (100% free — sends directly to your verified Gmail
+# destination address without needing Resend or any external API key!)
+[[send_email]]
+name = "SEND_EMAIL"
+destination_address = "homemngdev@gmail.com"
+
+[vars]
+# Production allows only https://home-management.dev (localhost is enabled only in local wrangler dev)
+ALLOWED_ORIGIN = "https://home-management.dev"
+CONTACT_FROM_ADDRESS = "support@home-management.dev"
+CONTACT_FROM_NAME = "Home Management"
+CONTACT_TO_EMAIL = "homemngdev@gmail.com"

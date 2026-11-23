@@ -80,6 +80,8 @@ interface Raindrop {
 
 /** Maximum tree depth */
 const MAX_DEPTH = 4;
+/** Reduced tree depth for narrow mobile viewports */
+const MOBILE_MAX_DEPTH = 3;
 /** Maximum snowflakes — reduced from 250 for performance */
 const MAX_SNOWFLAKES = 50;
 /** Maximum raindrops — reduced from 120 for performance */
@@ -95,7 +97,7 @@ interface SeasonTreeData {
   readonly raindrops: Raindrop[];
 }
 
-const seasonTreeCache = new Map<Season, SeasonTreeData>();
+const seasonTreeCache = new Map<string, SeasonTreeData>();
 
 @Component({
   selector: 'app-nature-tree',
@@ -181,8 +183,20 @@ export class NatureTreeComponent {
     setTimeout(() => requestAnimationFrame(measureFrame), 1500);
   }
 
+  private isMobileViewport(): boolean {
+    return (
+      Boolean(this.platformId) &&
+      isPlatformBrowser(this.platformId) &&
+      typeof window !== 'undefined' &&
+      typeof window.matchMedia === 'function' &&
+      window.matchMedia('(max-width: 768px)').matches
+    );
+  }
+
   private resetAndGenerate() {
-    const cached = seasonTreeCache.get(this.season);
+    const isMobile = this.isMobileViewport();
+    const cacheKey = `${this.season}:${isMobile ? 'mobile' : 'desktop'}`;
+    const cached = seasonTreeCache.get(cacheKey);
     if (cached) {
       this.branches = cached.branches;
       this.snowflakes = cached.snowflakes;
@@ -194,6 +208,7 @@ export class NatureTreeComponent {
     this.snowflakes = [];
     this.raindrops = [];
     this.seed = 51234;
+    const maxDepth = isMobile ? MOBILE_MAX_DEPTH : MAX_DEPTH;
 
     // Generate base trunk
     const trunk: Branch = {
@@ -203,7 +218,7 @@ export class NatureTreeComponent {
       length: 240,
       negLength: -240,
       width: 50,
-      depth: MAX_DEPTH,
+      depth: maxDepth,
       animDelay: '0s',
       animDuration: '8s',
       transform: 'translate(1000px, 1200px) rotate(0deg)',
@@ -214,11 +229,13 @@ export class NatureTreeComponent {
       flowers: [],
     };
 
-    this.generateBranchChildren(trunk, MAX_DEPTH);
+    this.generateBranchChildren(trunk, maxDepth);
     this.branches.push(trunk);
-    this.generateWeather();
+    if (!isMobile) {
+      this.generateWeather();
+    }
 
-    seasonTreeCache.set(this.season, {
+    seasonTreeCache.set(cacheKey, {
       branches: this.branches,
       snowflakes: this.snowflakes,
       raindrops: this.raindrops,

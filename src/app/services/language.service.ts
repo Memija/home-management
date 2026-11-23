@@ -193,12 +193,8 @@ export class LanguageService {
   constructor() {
     const initialLang = this.currentLang();
     this.syncDocumentLocale(initialLang);
-    // Load initial language
-    this.ready = new Promise<void>((resolve) => {
-      queueMicrotask(() => {
-        void this.loadLanguage(initialLang).then(resolve);
-      });
-    });
+    // Start loading initial language immediately without waiting an extra microtask
+    this.ready = this.loadLanguage(initialLang);
   }
 
   private getStoredLanguage(): Language {

@@ -44,6 +44,17 @@
     background: radial-gradient(circle, #8b5cf6 0%, rgba(139, 92, 246, 0) 70%);
     animation: orb-drift-3 30s ease-in-out infinite alternate;
   }
+
+  @media (max-width: 768px) {
+    filter: none;
+    opacity: 0.16;
+
+    &.orb-teal,
+    &.orb-blue,
+    &.orb-indigo {
+      animation: none;
+    }
+  }
 }
 
 @keyframes orb-drift-1 {
@@ -210,6 +221,11 @@
   backdrop-filter: blur(8px);
   box-shadow: 0 2px 14px rgba(16, 185, 129, 0.2);
 
+  @media (max-width: 768px) {
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+  }
+
   .pulse-dot {
     width: 7px;
     height: 7px;
@@ -320,6 +336,11 @@
     border: 1px solid var(--landing-hero-secondary-border);
     -webkit-backdrop-filter: blur(8px);
     backdrop-filter: blur(8px);
+
+    @media (max-width: 768px) {
+      -webkit-backdrop-filter: none;
+      backdrop-filter: none;
+    }
 
     &:hover {
       background: var(--landing-hero-secondary-hover-bg);

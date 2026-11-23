@@ -123,6 +123,29 @@
   opacity: 0.25;
 }
 
+@media (max-width: 768px), (prefers-reduced-motion: reduce) {
+  :host {
+    transition: none;
+    will-change: auto;
+  }
+
+  .detailed-tree-svg {
+    .animated-branch,
+    .leaves .leaf-group,
+    .flowers .flower-group,
+    .snow-layer .snowflake,
+    .rain-layer .raindrop,
+    .lanterns.show-lanterns .lantern-sway,
+    .lanterns.show-lanterns .glow {
+      animation: none;
+    }
+
+    .lanterns {
+      transition: none;
+    }
+  }
+}
+
 @keyframes flicker {
   0%,
   100% {

@@ -380,7 +380,11 @@ export default {
     const { name, email, categoryLabel, subject, message } = validation.data;
     const fromName = env.CONTACT_FROM_NAME || 'Home Management';
     const fromAddress = env.CONTACT_FROM_ADDRESS || 'support@home-management.dev';
-    const toEmail = env.CONTACT_TO_EMAIL || 'homemngdev@gmail.com';
+    const toEmail = String(env.CONTACT_TO_EMAIL || '').trim();
+    if (!toEmail) {
+      console.error('Missing CONTACT_TO_EMAIL configuration');
+      return jsonResponse({ ok: false, error: 'server_error' }, 500, corsHeaders);
+    }
     const subjectLine = `[${categoryLabel}] ${subject} — ${name}`;
     const html = buildEmailHtml(validation.data);
     const text = `From: ${name} <${email}>\nCategory: ${categoryLabel}\nSubject: ${subject}\n\n${message}`;

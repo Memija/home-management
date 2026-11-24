@@ -1,6 +1,8 @@
 # Local `wrangler dev` overrides (`workers/contact-api/.dev.vars` is gitignored and never deployed).
-# Allows http://localhost:4200 during `wrangler dev --remote` when url.hostname is home-management.dev.
+# In production, set `CONTACT_TO_EMAIL` once via:
+#   npx wrangler secret put CONTACT_TO_EMAIL --config workers/contact-api/wrangler.toml
 ALLOW_LOCALHOST_ORIGIN=true
+CONTACT_TO_EMAIL=your-verified-destination@example.com
 
 # Optional overrides:
 # TURNSTILE_SECRET_KEY=

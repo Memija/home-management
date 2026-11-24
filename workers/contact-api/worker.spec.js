@@ -38,7 +38,7 @@ describe('contact-api Cloudflare Worker', () => {
       ALLOWED_ORIGIN: 'https://home-management.dev',
       CONTACT_FROM_NAME: 'Home Management',
       CONTACT_FROM_ADDRESS: 'support@home-management.dev',
-      CONTACT_TO_EMAIL: 'homemngdev@gmail.com',
+      CONTACT_TO_EMAIL: 'inbox@example.com',
     };
   });
 
@@ -127,7 +127,7 @@ describe('contact-api Cloudflare Worker', () => {
 
     const sentMsg = sendSpy.mock.calls[0][0];
     expect(sentMsg.from).toBe('support@home-management.dev');
-    expect(sentMsg.to).toBe('homemngdev@gmail.com');
+    expect(sentMsg.to).toBe('inbox@example.com');
     expect(sentMsg.raw).toContain('From: "Home Management" <support@home-management.dev>');
     expect(sentMsg.raw).toContain('Reply-To: ada@example.org');
     expect(sentMsg.raw).toContain('Content-Type: multipart/alternative;');
@@ -148,6 +148,7 @@ describe('contact-api Cloudflare Worker', () => {
     const resendEnv = {
       RESEND_API_KEY: 'mock-resend-key',
       ALLOWED_ORIGIN: 'https://home-management.dev',
+      CONTACT_TO_EMAIL: 'inbox@example.com',
     };
 
     const res = await worker.fetch(buildRequest(JSON.stringify(validBody)), resendEnv);
@@ -155,6 +156,12 @@ describe('contact-api Cloudflare Worker', () => {
     expect(fetchSpy).toHaveBeenCalledTimes(1);
     const sentPayload = JSON.parse(fetchSpy.mock.calls[0][1].body);
     expect(sentPayload.reply_to).toBe('ada@example.org');
+
+    const missingToRes = await worker.fetch(buildRequest(JSON.stringify(validBody)), {
+      SEND_EMAIL: { send: sendSpy },
+      ALLOWED_ORIGIN: 'https://home-management.dev',
+    });
+    expect(missingToRes.status).toBe(500);
   });
 
   it('should enforce per-IP rate limiting after 5 requests within the window', async () => {

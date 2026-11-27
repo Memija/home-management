@@ -1,0 +1,81 @@
+import { Observable, Subject } from 'rxjs';
+
+export abstract class StorageService {
+  protected readonly dataRefreshedSubject = new Subject<void>();
+
+  /**
+   * Observable that emits whenever storage data is refreshed or imported externally
+   * (e.g. cloud sync pull, file import, or cache reset).
+   */
+  readonly dataRefreshed$: Observable<void> = this.dataRefreshedSubject.asObservable();
+
+  /**
+   * Notifies subscribers that underlying storage data has been refreshed.
+   */
+  notifyDataRefreshed(): void {
+    this.dataRefreshedSubject.next();
+  }
+
+  /**
+   * Save data to storage
+   * @param key The storage key
+   * @param data The data to save
+   */
+  abstract save<T>(key: string, data: T): Promise<void>;
+
+  /**
+   * Load data from storage
+   * @param key The storage key
+   * @returns The loaded data or null if not found
+   */
+  abstract load<T>(key: string): Promise<T | null>;
+
+  /**
+   * Synchronously load data from cache or local storage if available.
+   * @param key The storage key
+   * @returns The loaded data or null if not found or unsupported
+   */
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  loadSync<T>(_key: string): T | null {
+    return null;
+  }
+
+  /**
+   * Delete data from storage
+   * @param key The storage key
+   */
+  abstract delete(key: string): Promise<void>;
+
+  /**
+   * Check if a key exists in storage
+   * @param key The storage key
+   * @returns True if the key exists
+   */
+  abstract exists(key: string): Promise<boolean>;
+
+  /**
+   * Export all data from storage
+   * @returns All stored data as a record
+   */
+  abstract exportAll(): Promise<Record<string, unknown>>;
+
+  /**
+   * Import all data into storage
+   * @param data The data to import
+   */
+  abstract importAll(data: Record<string, unknown>): Promise<void>;
+
+  /**
+   * Export records only from a specific key
+   * @param recordKey The key where records are stored
+   * @returns The records array
+   */
+  abstract exportRecords(recordKey: string): Promise<unknown[]>;
+
+  /**
+   * Import records into a specific key
+   * @param recordKey The key where records are stored
+   * @param records The records array to import
+   */
+  abstract importRecords(recordKey: string, records: unknown[]): Promise<void>;
+}

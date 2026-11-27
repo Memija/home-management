@@ -102,12 +102,15 @@ describe('AuthService', () => {
   beforeEach(() => {
     authMock = {};
     globalAuthMock = authMock;
+    localStorage.clear();
+    localStorage.setItem('hm_has_auth_session', 'true');
     mockGetApps.mockReturnValue([]);
     mockOnAuthStateChanged.mockImplementation(() => undefined);
     vi.clearAllMocks();
   });
 
   afterEach(() => {
+    localStorage.clear();
     vi.restoreAllMocks();
   });
 
@@ -136,6 +139,15 @@ describe('AuthService', () => {
 
     it('should skip auth listener and not be loading in server platform', async () => {
       setupTestBed('server');
+      await flushPromises();
+
+      expect(mockOnAuthStateChanged).not.toHaveBeenCalled();
+      expect(service.isLoading()).toBe(false);
+    });
+
+    it('should skip eager Firebase auth initialization for anonymous local-only users', async () => {
+      localStorage.clear();
+      setupTestBed('browser');
       await flushPromises();
 
       expect(mockOnAuthStateChanged).not.toHaveBeenCalled();

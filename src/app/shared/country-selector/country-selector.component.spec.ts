@@ -96,15 +96,15 @@ describe('CountrySelectorComponent', () => {
     });
 
     it('should have empty countryCode by default', () => {
-      expect(component.countryCode).toBe('');
+      expect(component.countryCode()).toBe('');
     });
 
     it('should have default placeholder', () => {
-      expect(component.placeholder).toBe('SETTINGS.SEARCH_COUNTRY');
+      expect(component.placeholder()).toBe('SETTINGS.SEARCH_COUNTRY');
     });
 
     it('should have no error state by default', () => {
-      expect(component.hasError).toBe(false);
+      expect(component.hasError()).toBe(false);
     });
 
     it('should have empty search field by default', () => {
@@ -114,34 +114,40 @@ describe('CountrySelectorComponent', () => {
 
   describe('countryCode setter', () => {
     it('should set the internal country code signal', () => {
-      component.countryCode = 'de';
+      fixture.componentRef.setInput('countryCode', 'de');
+      TestBed.flushEffects();
       expect(component['_countryCode']()).toBe('de');
     });
 
     it('should update search field with translated country name', () => {
-      component.countryCode = 'de';
+      fixture.componentRef.setInput('countryCode', 'de');
+      TestBed.flushEffects();
       expect(component['_countrySearch']()).toBe('Germany');
     });
 
     it('should call countryService.getCountryInfoByCode', () => {
-      component.countryCode = 'fr';
+      fixture.componentRef.setInput('countryCode', 'fr');
+      TestBed.flushEffects();
       expect(countryServiceMock.getCountryInfoByCode).toHaveBeenCalledWith('fr');
     });
 
     it('should not update search if code is empty', () => {
-      component.countryCode = '';
+      fixture.componentRef.setInput('countryCode', '');
+      TestBed.flushEffects();
       expect(component['_countrySearch']()).toBe('');
     });
 
     it('should not update search if code is not found', () => {
       countryServiceMock.getCountryInfoByCode.mockReturnValue(undefined);
-      component.countryCode = 'xx';
+      fixture.componentRef.setInput('countryCode', 'xx');
+      TestBed.flushEffects();
       expect(component['_countrySearch']()).toBe('');
     });
 
     it('should return the country code via getter', () => {
-      component.countryCode = 'at';
-      expect(component.countryCode).toBe('at');
+      fixture.componentRef.setInput('countryCode', 'at');
+      TestBed.flushEffects();
+      expect(component.countryCode()).toBe('at');
     });
   });
 
@@ -185,7 +191,8 @@ describe('CountrySelectorComponent', () => {
     );
 
     it('should clear country code when no match found', () => {
-      component.countryCode = 'de';
+      fixture.componentRef.setInput('countryCode', 'de');
+      TestBed.flushEffects();
       component.onSearchChange('NonExistentCountry');
       expect(component['_countryCode']()).toBe('');
     });
@@ -329,30 +336,22 @@ describe('CountrySelectorComponent', () => {
     });
   });
 
-  describe('trackByCountry', () => {
-    it('should return the country string itself', () => {
-      expect(component.trackByCountry(0, 'Germany')).toBe('Germany');
-      expect(component.trackByCountry(5, 'France')).toBe('France');
-    });
-
-    it('should handle empty string', () => {
-      expect(component.trackByCountry(0, '')).toBe('');
-    });
-  });
-
   describe('Edge Cases', () => {
     beforeEach(() => {
       fixture.detectChanges();
     });
 
     it('should handle setting countryCode multiple times', () => {
-      component.countryCode = 'de';
+      fixture.componentRef.setInput('countryCode', 'de');
+      TestBed.flushEffects();
       expect(component['_countrySearch']()).toBe('Germany');
 
-      component.countryCode = 'fr';
+      fixture.componentRef.setInput('countryCode', 'fr');
+      TestBed.flushEffects();
       expect(component['_countrySearch']()).toBe('France');
 
-      component.countryCode = 'us';
+      fixture.componentRef.setInput('countryCode', 'us');
+      TestBed.flushEffects();
       expect(component['_countrySearch']()).toBe('United States');
     });
 
@@ -389,7 +388,7 @@ describe('CountrySelectorComponent', () => {
     });
 
     it('should handle hasError input', () => {
-      component.hasError = true;
+      fixture.componentRef.setInput('hasError', true);
       fixture.detectChanges();
 
       const input = fixture.debugElement.query(By.css('input'));
@@ -397,7 +396,7 @@ describe('CountrySelectorComponent', () => {
     });
 
     it('should not have error class when hasError is false', () => {
-      component.hasError = false;
+      fixture.componentRef.setInput('hasError', false);
       fixture.detectChanges();
 
       const input = fixture.debugElement.query(By.css('input'));
@@ -414,7 +413,8 @@ describe('CountrySelectorComponent', () => {
       countryServiceMock.getCountryInfoByCode.mockImplementation((code: string) =>
         mockCountries.find((c) => c.code === code.toLowerCase()),
       );
-      component.countryCode = 'DE';
+      fixture.componentRef.setInput('countryCode', 'DE');
+      TestBed.flushEffects();
       // Should find Germany via case-insensitive lookup in the mock
       expect(countryServiceMock.getCountryInfoByCode).toHaveBeenCalledWith('DE');
     });
@@ -455,7 +455,7 @@ describe('CountrySelectorComponent', () => {
     });
 
     it('should set placeholder using translate pipe', () => {
-      component.placeholder = 'SETTINGS.SEARCH_COUNTRY';
+      fixture.componentRef.setInput('placeholder', 'SETTINGS.SEARCH_COUNTRY');
       fixture.detectChanges();
 
       const input = fixture.debugElement.query(By.css('input'));

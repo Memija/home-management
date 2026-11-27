@@ -1,12 +1,16 @@
-import { Chart, ChartConfiguration, ChartEvent, LegendItem, TooltipItem } from 'chart.js';
+import { Chart, ChartConfiguration, ChartEvent, LegendItem } from 'chart.js';
 import { LanguageService } from '../../../services/language.service';
 import { AppChartDataset } from '../../../models/records.model';
 import { ChartDataPoint } from '../../../models/consumption-chart.model';
+import { buildTooltipOptions, MobileTooltipReadout } from './chart-tooltip.builder';
+
+export type { MobileReadoutItem, MobileTooltipReadout } from './chart-tooltip.builder';
 
 export interface ChartOptionsBuilderDeps {
   languageService: LanguageService;
   chartType: 'water' | 'home' | 'heating' | 'electricity';
   getData: () => ChartDataPoint[];
+  onMobileTooltip?: (readout: MobileTooltipReadout | null) => void;
 }
 
 // ─── Legend helpers ───────────────────────────────────────────────────────────
@@ -17,10 +21,10 @@ export interface ChartOptionsBuilderDeps {
  * prediction dataset entry).
  */
 function buildLegendFilter(languageService: LanguageService) {
+  const minTranslation = languageService.translate('PREDICTIONS.MIN');
+  const maxTranslation = languageService.translate('PREDICTIONS.MAX');
   return (legendItem: LegendItem, data: ChartConfiguration['data']): boolean => {
     const label = legendItem.text;
-    const minTranslation = languageService.translate('PREDICTIONS.MIN');
-    const maxTranslation = languageService.translate('PREDICTIONS.MAX');
     if (label === minTranslation || label === maxTranslation) return false;
     // Hide prediction extension overlays (predicted trendline continuations)
     const ds = data.datasets?.[legendItem.datasetIndex ?? -1];
@@ -33,53 +37,114 @@ export function escapeRegExp(str: string): string {
   return str.replace(/[.*+?^${}()|[\]\\]/g, String.raw`\$&`);
 }
 
+function buildLabelRegex(label: string): RegExp | null {
+  if (!label) return null;
+  const escaped = escapeRegExp(label);
+  // eslint-disable-next-line security/detect-non-literal-regexp -- label is escaped with escapeRegExp and sourced from internal i18n
+  return new RegExp(
+    String.raw`(\s*[(（\[]\s*${escaped}\s*[)）\]]|\s*[-—–]\s*${escaped}\s*|${escaped})`,
+    'giu',
+  );
+}
+
 /**
  * Replaces occurrences of a translated label (with optional leading separators like " - " or " ("
  * and optional closing parens) with a compact icon symbol.
  */
-export function replaceLabelWithIcon(text: string, label: string, icon: string): string {
-  if (!label || !text.toLowerCase().includes(label.toLowerCase())) return text;
-  const escaped = escapeRegExp(label);
-  // eslint-disable-next-line security/detect-non-literal-regexp -- label is escaped with escapeRegExp and sourced from internal i18n
-  const pattern = new RegExp(
-    String.raw`(\s*[(（\[]\s*${escaped}\s*[)）\]]|\s*[-—–]\s*${escaped}\s*|${escaped})`,
-    'giu',
-  );
+export function replaceLabelWithIcon(
+  text: string,
+  label: string,
+  icon: string,
+  compiledPattern?: RegExp | null,
+  labelLower?: string,
+): string {
+  if (!label) return text;
+  const normalizedLabel = labelLower ?? label.toLowerCase();
+  if (!text.toLowerCase().includes(normalizedLabel)) return text;
+  const pattern = compiledPattern ?? buildLabelRegex(label);
+  if (!pattern) return text;
   return text
     .replace(pattern, ` ${icon}`)
     .replace(/\s{2,}/g, ' ')
     .trim();
 }
 
+type CompiledLabelReplacement = readonly [
+  label: string,
+  icon: string,
+  pattern: RegExp | null,
+  labelLower: string,
+];
+
+function isMobileViewport(): boolean {
+  return typeof window !== 'undefined' && window.innerWidth <= 768;
+}
+
+function createLabelReplacements(languageService: LanguageService): CompiledLabelReplacement[] {
+  const rawPairs: [string, string][] = [
+    [languageService.translate('CHART.CONSUMPTION_PREDICTION'), '🔮'],
+    [languageService.translate('CHART.TRENDLINE'), '📈'],
+    [languageService.translate('CHART.COUNTRY_AVERAGE'), '🌐'],
+    [languageService.translate('CHART.PAST_FORECAST'), '🎯'],
+    [languageService.translate('CHART.INCREMENTAL_CONSUMPTION'), '📅'],
+    [languageService.translate('CHART.DISPLAY_MODE_INCREMENTAL'), '📅'],
+    [languageService.translate('CHART.TOTAL_WEEKLY_CONSUMPTION'), '∑'],
+    [languageService.translate('CHART.DISPLAY_MODE_TOTAL'), '∑'],
+    [languageService.translate('CHART.TOTAL_CONSUMPTION'), '∑'],
+  ];
+  return rawPairs.map(([label, icon]) => [
+    label,
+    icon,
+    buildLabelRegex(label),
+    label.toLowerCase(),
+  ]);
+}
+
+function applyLabelReplacements(text: string, replacements: CompiledLabelReplacement[]): string {
+  let result = text;
+  let resultLower = result.toLowerCase();
+  for (const [label, icon, pattern, labelLower] of replacements) {
+    if (labelLower && resultLower.includes(labelLower)) {
+      result = replaceLabelWithIcon(result, label, icon, pattern, labelLower);
+      resultLower = result.toLowerCase();
+    }
+  }
+  return result;
+}
+
+export function buildCompactLabelFormatter(
+  languageService: LanguageService,
+): (label: string) => string {
+  let cachedReplacements: CompiledLabelReplacement[] | null = null;
+  return (label: string): string => {
+    if (!label) return '';
+    cachedReplacements ??= createLabelReplacements(languageService);
+    return applyLabelReplacements(label, cachedReplacements);
+  };
+}
+
 /**
  * Generates compact legend labels on mobile screens by substituting lengthy suffix strings
  * (e.g., " - Consumption prediction" or " (Daily Average Consumption)") with concise symbols/icons.
  */
-function buildGenerateLabels(languageService: LanguageService) {
+function buildGenerateLabels(
+  languageService: LanguageService,
+  compactFormatter?: (label: string) => string,
+) {
+  const formatLabel = compactFormatter ?? buildCompactLabelFormatter(languageService);
+
   return (chart: Chart): LegendItem[] => {
     const defaultGenerator = Chart.defaults.plugins.legend.labels.generateLabels;
     const items = defaultGenerator(chart);
 
-    if (typeof window !== 'undefined' && window.innerWidth <= 768) {
-      const replacements: [string, string][] = [
-        [languageService.translate('CHART.CONSUMPTION_PREDICTION'), '🔮'],
-        [languageService.translate('CHART.TRENDLINE'), '📈'],
-        [languageService.translate('CHART.COUNTRY_AVERAGE'), '🌐'],
-        [languageService.translate('CHART.PAST_FORECAST'), '🎯'],
-        [languageService.translate('CHART.INCREMENTAL_CONSUMPTION'), '📅'],
-        [languageService.translate('CHART.DISPLAY_MODE_INCREMENTAL'), '📅'],
-        [languageService.translate('CHART.TOTAL_WEEKLY_CONSUMPTION'), '∑'],
-        [languageService.translate('CHART.DISPLAY_MODE_TOTAL'), '∑'],
-        [languageService.translate('CHART.TOTAL_CONSUMPTION'), '∑'],
-      ];
+    if (!isMobileViewport()) {
+      return items;
+    }
 
-      items.forEach((item) => {
-        let text = item.text || '';
-        for (const [label, icon] of replacements) {
-          text = replaceLabelWithIcon(text, label, icon);
-        }
-        item.text = text;
-      });
+    for (const item of items) {
+      if (item.text) {
+        item.text = formatLabel(item.text);
+      }
     }
 
     return items;
@@ -94,6 +159,13 @@ function buildGenerateLabels(languageService: LanguageService) {
  * in all supported languages.
  */
 function buildLegendClickHandler(languageService: LanguageService) {
+  const predictionsLabel = languageService.translate('CHART.CONSUMPTION_PREDICTION');
+  const trendlineLabel = languageService.translate('CHART.TRENDLINE');
+  const countryAverageLabel = languageService.translate('CHART.COUNTRY_AVERAGE');
+  const totalViewLabel = languageService.translate('CHART.TOTAL_WEEKLY_CONSUMPTION');
+  const minLabel = languageService.translate('PREDICTIONS.MIN');
+  const maxLabel = languageService.translate('PREDICTIONS.MAX');
+
   return (_e: ChartEvent, legendItem: LegendItem, legend: { chart: Chart }): void => {
     const chart = legend.chart;
     const clickedIndex = legendItem.datasetIndex;
@@ -108,14 +180,11 @@ function buildLegendClickHandler(languageService: LanguageService) {
     chart.setDatasetVisibility(clickedIndex, isHidden);
 
     // ── Sync prediction min/max band when the expected-prediction line is clicked ──
-    const predictionsLabel = languageService.translate('CHART.CONSUMPTION_PREDICTION');
     if (clickedLabel.includes(predictionsLabel)) {
-      syncPredictionBand(chart, clickedDataset, isHidden, languageService);
+      syncPredictionBand(chart, clickedDataset, isHidden, minLabel, maxLabel);
     }
 
     // ── Sync trendline / country-average datasets with their parent series ──
-    const trendlineLabel = languageService.translate('CHART.TRENDLINE');
-    const countryAverageLabel = languageService.translate('CHART.COUNTRY_AVERAGE');
     const isTrendlineOrAverage =
       clickedLabel.includes(trendlineLabel) || clickedLabel.includes(countryAverageLabel);
 
@@ -127,7 +196,7 @@ function buildLegendClickHandler(languageService: LanguageService) {
         isHidden,
         trendlineLabel,
         countryAverageLabel,
-        languageService,
+        totalViewLabel,
       );
     }
 
@@ -143,10 +212,9 @@ function syncPredictionBand(
   chart: Chart,
   clickedDataset: ChartConfiguration['data']['datasets'][0],
   isHidden: boolean,
-  languageService: LanguageService,
+  minLabel: string,
+  maxLabel: string,
 ): void {
-  const minLabel = languageService.translate('PREDICTIONS.MIN');
-  const maxLabel = languageService.translate('PREDICTIONS.MAX');
   const clickedCategoryId = (clickedDataset as AppChartDataset | undefined)?.categoryId;
 
   chart.data.datasets.forEach(
@@ -179,9 +247,8 @@ function syncRelatedDatasets(
   isHidden: boolean,
   trendlineLabel: string,
   countryAverageLabel: string,
-  languageService: LanguageService,
+  totalViewLabel: string,
 ): void {
-  const totalViewLabel = languageService.translate('CHART.TOTAL_WEEKLY_CONSUMPTION');
   const isTotalView = clickedLabel.includes(totalViewLabel);
 
   if (isTotalView) {
@@ -230,76 +297,69 @@ function syncRelatedDatasets(
   );
 }
 
-// ─── Tooltip helpers ──────────────────────────────────────────────────────────
+// ─── Scale & mobile layout helpers ───────────────────────────────────────────
 
-/**
- * Builds the tooltip title callback: shows the full locale-aware date for
- * historical data points, and an estimated future date for prediction points.
- */
-function buildTooltipTitleCallback(
-  languageService: LanguageService,
-  getData: () => ChartDataPoint[],
-) {
-  return (tooltipItems: TooltipItem<keyof import('chart.js').ChartTypeRegistry>[]): string => {
-    if (tooltipItems.length === 0) return '';
-
-    const item = tooltipItems[0];
-    const dataIndex = item.dataIndex;
-    const data = getData();
-    const pastDataLength = data.length;
-
-    if (dataIndex < pastDataLength) {
-      return languageService.formatDate(new Date(data[dataIndex].date), {
-        weekday: 'long',
-        year: 'numeric',
-        month: 'long',
-        day: 'numeric',
-      });
-    }
-
-    // Future data point (prediction zone)
-    if (pastDataLength > 0) {
-      const monthOffset = dataIndex - pastDataLength + 1;
-      const futureDate = new Date(data[pastDataLength - 1].date);
-      futureDate.setMonth(futureDate.getMonth() + monthOffset);
-      return languageService.formatDate(futureDate, {
-        weekday: 'long',
-        year: 'numeric',
-        month: 'long',
-        day: 'numeric',
-      });
-    }
-
-    return item.label;
-  };
+export function formatCompactAxisTick(value: number): string {
+  const abs = Math.abs(value);
+  if (abs >= 1_000_000) {
+    const m = Math.round((value / 1_000_000) * 10) / 10;
+    return `${m}M`;
+  }
+  if (abs >= 1_000) {
+    const k = Math.round((value / 1_000) * 10) / 10;
+    return `${k}k`;
+  }
+  return String(Math.round(value * 10) / 10);
 }
 
-/**
- * Builds the tooltip label callback: formats the value with its unit and
- * appends a normalized-period note for incremental-mode data points.
- */
-function buildTooltipLabelCallback(
+function resolveUnitAxisLabel(
   languageService: LanguageService,
   chartType: ChartOptionsBuilderDeps['chartType'],
-) {
-  return (context: TooltipItem<keyof import('chart.js').ChartTypeRegistry>): string => {
-    const unit = chartType === 'heating' || chartType === 'electricity' ? 'kWh' : 'L';
-    const parsedY =
-      typeof context.parsed === 'object' && context.parsed !== null && 'y' in context.parsed
-        ? Number((context.parsed as { y: number }).y)
-        : Number(context.parsed);
-    const val = Math.round(parsedY);
-    const datasetLabel = context.dataset?.label ?? '';
-    let label = `${datasetLabel}: ${val} ${unit}`;
+): string {
+  return chartType === 'heating' || chartType === 'electricity'
+    ? languageService.translate('CHART.AXIS_KWH')
+    : languageService.translate('CHART.AXIS_LITERS');
+}
 
-    const normalizedData = (context.dataset as AppChartDataset).normalizedData;
-    const itemNorm = normalizedData?.[context.dataIndex] as { days?: number } | undefined;
-    if (itemNorm?.days) {
-      const days = Number(itemNorm.days).toFixed(1);
-      label += ` ${languageService.translate('CHART.ESTIMATED_MONTHLY', { days })}`;
-    }
+function buildScalesOptions(
+  mobile: boolean,
+  unitLabel: string,
+  dateLabel: string,
+): NonNullable<ChartConfiguration['options']>['scales'] {
+  if (!mobile) {
+    return {
+      y: {
+        beginAtZero: true,
+        title: { display: true, text: unitLabel },
+      },
+      x: {
+        title: { display: true, text: dateLabel },
+        ticks: { maxRotation: 45, minRotation: 0 },
+      },
+    };
+  }
 
-    return label;
+  return {
+    y: {
+      beginAtZero: true,
+      title: { display: false, text: unitLabel },
+      ticks: {
+        maxTicksLimit: 5,
+        font: { size: 10 },
+        callback: (tickValue: string | number) => formatCompactAxisTick(Number(tickValue)),
+      },
+    },
+    x: {
+      title: { display: false, text: dateLabel },
+      grid: { display: false },
+      ticks: {
+        maxRotation: 0,
+        minRotation: 0,
+        autoSkip: true,
+        maxTicksLimit: 5,
+        font: { size: 10 },
+      },
+    },
   };
 }
 
@@ -311,27 +371,38 @@ function buildTooltipLabelCallback(
  * Internally composed from focused helper functions for legend, tooltips, zoom, and scales.
  */
 export function buildChartOptions(deps: ChartOptionsBuilderDeps): ChartConfiguration['options'] {
-  const { languageService, chartType, getData } = deps;
+  const { languageService, chartType, getData, onMobileTooltip } = deps;
+  const mobile = isMobileViewport();
+  const unitLabel = resolveUnitAxisLabel(languageService, chartType);
+  const dateLabel = languageService.translate('CHART.AXIS_DATE');
+  const isHeating = chartType === 'heating';
+  const compactLabel = buildCompactLabelFormatter(languageService);
 
   return {
     responsive: true,
     maintainAspectRatio: false,
+    interaction: mobile
+      ? { mode: 'index', intersect: false }
+      : { mode: 'nearest', intersect: true },
     plugins: {
       legend: {
         display: true,
         position: 'top',
         labels: {
+          ...(mobile ? { boxWidth: 10, boxHeight: 10, padding: 8, font: { size: 11 } } : {}),
           filter: buildLegendFilter(languageService),
-          generateLabels: buildGenerateLabels(languageService),
+          generateLabels: buildGenerateLabels(languageService, compactLabel),
         },
         onClick: buildLegendClickHandler(languageService),
       },
-      tooltip: {
-        callbacks: {
-          title: buildTooltipTitleCallback(languageService, getData),
-          label: buildTooltipLabelCallback(languageService, chartType),
-        },
-      },
+      tooltip: buildTooltipOptions({
+        languageService,
+        chartType,
+        getData,
+        mobile,
+        compactLabel,
+        onMobileTooltip,
+      }),
       zoom: {
         pan: { enabled: true, mode: 'x' },
         zoom: {
@@ -343,8 +414,8 @@ export function buildChartOptions(deps: ChartOptionsBuilderDeps): ChartConfigura
       // Custom plugins — cast to Record<string, unknown> since their keys aren't in Chart.js's generated types
       ...({
         summerSun: {
-          enabled: chartType === 'heating',
-          records: chartType === 'heating' ? getData() : [],
+          enabled: isHeating,
+          records: isHeating ? getData() : [],
         },
         newYearMarker: {
           enabled: true,
@@ -352,21 +423,6 @@ export function buildChartOptions(deps: ChartOptionsBuilderDeps): ChartConfigura
         },
       } as Record<string, unknown>),
     },
-    scales: {
-      y: {
-        beginAtZero: true,
-        title: {
-          display: true,
-          text:
-            chartType === 'heating' || chartType === 'electricity'
-              ? languageService.translate('CHART.AXIS_KWH')
-              : languageService.translate('CHART.AXIS_LITERS'),
-        },
-      },
-      x: {
-        title: { display: true, text: languageService.translate('CHART.AXIS_DATE') },
-        ticks: { maxRotation: 45, minRotation: 0 },
-      },
-    },
+    scales: buildScalesOptions(mobile, unitLabel, dateLabel),
   };
 }

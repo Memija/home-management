@@ -31,7 +31,7 @@ export const chart = {
     COMPARE_WITH_INFO_ELECTRICITY:
       'Data rata-rata konsumsi listrik bersumber dari statistik energi nasional.',
     COMPARE_WITH_INFO_HEATING:
-      'Data rata-rata konsumsi pemanas bersumber dari statistik energi nasional.',
+      'Data rata-rata konsumsi pemanas bersumber dari statistik energi nasional untuk hunian tipikal seluas 100 m². Pemanas ruangan dibandingkan per rumah tangga dan bukan per orang karena bergantung pada luas lantai, insulasi bangunan, dan iklim luar ruangan, bukan jumlah penghuni.',
     COMPARISON_REQUIRES_DATA: 'Setidaknya diperlukan 3 entri untuk perbandingan negara',
     KITCHEN_TOTAL: 'Konsumsi Dapur',
     BATHROOM_TOTAL: 'Konsumsi Kamar Mandi',
@@ -83,5 +83,16 @@ export const chart = {
     COLLAPSE_CHART: 'Keluar dari layar penuh',
     HIDE_CONTROLS: 'Sembunyikan kontrol',
     SHOW_CONTROLS: 'Tampilkan kontrol',
+    RANGE_3M: '3B',
+    RANGE_6M: '6B',
+    RANGE_1Y: '1T',
+    RANGE_ALL: 'Semua',
+    GRANULARITY_RAW: 'Bacaan',
+    GRANULARITY_MONTHLY: 'Bulanan',
+    OVERLAYS_BUTTON: 'Lapisan',
+    ZOOM_HINT_MOBILE: 'Ketuk atau geser untuk memeriksa • Cubit untuk zoom',
+    LATEST_READING: 'Terbaru',
+    CLEAR_SELECTION: 'Hapus pilihan',
+    DAYS_SHORT: 'Rata2 {{days}}h',
   },
 };

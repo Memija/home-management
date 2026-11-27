@@ -32,7 +32,7 @@ export const chart = {
     COMPARE_WITH_INFO_ELECTRICITY:
       'Average electricity consumption data is sourced from national energy statistics and utility reports for each country.',
     COMPARE_WITH_INFO_HEATING:
-      'Average heating consumption data is sourced from national energy statistics and household surveys for each country.',
+      'Average heating consumption data is sourced from national energy statistics and household surveys for a typical 100 m² residence. Space heating is compared per household rather than per person because it depends on floor area, building insulation, and outdoor climate rather than occupant count.',
     COMPARISON_REQUIRES_DATA: 'At least 3 entries are required for country comparison',
     KITCHEN_TOTAL: 'Kitchen Consumption',
     BATHROOM_TOTAL: 'Bathroom Consumption',
@@ -85,5 +85,16 @@ export const chart = {
     COLLAPSE_CHART: 'Exit full screen',
     HIDE_CONTROLS: 'Hide controls',
     SHOW_CONTROLS: 'Show controls',
+    RANGE_3M: '3M',
+    RANGE_6M: '6M',
+    RANGE_1Y: '1Y',
+    RANGE_ALL: 'All',
+    GRANULARITY_RAW: 'Readings',
+    GRANULARITY_MONTHLY: 'Monthly',
+    OVERLAYS_BUTTON: 'Overlays',
+    ZOOM_HINT_MOBILE: 'Tap or drag to inspect • Pinch to zoom',
+    LATEST_READING: 'Latest',
+    CLEAR_SELECTION: 'Clear selection',
+    DAYS_SHORT: '{{days}}d avg',
   },
 };

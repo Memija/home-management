@@ -32,7 +32,7 @@ export const chart = {
     COMPARE_WITH_INFO_ELECTRICITY:
       'Podaci o prosječnoj potrošnji električne energije preuzeti su iz nacionalnih statistika i energetskih izvještaja za svaku državu.',
     COMPARE_WITH_INFO_HEATING:
-      'Podaci o prosječnoj potrošnji grijanja preuzeti su iz nacionalnih statistika i anketa domaćinstava za svaku državu.',
+      'Podaci o prosječnoj potrošnji grijanja preuzeti su iz nacionalnih statistika i anketa domaćinstava za tipičan stan od 100 m². Grijanje prostora poredi se po domaćinstvu umjesto po osobi jer zavisi od površine stana, izolacije objekta i vanjske klime, a ne od broja ukućana.',
     COMPARISON_REQUIRES_DATA: 'Za poređenje s držvama potrebna su barem 3 unosa',
     KITCHEN_TOTAL: 'Potrošnja u kuhinji',
     BATHROOM_TOTAL: 'Potrošnja u kupatilu',
@@ -85,5 +85,16 @@ export const chart = {
     COLLAPSE_CHART: 'Zatvori cijeli ekran',
     HIDE_CONTROLS: 'Sakrij kontrole',
     SHOW_CONTROLS: 'Prikaži kontrole',
+    RANGE_3M: '3M',
+    RANGE_6M: '6M',
+    RANGE_1Y: '1G',
+    RANGE_ALL: 'Sve',
+    GRANULARITY_RAW: 'Očitanja',
+    GRANULARITY_MONTHLY: 'Mjesečno',
+    OVERLAYS_BUTTON: 'Prikazi',
+    ZOOM_HINT_MOBILE: 'Dodirnite ili prevucite za pregled • Uštipnite za zum',
+    LATEST_READING: 'Najnovije',
+    CLEAR_SELECTION: 'Poništi odabir',
+    DAYS_SHORT: 'Ø {{days}} d.',
   },
 };

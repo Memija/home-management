@@ -1,8 +1,8 @@
-@if (showSignal()) {
+@if (show()) {
   <!-- eslint-disable-next-line @angular-eslint/template/interactive-supports-focus -- Backdrop dismissal by design -->
   <div
     class="modal-overlay"
-    (click)="$event.target === $event.currentTarget && closeModal.emit()"
+    (click)="$event.target === $event.currentTarget ? closeModal.emit() : undefined"
     (keydown.escape)="closeModal.emit()"
   >
     <div class="modal-content">

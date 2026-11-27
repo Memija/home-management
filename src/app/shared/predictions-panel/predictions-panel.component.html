@@ -30,7 +30,7 @@
         </span>
       </div>
       @if (pred.accuracyPercentage) {
-        <div class="confidence-badge accuracy-badge" [ngClass]="accuracyClass()">
+        <div [class]="'confidence-badge accuracy-badge ' + accuracyClass()">
           <lucide-icon [img]="TargetIcon" [size]="14"></lucide-icon>
           <span>{{ 'PREDICTIONS.ACCURACY' | translate }}: {{ pred.accuracyPercentage }}%</span>
           <span class="info-tooltip-container">
@@ -80,13 +80,10 @@
       </div>
     </div>
 
-    @if (pred.appliedCorrection) {
+    @if (correctionParams(); as corrParams) {
       <div class="auto-correction-notice">
         <lucide-icon [img]="RefreshCcwIcon" [size]="14"></lucide-icon>
-        <span>{{
-          'PREDICTIONS.AUTO_CORRECTED'
-            | translate: { percent: ((pred.appliedCorrection - 1) * 100).toFixed(1) }
-        }}</span>
+        <span>{{ 'PREDICTIONS.AUTO_CORRECTED' | translate: corrParams }}</span>
         <span class="info-tooltip-container">
           <lucide-icon [img]="InfoIcon" size="14" class="info-icon"></lucide-icon>
           <span class="info-tooltip">{{ 'PREDICTIONS.AUTO_CORRECTED_INFO' | translate }}</span>

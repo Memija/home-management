@@ -1,5 +1,5 @@
 import { Injectable, signal, computed } from '@angular/core';
-import { ElectricityRecord } from '../models/records.model';
+import { ElectricityRecord, getIsoDateKey } from '../models/records.model';
 
 @Injectable({
   providedIn: 'root',
@@ -16,21 +16,18 @@ export class ElectricityFormService {
 
   isDateDuplicate(currentRecords: ElectricityRecord[]): boolean {
     if (this.editingRecord()) return false;
-    if (!this.selectedDate()) return false;
+    const selected = this.selectedDate();
+    if (!selected) return false;
 
     // Check if a record already exists for the selected date
-    return currentRecords.some((r) => {
-      const d = new Date(r.date);
-      if (Number.isNaN(d.getTime())) return false;
-      return d.toISOString().split('T')[0] === this.selectedDate();
-    });
+    return currentRecords.some((r) => getIsoDateKey(r.date) === selected);
   }
 
   startEdit(record: ElectricityRecord) {
     this.editingRecord.set(record);
-    const date = new Date(record.date);
-    if (!Number.isNaN(date.getTime())) {
-      this.selectedDate.set(date.toISOString().split('T')[0]);
+    const isoDate = getIsoDateKey(record.date);
+    if (isoDate) {
+      this.selectedDate.set(isoDate);
     }
     this.value.set(record.value);
   }

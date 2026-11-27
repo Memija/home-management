@@ -44,9 +44,27 @@ export class ExcelSettingsService {
   readonly settings = signal<ExcelSettings>(this.getDefaultSettings());
 
   constructor() {
-    queueMicrotask(() => {
-      void this.loadSettings();
-    });
+    if (typeof this.storage?.loadSync === 'function') {
+      const settings = this.storage.loadSync<ExcelSettings>('excel_settings');
+      if (settings) {
+        this.settings.set({
+          enabled: settings.enabled ?? false,
+          waterMapping: { ...this.getDefaultWaterMapping(), ...settings.waterMapping },
+          heatingMapping: { ...this.getDefaultHeatingMapping(), ...settings.heatingMapping },
+          electricityMapping: {
+            ...this.getDefaultElectricityMapping(),
+            ...settings.electricityMapping,
+          },
+        });
+      }
+      setTimeout(() => {
+        this.isInitialized = true;
+      }, 0);
+    } else {
+      queueMicrotask(() => {
+        void this.loadSettings();
+      });
+    }
     this.storage.dataRefreshed$
       ?.pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe(() => void this.loadSettings());

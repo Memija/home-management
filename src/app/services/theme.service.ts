@@ -12,15 +12,16 @@ const THEME_STORAGE_KEY = 'hm_theme';
 export class ThemeService {
   private readonly platformId = inject(PLATFORM_ID);
 
+  private readonly mediaQuery =
+    this.isBrowser && typeof window.matchMedia === 'function'
+      ? window.matchMedia('(prefers-color-scheme: dark)')
+      : null;
+
   /** Current theme preference */
   readonly currentTheme = signal<Theme>(this.getStoredTheme());
 
   /** Resolved theme (light or dark based on system preference if 'system' is selected) */
-  readonly resolvedTheme = signal<'light' | 'dark'>(this.resolveTheme(this.getStoredTheme()));
-
-  private readonly mediaQuery = this.isBrowser
-    ? window.matchMedia('(prefers-color-scheme: dark)')
-    : null;
+  readonly resolvedTheme = signal<'light' | 'dark'>(this.resolveTheme(this.currentTheme()));
 
   constructor() {
     if (this.mediaQuery) {
@@ -57,7 +58,12 @@ export class ThemeService {
   private resolveTheme(theme: Theme): 'light' | 'dark' {
     if (theme === 'system') {
       if (!this.isBrowser) return 'light';
-      return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+      const mq =
+        this.mediaQuery ??
+        (typeof window.matchMedia === 'function'
+          ? window.matchMedia('(prefers-color-scheme: dark)')
+          : null);
+      return mq?.matches ? 'dark' : 'light';
     }
     return theme;
   }

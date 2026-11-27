@@ -71,8 +71,8 @@
           <p>{{ feature.descKey | translate }}</p>
         </div>
         <div class="feature-tag" [class]="'tag-' + feature.tag">
-          <lucide-icon [img]="getTagIcon(feature.tag)" [size]="12"></lucide-icon>
-          <span>{{ getTagTranslationKey(feature.tag) | translate }}</span>
+          <lucide-icon [img]="tagIcons[feature.tag]" [size]="12"></lucide-icon>
+          <span>{{ tagTranslationKeys[feature.tag] | translate }}</span>
         </div>
       </div>
     }

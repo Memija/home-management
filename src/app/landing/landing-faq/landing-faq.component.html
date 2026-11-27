@@ -1,0 +1,22 @@
+<section class="faq-section" id="faq" aria-labelledby="faq-heading">
+  <div class="faq-header">
+    <h2 class="faq-title" id="faq-heading">{{ 'LANDING.FAQ.TITLE' | translate }}</h2>
+    <p class="faq-subtitle">{{ 'LANDING.FAQ.SUBTITLE' | translate }}</p>
+  </div>
+  <div class="faq-list">
+    @for (item of faqItems; track item.questionKey; let first = $first) {
+      <details class="faq-item" [attr.open]="first ? '' : null">
+        <summary class="faq-question">
+          <span class="faq-question-text">{{ item.questionKey | translate }}</span>
+          <lucide-icon
+            [img]="ChevronDownIcon"
+            size="20"
+            class="faq-chevron"
+            aria-hidden="true"
+          ></lucide-icon>
+        </summary>
+        <p class="faq-answer">{{ item.answerKey | translate }}</p>
+      </details>
+    }
+  </div>
+</section>

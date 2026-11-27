@@ -237,7 +237,87 @@ async function auditModal(
 /**
  * Reusable suite covering all primary pages and all 10 interactive modals
  */
-async function auditSuite(flow, page, { isMobile, theme, suiteNum, totalSuites, isQuick }) {
+async function auditMotivationNotifications(flow, page, { name, isMobile = false, demoData }) {
+  console.log(`   👉 Auditing Notification Dropdown & Motivation Alerts: ${name}...`);
+  try {
+    await page.evaluate(() => {
+      const dayMs = 24 * 60 * 60 * 1000;
+      const d21 = new Date(Date.now() - 21 * dayMs).toISOString();
+      const d11 = new Date(Date.now() - 11 * dayMs).toISOString();
+      const d1 = new Date(Date.now() - 1 * dayMs).toISOString();
+
+      localStorage.removeItem('hm_demo_mode_is_active');
+      localStorage.removeItem('hm_dismissed_notifications');
+
+      localStorage.setItem(
+        'hm_water_consumption_records',
+        JSON.stringify([
+          { date: d21, kitchenWarm: 0, kitchenCold: 0, bathroomWarm: 0, bathroomCold: 0 },
+          { date: d11, kitchenWarm: 0, kitchenCold: 0, bathroomWarm: 300, bathroomCold: 700 },
+          { date: d1, kitchenWarm: 0, kitchenCold: 0, bathroomWarm: 500, bathroomCold: 1250 },
+        ]),
+      );
+      localStorage.setItem(
+        'hm_heating_consumption_records',
+        JSON.stringify([
+          { date: d21, rooms: { room_1: 100 } },
+          { date: d11, rooms: { room_1: 200 } },
+          { date: d1, rooms: { room_1: 300 } },
+        ]),
+      );
+      localStorage.setItem(
+        'hm_electricity_consumption_records',
+        JSON.stringify([
+          { date: d21, value: 1000 },
+          { date: d11, value: 1100 },
+          { date: d1, value: 1235 },
+        ]),
+      );
+    });
+
+    await page.goto(`${BASE_URL}/dashboard`, { waitUntil: 'networkidle0' });
+    await page.waitForSelector('.motivation-status', { visible: true, timeout: 6000 });
+    await page.waitForSelector('.notification-bell.has-notifications', {
+      visible: true,
+      timeout: 6000,
+    });
+
+    await page.evaluate(() => {
+      const refreshBtn = document.querySelector('.motivation-refresh-btn');
+      if (refreshBtn) refreshBtn.click();
+      const bellBtn = document.querySelector('.notification-bell');
+      if (bellBtn) bellBtn.click();
+    });
+
+    await page.waitForSelector('.notification-panel', { visible: true, timeout: 6000 });
+    await new Promise((resolve) => setTimeout(resolve, 350));
+
+    const settingsOverrides = isMobile ? MOBILE_CONFIG : DESKTOP_CONFIG;
+    await flow.snapshot({
+      name,
+      stepName: name,
+      configContext: { settingsOverrides },
+    });
+
+    await page.evaluate(() => {
+      const dismissBtn = document.querySelector('.notification-panel .dismiss-btn');
+      if (dismissBtn) dismissBtn.click();
+      const closeBtn = document.querySelector('.notification-panel .close-btn');
+      if (closeBtn) closeBtn.click();
+    });
+    console.log(`   ✅ Completed: ${name}`);
+  } catch (error) {
+    console.warn(`   ⚠️ Warning: Could not complete motivation step "${name}":`, error.message);
+  } finally {
+    await setupDemoMode(page, demoData);
+  }
+}
+
+async function auditSuite(
+  flow,
+  page,
+  { isMobile, theme, suiteNum, totalSuites, isQuick, demoData },
+) {
   const platformName = isMobile ? 'Mobile' : 'Desktop';
   const themeName = theme === 'dark' ? 'Dark' : 'Light';
   const icon = isMobile ? (theme === 'dark' ? '📱🌙' : '📱☀️') : theme === 'dark' ? '💻🌙' : '💻☀️';
@@ -258,7 +338,8 @@ async function auditSuite(flow, page, { isMobile, theme, suiteNum, totalSuites, 
     });
   }
 
-  // 2. Dashboard Page
+  // 2. Dashboard Page (with initial header notification badge & motivation banners)
+  await page.evaluate(() => localStorage.removeItem('hm_dismissed_notifications'));
   await auditPage(flow, page, {
     url: `${BASE_URL}/dashboard`,
     name: `${icon} Dashboard Page (${platformName} ${themeName})`,
@@ -274,11 +355,13 @@ async function auditSuite(flow, page, { isMobile, theme, suiteNum, totalSuites, 
     isMobile,
     beforeSnapshot: async (p) => {
       await p.evaluate(() => {
-        const sel = document.querySelector('.custom-select');
+        const sel =
+          document.querySelector('app-contact-modal .select-trigger') ||
+          document.querySelector('.custom-select');
         if (sel) sel.click();
       });
       try {
-        await p.waitForSelector('#email-client-dropdown', { visible: true, timeout: 3000 });
+        await p.waitForSelector('#contact-category-dropdown', { visible: true, timeout: 3000 });
       } catch {
         await new Promise((r) => setTimeout(r, 300));
       }
@@ -409,6 +492,20 @@ async function auditSuite(flow, page, { isMobile, theme, suiteNum, totalSuites, 
     name: `${icon} Delete Confirmation Modal (${platformName} ${themeName})`,
     isMobile,
   });
+
+  // 17. Modal 11: Notification Bell Dropdown & All 3 Motivation States (Saving, Stable, Spike)
+  await auditMotivationNotifications(flow, page, {
+    name: `${icon} Notification Panel & Motivation Alerts (${platformName} ${themeName})`,
+    isMobile,
+    demoData,
+  });
+
+  // 18. 404 Not Found Page (Aerial Landscape in Day/Night Theme)
+  await auditPage(flow, page, {
+    url: `${BASE_URL}/not-found`,
+    name: `${icon} 404 Not Found Page (${platformName} ${themeName})`,
+    isMobile,
+  });
 }
 
 /**
@@ -467,7 +564,8 @@ async function stopProcess(child) {
 }
 
 /**
- * Discovers an active web server or automatically spawns the Express SSR server
+ * Discovers an active web server or automatically spawns the Firebase Hosting emulation
+ * (scripts/serve-hosting.js), which serves the build exactly like production does
  */
 async function resolveServer() {
   if (process.env.TARGET_URL) {
@@ -486,26 +584,26 @@ async function resolveServer() {
     return { url: 'http://localhost:4200', process: null };
   }
 
-  // 2. Check if Express SSR server is already active on port 4000
+  // 2. Check if a production server (hosting emulation) is already active on port 4000
   if (await isServerReachable('http://localhost:4000')) {
-    console.log('📡 Connected to active SSR server at http://localhost:4000\n');
+    console.log('📡 Connected to active server at http://localhost:4000\n');
     return { url: 'http://localhost:4000', process: null };
   }
 
-  // 3. Neither server is active: automatically launch Express SSR server
-  const serverPath = path.resolve(process.cwd(), 'dist/home-management/server/server.mjs');
-  if (!fs.existsSync(serverPath)) {
-    console.log('📦 SSR production build not found. Building application (npm run build)...');
+  // 3. Neither server is active: automatically launch the Firebase Hosting emulation
+  const buildIndexPath = path.resolve(process.cwd(), 'dist/home-management/browser/index.csr.html');
+  if (!fs.existsSync(buildIndexPath)) {
+    console.log('📦 Production build not found. Building application (npm run build)...');
     execSync('npm run build', { stdio: 'inherit' });
   }
 
-  console.log('🚀 Spawning local Express SSR server on port 4000...');
+  console.log('🚀 Spawning Firebase Hosting emulation on port 4000...');
+  const serverPath = path.resolve(process.cwd(), 'scripts/serve-hosting.js');
   const serverProc = spawn(process.execPath, [serverPath], {
     stdio: ['ignore', 'pipe', 'pipe'],
     env: {
       ...process.env,
       PORT: '4000',
-      NG_ALLOWED_HOSTS: 'localhost,127.0.0.1',
     },
   });
 
@@ -520,11 +618,11 @@ async function resolveServer() {
   if (!isReady) {
     await stopProcess(serverProc);
     throw new Error(
-      `Failed to start Express SSR server on http://localhost:4000.\n${serverErrOutput}`,
+      `Failed to start Firebase Hosting emulation on http://localhost:4000.\n${serverErrOutput}`,
     );
   }
 
-  console.log('✅ Express SSR server ready on http://localhost:4000\n');
+  console.log('✅ Firebase Hosting emulation ready on http://localhost:4000\n');
   return { url: 'http://localhost:4000', process: serverProc };
 }
 
@@ -535,7 +633,7 @@ async function runAudit() {
 
   const handleTermination = async () => {
     if (serverProcess) {
-      console.log('\n🛑 Stopping background SSR server...');
+      console.log('\n🛑 Stopping background server...');
       await stopProcess(serverProcess);
       serverProcess = null;
     }
@@ -630,6 +728,7 @@ async function runAudit() {
         suiteNum: i + 1,
         totalSuites: suites.length,
         isQuick: IS_QUICK,
+        demoData,
       });
     }
 
@@ -765,7 +864,7 @@ async function runAudit() {
       }
     }
     if (serverProcess) {
-      console.log('🛑 Stopping background SSR server...');
+      console.log('🛑 Stopping background server...');
       await stopProcess(serverProcess);
     }
   }

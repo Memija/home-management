@@ -1,10 +1,20 @@
-import { Component, inject, signal, HostListener, ElementRef, computed } from '@angular/core';
+import {
+  Component,
+  ChangeDetectionStrategy,
+  inject,
+  signal,
+  ElementRef,
+  computed,
+  effect,
+} from '@angular/core';
+import { DOCUMENT } from '@angular/common';
 import { Router } from '@angular/router';
 import { TranslatePipe } from '../../pipes/translate.pipe';
 import { LanguageSwitcherComponent } from '../../components/language-switcher/language-switcher.component';
 import { AuthButtonComponent } from '../../components/auth-button/auth-button.component';
 import {
   LucideAngularModule,
+  LucideIconData,
   Play,
   X,
   Bell,
@@ -15,11 +25,31 @@ import {
   CirclePlay,
 } from 'lucide-angular';
 import { DemoService } from '../../services/demo.service';
-import { NotificationService, Notification } from '../../services/notification.service';
+import {
+  NotificationService,
+  Notification,
+  NotificationAccent,
+  NotificationCategory,
+} from '../../services/notification.service';
+import {
+  getNotificationCategoryIcon,
+  getNotificationStatusIcon,
+  resolveNotificationAccent,
+  resolveNotificationCategory,
+} from '../../utils/notification-ui.utils';
 import { ThemeService, Theme } from '../../services/theme.service';
 import { LanguageService } from '../../services/language.service';
 import { AuthService } from '../../services/auth.service';
 import { HybridStorageService } from '../../services/hybrid-storage.service';
+
+export interface DecoratedNotification {
+  readonly notification: Notification;
+  readonly category: NotificationCategory;
+  readonly accent: NotificationAccent;
+  readonly categoryIcon: LucideIconData;
+  readonly statusIcon: LucideIconData | null;
+  readonly actionTitleKey: string;
+}
 
 @Component({
   selector: 'app-header',
@@ -27,8 +57,17 @@ import { HybridStorageService } from '../../services/hybrid-storage.service';
   imports: [TranslatePipe, LanguageSwitcherComponent, AuthButtonComponent, LucideAngularModule],
   templateUrl: './header.component.html',
   styleUrl: './header.component.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class HeaderComponent {
+  private static readonly THEME_ORDER: readonly Theme[] = ['light', 'dark', 'system'];
+  private static readonly THEME_KEYS: Record<Theme, string> = {
+    light: 'SETTINGS.THEME_LIGHT',
+    dark: 'SETTINGS.THEME_DARK',
+    system: 'SETTINGS.THEME_SYSTEM',
+  };
+
+  private readonly document = inject(DOCUMENT);
   private readonly elementRef = inject(ElementRef);
   private readonly router = inject(Router);
   protected readonly demoService = inject(DemoService);
@@ -55,11 +94,39 @@ export class HeaderComponent {
 
   protected readonly isNotificationPanelOpen = signal(false);
 
+  protected readonly decoratedNotifications = computed<DecoratedNotification[]>(() =>
+    this.notificationService.notifications().map((notification) => ({
+      notification,
+      category: resolveNotificationCategory(notification),
+      accent: resolveNotificationAccent(notification),
+      categoryIcon: getNotificationCategoryIcon(notification),
+      statusIcon: getNotificationStatusIcon(notification),
+      actionTitleKey: notification.route?.endsWith('/settings')
+        ? 'NOTIFICATIONS.GO_TO_SETTINGS'
+        : 'NOTIFICATIONS.GO_TO_TRACKER',
+    })),
+  );
+
   protected notificationCount = computed(() => this.notificationService.notifications().length);
 
+  protected readonly themeTitle = computed(() => {
+    this.languageService.currentLang();
+    this.languageService.translationVersion?.();
+    return this.getThemeTitle();
+  });
+
+  constructor() {
+    effect((onCleanup) => {
+      if (!this.isNotificationPanelOpen()) return;
+      const handler = (event: MouseEvent) => this.onDocumentClick(event);
+      this.document.addEventListener('click', handler);
+      onCleanup(() => this.document.removeEventListener('click', handler));
+    });
+  }
+
   // Close dropdown when clicking outside
-  @HostListener('document:click', ['$event'])
   onDocumentClick(event: MouseEvent): void {
+    if (!this.isNotificationPanelOpen()) return;
     if (!this.elementRef.nativeElement.contains(event.target)) {
       this.isNotificationPanelOpen.set(false);
     }
@@ -108,26 +175,20 @@ export class HeaderComponent {
    */
   protected cycleTheme(): void {
     const current = this.themeService.currentTheme();
-    const themeOrder: Theme[] = ['light', 'dark', 'system'];
-    const currentIndex = themeOrder.indexOf(current);
-    const nextIndex = (currentIndex + 1) % themeOrder.length;
-    this.themeService.setTheme(themeOrder[nextIndex]);
+    const currentIndex = HeaderComponent.THEME_ORDER.indexOf(current);
+    const nextIndex = (currentIndex + 1) % HeaderComponent.THEME_ORDER.length;
+    this.themeService.setTheme(HeaderComponent.THEME_ORDER[nextIndex]);
   }
 
   protected getThemeTitle(): string {
     const current = this.themeService.currentTheme();
-    const resolved = this.themeService.resolvedTheme();
-
-    const themeNames: Record<Theme, string> = {
-      light: this.languageService.translate('SETTINGS.THEME_LIGHT'),
-      dark: this.languageService.translate('SETTINGS.THEME_DARK'),
-      system: this.languageService.translate('SETTINGS.THEME_SYSTEM'),
-    };
+    const currentName = this.languageService.translate(HeaderComponent.THEME_KEYS[current]);
 
     if (current === 'system') {
-      const resolvedName = themeNames[resolved];
-      return `${themeNames.system} (${resolvedName})`;
+      const resolved = this.themeService.resolvedTheme();
+      const resolvedName = this.languageService.translate(HeaderComponent.THEME_KEYS[resolved]);
+      return `${currentName} (${resolvedName})`;
     }
-    return themeNames[current];
+    return currentName;
   }
 }

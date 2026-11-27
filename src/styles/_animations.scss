@@ -4,6 +4,29 @@
   animation: spin 1s linear infinite;
 }
 
+.hm-boot-shell {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+}
+
+.hm-boot-spinner {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  border: 3px solid rgba(16, 185, 129, 0.22);
+  border-top-color: #10b981;
+  animation: spin 0.8s linear infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .spin,
+  .hm-boot-spinner {
+    animation: none;
+  }
+}
+
 @keyframes spin {
   from {
     transform: rotate(0deg);

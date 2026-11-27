@@ -72,6 +72,7 @@ describe('HeatingDataService', () => {
   function createMockNotificationService() {
     return {
       setHeatingRecords: vi.fn(),
+      resetMotivationDismissal: vi.fn(),
     };
   }
 
@@ -242,6 +243,15 @@ describe('HeatingDataService', () => {
   });
 
   describe('deleteRecord', () => {
+    it('should reset motivation toast dismissal on saveRecord but not deleteRecord', async () => {
+      const record = createTestRecord(new Date(2024, 0, 15));
+      await service.saveRecord(record, null);
+      expect(mockNotificationService.resetMotivationDismissal).toHaveBeenCalledWith('heating');
+
+      mockNotificationService.resetMotivationDismissal.mockClear();
+      await service.deleteRecord(record);
+      expect(mockNotificationService.resetMotivationDismissal).not.toHaveBeenCalled();
+    });
     it('should remove record by date', async () => {
       const record1 = createTestRecord(new Date(2024, 0, 15));
       const record2 = createTestRecord(new Date(2024, 0, 16));
@@ -284,10 +294,12 @@ describe('HeatingDataService', () => {
       await service.saveRecord(record2, null);
       await service.saveRecord(record3, null);
 
+      mockNotificationService.resetMotivationDismissal.mockClear();
       await service.deleteRecords([record1, record3]);
 
       expect(service.records()).toHaveLength(1);
       expect(service.records()[0].date.getTime()).toBe(record2.date.getTime());
+      expect(mockNotificationService.resetMotivationDismissal).not.toHaveBeenCalled();
     });
 
     it('should handle empty array', async () => {
@@ -500,6 +512,7 @@ describe('HeatingDataService', () => {
       await service.confirmImport();
 
       expect(service.showSuccessModal()).toBe(true);
+      expect(mockNotificationService.resetMotivationDismissal).toHaveBeenCalledWith('heating');
     });
 
     it('should show warning when placeholders are skipped', async () => {
@@ -579,6 +592,7 @@ describe('HeatingDataService', () => {
       await service.importFromExcel(event);
 
       expect(mockExcelService.importHeatingFromExcel).toHaveBeenCalled();
+      expect(mockNotificationService.resetMotivationDismissal).toHaveBeenCalledWith('heating');
     });
 
     it('should accept xls files', async () => {
@@ -592,6 +606,7 @@ describe('HeatingDataService', () => {
       await service.importFromExcel(event);
 
       expect(mockExcelService.importHeatingFromExcel).toHaveBeenCalled();
+      expect(mockNotificationService.resetMotivationDismissal).toHaveBeenCalledWith('heating');
     });
 
     it('should accept csv files', async () => {
@@ -605,6 +620,7 @@ describe('HeatingDataService', () => {
       await service.importFromExcel(event);
 
       expect(mockExcelService.importHeatingFromExcel).toHaveBeenCalled();
+      expect(mockNotificationService.resetMotivationDismissal).toHaveBeenCalledWith('heating');
     });
 
     it('should merge imported records with existing', async () => {

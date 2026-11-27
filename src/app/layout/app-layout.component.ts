@@ -1,4 +1,4 @@
-import { Component, inject, computed } from '@angular/core';
+import { Component, ChangeDetectionStrategy, inject, computed } from '@angular/core';
 import { RouterOutlet, Router } from '@angular/router';
 import { HeaderComponent } from '../shared/header/header.component';
 import { FooterComponent } from '../shared/footer/footer.component';
@@ -23,6 +23,7 @@ import { HybridStorageService } from '../services/hybrid-storage.service';
   ],
   templateUrl: './app-layout.component.html',
   styleUrl: './app-layout.component.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class AppLayoutComponent {
   // Inject ThemeService to ensure it initializes when entering the app

@@ -32,7 +32,7 @@ export const chart = {
     COMPARE_WITH_INFO_ELECTRICITY:
       'Dane o średnim zużyciu energii pochodzą z krajowych statystyk i raportów energetycznych.',
     COMPARE_WITH_INFO_HEATING:
-      'Dane o średnim zużyciu ciepła pochodzą z krajowych statystyk i ankiet gospodarstw domowych.',
+      'Dane o średnim zużyciu ciepła pochodzą z krajowych statystyk i ankiet gospodarstw domowych dla typowego mieszkania o powierzchni 100 m². Ogrzewanie pomieszczeń jest porównywane na gospodarstwo domowe, a nie na osobę, ponieważ zależy od powierzchni, izolacji budynku i klimatu zewnętrznego, a nie od liczby domowników.',
     COMPARISON_REQUIRES_DATA: 'Wymagane są co najmniej 3 wpisy do porównania krajowego',
     KITCHEN_TOTAL: 'Zużycie w Kuchni',
     BATHROOM_TOTAL: 'Zużycie w Łazience',
@@ -85,5 +85,16 @@ export const chart = {
     COLLAPSE_CHART: 'Zakończ tryb pełnoekranowy',
     HIDE_CONTROLS: 'Ukryj kontrolki',
     SHOW_CONTROLS: 'Pokaż kontrolki',
+    RANGE_3M: '3M',
+    RANGE_6M: '6M',
+    RANGE_1Y: '1R',
+    RANGE_ALL: 'Wszystko',
+    GRANULARITY_RAW: 'Odczyty',
+    GRANULARITY_MONTHLY: 'Miesięcznie',
+    OVERLAYS_BUTTON: 'Nakładki',
+    ZOOM_HINT_MOBILE: 'Dotknij lub przeciągnij, by sprawdzić • Uszczypnij, by przybliżyć',
+    LATEST_READING: 'Najnowszy',
+    CLEAR_SELECTION: 'Wyczyść wybór',
+    DAYS_SHORT: 'śr. {{days}} dni',
   },
 };

@@ -1,6 +1,6 @@
 export const landing = {
   LANDING: {
-    BADGE: 'Otvoren Kod · Zauvijek Besplatno',
+    BADGE: 'Javan Izvorni Kod · Zauvijek Besplatno',
     TITLE_LINE_1: 'Vaš Dom,',
     TITLE_LINE_2: 'Potpuno Upravljan.',
     SUBTITLE:
@@ -12,7 +12,7 @@ export const landing = {
     THEME_TOGGLE: 'Promijeni temu boja',
     SCROLL_PROGRESS: 'Napredak pomicanja stranice',
     STATS: {
-      FREE: 'Besplatno i Otvoren Kod',
+      FREE: 'Besplatno i Javan Izvorni Kod',
       TRACKERS: 'Modula Praćenja',
       DATA_POINTS: 'Podataka',
       ADS: 'Oglasa Nikad',
@@ -38,8 +38,8 @@ export const landing = {
       UNIFIED_TAG_3: 'Dnevna Potrošnja',
       PRIVACY_TITLE: 'Više Jezika i Potpuna Privatnost',
       PRIVACY_DESC:
-        'Potpuna podrška na 5 jezika uz pristupačne tamne i svijetle teme bez ikakvog praćenja.',
-      PRIVACY_TAG_1: '5 Jezika',
+        'Potpuna podrška na 6 jezika uz pristupačne tamne i svijetle teme bez ikakvog praćenja.',
+      PRIVACY_TAG_1: '6 Jezika',
       PRIVACY_TAG_2: 'Bez Praćenja',
       PRIVACY_TAG_3: 'Pristupačne Teme',
     },
@@ -83,6 +83,20 @@ export const landing = {
       STEP_3_TITLE: 'Vidite Rezultate',
       STEP_3_DESC: 'Predivni grafikoni pokazuju vaše trendove, usporedbe i potrošnju po osobi.',
     },
+    FAQ: {
+      TITLE: 'Često Postavljana Pitanja',
+      SUBTITLE: 'Sve što trebate znati o privatnosti, očitanju brojila i prognozama potrošnje.',
+      Q1: 'Da li Home Management zahtijeva korisnički račun ili pretplatu?',
+      A1: 'Ne. Home Management je 100% besplatan za ličnu i kućnu upotrebu i radi odmah u vašem pregledniku bez registracije. Opcionalna Google prijava koristi se samo ako želite sinhronizovati podatke između uređaja.',
+      Q2: 'Gdje se čuvaju podaci o potrošnji mog domaćinstva?',
+      A2: 'Prema zadanim postavkama, svi zapisi o vodi, grijanju i struji ostaju lokalno u memoriji vašeg preglednika. Nema reklama niti skripti za praćenje trećih strana. Podatke možete u svakom trenutku izvesti ili uključiti sigurnosnu kopiju u oblaku.',
+      Q3: 'Kako radi očitanje brojila kamerom (OCR)?',
+      A3: 'Kada uslikate ili učitate fotografiju brojila, izrezivanje slike, poboljšanje kontrasta i Tesseract.js prepoznavanje znakova izvršavaju se isključivo na vašem uređaju. Fotografije brojila nikada ne napuštaju vaš preglednik.',
+      Q4: 'Kako se računaju prognoze potrošnje i državni prosjeci?',
+      A4: 'Prognoze kombinuju linearnu i polinomsku regresiju sa sezonskim prilagođavanjem i automatskom korekcijom tačnosti. Državne usporedbe porede vašu potrošnju po osobi sa zvaničnim statistikama institucija kao što su Umweltbundesamt (Njemačka savezna agencija za okoliš), BDEW (Njemačko udruženje za energetiku i vodoprivredu), Eurostat (Statistički ured Evropske unije) i EIA (Američka uprava za energetske informacije).',
+      Q5: 'Mogu li evidentirati zamjenu brojila i uvesti postojeće Excel tabele?',
+      A5: 'Da. Kada se brojilo zamijeni ili resetuje, aplikacija računa razliku potrošnje bez lažnih skokova. Također možete uvesti historijske Excel (.xlsx) datoteke uz prilagođeno mapiranje kolona ili ih izvesti u Excel, JSON i PDF.',
+    },
     CTA: {
       TITLE: 'Spremni Preuzeti Kontrolu?',
       SUBTITLE:
@@ -91,6 +105,7 @@ export const landing = {
     },
     FOOTER: {
       GITHUB: 'GitHub',
+      BENCHMARKS: 'Državni Prosjeci',
       OPEN_APP: 'Otvori Aplikaciju',
     },
   },

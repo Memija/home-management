@@ -1,7 +1,22 @@
 import { TestBed } from '@angular/core/testing';
 import { WaterFactsService } from './water-facts.service';
-import { LanguageService } from './language.service';
+import { LanguageService, Language } from './language.service';
+import { enFacts } from '../i18n/facts/en';
+import { deFacts } from '../i18n/facts/de';
+import { bsFacts } from '../i18n/facts/bs';
+import { srFacts } from '../i18n/facts/sr';
+import { plFacts } from '../i18n/facts/pl';
+import { idFacts } from '../i18n/facts/id';
 import { describe, it, expect, beforeEach, vi } from 'vitest';
+
+const FACTS_BY_LANG: Record<Language, Record<string, unknown>> = {
+  en: enFacts,
+  de: deFacts,
+  bs: bsFacts,
+  sr: srFacts,
+  pl: plFacts,
+  id: idFacts,
+};
 
 describe('WaterFactsService (Multi-language Localization)', () => {
   let service: WaterFactsService;
@@ -11,6 +26,7 @@ describe('WaterFactsService (Multi-language Localization)', () => {
     mockLanguageService = {
       currentLang: vi.fn(),
       currentLocale: vi.fn(),
+      getTranslations: vi.fn((lang: Language) => FACTS_BY_LANG[lang] ?? enFacts),
     };
 
     TestBed.configureTestingModule({

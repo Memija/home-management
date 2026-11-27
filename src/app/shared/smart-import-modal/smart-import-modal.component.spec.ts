@@ -37,7 +37,7 @@ describe('SmartImportModalComponent', () => {
 
     fixture = TestBed.createComponent(SmartImportModalComponent);
     component = fixture.componentInstance;
-    component.show = true;
+    fixture.componentRef.setInput('show', true);
     fixture.detectChanges();
   });
 

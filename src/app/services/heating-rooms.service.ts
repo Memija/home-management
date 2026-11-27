@@ -38,16 +38,28 @@ export class HeatingRoomsService {
   private readonly languageService = inject(LanguageService);
 
   // Room configurations signal
-  private readonly _rooms = signal<HeatingRoomConfig[]>([]);
+  private initialSyncLoaded = false;
+  private readonly _rooms = signal<HeatingRoomConfig[]>(this.getInitialRooms());
   readonly rooms = this._rooms.asReadonly();
 
   constructor() {
-    queueMicrotask(() => {
-      void this.loadRooms();
-    });
+    if (!this.initialSyncLoaded) {
+      queueMicrotask(() => {
+        void this.loadRooms();
+      });
+    }
     this.storage.dataRefreshed$
       ?.pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe(() => void this.loadRooms());
+  }
+
+  private getInitialRooms(): HeatingRoomConfig[] {
+    if (!this.storage || typeof this.storage.loadSync !== 'function') {
+      return [];
+    }
+    this.initialSyncLoaded = true;
+    const stored = this.storage.loadSync<HeatingRoomConfig[]>(STORAGE_KEY);
+    return stored && Array.isArray(stored) ? stored : [];
   }
 
   // Computed helpers

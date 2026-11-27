@@ -32,7 +32,7 @@ export const chart = {
     COMPARE_WITH_INFO_ELECTRICITY:
       'Die durchschnittlichen Stromverbrauchsdaten stammen aus nationalen Energiestatistiken und Berichten von Energieversorgern für jedes Land.',
     COMPARE_WITH_INFO_HEATING:
-      'Die durchschnittlichen Heizverbrauchsdaten stammen aus nationalen Energiestatistiken und Haushaltsbefragungen für jedes Land.',
+      'Die durchschnittlichen Heizungsverbrauchsdaten stammen aus nationalen Energiestatistiken und Haushaltsbefragungen für eine typische 100 m² Wohnung. Raumheizung wird pro Haushalt statt pro Person verglichen, da sie von der Wohnfläche, der Gebäudedämmung und dem Außenklima abhängt und nicht von der Personenanzahl.',
     COMPARISON_REQUIRES_DATA: 'Mindestens 3 Einträge sind für den Ländervergleich erforderlich',
     KITCHEN_TOTAL: 'Verbrauch Küche',
     BATHROOM_TOTAL: 'Verbrauch Badezimmer',
@@ -86,5 +86,16 @@ export const chart = {
     COLLAPSE_CHART: 'Vollbild schließen',
     HIDE_CONTROLS: 'Steuerelemente ausblenden',
     SHOW_CONTROLS: 'Steuerelemente anzeigen',
+    RANGE_3M: '3M',
+    RANGE_6M: '6M',
+    RANGE_1Y: '1J',
+    RANGE_ALL: 'Alle',
+    GRANULARITY_RAW: 'Einzelwerte',
+    GRANULARITY_MONTHLY: 'Monatsansicht',
+    OVERLAYS_BUTTON: 'Überlagerungen',
+    ZOOM_HINT_MOBILE: 'Tippen oder ziehen zum Prüfen • Zwei Finger zum Zoomen',
+    LATEST_READING: 'Aktuell',
+    CLEAR_SELECTION: 'Auswahl aufheben',
+    DAYS_SHORT: 'Ø {{days}} T.',
   },
 };

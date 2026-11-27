@@ -55,33 +55,33 @@ describe('ConfirmationModalComponent', () => {
     });
 
     it('should not show by default', () => {
-      expect(component.show).toBe(false);
+      expect(component.show()).toBe(false);
     });
 
     it('should have empty titleKey by default', () => {
-      expect(component.titleKey).toBe('');
+      expect(component.titleKey()).toBe('');
     });
 
     it('should have empty messageKey by default', () => {
-      expect(component.messageKey).toBe('');
+      expect(component.messageKey()).toBe('');
     });
 
     it('should have empty messageParams by default', () => {
-      expect(component.messageParams).toEqual({});
+      expect(component.messageParams()).toEqual({});
     });
 
     it('should have empty cancelKey by default', () => {
-      expect(component.cancelKey).toBe('');
+      expect(component.cancelKey()).toBe('');
     });
 
     it('should have empty confirmKey by default', () => {
-      expect(component.confirmKey).toBe('');
+      expect(component.confirmKey()).toBe('');
     });
   });
 
   describe('translatedMessage', () => {
     it('should translate the message key', () => {
-      component.messageKey = 'TEST.MESSAGE';
+      fixture.componentRef.setInput('messageKey', 'TEST.MESSAGE');
       fixture.detectChanges();
 
       component['translatedMessage']();
@@ -90,8 +90,8 @@ describe('ConfirmationModalComponent', () => {
 
     it('should replace placeholders with params', () => {
       languageServiceMock.translate.mockReturnValue('Hello {{name}}, you have {{count}} items');
-      component.messageKey = 'TEST.MESSAGE';
-      component.messageParams = { name: 'John', count: '5' };
+      fixture.componentRef.setInput('messageKey', 'TEST.MESSAGE');
+      fixture.componentRef.setInput('messageParams', { name: 'John', count: '5' });
       fixture.detectChanges();
 
       const result = component['translatedMessage']();
@@ -100,8 +100,8 @@ describe('ConfirmationModalComponent', () => {
 
     it('should handle message with no placeholders', () => {
       languageServiceMock.translate.mockReturnValue('Simple message');
-      component.messageKey = 'TEST.SIMPLE';
-      component.messageParams = {};
+      fixture.componentRef.setInput('messageKey', 'TEST.SIMPLE');
+      fixture.componentRef.setInput('messageParams', {});
       fixture.detectChanges();
 
       const result = component['translatedMessage']();
@@ -110,8 +110,8 @@ describe('ConfirmationModalComponent', () => {
 
     it('should handle single placeholder', () => {
       languageServiceMock.translate.mockReturnValue('Delete {{item}}?');
-      component.messageKey = 'TEST.DELETE';
-      component.messageParams = { item: 'record' };
+      fixture.componentRef.setInput('messageKey', 'TEST.DELETE');
+      fixture.componentRef.setInput('messageParams', { item: 'record' });
       fixture.detectChanges();
 
       const result = component['translatedMessage']();
@@ -120,8 +120,8 @@ describe('ConfirmationModalComponent', () => {
 
     it('should leave unreplaced placeholders if param not provided', () => {
       languageServiceMock.translate.mockReturnValue('Hello {{name}}');
-      component.messageKey = 'TEST.MSG';
-      component.messageParams = {};
+      fixture.componentRef.setInput('messageKey', 'TEST.MSG');
+      fixture.componentRef.setInput('messageParams', {});
       fixture.detectChanges();
 
       const result = component['translatedMessage']();
@@ -129,7 +129,7 @@ describe('ConfirmationModalComponent', () => {
     });
 
     it('should react to language changes', () => {
-      component.messageKey = 'TEST.MESSAGE';
+      fixture.componentRef.setInput('messageKey', 'TEST.MESSAGE');
       fixture.detectChanges();
 
       component['translatedMessage']();
@@ -164,7 +164,7 @@ describe('ConfirmationModalComponent', () => {
 
   describe('DOM Rendering - Hidden State', () => {
     it('should not render modal when show is false', () => {
-      component.show = false;
+      fixture.componentRef.setInput('show', false);
       fixture.detectChanges();
 
       const overlay = fixture.debugElement.query(By.css('.modal-overlay'));
@@ -174,12 +174,12 @@ describe('ConfirmationModalComponent', () => {
 
   describe('DOM Rendering - Visible State', () => {
     beforeEach(() => {
-      component.show = true;
-      component.titleKey = 'TEST.TITLE';
-      component.messageKey = 'TEST.MESSAGE';
-      component.cancelKey = 'TEST.CANCEL';
-      component.confirmKey = 'TEST.CONFIRM';
-      component.icon = Info;
+      fixture.componentRef.setInput('show', true);
+      fixture.componentRef.setInput('titleKey', 'TEST.TITLE');
+      fixture.componentRef.setInput('messageKey', 'TEST.MESSAGE');
+      fixture.componentRef.setInput('cancelKey', 'TEST.CANCEL');
+      fixture.componentRef.setInput('confirmKey', 'TEST.CONFIRM');
+      fixture.componentRef.setInput('icon', Info);
       fixture.detectChanges();
     });
 
@@ -282,22 +282,22 @@ describe('ConfirmationModalComponent', () => {
 
   describe('Edge Cases', () => {
     it('should not render overlay when show is false', () => {
-      component.show = false;
-      component.icon = Info;
+      fixture.componentRef.setInput('show', false);
+      fixture.componentRef.setInput('icon', Info);
       fixture.detectChanges();
       expect(fixture.debugElement.query(By.css('.modal-overlay'))).toBeNull();
     });
 
     it('should render overlay when show is initially true', () => {
-      component.show = true;
-      component.icon = Info;
+      fixture.componentRef.setInput('show', true);
+      fixture.componentRef.setInput('icon', Info);
       fixture.detectChanges();
       expect(fixture.debugElement.query(By.css('.modal-overlay'))).toBeTruthy();
     });
 
     it('should handle empty message key', () => {
       languageServiceMock.translate.mockReturnValue('');
-      component.messageKey = '';
+      fixture.componentRef.setInput('messageKey', '');
       fixture.detectChanges();
 
       const result = component['translatedMessage']();
@@ -306,8 +306,8 @@ describe('ConfirmationModalComponent', () => {
 
     it('should handle special characters in params', () => {
       languageServiceMock.translate.mockReturnValue('Value: {{val}}');
-      component.messageKey = 'TEST.MSG';
-      component.messageParams = { val: '<script>alert("xss")</script>' };
+      fixture.componentRef.setInput('messageKey', 'TEST.MSG');
+      fixture.componentRef.setInput('messageParams', { val: '<script>alert("xss")</script>' });
       fixture.detectChanges();
 
       const result = component['translatedMessage']();
@@ -316,8 +316,8 @@ describe('ConfirmationModalComponent', () => {
 
     it('should handle params with empty values', () => {
       languageServiceMock.translate.mockReturnValue('Name: {{name}}');
-      component.messageKey = 'TEST.MSG';
-      component.messageParams = { name: '' };
+      fixture.componentRef.setInput('messageKey', 'TEST.MSG');
+      fixture.componentRef.setInput('messageParams', { name: '' });
       fixture.detectChanges();
 
       const result = component['translatedMessage']();

@@ -31,8 +31,8 @@ export async function initAppCheck(
     if (typeof window !== 'undefined' && window.location?.hostname === 'localhost') {
       // On localhost, only initialize if an explicit debug token string is configured.
       // Setting boolean true causes unauthorized exchangeDebugToken network requests that fail with 403.
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const debugToken = (self as any).FIREBASE_APPCHECK_DEBUG_TOKEN;
+      const debugToken = (self as unknown as { FIREBASE_APPCHECK_DEBUG_TOKEN?: unknown })
+        .FIREBASE_APPCHECK_DEBUG_TOKEN;
       if (typeof debugToken !== 'string' && !forceTest) {
         return;
       }

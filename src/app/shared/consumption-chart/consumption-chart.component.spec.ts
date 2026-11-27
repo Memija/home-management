@@ -129,13 +129,16 @@ describe('ConsumptionChartComponent', () => {
     chartType?: 'water' | 'heating' | 'electricity' | 'home';
     displayMode?: DisplayMode;
   }) => {
-    component.data = overrides?.data ?? makeWaterData(['2024-01-15', '2024-02-15']);
-    component.currentView = overrides?.currentView ?? 'total';
-    component.chartType = overrides?.chartType ?? 'water';
-    component.onViewChange = vi.fn();
-    component.onDisplayModeChange = vi.fn();
+    fixture.componentRef.setInput(
+      'data',
+      overrides?.data ?? makeWaterData(['2024-01-15', '2024-02-15']),
+    );
+    fixture.componentRef.setInput('currentView', overrides?.currentView ?? 'total');
+    fixture.componentRef.setInput('chartType', overrides?.chartType ?? 'water');
+    fixture.componentRef.setInput('onViewChange', vi.fn());
+    fixture.componentRef.setInput('onDisplayModeChange', vi.fn());
     if (overrides?.displayMode) {
-      component.displayMode = overrides.displayMode;
+      fixture.componentRef.setInput('displayMode', overrides.displayMode);
     }
     fixture.detectChanges();
     component.ngOnInit();
@@ -149,12 +152,12 @@ describe('ConsumptionChartComponent', () => {
 
     it('should default displayMode to total', () => {
       initWithDefaults();
-      expect(component.displayMode).toBe('total');
+      expect(component.displayMode()).toBe('total');
     });
 
     it('should default helpTitleKey', () => {
       initWithDefaults();
-      expect(component.helpTitleKey).toBe('HOME.CHART_HELP_TITLE');
+      expect(component.helpTitleKey()).toBe('HOME.CHART_HELP_TITLE');
     });
 
     it('should have help modal hidden by default', () => {
@@ -164,14 +167,14 @@ describe('ConsumptionChartComponent', () => {
 
     it('should default empty help steps', () => {
       initWithDefaults();
-      expect(component.helpSteps).toEqual([]);
+      expect(component.helpSteps()).toEqual([]);
     });
   });
 
   describe('setView', () => {
     it('should call onViewChange callback', () => {
       initWithDefaults();
-      const spy = component.onViewChange as ReturnType<typeof vi.fn>;
+      const spy = component.onViewChange() as ReturnType<typeof vi.fn>;
 
       component['setView']('by-room');
       expect(spy).toHaveBeenCalledWith('by-room');
@@ -179,7 +182,7 @@ describe('ConsumptionChartComponent', () => {
 
     it('should handle all view types', () => {
       initWithDefaults();
-      const spy = component.onViewChange as ReturnType<typeof vi.fn>;
+      const spy = component.onViewChange() as ReturnType<typeof vi.fn>;
 
       const views: ChartView[] = ['total', 'by-room', 'by-type', 'detailed'];
       views.forEach((view) => {
@@ -192,7 +195,7 @@ describe('ConsumptionChartComponent', () => {
   describe('setDisplayMode', () => {
     it('should call onDisplayModeChange callback', () => {
       initWithDefaults();
-      const spy = component.onDisplayModeChange as ReturnType<typeof vi.fn>;
+      const spy = component.onDisplayModeChange() as ReturnType<typeof vi.fn>;
 
       component['setDisplayMode']('incremental');
       expect(spy).toHaveBeenCalledWith('incremental');
@@ -200,7 +203,7 @@ describe('ConsumptionChartComponent', () => {
 
     it('should handle both modes', () => {
       initWithDefaults();
-      const spy = component.onDisplayModeChange as ReturnType<typeof vi.fn>;
+      const spy = component.onDisplayModeChange() as ReturnType<typeof vi.fn>;
 
       component['setDisplayMode']('total');
       expect(spy).toHaveBeenCalledWith('total');
@@ -608,20 +611,20 @@ describe('ConsumptionChartComponent', () => {
 
     it('should handle familySize and country defaults', () => {
       initWithDefaults();
-      expect(component.familySize).toBe(0);
-      expect(component.country).toBe('');
+      expect(component.familySize()).toBe(0);
+      expect(component.country()).toBe('');
     });
 
     it('should handle room-related inputs defaults for non-heating charts', () => {
       initWithDefaults({ chartType: 'water' });
-      expect(component.roomNames).toEqual([]);
-      expect(component.roomIds).toEqual([]);
-      expect(component.roomColors).toEqual([]);
+      expect(component.roomNames()).toEqual([]);
+      expect(component.roomIds()).toEqual([]);
+      expect(component.roomColors()).toEqual([]);
     });
 
     it('should handle ignoredSpikes default', () => {
       initWithDefaults();
-      expect(component.ignoredSpikes).toEqual([]);
+      expect(component.ignoredSpikes()).toEqual([]);
     });
   });
 
@@ -703,6 +706,123 @@ describe('ConsumptionChartComponent', () => {
         value: null,
         configurable: true,
       });
+    });
+  });
+
+  describe('Time Range, Granularity, and Mobile Overlays', () => {
+    it('should default timeRange to 1y on mobile viewport when data exceeds 24 points', () => {
+      const originalInnerWidth = window.innerWidth;
+      Object.defineProperty(window, 'innerWidth', { value: 390, configurable: true });
+      const manyDates = Array.from({ length: 30 }, (_, idx) => {
+        const year = 2023 + Math.floor(idx / 12);
+        const month = String((idx % 12) + 1).padStart(2, '0');
+        return `${year}-${month}-15`;
+      });
+
+      initWithDefaults({ data: makeWaterData(manyDates) });
+
+      expect(component['timeRange']()).toBe('1y');
+      expect(component['windowedData']().length).toBeLessThan(30);
+
+      Object.defineProperty(window, 'innerWidth', {
+        value: originalInnerWidth,
+        configurable: true,
+      });
+    });
+
+    it('should update timeRange, persist preference, and slice records passed to ChartDataService', () => {
+      const multiMonthData = makeWaterData([
+        '2025-01-15',
+        '2025-04-15',
+        '2025-08-15',
+        '2025-11-15',
+        '2025-12-15',
+      ]);
+      initWithDefaults({ data: multiMonthData, chartType: 'water' });
+      chartDataServiceMock.getWaterChartData.mockClear();
+
+      component['setTimeRange']('3m');
+      component['chartData']();
+
+      expect(component['timeRange']()).toBe('3m');
+      expect(localStorageServiceMock.setPreference).toHaveBeenCalledWith(
+        'water_chart_time_range',
+        '3m',
+      );
+      const passedRecords = chartDataServiceMock.getWaterChartData.mock.calls[0][0].records;
+      expect(passedRecords).toHaveLength(2);
+    });
+
+    it('should aggregate intra-month readings when granularity is set to monthly', () => {
+      const intraMonthData = makeWaterData([
+        '2026-01-05',
+        '2026-01-18',
+        '2026-01-29',
+        '2026-02-04',
+        '2026-02-19',
+        '2026-03-08',
+        '2026-03-27',
+      ]);
+      initWithDefaults({ data: intraMonthData, chartType: 'water' });
+
+      expect(component['showGranularityToggle']()).toBe(true);
+      component['setGranularity']('monthly');
+
+      expect(component['granularity']()).toBe('monthly');
+      expect(localStorageServiceMock.setPreference).toHaveBeenCalledWith(
+        'water_chart_granularity',
+        'monthly',
+      );
+      expect(component['windowedData']()).toHaveLength(3);
+    });
+
+    it('should toggle mobile overlays panel and compute activeOverlayCount accurately', () => {
+      initWithDefaults({
+        data: makeWaterData(['2026-01-15', '2026-02-15', '2026-03-15']),
+        chartType: 'water',
+        displayMode: 'incremental',
+      });
+      fixture.componentRef.setInput('familySize', 3);
+      fixture.detectChanges();
+
+      expect(component['isMobileOverlaysOpen']()).toBe(false);
+      expect(component['activeOverlayCount']()).toBe(2);
+
+      component['toggleMobileOverlays']();
+      expect(component['isMobileOverlaysOpen']()).toBe(true);
+
+      component['toggleTrendline']();
+      expect(component['activeOverlayCount']()).toBe(1);
+    });
+
+    it('should update and clear activeMobileReadout via clearMobileScrub', () => {
+      initWithDefaults({
+        data: makeWaterData(['2026-01-15', '2026-02-15']),
+        chartType: 'water',
+      });
+      const setActiveElements = vi.fn();
+      const tooltipSetActive = vi.fn();
+      const update = vi.fn();
+      component['chart'] = {
+        chart: {
+          setActiveElements,
+          tooltip: { setActiveElements: tooltipSetActive },
+          update,
+        },
+      } as unknown as BaseChartDirective;
+
+      component['activeMobileReadout'].set({
+        dateText: 'Feb 15, 2026',
+        items: [{ label: '∑', valueText: '50 L', color: '#0ea5e9' }],
+      });
+      expect(component['displayedMobileReadout']()?.dateText).toBe('Feb 15, 2026');
+
+      component['clearMobileScrub']();
+
+      expect(component['activeMobileReadout']()).toBeNull();
+      expect(setActiveElements).toHaveBeenCalledWith([]);
+      expect(tooltipSetActive).toHaveBeenCalledWith([], { x: 0, y: 0 });
+      expect(update).toHaveBeenCalledWith('none');
     });
   });
 });

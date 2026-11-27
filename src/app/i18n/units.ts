@@ -87,3 +87,12 @@ export const UNITS_CONFIG: Record<Language, UnitTranslations> = {
   pl: plUnits,
   id: idUnits,
 };
+
+export const DID_YOU_KNOW_BY_LANG: Record<Language, string> = {
+  en: 'Did you know?',
+  de: 'Wussten Sie schon?',
+  bs: 'Da li ste znali?',
+  sr: 'Да ли сте знали?',
+  pl: 'Czy wiesz, że?',
+  id: 'Tahukah Anda?',
+};

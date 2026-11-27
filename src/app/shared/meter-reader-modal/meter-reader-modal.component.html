@@ -1,12 +1,11 @@
-@if (show) {
+@if (show()) {
   <!-- eslint-disable-next-line @angular-eslint/template/interactive-supports-focus -- Backdrop dismissal by design -->
   <div
     class="modal-overlay"
-    (click)="$event.target === $event.currentTarget && onOverlayClick($event)"
+    (click)="$event.target === $event.currentTarget ? onOverlayClick($event) : undefined"
     (keydown.escape)="onClose($event)"
   >
     <div class="modal-content modal-lg">
-      <!-- Header -->
       <div class="modal-header modal-header-premium">
         <lucide-icon [img]="CameraIcon" size="24" class="header-icon"></lucide-icon>
         <h3>{{ 'METER_READER.TITLE' | translate }}</h3>
@@ -22,11 +21,9 @@
       </div>
 
       <div class="modal-body">
-        <!-- Step 1: Capture -->
         @if (step() === 'capture') {
           <div class="capture-step">
             @if (useCameraMode() && cameraStream()) {
-              <!-- Live camera preview -->
               <div class="camera-preview">
                 <video
                   #cameraVideo
@@ -71,15 +68,12 @@
                 </div>
               </div>
             } @else {
-              <!-- Camera / Upload options -->
               <p class="instruction-text">{{ 'METER_READER.INSTRUCTION' | translate }}</p>
-
               @if (cameraError()) {
                 <div class="error-note">
                   <span>{{ cameraError()! | translate }}</span>
                 </div>
               }
-
               <div class="capture-options">
                 <button
                   type="button"
@@ -93,7 +87,6 @@
                   <span class="option-label">{{ 'METER_READER.TAKE_PHOTO' | translate }}</span>
                   <span class="option-hint">{{ 'METER_READER.CAMERA_HINT' | translate }}</span>
                 </button>
-
                 <label
                   class="capture-option-btn"
                   for="meter-image-upload"
@@ -117,7 +110,6 @@
           </div>
         }
 
-        <!-- Step 2: Crop -->
         @if (step() === 'crop') {
           <div class="crop-step">
             <p class="instruction-text">
@@ -138,40 +130,17 @@
               ></canvas>
             </div>
             <div class="crop-hint">
-              @if (cropRect()) {
-                <span class="crop-hint-active">{{ 'METER_READER.CROP_SELECTED' | translate }}</span>
-              } @else {
-                <span>{{ 'METER_READER.CROP_DRAG_HINT' | translate }}</span>
-              }
+              <span [class.crop-hint-active]="cropRect()">
+                {{
+                  (cropRect() ? 'METER_READER.CROP_SELECTED' : 'METER_READER.CROP_DRAG_HINT')
+                    | translate
+                }}
+              </span>
             </div>
-            <div class="result-actions">
-              <button
-                type="button"
-                class="btn-secondary"
-                (click)="retry()"
-                title="{{ 'METER_READER.RETRY' | translate }}"
-                aria-label="{{ 'METER_READER.RETRY' | translate }}"
-              >
-                <lucide-icon [img]="RetryIcon" size="16"></lucide-icon>
-                {{ 'METER_READER.RETRY' | translate }}
-              </button>
-              @if (cropRect()) {
-                <button
-                  type="button"
-                  class="btn-primary"
-                  (click)="confirmCrop()"
-                  title="{{ 'METER_READER.SCAN_SELECTION' | translate }}"
-                  aria-label="{{ 'METER_READER.SCAN_SELECTION' | translate }}"
-                >
-                  <lucide-icon [img]="CropIcon" size="16"></lucide-icon>
-                  {{ 'METER_READER.SCAN_SELECTION' | translate }}
-                </button>
-              }
-            </div>
+            <ng-container *ngTemplateOutlet="actionButtons"></ng-container>
           </div>
         }
 
-        <!-- Step 3: Processing -->
         @if (step() === 'processing') {
           <div class="processing-step">
             @if (capturedImage()) {
@@ -199,7 +168,6 @@
           </div>
         }
 
-        <!-- Step 4: Result -->
         @if (step() === 'result') {
           <div class="result-step">
             @if (capturedImage()) {
@@ -207,7 +175,6 @@
                 <img [src]="capturedImage()" alt="Captured meter" />
               </div>
             }
-
             @if (selectedValue() !== null) {
               <div class="result-card success-card">
                 <label for="meter-detected-value" class="result-label">
@@ -234,35 +201,10 @@
                 <p>{{ 'METER_READER.NO_VALUE_FOUND' | translate }}</p>
               </div>
             }
-
-            <div class="result-actions">
-              <button
-                type="button"
-                class="btn-secondary"
-                (click)="retry()"
-                title="{{ 'METER_READER.RETRY' | translate }}"
-                aria-label="{{ 'METER_READER.RETRY' | translate }}"
-              >
-                <lucide-icon [img]="RetryIcon" size="16"></lucide-icon>
-                {{ 'METER_READER.RETRY' | translate }}
-              </button>
-              @if (selectedValue() !== null) {
-                <button
-                  type="button"
-                  class="btn-primary"
-                  (click)="confirmValue()"
-                  title="{{ 'METER_READER.USE_VALUE' | translate }}"
-                  aria-label="{{ 'METER_READER.USE_VALUE' | translate }}"
-                >
-                  <lucide-icon [img]="CheckIcon" size="16"></lucide-icon>
-                  {{ 'METER_READER.USE_VALUE' | translate }}
-                </button>
-              }
-            </div>
+            <ng-container *ngTemplateOutlet="actionButtons"></ng-container>
           </div>
         }
 
-        <!-- Step 5: Select which field (multi-field mode) -->
         @if (step() === 'select-field') {
           <div class="select-field-step">
             <p class="instruction-text">{{ 'METER_READER.SELECT_FIELD' | translate }}</p>
@@ -270,16 +212,7 @@
             @if (hasNoFields()) {
               <div class="no-fields-notice">
                 <p>{{ 'METER_READER.NO_FIELDS_CONFIGURED' | translate }}</p>
-                <button
-                  type="button"
-                  class="btn-secondary"
-                  (click)="retry()"
-                  title="{{ 'METER_READER.RETRY' | translate }}"
-                  aria-label="{{ 'METER_READER.RETRY' | translate }}"
-                >
-                  <lucide-icon [img]="RetryIcon" size="16"></lucide-icon>
-                  {{ 'METER_READER.RETRY' | translate }}
-                </button>
+                <ng-container *ngTemplateOutlet="actionButtons"></ng-container>
               </div>
             } @else {
               <div class="field-groups">
@@ -296,10 +229,7 @@
                           type="button"
                           class="field-option-btn"
                           (click)="selectField(field.key)"
-                          title="{{
-                            'METER_READER.ASSIGN_TO'
-                              | translate: { name: (field.label | translate) }
-                          }}"
+                          [title]="field.assignTitle"
                         >
                           <span class="field-btn-left">
                             @if (field.icon) {
@@ -307,11 +237,11 @@
                                 [img]="field.icon"
                                 size="20"
                                 class="field-icon"
-                                [class.icon-warm]="field.key.toLowerCase().includes('warm')"
-                                [class.icon-cold]="field.key.toLowerCase().includes('cold')"
+                                [class.icon-warm]="field.isWarm"
+                                [class.icon-cold]="field.isCold"
                               ></lucide-icon>
                             }
-                            <span class="field-btn-label">{{ field.label | translate }}</span>
+                            <span class="field-btn-label">{{ field.translatedName }}</span>
                           </span>
                           @if (field.currentValue !== null && field.currentValue !== undefined) {
                             <span class="field-btn-current">{{ field.currentValue }}</span>
@@ -329,3 +259,33 @@
     </div>
   </div>
 }
+
+<ng-template #actionButtons>
+  <div class="result-actions">
+    <button
+      type="button"
+      class="btn-secondary"
+      (click)="retry()"
+      title="{{ 'METER_READER.RETRY' | translate }}"
+      aria-label="{{ 'METER_READER.RETRY' | translate }}"
+    >
+      <lucide-icon [img]="RetryIcon" size="16"></lucide-icon>
+      {{ 'METER_READER.RETRY' | translate }}
+    </button>
+    @if ((step() === 'crop' && cropRect()) || (step() === 'result' && selectedValue() !== null)) {
+      <button
+        type="button"
+        class="btn-primary"
+        (click)="step() === 'crop' ? confirmCrop() : confirmValue()"
+        title="{{
+          (step() === 'crop' ? 'METER_READER.SCAN_SELECTION' : 'METER_READER.USE_VALUE') | translate
+        }}"
+      >
+        <lucide-icon [img]="step() === 'crop' ? CropIcon : CheckIcon" size="16"></lucide-icon>
+        {{
+          (step() === 'crop' ? 'METER_READER.SCAN_SELECTION' : 'METER_READER.USE_VALUE') | translate
+        }}
+      </button>
+    }
+  </div>
+</ng-template>

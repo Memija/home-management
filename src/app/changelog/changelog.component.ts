@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, ChangeDetectionStrategy } from '@angular/core';
 import { TranslatePipe } from '../pipes/translate.pipe';
 import {
   LucideAngularModule,
@@ -10,6 +10,7 @@ import {
   Brain,
   Zap,
   ShieldCheck,
+  TrendingUp,
   LucideIconData,
 } from 'lucide-angular';
 
@@ -27,6 +28,7 @@ interface ChangelogEntry {
   imports: [TranslatePipe, LucideAngularModule],
   templateUrl: './changelog.component.html',
   styleUrl: './changelog.component.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ChangelogComponent {
   readonly HistoryIcon = History;
@@ -50,6 +52,13 @@ export class ChangelogComponent {
           descKey: 'RELEASE_PLAN.FEATURE_6_DESC',
           icon: ShieldCheck,
           colorClass: 'enhancement-feature',
+        },
+        {
+          id: 7,
+          titleKey: 'RELEASE_PLAN.FEATURE_7_TITLE',
+          descKey: 'RELEASE_PLAN.FEATURE_7_DESC',
+          icon: TrendingUp,
+          colorClass: 'prediction-feature',
         },
       ],
     },

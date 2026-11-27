@@ -1,5 +1,4 @@
-import { Component, Input, Output, EventEmitter, signal, computed } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { Component, ChangeDetectionStrategy, input, output, signal, computed } from '@angular/core';
 import {
   LucideAngularModule,
   X,
@@ -18,23 +17,19 @@ export interface HelpStep {
 @Component({
   selector: 'app-help-modal',
   standalone: true,
-  imports: [CommonModule, LucideAngularModule, TranslatePipe],
+  imports: [LucideAngularModule, TranslatePipe],
   templateUrl: './help-modal.component.html',
   styleUrl: './help-modal.component.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class HelpModalComponent {
-  @Input() show = false;
-  @Input() titleKey = '';
+  readonly show = input<boolean>(false);
+  readonly titleKey = input<string>('');
+  readonly steps = input<HelpStep[], HelpStep[] | null | undefined>([], {
+    transform: (val) => val || [],
+  });
 
-  @Input() set steps(val: HelpStep[]) {
-    this._steps.set(val || []);
-  }
-  get steps(): HelpStep[] {
-    return this._steps();
-  }
-  private readonly _steps = signal<HelpStep[]>([]);
-
-  @Output() closeModal = new EventEmitter<void>();
+  readonly closeModal = output<void>();
 
   // Icons
   protected readonly CloseIcon = X;
@@ -45,10 +40,10 @@ export class HelpModalComponent {
   // Current step index
   protected readonly currentStep = signal(0);
 
-  protected totalSteps = computed(() => this._steps().length);
+  protected totalSteps = computed(() => this.steps().length);
 
   protected currentStepData = computed(() => {
-    const stepsArray = this._steps();
+    const stepsArray = this.steps();
     const index = this.currentStep();
     return stepsArray[index] || null;
   });

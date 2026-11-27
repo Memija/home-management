@@ -1,0 +1,121 @@
+# Home Management — Full Technical & Methodology Reference (`llms-full.txt`)
+
+> Comprehensive documentation of Home Management (https://home-management.dev), a free, local-first household water, heating, and electricity consumption tracker and forecasting web application.
+
+## 1. Product Summary & Licensing
+
+- **Name**: Home Management
+- **Canonical URL**: https://home-management.dev/
+- **Web App Entry**: https://home-management.dev/dashboard
+- **Public Benchmarks**: https://home-management.dev/dashboard/benchmarks
+- **Author**: Anel Memic (https://github.com/Memija)
+- **License**: Prosperity Public License 3.0.0 (source-available; 100% free for personal and noncommercial household use).
+- **Supported Locales (6)**:
+  - English (`en-US`): https://home-management.dev/
+  - German (`de-DE`): https://home-management.dev/de
+  - Bosnian (`bs-Latn-BA`): https://home-management.dev/bs
+  - Serbian (`sr-RS`): https://home-management.dev/sr
+  - Indonesian (`id-ID`): https://home-management.dev/id
+  - Polish (`pl-PL`): https://home-management.dev/pl
+
+---
+
+## 2. Privacy & Storage Architecture
+
+1. **Local-First Default (`HybridStorageService`)**:
+   - All meter readings, household member profiles, room configurations, and address preferences are stored locally in the browser (`localStorage`) by default.
+   - No account, email address, or sign-up is required to use the full feature set.
+2. **Optional Cloud Sync**:
+   - Users may optionally sign in with Google Authentication to synchronize their encrypted household records across devices via Google Cloud Firestore.
+   - Users can sign out or delete their cloud data at any time while retaining local exports.
+3. **Zero Third-Party Tracking**:
+   - Home Management serves zero advertisements, uses no third-party marketing pixels, and enforces a strict Content Security Policy (CSP).
+
+---
+
+## 3. Utility Tracking Methodology
+
+### 3.1 Water Consumption Tracker (`/dashboard/water`)
+- **Sub-Metering Layout**: Supports separate cumulative meter readings (in `m³`) for:
+  - Kitchen Warm Water & Kitchen Cold Water
+  - Bathroom Warm Water & Bathroom Cold Water
+  - Optional **Cold-Water-Only Mode** for households with a single main cold water meter or instantaneous water heaters.
+- **Delta & Daily Rate Calculation**:
+  - Given two consecutive readings $(t_1, v_1)$ and $(t_2, v_2)$, incremental volume is $\Delta V = (v_2 - v_1) \times 1000$ liters over $\Delta d = \max(1, \text{days}(t_2 - t_1))$ days.
+  - Per-person daily consumption is computed as $\frac{\Delta V}{\Delta d \times N_{\text{members}}}$ L/person/day.
+- **Meter Replacement Handling**:
+  - When a physical water meter is replaced or resets to zero, users flag the reading as a meter change (or confirm the detected drop). The delta engine calculates consumption across the swap boundary without producing negative spikes or corrupting historical totals.
+
+### 3.2 Heating Consumption Tracker (`/dashboard/heating`)
+- **Room-Level Sub-Metering**:
+  - Users configure custom rooms (e.g., Living Room, Bedroom, Kitchen, Office, Bathroom) and record heat cost allocator units or kWh readings per room.
+- **Seasonal Weighting & Anomaly Detection**:
+  - Tracks cumulative and incremental room-level heating consumption across heating seasons (autumn/winter vs. spring/summer) and flags abnormal room spikes or newly added rooms.
+
+### 3.3 Electricity Consumption Tracker (`/dashboard/electricity`)
+- **Cumulative kWh Tracking**:
+  - Records main meter readings in `kWh`, automatically deriving daily (`kWh/day`), monthly, and annual consumption trends.
+  - Detects meter replacements when a reading is lower than the prior reading and prompts the user to confirm the meter reset.
+
+---
+
+## 4. Statistical Forecasting & Bias Correction
+
+- **Minimum Data Threshold**: Requires at least 4 chronological meter readings to unlock predictions.
+- **Forecast Horizons**: 30 Days, 90 Days, Half Year (180 Days), 1 Year (365 Days), and 10 Years.
+- **Algorithm**:
+  - Combines weighted recent daily consumption rates with seasonal adjustment multipliers and linear/polynomial trend regression.
+  - **Historical Bias Auto-Correction**: Backtests prior predictions against actual recorded consumption and applies an automatic percentage bias correction factor when systematic over- or under-estimation is detected.
+  - Outputs expected consumption, min/max confidence bounds, and a confidence rating (`High`, `Medium`, `Low`) based on sample count and variance.
+
+---
+
+## 5. On-Device Camera Meter Reader (OCR)
+
+- **Client-Side Pipeline**:
+  1. Captures a photo from the device camera (`MediaDevices.getUserMedia`) or file upload.
+  2. Allows interactive bounding-box cropping around the meter digit drum.
+  3. Preprocesses the cropped image on an HTML5 `<canvas>` (grayscale conversion, contrast stretching, and adaptive thresholding) to improve digit legibility.
+  4. Runs optical character recognition locally in a Web Worker using **Tesseract.js**.
+- **Privacy Guarantee**: Meter photos are processed 100% in browser memory and are never uploaded to any external server.
+
+---
+
+## 6. Reference Country Benchmarks (`/dashboard/benchmarks`)
+
+Home Management benchmarks household consumption against official national statistics. Selected reference values:
+
+| Country | Water (L / person / day) | Water Source | Electricity (kWh / person / yr) | Electricity Source | Heating (kWh / household / yr, ~100 m²) | Heating Source |
+| :--- | ---: | :--- | ---: | :--- | ---: | :--- |
+| Germany (`de`) | 128 | Umweltbundesamt (2022) | 1,500 | BDEW (2022) | 13,500 | BDEW (2021) |
+| Austria (`at`) | 130 | Statistik Austria (2021) | 1,600 | E-Control (2021) | 12,800 | Statistik Austria (2020) |
+| Switzerland (`ch`) | 142 | SVGW (2021) | 1,800 | BFE (2021) | 11,500 | BFE (2021) |
+| United Kingdom (`gb`) | 142 | Water UK (2023) | 1,400 | Gov UK (2022) | 12,000 | OFGEM (2020) |
+| France (`fr`) | 150 | Observatoire Eau (2020) | 2,200 | RTE (2021) | 11,500 | ADEME (2019) |
+| Italy (`it`) | 220 | ISTAT (2022) | 1,200 | Terna (2021) | 10,000 | ENEA (2019) |
+| Spain (`es`) | 132 | INE Spain (2021) | 1,300 | REE (2021) | 8,500 | IDAE (2020) |
+| Netherlands (`nl`) | 119 | Vewin (2021) | 1,400 | CBS (2021) | 12,500 | CBS (2020) |
+| Poland (`pl`) | 92 | GUS Poland (2021) | 1,100 | ARE (2021) | 15,600 | GUS (2019) |
+| Bosnia and Herzegovina (`ba`) | 80 | BHAS (2019) | 1,450 | NOSBiH (2021) | 9,000 | Energy Sector Study BiH (2020) |
+| Serbia (`rs`) | 88 | Statistical Office of Serbia (2020) | 2,100 | EPS Serbia (2021) | 9,500 | Statistical Office Serbia (2020) |
+| Indonesia (`id`) | 144 | PDAM Indonesia (2019) | 480 | PLN Indonesia (2021) | 0 (N/A) | N/A (Tropical climate) |
+| Sweden (`se`) | 140 | Svenskt Vatten (2021) | 4,000 | SCB (2021) | 14,000 | Energimyndigheten (2020) |
+| Norway (`no`) | 180 | SSB Norway (2020) | 7,000 | SSB (2021) | 16,000 | SSB (2020) |
+| United States (`us`) | 310 | USGS (2015) | 4,500 | EIA (2021) | 14,000 | EIA (2020) |
+| Canada (`ca`) | 274 | Environment Canada (2019) | 5,000 | NRCan (2021) | 22,000 | NRCan (2019) |
+| World Average (`world`) | 150 | World Average Estimate (2022) | 850 | IEA Residential World Average (2022) | 10,000 | IEA Temperate Average (2021) |
+
+The interactive benchmark explorer for all 198 supported countries (plus global averages) is available at https://home-management.dev/dashboard/benchmarks. Tropical and hot-arid countries where residential space heating is not required are explicitly marked as `0 kWh/yr` (`N/A`).
+
+---
+
+## 7. Frequently Asked Questions (FAQ)
+
+- **Does Home Management require an account or subscription?**
+  No. Home Management is 100% free for personal and household use and runs immediately in your browser without registration. Optional Google sign-in is only needed if you want to sync data across devices.
+- **Where is my utility data stored?**
+  By default, all data is stored locally in your browser (`localStorage`). Nothing leaves your device unless you explicitly enable Firebase cloud sync or export a backup file.
+- **How does the AI camera meter reader work?**
+  You take or upload a photo of your meter, crop the digits, and an in-browser Tesseract.js OCR worker extracts the reading directly on your device. Images are never sent to a server.
+- **Can I import my existing Excel spreadsheets?**
+  Yes. You can map custom columns from existing `.xlsx` spreadsheets, paste raw text tables using Smart Import, and export your records to Excel (`.xlsx`), JSON, or formatted PDF reports at any time.

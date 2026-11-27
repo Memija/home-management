@@ -31,12 +31,12 @@ describe('HelpModalComponent', () => {
     component = fixture.componentInstance;
 
     // Set required inputs
-    component.show = true;
-    component.titleKey = 'TEST.TITLE';
-    component.steps = [
+    fixture.componentRef.setInput('show', true);
+    fixture.componentRef.setInput('titleKey', 'TEST.TITLE');
+    fixture.componentRef.setInput('steps', [
       { titleKey: 'STEP.1', descriptionKey: 'DESC.1' },
       { titleKey: 'STEP.2', descriptionKey: 'DESC.2', imageUrl: 'img.png' },
-    ];
+    ]);
 
     fixture.detectChanges();
   });
@@ -117,7 +117,7 @@ describe('HelpModalComponent', () => {
 
   describe('Edge cases', () => {
     it('should handle zero steps', () => {
-      component.steps = [];
+      fixture.componentRef.setInput('steps', []);
       fixture.detectChanges();
 
       const internal = component as unknown as HelpModalInternal;
@@ -134,7 +134,7 @@ describe('HelpModalComponent', () => {
     });
 
     it('should handle one step', () => {
-      component.steps = [{ titleKey: 'STEP.1', descriptionKey: 'DESC.1' }];
+      fixture.componentRef.setInput('steps', [{ titleKey: 'STEP.1', descriptionKey: 'DESC.1' }]);
       fixture.detectChanges();
 
       const internal = component as unknown as HelpModalInternal;

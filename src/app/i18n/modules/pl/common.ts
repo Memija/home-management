@@ -48,10 +48,11 @@ export const common = {
   FOOTER: {
     APP_NAME: 'Zarządzanie Domem',
     SUPPORT_PROJECT: 'Wesprzyj ten Projekt',
+    BENCHMARKS: 'Średnie Krajowe',
     CHANGELOG: 'Zmiany',
     RELEASE_PLAN: 'Nadchodzące Funkcje',
     CONTRIBUTE: 'Współpracuj',
-    PRIVACY_POLICY: 'Polityka Prywatności',
+    PRIVACY_POLICY: 'Prywatność i informacje prawne',
     VERSION: 'Wersja {{version}}',
   },
   CHANGELOG: {
@@ -110,6 +111,9 @@ export const common = {
     FEATURE_13_TITLE: 'Organizer Rodzinny i Szkolny',
     FEATURE_13_DESC:
       'Organizuj harmonogramy rodzinne, plany lekcji i powtarzalne rutyny domowe w jednym miejscu. Przypisuj plany członkom rodziny, aby ułatwić codzienną koordynację.',
+    FEATURE_14_TITLE: 'Dziennik Domowy i Rodzinny',
+    FEATURE_14_DESC:
+      'Prowadź wspólny chronologiczny dziennik dla całego domu. Zapisuj codzienne chwile rodzinne i wyjazdy, dodawaj osobiste notatki przypisane do poszczególnych domowników oraz dokumentuj naprawy, remonty i serwisowanie urządzeń w jednym przejrzystym miejscu.',
     CTA_TEXT:
       'Twoje wsparcie pomaga nam budować te funkcje szybciej. Dziękujemy za bycie częścią naszej społeczności!',
     BACK_TO_HOME: 'Powrót do strony głównej',

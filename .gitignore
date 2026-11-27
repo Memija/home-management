@@ -62,6 +62,10 @@ src/app/config/firebase.config.ts
 .env
 .env.*
 !.env.example
+.dev.vars
+**/.dev.vars
+.wrangler/
+**/.wrangler/
 
 # Security & audit artifacts
 cyclonedx.sbom.json

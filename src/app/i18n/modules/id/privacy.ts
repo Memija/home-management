@@ -7,6 +7,8 @@ export const privacy = {
       'Kami menggunakan Autentikasi Google untuk memungkinkan Anda masuk ke aplikasi. Dengan demikian, kami mengumpulkan alamat email, nama tampilan, url foto profil, dan pengidentifikasi pengguna unik (UID).',
     COLLECTION_P2:
       'Kami juga menyimpan data aplikasi Anda dengan aman, seperti catatan konsumsi air, pemanas, dan listrik, di dalam Firebase Firestore, yang ditautkan langsung ke UID Anda.',
+    COLLECTION_P3:
+      'Saat Anda mengirimkan pertanyaan melalui formulir Hubungi Kami, nama, alamat email, kategori, subjek, dan pesan yang Anda berikan dikirimkan semata-mata untuk meneruskan dan membalas pesan Anda.',
     USAGE_TITLE: 'Penggunaan Data',
     USAGE_P1:
       'Data Anda digunakan secara ketat untuk tujuan menyediakan fungsionalitas aplikasi internal. Kami tidak membagikan, menjual, atau mendistribusikan data ini kepada pihak ketiga.',
@@ -19,5 +21,15 @@ export const privacy = {
     COOKIES_TITLE: 'Cookie',
     COOKIES_P1:
       'Kami hanya menggunakan cookie yang "Sangat Diperlukan" untuk autentikasi dan fungsionalitas inti aplikasi.',
+    DISCLAIMER_TITLE: 'Penafian Data, Prakiraan, dan Tolok Ukur',
+    DISCLAIMER_P1:
+      'Seluruh tolok ukur konsumsi, estimasi utilitas, prakiraan, dan analitik di Home Management disediakan sebagaimana adanya semata-mata untuk tujuan informasi umum dan edukasi, tanpa jaminan tersurat maupun tersirat atas keakuratan, kelengkapan, kemutakhiran, atau kesesuaian untuk tujuan tertentu.',
+    DISCLAIMER_P2:
+      'Nilai yang ditampilkan merupakan perkiraan statistik umum yang dapat mengandung kesalahan, kelalaian, atau data usang dan tidak boleh digunakan sebagai dasar pengambilan keputusan keuangan, penagihan, hukum, regulasi, maupun teknis.',
+    LINKS_TITLE: 'Tautan Eksternal dan Sumber Pihak Ketiga',
+    LINKS_P1:
+      'Tautan referensi di seluruh aplikasi mengarah ke situs web pihak ketiga eksternal yang dikelola oleh badan statistik independen, regulator utilitas, dan organisasi internasional di luar kendali Home Management.',
+    LINKS_P2:
+      'Alamat situs eksternal dapat berubah, berpindah, atau menjadi tidak tersedia kapan saja tanpa pemberitahuan. Home Management tidak bertanggung jawab atas keakuratan, ketersediaan, konten, atau keamanan situs eksternal mana pun maupun atas kerugian yang timbul akibat penggunaan data pihak ketiga.',
   },
 };

@@ -1,8 +1,9 @@
-import { Component } from '@angular/core';
+import { Component, ChangeDetectionStrategy } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { TranslatePipe } from '../../pipes/translate.pipe';
 import {
   LucideAngularModule,
+  Globe,
   Heart,
   Rocket,
   History,
@@ -24,14 +25,18 @@ const GITHUB_ICON: LucideIconData = [
   ['path', { d: 'M9 18c-4.51 2-5-2-7-2', key: '9comsn' }],
 ];
 
+const VERSION_PARAMS = { version: APP_VERSION };
+
 @Component({
   selector: 'app-footer',
   standalone: true,
   imports: [TranslatePipe, LucideAngularModule, RouterLink, SupportModalComponent],
   templateUrl: './footer.component.html',
   styleUrl: './footer.component.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class FooterComponent {
+  readonly GlobeIcon = Globe;
   readonly HeartIcon = Heart;
   readonly RocketIcon = Rocket;
   readonly HistoryIcon = History;
@@ -40,4 +45,8 @@ export class FooterComponent {
   readonly appVersion = APP_VERSION;
 
   showSupportModal = false;
+
+  get versionParams(): { readonly version: string } {
+    return VERSION_PARAMS;
+  }
 }

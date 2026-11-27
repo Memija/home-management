@@ -1,51 +1,47 @@
-import { Component, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
 import { RouterLink, RouterLinkActive } from '@angular/router';
 import { TranslatePipe } from '../../pipes/translate.pipe';
-import { ContactModalComponent, EmailClient } from '../contact-modal/contact-modal.component';
+import { ContactModalComponent } from '../contact-modal/contact-modal.component';
+import { SuccessModalComponent } from '../success-modal/success-modal.component';
+
+const EXACT_ROUTE_OPTIONS = { exact: true };
 
 @Component({
   selector: 'app-menu-bar',
   standalone: true,
-  imports: [RouterLink, RouterLinkActive, TranslatePipe, ContactModalComponent],
+  imports: [
+    RouterLink,
+    RouterLinkActive,
+    TranslatePipe,
+    ContactModalComponent,
+    SuccessModalComponent,
+  ],
   templateUrl: './menu-bar.component.html',
   styleUrl: './menu-bar.component.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class MenuBarComponent {
-  // Contact modal state
-  protected readonly showContactModal = signal(false);
+  protected get exactRouteOptions(): { exact: boolean } {
+    return EXACT_ROUTE_OPTIONS;
+  }
 
-  protected contactUs() {
+  protected readonly showContactModal = signal(false);
+  protected readonly showContactSuccessModal = signal(false);
+
+  protected contactUs(): void {
     this.showContactModal.set(true);
   }
 
-  protected onCloseModal() {
+  protected onCloseModal(): void {
     this.showContactModal.set(false);
   }
 
-  protected onComposeEmail(data: {
-    name: string;
-    email: string;
-    subject: string;
-    message: string;
-    client: EmailClient;
-  }) {
-    const recipient = 'homemngdev@gmail.com';
-    const subject = encodeURIComponent(`[${data.name}] ${data.subject}`);
-    const body = encodeURIComponent(`From: ${data.name} (${data.email})\n\n${data.message}`);
-
-    let mailUrl: string;
-    switch (data.client) {
-      case 'outlook':
-        mailUrl = `https://outlook.live.com/mail/0/deeplink/compose?to=${recipient}&subject=${subject}&body=${body}`;
-        break;
-      case 'gmail':
-        mailUrl = `https://mail.google.com/mail/?view=cm&to=${recipient}&su=${subject}&body=${body}`;
-        break;
-      default:
-        mailUrl = `mailto:${recipient}?subject=${subject}&body=${body}`;
-    }
-
-    window.open(mailUrl, '_blank', 'noopener,noreferrer');
+  protected onContactSubmitted(): void {
     this.showContactModal.set(false);
+    this.showContactSuccessModal.set(true);
+  }
+
+  protected onCloseSuccessModal(): void {
+    this.showContactSuccessModal.set(false);
   }
 }

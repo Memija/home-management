@@ -1,0 +1,50 @@
+<div class="page-container benchmarks-page">
+  <header class="benchmarks-hero">
+    <div class="hero-icon" aria-hidden="true">
+      <lucide-icon [img]="GlobeIcon" [size]="44"></lucide-icon>
+    </div>
+    <h1>{{ 'SEO.BENCHMARKS.TITLE' | translate }}</h1>
+  </header>
+
+  <main class="benchmarks-main" id="main-content">
+    <app-benchmarks-controls
+      [householdSizes]="householdSizes()"
+      [householdSize]="householdSize()"
+      [householdSizeParams]="householdSizeParams()"
+      [isBrowser]="isBrowser"
+      [searchQuery]="searchQuery()"
+      (sizeChange)="setHouseholdSize($event)"
+      (searchChange)="setSearchQuery($event)"
+    />
+
+    <div class="table-card">
+      @if (rows().length === 0) {
+        <p class="empty-state">{{ 'SEO.BENCHMARKS.NO_RESULTS' | translate }}</p>
+      } @else {
+        <app-benchmarks-table
+          [rows]="rows()"
+          [sortColumn]="sortColumn()"
+          [sortDirection]="sortDirection()"
+          (sortChange)="toggleSort($event)"
+          (countrySelected)="openCountryFacts($event)"
+        />
+      }
+      <p class="benchmarks-disclaimer-footnote">
+        {{ 'SEO.BENCHMARKS.DISCLAIMER_NOTE' | translate }}
+        <a routerLink="/dashboard/privacy" class="disclaimer-link">{{
+          'FOOTER.PRIVACY_POLICY' | translate
+        }}</a>
+      </p>
+    </div>
+  </main>
+
+  @defer (when selectedCountry() !== null) {
+    @if (selectedCountry(); as country) {
+      <app-country-facts-modal
+        [country]="country"
+        [initialCategory]="activeFactCategory()"
+        (closeModal)="closeCountryFacts()"
+      />
+    }
+  }
+</div>

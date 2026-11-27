@@ -1,4 +1,15 @@
 import { Injectable, signal } from '@angular/core';
+import {
+  TesseractWord,
+  OcrPassResult,
+  ScoredCandidate,
+  fileToDataUrl,
+  upscaleImage,
+  preprocessContrast,
+  preprocessInverted,
+  extractNumbersFromOcrText,
+  scoreAndSelectBestCandidate,
+} from '../utils/image-preprocessing.utils';
 
 interface TesseractWorker {
   setParameters(p: Record<string, unknown>): Promise<unknown>;
@@ -21,29 +32,6 @@ export interface MeterReadingResult {
   candidates: number[];
 }
 
-/** Internal result from a single OCR pass */
-interface TesseractWord {
-  text: string;
-  confidence: number;
-  bbox: { x0: number; y0: number; x1: number; y1: number };
-}
-
-interface OcrPassResult {
-  text: string;
-  confidence: number;
-  words: TesseractWord[];
-}
-
-interface ScoredCandidate {
-  value: number;
-  text: string;
-  confidence: number;
-  centerX: number;
-  centerY: number;
-  width: number;
-  height: number;
-}
-
 /**
  * Service for reading meter values from images using Tesseract.js OCR.
  * Uses a multi-pass strategy with different image preprocessing techniques
@@ -58,6 +46,18 @@ export class MeterReaderService {
   readonly progress = signal(0);
 
   private tesseractWorker: unknown = null;
+  private workerPromise: Promise<unknown> | null = null;
+
+  /**
+   * Pre-warms the Tesseract WASM worker in the background (e.g. while the user crops the image).
+   */
+  async warmup(): Promise<void> {
+    try {
+      await this.getWorker();
+    } catch {
+      // Ignore warmup errors; readMeter will surface any actual failure
+    }
+  }
 
   /**
    * @param imageSource - File or base64 data URL
@@ -117,19 +117,13 @@ export class MeterReaderService {
     imageSource: File | string,
     isCropped: boolean,
   ): Promise<{ imageData: string; imgWidth: number; imgHeight: number }> {
-    let imageData: string;
-    if (imageSource instanceof File) {
-      imageData = await this.fileToDataUrl(imageSource);
-    } else {
-      imageData = imageSource;
-    }
+    let imageData =
+      imageSource instanceof File ? await this.fileToDataUrl(imageSource) : imageSource;
 
-    // When pre-cropped, upscale to ensure Tesseract has enough resolution
     if (isCropped) {
       imageData = await this.upscaleImage(imageData, 600);
     }
 
-    // Get image dimensions for centrality calculation
     const img = new Image();
     await new Promise((resolve) => {
       img.onload = resolve;
@@ -141,15 +135,15 @@ export class MeterReaderService {
 
   /**
    * Runs OCR in single-line mode with two focused passes for pre-cropped images.
+   * Overlaps main-thread contrast preprocessing with Web Worker Pass 1 recognition.
    */
   private async runCroppedMode(imageData: string): Promise<OcrPassResult[]> {
-    // Pass 1: PSM 7 (single text line), clean image
     this.progress.set(10);
+    const contrastPromise = this.preprocessContrast(imageData);
     const pass1 = await this.runOcrPass(imageData, '0123456789.,', '7');
 
-    // Pass 2: PSM 7, high-contrast binarized
     this.progress.set(50);
-    const contrastImage = await this.preprocessContrast(imageData);
+    const contrastImage = await contrastPromise;
     const pass2 = await this.runOcrPass(contrastImage, '0123456789.,', '7');
 
     return [pass1, pass2];
@@ -157,17 +151,20 @@ export class MeterReaderService {
 
   /**
    * Runs OCR in full image mode with three different preprocessing strategies.
+   * Overlaps main-thread contrast & inversion preprocessing with Web Worker Pass 1 recognition.
    */
   private async runFullImageMode(imageData: string): Promise<OcrPassResult[]> {
     this.progress.set(5);
+    const contrastPromise = this.preprocessContrast(imageData);
+    const invertedPromise = this.preprocessInverted(imageData);
     const pass1 = await this.runOcrPass(imageData);
 
     this.progress.set(35);
-    const contrastImage = await this.preprocessContrast(imageData);
+    const contrastImage = await contrastPromise;
     const pass2 = await this.runOcrPass(contrastImage, '0123456789.,');
 
     this.progress.set(65);
-    const invertedImage = await this.preprocessInverted(imageData);
+    const invertedImage = await invertedPromise;
     const pass3 = await this.runOcrPass(invertedImage, '0123456789.,');
 
     return [pass1, pass2, pass3];
@@ -214,7 +211,6 @@ export class MeterReaderService {
           }
         });
       } else {
-        // Fallback: no word bboxes — extract from raw text, place at center
         const numbers = this.extractNumbers(pass.text);
         numbers.forEach((val) => {
           candidates.push({
@@ -237,6 +233,7 @@ export class MeterReaderService {
    * Clean up the Tesseract worker to free memory.
    */
   async dispose(): Promise<void> {
+    this.workerPromise = null;
     if (this.tesseractWorker) {
       await (this.tesseractWorker as { terminate: () => Promise<void> }).terminate();
       this.tesseractWorker = null;
@@ -277,315 +274,67 @@ export class MeterReaderService {
     if (this.tesseractWorker) {
       return this.tesseractWorker;
     }
-
-    // tesseract.js v7's ESM bundle (`tesseract.esm.min.js`) only exposes a
-    // default export wrapping the CJS object. When Angular's production bundler
-    // resolves the dynamic import it picks up the ESM file, so named-export
-    // destructuring `{ createWorker }` yields `undefined` → "t is not a function".
-    // We therefore check the default export first and fall back to the module
-    // root, which handles both CommonJS and ESM interop.
-    const tesseractModule = await import('tesseract.js');
-    const createWorker: typeof tesseractModule.createWorker =
-      // ESM default-export path (production build)
-      (tesseractModule.default as typeof tesseractModule)?.createWorker ??
-      // Named-export path (dev build / CJS interop)
-      tesseractModule.createWorker;
-
-    const worker = await createWorker('eng', 1, {
-      workerPath: '/assets/tesseract/worker.min.js',
-      corePath: '/assets/tesseract/core/tesseract-core.wasm.js',
-      langPath: '/assets/tesseract-lang',
-      logger: (m: { status: string; progress: number }) => {
-        if (m.status === 'recognizing text') {
-          const passProgress = Math.round(m.progress * 100);
-          const currentBase = this.progress();
-          this.progress.set(Math.min(currentBase + Math.round(passProgress * 0.3), 100));
-        }
-      },
-    });
-
-    // PSM.SPARSE_TEXT (11) works best for finding numbers scattered across a meter face.
-    // user_defined_dpi prevents Tesseract from estimating image resolution, which suppresses
-    // the noisy "Estimating resolution as XXX" log that Tesseract prints to the worker console.
-    await (worker as unknown as TesseractWorker).setParameters({
-      tessedit_pageseg_mode: '11' as unknown,
-      tessedit_char_whitelist: '0123456789.,OolISsBbZz',
-      preserve_interword_spaces: '1',
-      user_defined_dpi: '70',
-    });
-
-    this.tesseractWorker = worker;
-    return worker;
-  }
-
-  /**
-   * Helper to scale canvas context and draw image
-   */
-  private setupCanvas(img: HTMLImageElement): {
-    canvas: HTMLCanvasElement;
-    ctx: CanvasRenderingContext2D;
-  } {
-    const canvas = document.createElement('canvas');
-    const MAX_DIMENSION = 1000; // Tesseract works best when characters aren't too massive
-
-    let width = img.width;
-    let height = img.height;
-
-    if (width > height && width > MAX_DIMENSION) {
-      height *= MAX_DIMENSION / width;
-      width = MAX_DIMENSION;
-    } else if (height > MAX_DIMENSION) {
-      width *= MAX_DIMENSION / height;
-      height = MAX_DIMENSION;
+    if (this.workerPromise) {
+      return this.workerPromise;
     }
 
-    canvas.width = Math.round(width);
-    canvas.height = Math.round(height);
-    const ctx = canvas.getContext('2d', { willReadFrequently: true })!;
-    ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+    this.workerPromise = (async () => {
+      const tesseractModule = await import('tesseract.js');
+      const createWorker: typeof tesseractModule.createWorker =
+        (tesseractModule.default as typeof tesseractModule)?.createWorker ??
+        tesseractModule.createWorker;
 
-    return { canvas, ctx };
+      const worker = await createWorker('eng', 1, {
+        workerPath: '/assets/tesseract/worker.min.js',
+        corePath: '/assets/tesseract/core/tesseract-core.wasm.js',
+        langPath: '/assets/tesseract-lang',
+        logger: (m: { status: string; progress: number }) => {
+          if (m.status === 'recognizing text') {
+            const passProgress = Math.round(m.progress * 100);
+            const currentBase = this.progress();
+            this.progress.set(Math.min(currentBase + Math.round(passProgress * 0.3), 100));
+          }
+        },
+      });
+
+      await (worker as unknown as TesseractWorker).setParameters({
+        tessedit_pageseg_mode: '11' as unknown,
+        tessedit_char_whitelist: '0123456789.,OolISsBbZz',
+        preserve_interword_spaces: '1',
+        user_defined_dpi: '70',
+      });
+
+      this.tesseractWorker = worker;
+      return worker;
+    })().catch((err) => {
+      this.workerPromise = null;
+      throw err;
+    });
+
+    return this.workerPromise;
   }
 
-  /**
-   * Convert a File to a base64 data URL.
-   */
   private fileToDataUrl(file: File): Promise<string> {
-    return new Promise((resolve, reject) => {
-      const reader = new FileReader();
-      reader.onload = () => resolve(reader.result as string);
-      reader.onerror = () => reject(new Error('Failed to read file'));
-      reader.readAsDataURL(file);
-    });
+    return fileToDataUrl(file);
   }
 
-  /**
-   * Upscale a small image to a minimum height so Tesseract has enough resolution.
-   * Cropped regions of a meter are often very small; Tesseract needs ~50px per character minimum.
-   */
   private upscaleImage(dataUrl: string, minHeight: number): Promise<string> {
-    return new Promise((resolve) => {
-      const img = new Image();
-      img.onload = () => {
-        if (img.height >= minHeight) {
-          resolve(dataUrl);
-          return;
-        }
-        const scale = minHeight / img.height;
-        const canvas = document.createElement('canvas');
-        canvas.width = Math.round(img.width * scale);
-        canvas.height = Math.round(img.height * scale);
-        const ctx = canvas.getContext('2d')!;
-        // Use image smoothing for upscaling
-        ctx.imageSmoothingEnabled = true;
-        ctx.imageSmoothingQuality = 'high';
-        ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-        resolve(canvas.toDataURL('image/png'));
-      };
-      img.onerror = () => resolve(dataUrl);
-      img.src = dataUrl;
-    });
+    return upscaleImage(dataUrl, minHeight);
   }
 
-  /**
-   * Preprocessing pass: Strict Binarization (Black & White).
-   * Good for LCD displays where we need to isolate dark segments from light background.
-   */
   private preprocessContrast(dataUrl: string): Promise<string> {
-    return new Promise((resolve) => {
-      const img = new Image();
-      img.onload = () => {
-        const { canvas, ctx } = this.setupCanvas(img);
-        const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
-        const data = imageData.data;
-
-        const { avgBrightness, grayData } = this.computeAverageBrightnessAndGrayscale(data);
-        const dilatedData = this.applyVerticalErosion(grayData, canvas.width, canvas.height);
-        this.binarizeImageData(data, dilatedData, avgBrightness * 0.95);
-
-        ctx.putImageData(imageData, 0, 0);
-        resolve(canvas.toDataURL('image/png'));
-      };
-      img.onerror = () => resolve(dataUrl);
-      img.src = dataUrl;
-    });
+    return preprocessContrast(dataUrl);
   }
 
-  private computeAverageBrightnessAndGrayscale(data: Uint8ClampedArray): {
-    avgBrightness: number;
-    grayData: Uint8Array;
-  } {
-    const pixelCount = data.length / 4;
-    const grayData = new Uint8Array(pixelCount);
-    let totalBrightness = 0;
-
-    for (let i = 0; i < data.length; i += 4) {
-      const gray = data[i] * 0.299 + data[i + 1] * 0.587 + data[i + 2] * 0.114;
-      grayData[i / 4] = gray;
-      totalBrightness += gray;
-    }
-
-    return {
-      avgBrightness: totalBrightness / pixelCount,
-      grayData,
-    };
-  }
-
-  private applyVerticalErosion(grayData: Uint8Array, w: number, h: number): Uint8Array {
-    const dilatedData = new Uint8Array(grayData.length);
-    for (let y = 0; y < h; y++) {
-      for (let x = 0; x < w; x++) {
-        const idx = y * w + x;
-        let minVal = grayData[idx];
-
-        if (y > 0) minVal = Math.min(minVal, grayData[idx - w]);
-        if (y < h - 1) minVal = Math.min(minVal, grayData[idx + w]);
-
-        dilatedData[idx] = minVal;
-      }
-    }
-    return dilatedData;
-  }
-
-  private binarizeImageData(
-    data: Uint8ClampedArray,
-    dilatedData: Uint8Array,
-    threshold: number,
-  ): void {
-    for (let idx = 0; idx < dilatedData.length; idx++) {
-      const val = dilatedData[idx] > threshold ? 255 : 0;
-      const dataIdx = idx * 4;
-      data[dataIdx] = val;
-      data[dataIdx + 1] = val;
-      data[dataIdx + 2] = val;
-    }
-  }
-
-  /**
-   * Preprocessing pass: Inverted binary.
-   * Good for odometer-style meters where numbers are white on black dials.
-   */
   private preprocessInverted(dataUrl: string): Promise<string> {
-    return new Promise((resolve) => {
-      const img = new Image();
-      img.onload = () => {
-        const { canvas, ctx } = this.setupCanvas(img);
-        const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
-        const data = imageData.data;
-
-        let totalBrightness = 0;
-        for (let i = 0; i < data.length; i += 4) {
-          totalBrightness += data[i] * 0.299 + data[i + 1] * 0.587 + data[i + 2] * 0.114;
-        }
-        const avgBrightness = totalBrightness / (data.length / 4);
-
-        for (let i = 0; i < data.length; i += 4) {
-          const gray = data[i] * 0.299 + data[i + 1] * 0.587 + data[i + 2] * 0.114;
-          // Invert and binary threshold
-          const val = 255 - gray > 255 - avgBrightness * 1.1 ? 255 : 0;
-          data[i] = val;
-          data[i + 1] = val;
-          data[i + 2] = val;
-        }
-
-        ctx.putImageData(imageData, 0, 0);
-        resolve(canvas.toDataURL('image/png'));
-      };
-      img.onerror = () => resolve(dataUrl);
-      img.src = dataUrl;
-    });
+    return preprocessInverted(dataUrl);
   }
 
-  /**
-   * Extract all numeric values from OCR text.
-   * Handles various formats: "12345", "12,345", "1.234", "12345.6"
-   * Also handles OCR artifacts like "O" for "0", "l" for "1", etc.
-   */
   private extractNumbers(text: string): number[] {
-    if (!text) return [];
-
-    // Pre-clean: fix common OCR misreads
-    const cleaned = text
-      .replace(/[oO]/g, '0') // O → 0
-      .replace(/[lI|]/g, '1') // l, I, | → 1
-      .replace(/[zZ]/g, '2') // Z → 2
-      .replace(/[sS]/g, '5') // S → 5
-      .replace(/[bB]/g, '8'); // B → 8
-
-    // Match contiguous number blocks (e.g., "15432", "1.234,56")
-    const numberPatterns = cleaned.match(/\d+[.,\d]*\d|\d+/g) || [];
-
-    return numberPatterns
-      .map((n) => {
-        // Handle European format (1.234,56) vs US format (1,234.56)
-        let normalized = n;
-
-        const commas = (normalized.match(/,/g) || []).length;
-        const dots = (normalized.match(/\./g) || []).length;
-
-        // If European format "1.234,56" or "12,34"
-        if (
-          commas === 1 &&
-          dots <= 1 &&
-          normalized.lastIndexOf(',') > normalized.lastIndexOf('.')
-        ) {
-          normalized = normalized.replaceAll('.', '').replace(',', '.');
-        }
-        // If US format "1,234.56" or "12.34"
-        else if (
-          dots === 1 &&
-          commas <= 1 &&
-          normalized.lastIndexOf('.') > normalized.lastIndexOf(',')
-        ) {
-          normalized = normalized.replaceAll(',', '');
-        }
-        // If multiple of same separator, assume thousand separators "1,234,567" or "1.234.567"
-        else {
-          normalized = normalized.replace(/[.,]/g, '');
-        }
-
-        return Number.parseFloat(normalized);
-      })
-      .filter((n) => !Number.isNaN(n) && n >= 0);
+    return extractNumbersFromOcrText(text);
   }
 
   private scoreAndSelectBest(candidates: ScoredCandidate[], isCropped = false): number | null {
-    if (candidates.length === 0) return null;
-
-    if (isCropped) {
-      // In cropped mode the image IS the reading — just return highest-confidence candidate.
-      // De-duplicate by value and pick the one Tesseract was most confident about.
-      const best = candidates.reduce(
-        (max, c) => (c.confidence > max.confidence ? c : max),
-        candidates[0],
-      );
-      return best.value;
-    }
-
-    const scored = candidates.map((c) => {
-      let score = c.confidence;
-
-      // Centrality: distance from center (0.5, 0.5)
-      const distFromCenter = Math.sqrt(Math.pow(c.centerX - 0.5, 2) + Math.pow(c.centerY - 0.5, 2));
-      const centralityFactor = 1 - Math.min(distFromCenter * 2, 1);
-      score *= 1 + centralityFactor;
-
-      // Length heuristic: meter readings are typically 4-7 digits
-      const digits = Math.floor(c.value).toString().length;
-      if (digits >= 4 && digits <= 7) {
-        score *= 1.5;
-      } else if (digits > 8) {
-        // Heavy penalty for suspected concatenations
-        score *= 0.1;
-      } else if (digits < 3) {
-        score *= 0.5;
-      }
-
-      return { candidate: c, score };
-    });
-
-    scored.sort((a, b) => b.score - a.score);
-
-    return scored[0].candidate.value;
+    return scoreAndSelectBestCandidate(candidates, isCropped);
   }
 }

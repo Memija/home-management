@@ -1,8 +1,5 @@
 import { Injectable, inject } from '@angular/core';
 import { LanguageService, Language } from './language.service';
-import { en } from '../i18n/en';
-import { de } from '../i18n/de';
-import { bs } from '../i18n/bs';
 import { secureRandomItem } from '../utils/crypto.utils';
 
 type CountryFactsMap = Record<string, string[]>;
@@ -50,9 +47,8 @@ export class CountryFactsService {
    * @returns Array of facts for the country
    */
   private getFactsForCountry(countryCode: string, lang: Language): string[] {
-    const translationMap = { de, bs, en } as const;
-    const translations = translationMap[lang as 'de' | 'bs'] ?? en;
-    const countryFacts = translations.COUNTRY_FACTS as CountryFactsMap;
+    const translations = this.languageService.getTranslations?.(lang, 'COUNTRY_FACTS') ?? {};
+    const countryFacts = (translations['COUNTRY_FACTS'] as CountryFactsMap | undefined) ?? {};
 
     // Try to get country-specific facts, fall back to DEFAULT
     if (countryFacts[countryCode] && countryFacts[countryCode].length > 0) {
@@ -63,12 +59,22 @@ export class CountryFactsService {
   }
 
   /**
+   * Get all water facts for a country in the active language.
+   * Lazy-loads only COUNTRY_FACTS for the current language on demand.
+   * @param countryCode The ISO country code
+   * @returns Array of facts for the country
+   */
+  getFacts(countryCode: string): readonly string[] {
+    const lang = this.languageService.currentLang();
+    return this.getFactsForCountry(countryCode.toUpperCase(), lang);
+  }
+
+  /**
    * Get the number of facts available for a country
    * @param countryCode The ISO country code
    * @returns The number of facts available
    */
   getFactCount(countryCode: string): number {
-    const lang = this.languageService.currentLang();
-    return this.getFactsForCountry(countryCode.toUpperCase(), lang).length;
+    return this.getFacts(countryCode).length;
   }
 }

@@ -14,6 +14,7 @@ class MockMeterReaderService {
     confidence: 90,
     candidates: [1234],
   });
+  dispose = vi.fn().mockResolvedValue(undefined);
 }
 
 describe('MeterReaderModalComponent', () => {
@@ -40,8 +41,8 @@ describe('MeterReaderModalComponent', () => {
     meterReaderService = TestBed.inject(MeterReaderService) as unknown as MockMeterReaderService;
 
     // Set required inputs
-    component.show = true;
-    component.fields = [{ key: 'water', label: 'Water' }];
+    fixture.componentRef.setInput('show', true);
+    fixture.componentRef.setInput('fields', [{ key: 'water', label: 'Water' }]);
 
     fixture.detectChanges();
   });
@@ -137,10 +138,10 @@ describe('MeterReaderModalComponent', () => {
 
     it('should go to select-field step if multiple fields exist', () => {
       vi.spyOn(component.reading, 'emit');
-      component.fields = [
+      fixture.componentRef.setInput('fields', [
         { key: 'water1', label: 'Water 1' },
         { key: 'water2', label: 'Water 2' },
-      ];
+      ]);
       fixture.detectChanges();
 
       component['selectedValue'].set(456);
@@ -151,7 +152,7 @@ describe('MeterReaderModalComponent', () => {
     });
 
     it('should go to select-field step if no fields exist (empty state)', () => {
-      component.fields = [];
+      fixture.componentRef.setInput('fields', []);
       fixture.detectChanges();
 
       component['selectedValue'].set(456);
@@ -183,6 +184,31 @@ describe('MeterReaderModalComponent', () => {
       const event = { target: { files: [{ type: 'application/pdf' }] } } as unknown as Event;
       component['onFileSelected'](event);
       expect(component['capturedImage']()).toBeNull();
+    });
+
+    it('should read selected image file and transition to crop step', async () => {
+      const file = new File(['pixel-data'], 'meter.png', { type: 'image/png' });
+      const target = { files: [file], value: 'C:\\fakepath\\meter.png' };
+      const event = { target } as unknown as Event;
+
+      component['onFileSelected'](event);
+
+      await vi.waitFor(() => {
+        expect(component['step']()).toBe('crop');
+      });
+      expect(component['capturedImage']()).toContain('data:image/png;base64,');
+      expect(target.value).toBe('');
+    });
+
+    it('should not prevent default when clicking the upload image label', () => {
+      const nativeEl = fixture.nativeElement as HTMLElement;
+      const uploadLabel = nativeEl.querySelector('label[for="meter-image-upload"]') as HTMLElement;
+      expect(uploadLabel).toBeTruthy();
+
+      const clickEvent = new MouseEvent('click', { bubbles: true, cancelable: true });
+      uploadLabel.dispatchEvent(clickEvent);
+
+      expect(clickEvent.defaultPrevented).toBe(false);
     });
   });
 

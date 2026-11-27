@@ -1,0 +1,34 @@
+// Bosnian core UI translations - excludes bulky country/utility trivia facts
+import { common } from '../modules/bs/common';
+import { water } from '../modules/bs/water';
+import { heating } from '../modules/bs/heating';
+import { settings } from '../modules/bs/settings';
+import { chart } from '../modules/bs/chart';
+import { countries } from '../modules/bs/countries';
+import { contact } from '../modules/bs/contact';
+import { errors } from '../modules/bs/errors';
+import { excel } from '../modules/bs/excel';
+import { electricity } from '../modules/bs/electricity';
+import { auth } from '../modules/bs/auth';
+import { landing } from '../modules/bs/landing';
+import { motivation } from '../modules/bs/motivation';
+import { privacy } from '../modules/bs/privacy';
+import { seo } from '../modules/bs/seo';
+
+export const bs = {
+  ...common,
+  ...water,
+  ...heating,
+  ...settings,
+  ...chart,
+  ...countries,
+  ...contact,
+  ...errors,
+  ...excel,
+  ...electricity,
+  ...auth,
+  ...landing,
+  ...motivation,
+  ...privacy,
+  ...seo,
+};

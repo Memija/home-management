@@ -6,7 +6,6 @@ import {
   ChangeDetectionStrategy,
   signal,
 } from '@angular/core';
-import { CommonModule } from '@angular/common';
 import { LanguageService } from '../services/language.service';
 import { DemoService } from '../services/demo.service';
 import { TranslatePipe } from '../pipes/translate.pipe';
@@ -29,7 +28,6 @@ interface ComponentWithUnsavedChanges {
   selector: 'app-settings',
   standalone: true,
   imports: [
-    CommonModule,
     TranslatePipe,
     LucideAngularModule,
     AddressComponent,
@@ -71,6 +69,7 @@ export class SettingsComponent {
   // Handle browser refresh/close
   @HostListener('window:beforeunload', ['$event'])
   onBeforeUnload(event: BeforeUnloadEvent): string | undefined {
+    if (event.defaultPrevented) return undefined;
     if (
       this.familyComponent?.hasUnsavedChanges() ||
       this.addressComponent?.hasUnsavedChanges() ||

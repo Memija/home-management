@@ -1,3 +1,7 @@
+@use 'variables' as *;
+
+$trendline-purple: #9b59b6;
+
 // ==========================================================================
 // Native Fullscreen API & CSS Fake Fullscreen — applied globally because
 // Angular encapsulation prevents :fullscreen from matching in component CSS
@@ -73,5 +77,225 @@
     .toggle-controls-btn {
       display: none;
     }
+  }
+}
+
+// ==========================================================================
+// Shared Consumption Chart Toolbar, Time-Range Pills & Mobile Overlays
+// ==========================================================================
+
+.chart-toolbar-primary {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+}
+
+.chart-range-pills,
+.chart-granularity-pills {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  padding: 3px;
+  background: var(--bg-secondary);
+  border-radius: 10px;
+  border: 1px solid var(--border-color);
+}
+
+.chart-range-pills button,
+.chart-granularity-pills button {
+  padding: 5px 10px;
+  border: 1px solid transparent;
+  background: transparent;
+  color: var(--text-secondary);
+  border-radius: 7px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  line-height: 1.2;
+  cursor: pointer;
+  transition:
+    background 0.2s ease,
+    color 0.2s ease,
+    border-color 0.2s ease,
+    box-shadow 0.2s ease;
+
+  &:hover:not(.active) {
+    color: var(--text-primary);
+    background: rgba(var(--card-bg-rgb), 0.5);
+  }
+
+  &.active {
+    background: var(--card-bg);
+    color: var(--theme-primary, #005cbf);
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08);
+    border-color: rgba(var(--theme-primary-rgb, 0, 92, 191), 0.25);
+  }
+}
+
+.mobile-overlays-btn {
+  display: none;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 10px;
+  border-radius: 8px;
+  border: 1px solid var(--border-color);
+  background: var(--bg-secondary);
+  color: var(--text-secondary);
+  font-size: 0.8rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition:
+    background 0.2s ease,
+    color 0.2s ease,
+    border-color 0.2s ease;
+
+  &.active {
+    background: var(--card-bg);
+    color: var(--theme-primary, #005cbf);
+    border-color: rgba(var(--theme-primary-rgb, 0, 92, 191), 0.35);
+  }
+}
+
+.overlay-count-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 18px;
+  height: 18px;
+  padding: 0 5px;
+  border-radius: 999px;
+  font-size: 0.7rem;
+  font-weight: 700;
+  background: var(--theme-primary, #005cbf);
+  color: #ffffff;
+}
+
+.chart-overlays-group {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+
+  .trendline-toggle {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 12px;
+    color: var(--text-secondary);
+    background: var(--bg-secondary);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    font-size: 0.85rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition:
+      background 0.2s ease,
+      color 0.2s ease,
+      border-color 0.2s ease,
+      transform 0.2s ease;
+
+    &:active {
+      transform: scale(0.97);
+    }
+
+    input[type='checkbox'] {
+      margin: 0;
+      cursor: pointer;
+    }
+
+    lucide-icon {
+      color: $trendline-purple;
+    }
+
+    &:hover:not(.disabled) {
+      background: var(--card-bg);
+      border-color: $trendline-purple;
+      color: $trendline-purple;
+    }
+
+    &.disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+
+      input[type='checkbox'] {
+        cursor: not-allowed;
+      }
+
+      lucide-icon {
+        color: $gray-500;
+      }
+    }
+  }
+
+  .info-tooltip-container {
+    margin-left: auto;
+  }
+
+  .info-tooltip {
+    left: auto;
+    right: 0;
+    transform: none;
+    max-width: 280px;
+
+    &::after {
+      left: auto;
+      right: 8px;
+      transform: none;
+    }
+  }
+
+  .info-icon.warning {
+    color: $warning;
+  }
+}
+
+.zoom-hint-mobile {
+  display: none;
+}
+
+@media (max-width: 768px) {
+  .chart-toolbar-primary {
+    gap: 6px;
+  }
+
+  .chart-range-pills button,
+  .chart-granularity-pills button {
+    padding: 5px 8px;
+    font-size: 0.76rem;
+  }
+
+  .mobile-overlays-btn {
+    display: inline-flex;
+  }
+
+  .chart-overlays-group {
+    display: none;
+
+    &.mobile-open {
+      display: flex;
+      gap: 6px;
+    }
+  }
+
+  .chart-fullscreen-wrapper .chart-overlays-group .trendline-toggle {
+    padding: 5px 10px;
+    font-size: 0.78rem;
+  }
+
+  .zoom-hint-desktop {
+    display: none;
+  }
+
+  .zoom-hint-mobile {
+    display: inline;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .chart-range-pills button,
+  .chart-granularity-pills button,
+  .mobile-overlays-btn,
+  .chart-overlays-group .trendline-toggle {
+    transition: none;
   }
 }

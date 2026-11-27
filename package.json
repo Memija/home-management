@@ -15,6 +15,7 @@
     "format:check": "prettier --check \"src/**/*.{ts,html,scss,json}\"",
     "test": "node scripts/generate-firebase-config.js && ng test home-management",
     "test:coverage": "node scripts/generate-firebase-config.js && ng test home-management --coverage --coverage-reporters=lcovonly --coverage-reporters=text-summary --watch=false",
+    "test:benchmark-links": "node scripts/check-benchmark-links.mjs",
     "sonar:scan": "sonar-scanner-npm",
     "test:lighthouse": "npm run test:lighthouse:mobile && npm run test:lighthouse:desktop",
     "test:lighthouse:mobile": "lhci autorun --upload.outputDir=./.lighthouseci/mobile",

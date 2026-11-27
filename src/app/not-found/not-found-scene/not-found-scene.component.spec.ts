@@ -33,4 +33,12 @@ describe('NotFoundSceneComponent', () => {
     expect(stage?.classList.contains('theme-dark')).toBe(false);
     expect(stage?.querySelectorAll('.night-only').length).toBe(0);
   });
+
+  it('should bind custom portrait viewBox to the aerial SVG element', () => {
+    fixture.componentRef.setInput('viewBox', '200 -753 1520 3289');
+    fixture.detectChanges();
+
+    const svg = fixture.nativeElement.querySelector('svg.aerial-svg');
+    expect(svg?.getAttribute('viewBox')).toBe('200 -753 1520 3289');
+  });
 });

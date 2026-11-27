@@ -3,7 +3,12 @@ import { PLATFORM_ID, signal } from '@angular/core';
 import { describe, it, expect, beforeEach } from 'vitest';
 import { Compass, House, LayoutDashboard } from 'lucide-angular';
 import { NotFoundComponent } from './not-found.component';
-import { buildAerialScene, getCarTransformsAtTime } from './not-found-scene.builder';
+import {
+  buildAerialScene,
+  computeAerialViewBox,
+  DEFAULT_AERIAL_VIEWBOX,
+  getCarTransformsAtTime,
+} from './not-found-scene.builder';
 import { ThemeService } from '../services/theme.service';
 
 /**
@@ -79,5 +84,34 @@ describe('NotFoundComponent', () => {
 
     const ssrComponent = TestBed.runInInjectionContext(() => new NotFoundComponent());
     expect(ssrComponent).toBeTruthy();
+    expect(ssrComponent.svgViewBox()).toBe(DEFAULT_AERIAL_VIEWBOX);
+  });
+
+  it('should compute a wide-framed portrait viewBox on mobile portrait viewports so all 404 lakes remain visible', () => {
+    expect(computeAerialViewBox(1920, 1080)).toBe(DEFAULT_AERIAL_VIEWBOX);
+    expect(computeAerialViewBox(844, 390)).toBe(DEFAULT_AERIAL_VIEWBOX);
+    expect(computeAerialViewBox(0, 0)).toBe(DEFAULT_AERIAL_VIEWBOX);
+
+    const portraitBox = computeAerialViewBox(390, 844);
+    const [minX, minY, width, height] = portraitBox.split(' ').map(Number);
+    expect(minX).toBe(200);
+    expect(width).toBe(1520);
+    expect(minX + width).toBe(1720);
+    expect(minY).toBeLessThan(0);
+    expect(height).toBeGreaterThan(3000);
+  });
+
+  it('should update svgViewBox dynamically when window resizes to portrait mobile', () => {
+    const origW = window.innerWidth;
+    const origH = window.innerHeight;
+    Object.defineProperty(window, 'innerWidth', { value: 375, configurable: true });
+    Object.defineProperty(window, 'innerHeight', { value: 812, configurable: true });
+
+    window.dispatchEvent(new Event('resize'));
+    expect(component.svgViewBox()).toBe(computeAerialViewBox(375, 812));
+
+    Object.defineProperty(window, 'innerWidth', { value: origW, configurable: true });
+    Object.defineProperty(window, 'innerHeight', { value: origH, configurable: true });
+    window.dispatchEvent(new Event('resize'));
   });
 });

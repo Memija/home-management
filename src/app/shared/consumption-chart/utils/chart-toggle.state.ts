@@ -1,4 +1,10 @@
 import { LocalStorageService } from '../../../services/local-storage.service';
+import {
+  ChartGranularity,
+  ChartTimeRange,
+  isChartGranularity,
+  isChartTimeRange,
+} from './chart-series-window.utils';
 
 export type ChartTypeKey = 'water' | 'home' | 'heating' | 'electricity';
 
@@ -71,5 +77,25 @@ export class ChartToggleState {
       `${this.chartType}_${view}_show_past_forecast`,
       String(visible),
     );
+  }
+
+  // ─── Time range & granularity ─────────────────────────────────────────────
+
+  getStoredTimeRange(): ChartTimeRange | null {
+    const stored = this.localStorageService.getPreference(`${this.chartType}_chart_time_range`);
+    return isChartTimeRange(stored) ? stored : null;
+  }
+
+  saveTimeRange(range: ChartTimeRange): void {
+    this.localStorageService.setPreference(`${this.chartType}_chart_time_range`, range);
+  }
+
+  getGranularity(): ChartGranularity {
+    const stored = this.localStorageService.getPreference(`${this.chartType}_chart_granularity`);
+    return isChartGranularity(stored) ? stored : 'raw';
+  }
+
+  saveGranularity(granularity: ChartGranularity): void {
+    this.localStorageService.setPreference(`${this.chartType}_chart_granularity`, granularity);
   }
 }

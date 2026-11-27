@@ -147,4 +147,32 @@ describe('ChartToggleState', () => {
       );
     });
   });
+
+  describe('timeRange and granularity persistence', () => {
+    it('should return null for missing or invalid stored time range and valid range when set', () => {
+      expect(new ChartToggleState(makeStorage(null), 'water').getStoredTimeRange()).toBeNull();
+      expect(new ChartToggleState(makeStorage('bad'), 'water').getStoredTimeRange()).toBeNull();
+      expect(new ChartToggleState(makeStorage('6m'), 'water').getStoredTimeRange()).toBe('6m');
+    });
+
+    it('should save time range and granularity under chartType keys', () => {
+      const storage = makeStorage();
+      const state = new ChartToggleState(storage, 'electricity');
+      state.saveTimeRange('1y');
+      state.saveGranularity('monthly');
+
+      expect(storage.setPreference).toHaveBeenCalledWith('electricity_chart_time_range', '1y');
+      expect(storage.setPreference).toHaveBeenCalledWith(
+        'electricity_chart_granularity',
+        'monthly',
+      );
+    });
+
+    it('should default granularity to raw when unset and return monthly when stored', () => {
+      expect(new ChartToggleState(makeStorage(null), 'water').getGranularity()).toBe('raw');
+      expect(new ChartToggleState(makeStorage('monthly'), 'water').getGranularity()).toBe(
+        'monthly',
+      );
+    });
+  });
 });

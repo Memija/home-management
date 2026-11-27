@@ -1,0 +1,37 @@
+@if (readout(); as current) {
+  <div class="chart-mobile-readout" [class.scrubbing]="isScrubbing()">
+    <div class="readout-meta">
+      <div class="readout-date-group">
+        <span class="readout-date">{{ current.dateText }}</span>
+        @if (!isScrubbing() && latestLabel()) {
+          <span class="readout-badge">{{ latestLabel() }}</span>
+        }
+        @if (current.periodNote) {
+          <span class="readout-period">{{ current.periodNote }}</span>
+        }
+      </div>
+      @if (isScrubbing()) {
+        <button
+          type="button"
+          class="readout-clear-btn"
+          (click)="onClear()"
+          title="{{ clearLabel() }}"
+          aria-label="{{ clearLabel() }}"
+        >
+          <lucide-icon [img]="ClearIcon" size="14"></lucide-icon>
+        </button>
+      }
+    </div>
+    <div class="readout-series-strip">
+      @for (item of current.items; track $index) {
+        <span class="readout-chip">
+          <span class="series-dot" [style.background]="item.color"></span>
+          @if (item.label) {
+            <span class="series-label">{{ item.label }}</span>
+          }
+          <strong class="series-value">{{ item.valueText }}</strong>
+        </span>
+      }
+    </div>
+  </div>
+}

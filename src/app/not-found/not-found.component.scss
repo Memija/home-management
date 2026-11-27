@@ -2,6 +2,7 @@
   display: block;
   width: 100%;
   min-height: 100vh;
+  min-height: 100svh;
 }
 
 .not-found-page {
@@ -15,13 +16,15 @@
 
   position: relative;
   width: 100%;
-  height: 100vh;
-  min-height: 640px;
+  min-height: 100vh;
+  min-height: 100svh;
+  height: 100dvh;
   overflow: hidden;
   display: flex;
   align-items: flex-end;
   justify-content: center;
-  padding: 1.5rem;
+  padding: max(1rem, env(safe-area-inset-top, 0px)) max(1.25rem, env(safe-area-inset-right, 0px))
+    max(1.5rem, env(safe-area-inset-bottom, 0px)) max(1.25rem, env(safe-area-inset-left, 0px));
   box-sizing: border-box;
   background: var(--land);
 
@@ -102,6 +105,7 @@
   a {
     display: inline-flex;
     align-items: center;
+    justify-content: center;
     gap: 0.45rem;
     padding: 0.55rem 1.1rem;
     border-radius: 10px;
@@ -109,5 +113,71 @@
     font-weight: 600;
     text-decoration: none;
     cursor: pointer;
+  }
+}
+
+@media (max-width: 768px) {
+  .not-found-page {
+    --hud-bg: rgba(255, 255, 255, 0.96);
+    padding: max(0.75rem, env(safe-area-inset-top, 0px))
+      max(0.875rem, env(safe-area-inset-right, 0px)) max(1rem, env(safe-area-inset-bottom, 0px))
+      max(0.875rem, env(safe-area-inset-left, 0px));
+
+    &.theme-dark {
+      --hud-bg: rgba(9, 17, 13, 0.95);
+    }
+  }
+
+  .not-found-hud {
+    padding: 1rem 1.1rem;
+    border-radius: 16px;
+    gap: 0.45rem;
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+  }
+
+  .hud-title {
+    font-size: 1.12rem;
+  }
+
+  .hud-description {
+    font-size: 0.84rem;
+    line-height: 1.4;
+  }
+}
+
+@media (max-width: 480px) {
+  .hud-actions {
+    width: 100%;
+    flex-direction: column;
+    gap: 0.5rem;
+
+    a {
+      width: 100%;
+      padding: 0.62rem 1rem;
+    }
+  }
+}
+
+@media (max-height: 500px) and (orientation: landscape) {
+  .not-found-page {
+    padding: max(0.5rem, env(safe-area-inset-top, 0px))
+      max(0.75rem, env(safe-area-inset-right, 0px)) max(0.5rem, env(safe-area-inset-bottom, 0px))
+      max(0.75rem, env(safe-area-inset-left, 0px));
+  }
+
+  .not-found-hud {
+    max-width: 480px;
+    padding: 0.65rem 1rem;
+    gap: 0.3rem;
+  }
+
+  .hud-description {
+    display: none;
+  }
+
+  .hud-actions a {
+    padding: 0.42rem 0.9rem;
+    font-size: 0.82rem;
   }
 }

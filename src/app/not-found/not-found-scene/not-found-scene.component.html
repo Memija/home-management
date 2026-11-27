@@ -1,17 +1,18 @@
 <div class="aerial-stage" [class.theme-dark]="resolvedTheme() === 'dark'" aria-hidden="true">
   <svg
     class="aerial-svg"
-    viewBox="0 0 1920 1080"
+    [attr.viewBox]="viewBox()"
     preserveAspectRatio="xMidYMid slice"
     xmlns="http://www.w3.org/2000/svg"
   >
     <defs>
       <filter
         id="natural-shoreline"
-        x="-8%"
-        y="-8%"
-        width="116%"
-        height="116%"
+        filterUnits="userSpaceOnUse"
+        x="-100"
+        y="70"
+        width="2120"
+        height="580"
         color-interpolation-filters="sRGB"
       >
         <feTurbulence
@@ -341,13 +342,18 @@
       </g>
     </defs>
 
-    <rect fill="var(--land)" width="1920" height="1080" />
+    <rect fill="var(--land)" x="-600" y="-1400" width="3120" height="4400" />
     <g>
+      <ellipse class="meadow-patch" cx="560" cy="-320" rx="420" ry="210" />
+      <ellipse class="hill-contour" cx="1360" cy="-540" rx="480" ry="260" />
       <ellipse class="meadow-patch" cx="340" cy="240" rx="260" ry="150" />
       <ellipse class="meadow-patch" cx="1580" cy="250" rx="280" ry="160" />
       <ellipse class="meadow-patch" cx="960" cy="860" rx="520" ry="180" />
       <ellipse class="hill-contour" cx="190" cy="890" rx="340" ry="210" />
       <ellipse class="hill-contour" cx="1740" cy="880" rx="360" ry="220" />
+      <ellipse class="meadow-patch" cx="620" cy="1380" rx="480" ry="240" />
+      <ellipse class="hill-contour" cx="1320" cy="1680" rx="520" ry="280" />
+      <ellipse class="meadow-patch" cx="920" cy="2120" rx="560" ry="260" />
     </g>
 
     <g filter="url(#natural-shoreline)">

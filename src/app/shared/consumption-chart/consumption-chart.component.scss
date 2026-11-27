@@ -4,8 +4,6 @@
   display: block;
 }
 
-$trendline-purple: #9b59b6;
-
 .chart-section {
   background: var(--card-bg);
   border: 1px solid var(--card-border);
@@ -51,149 +49,32 @@ $trendline-purple: #9b59b6;
   gap: 4px;
 }
 
-.chart-controls {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-}
-
-.display-mode-toggle,
-.chart-filters {
-  display: inline-flex;
-  gap: 4px;
-  padding: 4px;
-  background: var(--bg-secondary);
-  border-radius: 10px;
-  border: 1px solid var(--border-color);
-  flex-wrap: wrap;
-}
-
-.display-mode-toggle button,
-.chart-filters button,
-.reset-zoom-btn,
-.trendline-toggle,
 .expand-chart-btn,
 .toggle-controls-btn {
   display: flex;
   align-items: center;
+  justify-content: center;
+  padding: 6px;
+  color: var(--text-secondary);
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: 8px;
   cursor: pointer;
-  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-  font-size: 0.85rem;
-  font-weight: 500;
-  gap: 6px;
+  transition:
+    background 0.2s ease,
+    color 0.2s ease,
+    border-color 0.2s ease,
+    transform 0.2s ease;
 
   &:active {
     transform: scale(0.97);
   }
-}
-
-.display-mode-toggle button,
-.chart-filters button {
-  padding: 6px 14px;
-  border: 1px solid transparent;
-  background: transparent;
-  color: var(--text-secondary);
-  border-radius: 7px;
-
-  &:hover:not(.active) {
-    color: var(--text-primary);
-    background: rgba(var(--card-bg-rgb), 0.5);
-  }
-
-  &.active {
-    background: var(--card-bg);
-    color: var(--theme-primary, $primary);
-    font-weight: 600;
-    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08);
-    border-color: rgba(var(--theme-primary-rgb, 0, 92, 191), 0.25);
-  }
-}
-
-.reset-zoom-btn {
-  padding: 6px 12px;
-  color: var(--text-secondary);
-  border: 1px solid var(--border-color);
-  background: var(--card-bg);
-  border-radius: 8px;
-
-  &:hover {
-    background: var(--bg-secondary);
-    border-color: var(--theme-primary, $primary);
-    color: var(--theme-primary, $primary);
-  }
-}
-
-.trendline-toggle {
-  padding: 6px 12px;
-  color: var(--text-secondary);
-  background: var(--bg-secondary);
-  border: 1px solid var(--border-color);
-  border-radius: 8px;
-
-  input[type='checkbox'] {
-    margin: 0;
-    cursor: pointer;
-  }
-
-  lucide-icon {
-    color: $trendline-purple;
-  }
-
-  &:hover:not(.disabled) {
-    background: var(--card-bg);
-    border-color: $trendline-purple;
-    color: $trendline-purple;
-  }
-
-  &.disabled {
-    opacity: 0.6;
-    cursor: not-allowed;
-
-    input[type='checkbox'] {
-      cursor: not-allowed;
-    }
-
-    lucide-icon {
-      color: $gray-500;
-    }
-  }
-}
-
-.expand-chart-btn,
-.toggle-controls-btn {
-  padding: 6px;
-  color: var(--text-secondary);
-  justify-content: center;
-  background: transparent;
-  border: 1px solid transparent;
-  border-radius: 8px;
 
   &:hover {
     background: var(--bg-secondary);
     border-color: var(--border-color);
     color: var(--theme-primary, $primary);
   }
-}
-
-.info-tooltip-container {
-  margin-left: auto;
-}
-
-.info-tooltip {
-  left: auto;
-  right: 0;
-  transform: none;
-  max-width: 280px;
-
-  &::after {
-    left: auto;
-    right: 8px;
-    transform: none;
-  }
-}
-
-.info-icon.warning {
-  color: $warning;
 }
 
 .chart-container {
@@ -210,33 +91,27 @@ $trendline-purple: #9b59b6;
 }
 
 @media (max-width: 768px) {
+  .chart-section {
+    padding: 14px;
+    min-height: 380px;
+  }
+
   .chart-header {
     flex-direction: column;
-    align-items: flex-start;
-  }
-
-  .chart-controls {
-    width: 100%;
-    gap: 8px;
-  }
-
-  .control-text {
-    display: none;
-  }
-
-  .display-mode-toggle button,
-  .chart-filters button,
-  .reset-zoom-btn {
-    padding: 8px 14px;
-    justify-content: center;
-  }
-
-  .reset-zoom-btn .control-text,
-  .trendline-toggle .control-text {
-    display: inline;
+    align-items: stretch;
+    margin-bottom: 12px;
+    gap: 10px;
   }
 
   .chart-container {
-    height: 250px;
+    height: 310px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .chart-section,
+  .expand-chart-btn,
+  .toggle-controls-btn {
+    transition: none;
   }
 }

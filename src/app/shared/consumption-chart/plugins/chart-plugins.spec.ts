@@ -1,5 +1,10 @@
 import { describe, it, expect, vi, afterEach } from 'vitest';
-import { summerSunPlugin, newYearMarkerPlugin, registerChartPlugins } from './chart-plugins';
+import {
+  summerSunPlugin,
+  newYearMarkerPlugin,
+  crosshairGuidePlugin,
+  registerChartPlugins,
+} from './chart-plugins';
 import { Chart } from 'chart.js';
 import { DynamicHeatingRecord } from '../../../models/records.model';
 
@@ -663,7 +668,7 @@ describe('Chart Plugins', () => {
   });
 
   describe('registerChartPlugins', () => {
-    it('should register both plugins with Chart.js', () => {
+    it('should register all custom plugins with Chart.js', () => {
       const registerSpy = vi.spyOn(Chart, 'register').mockImplementation(() => {
         /* no-op */
       });
@@ -672,9 +677,47 @@ describe('Chart Plugins', () => {
 
       expect(registerSpy).toHaveBeenCalledWith(summerSunPlugin);
       expect(registerSpy).toHaveBeenCalledWith(newYearMarkerPlugin);
-      expect(registerSpy).toHaveBeenCalledTimes(2);
+      expect(registerSpy).toHaveBeenCalledWith(crosshairGuidePlugin);
+      expect(registerSpy).toHaveBeenCalledTimes(3);
 
       registerSpy.mockRestore();
+    });
+  });
+
+  describe('crosshairGuidePlugin', () => {
+    it('should draw vertical dashed guide line when active element is within chartArea', () => {
+      const chart = {
+        ...createMockChart(3),
+        chartArea: { top: 10, bottom: 200, left: 40, right: 360 },
+        getActiveElements: () => [{ element: { x: 180 } }],
+      };
+
+      crosshairGuidePlugin.afterDatasetsDraw(chart as unknown as Chart);
+
+      expect(chart.ctx.save).toHaveBeenCalledTimes(1);
+      expect(chart.ctx.setLineDash).toHaveBeenCalledWith([4, 4]);
+      expect(chart.ctx.moveTo).toHaveBeenCalledWith(180, 10);
+      expect(chart.ctx.lineTo).toHaveBeenCalledWith(180, 200);
+      expect(chart.ctx.stroke).toHaveBeenCalledTimes(1);
+      expect(chart.ctx.restore).toHaveBeenCalledTimes(1);
+    });
+
+    it('should not draw when there are no active elements or x is out of bounds', () => {
+      const emptyChart = {
+        ...createMockChart(3),
+        chartArea: { top: 10, bottom: 200, left: 40, right: 360 },
+        getActiveElements: () => [],
+      };
+      crosshairGuidePlugin.afterDatasetsDraw(emptyChart as unknown as Chart);
+      expect(emptyChart.ctx.save).not.toHaveBeenCalled();
+
+      const outOfBoundsChart = {
+        ...createMockChart(3),
+        chartArea: { top: 10, bottom: 200, left: 40, right: 360 },
+        getActiveElements: () => [{ element: { x: 20 } }],
+      };
+      crosshairGuidePlugin.afterDatasetsDraw(outOfBoundsChart as unknown as Chart);
+      expect(outOfBoundsChart.ctx.save).not.toHaveBeenCalled();
     });
   });
 

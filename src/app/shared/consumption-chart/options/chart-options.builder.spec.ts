@@ -3,6 +3,7 @@ import {
   buildChartOptions,
   ChartOptionsBuilderDeps,
   escapeRegExp,
+  formatCompactAxisTick,
   replaceLabelWithIcon,
 } from './chart-options.builder';
 import { LanguageService } from '../../../services/language.service';
@@ -877,6 +878,49 @@ describe('buildGenerateLabels', () => {
           { index: 2, contains: 'Bathroom' },
         ],
       );
+    });
+  });
+
+  describe('mobile layout and compact axis ticks', () => {
+    afterEach(() => {
+      Object.defineProperty(window, 'innerWidth', {
+        value: 1024,
+        writable: true,
+        configurable: true,
+      });
+    });
+
+    it('should format compact axis ticks cleanly', () => {
+      expect(formatCompactAxisTick(450)).toBe('450');
+      expect(formatCompactAxisTick(1500)).toBe('1.5k');
+      expect(formatCompactAxisTick(1200000)).toBe('1.2M');
+    });
+
+    it('should configure index scrubbing and hide axis titles on mobile viewports', () => {
+      Object.defineProperty(window, 'innerWidth', {
+        value: 390,
+        writable: true,
+        configurable: true,
+      });
+
+      const options = buildChartOptions({
+        languageService: makeLangService({ 'CHART.AXIS_LITERS': 'L', 'CHART.AXIS_DATE': 'Date' }),
+        chartType: 'water',
+        getData: () => [],
+      });
+
+      expect(options?.interaction).toEqual({ mode: 'index', intersect: false });
+      const scales = options?.scales as {
+        x?: { title?: { display?: boolean }; ticks?: { maxRotation?: number } };
+        y?: {
+          title?: { display?: boolean };
+          ticks?: { callback?: (v: number) => string };
+        };
+      };
+      expect(scales.x?.title?.display).toBe(false);
+      expect(scales.x?.ticks?.maxRotation).toBe(0);
+      expect(scales.y?.title?.display).toBe(false);
+      expect(scales.y?.ticks?.callback?.(2500)).toBe('2.5k');
     });
   });
 });

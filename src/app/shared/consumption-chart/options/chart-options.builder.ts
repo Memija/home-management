@@ -1,12 +1,16 @@
-import { Chart, ChartConfiguration, ChartEvent, LegendItem, TooltipItem } from 'chart.js';
+import { Chart, ChartConfiguration, ChartEvent, LegendItem } from 'chart.js';
 import { LanguageService } from '../../../services/language.service';
-import { AppChartDataset, parseSafeDate } from '../../../models/records.model';
+import { AppChartDataset } from '../../../models/records.model';
 import { ChartDataPoint } from '../../../models/consumption-chart.model';
+import { buildTooltipOptions, MobileTooltipReadout } from './chart-tooltip.builder';
+
+export type { MobileReadoutItem, MobileTooltipReadout } from './chart-tooltip.builder';
 
 export interface ChartOptionsBuilderDeps {
   languageService: LanguageService;
   chartType: 'water' | 'home' | 'heating' | 'electricity';
   getData: () => ChartDataPoint[];
+  onMobileTooltip?: (readout: MobileTooltipReadout | null) => void;
 }
 
 // ─── Legend helpers ───────────────────────────────────────────────────────────
@@ -108,12 +112,26 @@ function applyLabelReplacements(text: string, replacements: CompiledLabelReplace
   return result;
 }
 
+export function buildCompactLabelFormatter(
+  languageService: LanguageService,
+): (label: string) => string {
+  let cachedReplacements: CompiledLabelReplacement[] | null = null;
+  return (label: string): string => {
+    if (!label) return '';
+    cachedReplacements ??= createLabelReplacements(languageService);
+    return applyLabelReplacements(label, cachedReplacements);
+  };
+}
+
 /**
  * Generates compact legend labels on mobile screens by substituting lengthy suffix strings
  * (e.g., " - Consumption prediction" or " (Daily Average Consumption)") with concise symbols/icons.
  */
-function buildGenerateLabels(languageService: LanguageService) {
-  let cachedReplacements: CompiledLabelReplacement[] | null = null;
+function buildGenerateLabels(
+  languageService: LanguageService,
+  compactFormatter?: (label: string) => string,
+) {
+  const formatLabel = compactFormatter ?? buildCompactLabelFormatter(languageService);
 
   return (chart: Chart): LegendItem[] => {
     const defaultGenerator = Chart.defaults.plugins.legend.labels.generateLabels;
@@ -123,11 +141,9 @@ function buildGenerateLabels(languageService: LanguageService) {
       return items;
     }
 
-    cachedReplacements ??= createLabelReplacements(languageService);
-
     for (const item of items) {
       if (item.text) {
-        item.text = applyLabelReplacements(item.text, cachedReplacements);
+        item.text = formatLabel(item.text);
       }
     }
 
@@ -281,75 +297,69 @@ function syncRelatedDatasets(
   );
 }
 
-// ─── Tooltip helpers ──────────────────────────────────────────────────────────
+// ─── Scale & mobile layout helpers ───────────────────────────────────────────
 
-const TOOLTIP_DATE_OPTIONS = {
-  weekday: 'long',
-  year: 'numeric',
-  month: 'long',
-  day: 'numeric',
-} as const;
-
-/**
- * Builds the tooltip title callback: shows the full locale-aware date for
- * historical data points, and an estimated future date for prediction points.
- */
-function buildTooltipTitleCallback(
-  languageService: LanguageService,
-  getData: () => ChartDataPoint[],
-) {
-  return (tooltipItems: TooltipItem<keyof import('chart.js').ChartTypeRegistry>[]): string => {
-    if (tooltipItems.length === 0) return '';
-
-    const item = tooltipItems[0];
-    const dataIndex = item.dataIndex;
-    const data = getData();
-    const pastDataLength = data.length;
-
-    if (dataIndex < pastDataLength) {
-      const rawDate = data[dataIndex].date;
-      const dateObj = parseSafeDate(rawDate);
-      return languageService.formatDate(dateObj, TOOLTIP_DATE_OPTIONS);
-    }
-
-    // Future data point (prediction zone)
-    if (pastDataLength > 0) {
-      const monthOffset = dataIndex - pastDataLength + 1;
-      const futureDate = new Date(parseSafeDate(data[pastDataLength - 1].date));
-      futureDate.setMonth(futureDate.getMonth() + monthOffset);
-      return languageService.formatDate(futureDate, TOOLTIP_DATE_OPTIONS);
-    }
-
-    return item.label;
-  };
+export function formatCompactAxisTick(value: number): string {
+  const abs = Math.abs(value);
+  if (abs >= 1_000_000) {
+    const m = Math.round((value / 1_000_000) * 10) / 10;
+    return `${m}M`;
+  }
+  if (abs >= 1_000) {
+    const k = Math.round((value / 1_000) * 10) / 10;
+    return `${k}k`;
+  }
+  return String(Math.round(value * 10) / 10);
 }
 
-/**
- * Builds the tooltip label callback: formats the value with its unit and
- * appends a normalized-period note for incremental-mode data points.
- */
-function buildTooltipLabelCallback(
+function resolveUnitAxisLabel(
   languageService: LanguageService,
   chartType: ChartOptionsBuilderDeps['chartType'],
-) {
-  return (context: TooltipItem<keyof import('chart.js').ChartTypeRegistry>): string => {
-    const unit = chartType === 'heating' || chartType === 'electricity' ? 'kWh' : 'L';
-    const parsedY =
-      typeof context.parsed === 'object' && context.parsed !== null && 'y' in context.parsed
-        ? Number((context.parsed as { y: number }).y)
-        : Number(context.parsed);
-    const val = Math.round(parsedY);
-    const datasetLabel = context.dataset?.label ?? '';
-    let label = `${datasetLabel}: ${val} ${unit}`;
+): string {
+  return chartType === 'heating' || chartType === 'electricity'
+    ? languageService.translate('CHART.AXIS_KWH')
+    : languageService.translate('CHART.AXIS_LITERS');
+}
 
-    const normalizedData = (context.dataset as AppChartDataset).normalizedData;
-    const itemNorm = normalizedData?.[context.dataIndex] as { days?: number } | undefined;
-    if (itemNorm?.days) {
-      const days = Number(itemNorm.days).toFixed(1);
-      label += ` ${languageService.translate('CHART.ESTIMATED_MONTHLY', { days })}`;
-    }
+function buildScalesOptions(
+  mobile: boolean,
+  unitLabel: string,
+  dateLabel: string,
+): NonNullable<ChartConfiguration['options']>['scales'] {
+  if (!mobile) {
+    return {
+      y: {
+        beginAtZero: true,
+        title: { display: true, text: unitLabel },
+      },
+      x: {
+        title: { display: true, text: dateLabel },
+        ticks: { maxRotation: 45, minRotation: 0 },
+      },
+    };
+  }
 
-    return label;
+  return {
+    y: {
+      beginAtZero: true,
+      title: { display: false, text: unitLabel },
+      ticks: {
+        maxTicksLimit: 5,
+        font: { size: 10 },
+        callback: (tickValue: string | number) => formatCompactAxisTick(Number(tickValue)),
+      },
+    },
+    x: {
+      title: { display: false, text: dateLabel },
+      grid: { display: false },
+      ticks: {
+        maxRotation: 0,
+        minRotation: 0,
+        autoSkip: true,
+        maxTicksLimit: 5,
+        font: { size: 10 },
+      },
+    },
   };
 }
 
@@ -361,27 +371,38 @@ function buildTooltipLabelCallback(
  * Internally composed from focused helper functions for legend, tooltips, zoom, and scales.
  */
 export function buildChartOptions(deps: ChartOptionsBuilderDeps): ChartConfiguration['options'] {
-  const { languageService, chartType, getData } = deps;
+  const { languageService, chartType, getData, onMobileTooltip } = deps;
+  const mobile = isMobileViewport();
+  const unitLabel = resolveUnitAxisLabel(languageService, chartType);
+  const dateLabel = languageService.translate('CHART.AXIS_DATE');
+  const isHeating = chartType === 'heating';
+  const compactLabel = buildCompactLabelFormatter(languageService);
 
   return {
     responsive: true,
     maintainAspectRatio: false,
+    interaction: mobile
+      ? { mode: 'index', intersect: false }
+      : { mode: 'nearest', intersect: true },
     plugins: {
       legend: {
         display: true,
         position: 'top',
         labels: {
+          ...(mobile ? { boxWidth: 10, boxHeight: 10, padding: 8, font: { size: 11 } } : {}),
           filter: buildLegendFilter(languageService),
-          generateLabels: buildGenerateLabels(languageService),
+          generateLabels: buildGenerateLabels(languageService, compactLabel),
         },
         onClick: buildLegendClickHandler(languageService),
       },
-      tooltip: {
-        callbacks: {
-          title: buildTooltipTitleCallback(languageService, getData),
-          label: buildTooltipLabelCallback(languageService, chartType),
-        },
-      },
+      tooltip: buildTooltipOptions({
+        languageService,
+        chartType,
+        getData,
+        mobile,
+        compactLabel,
+        onMobileTooltip,
+      }),
       zoom: {
         pan: { enabled: true, mode: 'x' },
         zoom: {
@@ -393,8 +414,8 @@ export function buildChartOptions(deps: ChartOptionsBuilderDeps): ChartConfigura
       // Custom plugins — cast to Record<string, unknown> since their keys aren't in Chart.js's generated types
       ...({
         summerSun: {
-          enabled: chartType === 'heating',
-          records: chartType === 'heating' ? getData() : [],
+          enabled: isHeating,
+          records: isHeating ? getData() : [],
         },
         newYearMarker: {
           enabled: true,
@@ -402,21 +423,6 @@ export function buildChartOptions(deps: ChartOptionsBuilderDeps): ChartConfigura
         },
       } as Record<string, unknown>),
     },
-    scales: {
-      y: {
-        beginAtZero: true,
-        title: {
-          display: true,
-          text:
-            chartType === 'heating' || chartType === 'electricity'
-              ? languageService.translate('CHART.AXIS_KWH')
-              : languageService.translate('CHART.AXIS_LITERS'),
-        },
-      },
-      x: {
-        title: { display: true, text: languageService.translate('CHART.AXIS_DATE') },
-        ticks: { maxRotation: 45, minRotation: 0 },
-      },
-    },
+    scales: buildScalesOptions(mobile, unitLabel, dateLabel),
   };
 }

@@ -1,0 +1,213 @@
+<div class="chart-controls">
+  <div class="chart-toolbar-primary">
+    <div class="display-mode-toggle">
+      <button
+        type="button"
+        [class.active]="displayMode() === 'total'"
+        [attr.aria-pressed]="displayMode() === 'total'"
+        (click)="displayModeChange.emit('total')"
+        title="{{ 'CHART.DISPLAY_MODE_TOTAL' | translate }}"
+        aria-label="{{ 'CHART.DISPLAY_MODE_TOTAL' | translate }}"
+      >
+        <lucide-icon [img]="BarChart3Icon" size="16"></lucide-icon>
+        <span class="control-text">{{ 'CHART.DISPLAY_MODE_TOTAL' | translate }}</span>
+      </button>
+      <button
+        type="button"
+        [class.active]="displayMode() === 'incremental'"
+        [attr.aria-pressed]="displayMode() === 'incremental'"
+        (click)="displayModeChange.emit('incremental')"
+        title="{{ 'CHART.DISPLAY_MODE_INCREMENTAL' | translate }}"
+        aria-label="{{ 'CHART.DISPLAY_MODE_INCREMENTAL' | translate }}"
+      >
+        <lucide-icon [img]="TrendingUpIcon" size="16"></lucide-icon>
+        <span class="control-text">{{ 'CHART.DISPLAY_MODE_INCREMENTAL' | translate }}</span>
+      </button>
+    </div>
+    @if (chartType() !== 'electricity') {
+      <div class="chart-filters">
+        @for (filter of availableViewFilters(); track filter.view) {
+          <button
+            type="button"
+            [class.active]="currentView() === filter.view"
+            [attr.aria-pressed]="currentView() === filter.view"
+            (click)="viewChange.emit(filter.view)"
+            title="{{ filter.labelKey | translate }}"
+            aria-label="{{ filter.labelKey | translate }}"
+          >
+            <lucide-icon [img]="filter.icon" size="16"></lucide-icon>
+            <span class="control-text">{{ filter.labelKey | translate }}</span>
+          </button>
+        }
+      </div>
+    }
+    <div class="chart-range-pills">
+      @for (range of timeRanges; track range) {
+        <button
+          type="button"
+          [class.active]="timeRange() === range"
+          [attr.aria-pressed]="timeRange() === range"
+          (click)="timeRangeChange.emit(range)"
+          title="{{ getRangeLabelKey(range) | translate }}"
+          aria-label="{{ getRangeLabelKey(range) | translate }}"
+        >
+          {{ getRangeLabelKey(range) | translate }}
+        </button>
+      }
+    </div>
+    @if (showGranularityToggle()) {
+      <div class="chart-granularity-pills">
+        <button
+          type="button"
+          [class.active]="granularity() === 'raw'"
+          [attr.aria-pressed]="granularity() === 'raw'"
+          (click)="granularityChange.emit('raw')"
+          title="{{ 'CHART.GRANULARITY_RAW' | translate }}"
+          aria-label="{{ 'CHART.GRANULARITY_RAW' | translate }}"
+        >
+          {{ 'CHART.GRANULARITY_RAW' | translate }}
+        </button>
+        <button
+          type="button"
+          [class.active]="granularity() === 'monthly'"
+          [attr.aria-pressed]="granularity() === 'monthly'"
+          (click)="granularityChange.emit('monthly')"
+          title="{{ 'CHART.GRANULARITY_MONTHLY' | translate }}"
+          aria-label="{{ 'CHART.GRANULARITY_MONTHLY' | translate }}"
+        >
+          {{ 'CHART.GRANULARITY_MONTHLY' | translate }}
+        </button>
+      </div>
+    }
+    @if (hasAvailableOverlays()) {
+      <button
+        type="button"
+        class="mobile-overlays-btn"
+        [class.active]="isMobileOverlaysOpen() || activeOverlayCount() > 0"
+        [attr.aria-expanded]="isMobileOverlaysOpen()"
+        (click)="mobileOverlaysToggle.emit()"
+        title="{{ 'CHART.OVERLAYS_BUTTON' | translate }}"
+        aria-label="{{ 'CHART.OVERLAYS_BUTTON' | translate }}"
+      >
+        <lucide-icon [img]="LayersIcon" size="15"></lucide-icon>
+        <span>{{ 'CHART.OVERLAYS_BUTTON' | translate }}</span>
+        @if (activeOverlayCount() > 0) {
+          <span class="overlay-count-badge">{{ activeOverlayCount() }}</span>
+        }
+      </button>
+    }
+    <button
+      type="button"
+      class="reset-zoom-btn"
+      (click)="resetZoomClick.emit()"
+      title="{{ 'CHART.RESET_ZOOM' | translate }}"
+      aria-label="{{ 'CHART.RESET_ZOOM' | translate }}"
+    >
+      <lucide-icon [img]="ZoomInIcon" size="16"></lucide-icon>
+      <span class="control-text">{{ 'CHART.RESET_ZOOM' | translate }}</span>
+    </button>
+  </div>
+
+  @if (hasAvailableOverlays()) {
+    <div class="chart-overlays-group" [class.mobile-open]="isMobileOverlaysOpen()">
+      <label
+        class="trendline-toggle"
+        for="show-trendline"
+        [class.disabled]="!hasSufficientDataForTrendline()"
+        title="{{ 'CHART.SHOW_TRENDLINE' | translate }}"
+      >
+        <input
+          id="show-trendline"
+          type="checkbox"
+          [checked]="showTrendline()"
+          (change)="trendlineToggle.emit()"
+          [disabled]="!hasSufficientDataForTrendline()"
+        />
+        <lucide-icon [img]="ActivityIcon" size="16"></lucide-icon>
+        <span class="control-text">{{ 'CHART.SHOW_TRENDLINE' | translate }}</span>
+        @if (!hasSufficientDataForTrendline()) {
+          <span class="info-tooltip-container">
+            <lucide-icon [img]="InfoIcon" size="14" class="info-icon"></lucide-icon>
+            <span class="info-tooltip">{{
+              'CHART.TRENDLINE_REQUIRES_DATA_INCREMENTAL' | translate
+            }}</span>
+          </span>
+        }
+      </label>
+      @if (displayMode() === 'incremental') {
+        <label
+          class="trendline-toggle"
+          [attr.for]="
+            chartType() === 'heating' ? 'show-heating-average' : 'show-average-comparison'
+          "
+          [class.disabled]="isAverageComparisonDisabled()"
+          title="{{ 'CHART.SHOW_AVERAGE' | translate }}"
+        >
+          <input
+            [id]="chartType() === 'heating' ? 'show-heating-average' : 'show-average-comparison'"
+            type="checkbox"
+            [checked]="showAverageComparison()"
+            (change)="averageComparisonToggle.emit()"
+            [disabled]="isAverageComparisonDisabled()"
+          />
+          <lucide-icon [img]="BarChart3Icon" size="16"></lucide-icon>
+          <span class="control-text">{{ 'CHART.SHOW_AVERAGE' | translate }}</span>
+          @if (chartType() === 'heating') {
+            <span class="info-tooltip-container">
+              <lucide-icon [img]="InfoIcon" size="14" class="info-icon"></lucide-icon>
+              <span class="info-tooltip info-tooltip-wide">{{
+                'CHART.HEATING_AVERAGE_INFO' | translate
+              }}</span>
+            </span>
+          }
+          @if (chartType() !== 'heating' && familySize() === 0) {
+            <span class="info-tooltip-container">
+              <lucide-icon [img]="InfoIcon" size="14" class="info-icon"></lucide-icon>
+              <span class="info-tooltip">{{ 'CHART.AVERAGE_REQUIRES_FAMILY' | translate }}</span>
+            </span>
+          } @else if (!hasSufficientDataForComparison()) {
+            <span class="info-tooltip-container">
+              <lucide-icon
+                [img]="InfoIcon"
+                size="14"
+                class="info-icon"
+                [class.warning]="chartType() === 'heating'"
+              ></lucide-icon>
+              <span class="info-tooltip">{{ 'CHART.AVERAGE_REQUIRES_DATA' | translate }}</span>
+            </span>
+          }
+        </label>
+      }
+      @if (hasPrediction() && displayMode() === 'incremental') {
+        <label
+          class="trendline-toggle"
+          for="show-predictions"
+          title="{{ 'CHART.SHOW_PREDICTIONS' | translate }}"
+        >
+          <input
+            id="show-predictions"
+            type="checkbox"
+            [checked]="showPredictions()"
+            (change)="predictionsToggle.emit()"
+          />
+          <lucide-icon [img]="SmartIcon" size="16"></lucide-icon>
+          <span class="control-text">{{ 'CHART.SHOW_PREDICTIONS' | translate }}</span>
+        </label>
+        <label
+          class="trendline-toggle"
+          for="show-past-forecast"
+          title="{{ 'CHART.SHOW_PAST_FORECAST' | translate }}"
+        >
+          <input
+            id="show-past-forecast"
+            type="checkbox"
+            [checked]="showPastForecast()"
+            (change)="pastForecastToggle.emit()"
+          />
+          <lucide-icon [img]="TargetIcon" size="16"></lucide-icon>
+          <span class="control-text">{{ 'CHART.SHOW_PAST_FORECAST' | translate }}</span>
+        </label>
+      }
+    </div>
+  }
+</div>

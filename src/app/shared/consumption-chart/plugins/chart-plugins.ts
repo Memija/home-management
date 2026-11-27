@@ -435,6 +435,30 @@ export const newYearMarkerPlugin = {
   },
 };
 
+export const crosshairGuidePlugin = {
+  id: 'crosshairGuide',
+  afterDatasetsDraw: (chart: Chart): void => {
+    const activeElements = chart.getActiveElements?.();
+    if (!activeElements || activeElements.length === 0) return;
+
+    const { ctx, chartArea } = chart;
+    if (!ctx || !chartArea) return;
+
+    const x = activeElements[0].element?.x;
+    if (typeof x !== 'number' || x < chartArea.left || x > chartArea.right) return;
+
+    ctx.save();
+    ctx.strokeStyle = 'rgba(148, 163, 184, 0.55)';
+    ctx.lineWidth = 1;
+    ctx.setLineDash([4, 4]);
+    ctx.beginPath();
+    ctx.moveTo(x, chartArea.top);
+    ctx.lineTo(x, chartArea.bottom);
+    ctx.stroke();
+    ctx.restore();
+  },
+};
+
 /**
  * Register all custom chart plugins.
  * Call this once at application startup.
@@ -442,4 +466,5 @@ export const newYearMarkerPlugin = {
 export function registerChartPlugins(): void {
   Chart.register(summerSunPlugin);
   Chart.register(newYearMarkerPlugin);
+  Chart.register(crosshairGuidePlugin);
 }

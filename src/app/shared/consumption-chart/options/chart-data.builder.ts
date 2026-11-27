@@ -1,4 +1,4 @@
-import { ChartConfiguration } from 'chart.js';
+import { ChartConfiguration, ChartDataset } from 'chart.js';
 import { ChartDataService, ChartView, DisplayMode } from '../../../services/chart-data.service';
 import { LanguageService } from '../../../services/language.service';
 import { ChartDataPoint } from '../../../models/consumption-chart.model';
@@ -33,6 +33,36 @@ export interface BuildChartDataParams {
   predictionPeriod: PredictionPeriod;
   showPredictions: boolean;
   showPastForecast: boolean;
+}
+
+const MOBILE_DENSE_POINTS_THRESHOLD = 15;
+
+function isMobileChartViewport(): boolean {
+  return typeof window !== 'undefined' && window.innerWidth <= 768;
+}
+
+function applyMobileDatasetDensity(
+  chartData: ChartConfiguration['data'],
+  pointCount: number,
+): ChartConfiguration['data'] {
+  if (!isMobileChartViewport() || !chartData.datasets) {
+    return chartData;
+  }
+
+  const isDense = pointCount > MOBILE_DENSE_POINTS_THRESHOLD;
+  for (const ds of chartData.datasets) {
+    const lineDs = ds as ChartDataset<'line'>;
+    if (lineDs.pointRadius === 0) {
+      continue;
+    }
+    lineDs.pointRadius = isDense ? 0 : 2.5;
+    lineDs.pointHoverRadius = 5;
+    lineDs.pointHitRadius = 16;
+    if (isDense && typeof lineDs.borderWidth === 'number' && lineDs.borderWidth > 2) {
+      lineDs.borderWidth = 2;
+    }
+  }
+  return chartData;
 }
 
 /**
@@ -124,10 +154,10 @@ export function buildConsumptionChartData(
   }
 
   if (mode !== 'incremental') {
-    return resultData;
+    return applyMobileDatasetDensity(resultData, records.length);
   }
 
-  return appendPredictionDatasets(resultData, {
+  const withPredictions = appendPredictionDatasets(resultData, {
     languageService,
     chartType,
     currentView: () => view,
@@ -137,4 +167,6 @@ export function buildConsumptionChartData(
     showPredictions,
     showPastForecast,
   });
+
+  return applyMobileDatasetDensity(withPredictions, records.length);
 }

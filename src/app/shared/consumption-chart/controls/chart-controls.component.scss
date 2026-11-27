@@ -1,0 +1,109 @@
+@use 'variables' as *;
+
+:host {
+  display: block;
+}
+
+.chart-controls {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.display-mode-toggle,
+.chart-filters {
+  display: inline-flex;
+  gap: 4px;
+  padding: 4px;
+  background: var(--bg-secondary);
+  border-radius: 10px;
+  border: 1px solid var(--border-color);
+  flex-wrap: wrap;
+}
+
+.display-mode-toggle button,
+.chart-filters button,
+.reset-zoom-btn {
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  transition:
+    background 0.2s ease,
+    color 0.2s ease,
+    border-color 0.2s ease,
+    box-shadow 0.2s ease,
+    transform 0.2s ease;
+  font-size: 0.85rem;
+  font-weight: 500;
+  gap: 6px;
+
+  &:active {
+    transform: scale(0.97);
+  }
+}
+
+.display-mode-toggle button,
+.chart-filters button {
+  padding: 6px 14px;
+  border: 1px solid transparent;
+  background: transparent;
+  color: var(--text-secondary);
+  border-radius: 7px;
+
+  &:hover:not(.active) {
+    color: var(--text-primary);
+    background: rgba(var(--card-bg-rgb), 0.5);
+  }
+
+  &.active {
+    background: var(--card-bg);
+    color: var(--theme-primary, $primary);
+    font-weight: 600;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08);
+    border-color: rgba(var(--theme-primary-rgb, 0, 92, 191), 0.25);
+  }
+}
+
+.reset-zoom-btn {
+  padding: 6px 12px;
+  color: var(--text-secondary);
+  border: 1px solid var(--border-color);
+  background: var(--card-bg);
+  border-radius: 8px;
+
+  &:hover {
+    background: var(--bg-secondary);
+    border-color: var(--theme-primary, $primary);
+    color: var(--theme-primary, $primary);
+  }
+}
+
+@media (max-width: 768px) {
+  .chart-controls {
+    width: 100%;
+    gap: 8px;
+  }
+
+  .control-text {
+    display: none;
+  }
+
+  .display-mode-toggle button,
+  .chart-filters button,
+  .reset-zoom-btn {
+    padding: 7px 10px;
+    justify-content: center;
+  }
+
+  .trendline-toggle .control-text {
+    display: inline;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .display-mode-toggle button,
+  .chart-filters button,
+  .reset-zoom-btn {
+    transition: none;
+  }
+}
